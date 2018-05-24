@@ -2,7 +2,9 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.SignRewardType;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
 import com.ald.fanbei.api.dal.domain.query.AfSignRewardQuery;
 import org.slf4j.Logger;
@@ -45,7 +47,7 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
     }
 
     @Override
-    public int sumSignDays(Long userId,Date startTime){
+    public List<AfSignRewardDo> sumSignDays(Long userId,Date startTime){
         return  afSignRewardDao.sumSignDays(userId,startTime);
     }
 
@@ -85,12 +87,14 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
     }
 
     @Override
-    public int supplementSign(AfSignRewardExtDo afSignRewardExtDo, int num){
+    public StringBuffer supplementSign(AfSignRewardExtDo afSignRewardExtDo, int num){
+        StringBuffer sb = new StringBuffer();
+        Long days ;
         int countDays = 0;
         boolean flag = true;
         Date date = afSignRewardExtDo.getFirstDayParticipation();
         if(date ==null){
-            return  0;
+            return  sb;
         }
         int cycle = afSignRewardExtDo.getCycleDays();
         Date startTime;
@@ -105,15 +109,20 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
             endTime = calendar.getTime();
             if((startTime.getTime() <= DateUtil.formatDateToYYYYMMdd(new Date()).getTime()) && (endTime.getTime() >= DateUtil.formatDateToYYYYMMdd(new Date()).getTime())){
                 flag = false;
-                int count = sumSignDays(afSignRewardExtDo.getUserId(),startTime);
-                Long days = DateUtil.getNumberOfDatesBetween(startTime,new Date());
-                if(days.intValue()>=count){
-                    countDays = days.intValue()-count;
+                List<AfSignRewardDo> afSignRewardDos = sumSignDays(afSignRewardExtDo.getUserId(),startTime);
+                for(AfSignRewardDo afSignRewardDo : afSignRewardDos){
+                    if(StringUtil.equals(SignRewardType.ZERO.getCode().toString(),afSignRewardDo.getType().toString())){
+                        days = DateUtil.getNumberOfDatesBetween(startTime,DateUtil.formatDateToYYYYMMdd(afSignRewardDo.getGmtCreate()));
+                        sb.append(days+1).append(",");
+                    }else if(StringUtil.equals(SignRewardType.ONE.getCode().toString(),afSignRewardDo.getType().toString())){
+                        days = DateUtil.getNumberOfDatesBetween(startTime,DateUtil.formatDateToYYYYMMdd(afSignRewardDo.getTime()));
+                        sb.append(days+1).append(",");
+                    }
                 }
             }else{
                 supplementSign(afSignRewardExtDo,num);
             }
         }
-        return countDays;
+        return sb.deleteCharAt(sb.length()-1);
     }
 }

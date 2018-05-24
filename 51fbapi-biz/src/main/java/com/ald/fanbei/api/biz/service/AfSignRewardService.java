@@ -20,7 +20,7 @@ public interface AfSignRewardService {
 
     boolean isExist(Long userId);
 
-    int sumSignDays(Long userId,Date startTime);
+    List<AfSignRewardDo> sumSignDays(Long userId,Date startTime);
 
     List<AfSignRewardDo> getRewardDetailList(AfSignRewardQuery query);
 
@@ -34,7 +34,7 @@ public interface AfSignRewardService {
 
     boolean frienddUserSignCountToDay(Long userId,Long friendUserId);
 
-    int supplementSign(AfSignRewardExtDo afSignRewardExtDo, int num);
+    StringBuffer supplementSign(AfSignRewardExtDo afSignRewardExtDo, int num);
 
     int saveRecordBatch(List<AfSignRewardDo> list);
 

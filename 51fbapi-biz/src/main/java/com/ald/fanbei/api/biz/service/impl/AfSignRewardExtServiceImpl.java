@@ -102,16 +102,16 @@ public class AfSignRewardExtServiceImpl  implements AfSignRewardExtService {
             map.put("isOpenRemind","N");
             //是否有余额
             map.put("rewardAmount",BigDecimal.ZERO);
-            //是否有补签
+            //已签到天数
             map.put("supplementSignDays",0);
         }else if(null != afSignRewardExtDo){
             //签到提醒
             map.put("isOpenRemind",afSignRewardExtDo.getIsOpenRemind()>0?"Y":"N");
             //是否有余额
             map.put("rewardAmount",afSignRewardExtDo.getAmount());
-            //是否有补签
-            int count = afSignRewardService.supplementSign(afSignRewardExtDo,0);
-            map.put("supplementSignDays",count);
+            //已签到天数
+            StringBuffer days = afSignRewardService.supplementSign(afSignRewardExtDo,0);
+            map.put("supplementSignDays",days.toString());
         }
         return map;
     }

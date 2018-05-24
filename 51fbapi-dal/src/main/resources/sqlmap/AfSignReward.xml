@@ -149,8 +149,10 @@
         AND  date_format(now(),'%Y-%m-%d') = date_format(gmt_create,'%Y-%m-%d')
     </select>
 
-    <select id="sumSignDays" resultType="int">
-        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and type in (0,2)
+    <select id="sumSignDays" resultType="AfSignRewardDo">
+        SELECT
+          <include refid="queryFields" />
+        FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and type in (0,2)
         AND gmt_create BETWEEN #{startTime} AND date_format(DATE_ADD(now(),INTERVAL 1 DAY),'%Y-%m-%d')
     </select>
 

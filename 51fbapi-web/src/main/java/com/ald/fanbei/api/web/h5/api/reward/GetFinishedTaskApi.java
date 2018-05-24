@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.h5.api.reward;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
@@ -43,10 +44,16 @@ public class GetFinishedTaskApi implements H5Handle {
         List<AfTaskUserDo> isDailyTaskList = new ArrayList<AfTaskUserDo>();
         List<AfTaskUserDo> isNotDailyTaskList =	new ArrayList<AfTaskUserDo>();
         Long userId = context.getUserId();
-        AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-        String level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
         List<Long> taskIds = new ArrayList<Long>();
-
+        List<AfTaskDto> finalTaskList = new ArrayList<>();
+        AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId);
+        if(null != taskUserDo){
+            if(StringUtil.equals(taskUserDo.getStatus().toString(),"1")){
+                AfTaskDto afTaskDto = new AfTaskDto();
+                afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
+                finalTaskList.add(afTaskDto);
+            }
+        }
         if(isDailyList.size()>0){
             isDailyTaskList = afTaskUserService.isDailyFinishTaskList(userId);
         }
@@ -59,7 +66,7 @@ public class GetFinishedTaskApi implements H5Handle {
             taskIds.add(afTaskUserDo.getTaskId());
         }
 
-        List<AfTaskDto> finalTaskList = afTaskService.getTaskByTaskIds(taskIds);
+        finalTaskList = afTaskService.getTaskByTaskIds(taskIds);
 
         resp.addResponseData("taskList",finalTaskList);
         return resp;

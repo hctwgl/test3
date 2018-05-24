@@ -19,7 +19,7 @@ public interface AfSignRewardDao  {
 
     int isExist(@Param("userId")Long userId);
 
-    int sumSignDays(@Param("userId")Long userId,@Param("startTime")Date startTime);
+    List<AfSignRewardDo> sumSignDays(@Param("userId")Long userId,@Param("startTime")Date startTime);
 
     List<AfSignRewardDo> getRewardDetailList(AfSignRewardQuery query);
 

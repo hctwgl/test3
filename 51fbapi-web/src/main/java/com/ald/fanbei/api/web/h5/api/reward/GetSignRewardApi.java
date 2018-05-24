@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -80,36 +81,25 @@ public class GetSignRewardApi implements H5Handle {
     private boolean userSign(AfSignRewardDo afSignRewardDo, final AfResourceDo afResourceDo,H5HandleResponse resp){
         boolean flag = afSignRewardService.checkUserSign(afSignRewardDo.getUserId());
         boolean result;
-        String status ;
+        String status = "" ;
         if(flag){//多次签到
             //判断是当前周期的第几天
             AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(afSignRewardDo.getUserId());
-            final int count = signDays(afSignRewardExtDo,0);
+            StringBuffer days = afSignRewardService.supplementSign(afSignRewardExtDo,0);
+            String str[] = days.toString().split(",");
+            final int count = str.length+1;
             final BigDecimal rewardAmount = randomNum(afResourceDo.getValue3(),afResourceDo.getValue4());
             afSignRewardDo.setAmount(rewardAmount);
             final AfSignRewardDo rewardDo = afSignRewardDo;
-            if(count == 5 || count == 1){
+            if(count == 1){
                 afSignRewardExtDo.setAmount(rewardAmount);
                 final AfSignRewardExtDo signRewardExtDo = afSignRewardExtDo;
-                if(count == 1){
-                    afSignRewardExtDo.setFirstDayParticipation(new Date());
-                }
+                afSignRewardExtDo.setFirstDayParticipation(new Date());
                 status = transactionTemplate.execute(new TransactionCallback<String>() {
                     @Override
                     public String doInTransaction(TransactionStatus status) {
                         try{
                             afSignRewardService.saveRecord(rewardDo);
-                            if(count == 3){
-                                AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
-                                afUserCouponDo.setUserId(rewardDo.getUserId());
-                                afUserCouponDo.setCouponId(Long.parseLong(afResourceDo.getValue5()));
-                                afUserCouponDo.setGmtCreate(new Date());
-                                afUserCouponDo.setGmtModified(new Date());
-                                afUserCouponDo.setSourceType("SIGN_REWARD");
-                                afUserCouponDo.setSourceRef("SYS");
-                                afUserCouponDo.setStatus("NOUSE");
-                                afUserCouponService.addUserCoupon(afUserCouponDo);
-                            }
                             afSignRewardExtService.increaseMoney(signRewardExtDo);
                             return "success";
                         }catch (Exception e){
@@ -119,25 +109,38 @@ public class GetSignRewardApi implements H5Handle {
                     }
                 });
             }else {
-                if(count == 7){
-                    afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN));
-                }else if(count == 10){
-                    afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(3)).setScale(2,RoundingMode.HALF_EVEN));
-                }
-                final AfSignRewardExtDo signRewardExtDo = afSignRewardExtDo;
-                status = transactionTemplate.execute(new TransactionCallback<String>() {
-                    @Override
-                    public String doInTransaction(TransactionStatus status) {
-                        try{
-                            afSignRewardService.saveRecord(rewardDo);
-                            afSignRewardExtService.increaseMoney(signRewardExtDo);
-                            return "success";
-                        }catch (Exception e){
-                            status.setRollbackOnly();
-                            return "fail";
-                        }
+                sortStr(str);
+                int maxCount = maxCount(str);
+                Date before = DateUtil.formatDateToYYYYMMdd(afSignRewardExtDo.getFirstDayParticipation());
+                Date after = DateUtil.formatDateToYYYYMMdd(new Date());;
+                days.append(",").append(DateUtil.getNumberOfDatesBetween(before,after));
+                int newMaxCount = maxCount(days.toString().split(","));
+                if(count >= 5 || count < 7){
+                    //给予连续5天的奖励
+                    if(maxCount < 5 && newMaxCount == 5){
+                        fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
                     }
-                });
+                }else if(count >= 7 || count< 10){
+                    //给予连续5天的奖励
+                    if(maxCount < 5 && newMaxCount == 5){
+                        fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
+                    }else if(maxCount < 5 && newMaxCount == 7){//给予连续5天和7天的奖励
+                        afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN));
+                        fiveOrSevenSignDays(afSignRewardExtDo,afSignRewardExtDo.getAmount(),rewardDo,afResourceDo);
+                    }else if(maxCount >= 5 && newMaxCount == 7){//给予连续7天的奖励
+                        afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN));
+                        tenSignDays(rewardDo,afSignRewardExtDo);
+                    }
+                }else if(count == 10){
+                    //给予连续7天和10天的奖励
+                    if(maxCount < 7){
+                        afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(4)).setScale(2,RoundingMode.HALF_EVEN));
+                        tenSignDays(rewardDo,afSignRewardExtDo);
+                    }
+                }else {//给予普通签到的奖励
+                    afSignRewardExtDo.setAmount(rewardAmount);
+                    tenSignDays(rewardDo,afSignRewardExtDo);
+                }
             }
             resp.addResponseData("amount",afSignRewardExtDo.getAmount());
         }else {//第一次签到
@@ -164,7 +167,6 @@ public class GetSignRewardApi implements H5Handle {
             });
             resp.addResponseData("amount",rewardAmount);
         }
-
         if(StringUtil.equals(status,"success")){
             result =true;
         }else {
@@ -173,54 +175,106 @@ public class GetSignRewardApi implements H5Handle {
         return result;
     }
 
-
-    /**
-     * 得到这一期签到的天数
-     * @param afSignRewardExtDo
-     * @param num
-     * @return
-     */
-    private int signDays(AfSignRewardExtDo afSignRewardExtDo,int num){
-        int countDays = 0;
-        boolean flag = true;
-        Date date = afSignRewardExtDo.getFirstDayParticipation();
-        int cycle = afSignRewardExtDo.getCycleDays();
-        Date startTime;
-        Date endTime;
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(DateUtil.formatDateToYYYYMMdd(date));
-        while(flag){
-            num ++;
-            calendar.add(Calendar.DAY_OF_MONTH,(new BigDecimal(num-1).multiply(new BigDecimal(cycle))).intValue());
-            startTime = calendar.getTime();
-            calendar.add(Calendar.DAY_OF_MONTH,cycle-1);
-            endTime = calendar.getTime();
-            if((startTime.getTime() <= DateUtil.formatDateToYYYYMMdd(new Date()).getTime()) && (endTime.getTime() >= DateUtil.formatDateToYYYYMMdd(new Date()).getTime())){
-                if(startTime.getTime() == DateUtil.formatDateToYYYYMMdd(new Date()).getTime()){
-                    afSignRewardExtDo.setFirstDayParticipation(new Date());
-                    afSignRewardExtDo.setGmtModified(new Date());
-                    afSignRewardExtService.updateSignRewardExt(afSignRewardExtDo);
-                }
-                flag = false;
-                countDays = afSignRewardService.sumSignDays(afSignRewardExtDo.getUserId(),startTime);
-            }else{
-                signDays(afSignRewardExtDo,num);
-            }
-        }
-        return countDays;
+    public void sortStr(String[] str){
+        for (int sx=0; sx<str.length-1; sx++) {
+             for (int i=0; i<str.length-1-sx; i++) {
+                 if (Integer.parseInt(str[i]) > Integer.parseInt(str[i+1]) ) {
+                     // 交换数据
+                     String temp = str[i];
+                     str[i] = str[i+1];
+                     str[i+1] = temp;
+                 }
+             }
+         }
     }
 
 
-    /**
-     * 随机获取min 与 max 之间的值
-     * @param min
-     * @param max
-     * @return
-     */
+    private  int maxCount(String[] nums) {
+        int count = 0;
+        int maxCount = 0;
+        for (int i = 0; i < nums.length-1; i++) {
+            if(Integer.parseInt(nums[i]) == Integer.parseInt(nums[i+1])-1){
+                count++;
+            }else {
+                if(count > maxCount){
+                    maxCount = count;
+                }
+                count = 0;
+                i--;
+            }
+        }
+        return maxCount;
+    }
+
+            /**
+             * 随机获取min 与 max 之间的值
+             * @param min
+             * @param max
+             * @return
+             */
     private BigDecimal randomNum(String min,String max){
         BigDecimal rewardAmount = new BigDecimal(Math.random() * (Double.parseDouble(max) - Double.parseDouble(min)) + min).setScale(2, RoundingMode.HALF_EVEN);
         return rewardAmount;
-
     }
+
+    /**
+     * 连续5天和7天的奖励 或者 连续5天的奖励
+     * @param afSignRewardExtDo
+     * @param rewardAmount
+     * @param rewardDo
+     * @param afResourceDo
+     * @return
+     */
+    private String fiveOrSevenSignDays(AfSignRewardExtDo afSignRewardExtDo ,BigDecimal rewardAmount,final AfSignRewardDo rewardDo,final AfResourceDo afResourceDo){
+        afSignRewardExtDo.setAmount(rewardAmount);
+        final AfSignRewardExtDo signRewardExtDo = afSignRewardExtDo;
+        String status = transactionTemplate.execute(new TransactionCallback<String>() {
+            @Override
+            public String doInTransaction(TransactionStatus status) {
+                try{
+                    afSignRewardService.saveRecord(rewardDo);
+                    AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
+                    afUserCouponDo.setUserId(rewardDo.getUserId());
+                    afUserCouponDo.setCouponId(Long.parseLong(afResourceDo.getValue5()));
+                    afUserCouponDo.setGmtCreate(new Date());
+                    afUserCouponDo.setGmtModified(new Date());
+                    afUserCouponDo.setSourceType("SIGN_REWARD");
+                    afUserCouponDo.setSourceRef("SYS");
+                    afUserCouponDo.setStatus("NOUSE");
+                    afUserCouponService.addUserCoupon(afUserCouponDo);
+                    afSignRewardExtService.increaseMoney(signRewardExtDo);
+                    return "success";
+                }catch (Exception e){
+                    status.setRollbackOnly();
+                    return "fail";
+                }
+            }
+        });
+        return status;
+    }
+
+    /**
+     * 签到7天 10天 或者 普通签到的奖励
+     * @param rewardDo
+     * @param signRewardExtDo
+     * @return
+     */
+    private String tenSignDays(final AfSignRewardDo rewardDo,final AfSignRewardExtDo signRewardExtDo){
+        String status = transactionTemplate.execute(new TransactionCallback<String>() {
+            @Override
+            public String doInTransaction(TransactionStatus status) {
+                try{
+                    afSignRewardService.saveRecord(rewardDo);
+                    afSignRewardExtService.increaseMoney(signRewardExtDo);
+                    return "success";
+                }catch (Exception e){
+                    status.setRollbackOnly();
+                    return "fail";
+                }
+            }
+        });
+        return status;
+    }
+
 
 }

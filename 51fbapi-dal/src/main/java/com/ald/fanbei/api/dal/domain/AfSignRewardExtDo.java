@@ -61,4 +61,6 @@ import java.math.BigDecimal;
 
     private Integer isDelete;
 
+    private Date time;
+
 }

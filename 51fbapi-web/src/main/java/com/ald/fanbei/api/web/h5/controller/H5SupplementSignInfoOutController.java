@@ -86,6 +86,8 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
             String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
             String push = ObjectUtils.toString(request.getParameter("push"), "").toString();
+            String dateTime = ObjectUtils.toString(request.getParameter("dateTime"), "").toString();
+            Date time = DateUtil.parseDateyyyyMMddHHmmss(dateTime);
             final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
             Map<String, Object> data = new HashMap<String, Object>();
             AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
@@ -154,7 +156,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
             CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
             bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
-            if(!signReward(request,userId,moblie)){
+            if(!signReward(request,userId,moblie,time)){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
             homeInfo(userId,data,push);
@@ -168,24 +170,32 @@ public class H5SupplementSignInfoOutController extends H5Controller {
         }
     }
 
-    private boolean signReward(HttpServletRequest request,final Long userId,final String moblie){
+    private boolean signReward(HttpServletRequest request,final Long userId,final String moblie,final Date time){
         boolean result ;
-        final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
         final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
         final AfResourceDo afResource = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
+        final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
         if(afResourceDo == null || afResource == null || numberWordFormat.isNumeric(afResourceDo.getValue())){
             throw new FanbeiException("param error", FanbeiExceptionCode.PARAM_ERROR);
         }
+        final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
         final BigDecimal amount = randomNum(afResource.getValue1(),afResource.getValue2());
         String status = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus status) {
                 try{
+                    //补签成功 分享者获取相应的奖励
+                    AfSignRewardDo afSignRewardDo = buildSignReward(rewardUserId,SignRewardType.TWO.getCode(),userId,rewardAmount);
                     //补签成功 打开者获取相应的奖励
                     AfSignRewardDo rewardDo = buildSignReward(userId, SignRewardType.FIVE.getCode(),null,amount);
                     List<AfSignRewardDo> signList = new ArrayList<>();
+                    signList.add(afSignRewardDo);
                     signList.add(rewardDo);
                     afSignRewardService.saveRecordBatch(signList);
+                    //补签成功 分享者增加余额
+                    AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(rewardUserId);
+                    afSignRewardExtDo.setAmount(rewardAmount);
+                    afSignRewardExtService.increaseMoney(afSignRewardExtDo);
                     //补签成功 打开者增加余额
                     AfSignRewardExtDo afSignRewardExt = buildSignRewardExt(userId,amount);
                     afSignRewardExtService.saveRecord(afSignRewardExt);
@@ -203,6 +213,8 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                 }
             }
         });
+
+
         if(StringUtil.equals(status,"success")){
             result =true;
         }else {
