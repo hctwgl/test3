@@ -31,4 +31,8 @@ public class AfContractPdfServiceImpl implements AfContractPdfService {
     public List<AfLenderInfoDto> selectLenders(Long pdfId) {
         return afContractPdfDao.selectLenders(pdfId);
     }
+    @Override
+    public List<AfLenderInfoDto> selectLendersSummary(Long pdfId) {
+        return afContractPdfDao.selectLendersSummary(pdfId);
+    }
 }
