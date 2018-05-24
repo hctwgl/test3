@@ -473,5 +473,12 @@ public interface AfOrderService {
 	String getUserFirstBigOrderDate(Long userId, Integer amount);
 
 	int getALLNoFinishOrderCount(Long userId);
+	/**
+	 * 获取指定用户，指定商品有效下单的记录（待支付、已支付、已收货、已返利等非close状态）
+	 * @param goodsId
+	 * @param userId
+	 * @return
+	 */
+	Integer countSpecGoodsBuyNums(Long goodsId,Long userId);
 
 }

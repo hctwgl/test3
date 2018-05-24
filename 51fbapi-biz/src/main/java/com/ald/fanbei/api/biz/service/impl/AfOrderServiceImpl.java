@@ -3302,6 +3302,17 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			logger.error("preFinishNotifyEds error="+e);
 		}
 	}
+	
+	/**
+	 * 获取指定用户，指定商品有效下单的记录（待支付、已支付、已收货、已返利等）
+	 * @param goodsId
+	 * @param userId
+	 * @return
+	 */
+	@Override
+	public Integer countSpecGoodsBuyNums(Long goodsId,Long userId){
+		return orderDao.countSpecGoodsBuyNums(goodsId,userId);
+	}
 
 	@Override
 	public int getALLNoFinishOrderCount(Long userId) {
