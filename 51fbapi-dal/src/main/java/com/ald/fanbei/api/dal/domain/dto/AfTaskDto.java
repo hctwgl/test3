@@ -19,4 +19,8 @@ import lombok.Setter;
 
 
       private String receiveReward;
+
+      private Integer sumTaskCondition;
+
+      private Integer finishTaskCondition;
 }

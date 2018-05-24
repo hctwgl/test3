@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.h5.api.reward;
 import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo;
 import com.ald.fanbei.api.biz.bo.loan.ApplyLoanBo.ReqParam;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
@@ -50,7 +51,8 @@ public class GetRewardHomeInfoApi implements H5Handle {
 	AfTaskService afTaskService;
 	@Resource
 	AfUserAuthStatusService afUserAuthStatusService;
-
+	@Resource
+	BizCacheUtil bizCacheUtil;
 
 	@Override
 	public H5HandleResponse process(Context context) {

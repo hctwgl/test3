@@ -14,7 +14,8 @@ public enum TaskSecType {
 	commodity("commodity","商品", ""),
 	brand("brand", "品牌",""),
 	category("category", "分类",""),
-	activity("activity", "活动","");
+	activity("activity", "活动",""),
+	quantity("quantity", "购买数量","");
 
 
 	private String code;

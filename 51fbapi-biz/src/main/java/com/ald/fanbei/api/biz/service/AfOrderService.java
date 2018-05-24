@@ -476,4 +476,8 @@ public interface AfOrderService {
 	 */
 	int getFinishOrderCount(Long userId);
 
+
+	int getSignFinishOrderCount(Long userId,Date date);
+
+
 }

@@ -2,13 +2,13 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.AfTaskUserService;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.TaskSecType;
 import com.ald.fanbei.api.common.enums.TaskType;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.dal.dao.AfTaskDao;
 import com.ald.fanbei.api.dal.domain.AfTaskDo;
-import com.ald.fanbei.api.biz.service.AfTaskService;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,7 +43,8 @@ public class AfTaskServiceImpl  implements AfTaskService {
     private AfTaskDao afTaskDao;
     @Resource
     AfTaskUserService afTaskUserService;
-
+    @Resource
+    AfTaskBrowseGoodsService afTaskBrowseGoodsService;
     @Resource
     private AfUserAuthService afUserAuthService;
 
@@ -53,6 +53,8 @@ public class AfTaskServiceImpl  implements AfTaskService {
 
     @Resource
     private AfOrderService afOrderService;
+    @Resource
+    BizCacheUtil bizCacheUtil;
 
     @Override
 	public List<AfTaskDto> getTaskListByUserIdAndUserLevel( String userLevel){
@@ -73,7 +75,9 @@ public class AfTaskServiceImpl  implements AfTaskService {
         List<Long> notFinishedList = new ArrayList<Long>();
         List<AfTaskDto> finalTaskList = new ArrayList<AfTaskDto>();
         List<AfTaskDto> taskList = afTaskDao.getTaskListByUserIdAndUserLevel(level);
-
+        if(StringUtil.isBlank((String) bizCacheUtil.getObject(userId+Constants.SIGN_DATE))){
+            bizCacheUtil.saveObjectForever(userId+Constants.SIGN_DATE,new Date());
+        }
         for(AfTaskDo afTaskDo : taskList){
             if(afTaskDo.getIsDailyUpdate().equals("1")){
                 isDailyList.add(afTaskDo.getRid());
@@ -92,12 +96,44 @@ public class AfTaskServiceImpl  implements AfTaskService {
             notFinishedList.add(taskUserDo.getTaskId());
         }
 
+        AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId);
+        boolean taskBrowseFlag = true;
+        if(null != taskUserDo){
+            if(StringUtil.equals(taskUserDo.getStatus().toString(),"0")){
+                AfTaskDto afTaskDto = new AfTaskDto();
+                afTaskDto.setFinishTaskCondition(3);
+                afTaskDto.setSumTaskCondition(3);
+                afTaskDto.setReceiveReward("N");
+                afTaskDto.setIsDailyUpdate(1);
+                afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
+                finalTaskList.add(afTaskDto);
+            }
+        }else{
+            taskBrowseFlag = false;
+        }
+
         List<AfTaskDto> afTaskDtos = afTaskDao.getTaskByTaskIds(notFinishedList);
         for (AfTaskDto afTaskDto : afTaskDtos){
+            if(StringUtil.equals(afTaskDto.getTaskSecType(), TaskSecType.quantity.getCode())){
+                afTaskDto.setFinishTaskCondition(Integer.parseInt(afTaskDto.getTaskCondition()));
+                afTaskDto.setSumTaskCondition(Integer.parseInt(afTaskDto.getTaskCondition()));
+            }else{
+                afTaskDto.setFinishTaskCondition(1);
+                afTaskDto.setSumTaskCondition(1);
+            }
             afTaskDto.setReceiveReward("N");
             finalTaskList.add(afTaskDto);
         }
 
+        if(!taskBrowseFlag){
+            int countToday = afTaskBrowseGoodsService.countBrowseGoodsToday(userId);
+            AfTaskDto afTaskDto = new AfTaskDto();
+            afTaskDto.setFinishTaskCondition(countToday);
+            afTaskDto.setSumTaskCondition(3);
+            afTaskDto.setIsDailyUpdate(1);
+            afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
+            finalTaskList.add(afTaskDto);
+        }
         for(AfTaskDto afTaskDo : taskList){
             boolean flag = true;
             boolean taskFlag = true;
@@ -126,10 +162,17 @@ public class AfTaskServiceImpl  implements AfTaskService {
                     if(StringUtil.equals(push, "Y")){
                         break;
                     }
+                }else if(StringUtil.equals(afTaskDo.getTaskSecType(), TaskSecType.quantity.getCode())){
+                    afTaskDo.setFinishTaskCondition(afOrderService.getSignFinishOrderCount(userId,(Date)bizCacheUtil.getObject(userId+Constants.SIGN_DATE)));
+                    afTaskDo.setSumTaskCondition(Integer.parseInt(afTaskDo.getTaskCondition()));
+                }else {
+                    afTaskDo.setFinishTaskCondition(0);
+                    afTaskDo.setSumTaskCondition(1);
                 }
                 finalTaskList.add(afTaskDo);
             }
         }
+
 
         return finalTaskList;
     }

@@ -389,4 +389,15 @@
         </foreach>
     </update>
 
+    <select id="getTodayTaskUserDoByTaskNameAndUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0 AND task_name = #{taskName}
+        AND date(reward_time) = date(now())
+        AND user_id = #{userId}
+        LIMIT 0,1
+    </select>
+
+
 </mapper>

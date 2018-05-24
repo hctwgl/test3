@@ -619,4 +619,6 @@ public class Constants {
 	 * 金币兑换任务名称
 	 */
 	public static final String TASK_COIN_CHANGE_TO_CASH_NAME = "金币兑换零钱";
+
+	public static final String SIGN_DATE = "SIGN_DATE";
 }

@@ -77,9 +77,10 @@
 
 	<select id="countBrowseGoodsToday" resultType="java.lang.Integer">
         SELECT
-        <include refid="queryFields" />
+        count(*)
         FROM af_task_browse_goods
-        <include refid="commonCondition"/>
+        where is_delete = 0
+        AND user_id = #{userId}
         and to_days(gmt_create) = to_days(now())
     </select>
     
