@@ -164,7 +164,7 @@ public class FriendSignInfoApi implements H5Handle {
                         AfSignRewardExtDo afSignRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(userId,amount);
                         afSignRewardExtService.increaseMoney(afSignRewardExt);
                     }
-                    AfSignRewardDo rewardDo = H5SupplementSignInfoOutController.buildSignReward(userId, SignRewardType.FOUR.getCode(),null,amount);
+                    AfSignRewardDo rewardDo = H5SupplementSignInfoOutController.buildSignReward(userId, SignRewardType.FOUR.getCode(),null,amount,null);
                     List<AfSignRewardDo> list = new ArrayList<>();
                     list.add(rewardDo);
                     list.add(signRewardDo);

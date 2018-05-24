@@ -86,8 +86,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
             String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
             String push = ObjectUtils.toString(request.getParameter("push"), "").toString();
-            String dateTime = ObjectUtils.toString(request.getParameter("dateTime"), "").toString();
-            Date time = DateUtil.parseDateyyyyMMddHHmmss(dateTime);
+            Integer time = NumberUtil.objToIntDefault(request.getParameter("time"),1);
             final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
             Map<String, Object> data = new HashMap<String, Object>();
             AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
@@ -170,7 +169,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
         }
     }
 
-    private boolean signReward(HttpServletRequest request,final Long userId,final String moblie,final Date time){
+    private boolean signReward(HttpServletRequest request,final Long userId,final String moblie,final int time){
         boolean result ;
         final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
         final AfResourceDo afResource = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
@@ -184,14 +183,6 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             @Override
             public String doInTransaction(TransactionStatus status) {
                 try{
-                    //补签成功 分享者获取相应的奖励
-                    AfSignRewardDo afSignRewardDo = buildSignReward(rewardUserId,SignRewardType.TWO.getCode(),userId,rewardAmount);
-                    //补签成功 打开者获取相应的奖励
-                    AfSignRewardDo rewardDo = buildSignReward(userId, SignRewardType.FIVE.getCode(),null,amount);
-                    List<AfSignRewardDo> signList = new ArrayList<>();
-                    signList.add(afSignRewardDo);
-                    signList.add(rewardDo);
-                    afSignRewardService.saveRecordBatch(signList);
                     //补签成功 分享者增加余额
                     AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(rewardUserId);
                     afSignRewardExtDo.setAmount(rewardAmount);
@@ -206,6 +197,19 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                     afUserThirdInfoDo.setModifier(moblie);
                     afUserThirdInfoDo.setUserName(moblie);
                     afUserThirdInfoService.updateByUserName(afUserThirdInfoDo);
+                    //补签成功 分享者获取相应的奖励
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(afSignRewardExtDo.getFirstDayParticipation());
+                    calendar.add(Calendar.DAY_OF_MONTH,time);
+                    Date date =calendar.getTime();
+                    AfSignRewardDo afSignRewardDo = buildSignReward(rewardUserId,SignRewardType.TWO.getCode(),userId,rewardAmount,date);
+                    //补签成功 打开者获取相应的奖励
+                    AfSignRewardDo rewardDo = buildSignReward(userId, SignRewardType.FIVE.getCode(),null,amount,null);
+                    List<AfSignRewardDo> signList = new ArrayList<>();
+                    signList.add(afSignRewardDo);
+                    signList.add(rewardDo);
+                    afSignRewardService.saveRecordBatch(signList);
+
                     return "success";
                 }catch (Exception e){
                     status.setRollbackOnly();
@@ -213,7 +217,6 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                 }
             }
         });
-
 
         if(StringUtil.equals(status,"success")){
             result =true;
@@ -225,7 +228,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
     }
 
 
-    public static AfSignRewardDo buildSignReward(Long userId,Integer type,Long friendUserId,BigDecimal rewardAmount){
+    public static AfSignRewardDo buildSignReward(Long userId,Integer type,Long friendUserId,BigDecimal rewardAmount,Date time){
         AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
         afSignRewardDo.setIsDelete(0);
         afSignRewardDo.setUserId(userId);
@@ -235,6 +238,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
         afSignRewardDo.setStatus(0);
         afSignRewardDo.setFriendUserId(friendUserId);
         afSignRewardDo.setAmount(rewardAmount);
+        afSignRewardDo.setTime(time);
         return afSignRewardDo;
     }
 
