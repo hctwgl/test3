@@ -607,7 +607,7 @@ public class AfContractPdfCreateServiceImpl implements AfContractPdfCreateServic
             FileDigestSignResult fileDigestSignResult = afESdkService.secondOldSign(map);
             if (fileDigestSignResult.isErrShow()) {
                 result = false;
-                logger.error("乙方盖章证书生成失败 => {}",fileDigestSignResult);
+                logger.error("乙方盖章证书生成失败 => {}",JSON.toJSONString(fileDigestSignResult));
                 return result;
             }
             map.put("esignIdThird", fileDigestSignResult.getSignServiceId());
