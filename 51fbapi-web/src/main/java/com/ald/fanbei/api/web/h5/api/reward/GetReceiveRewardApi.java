@@ -42,9 +42,10 @@ public class GetReceiveRewardApi implements H5Handle {
     @Override
     public H5HandleResponse process(final Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
-        String isDailyTask = ObjectUtils.toString(context.getData("isDailyTask").toString(),null);
+        String isDailyUpdate = ObjectUtils.toString(context.getData("isDailyUpdate").toString(),null);
         String taskName = ObjectUtils.toString(context.getData("taskName").toString(),null);
-        Long taskId = NumberUtil.objToLongDefault(context.getData("taskId"),0l);
+        Long taskId = Long.parseLong(context.getData("taskId").toString());
+//        Long taskId = NumberUtil.objToLongDefault(context.getData("taskId"),0l);
         Long userId = context.getUserId();
         int count = 0;
         if(!StringUtil.equals(taskName, Constants.BROWSE_TASK_NAME)){
@@ -59,10 +60,10 @@ public class GetReceiveRewardApi implements H5Handle {
         afTaskUserDo.setGmtModified(new Date());
         afTaskUserDo.setStatus(1);
         afTaskUserDo.setRewardTime(new Date());
-        if(isDailyTask != null){
-            if(StringUtil.equals(isDailyTask,"1")){//每日任务
+        if(isDailyUpdate != null){
+            if(StringUtil.equals(isDailyUpdate,"1")){//每日任务
                 count = afTaskUserService.updateDailyByTaskIdAndUserId(afTaskUserDo);
-            }else if(StringUtil.equals(isDailyTask,"0")){//非每日任务
+            }else if(StringUtil.equals(isDailyUpdate,"0")){//非每日任务
                 count = afTaskUserService.updateNotDailyByTaskIdAndUserId(afTaskUserDo);
             }
             if(count<1){
