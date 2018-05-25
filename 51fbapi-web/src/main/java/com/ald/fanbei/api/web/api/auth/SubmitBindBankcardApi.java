@@ -1,37 +1,33 @@
 package com.ald.fanbei.api.web.api.auth;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
+import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.BankCardType;
+import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.UserUtil;
+import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.web.common.ApiHandle;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.validator.Validator;
+import com.ald.fanbei.api.web.validator.bean.SubmitBindBankcardParam;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
-import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.BankcardStatus;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.UserUtil;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.web.common.ApiHandle;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
-import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.validator.Validator;
-import com.ald.fanbei.api.web.validator.bean.SubmitBindBankcardParam;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *@类现描述：提交绑卡
@@ -108,9 +104,11 @@ public class SubmitBindBankcardApi implements ApiHandle {
 				afUserBankcardService.updateUserBankcard(bank);
 
 				//设置用户绑卡状态
-				userAuthUpdate.setUserId(userAccDB.getUserId());
-				userAuthUpdate.setBankcardStatus(YesNoStatus.YES.getCode());
-				afUserAuthService.updateUserAuth(userAuthUpdate);
+				if(!BankCardType.CREDIT.getCode().equals(bank.getCardType())) {
+					userAuthUpdate.setUserId(userAccDB.getUserId());
+					userAuthUpdate.setBankcardStatus(YesNoStatus.YES.getCode());
+					afUserAuthService.updateUserAuth(userAuthUpdate);
+				}
 				UpsAuthSignValidRespBo upsResult = upsUtil.authSignValid(context.getUserId()+"", bank.getCardNumber(), param.smsCode, "02");
 				if(!upsResult.isSuccess()){
 					status.setRollbackOnly();
