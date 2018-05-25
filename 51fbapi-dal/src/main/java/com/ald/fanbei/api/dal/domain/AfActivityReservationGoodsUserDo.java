@@ -49,7 +49,7 @@ import java.math.BigDecimal;
     /**
      * 预定商品数量
      */
-    private Integer goodsCount;
+    private int goodsCount;
 
     private Integer limitCount; //限购数量
     private String goodsName;  //商品名称
@@ -61,6 +61,8 @@ import java.math.BigDecimal;
     private String goodsIcon;//商品图标
     private String thumbnailIcon;//商品缩略图
     private String goodsUrl;//商品链接
+
+    private Long userReservationId;
 
     /**
      * 获取主键Id
@@ -168,22 +170,12 @@ import java.math.BigDecimal;
       this.userId = userId;
     }
 
-    /**
-     * 获取预定商品数量
-     *
-     * @return 预定商品数量
-     */
-    public Integer getGoodsCount(){
-      return goodsCount;
+    public int getGoodsCount() {
+        return goodsCount;
     }
 
-    /**
-     * 设置预定商品数量
-     * 
-     * @param goodsCount 要设置的预定商品数量
-     */
-    public void setGoodsCount(Integer goodsCount){
-      this.goodsCount = goodsCount;
+    public void setGoodsCount(int goodsCount) {
+        this.goodsCount = goodsCount;
     }
 
     public Integer getLimitCount() {
@@ -256,5 +248,13 @@ import java.math.BigDecimal;
 
     public void setGoodsUrl(String goodsUrl) {
         this.goodsUrl = goodsUrl;
+    }
+
+    public Long getUserReservationId() {
+        return userReservationId;
+    }
+
+    public void setUserReservationId(Long userReservationId) {
+        this.userReservationId = userReservationId;
     }
 }

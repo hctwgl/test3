@@ -409,23 +409,44 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         Map<String, Object> data = Maps.newHashMap();
         List<AfActivityReservationGoodsUserDo> userReservationGoodsList = null;
         // 商品展示
-        Long userId = null;
-        if (context.getUserName() != null) {
-            AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
-            if (userDo != null)
-                userId = userDo.getRid();
+        Long userId = 0L;
+        AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
+        if (userDo != null)
+            userId = userDo.getRid();
 
-            //资源信息
-            AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.ACTIVITY_RESERVATION_GOODS);
-            if(null != resourceInfo) {
-                Long activityId = Long.valueOf(resourceInfo.getValue());
-                //用户预售商品列表
-                userReservationGoodsList = afActivityReservationGoodsUserService.getActivityReservationGoodsList(userId, activityId);
+        //资源信息
+        AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(Constants.ACTIVITY_RESERVATION_GOODS);
+        if(null != resourceInfo) {
+            Long activityId = Long.valueOf(resourceInfo.getValue());
+            //活动预售商品列表
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("userId",userId );
+            map.put("activityId",activityId );
+            userReservationGoodsList = afActivityReservationGoodsUserService.getActivityReservationGoodsList(map);
 
-            }
         }
+
         data.put("reservationGoodsList", userReservationGoodsList);
         return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
+    }
+
+    /**
+     * ceshi
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "ceshiPay", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String ceshiPay(HttpServletRequest request, HttpServletResponse response) {
+
+        // 预售商品回调 处理
+        AfOrderDo orderInfo = new AfOrderDo();
+        orderInfo.setUserId(13989456327L);
+        orderInfo.setRid(193477L);
+        orderInfo.setGoodsId(136879L);
+        afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
+        return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
     }
 
     /*

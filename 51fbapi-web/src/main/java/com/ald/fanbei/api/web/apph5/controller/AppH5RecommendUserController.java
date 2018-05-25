@@ -15,6 +15,7 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,10 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * @类描述：
@@ -161,19 +159,49 @@ public class AppH5RecommendUserController extends BaseController {
      * @param type 类型 0 微信朋友圈，1 微信好友，2 qq空间 ，3二维码
      * @return
      */
-    @ResponseBody
+   /* @ResponseBody
     @RequestMapping(value = "addShared", method = RequestMethod.POST)
     public int addShared(HttpServletRequest request,int type){
         FanbeiWebContext context = doWebCheck(request, false);
         String userName = context.getUserName();
-//        String userName ="13588469645";
+       // String userName ="13588469645";
 
         AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
         AfRecommendShareDo afRecommendShareDo = new AfRecommendShareDo();
-        afRecommendShareDo.setUser_id(afUserDo.getRid());
-        afRecommendShareDo.setType(type);
-        afRecommendShareDo.setRecommend_code(afUserDo.getRecommendCode());
-        return afRecommendUserService.addRecommendShared(afRecommendShareDo);
+
+       afRecommendShareDo.setUser_id(afUserDo.getRid());
+       afRecommendShareDo.setType(type);
+       afRecommendShareDo.setRecommend_code(afUserDo.getRecommendCode());
+       return  afRecommendUserService.addRecommendShared(afRecommendShareDo);
+
+    }*/
+
+    /**
+     *新增分享
+     * @param request
+     * @param type 类型 0 微信朋友圈，1 微信好友，2 qq空间 ，3二维码
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "addShared", method = RequestMethod.POST)
+    public String addUserShared(HttpServletRequest request,int type){
+        FanbeiWebContext context = doWebCheck(request, false);
+        String userName = context.getUserName();
+        // String userName ="13588469645";
+
+        Map<String, Object> data = Maps.newHashMap();
+        AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
+        AfRecommendShareDo afRecommendShareDo = new AfRecommendShareDo();
+        int reInt = 0;
+
+        if( null != afUserDo){
+            afRecommendShareDo.setUser_id(afUserDo.getRid());
+            afRecommendShareDo.setType(type);
+            afRecommendShareDo.setRecommend_code(afUserDo.getRecommendCode());
+            reInt = afRecommendUserService.addRecommendShared(afRecommendShareDo);
+        }
+        data.put("addSharedCount",reInt);
+        return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
     }
 
 

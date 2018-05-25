@@ -156,19 +156,28 @@
         <include refid="commonCondition"/>
     </select>
 
-    <select id="getActivityReservationGoodsInfo" resultType="com.ald.fanbei.api.dal.domain.AfActivityReservationGoodsDo" >
-        SELECT
-        aag.id rid,aag.goods_id,aag.gmt_create,aag.gmt_modified,aag.start_time,aag.end_time,sag.limit_count,aag.coupon_id,aag.sort
-        , ag.gmt_start, ag.gmt_end, ag.name goodsName, sag.special_price activityAmount
-        , ag.price_amount, ag.sale_amount, ac.amount couponPrice, (ag.price_amount - ac.amount) endPrice
+    <select id="getActivityReservationGoodsInfo" resultType="java.util.Map" >
+         SELECT
+        aag.id rid,aag.goods_id,aag.gmt_create,aag.gmt_modified,aag.limit_count,aag.coupon_id,aag.sort
+        , sa.gmt_start, sa.gmt_end, ag.name goodsName, sag.special_price activityAmount
+        , ag.sale_amount, (ag.sale_amount - ac.amount) endAmount, ac.amount couponPrice, ifnull(agu.goods_count, -1) goods_count
+        , ag.goods_icon, ag.thumbnail_icon, ag.goods_url
         FROM af_activity_reservation_goods  aag
+        left join af_activity_reservation_goods_user agu on agu.goods_id = aag.id and agu.user_id = #{userId,jdbcType=INTEGER}
+        and aag.id in (
+          select gu.goods_id from af_activity_reservation_goods_user gu where gu.user_id = #{userId,jdbcType=INTEGER} and gu.goods_count > 0
+          )
         left join af_goods ag on ag.id = aag.goods_id
         left join af_seckill_activity_goods sag on sag.goods_id = aag.goods_id and  sag.is_delete = 0
         left join af_seckill_activity sa on sa.id = sag.activity_id
         left join af_coupon ac on ac.id = aag.coupon_id
         WHERE aag.is_delete = 0
-        AND aag.goods_id = #{goodsId,jdbcType=INTEGER}
+        <if test="goodsId != null and goodsId != '' ">
+            AND aag.goods_id = #{goodsId,jdbcType=INTEGER}
+        </if>
         and sa.id = #{activityId,jdbcType=INTEGER}
+        and ag.status = 'PUBLISH'
+        and sag.special_price != 0
         GROUP BY aag.goods_id
         order by aag.sort DESC
     </select>

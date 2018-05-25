@@ -5,6 +5,7 @@ import com.ald.fanbei.api.dal.domain.AfActivityReservationGoodsUserDo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户预定预售商品表Dao
@@ -19,7 +20,7 @@ public interface AfActivityReservationGoodsUserDao extends BaseDao<AfActivityRes
 
     List<AfActivityReservationGoodsUserDo> getUserActivityReservationGoodsList( @Param("userId") long userId, @Param("activityId") Long activityId);
 
-    List<AfActivityReservationGoodsUserDo> getActivityReservationGoodsList( @Param("userId") long userId, @Param("activityId") Long activityId);
+    List<AfActivityReservationGoodsUserDo> getActivityReservationGoodsList(Map<String, Object> map);
 
     /*
      * 更新预约商品数量

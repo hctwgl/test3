@@ -11,6 +11,7 @@ import com.ald.fanbei.api.dal.domain.AfActivityReservationGoodsUserDo;
 import com.ald.fanbei.api.biz.service.AfActivityReservationGoodsUserService;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -41,7 +42,7 @@ public class AfActivityReservationGoodsUserServiceImpl extends ParentServiceImpl
 	}
 
 	@Override
-	public List<AfActivityReservationGoodsUserDo> getActivityReservationGoodsList(Long userId, Long activityId) {
-		return afActivityReservationGoodsUserDao.getActivityReservationGoodsList(userId, activityId);
+	public List<AfActivityReservationGoodsUserDo> getActivityReservationGoodsList(Map<String, Object> map) {
+		return afActivityReservationGoodsUserDao.getActivityReservationGoodsList(map);
 	}
 }

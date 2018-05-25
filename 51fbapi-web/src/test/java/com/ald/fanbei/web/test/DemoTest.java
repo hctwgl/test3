@@ -14,7 +14,8 @@ public class DemoTest extends BaseTest{
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
 	String urlBase = "http://localhost:8080";
-	String userName = "13656640521";
+	String userName = "13666745602";
+	//String userName = "13989456684";
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -60,6 +61,16 @@ public class DemoTest extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 
+	//新增优惠券
+	@Test
+	public void  addShared() {
+		String url = urlBase + "/fanbei-web/addShared";
+		Map<String,String> params = new HashMap<>();
+		params.put("type", "2");
+		//testApi(url, params, userName, false);
+		testH5(url, params, userName, true);
+	}
+
 	//分享成功，随机赠送优惠券
 	//@Test
 	public void  sendCouponAfterSuccessShare() {
@@ -88,12 +99,12 @@ public class DemoTest extends BaseTest{
 	}
 
 	//活动预售商品列表
-	@Test
+	//@Test
 	public void  getReservationGoodsList() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/getReservationGoodsList";
 		Map<String,String> params = new HashMap<>();
 		params.put("userName", "13685746702");
-		testH5(url, params, userName, true);
+		testH5(url, params, userName, false);
 	}
 
 	//测试发送短信

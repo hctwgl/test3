@@ -150,7 +150,7 @@
         SELECT
         aag.id rid,aag.goods_id,aag.gmt_create,aag.gmt_modified,aag.limit_count,aag.coupon_id,aag.sort
         , sa.gmt_start, sa.gmt_end, ag.name goodsName, sag.special_price activityAmount
-        , ag.sale_amount, (ag.sale_amount - ac.amount) endAmount, ac.amount couponPrice, ifnull(agu.goods_count, 0) goods_count
+        , ag.sale_amount, (ag.sale_amount - ac.amount) endAmount, ac.amount couponPrice,  agu.goods_count goodsCount
         , ag.goods_icon, ag.thumbnail_icon, ag.goods_url
         FROM af_activity_reservation_goods  aag
         left join af_activity_reservation_goods_user agu on agu.goods_id = aag.id and agu.user_id = #{userId,jdbcType=INTEGER}
@@ -162,6 +162,9 @@
         left join af_seckill_activity sa on sa.id = sag.activity_id
         left join af_coupon ac on ac.id = aag.coupon_id
         WHERE aag.is_delete = 0
+        <if test="goodsId != null and goodsId != '' ">
+            and aag.goods_id = #{goodsId,jdbcType=INTEGER}
+        </if>
         and sa.id = #{activityId,jdbcType=INTEGER}
         and ag.status = 'PUBLISH'
         and sag.special_price != 0

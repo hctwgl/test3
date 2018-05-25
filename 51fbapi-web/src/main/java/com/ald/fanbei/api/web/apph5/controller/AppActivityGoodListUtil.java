@@ -356,6 +356,7 @@ public class AppActivityGoodListUtil {
                 pool.execute(process);
             }
         }
+        activityList = null;
         if (activityList == null) {
             activityList = getActivityPartList(subjectList, resource, array);
             bizCacheUtil.saveListByTime(cacheKey, activityList, 10 * 60);

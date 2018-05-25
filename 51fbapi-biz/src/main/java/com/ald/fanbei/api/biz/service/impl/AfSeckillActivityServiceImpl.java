@@ -301,56 +301,59 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 			AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityDao.getActivityById( activityId);
 
 			if(null != afSeckillActivityDo){
-				AfActivityReservationGoodsDo afActivityReservationGoodsDo = new AfActivityReservationGoodsDo();
-				long date = System.currentTimeMillis();
+				long date = new Date().getTime();
 				AfActivityReservationGoodsUserDo  afActivityReservationGoodsUserDo = new AfActivityReservationGoodsUserDo();
 				afActivityReservationGoodsUserDo.setUserId(orderInfo.getUserId());
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("userId",orderInfo.getUserId() );
+				map.put("activityId",activityId );
+				map.put("goodsId",orderInfo.getGoodsId() );
 				//付定金
 				if(afSeckillActivityDo.getGmtStart().getTime() <= date  && date <= afSeckillActivityDo.getGmtEnd().getTime()){
 
 					//查询预售活动商品
-					afActivityReservationGoodsDo = afActivityReservationGoodsDao.getActivityReservationGoodsInfo(activityId, orderInfo.getGoodsId());
-					if(null != afActivityReservationGoodsDo ){
+					List<AfActivityReservationGoodsUserDo>  AfActivityReservationGoodsUserDoList = afActivityReservationGoodsUserDao.getActivityReservationGoodsList(map);
+					if(null != AfActivityReservationGoodsUserDoList &&  AfActivityReservationGoodsUserDoList.size() > 0){
 						logger.info("updateUserActivityGoodsInfo payReservationAmount userId: " + orderInfo.getUserId() );
-						//查询是否已经购买， 未购买时添加，购买时更新购买数量
-						afActivityReservationGoodsUserDo.setGoodsId(afActivityReservationGoodsDo.getRid());
-						AfActivityReservationGoodsUserDo afActivityReservationGoodsUserDo1 = afActivityReservationGoodsUserDao.getByCommonCondition(afActivityReservationGoodsUserDo);
-						if(null != afActivityReservationGoodsUserDo1){
-							if(Integer.valueOf(afActivityReservationGoodsDo.getLimitCount()) > afActivityReservationGoodsUserDo1.getGoodsCount()){
-								afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsDo.getRid(), orderInfo.getUserId(), 1);
+						AfActivityReservationGoodsUserDo afActivityReservationGoodsUserDo1 = AfActivityReservationGoodsUserDoList.get(0);
+						//未购买时添加，购买时更新购买数量
+						afActivityReservationGoodsUserDo.setGoodsId(afActivityReservationGoodsUserDo1.getRid());
 
-								//修改订单状态为已完成
-								logger.info("updateUserActivityGoodsInfo updateOrderStatus rid: " + orderInfo.getRid() );
-								orderDao.updateOrderStatus(orderInfo.getRid());
-								//获取资源信息
-								AfResourceDo resourceInfo1 = afResourceService.getConfigByTypesAndSecType(Constants.SMS_TEMPLATE, Constants.SMS_ACTIVITY_RESERVATION_GOODS);
-								if(resourceInfo1 != null){
-									String content = resourceInfo1.getValue();
-									//发送短信
-									String mobile = orderInfo.getMobile();
-									smsUtil.sendSmsToDhstAishangjie(mobile, content);
-								}
-								}
-						}else{
-							afActivityReservationGoodsUserDo.setCouponId(Long.valueOf(afActivityReservationGoodsDo.getCouponId()));
+						Integer goodsCount = afActivityReservationGoodsUserDo1.getGoodsCount();
+						if(null !=  goodsCount &&  afActivityReservationGoodsUserDo1.getLimitCount() > goodsCount){
+							afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsUserDo1.getRid(), orderInfo.getUserId(), 1);
+						}else if(null == goodsCount){
+							afActivityReservationGoodsUserDo.setCouponId(Long.valueOf(afActivityReservationGoodsUserDo1.getCouponId()));
 							afActivityReservationGoodsUserDo.setGoodsCount(1);
 							Date nowTime = new Date();
 							afActivityReservationGoodsUserDo.setGmtCreate(nowTime);
 							afActivityReservationGoodsUserDo.setGmtModified(nowTime);
 							afActivityReservationGoodsUserDao.saveRecord(afActivityReservationGoodsUserDo);
 						}
+
+						//修改订单状态为已完成
+						logger.info("updateUserActivityGoodsInfo updateOrderStatus rid: " + orderInfo.getRid() );
+						orderDao.updateOrderStatus(orderInfo.getRid());
+						//获取资源信息
+						AfResourceDo resourceInfo1 = afResourceService.getConfigByTypesAndSecType(Constants.SMS_TEMPLATE, Constants.SMS_ACTIVITY_RESERVATION_GOODS);
+						if(resourceInfo1 != null){
+							String content = resourceInfo1.getValue();
+							//发送短信
+							String mobile = orderInfo.getMobile();
+							smsUtil.sendSmsToDhstAishangjie(mobile, content);
+						}
 					}
 					//付售价
 				}else{
 					logger.info("updateUserActivityGoodsInfo payEndAmount userId: " + orderInfo.getUserId() );
 					//查询预售活动商品
-					afActivityReservationGoodsDo = afActivityReservationGoodsDao.getActivityReservationGoodsInfo(activityId, orderInfo.getGoodsId());
-					if(null != afActivityReservationGoodsDo ){
+					List<AfActivityReservationGoodsUserDo>  AfActivityReservationGoodsUserDoList = afActivityReservationGoodsUserDao.getActivityReservationGoodsList(map);
+					if(null != AfActivityReservationGoodsUserDoList &&  AfActivityReservationGoodsUserDoList.size() > 0){
+						AfActivityReservationGoodsUserDo afActivityReservationGoodsUserDo1 = AfActivityReservationGoodsUserDoList.get(0);
 						//查询是否已经购买, 当购买数量大于0时 更新购买数量
-						afActivityReservationGoodsUserDo.setGoodsId(afActivityReservationGoodsDo.getRid());
-						AfActivityReservationGoodsUserDo afActivityReservationGoodsUserDo1 = afActivityReservationGoodsUserDao.getByCommonCondition(afActivityReservationGoodsUserDo);
-						if(null != afActivityReservationGoodsUserDo1 && afActivityReservationGoodsUserDo1.getGoodsCount() > 0){
-							afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsDo.getRid(), orderInfo.getUserId(), 2);
+						afActivityReservationGoodsUserDo.setGoodsId(afActivityReservationGoodsUserDo1.getRid());
+						if(afActivityReservationGoodsUserDo1.getGoodsCount() > 0){
+							afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsUserDo1.getGoodsId(), orderInfo.getUserId(), 2);
 						}
 					}
 				}
