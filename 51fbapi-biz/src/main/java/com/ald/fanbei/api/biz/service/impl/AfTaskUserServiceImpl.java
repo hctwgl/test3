@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfTaskSecType;
 import com.ald.fanbei.api.common.enums.AfTaskType;
@@ -40,6 +41,9 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 
     @Resource
     private AfTaskService afTaskService;
+
+    @Resource
+	BizCacheUtil bizCacheUtil;
 
     @Resource
     private AfGoodsService afGoodsService;
@@ -98,7 +102,10 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 			List<AfTaskDo> taskList = afTaskService.getTaskListByTaskTypeAndUserLevel(afTaskType, userLevelList, null);
 
 			// 用户购物数量
-			int orderCount = afOrderService.getFinishOrderCount(userId);
+			if(null == bizCacheUtil.getObject(userId+Constants.SIGN_DATE)){
+				bizCacheUtil.saveObjectForever(userId+Constants.SIGN_DATE,new Date());
+			}
+			int orderCount = afOrderService.getSignFinishOrderCount(userId,(Date)bizCacheUtil.getObject(userId+Constants.SIGN_DATE));
 
 			if(null != taskList && !taskList.isEmpty()) {
 				// 获取商品ID、商品品牌ID、商品分类ID
