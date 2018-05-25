@@ -238,7 +238,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 	try {
 	    lock(tradeNo);
 
-	    logger.info("dealRepaymentSucess process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo + ",borrowRepayment=" + JSON.toJSONString(repaymentDo));
+		logger.info("dealRepaymentSucess process begin, tradeNo=" + tradeNo + ",isBalance="+isBalance+",outTradeNo=" + outTradeNo + ",borrowRepayment=" + JSON.toJSONString(repaymentDo));
 
 	    this.preCheck(repaymentDo, tradeNo);
 
