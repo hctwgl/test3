@@ -331,7 +331,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 	    result.put("daysBorrowed", "");// 借款天数
 	    result.put("violateStartDate", "");// 违约金开始计算日期
 	    result.put("violateEndDate", "");// 违约金结束计算日期
-	    result.put("dayOverdue", "");// 逾期天数
+	    result.put("dayOverdue", afBorrowCashDo.getOverdueDay()-1);// 逾期天数
 	    result.put("debtDate",DateUtil.formatDate( DateUtil.addDays( afBorrowCashDo.getGmtPlanRepayment(),2),"yyyy-MM-dd") );// 债转日期
 
 	    resp.setErrCode(ArbitrationStatus.SUCCESS.getCode());
