@@ -236,7 +236,7 @@
     </select>
 
     <update id="updateDailyByTaskIdAndUserId"  parameterType="AfTaskUserDo">
-        UPDATE af_task_user set gmt_modified = now(),reward_time = now(),
+        UPDATE af_task_user set gmt_modified = now(),reward_time = now()
             <if test="status != null and status != '' ">
                 ,status = #{status}
             </if>
@@ -244,8 +244,17 @@
         AND date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
     </update>
 
+    <update id="updateDailyByTaskNameAndUserId"  parameterType="AfTaskUserDo">
+        UPDATE af_task_user set gmt_modified = now(),reward_time = now()
+        <if test="status != null and status != '' ">
+            ,status = #{status}
+        </if>
+        WHERE is_delete = 0 AND user_id = #{userId} AND task_name = #{taskName}
+        AND date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+    </update>
+
     <update id="updateNotDailyByTaskIdAndUserId"  parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
-        UPDATE af_task_user set  gmt_modified = now(),reward_time = now(),
+        UPDATE af_task_user set  gmt_modified = now(),reward_time = now()
             <if test="status != null and status != '' ">
                 ,status = #{status}
             </if>

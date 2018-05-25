@@ -324,6 +324,11 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		return afTaskUserDao.batchUpdateTaskUserStatus(taskUserIdList);
 	}
 
+	@Override
+	public int updateDailyByTaskNameAndUserId(AfTaskUserDo afTaskUserDo){
+		return afTaskUserDao.updateDailyByTaskNameAndUserId(afTaskUserDo);
+	}
+
 	/**
 	 * 是否匹配任务ID
 	 * @param taskCondition  任务条件

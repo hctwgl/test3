@@ -139,4 +139,6 @@ public interface AfTaskUserService {
      */
     int batchUpdateTaskUserStatus(List<Long> taskUserIdList);
 
+    int updateDailyByTaskNameAndUserId(AfTaskUserDo afTaskUserDo);
+
 }

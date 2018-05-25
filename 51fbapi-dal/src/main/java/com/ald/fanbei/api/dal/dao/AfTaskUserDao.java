@@ -49,4 +49,6 @@ public interface AfTaskUserDao  {
 
     int batchUpdateTaskUserStatus(@Param("taskUserIdList") List<Long> taskUserIdList);
 
+    int updateDailyByTaskNameAndUserId(AfTaskUserDo afTaskUserDo);
+
 }

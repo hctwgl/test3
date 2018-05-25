@@ -44,15 +44,11 @@ public class GetReceiveRewardApi implements H5Handle {
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
         String isDailyUpdate = ObjectUtils.toString(context.getData("isDailyUpdate").toString(),null);
         String taskName = ObjectUtils.toString(context.getData("taskName").toString(),null);
-        Long taskId = Long.parseLong(context.getData("taskId").toString());
-//        Long taskId = NumberUtil.objToLongDefault(context.getData("taskId"),0l);
+        Long taskId = NumberUtil.objToLongDefault(context.getData("taskId"),0l);
         Long userId = context.getUserId();
         int count = 0;
         if(!StringUtil.equals(taskName, Constants.BROWSE_TASK_NAME)){
-            AfTaskDo afTaskDo = afTaskService.getTaskByTaskId(taskId);
-            if(null == afTaskDo){
-                return new H5HandleResponse(context.getId(), FanbeiExceptionCode.TASK_NOT_EXIST);
-            }
+
         }
         AfTaskUserDo afTaskUserDo = new AfTaskUserDo();
         afTaskUserDo.setTaskId(taskId);
@@ -60,9 +56,14 @@ public class GetReceiveRewardApi implements H5Handle {
         afTaskUserDo.setGmtModified(new Date());
         afTaskUserDo.setStatus(1);
         afTaskUserDo.setRewardTime(new Date());
+        afTaskUserDo.setTaskName(taskName);
         if(isDailyUpdate != null){
             if(StringUtil.equals(isDailyUpdate,"1")){//每日任务
-                count = afTaskUserService.updateDailyByTaskIdAndUserId(afTaskUserDo);
+                if(StringUtil.equals(taskName, Constants.BROWSE_TASK_NAME)){
+                    count = afTaskUserService.updateDailyByTaskIdAndUserId(afTaskUserDo);
+                }else{
+                    count = afTaskUserService.updateDailyByTaskIdAndUserId(afTaskUserDo);
+                }
             }else if(StringUtil.equals(isDailyUpdate,"0")){//非每日任务
                 count = afTaskUserService.updateNotDailyByTaskIdAndUserId(afTaskUserDo);
             }
