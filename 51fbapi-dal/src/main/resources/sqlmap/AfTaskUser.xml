@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,user_id,task_id,task_name,coin_amount,cash_amount,coupon_id,status
+        id rid,gmt_create,gmt_modified,user_id,task_id,task_name,coin_amount,cash_amount,coupon_id,status,reward_time
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -236,16 +236,7 @@
     </select>
 
     <update id="updateDailyByTaskIdAndUserId"  parameterType="AfTaskUserDo">
-        UPDATE af_task_user set gmt_modified = now()
-            <if test="coinAmount != null and coinAmount != '' ">
-                ,coin_amount = #{coinAmount}
-            </if>
-            <if test="cashAmount != null and cashAmount != '' ">
-                ,cash_amount = #{cashAmount}
-            </if>
-            <if test="couponId != null and couponId != '' ">
-                ,coupon_id = #{couponId}
-            </if>
+        UPDATE af_task_user set gmt_modified = now(),reward_time = now(),
             <if test="status != null and status != '' ">
                 ,status = #{status}
             </if>
@@ -254,17 +245,7 @@
     </update>
 
     <update id="updateNotDailyByTaskIdAndUserId"  parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
-        UPDATE af_task_user set  gmt_modified = now()
-
-            <if test="coinAmount != null and coinAmount != '' ">
-                ,coin_amount = #{coinAmount}
-            </if>
-            <if test="cashAmount != null and cashAmount != '' ">
-                ,cash_amount = #{cashAmount}
-            </if>
-            <if test="couponId != null and couponId != '' ">
-                ,coupon_id = #{couponId}
-            </if>
+        UPDATE af_task_user set  gmt_modified = now(),reward_time = now(),
             <if test="status != null and status != '' ">
                 ,status = #{status}
             </if>

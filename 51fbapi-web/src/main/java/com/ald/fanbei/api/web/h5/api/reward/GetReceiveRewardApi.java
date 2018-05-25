@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.h5.api.reward;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -42,21 +43,22 @@ public class GetReceiveRewardApi implements H5Handle {
     public H5HandleResponse process(final Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
         String isDailyTask = ObjectUtils.toString(context.getData("isDailyTask").toString(),null);
+        String taskName = ObjectUtils.toString(context.getData("taskName").toString(),null);
         Long taskId = NumberUtil.objToLongDefault(context.getData("taskId"),0l);
         Long userId = context.getUserId();
-        AfTaskDo afTaskDo = afTaskService.getTaskByTaskId(taskId);
         int count = 0;
-        if(null == afTaskDo){
-            return new H5HandleResponse(context.getId(), FanbeiExceptionCode.TASK_NOT_EXIST);
+        if(!StringUtil.equals(taskName, Constants.BROWSE_TASK_NAME)){
+            AfTaskDo afTaskDo = afTaskService.getTaskByTaskId(taskId);
+            if(null == afTaskDo){
+                return new H5HandleResponse(context.getId(), FanbeiExceptionCode.TASK_NOT_EXIST);
+            }
         }
         AfTaskUserDo afTaskUserDo = new AfTaskUserDo();
-        afTaskUserDo.setCashAmount(afTaskDo.getCashAmount());
-        afTaskUserDo.setCoinAmount(afTaskDo.getCoinAmount());
-        afTaskUserDo.setCouponId(afTaskDo.getCouponId());
         afTaskUserDo.setTaskId(taskId);
         afTaskUserDo.setUserId(userId);
         afTaskUserDo.setGmtModified(new Date());
         afTaskUserDo.setStatus(1);
+        afTaskUserDo.setRewardTime(new Date());
         if(isDailyTask != null){
             if(StringUtil.equals(isDailyTask,"1")){//每日任务
                 count = afTaskUserService.updateDailyByTaskIdAndUserId(afTaskUserDo);
