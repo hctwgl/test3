@@ -283,6 +283,7 @@
         set
          click_count = click_count +1
          where id = #{rid}
+         and  click_count <![CDATA[ < ]]>   day_count
      </update>     
     
 </mapper>
