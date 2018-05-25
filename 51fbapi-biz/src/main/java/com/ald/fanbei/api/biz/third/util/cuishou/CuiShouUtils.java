@@ -23,6 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 
@@ -102,6 +105,11 @@ public class CuiShouUtils {
     @Resource
     private AfBorrowRecycleService afBorrowRecycleService;
 
+    @Resource
+    private AfUserAccountSenceService afUserAccountSenceService;
+
+    @Resource
+    TransactionTemplate transactionTemplate;
     /**
      * 线下还款
      *
@@ -690,7 +698,7 @@ public class CuiShouUtils {
                 Long borrowId = jsonObject.getLong("ref_id");
                 AfBorrowCashDo borrowCashExist = afBorrowCashService.getBorrowCashByrid(borrowId);
                 thirdLog.info("direct finish borrow cash "+borrowId);
-                AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
+                final AfBorrowCashDo afBorrowCashDo = new AfBorrowCashDo();
                 afBorrowCashDo.setRid(borrowId);
                 afBorrowCashDo.setSumRate(null);
                 afBorrowCashDo.setSumOverdue(null);
@@ -714,10 +722,16 @@ public class CuiShouUtils {
         		} catch (Exception e) {
         			thirdLog.error("preFinishNotifyEds error="+e);
         		}
-
-                Integer i = afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
+                final AfBorrowCashDo cashDo = afBorrowCashDao.getBorrowCashByrid(borrowId);
+                Integer i = transactionTemplate.execute(new TransactionCallback<Integer>() {
+                    @Override
+                    public Integer doInTransaction(TransactionStatus status) {
+                        Integer i = afBorrowCashDao.updateBorrowCash(afBorrowCashDo);
+                        afUserAccountSenceService.syncLoanUsedAmount(cashDo.getUserId(), SceneType.CASH, cashDo.getAmount().negate());
+                        return i;
+                    }
+                });
                 CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney();
-
                 if (i > 0) {
                     cuiShouBackMoney.setCode(200);
                     try{
@@ -742,10 +756,18 @@ public class CuiShouUtils {
                 Integer i = loanPeriodsDao.updateById(loanPeriodsDo);
                 AfLoanPeriodsDo periodsDo = loanPeriodsDao.getById(loanPeriodsId);
                 if (periodsDo.getNper() == periodsDo.getPeriods()) {
-                    AfLoanDo loanDo = new AfLoanDo();
+                    final AfLoanDo loanDo = new AfLoanDo();
                     loanDo.setRid(periodsDo.getLoanId());
                     loanDo.setStatus(AfLoanStatus.FINISHED.name());
-                    loanDao.updateById(loanDo);
+                    final AfLoanDo loan = afLoanService.selectById(periodsDo.getLoanId());
+                    transactionTemplate.execute(new TransactionCallback<Integer>() {
+                        @Override
+                        public Integer doInTransaction(TransactionStatus status) {
+                            Integer i = loanDao.updateById(loanDo);
+                            afUserAccountSenceService.syncLoanUsedAmount(loan.getUserId(), SceneType.BLD_LOAN, loan.getAmount().negate());
+                            return i;
+                        }
+                    });
                     try {
                     	boolean isBefore = DateUtil.isBefore(new Date(), periodsDo.getGmtPlanRepay());
                     	if (isBefore) {
