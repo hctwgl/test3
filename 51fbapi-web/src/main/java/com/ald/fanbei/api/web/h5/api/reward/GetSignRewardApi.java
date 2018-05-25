@@ -88,7 +88,7 @@ public class GetSignRewardApi implements H5Handle {
             AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(afSignRewardDo.getUserId());
             StringBuffer days = afSignRewardService.supplementSign(afSignRewardExtDo,0);
             String str[] = days.toString().split(",");
-            final int count = str.length+1;
+            final int count = str.length;
             final BigDecimal rewardAmount = randomNum(afResourceDo.getValue3(),afResourceDo.getValue4());
             afSignRewardDo.setAmount(rewardAmount);
             final AfSignRewardDo rewardDo = afSignRewardDo;
