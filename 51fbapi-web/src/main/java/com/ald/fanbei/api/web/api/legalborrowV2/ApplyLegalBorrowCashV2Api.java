@@ -122,9 +122,9 @@ public class ApplyLegalBorrowCashV2Api extends GetBorrowCashBase implements ApiH
 
 		final Long userId = context.getUserId();
 		String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
+		// 业务加锁处理
+		applyLegalBorrowCashService.checkLock(lockKey);
 		try {
-			// 业务加锁处理
-			applyLegalBorrowCashService.checkLock(lockKey);
 			// 获取客户端请求参数
 			ApplyLegalBorrowCashParam param = (ApplyLegalBorrowCashParam) requestDataVo.getParamObj();
 			try{

@@ -130,7 +130,13 @@ public enum AfResourceType {
 	ASSET_SIDE_CONFIG("ASSET_SIDE_CONFIG","资产方相关配置"),
 	//登录白名单
 	LOGIN_WHITE_LIST("LOGIN_WHITE_LIST","登录白名单"),
+
+
+	ARBITRATION_TYPE("ARBITRATION_TYPE","在线仲裁系统相关配置"),
+	ARBITRATION_SEC_TYPE("ARBITRATION_SEC_TYPE","在线仲裁系统相关配置"),
+
 	//芝麻信用认证相关配置
+
 	ZHIMA_VERIFY_CONFIG("ZHIMA_VERIFY_CONFIG","芝麻信用认证相关配置"),
 
 	BUBBLE_AUTH_CONFIG("BUBBLE_AUTH_CONFIG","芝麻信用认证相关配置"),
@@ -144,6 +150,7 @@ public enum AfResourceType {
 	APP_NAVIGATION_OPEN("APP_NAVIGATION_OPEN","app导航栏展开控件"),
 	APP_NAVIGATION_CLOSE("APP_NAVIGATION_CLOSE","app导航栏关闭控件"),
 	BANNER_BACKIMG("BANNER_BACKIMG","Banner背景图片");
+
 
 	private String code;
     private String name;
