@@ -47,9 +47,6 @@ public class GetReceiveRewardApi implements H5Handle {
         Long taskId = NumberUtil.objToLongDefault(context.getData("taskId"),0l);
         Long userId = context.getUserId();
         int count = 0;
-        if(!StringUtil.equals(taskName, Constants.BROWSE_TASK_NAME)){
-
-        }
         AfTaskUserDo afTaskUserDo = new AfTaskUserDo();
         afTaskUserDo.setTaskId(taskId);
         afTaskUserDo.setUserId(userId);

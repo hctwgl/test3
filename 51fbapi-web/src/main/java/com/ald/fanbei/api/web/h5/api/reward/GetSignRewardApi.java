@@ -68,7 +68,7 @@ public class GetSignRewardApi implements H5Handle {
         if(afSignRewardService.isExist(afSignRewardDo.getUserId())){
             return new H5HandleResponse(context.getId(), FanbeiExceptionCode.USER_SIGN_EXIST);
         }
-        if(userSign(afSignRewardDo,afResourceDo,resp)){
+        if(!userSign(afSignRewardDo,afResourceDo,resp)){
             return new H5HandleResponse(context.getId(), FanbeiExceptionCode.USER_SIGN_FAIL);
         }
         return resp;
@@ -88,7 +88,12 @@ public class GetSignRewardApi implements H5Handle {
             AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(afSignRewardDo.getUserId());
             StringBuffer days = afSignRewardService.supplementSign(afSignRewardExtDo,0);
             String str[] = days.toString().split(",");
-            final int count = str.length;
+            int count = 0;
+            if(StringUtil.equals(days.toString(),"")){
+                count = str.length;
+            }else{
+                count = str.length+1;
+            }
             final BigDecimal rewardAmount = randomNum(afResourceDo.getValue3(),afResourceDo.getValue4());
             afSignRewardDo.setAmount(rewardAmount);
             final AfSignRewardDo rewardDo = afSignRewardDo;
@@ -113,34 +118,36 @@ public class GetSignRewardApi implements H5Handle {
                 sortStr(str);
                 int maxCount = maxCount(str);
                 Date before = DateUtil.formatDateToYYYYMMdd(afSignRewardExtDo.getFirstDayParticipation());
-                Date after = DateUtil.formatDateToYYYYMMdd(new Date());;
-                days.append(",").append(DateUtil.getNumberOfDatesBetween(before,after));
-                int newMaxCount = maxCount(days.toString().split(","));
-                if(count >= 5 || count < 7){
+                Date after = DateUtil.formatDateToYYYYMMdd(new Date());
+                days.append(",").append(DateUtil.getNumberOfDatesBetween(before,after)+1);
+                String arrayStr[] = days.toString().split(",");
+                sortStr(arrayStr);
+                int newMaxCount = maxCount(arrayStr);
+                if(count >= 5 && count < 7){
                     //给予连续5天的奖励
                     if(maxCount < 5 && newMaxCount == 5){
-                        fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
+                       status = fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
                     }
-                }else if(count >= 7 || count< 10){
+                }else if(count >= 7 && count< 10){
                     //给予连续5天的奖励
                     if(maxCount < 5 && newMaxCount == 5){
-                        fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
+                        status = fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
                     }else if(maxCount < 5 && newMaxCount == 7){//给予连续5天和7天的奖励
                         afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN));
-                        fiveOrSevenSignDays(afSignRewardExtDo,afSignRewardExtDo.getAmount(),rewardDo,afResourceDo);
+                        status = fiveOrSevenSignDays(afSignRewardExtDo,afSignRewardExtDo.getAmount(),rewardDo,afResourceDo);
                     }else if(maxCount >= 5 && newMaxCount == 7){//给予连续7天的奖励
                         afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN));
-                        tenSignDays(rewardDo,afSignRewardExtDo);
+                        status = tenSignDays(rewardDo,afSignRewardExtDo);
                     }
                 }else if(count == 10){
                     //给予连续7天和10天的奖励
                     if(maxCount < 7){
                         afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(4)).setScale(2,RoundingMode.HALF_EVEN));
-                        tenSignDays(rewardDo,afSignRewardExtDo);
+                        status = tenSignDays(rewardDo,afSignRewardExtDo);
                     }
                 }else {//给予普通签到的奖励
                     afSignRewardExtDo.setAmount(rewardAmount);
-                    tenSignDays(rewardDo,afSignRewardExtDo);
+                    status = tenSignDays(rewardDo,afSignRewardExtDo);
                 }
             }
             resp.addResponseData("amount",afSignRewardExtDo.getAmount());
@@ -201,10 +208,12 @@ public class GetSignRewardApi implements H5Handle {
                     maxCount = count;
                 }
                 count = 0;
-                i--;
             }
         }
-        return maxCount;
+        if(count > maxCount){
+            maxCount = count;
+        }
+        return maxCount+1;
     }
 
             /**
