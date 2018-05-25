@@ -73,11 +73,13 @@ public class ApplyBindBankcardApi implements ApiHandle {
 		if(afUserBankcardDao.getUserBankByCardNo(param.cardNumber)>0){// 判断该卡是否已被绑定
 			throw new FanbeiException("user bankcard exist error", FanbeiExceptionCode.USER_BANKCARD_EXIST_ERROR);
 		}
-		
-		if(param.idNumber == null) {
-			AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
-			param.realname = userAccount.getRealName();
-			param.idNumber = userAccount.getIdNumber();
+
+		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
+		if(userAccount !=null) {
+			if (userAccount.getRealName() != null)
+				param.realname = userAccount.getRealName();
+			if (userAccount.getIdNumber() != null)
+				param.idNumber = userAccount.getIdNumber();
 		}
 
 		if(afUserAccountService.getCountByIdNumer(param.idNumber,userId)>0){
