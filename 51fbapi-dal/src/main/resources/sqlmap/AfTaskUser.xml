@@ -235,49 +235,40 @@
         AND date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
     </select>
 
-    <update id="updateDailyByTaskIdAndUserId"  parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
-        UPDATE af_task_user
-        <set>
-            <if test="gmtModified != null and gmtModified != '' ">
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
-            </if>
+    <update id="updateDailyByTaskIdAndUserId"  parameterType="AfTaskUserDo">
+        UPDATE af_task_user set gmt_modified = now()
             <if test="coinAmount != null and coinAmount != '' ">
-                coin_amount = #{coinAmount,jdbcType=INTEGER},
+                ,coin_amount = #{coinAmount}
             </if>
             <if test="cashAmount != null and cashAmount != '' ">
-                cash_amount = #{cashAmount,jdbcType=DECIMAL},
+                ,cash_amount = #{cashAmount}
             </if>
             <if test="couponId != null and couponId != '' ">
-                coupon_id = #{couponId,jdbcType=INTEGER}
+                ,coupon_id = #{couponId}
             </if>
             <if test="status != null and status != '' ">
-                status = #{status,jdbcType=INTEGER}
+                ,status = #{status}
             </if>
-        </set>
-        WHERE is_delete = 0 AND user_id = #{userId ,jdbcType=BIGINT} AND task_id = #{taskId ,jdbcType=BIGINT}
+        WHERE is_delete = 0 AND user_id = #{userId} AND task_id = #{taskId}
         AND date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
     </update>
 
     <update id="updateNotDailyByTaskIdAndUserId"  parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
-        UPDATE af_task_user
-        <set>
-            <if test="gmtModified != null and gmtModified != '' ">
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
-            </if>
+        UPDATE af_task_user set  gmt_modified = now()
+
             <if test="coinAmount != null and coinAmount != '' ">
-                coin_amount = #{coinAmount,jdbcType=INTEGER},
+                ,coin_amount = #{coinAmount}
             </if>
             <if test="cashAmount != null and cashAmount != '' ">
-                cash_amount = #{cashAmount,jdbcType=DECIMAL},
+                ,cash_amount = #{cashAmount}
             </if>
             <if test="couponId != null and couponId != '' ">
-                coupon_id = #{couponId,jdbcType=INTEGER}
+                ,coupon_id = #{couponId}
             </if>
             <if test="status != null and status != '' ">
-                status = #{status,jdbcType=INTEGER}
+                ,status = #{status}
             </if>
-        </set>
-        WHERE is_delete = 0 AND user_id = #{userId ,jdbcType=BIGINT} AND task_id = #{taskId ,jdbcType=BIGINT}
+        WHERE is_delete = 0 AND user_id = #{userId} AND task_id = #{taskId}
     </update>
 
     <select id="getAvailableCoinAmount" resultType="java.lang.Long">
