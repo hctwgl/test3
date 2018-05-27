@@ -1,12 +1,13 @@
 package com.ald.fanbei.api.biz.service;
 
-import java.math.BigDecimal;
-import java.util.List;
-
+import com.ald.fanbei.api.common.enums.BankCardType;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.UpsBankStatusDto;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @类现描述：
@@ -30,7 +31,7 @@ public interface AfUserBankcardService {
      * @param userId
      * @return
      */
-    List<AfBankUserBankDto> getUserBankcardByUserId(Long userId, Integer appVersion);
+    List<AfBankUserBankDto> getUserBankcardByUserId(Long userId, Integer appVersion,String cardType);
 
     /**
      * 删除银行卡

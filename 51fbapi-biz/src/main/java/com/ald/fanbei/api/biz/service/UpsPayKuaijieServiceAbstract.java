@@ -132,10 +132,7 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
      * 
      * @author gaojb
      * @Time 2018年4月2日 下午2:50:58
-     * @param bankPayType
      * @param cardId
-     * @param repayment
-     * @param billIdList
      * @param payTradeNo
      * @param actualAmount
      * @param userId
@@ -147,7 +144,8 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 	// 申请发送支付确认短信
 	AfUserBankDto bank = afUserBankcardDao.getUserBankInfo(cardId);
 	UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.quickPay(payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), 
-		bank.getBankCode(), bank.getCardNumber(), idNumber, purpose, remark, "02", merPriv, afResourceService.getCashProductName());
+		bank.getBankCode(), bank.getCardNumber(), idNumber, purpose, remark, "02", merPriv, afResourceService.getCashProductName(),
+			bank.getSafeCode(),bank.getValidDate());
 
 	// 处理支付结果
 	if (!respBo.isSuccess()) {

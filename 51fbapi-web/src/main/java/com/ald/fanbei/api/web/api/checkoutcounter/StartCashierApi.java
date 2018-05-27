@@ -1,8 +1,5 @@
 package com.ald.fanbei.api.web.api.checkoutcounter;
 
-import com.ald.fanbei.api.biz.bo.RiskCreditBo;
-import com.ald.fanbei.api.biz.bo.RiskQueryOverdueOrderRespBo;
-import com.ald.fanbei.api.biz.bo.RiskVirtualProductQuotaRespBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
@@ -10,36 +7,28 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.vo.BoluomeConfirmOrderVo;
 import com.ald.fanbei.api.web.vo.CashierTypeVo;
 import com.ald.fanbei.api.web.vo.CashierVo;
-import com.ald.fanbei.api.web.vo.ConfirmOrderVo;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
-
 import org.apache.commons.lang.ObjectUtils;
-import org.dbunit.util.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -243,7 +232,7 @@ public class StartCashierApi implements ApiHandle {
 
 	// 查询银行卡信息
 	if (YesNoStatus.YES.getCode().equals(cashierVo.getBank().getStatus())) {
-	    cashierVo.setBankCardList(afUserBankcardService.getUserBankcardByUserId(userId, context.getAppVersion()));
+	    cashierVo.setBankCardList(afUserBankcardService.getUserBankcardByUserId(userId, context.getAppVersion(),BankCardType.ALL.getCode().toString()));
 	}
 	//判断是不是活动订单
 	AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getActivityByOrderId(orderId);
@@ -461,37 +450,37 @@ public class StartCashierApi implements ApiHandle {
      * @return
      */
     private String getIsAuth(AfUserAccountDto userDto, AfUserAuthDo authDo, AfOrderDo orderInfo, FanbeiContext context) {
-	String status = YesNoStatus.NO.getCode();
-	if (context.getAppVersion() >= 406) {
-	    // 获取不同场景的强风控认证
-	    if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
-		// 商圈认证
-		AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), orderInfo.getSecType(), YesNoStatus.YES.getCode());
-		if (afUserAuthStatusDo == null) {
-		    authDo.setRiskStatus(YesNoStatus.NO.getCode());
-		} else {
-		    authDo.setRiskStatus(YesNoStatus.YES.getCode());
+		String status = YesNoStatus.NO.getCode();
+		if (context.getAppVersion() >= 406) {
+			// 获取不同场景的强风控认证
+			if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
+				// 商圈认证
+				AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), orderInfo.getSecType(), YesNoStatus.YES.getCode());
+				if (afUserAuthStatusDo == null) {
+					authDo.setRiskStatus(YesNoStatus.NO.getCode());
+				} else {
+					authDo.setRiskStatus(YesNoStatus.YES.getCode());
+				}
+			} else {
+				// 线上分期认证
+				AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), UserAccountSceneType.ONLINE.getCode(), YesNoStatus.YES.getCode());
+				if (afUserAuthStatusDo == null) {
+					authDo.setRiskStatus(YesNoStatus.NO.getCode());
+				} else {
+					authDo.setRiskStatus(YesNoStatus.YES.getCode());
+				}
+			}
 		}
-	    } else {
-		// 线上分期认证
-		AfUserAuthStatusDo afUserAuthStatusDo = afUserAuthStatusService.selectAfUserAuthStatusByCondition(userDto.getUserId(), UserAccountSceneType.ONLINE.getCode(), YesNoStatus.YES.getCode());
-		if (afUserAuthStatusDo == null) {
-		    authDo.setRiskStatus(YesNoStatus.NO.getCode());
-		} else {
-		    authDo.setRiskStatus(YesNoStatus.YES.getCode());
+		if (YesNoStatus.YES.getCode().equals(authDo.getRiskStatus())) {
+			if (StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getZmStatus())// 芝麻信用已验证
+					&& StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getTeldirStatus())// 通讯录匹配状态
+					&& StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getMobileStatus())// 手机运营商
+					&& StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())) { // 强风控状态
+				status = YesNoStatus.YES.getCode();
+			}
 		}
-	    }
+		return status;
 	}
-	if (YesNoStatus.YES.getCode().equals(authDo.getRiskStatus())) {
-	    if (StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getZmStatus())// 芝麻信用已验证
-		    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getTeldirStatus())// 通讯录匹配状态
-		    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getMobileStatus())// 手机运营商
-		    && StringUtil.equals(YesNoStatus.YES.getCode(), authDo.getRiskStatus())) { // 强风控状态
-		status = YesNoStatus.YES.getCode();
-	    }
-	}
-	return status;
-    }
 
     /**
      * 风控处理

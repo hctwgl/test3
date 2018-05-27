@@ -59,7 +59,8 @@ public class FanbeiController extends BaseController {
 
     @RequestMapping(value ={
     	"/address/addressList","/address/addAddress","/address/updateInfo","/address/deleteAddress","/mine/commitCode",
-    	"/coupon/couponList","/mine/getInviteInfo","/mine/getOrderListCount","/mine/getSettingInfo","/order/payResultOfAlipay","/order/getOrderLogistics"
+    	"/coupon/couponList","/mine/getInviteInfo","/mine/getOrderListCount","/mine/getSettingInfo","/order/payResultOfAlipay","/order/getOrderLogistics",
+        "/coupon/getDetailCouponList","/coupon/getPickCoupon","/coupon/getSaleServiceInfo"
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String mineRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -153,7 +154,8 @@ public class FanbeiController extends BaseController {
 			"/auth/authContactorV1","/auth/authContactsV1","/auth/authCreditV1","/auth/authFaceV1","/auth/authRealnameV1","/auth/submitIdNumberInfoV1","/auth/updateIdCardV1",
 			"/auth/authSupplyCertify","/auth/authFund","/auth/authFundNew","/auth/authFundNew/GiveBack","/auth/authFundSwitch","/auth/authSocialSecurity","/auth/authCreditCard","/auth/authSupplyVerifying","/auth/authAlipay",
 			"/auth/submitIdNumberInfoForFacePlus","/auth/getFaceType","/auth/getFaceTypeFree","/auth/updateIdCardForFacePlus","/auth/updateRealnameManual","/auth/updateRealnameManualFree","/auth/lookAllQuota","/auth/authRaiseQuota","/auth/authGxb",
-			"/auth/submitBindBankcard","/auth/applyBindBankcard","/auth/submitSuperBindBankcard","/auth/applySuperBindBankcard","/auth/checkUserBasicInfo","/auth/checkUserIdCardInfo"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+			"/auth/submitBindBankcard","/auth/applyBindBankcard","/auth/submitSuperBindBankcard","/auth/applySuperBindBankcard","/auth/checkUserBasicInfo","/auth/checkUserIdCardInfo","/auth/bankcardInfo"},
+            method = RequestMethod.POST, produces = "application/json;charset=utf-8")
 	@ResponseBody
 	public String authRequest(@RequestBody String body, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding(Constants.DEFAULT_ENCODE);

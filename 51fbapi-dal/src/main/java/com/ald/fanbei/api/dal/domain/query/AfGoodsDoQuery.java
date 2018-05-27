@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.ald.fanbei.api.common.page.Page;
 import com.ald.fanbei.api.dal.domain.AfGoodsDo;
+import lombok.Getter;
+import lombok.Setter;
 
 /**  
  * @Title: AfGoodsDoQuery.java
@@ -15,6 +17,8 @@ import com.ald.fanbei.api.dal.domain.AfGoodsDo;
  * @date 2017年12月25日 下午2:42:09
  * @version V1.0  
  */
+@Setter
+@Getter
 public class AfGoodsDoQuery extends Page<AfGoodsDo>{
 
 	private static final long serialVersionUID = -2000955393324256962L;
@@ -24,6 +28,8 @@ public class AfGoodsDoQuery extends Page<AfGoodsDo>{
 	private String sort;
 	private Long goodsId;
 	private List<Long> goodsIds;
+	private List<Long> categoryIds;
+	private List<Long> brandIds;
 	
 	public List<Long> getGoodsIds() {
 		return goodsIds;

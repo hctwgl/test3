@@ -1,13 +1,12 @@
 package com.ald.fanbei.api.dal.dao;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
-
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserBankQuery;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @类现描述：
@@ -32,7 +31,7 @@ public interface AfUserBankcardDao {
 	 * @param userId
 	 * @return
 	 */
-	List<AfBankUserBankDto> getUserBankcardByUserId(@Param("userId") Long userId);
+	List<AfBankUserBankDto> getUserBankcardByUserId(@Param("userId") Long userId, @Param("cardType")String cardType);
 
 	/**
 	 * 删除银行卡
@@ -79,22 +78,19 @@ public interface AfUserBankcardDao {
 	
 	/**
 	 * 查询银行卡是否已被人绑定
-	 * @param cardNo
 	 * @return
 	 */
 	int getUserBankByCardNo(@Param("cardNumber")String cardNumber);
 
 	/**
 	 * 根据卡号查询银行卡的其他信息
-	 * 
-	 * @param cardNo
+	 *
 	 * @return
 	 */
 	AfUserBankcardDo getUserBankcardByCardNo(@Param("cardNumber") String cardNumber);
 	
 	/**
-	 * 
-	 * @param cardNumber
+	 *
 	 * @return
 	 */
 	List<AfUserBankcardDo> getUserBankList(AfUserBankQuery query);
