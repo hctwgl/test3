@@ -90,7 +90,6 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
     public StringBuffer supplementSign(AfSignRewardExtDo afSignRewardExtDo, int num){
         StringBuffer sb = new StringBuffer();
         Long days ;
-        int countDays = 0;
         boolean flag = true;
         Date date = afSignRewardExtDo.getFirstDayParticipation();
         if(date ==null){
@@ -107,7 +106,8 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
             startTime = calendar.getTime();
             calendar.add(Calendar.DAY_OF_MONTH,cycle-1);
             endTime = calendar.getTime();
-            if((startTime.getTime() <= DateUtil.formatDateToYYYYMMdd(new Date()).getTime()) && (endTime.getTime() >= DateUtil.formatDateToYYYYMMdd(new Date()).getTime())){
+            if((startTime.getTime() <= DateUtil.formatDateToYYYYMMdd(new Date()).getTime()) &&
+                    (endTime.getTime() >= DateUtil.formatDateToYYYYMMdd(new Date()).getTime())){
                 flag = false;
                 List<AfSignRewardDo> afSignRewardDos = sumSignDays(afSignRewardExtDo.getUserId(),startTime);
                 for(AfSignRewardDo afSignRewardDo : afSignRewardDos){
@@ -120,7 +120,8 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
                     }
                 }
             }else{
-                supplementSign(afSignRewardExtDo,num);
+                StringBuffer str = supplementSign(afSignRewardExtDo,num);
+                return str.length()>0?str.deleteCharAt(str.length()-1):str;
             }
         }
         return sb.length()>0?sb.deleteCharAt(sb.length()-1):sb;
