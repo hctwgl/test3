@@ -336,4 +336,10 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	Integer countSpecGoodsBuyNums(@Param("goodsId") Long goodsId,@Param("userId") Long userId);
+	/**
+	 * 修改用户所有未支付的订单
+	 * @param userId
+	 * @return
+	 */
+	int updateUnclosedOrder(Long userId);
 }

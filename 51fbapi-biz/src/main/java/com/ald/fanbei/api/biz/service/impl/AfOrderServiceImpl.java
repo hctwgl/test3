@@ -1277,8 +1277,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 				 if ( ! riskPassStatus){
 					 // 风控未通过，进行软弱风控的验证
 					 
-					 if ((!riskPassStatus) && (!weakRiskStatus)){
-						 verybo.setSuccess(false);
+					 if (weakRiskStatus){
+						 verybo.setSuccess(true);
 					 }
 				 }
 			 }else{
@@ -1344,6 +1344,15 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 				 logger.info("verify userId" + userId);
 				 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 				 logger.info("verybo=" + verybo);
+				 boolean riskPassStatus = verybo.isSuccess();
+				 boolean weakRiskStatus = false;
+				 if ( ! riskPassStatus){
+					 // 风控未通过，进行软弱风控的验证
+					 
+					 if (weakRiskStatus){
+						 verybo.setSuccess(true);
+					 }
+				 }
 			 }else{
 				 verybo = skipRisk();
 			 }
@@ -3326,6 +3335,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	@Override
 	public int getALLNoFinishOrderCount(Long userId) {
 		return orderDao.getALLNoFinishOrderCount(userId);
+	}
+
+	@Override
+	public int updateUnclosedOrder(Long userId) {
+		return orderDao.updateUnclosedOrder(userId);
 	}
 
 }

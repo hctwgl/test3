@@ -1506,4 +1506,9 @@
 		AND goods_id = #{goodsId}
 		and status !='CLOSED' 
 	</select>
+	
+	<update id="updateUnclosedOrder">
+	UPDATE af_order SET support_credit_status = 'Y'
+	WHERE `status` IN ('NEW','PAYFAIL','DEALING') AND user_id= #{userId}
+	</update>
 </mapper>

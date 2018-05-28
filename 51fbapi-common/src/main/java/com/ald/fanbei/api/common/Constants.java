@@ -583,5 +583,5 @@ public class Constants {
 
     public static final String BORROW_FINANCE = "borrow";
 
-
+    public static final String GoodsType = "auth"; // 支付接口新增权限包
 }

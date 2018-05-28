@@ -436,6 +436,12 @@ public class PayOrderV1Api implements ApiHandle {
      		       }
 		    
                     }
+                    
+                   // ******* modify by liutengyuan start *****
+                    if (Constants.GoodsType.equals(goodsType)){
+                    	afOrderService.updateUnclosedOrder(userId);
+                    }
+                  // ******* modify by liutengyuan end *****
 
                     
                 } else {
