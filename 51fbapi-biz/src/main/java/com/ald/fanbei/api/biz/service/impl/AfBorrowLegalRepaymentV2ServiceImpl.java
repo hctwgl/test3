@@ -118,6 +118,8 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
     AfUserAccountLogDao afUserAccountLogDao;
 
     @Resource
+	AfBorrowRecycleOrderService recycleOrderService;
+    @Resource
     AfUserCouponDao afUserCouponDao;
 
     @Resource
@@ -265,9 +267,9 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 		    }
 		}
 	    });
-
             if (resultValue == 1L) {
             	try {
+					getCurType(repayDealBo);
 	            	notifyUserBySms(repayDealBo,isBalance);
 	            	nofityRisk(repayDealBo,cashDo);
             	} catch(Exception e) {
@@ -289,6 +291,16 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
     		unLockRepay(repaymentDo.getUserId());
 		}
     }
+
+    public void getCurType(RepayDealBo repayDealBo){
+		AfBorrowCashDo borrowCashDo= repayDealBo.cashDo;
+		AfBorrowRecycleOrderDo recycleOrderDo = recycleOrderService.getBorrowRecycleOrderByBorrowId(borrowCashDo.getRid());
+		if (recycleOrderDo != null){
+			repayDealBo.curType = "recycle";
+		}else {
+			repayDealBo.curType = "cash";
+		}
+	}
 
     @Override
     public void dealRepaymentSucess(String tradeNo, String outTradeNo) {
@@ -566,12 +578,18 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 	logger.info("notifyUserBySms info begin,sumAmount=" + repayDealBo.sumAmount + ",curSumRepayAmount=" + repayDealBo.curSumRepayAmount + ",sumRepaidAmount=" + repayDealBo.sumRepaidAmount + "Trade= " + repayDealBo.curTradeNo);
 	try {
 	    AfUserDo afUserDo = afUserService.getUserById(repayDealBo.userId);
+	    BigDecimal notRepayMoney = BigDecimal.ZERO;
 	    if (repayDealBo.curName.equals("代扣付款")) {
-		sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), repayDealBo.curSumRepayAmount);
-	    } else if (YesNoStatus.YES.getCode().equals(isBalance)) {
-		sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), repayDealBo.curSumRepayAmount, BigDecimal.ZERO);
-	    } else {
-		sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), repayDealBo.curSumRepayAmount, repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount));
+			sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), repayDealBo.curSumRepayAmount);
+	    } else  {
+			if (!YesNoStatus.YES.getCode().equals(isBalance)){
+				notRepayMoney  = repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount);
+			}
+	    	if (repayDealBo.curType.equals("recycle")){
+				sendRepaymentBorrowRecycleWarnMsg(afUserDo.getMobile(),repayDealBo.cashDo.getRid(),repayDealBo.curSumRepayAmount, notRepayMoney);
+			}else {
+				sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), repayDealBo.curSumRepayAmount, notRepayMoney);
+			}
 	    }
 	} catch (Exception e) {
 	    logger.error("Sms notify user error, userId:" + repayDealBo.userId + ",nowRepayAmount:" + repayDealBo.curSumRepayAmount + ",notRepayMoney" + repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount), e);
@@ -617,6 +635,35 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 	    return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS_REMAIN.getCode());
 	}
     }
+
+	/**
+	 * 用户手动现金贷还款成功短信发送
+	 *
+	 * @param mobile
+	 * @param repayMoney
+	 */
+	private boolean sendRepaymentBorrowRecycleWarnMsg(String mobile,Long cashId,BigDecimal repayMoney, BigDecimal notRepayMoney) {
+		// 模版数据map处理
+		Map<String, String> replaceMapData = new HashMap<String, String>();
+		replaceMapData.put("repayMoney", repayMoney + "");
+		replaceMapData.put("remainAmount", notRepayMoney + "");
+		AfBorrowRecycleOrderDo recycleOrderDo = recycleOrderService.getBorrowRecycleOrderByBorrowId(cashId);
+		JSONObject propertyValue = (JSONObject) JSONObject.parse(recycleOrderDo.getPropertyValue());
+		if (notRepayMoney == null || notRepayMoney.compareTo(BigDecimal.ZERO) <= 0) {
+			String title = "恭喜您，借款已还清！";
+			String content = "成功支付&repayMoney元，您的”&param2“”&param3“回收订单已完成，信用分再度升级，给您点个大大的赞！";
+			content = content.replace("&repayMoney", repayMoney.toString()).replace("&param2", recycleOrderDo.getGoodsName()).replace("&param3", String.valueOf(propertyValue.get("goodsModel")));
+			pushService.pushUtil(title, content, mobile);
+			return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RECYCLE_REPAYMENT_SUCCESS.getCode());
+		} else {
+			String title = "部分还款成功！";
+			String content = "成功支付&repayMoney元，剩余待支付金额&remainAmount元。";
+			content = content.replace("&repayMoney", repayMoney.toString());
+			content = content.replace("&remainAmount", notRepayMoney.toString());
+			pushService.pushUtil(title, content, mobile);
+			return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RECYCLE_REPAYMENT_SUCCESS_REMAIN.getCode());
+		}
+	}
 
     private void nofityRisk(RepayDealBo repayDealBo, AfBorrowCashDo cashDo) {
 	logger.info("nofityRisk begin, borrowNo={}", cashDo.getBorrowNo());
@@ -959,6 +1006,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 	String curName; // 当前还款名称，用来识别自动代付还款
 	String curTradeNo;
 	String curOutTradeNo;
+	String curType;//当前还款类型
 
 	BigDecimal sumRepaidAmount = BigDecimal.ZERO; // 对应借款的还款总额
 	BigDecimal sumAmount = BigDecimal.ZERO; // 对应借款总额（包含所有费用）
