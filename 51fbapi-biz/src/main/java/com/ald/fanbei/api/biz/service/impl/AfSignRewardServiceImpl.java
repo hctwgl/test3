@@ -123,6 +123,6 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
                 supplementSign(afSignRewardExtDo,num);
             }
         }
-        return sb.deleteCharAt(sb.length()-1);
+        return sb.length()>0?sb.deleteCharAt(sb.length()-1):sb;
     }
 }
