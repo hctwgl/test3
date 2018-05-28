@@ -1158,7 +1158,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		Date currentDate = new Date();
 		String tradeNo = generatorClusterNo.getOrderPayNo(currentDate,bankChannel);
 		Map<String, Object> resultMap = new HashMap<String, Object>();
-		boolean isRecommend = false; // 是否推荐权限包
 
 		try {
 		    // 查卡号，用于调用风控接口
@@ -1241,10 +1240,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						logger.info("updateOrder orderInfo = {}", orderInfo);
 
 			String cardNo = card.getCardNumber();
-	//		String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-			String riskOrderNo = generateRiskOrderNO(cardNo, userId);
-			orderInfo.setRiskOrderNo(riskOrderNo);
-			orderDao.updateOrder(orderInfo);
+//			String riskOrderNo = generateRiskOrderNO(cardNo, userId);
+//			orderInfo.setRiskOrderNo(riskOrderNo);
+//			orderDao.updateOrder(orderInfo);
 
 			String name = orderInfo.getGoodsName();
 			if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
@@ -1269,30 +1267,51 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			}
 			
 			// ****** modify by liutengyuan start  *****
-	    	    // 如果用户有权限包，无需调用风控
+	    	// 如果用户有权限包，无需调用风控
 			RiskVerifyRespBo verybo;
-			String  isSupportCreditPay = "Y";
-			
-			 if ( ! "Y".equalsIgnoreCase(authDo.getOrderWeakRiskStatus())){
+			if ( !YesNoStatus.YES.getCode().equals(authDo.getOrderWeakRiskStatus())){
+				//弱风控订单号生成及调用
+				String weakRiskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+				orderInfo.setRiskOrderNo(weakRiskOrderNo);
+				orderDao.updateOrder(orderInfo);
+				
 				 logger.info("verify userId" + userId);
-				 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-				 logger.info("verybo=" + verybo);
+				 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+				 logger.info("weakverybo=" + verybo);
 				 boolean riskPassStatus = verybo.isSuccess();
-				 boolean weakRiskStatus = false;
 				 if ( ! riskPassStatus){
+					 Map<String, Object> riskReturnMap = new HashMap<String, Object>();
+					//标记此订单支付失败，根据软弱风控去选择是否引导权限包购买
+					orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+				    orderInfo.setStatus(OrderStatus.PAYFAIL.getCode());
+				    orderInfo.setStatusRemark(FanbeiExceptionCode.RISK_VERIFY_ERROR.getDesc());
+				    orderInfo.setGmtPay(new Date());
+				    orderInfo.setSupportCreditStatus(YesNoStatus.NO.getCode());
+				    
 					 // 弱风控未通过，进行软弱风控的验证
-					 isSupportCreditPay = "N";
-					 RiskVerifyRespBo weakRiskResp = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-					 weakRiskStatus = weakRiskResp.isSuccess();
-					 if ( weakRiskStatus){
-						 isRecommend = true;
+					 String softWeakRiskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+					 orderInfo.setWeakRiskOrderNo(softWeakRiskOrderNo);
+					 orderDao.updateOrder(orderInfo);
+					 
+					 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+					 logger.info("softWeakverybo=" + softWeakverybo);
+					 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
+					 if(softWeakRiskStatus){
+						 //软弱风控通过，引导权限包
+						 resultMap.put("authPackageDirect", true);
+					 }else{
+						 resultMap.put("authPackageDirect", false);
 					 }
+					 
+					 //return返回调用结果信息
+					 resultMap.put("success", false);
+					 resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
+					 return riskReturnMap;
 				 }
 			 }else{
+				 logger.info("afOrderService.payBrandOrder have authPackage skip weakRiks ,orderId="+orderInfo.getRid());
 				 verybo = skipRisk();
 			 }
-			 orderInfo.setSupportCreditStatus(isSupportCreditPay);
-			 orderDao.updateOrder(orderInfo);
 	    	// ******* end *******
 			
 			if (verybo.isSuccess()) {
@@ -1329,8 +1348,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						orderInfo.setBorrowRate(boStr);
 
 			String cardNo = card.getCardNumber();
-			String riskOrderNo = generateRiskOrderNO(cardNo, userId);
-			orderInfo.setRiskOrderNo(riskOrderNo);
 			orderInfo.setBorrowAmount(leftAmount);
 			orderInfo.setBankAmount(bankAmount);
 			orderDao.updateOrder(orderInfo);
@@ -1340,50 +1357,70 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			borrow.setVersion(1);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String borrowTime = sdf.format(borrow.getGmtCreate());
-			String codeForSecond = null;
-			String codeForThird = null;
-			codeForSecond = OrderTypeSecSence.getCodeByNickName(orderInfo.getOrderType());
-			codeForThird = OrderTypeThirdSence.getCodeByNickName(orderInfo.getSecType());
+			// **** new softWeakLogic  start //
 			RiskVerifyRespBo verybo;
-			String isSupportCreditPay = "Y";
-			 if ( ! "Y".equalsIgnoreCase(authDo.getOrderWeakRiskStatus())){
-				 logger.info("verify userId" + userId);
-				 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-				 logger.info("verybo=" + verybo);
+			if ( !YesNoStatus.YES.getCode().equals(authDo.getOrderWeakRiskStatus())){
+				//弱风控订单号生成及调用
+				String weakRiskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+				orderInfo.setRiskOrderNo(weakRiskOrderNo);
+				orderDao.updateOrder(orderInfo);
+				
+				 logger.info("cp verify userId" + userId);
+				 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+				 logger.info("cp weakverybo=" + verybo);
 				 boolean riskPassStatus = verybo.isSuccess();
-				 boolean weakRiskStatus = false;
 				 if ( ! riskPassStatus){
-					 // 风控未通过，进行软弱风控的验证
-					 isSupportCreditPay = "N";
-					 RiskVerifyRespBo weakRiskResp = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-					 weakRiskStatus = weakRiskResp.isSuccess();
-					 if ( weakRiskStatus){
-						 isRecommend = true;
+					Map<String, Object> riskReturnMap = new HashMap<String, Object>();
+					//标记此订单支付失败，根据软弱风控去选择是否引导权限包购买
+					orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
+				    orderInfo.setStatus(OrderStatus.PAYFAIL.getCode());
+				    orderInfo.setStatusRemark(FanbeiExceptionCode.RISK_VERIFY_ERROR.getDesc());
+				    orderInfo.setGmtPay(new Date());
+				    orderInfo.setSupportCreditStatus(YesNoStatus.NO.getCode());
+				    
+					 // 弱风控未通过，进行软弱风控的验证
+					 String softWeakRiskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
+					 orderInfo.setWeakRiskOrderNo(softWeakRiskOrderNo);
+					 orderDao.updateOrder(orderInfo);
+					 
+					 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), softWeakRiskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+					 logger.info("cp softWeakverybo=" + softWeakverybo);
+					 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
+					 if(softWeakRiskStatus){
+						 //软弱风控通过，引导权限包
+						 resultMap.put("authPackageDirect", true);
+					 }else{
+						 resultMap.put("authPackageDirect", false);
 					 }
+					 
+					 //return返回调用结果信息
+					 resultMap.put("success", false);
+					 resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
+					 return riskReturnMap;
 				 }
 			 }else{
+				 logger.info("cp afOrderService.payBrandOrder have authPackage skip weakRiks ,orderId="+orderInfo.getRid());
 				 verybo = skipRisk();
 			 }
-			 orderInfo.setSupportCreditStatus(isSupportCreditPay);
-			 orderDao.updateOrder(orderInfo);
-			// 通过弱风控后才进行后续操作
-			if (verybo.isSuccess()) {
-			    logger.info("combination_pay result is true");
-			    orderInfo.setPayType(PayType.COMBINATION_PAY.getCode());
-			    orderDao.updateOrder(orderInfo);
-			    AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
-
-			    resultMap = new HashMap<String, Object>();
-
-			    if (null == cardInfo) {
-				throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
-			    }
-			    logger.info("combination_pay orderInfo = {}", orderInfo);
-
-			    Map<String, Object> result = afOrderCombinationPayService.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap,
-				    isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo, bankChannel);
-			    return result;
-			}
+			// **** new softWeakLogic  end //
+				// 通过弱风控后才进行后续操作
+				if (verybo.isSuccess()) {
+				    logger.info("combination_pay result is true");
+				    orderInfo.setPayType(PayType.COMBINATION_PAY.getCode());
+				    orderDao.updateOrder(orderInfo);
+				    AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
+	
+				    resultMap = new HashMap<String, Object>();
+	
+				    if (null == cardInfo) {
+					throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+				    }
+				    logger.info("combination_pay orderInfo = {}", orderInfo);
+	
+				    Map<String, Object> result = afOrderCombinationPayService.combinationPay(userId, orderNo, orderInfo, tradeNo, resultMap,
+					    isSelf, virtualMap, bankAmount, borrow, verybo, cardInfo, bankChannel);
+				    return result;
+				}
 		    } else {
 			orderInfo.setPayType(PayType.BANK.getCode());
 			Map<String, Object> newMap = new HashMap<String, Object>();
@@ -1462,8 +1499,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 				}
 			    }
 			}
-			// 活动返利
-			resultMap.put("isRecomend", isRecommend);
 		    }
 		    return resultMap;
 		} catch (FanbeiException exception) {
@@ -1475,6 +1510,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		    throw e;
 		}
 	    }
+	    });
+    } 	
 
 		private String generateRiskOrderNO(String cardNo, Long userId) {
 			String riskOrderNo;
@@ -1494,8 +1531,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			return verybo;
 		}
 
-	});
-    }
 
     @Override
     protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo) {
