@@ -612,8 +612,18 @@ class GetActivityListThread implements Runnable {
                 // 查询会场下所有商品信息
                 List<AfGoodsDo> subjectGoodsList = afSubjectGoodsService.listAllSubjectGoodsV1(subjectId);
                 List<Map> activityGoodsList  = new ArrayList<Map>();
+                BigDecimal saleAmount = null;
                 for(AfGoodsDo goodsDo : subjectGoodsList) {
                     Map activityGoodsInfo = new HashMap();
+                    activityGoodsInfo.put("goodName",goodsDo.getName());
+                    activityGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+                    if(null != goodsDo.getActivityPrice()){
+                        saleAmount = goodsDo.getActivityPrice();
+                    }
+                    else{
+                        saleAmount = goodsDo.getSaleAmount();
+                    }
+
                     activityGoodsInfo.put("goodName",goodsDo.getName());
                     activityGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
                     activityGoodsInfo.put("saleAmount", goodsDo.getSaleAmount());

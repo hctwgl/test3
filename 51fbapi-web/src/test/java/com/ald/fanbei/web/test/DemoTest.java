@@ -14,7 +14,7 @@ public class DemoTest extends BaseTest{
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
 	String urlBase = "http://localhost:8080";
-	String userName = "13666745602";
+	String userName = "17710378476";
 	//String userName = "13989456684";
 	
 	/**
@@ -39,7 +39,7 @@ public class DemoTest extends BaseTest{
 	public void  activityCouponInfo() {
 		String url = urlBase + "/fanbei-web/activityCouponInfo";
 		Map<String,String> params = new HashMap<>();
-		params.put("groupId", "107");
+		params.put("groupId", "995");
 		testH5(url, params, userName, true);
 	}
 
@@ -76,7 +76,7 @@ public class DemoTest extends BaseTest{
 	public void  sendCouponAfterSuccessShare() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/sendCouponAfterSuccessShare";
 		Map<String,String> params = new HashMap<>();
-		params.put("groupId", "107");
+		params.put("groupId", "994");
 		testH5(url, params, userName, true);
 	}
 
@@ -99,7 +99,7 @@ public class DemoTest extends BaseTest{
 	}
 
 	//活动预售商品列表
-	@Test
+	//@Test
 	public void  getReservationGoodsList() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/getReservationGoodsList";
 		Map<String,String> params = new HashMap<>();

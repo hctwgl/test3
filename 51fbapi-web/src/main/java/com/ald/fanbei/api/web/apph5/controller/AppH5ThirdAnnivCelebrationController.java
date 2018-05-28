@@ -116,7 +116,10 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                         String coupons = couponCategory.getCoupons();
                         JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
                         int size = couponsArray.size();
-                        int index = RandomUtil.getRandomInt(size - 1);
+                        int index = size;
+                        if(size > 1){
+                            index = RandomUtil.getRandomInt(size - 1);
+                        }
                         Long couponId = Long.parseLong(couponsArray.getString(index));
 
                         AfCouponDo couponDo = afCouponService.getCouponById(couponId);
