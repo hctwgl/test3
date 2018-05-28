@@ -4,6 +4,8 @@ import com.ald.fanbei.api.dal.domain.AfUserThirdInfoDo;
 import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
 import com.alibaba.fastjson.JSONObject;
 
+import java.util.List;
+
 /**
  * 用户第三方信息Service
  *
@@ -60,5 +62,7 @@ public interface AfUserThirdInfoService extends ParentService<AfUserThirdInfoDo,
     int selectUserThirdInfoByUserName(String userName);
 
     int updateByUserName(AfUserThirdInfoDo afUserThirdInfoDo);
+
+    List<AfUserThirdInfoDo> getListByCommonCondition(AfUserThirdInfoDo afUserThirdInfoDo);
 
 }

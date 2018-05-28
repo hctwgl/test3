@@ -2,10 +2,12 @@ package com.ald.fanbei.api.web.h5.api.reward;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.biz.util.WxUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SignRewardType;
 import com.ald.fanbei.api.common.enums.ThirdType;
+import com.ald.fanbei.api.common.enums.UserThirdType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -15,10 +17,12 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
+import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
 import com.ald.fanbei.api.web.common.*;
 import com.ald.fanbei.api.web.h5.controller.H5FriendSignInfoOutController;
 import com.ald.fanbei.api.web.h5.controller.H5SupplementSignInfoOutController;
 import com.ald.fanbei.api.web.validator.Validator;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -71,8 +75,9 @@ public class FriendSignInfoApi implements H5Handle {
         String thirdId = ObjectUtils.toString(context.getData("third_id"),null);//打开者的微信openId
         String thirdInfo = ObjectUtils.toString(context.getData("third_info"),null);//打开者的微信信息
         String push = ObjectUtils.toString(context.getData("push"),"N");
+        String wxCode = ObjectUtils.toString(context.getData("wxCode"),null);
         //判断用户和openId是否在爱上街绑定
-        boolean flag = afUserThirdInfoService.selectUserThirdInfoByUserName(userName)>0?true:false;
+        boolean flag = checkBindOpen(userId,wxCode);
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         //活动规则
         AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_RULE");
@@ -209,7 +214,25 @@ public class FriendSignInfoApi implements H5Handle {
         return resp;
     }
 
+    private boolean checkBindOpen(Long userId, String wxCode){
+        boolean flag = true;
+        AfResourceDo afResourceDo = afResourceService.getWechatConfig();
+        String appid = afResourceDo.getValue();
+        String secret = afResourceDo.getValue1();
+        JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
+        AfUserThirdInfoDo thirdInfo = new AfUserThirdInfoDo();
+        thirdInfo.setUserId(userId);
+        thirdInfo.setThirdType(UserThirdType.WX.getCode());
+        List<AfUserThirdInfoDo> thirdInfos = afUserThirdInfoService.getListByCommonCondition(thirdInfo);
+        thirdInfo = thirdInfos.size() == 0 ? null : thirdInfos.get(0);
+        if (thirdInfo != null) {
+            if (!thirdInfo.getThirdId().equals(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID))) {
+                flag = false;
+            }
+        }
+        return flag;
 
+    }
 
 
     /**

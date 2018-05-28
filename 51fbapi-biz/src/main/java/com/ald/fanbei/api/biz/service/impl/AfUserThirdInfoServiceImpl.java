@@ -110,7 +110,7 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 	}
 
 	// 获取用户第三方信息
-	private AfUserThirdInfoDo getUserThirdInfoByUserId(Long userId, String userThirdType) {
+	public AfUserThirdInfoDo getUserThirdInfoByUserId(Long userId, String userThirdType) {
 		AfUserThirdInfoDo query = new AfUserThirdInfoDo();
 		query.setUserId(userId);
 		query.setThirdType(userThirdType);
@@ -137,5 +137,12 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
     public int updateByUserName(AfUserThirdInfoDo afUserThirdInfoDo){
         return afUserThirdInfoDao.updateByUserName(afUserThirdInfoDo);
     }
+
+
+	@Override
+	public List<AfUserThirdInfoDo> getListByCommonCondition(AfUserThirdInfoDo afUserThirdInfoDo){
+		return afUserThirdInfoDao.getListByCommonCondition(afUserThirdInfoDo);
+	}
+
 
 }
