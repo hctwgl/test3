@@ -139,7 +139,7 @@ public class LoginApi implements ApiHandle {
 		loginDo.setPhoneType(phoneType);
 		loginDo.setUserName(userName);
 		loginDo.setUuid(uuid);
-		//ToutiaoAdActive(requestDataVo, context, afUserDo);
+//		ToutiaoAdActive(requestDataVo, context, afUserDo);
 		// check login failed count,if count greater than 5,lock specify hours
 		AfResourceDo lockHourResource = afResourceService
 				.getSingleResourceBytype(Constants.RES_APP_LOGIN_FAILED_LOCK_HOUR);
@@ -364,14 +364,14 @@ public class LoginApi implements ApiHandle {
 							callbackUrl += "&event_type=1";
 						}
 						String result = HttpUtil.doGet(callbackUrl, 20);
-					/*	if (result.indexOf("success") > -1) {
+						if (result.indexOf("success") > -1) {
 							Long rid = tdo.getRid();
 							Long userIdToutiao = context.getUserId() == null ? -1l : context.getUserId();
 							String userNameToutiao = context.getUserName() == null ? "" : context.getUserName();
 							afUserToutiaoService.uptUserActive(rid, userIdToutiao, userNameToutiao);
 						}
 						logger.error("toutiaoactive:update success,active=1,callbacr_url=" + callbackUrl + ",result="
-								+ result);*/
+								+ result);
 					}
 				}
 			}
@@ -383,7 +383,7 @@ public class LoginApi implements ApiHandle {
 	/**
 	 * 用于获取一个String的md5值
 	 * 
-	 * @param string
+	 * @param str
 	 * @return
 	 */
 	public static String getMd5(String str) throws Exception {

@@ -59,7 +59,8 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 
 	@Resource
 	AfTaskUserService afTaskUserService;
-	
+
+
 	@Override
 	public List<AfUserCouponDto> getUserCouponByUser(AfUserCouponQuery query) {
 		return afUserCouponDao.getUserCouponByUser(query);
@@ -388,6 +389,27 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	}
 
 	@Override
+	public List<AfUserCouponDto> getUserAllAcgencyCouponByAmount(Long userId, BigDecimal actualAmount) {
+		return afUserCouponDao.getUserAllAcgencyCouponByAmount(userId,actualAmount);
+	}
+
+	@Override
+	public List<AfUserCouponDto> getUserAllCoupon() {
+		return afUserCouponDao.getUserAllCoupon();
+	}
+
+	@Override
+	public List<AfUserCouponDto> getUserAllCouponByUserId(Long userId) {
+		return afUserCouponDao.getUserAllCouponByUserId(userId);
+	}
+
+	@Override
+	public List<AfUserCouponDto> getH5UserCouponByUser(Long userId, String status) {
+		return afUserCouponDao.getH5UserCouponByUser(userId,status);
+	}
+
+
+	@Override
 	public AfUserCouponDo sendActivityCouponByCouponGroupRandom(Long userId, String couponSenceRuleType, AfResourceDo resourceDo){
 		try {
 			if(null != resourceDo) {
@@ -441,5 +463,20 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	public AfUserCouponDto getUserCouponAfterPaidSuccess(Long userId){
 		return afUserCouponDao.getUserCouponAfterPaidSuccess(userId);
 	}
-	
+
+	@Override
+	public List<AfUserCouponDto> getUserCouponByTypeV1(Long userId, String type, String repaymentType) {
+		return afUserCouponDao.getUserCouponByTypeV1(userId,type,repaymentType);
+	}
+
+	@Override
+	public List<AfUserCouponDto> getUserBillCouponByUserIdAndType(Long userId, String code, BigDecimal repayAmount) {
+		return afUserCouponDao.getUserBillCouponByUserIdAndType(userId,code,repayAmount);
+	}
+
+	@Override
+	public List<AfUserCouponDto> getUserOldAllAcgencyCouponByAmount(Long userId, BigDecimal actualAmount) {
+		return afUserCouponDao.getUserOldAllAcgencyCouponByAmount(userId,actualAmount);
+	}
+
 }

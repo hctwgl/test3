@@ -157,6 +157,10 @@ public interface AfGoodsService {
 
 	List<Map<String, Object>> getGoodsByIds(List<Long> goodList);
 
+	List<Long> getGoodsisGlobal3(List<Long> goodsIdList);
+
+    List<Long> getGoodsisGlobal1(Long modelId);
+
 	List<AfGoodsDo> getAfGoodsListByBrandId(AfGoodsQuery goodsQuery);
 
 	List<HashMap> getTaskGoodsList(AfGoodsQuery goodsQuery);

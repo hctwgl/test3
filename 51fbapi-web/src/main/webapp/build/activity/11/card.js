@@ -1,5 +1,5 @@
 
-var userName = getUrl('userName'); //获取用户id
+var userName = getinfo().userName; //获取用户id
 var pageType = getUrl('type');
 
 let vm = new Vue({

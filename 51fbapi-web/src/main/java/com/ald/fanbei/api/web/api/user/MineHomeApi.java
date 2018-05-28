@@ -83,6 +83,9 @@ public class MineHomeApi implements ApiHandle {
     private AfLoanPeriodsService afLoanPeriodsService;
 
     @Autowired
+    private AfResourceH5ItemService afResourceH5ItemService;
+
+    @Autowired
     private AfTaskUserService afTaskUserService;
 
     @Override
@@ -96,7 +99,8 @@ public class MineHomeApi implements ApiHandle {
         fillCreditInfo(data, userId);
         fillAccountInfo(data, userId);
         fillOrderInfo(data, userId);
-        fillBannerAndNavigationInfo(data, requestDataVo.getId());
+        fillBannerAndNavigationInfo(data, requestDataVo.getId(), context.getAppVersion());
+        fillConfigInfo(data);
         resp.setResponseData(data);
 
         return resp;
@@ -274,7 +278,7 @@ public class MineHomeApi implements ApiHandle {
     }
 
     // 填充banner和快速导航信息
-    private void fillBannerAndNavigationInfo(MineHomeVo data, String appModel) {
+    private void fillBannerAndNavigationInfo(MineHomeVo data, String appModel, Integer appVersion) {
         // banner
         String invelomentType = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 
@@ -291,7 +295,7 @@ public class MineHomeApi implements ApiHandle {
                     .convertToListFromList(bannerResources, new Converter<AfResourceDo, Map<String, Object>>() {
                         @Override
                         public Map<String, Object> convert(AfResourceDo source) {
-                            Map<String, Object> map = new HashMap<String, Object>();
+                            Map<String, Object> map = new HashMap<>();
                             map.put("imageUrl", source.getValue());
                             map.put("type", source.getValue1());
                             map.put("content", source.getValue2());
@@ -304,10 +308,9 @@ public class MineHomeApi implements ApiHandle {
         // navigation
         List<AfResourceDo> navigationResources = afResourceService
                 .getHomeIndexListByOrderby(AfResourceType.PERSONAL_CENTER_NAVIGATION.getCode());
-        int nrSize = navigationResources.size();
-        for (int i =0; i < nrSize; i++) {
+        for (AfResourceDo nr : navigationResources) {
             // 如果配置大于4个，小于8个，则只显示4个
-            if (nrSize >= 4 && nrSize < 8) {
+            /*if (nrSize >= 4 && nrSize < 8) {
                 if (i >= 4) {
                     break;
                 }
@@ -318,10 +321,12 @@ public class MineHomeApi implements ApiHandle {
                 }
             }else if(nrSize < 4 ){
                 break;
-            }
+            }*/
 
-            AfResourceDo nr = navigationResources.get(i);
-            Map<String, Object> dataMap = new HashMap<String, Object>();
+            if (isIgnoreNavigation(nr, appVersion))
+                continue;
+
+            HashMap<String, Object> dataMap = new HashMap<>();
             dataMap.put("imageUrl", nr.getValue());
             dataMap.put("type", nr.getSecType());
             dataMap.put("titleName", nr.getName());
@@ -342,12 +347,30 @@ public class MineHomeApi implements ApiHandle {
         }
     }
 
+    // 填充配置信息
+    private void fillConfigInfo(MineHomeVo data) {
+        // 信用中心（爱花）跳转链接配置
+        List<AfResourceH5ItemDo> itemList = afResourceH5ItemService
+                .findListByModelTagAndSort(H5ResourceType.MINE_HOME_LOVE_SHOP.getTag(),
+                        H5ResourceType.MINE_HOME_LOVE_SHOP.getSort());
+        if (CollectionUtil.isNotEmpty(itemList)) {
+            data.setLoveShopSkipUrl(itemList.get(0).getValue1());
+        }
+
+        // 签到图片
+        itemList = afResourceH5ItemService.findListByModelTagAndSort(H5ResourceType.MINE_HOME_SIGN_IMG.getTag(),
+                        H5ResourceType.MINE_HOME_SIGN_IMG.getSort());
+        if (CollectionUtil.isNotEmpty(itemList)) {
+            data.setSignImgUrl(itemList.get(0).getValue3());
+        }
+    }
+
     private String randomPhone() {
         String targetPhone = "0571-86803811";
         AfResourceDo resourceInfo = afResourceService.getSingleResourceBytype(AfResourceType.APPCONSUMERPHONE.getCode());
         if(resourceInfo != null && StringUtil.isNotBlank(resourceInfo.getValue())){
             String[] phoneArry = resourceInfo.getValue().split(",");
-            if(phoneArry!= null && phoneArry.length > 0){
+            if(phoneArry.length > 0){
                 targetPhone = RandomUtil.getRandomElement(phoneArry);
                 if(StringUtil.isNotBlank(targetPhone)){
                     return targetPhone;
@@ -412,5 +435,10 @@ public class MineHomeApi implements ApiHandle {
             }
         }
         return result;
+    }
+
+    // 是否忽略某个导航
+    private boolean isIgnoreNavigation(AfResourceDo nr, Integer appVersion) {
+        return appVersion < 415 && (nr.getName().equals("帮助中心") || nr.getName().equals("银行卡"));
     }
 }

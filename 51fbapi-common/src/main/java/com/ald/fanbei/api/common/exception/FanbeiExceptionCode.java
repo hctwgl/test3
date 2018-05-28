@@ -457,9 +457,13 @@ public enum FanbeiExceptionCode {
     TASK_NOT_EXIST("TASK_NOT_EXIST",9012,"task not exist","此任务不存在"),
     SIGN_REMIND_FAIL("SIGN_REMIND_FAIL",9011,"sign remind fail","提现失败"),
     WITHDRAW_FAIL("WITHDRAW_FAIL",9010,"withdraw fail","提现失败"),
-    CHOOSE_WITHDRAW_TYPE("CHOOSE_WITHDRAW_TYPE",9009,"choose withdraw type","请选择提现方式");
+    CHOOSE_WITHDRAW_TYPE("CHOOSE_WITHDRAW_TYPE",9009,"choose withdraw type","请选择提现方式"),
 
 
+    WX_CODE_INVALID("WX_CODE_INVALID", 2900, "wx code is invalid", "微信code码失效"),
+
+    // 天天拆红包code
+    OPEN_REDPACKET_ACTIVITY_OVER("OPEN_REDPACKET_ACTIVITY_OVER", -1, "activity is over", "活动已结束");
 
     /**
      * 错误码

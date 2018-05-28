@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.apph5.controller;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.ActivityGoodsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.JobThreadPoolUtils;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -81,8 +82,6 @@ public class AppH5EnjoyLifeController extends BaseController {
     AfUserCouponService afUserCouponService;
 
     @Resource
-    AfModelH5Service afModelH5Service;
-    @Resource
     BizCacheUtil bizCacheUtil;
 
     @Resource
@@ -91,7 +90,8 @@ public class AppH5EnjoyLifeController extends BaseController {
     @Resource
     AfSeckillActivityService afSeckillActivityService;
 
-    ExecutorService pool = Executors.newFixedThreadPool(1);
+    @Resource
+    JobThreadPoolUtils jobThreadPoolUtils;
     @Resource
     ActivityGoodsUtil activityGoodsUtil;
     @Resource
@@ -171,8 +171,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                         BigDecimal onlineAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount());
                         // 临时额度
                         AfInterimAuDo interimAuDo = afBorrowBillService.selectInterimAmountByUserId(userDo.getRid());
-                        if (interimAuDo != null
-                                && interimAuDo.getGmtFailuretime().getTime() > new Date().getTime()) {
+                        if (interimAuDo != null && interimAuDo.getGmtFailuretime().getTime() > new Date().getTime()) {
                             onlineAmount = onlineAmount.add(interimAuDo.getInterimAmount()).subtract(interimAuDo.getInterimUsed());
                         }
                         if(onlineAmount.compareTo(BigDecimal.ZERO)<0){
@@ -233,7 +232,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                                     //bizCacheUtil.saveObjectForever(processKey,isProcess);
                                     Runnable process = new GetActivityListThread(subjectList,resource,array,afSubjectService,afSubjectGoodsService,afSchemeGoodsService,afInterestFreeRulesService,
                                             bizCacheUtil,afSeckillActivityService,activityGoodsUtil,query);
-                                    pool.execute(process);
+                                    jobThreadPoolUtils.asynProcessBusiness(process);
                                 }
                             }
                             if(activityList==null){

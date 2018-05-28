@@ -5,17 +5,15 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
-import java.math.BigDecimal;
 
 /**
- * 用户第三方信息表(与微信绑定)实体
- * 
- * @author cfp
+ * 实体
+ *
+ * @author wangli
  * @version 1.0.0 初始化
- * @date 2018-05-21 10:30:52
+ * @date 2018-05-04 09:20:23
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-
 @Getter
 @Setter
  public class AfUserThirdInfoDo extends AbstractSerial {

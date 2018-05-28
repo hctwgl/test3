@@ -865,7 +865,7 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 		BigDecimal repayAmount = loanRepayDealBo.curRepayAmoutStub;
 
 		if(repaymentDo.getRepayAmount().compareTo(calculateRestAmount) >= 0){	// 针对多期已出账 的部分还款
-			if(repayAmount.compareTo(calculateRestAmount) >= 0){
+			if(repayAmount.compareTo(calculateRestAmount.subtract(curRepayOSI)) >= 0){
 				loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepayAmount(),calculateRestAmount));
 				loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(calculateRestAmount.subtract(curRepayOSI));
 			}else {
@@ -881,6 +881,10 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 			}
 			loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 		}
+		
+		loanRepayDealBo.curRepayOverdue = BigDecimal.ZERO;
+		loanRepayDealBo.curRepayService = BigDecimal.ZERO;
+		loanRepayDealBo.curRepayInterest = BigDecimal.ZERO;
 		
 		// 所有已还金额
 		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount();
@@ -1358,16 +1362,12 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 		List<AfLoanPeriodsDo> loanPeriodsIds = new ArrayList<AfLoanPeriodsDo>();
 		
 		AfLoanPeriodsDo loanPeriodDo = afLoanPeriodsDao.getLastActivePeriodByLoanId(loanId);
-		
+		logger.info("AfLoanRepaymentServiceImpl getLoanPeriodsIds loanPeriodDo =>{}",JSONObject.toJSONString(loanPeriodDo)+",loanId="+loanId+",repaymentAmount="+repaymentAmount);
 		// 最多可还期数(还款金额/（每期需还本金+手续费+利息）+1)
-		int mostNper = BigDecimalUtil.divHalfUp(repaymentAmount, BigDecimalUtil.add(loanPeriodDo.getAmount(),
-				loanPeriodDo.getInterestFee(),loanPeriodDo.getRepaidInterestFee(),
-				loanPeriodDo.getServiceFee(),loanPeriodDo.getRepaidServiceFee()).subtract(loanPeriodDo.getRepayAmount()), 0).intValue();
-
 		BigDecimal restAmount = BigDecimal.ZERO;
 		Integer nper = loanPeriodDo.getNper();
 		
-		for (int i = 0; i < mostNper; i++) {
+		for (int i = 0; i < (loanPeriodDo.getPeriods() - nper + 1); i++) {
 			if(repaymentAmount.compareTo(BigDecimal.ZERO)>0){
 				// 根据 loanId&期数  获取分期信息
 				AfLoanPeriodsDo nextLoanPeriodDo = afLoanPeriodsDao.getPeriodByLoanIdAndNper(loanId, nper+i);
