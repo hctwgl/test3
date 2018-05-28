@@ -364,33 +364,11 @@ public class PayOrderV1Api implements ApiHandle {
             Object success = result.get("success");
             Object payStatus = result.get("status");
             
-            String goodsType = AfGoodsSpecType.COMMON.getCode();
-            Long goodsId = 0L;
-            String  relaCreditPay = "N";
             Integer toPayOrderNums =0;
-            String goodsBanner = "";
-            AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
-            if (vipGoodsResourceDo != null){
-            	if(result.get("authPackageDirect")!=null && (boolean)result.get("authPackageDirect")){
-            		//需要引导权限包，则置对应值
-            		goodsBanner = vipGoodsResourceDo.getValue3();
-                	goodsId = NumberUtil.objToLongDefault(vipGoodsResourceDo.getValue(), 0L);
-            	}
-            	if (orderInfo.getGoodsId().equals(goodsId)){
-            		goodsType = AfGoodsSpecType.AUTH.getCode();
-            	}
-            }
-            
-            if (PayType.COMBINATION_PAY.getCode().equals(payType) || PayType.AGENT_PAY.getCode().equals(payType)){
-            	relaCreditPay = "Y";
-            }
+           
             // 查询当前用户待支付的订单数
             toPayOrderNums = afOrderService.getALLNoFinishOrderCount(userId);
-            result.put("goodsType", goodsType);
-            result.put("goodsId", goodsId);
-            result.put("relaCreditPay", relaCreditPay);
             result.put("toPayOrderNums", toPayOrderNums);
-            result.put("goodsBanner", goodsBanner);
             
             if (success != null) {
                 if (Boolean.parseBoolean(success.toString())) {

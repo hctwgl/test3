@@ -41,6 +41,7 @@ import com.ald.fanbei.api.biz.service.AfShareUserGoodsService;
 import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAddressService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.de.AfDeUserGoodsService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -90,6 +91,8 @@ public class BuySelfGoodsApi implements ApiHandle {
 	@Resource
 	AfUserAccountService afUserAccountService;
 	@Resource
+	AfUserAuthService afUserAuthService;
+	@Resource
 	AfInterestFreeRulesService afInterestFreeRulesService;
 	@Autowired
 	AfDeUserGoodsService afDeUserGoodsService;
@@ -131,14 +134,31 @@ public class BuySelfGoodsApi implements ApiHandle {
 		Integer count = NumberUtil.objToIntDefault(requestDataVo.getParams().get("count"), 1);
 		
 		//alter by chengkang 权限包商品校验，不可重复购买 begin
+		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+		
 		AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
+		Integer vipGoodsValidDay = NumberUtil.objToIntDefault(vipGoodsResourceDo.getValue4(), 0);
+		//权限包是否在有效期限内
+		boolean vipGoodsIsValidForDate = true;
+		if(vipGoodsValidDay>0 && authDo.getGmtOrderWeakRisk()!=null
+				&& DateUtil.compareDate(new Date(),DateUtil.addDays(authDo.getGmtOrderWeakRisk(), vipGoodsValidDay))){
+			vipGoodsIsValidForDate = false;
+		}
+		
 		if(vipGoodsResourceDo!=null){
 			Long vipGoodsId = NumberUtil.objToLongDefault(vipGoodsResourceDo.getValue(), 0L);
 			if(vipGoodsId>0 && vipGoodsId.equals(goodsId)){
-				//已下单数量
-				Integer countNums = afOrderService.countSpecGoodsBuyNums(goodsId,userId);
-				if(countNums!=null && countNums>0){
-					throw new FanbeiException(FanbeiExceptionCode.WEAK_VERIFY_VIP_GOODS_REPEAT_BUY);
+				if(!YesNoStatus.YES.getCode().equals(authDo.getOrderWeakRiskStatus())){
+					//如果用户之前没有购买成功过，则校验已下单数量
+					Integer countNums = afOrderService.countSpecGoodsBuyNums(goodsId,userId);
+					if(countNums!=null && countNums>0){
+						throw new FanbeiException(FanbeiExceptionCode.WEAK_VERIFY_VIP_GOODS_REPEAT_BUY);
+					}
+				}else{
+					//如果在有效期限内，则不允许继续下单
+					if(vipGoodsIsValidForDate){
+						throw new FanbeiException(FanbeiExceptionCode.WEAK_VERIFY_VIP_GOODS_REPEAT_BUY);
+					}
 				}
 				//本单下单个数，只允许购买一个
 				if(count>1){

@@ -1151,14 +1151,36 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	    // 添加第三方订单
 	    riskDataMap.get("summaryOrderData").put("thirdOrderNo", orderInfo.getThirdOrderNo());
 	}
-
-	return transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
+	
+	//权限包商品配置信息
+	final AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
+    	
+	Map<String, Object> resultMap = transactionTemplate.execute(new TransactionCallback<Map<String, Object>>() {
 	    @Override
 	    public Map<String, Object> doInTransaction(TransactionStatus status) {
 		Date currentDate = new Date();
 		String tradeNo = generatorClusterNo.getOrderPayNo(currentDate,bankChannel);
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 
+		String goodsType = AfGoodsSpecType.COMMON.getCode();
+		String vipGoodsBanner = "";
+	    Long vipGoodsId = 0L;
+	    String  isRecomend = YesNoStatus.NO.getCode();
+	    //权限包产品的有效期，大于0时有效
+	    Integer vipGoodsValidDay = 0;
+	    if (vipGoodsResourceDo != null){
+	    	vipGoodsBanner = vipGoodsResourceDo.getValue3();
+	    	vipGoodsId = NumberUtil.objToLongDefault(vipGoodsResourceDo.getValue(), 0L);
+	    	vipGoodsValidDay = NumberUtil.objToIntDefault(vipGoodsResourceDo.getValue4(), 0);
+	    	if (orderInfo.getGoodsId().equals(vipGoodsId)){
+	    		goodsType = AfGoodsSpecType.AUTH.getCode();
+	    	}
+	    }
+		resultMap.put("goodsType", goodsType);
+		resultMap.put("isRecomend", isRecomend);
+	    resultMap.put("goodsId", 0L);
+	    resultMap.put("goodsBanner", "");
+	    
 		try {
 		    // 查卡号，用于调用风控接口
 		    AfUserBankcardDo card = afUserBankcardService.getUserMainBankcardByUserId(userId);
@@ -1269,7 +1291,18 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			// ****** modify by liutengyuan start  *****
 	    	// 如果用户有权限包，无需调用风控
 			RiskVerifyRespBo verybo;
-			if ( !YesNoStatus.YES.getCode().equals(authDo.getOrderWeakRiskStatus())){
+			boolean vipGoodsIsValidForDate = true;
+			if(vipGoodsValidDay>0 && authDo.getGmtOrderWeakRisk()!=null
+					&& DateUtil.compareDate(new Date(),DateUtil.addDays(authDo.getGmtOrderWeakRisk(), vipGoodsValidDay))){
+			    //代表需要对权限包进行有效日期的校验
+				vipGoodsIsValidForDate = false;
+			}
+			
+			if( YesNoStatus.YES.getCode().equals(authDo.getOrderWeakRiskStatus()) && vipGoodsIsValidForDate ){
+				//用户购买过权限包且在有效期内，则直接跳过弱风控
+				logger.info("afOrderService.payBrandOrder have authPackage skip weakRiks ,orderId="+orderInfo.getRid());
+				verybo = skipRisk();
+			 }else{
 				//弱风控订单号生成及调用
 				String weakRiskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 				orderInfo.setRiskOrderNo(weakRiskOrderNo);
@@ -1296,21 +1329,18 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 					 logger.info("softWeakverybo=" + softWeakverybo);
 					 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
-					 if(softWeakRiskStatus){
+					 if(softWeakRiskStatus && vipGoodsId>0){
 						 //软弱风控通过，引导权限包
-						 resultMap.put("authPackageDirect", true);
-					 }else{
-						 resultMap.put("authPackageDirect", false);
+						 resultMap.put("isRecomend", YesNoStatus.YES.getCode());
+						 resultMap.put("goodsId", vipGoodsId);
+						 resultMap.put("goodsBanner", vipGoodsBanner);
 					 }
 					 
 					 //return返回调用结果信息
 					 resultMap.put("success", false);
 					 resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
 					 return riskReturnMap;
-				 }
-			 }else{
-				 logger.info("afOrderService.payBrandOrder have authPackage skip weakRiks ,orderId="+orderInfo.getRid());
-				 verybo = skipRisk();
+				 } 
 			 }
 	    	// ******* end *******
 			
@@ -1358,8 +1388,21 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String borrowTime = sdf.format(borrow.getGmtCreate());
 			// **** new softWeakLogic  start //
+			
+			// 如果用户有权限包，无需调用风控
 			RiskVerifyRespBo verybo;
-			if ( !YesNoStatus.YES.getCode().equals(authDo.getOrderWeakRiskStatus())){
+			boolean vipGoodsIsValidForDate = true;
+			if(vipGoodsValidDay>0 && authDo.getGmtOrderWeakRisk()!=null
+					&& DateUtil.compareDate(new Date(),DateUtil.addDays(authDo.getGmtOrderWeakRisk(), vipGoodsValidDay))){
+			    //代表需要对权限包进行有效日期的校验
+				vipGoodsIsValidForDate = false;
+			}
+			
+			if( YesNoStatus.YES.getCode().equals(authDo.getOrderWeakRiskStatus()) && vipGoodsIsValidForDate ){
+				//用户购买过权限包且在有效期内，则直接跳过弱风控
+				 logger.info("cp afOrderService.payBrandOrder have authPackage skip weakRiks ,orderId="+orderInfo.getRid());
+				 verybo = skipRisk();
+			}else{
 				//弱风控订单号生成及调用
 				String weakRiskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 				orderInfo.setRiskOrderNo(weakRiskOrderNo);
@@ -1386,11 +1429,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), softWeakRiskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 					 logger.info("cp softWeakverybo=" + softWeakverybo);
 					 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
-					 if(softWeakRiskStatus){
+					 if(softWeakRiskStatus && vipGoodsId>0){
 						 //软弱风控通过，引导权限包
-						 resultMap.put("authPackageDirect", true);
-					 }else{
-						 resultMap.put("authPackageDirect", false);
+						 resultMap.put("isRecomend", YesNoStatus.YES.getCode());
+						 resultMap.put("goodsId", vipGoodsId);
+						 resultMap.put("goodsBanner", vipGoodsBanner);
 					 }
 					 
 					 //return返回调用结果信息
@@ -1398,10 +1441,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					 resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
 					 return riskReturnMap;
 				 }
-			 }else{
-				 logger.info("cp afOrderService.payBrandOrder have authPackage skip weakRiks ,orderId="+orderInfo.getRid());
-				 verybo = skipRisk();
 			 }
+			
 			// **** new softWeakLogic  end //
 				// 通过弱风控后才进行后续操作
 				if (verybo.isSuccess()) {
@@ -1511,6 +1552,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		}
 	    }
 	    });
+	  return resultMap;
     } 	
 
 		private String generateRiskOrderNO(String cardNo, Long userId) {
