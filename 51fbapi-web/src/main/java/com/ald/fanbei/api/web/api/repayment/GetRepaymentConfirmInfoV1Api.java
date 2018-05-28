@@ -72,7 +72,7 @@ public class GetRepaymentConfirmInfoV1Api implements ApiHandle {
         vo.setRepayAmount(billDo.getBillAmount());
         vo.setBillId(billDo.getBillIds());
 
-        List<AfUserCouponDto> couponDto = afUserCouponService.getUserCouponByUserIdAndType(userId, CouponType.REPAYMENT.getCode(), vo.getRepayAmount());
+        List<AfUserCouponDto> couponDto = afUserCouponService.getUserBillCouponByUserIdAndType(userId, CouponType.BORROWBILL.getCode(), vo.getRepayAmount());
         if(null != couponDto && couponDto.size()>0){
             AfUserCouponDto coupon = couponDto.get(0);
             vo.setCouponAmount(coupon.getAmount());
@@ -105,6 +105,11 @@ public class GetRepaymentConfirmInfoV1Api implements ApiHandle {
                 userCoupon.setName(afUserCouponDto.getName());
                 userCoupon.setStatus(afUserCouponDto.getStatus());
                 userCoupon.setUseRule(afUserCouponDto.getUseRule());
+                if(StringUtil.isNotBlank(afUserCouponDto.getType())){
+                    if(StringUtil.equals("BORROWBILL",afUserCouponDto.getType())){
+                        afUserCouponDto.setType("REPAYMENT");
+                    }
+                }
                 userCoupon.setType(afUserCouponDto.getType());
                 couponList.add(userCoupon);
             }

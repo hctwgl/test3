@@ -6,6 +6,7 @@ package com.ald.fanbei.api.biz.service;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfCouponDo;
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 
 /**
@@ -39,4 +40,5 @@ public interface AfCouponService {
 	List<AfCouponDo> getByActivityType(String activityType);
 
 	List<AfCouponDo> getCouponByIds(List<String> ids);
+
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.AfGoodsDo;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.AfCouponService;
