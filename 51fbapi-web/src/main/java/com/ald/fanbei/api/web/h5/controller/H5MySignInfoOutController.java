@@ -1,33 +1,38 @@
-package com.ald.fanbei.api.web.h5.api.reward;
+package com.ald.fanbei.api.web.h5.controller;
 
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.TongdunUtil;
+import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.CookieUtil;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SignRewardType;
+import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.web.common.H5Handle;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
-import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import org.apache.commons.lang.ObjectUtils;
-import org.springframework.stereotype.Component;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -35,44 +40,64 @@ import java.util.Map;
  * @author cfp
  * @类描述：签到领金币
  */
-@NeedLogin
-@Component("getSignRewardApi")
-public class GetSignRewardApi implements H5Handle {
+@RestController
+@RequestMapping(value = "/mySignInfo/")
+public class H5MySignInfoOutController extends H5Controller {
 
     @Resource
-    AfSignRewardService afSignRewardService;
+    AfUserService afUserService;
+    @Resource
+    BizCacheUtil bizCacheUtil;
     @Resource
     AfResourceService afResourceService;
     @Resource
     NumberWordFormat numberWordFormat;
     @Resource
-    AfSignRewardExtService afSignRewardExtService;
-    @Resource
     TransactionTemplate transactionTemplate;
+    @Resource
+    AfSignRewardService afSignRewardService;
+    @Resource
+    AfSignRewardExtService afSignRewardExtService;
     @Resource
     AfUserCouponService afUserCouponService;
 
-    @Override
-    public H5HandleResponse process(Context context) {
-        H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
-        AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
-        afSignRewardDo.setIsDelete(0);
-        afSignRewardDo.setUserId(context.getUserId());
-        afSignRewardDo.setGmtCreate(new Date());
-        afSignRewardDo.setGmtModified(new Date());
-        afSignRewardDo.setType(SignRewardType.ZERO.getCode());
-        afSignRewardDo.setStatus(0);
-        AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
-        if(afResourceDo == null || numberWordFormat.isNumeric(afResourceDo.getValue())){
-            return new H5HandleResponse(context.getId(), FanbeiExceptionCode.PARAM_ERROR);
+
+    /**
+     * 自己签到
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/mySign", method = RequestMethod.POST)
+    public String homePage(HttpServletRequest request, HttpServletResponse response) {
+        Long userId = NumberUtil.objToLongDefault(request.getParameter("userId"),null);
+        Map<String,String> map = new HashMap<String,String>();
+        try {
+            AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
+            afSignRewardDo.setIsDelete(0);
+            afSignRewardDo.setUserId(userId);
+            afSignRewardDo.setGmtCreate(new Date());
+            afSignRewardDo.setGmtModified(new Date());
+            afSignRewardDo.setType(SignRewardType.ZERO.getCode());
+            afSignRewardDo.setStatus(0);
+            AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
+            if(afResourceDo == null || numberWordFormat.isNumeric(afResourceDo.getValue())){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc()).toString();
+            }
+            if(afSignRewardService.isExist(afSignRewardDo.getUserId())){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SIGN_EXIST.getDesc()).toString();
+            }
+            if(!userSign(afSignRewardDo,afResourceDo,map)){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SIGN_FAIL.getDesc()).toString();
+            }
+            return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",map ).toString();
+        } catch (FanbeiException e) {
+            logger.error("commitRegister fanbei exception" + e.getMessage());
+            return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
+        } catch (Exception e) {
+            logger.error("commitRegister exception", e);
+            return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
         }
-        if(afSignRewardService.isExist(afSignRewardDo.getUserId())){
-            return new H5HandleResponse(context.getId(), FanbeiExceptionCode.USER_SIGN_EXIST);
-        }
-        if(!userSign(afSignRewardDo,afResourceDo,resp)){
-            return new H5HandleResponse(context.getId(), FanbeiExceptionCode.USER_SIGN_FAIL);
-        }
-        return resp;
     }
 
     /**
@@ -80,7 +105,7 @@ public class GetSignRewardApi implements H5Handle {
      * @param afSignRewardDo
      * @return
      */
-    private boolean userSign(AfSignRewardDo afSignRewardDo, final AfResourceDo afResourceDo,H5HandleResponse resp){
+    private boolean userSign(AfSignRewardDo afSignRewardDo, final AfResourceDo afResourceDo,Map<String,String> resp){
         boolean flag = afSignRewardService.checkUserSign(afSignRewardDo.getUserId());
         boolean result;
         String status = "" ;
@@ -134,14 +159,14 @@ public class GetSignRewardApi implements H5Handle {
                 if(count >= 5 && count < 7){
                     //给予连续5天的奖励
                     if(maxCount < 5 && newMaxCount == 5){
-                       status = fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
+                        status = fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
                     }
                 }else if(count >= 7 && count< 10){
                     //给予连续5天的奖励
                     if(maxCount < 5 && newMaxCount == 5){
                         status = fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
                     }else if(maxCount < 5 && newMaxCount == 7){//给予连续5天和7天的奖励
-                        afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN));
+                        afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2, RoundingMode.HALF_EVEN));
                         status = fiveOrSevenSignDays(afSignRewardExtDo,afSignRewardExtDo.getAmount(),rewardDo,afResourceDo);
                     }else if(maxCount >= 5 && newMaxCount == 7){//给予连续7天的奖励
                         afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN));
@@ -158,7 +183,7 @@ public class GetSignRewardApi implements H5Handle {
                     status = tenSignDays(rewardDo,afSignRewardExtDo);
                 }
             }
-            resp.addResponseData("amount",afSignRewardExtDo.getAmount());
+            resp.put("amount",afSignRewardExtDo.getAmount().toString());
         }else {//第一次签到
             BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
             afSignRewardDo.setAmount(rewardAmount);
@@ -181,7 +206,7 @@ public class GetSignRewardApi implements H5Handle {
                     }
                 }
             });
-            resp.addResponseData("amount",rewardAmount);
+            resp.put("amount",rewardAmount.toString());
         }
         if(StringUtil.equals(status,"success")){
             result =true;
@@ -191,17 +216,19 @@ public class GetSignRewardApi implements H5Handle {
         return result;
     }
 
+
+
     public void sortStr(String[] str){
         for (int sx=0; sx<str.length-1; sx++) {
-             for (int i=0; i<str.length-1-sx; i++) {
-                 if (Integer.parseInt(str[i]) > Integer.parseInt(str[i+1]) ) {
-                     // 交换数据
-                     String temp = str[i];
-                     str[i] = str[i+1];
-                     str[i+1] = temp;
-                 }
-             }
-         }
+            for (int i=0; i<str.length-1-sx; i++) {
+                if (Integer.parseInt(str[i]) > Integer.parseInt(str[i+1]) ) {
+                    // 交换数据
+                    String temp = str[i];
+                    str[i] = str[i+1];
+                    str[i+1] = temp;
+                }
+            }
+        }
     }
 
 
@@ -224,12 +251,12 @@ public class GetSignRewardApi implements H5Handle {
         return maxCount+1;
     }
 
-            /**
-             * 随机获取min 与 max 之间的值
-             * @param min
-             * @param max
-             * @return
-             */
+    /**
+     * 随机获取min 与 max 之间的值
+     * @param min
+     * @param max
+     * @return
+     */
     private BigDecimal randomNum(String min,String max){
         Double amount = new BigDecimal(Math.random() * (Double.parseDouble(max) - Double.parseDouble(min)) + Double.parseDouble(min)).doubleValue();
         DecimalFormat dFormat=new DecimalFormat("#.00");
@@ -296,6 +323,11 @@ public class GetSignRewardApi implements H5Handle {
         });
         return status;
     }
+
+
+
+
+
 
 
 }

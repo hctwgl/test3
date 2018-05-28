@@ -82,6 +82,9 @@ public class MineHomeApi implements ApiHandle {
     @Autowired
     private AfLoanPeriodsService afLoanPeriodsService;
 
+    @Autowired
+    private AfTaskUserService afTaskUserService;
+
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -105,6 +108,9 @@ public class MineHomeApi implements ApiHandle {
         data.setCustomerPhone(randomPhone());
 
         if (userId != null) {
+            //金币数量
+            Long availableCoinAmount = afTaskUserService.getAvailableCoinAmount(userId);
+            data.setAvailableCoinAmount(availableCoinAmount);
             AfUserAccountDto userAccountInfo = afUserAccountService.getUserAndAccountByUserId(userId);
             if (userAccountInfo != null) {
                 data.setIsLogin(YesNoStatus.YES.getCode());
