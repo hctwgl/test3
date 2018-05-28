@@ -83,7 +83,7 @@ public class AfSignRewardExtServiceImpl  implements AfSignRewardExtService {
     }
 
     @Override
-    public Map<String,Object> getHomeInfo(Long userId){
+    public Map<String,Object> getHomeInfo(Long userId,String status){
         Map<String,Object> map = new HashMap<>();
         AfSignRewardExtDo afSignRewardExtDo = selectByUserId(userId);
         if(null == afSignRewardExtDo){
@@ -103,15 +103,17 @@ public class AfSignRewardExtServiceImpl  implements AfSignRewardExtService {
             //是否有余额
             map.put("rewardAmount",BigDecimal.ZERO);
             //已签到天数
-            map.put("supplementSignDays",0);
+            map.put("supplementSignDays","");
+            map.put("signDays","");
         }else if(null != afSignRewardExtDo){
             //签到提醒
             map.put("isOpenRemind",afSignRewardExtDo.getIsOpenRemind()>0?"Y":"N");
             //是否有余额
             map.put("rewardAmount",afSignRewardExtDo.getAmount());
             //已签到天数
-            StringBuffer days = afSignRewardService.supplementSign(afSignRewardExtDo,0);
-            map.put("supplementSignDays",days.toString());
+            Map<String,String> days = afSignRewardService.supplementSign(afSignRewardExtDo,0,status);
+            map.put("supplementSignDays",days.get("supplementSignDays"));
+            map.put("signDays",days.get("signDays"));
         }
         return map;
     }

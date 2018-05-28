@@ -6,6 +6,7 @@ import com.ald.fanbei.api.dal.domain.query.AfSignRewardQuery;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -34,7 +35,7 @@ public interface AfSignRewardService {
 
     boolean frienddUserSignCountToDay(Long userId,Long friendUserId);
 
-    StringBuffer supplementSign(AfSignRewardExtDo afSignRewardExtDo, int num);
+    Map<String,String> supplementSign(AfSignRewardExtDo afSignRewardExtDo, int num,String status);
 
     int saveRecordBatch(List<AfSignRewardDo> list);
 

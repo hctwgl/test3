@@ -271,7 +271,10 @@ public class H5FriendSignInfoOutController extends H5Controller {
     }
 
     private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push){
-        resp = afSignRewardExtService.getHomeInfo(userId);
+        //今天是否签到
+        String status = afSignRewardService.isExist(userId)==false?"N":"Y";
+        resp.put("rewardStatus",status);
+        resp = afSignRewardExtService.getHomeInfo(userId,status);
         // 正式环境和预发布环境区分
         String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
         String homeBanner = AfResourceType.RewardHomeBanner.getCode();

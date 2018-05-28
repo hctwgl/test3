@@ -187,10 +187,14 @@ public class FriendSignInfoApi implements H5Handle {
 
 
     private H5HandleResponse homeInfo (Long userId,H5HandleResponse resp,String push){
-        Map<String,Object> map = afSignRewardExtService.getHomeInfo(userId);
+        //今天是否签到
+        String status = afSignRewardService.isExist(userId)==false?"N":"Y";
+        resp.addResponseData("rewardStatus",status);
+        Map<String,Object> map = afSignRewardExtService.getHomeInfo(userId,status);
         resp.addResponseData("isOpenRemind",map.get("isOpenRemind"));
         resp.addResponseData("rewardAmount",map.get("rewardAmount"));
         resp.addResponseData("supplementSignDays",map.get("supplementSignDays"));
+        resp.addResponseData("signDays",map.get("signDays"));
 
         // 正式环境和预发布环境区分
         String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);

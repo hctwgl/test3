@@ -67,10 +67,16 @@ public class GetRewardHomeInfoApi implements H5Handle {
 			resp.addResponseData("rewardRule","");
 		}
 		Long userId = context.getUserId();
-		Map<String,Object> map = afSignRewardExtService.getHomeInfo(userId);
+
+		//今天是否签到
+		String status = afSignRewardService.isExist(userId)==false?"N":"Y";
+		resp.addResponseData("rewardStatus",status);
+
+		Map<String,Object> map = afSignRewardExtService.getHomeInfo(userId,status);
 		resp.addResponseData("isOpenRemind",map.get("isOpenRemind"));
 		resp.addResponseData("rewardAmount",map.get("rewardAmount"));
 		resp.addResponseData("supplementSignDays",map.get("supplementSignDays"));
+		resp.addResponseData("signDays",map.get("signDays"));
 
 		//banner
 		String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
@@ -78,8 +84,7 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		// 正式环境和预发布环境区分
 		resp.addResponseData("rewardBannerList",afResourceService.rewardBannerList(type,homeBanner));
 
-		//今天是否签到
-		resp.addResponseData("rewardStatus",afSignRewardService.isExist(userId)==false?"N":"Y");
+
 
 		//任务列表
 		AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);

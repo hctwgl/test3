@@ -27,6 +27,7 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -86,8 +87,8 @@ public class GetSignRewardApi implements H5Handle {
         if(flag){//多次签到
             //判断是当前周期的第几天
             AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(afSignRewardDo.getUserId());
-            StringBuffer days = afSignRewardService.supplementSign(afSignRewardExtDo,0);
-            String str[] = days.toString().split(",");
+            Map<String,String> days = afSignRewardService.supplementSign(afSignRewardExtDo,0,"N");
+            String str[] = days.get("signDays").toString().split(",");
             int count = 0;
             if(StringUtil.equals(days.toString(),"")){
                 count = str.length;
@@ -119,7 +120,8 @@ public class GetSignRewardApi implements H5Handle {
                 int maxCount = maxCount(str);
                 Date before = DateUtil.formatDateToYYYYMMdd(afSignRewardExtDo.getFirstDayParticipation());
                 Date after = DateUtil.formatDateToYYYYMMdd(new Date());
-                days.append(",").append(DateUtil.getNumberOfDatesBetween(before,after)+1);
+                StringBuffer buffer = new StringBuffer(days.get("signDays"));
+                buffer.append(",").append(DateUtil.getNumberOfDatesBetween(before,after)+1);
                 String arrayStr[] = days.toString().split(",");
                 sortStr(arrayStr);
                 int newMaxCount = maxCount(arrayStr);
