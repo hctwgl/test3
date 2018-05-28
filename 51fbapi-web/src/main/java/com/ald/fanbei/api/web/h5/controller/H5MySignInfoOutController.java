@@ -115,7 +115,7 @@ public class H5MySignInfoOutController extends H5Controller {
             Map<String,String> days = afSignRewardService.supplementSign(afSignRewardExtDo,0,"N");
             String str[] = days.get("signDays").toString().split(",");
             int count = 0;
-            if(StringUtil.equals(days.toString(),"")){
+            if(StringUtil.equals(days.get("signDays").toString(),"")){
                 count = str.length;
             }else{
                 count = str.length+1;

@@ -44,7 +44,7 @@ public class H5TaskUserController extends BaseController {
     private AfTaskBrowseGoodsService afTaskBrowseGoodsService;
 
     /**
-     * 浏览任务
+     * 浏览任务（符合条件弹出宝箱）
      * @param request
      * @param response
      * @return
@@ -104,7 +104,6 @@ public class H5TaskUserController extends BaseController {
     public String receiveBrowseTaskRewards(HttpServletRequest request, HttpServletResponse response) {
         try{
             FanbeiH5Context context = doH5Check(request, true);
-            Long userId = context.getUserId();
             Map<String, Object> data = Maps.newHashMap();
             String taskUserIds = request.getParameter("taskUserIds");
             if (StringUtils.isNotEmpty(taskUserIds)) {
