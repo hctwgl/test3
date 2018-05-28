@@ -59,6 +59,7 @@ public enum AfResourceSecType {
 		borrowRiskMostAmount("BORROW_RISK_MOST_AMOUNT", "风控允许的最大可提升额度"),
 		AUTH_FUND_SWITCH("AUTH_FUND_SWITCH","公积金认证开关"),
 		BORROW_CASH_SWITCH("BORROW_CASH_SWITCH","极速贷开关"),
+		BORROW_CASH_MJB_SWITCH("BORROW_CASH_MJB_SWITCH","马甲包版本控制开关"),
 		//短信
 		SMS_RISK_SUCCESS("SMS_RISK_SUCCESS","强风控通过短信"),
 		SMS_RISK_FAIL("SMS_RISK_FAIL","强风控未通过短信"),

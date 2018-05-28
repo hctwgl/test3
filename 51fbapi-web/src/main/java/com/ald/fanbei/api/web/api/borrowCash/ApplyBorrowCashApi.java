@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -32,14 +33,6 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CommitRecordUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfBorrowCashReviewStatus;
-import com.ald.fanbei.api.common.enums.AfBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.AfBorrowCashType;
-import com.ald.fanbei.api.common.enums.AfCounponStatus;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.CouponStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -104,9 +97,12 @@ public class ApplyBorrowCashApi extends GetBorrowCashBase implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		/*if (context.getAppVersion() < 405) {
-			throw new FanbeiException("维护中！请您至APPStore下载【爱上街】app，申请借款！参与周年庆活动，全场不止免息，再送500元礼包", true);
-		}*/
+		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_CASH_MJB_SWITCH.getCode(),AfResourceSecType.BORROW_CASH_MJB_SWITCH.getCode());
+		if (null != resourceDo && resourceDo.getValue().equals("Y")){
+			if (context.getAppVersion() < 405) {
+				throw new FanbeiException("维护中！请您至APPStore下载【爱上街】app，申请借款！参与周年庆活动，全场不止免息，再送500元礼包", true);
+			}
+		}
 		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get("amount"));
 		String pwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"));
 		String type = ObjectUtils.toString(requestDataVo.getParams().get("type"));
