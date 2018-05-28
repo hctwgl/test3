@@ -136,9 +136,9 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),
                 FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
-        if (context.getAppVersion() < 405) {
+        /*if (context.getAppVersion() < 405) {
             throw new FanbeiException("维护中！请您至APPStore下载【爱上街】app，申请借款！参与周年庆活动，全场不止免息，再送500元礼包", true);
-        }
+        }*/
 		String amountStr = ObjectUtils.toString(requestDataVo.getParams().get(
 				"amount"));
 		String pwd = ObjectUtils.toString(requestDataVo.getParams().get("pwd"));
@@ -168,6 +168,10 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
 			return new ApiHandleResponse(requestDataVo.getId(),
 					FanbeiExceptionCode.REQUEST_PARAM_NOT_EXIST);
 		}
+        Integer dayType = numberWordFormat.borrowTime(type);
+        if (dayType == 7 || dayType == 14){
+            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.BORROW_CASH_MAJIABAO_STOP_ERROR);
+        }
         try{
             AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否不允许这种类型的借款
             if(afResourceDo!=null&&afResourceDo.getValue().equals(YesNoStatus.YES.getCode())&&afResourceDo.getValue1().contains(type)){
