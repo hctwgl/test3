@@ -138,7 +138,7 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
         StringBuffer buffer = new StringBuffer();
         boolean flag = true;
         int count = 0;
-        if(StringUtil.equals(status,"Y")){
+        if(StringUtil.equals(status,"Y") || StringUtil.isEmpty(sb)){
             count = arr.length-1;
         }else {
             count = arr.length;
