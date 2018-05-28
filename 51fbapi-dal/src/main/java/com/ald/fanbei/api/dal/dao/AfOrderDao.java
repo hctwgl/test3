@@ -337,9 +337,9 @@ public interface AfOrderDao {
 	 */
 	Integer countSpecGoodsBuyNums(@Param("goodsId") Long goodsId,@Param("userId") Long userId);
 	/**
-	 * 修改用户所有未支付的订单
+	 * 批量更新指定用户待支付且不支持信用支付的订单的信用支付状态为Y
 	 * @param userId
 	 * @return
 	 */
-	int updateUnclosedOrder(Long userId);
+	int batchUpdateToPayOrderCreditStatus(@Param("userId")Long userId);
 }

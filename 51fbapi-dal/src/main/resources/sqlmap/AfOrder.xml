@@ -1507,8 +1507,9 @@
 		and status !='CLOSED' 
 	</select>
 	
-	<update id="updateUnclosedOrder">
-	UPDATE af_order SET support_credit_status = 'Y'
-	WHERE `status` IN ('NEW','PAYFAIL','DEALING') AND user_id= #{userId}
+	<update id="batchUpdateToPayOrderCreditStatus">
+		update af_order set gmt_modified=NOW(),support_credit_status = 'Y'
+			where is_delete=0 and support_credit_status = 'N' and status in ('NEW','PAYFAIL','DEALING') 
+				and pay_type in ('AP','CP') and user_id=#{userId}
 	</update>
 </mapper>

@@ -1884,8 +1884,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					orderInfo.setGmtPay(new Date());
 					orderInfo.setTradeNo(tradeNo);
 					orderDao.updateOrder(orderInfo);
+					
+					logger.info("dealBrandOrderSucc buySpecGoodsOrderProcess , orderInfoId="+orderInfo.getRid());
+					buySpecGoodsOrderProcess(orderInfo.getRid());
+					
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
-//TODO 回调方法
 		    return 1;
 		} catch (Exception e) {
 		    status.setRollbackOnly();
@@ -3337,9 +3340,27 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		return orderDao.getALLNoFinishOrderCount(userId);
 	}
 
-	@Override
-	public int updateUnclosedOrder(Long userId) {
-		return orderDao.updateUnclosedOrder(userId);
+	/**
+	 * 特殊商品购买成功的后续处理，此处暂用于权限包商品的购买成功处理
+	 * @param orderId
+	 */
+	private void buySpecGoodsOrderProcess(Long orderId){
+		AfOrderDo order = orderDao.getOrderById(orderId);
+		//权限包商品配置获取
+		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
+		if(resourceDo!=null && order!=null && order.getGoodsId().equals(NumberUtil.objToLongDefault(resourceDo.getValue(), 0L))){
+			//更新当前订单的状态为已发货
+			order.setStatus(OrderStatus.DELIVERED.getCode());
+			orderDao.updateOrder(order);
+			
+			//更新用户的消费分期权限包状态及时间
+			AfUserAuthDo userAuthDo = new AfUserAuthDo();
+			userAuthDo.setUserId(order.getUserId());
+			userAuthDo.setOrderWeakRiskStatus(YesNoStatus.YES.getCode());
+			userAuthDo.setGmtOrderWeakRisk(new Date());
+			afUserAuthService.updateUserAuth(userAuthDo);
+			//批量更新当前用户下的待支付且不支持信用支付的订单，使之支持信用支付
+			orderDao.batchUpdateToPayOrderCreditStatus(order.getUserId());
+		}
 	}
-
 }

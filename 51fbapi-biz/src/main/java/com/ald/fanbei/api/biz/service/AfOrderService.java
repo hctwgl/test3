@@ -480,11 +480,5 @@ public interface AfOrderService {
 	 * @return
 	 */
 	Integer countSpecGoodsBuyNums(Long goodsId,Long userId);
-	/** 
-	 * 修改所有未支付的订单信的用状态
-	 * @param userId
-	 * @return
-	 */
-	int updateUnclosedOrder(Long userId);
 
 }

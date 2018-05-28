@@ -367,22 +367,21 @@ public class PayOrderV1Api implements ApiHandle {
 
             Object success = result.get("success");
             Object payStatus = result.get("status");
-            String goodsType = "";
+            
+            String goodsType = AfGoodsSpecType.COMMON.getCode();
             Long goodsId = 0L;
             String  relaCreditPay = "N";
-            Integer toPayOrderNums ;
-            String  goodsBanner = "";
+            Integer toPayOrderNums =0;
+            String goodsBanner = "";
             AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
             if (vipGoodsResourceDo != null){
-            	String authGoodsId = vipGoodsResourceDo.getValue();
-            	goodsId = NumberUtil.objToLong(authGoodsId);
             	goodsBanner = vipGoodsResourceDo.getValue3();
-            	if (orderInfo.getGoodsId() == goodsId){
-            		goodsType = "auth";
-            	}else{
-            		goodsType = "common";
+            	goodsId = NumberUtil.objToLongDefault(vipGoodsResourceDo.getValue(), 0L);
+            	if (orderInfo.getGoodsId().equals(goodsId)){
+            		goodsType = AfGoodsSpecType.AUTH.getCode();
             	}
             }
+            
             if (PayType.COMBINATION_PAY.getCode().equals(payType) || PayType.AGENT_PAY.getCode().equals(payType)){
             	relaCreditPay = "Y";
             }
@@ -436,14 +435,6 @@ public class PayOrderV1Api implements ApiHandle {
      		       }
 		    
                     }
-                    
-                   // ******* modify by liutengyuan start *****
-                    if (Constants.GoodsType.equals(goodsType)){
-                    	afOrderService.updateUnclosedOrder(userId);
-                    }
-                  // ******* modify by liutengyuan end *****
-
-                    
                 } else {
                     FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
                     ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);

@@ -7,22 +7,26 @@ import com.ald.fanbei.api.biz.third.util.bkl.BklUtils;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.dal.dao.AfGoodsCategoryDao;
 import com.ald.fanbei.api.dal.dao.AfIagentResultDao;
 import com.ald.fanbei.api.dal.dao.AfIdNumberDao;
 import com.ald.fanbei.api.dal.dao.AfUserAccountDao;
+import com.ald.fanbei.api.dal.dao.AfUserAuthDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfIagentResultDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
 import org.apache.commons.beanutils.ConvertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -51,6 +55,9 @@ public class AfBklServiceImpl implements AfBklService {
 
     @Resource
     AfUserAccountDao afUserAccountDao;
+    
+    @Resource
+    AfUserAuthDao afUserAuthDao;
 
     @Resource
     AfGoodsService afGoodsService;
@@ -71,6 +78,8 @@ public class AfBklServiceImpl implements AfBklService {
     public String  isBklResult(AfOrderDo orderInfo) {
 
         final AfUserDo userDo = afUserService.getUserById(orderInfo.getUserId());
+        AfUserAuthDo afUserAuthDo = afUserAuthDao.getUserAuthInfoByUserId(orderInfo.getUserId());
+        
         String result = "v2";//需电核
         //种子名单
 		AfUserSeedDo userSeedDo = afUserSeedService.getAfUserSeedDoByUserId(orderInfo.getUserId());
@@ -79,6 +88,13 @@ public class AfBklServiceImpl implements AfBklService {
 			orderInfo.setIagentStatus("I");
 			return result;
 		}
+		
+		//购买过权限包的用户，电核直接通过
+		if(afUserAuthDo!=null && YesNoStatus.YES.getCode().equals(afUserAuthDo.getOrderWeakRiskStatus())){
+			result = "v1";
+			return result;
+		}
+		
         AfResourceDo bklWhiteResource = afResourceService.getConfigByTypesAndSecType(ResourceType.BKL_WHITE_LIST_CONF.getCode(), AfResourceSecType.BKL_WHITE_LIST_CONF.getCode());
         if (bklWhiteResource != null) {
             //白名单开启

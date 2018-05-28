@@ -582,6 +582,4 @@ public class Constants {
 	public static final String ACTIVITY_INFO_GOODSID = "ACTIVITY_INFO_GOODSID";
 
     public static final String BORROW_FINANCE = "borrow";
-
-    public static final String GoodsType = "auth"; // 支付接口新增权限包
 }
