@@ -116,13 +116,19 @@ public class GetSignRewardApi implements H5Handle {
                     }
                 });
             }else {
-                sortStr(str);
+                if(str.length>1){
+                    sortStr(str);
+                }
                 int maxCount = maxCount(str);
                 Date before = DateUtil.formatDateToYYYYMMdd(afSignRewardExtDo.getFirstDayParticipation());
                 Date after = DateUtil.formatDateToYYYYMMdd(new Date());
                 StringBuffer buffer = new StringBuffer(days.get("signDays"));
-                buffer.append(",").append(DateUtil.getNumberOfDatesBetween(before,after)+1);
-                String arrayStr[] = days.toString().split(",");
+                if(str.length>1){
+                    buffer.append(",").append(DateUtil.getNumberOfDatesBetween(before,after)%10+1);
+                }else {
+                    buffer.append(DateUtil.getNumberOfDatesBetween(before,after)%10+1);
+                }
+                String arrayStr[] = buffer.toString().split(",");
                 sortStr(arrayStr);
                 int newMaxCount = maxCount(arrayStr);
                 if(count >= 5 && count < 7){
