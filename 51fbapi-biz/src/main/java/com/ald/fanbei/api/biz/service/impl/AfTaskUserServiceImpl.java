@@ -166,7 +166,11 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 					}
 
 					if (!toAddTaskUserList.isEmpty()) {
-						return batchInsertTaskUserDo(toAddTaskUserList);
+						for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
+							int rid = afTaskUserDao.insertTaskUserDo(afTaskUserDo);
+							afTaskUserDo.setRid(Long.parseLong(rid+""));
+						}
+						return toAddTaskUserList;
 					}
 				}
 			}
