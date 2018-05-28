@@ -143,10 +143,6 @@ public class PayOrderV1Api implements ApiHandle {
         if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())|| orderInfo.getStatus().equals(OrderStatus.PAID.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
         }
-        if (orderInfo == null) {
-            logger.error("orderId is invalid");
-            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
-        }
         orderInfo.setGpsAddress(gpsAddress);
         if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
             AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("BOLUOME_UNTRUST_SHOPGOODS");
@@ -375,8 +371,11 @@ public class PayOrderV1Api implements ApiHandle {
             String goodsBanner = "";
             AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
             if (vipGoodsResourceDo != null){
-            	goodsBanner = vipGoodsResourceDo.getValue3();
-            	goodsId = NumberUtil.objToLongDefault(vipGoodsResourceDo.getValue(), 0L);
+            	if(result.get("authPackageDirect")!=null && (boolean)result.get("authPackageDirect")){
+            		//需要引导权限包，则置对应值
+            		goodsBanner = vipGoodsResourceDo.getValue3();
+                	goodsId = NumberUtil.objToLongDefault(vipGoodsResourceDo.getValue(), 0L);
+            	}
             	if (orderInfo.getGoodsId().equals(goodsId)){
             		goodsType = AfGoodsSpecType.AUTH.getCode();
             	}
