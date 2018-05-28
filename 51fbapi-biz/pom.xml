@@ -191,5 +191,12 @@
             <artifactId>solr-solrj</artifactId>  
             <version>4.7.0</version>  
     	</dependency> 
+    		<!-- odps -->
+    	<dependency>
+		    <groupId>com.aliyun.odps</groupId>
+		    <artifactId>odps-sdk-core</artifactId>
+		    <version>0.26.2-public</version>
+		</dependency>
+                                    
 	</dependencies>
 </project>
