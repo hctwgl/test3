@@ -402,7 +402,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "getReservationGoodsList", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "getReservationGoodsList", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String getReservationGoodsList(HttpServletRequest request, HttpServletResponse response) {
         doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
        FanbeiWebContext context = doWebCheck(request, false);
