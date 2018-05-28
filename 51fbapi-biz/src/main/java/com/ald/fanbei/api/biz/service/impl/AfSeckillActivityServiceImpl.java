@@ -318,11 +318,11 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 						AfActivityReservationGoodsUserDo afActivityReservationGoodsUserDo1 = AfActivityReservationGoodsUserDoList.get(0);
 						//未购买时添加，购买时更新购买数量
 						afActivityReservationGoodsUserDo.setGoodsId(afActivityReservationGoodsUserDo1.getRid());
-
+						Long userReservationId = afActivityReservationGoodsUserDo1.getUserReservationId();
 						Integer goodsCount = afActivityReservationGoodsUserDo1.getGoodsCount();
-						if(null !=  goodsCount &&  afActivityReservationGoodsUserDo1.getLimitCount() > goodsCount){
+						if(null !=  userReservationId &&  afActivityReservationGoodsUserDo1.getLimitCount() > goodsCount){
 							afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsUserDo1.getRid(), orderInfo.getUserId(), 1);
-						}else if(null == goodsCount){
+						}else if(null == userReservationId){
 							afActivityReservationGoodsUserDo.setCouponId(Long.valueOf(afActivityReservationGoodsUserDo1.getCouponId()));
 							afActivityReservationGoodsUserDo.setGoodsCount(1);
 							Date nowTime = new Date();
@@ -344,7 +344,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 						}
 					}
 					//付售价
-				}else{
+				}else if(date > afSeckillActivityDo.getGmtEnd().getTime()){
 					logger.info("updateUserActivityGoodsInfo payEndAmount userId: " + orderInfo.getUserId() );
 					//查询预售活动商品
 					List<AfActivityReservationGoodsUserDo>  AfActivityReservationGoodsUserDoList = afActivityReservationGoodsUserDao.getActivityReservationGoodsList(map);
@@ -353,7 +353,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 						//查询是否已经购买, 当购买数量大于0时 更新购买数量
 						afActivityReservationGoodsUserDo.setGoodsId(afActivityReservationGoodsUserDo1.getRid());
 						if(afActivityReservationGoodsUserDo1.getGoodsCount() > 0){
-							afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsUserDo1.getGoodsId(), orderInfo.getUserId(), 2);
+							afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsUserDo1.getRid(), orderInfo.getUserId(), 2);
 						}
 					}
 				}

@@ -468,6 +468,10 @@ public class AppH5CouponController extends BaseController {
 					couponInfoMap.put("useRange", afCouponDo.getUseRange());
 					couponInfoMap.put("limitAmount", afCouponDo.getLimitAmount());
 					couponInfoMap.put("drawStatus", "N");
+					couponInfoMap.put("isFinish", "Y");
+					if(afCouponDo.getQuota() == -1 || afCouponDo.getQuota() > afCouponDo.getQuotaAlready()){
+						couponInfoMap.put("isFinish", "N");
+					}
 					if (isLogin) {
 						int count = afUserCouponService.getUserCouponByUserIdAndCouponId(userId,
 								Long.parseLong(couponId));

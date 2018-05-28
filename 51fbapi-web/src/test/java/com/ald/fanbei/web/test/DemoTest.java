@@ -35,7 +35,7 @@ public class DemoTest extends BaseTest{
 	}
 
 	//根据分类ID获取优惠券列表
-	//@Test
+	@Test
 	public void  activityCouponInfo() {
 		String url = urlBase + "/fanbei-web/activityCouponInfo";
 		Map<String,String> params = new HashMap<>();
@@ -62,7 +62,7 @@ public class DemoTest extends BaseTest{
 	}
 
 	//新增优惠券
-	@Test
+	//@Test
 	public void  addShared() {
 		String url = urlBase + "/fanbei-web/addShared";
 		Map<String,String> params = new HashMap<>();

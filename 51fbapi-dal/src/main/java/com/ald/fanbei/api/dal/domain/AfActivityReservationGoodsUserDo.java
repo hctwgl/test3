@@ -54,8 +54,8 @@ import java.math.BigDecimal;
     private Integer limitCount; //限购数量
     private String goodsName;  //商品名称
     private Double activityAmount;//活动金额
-    private Double endAmount;//到手价
-    private Double saleAmount;//售价（）
+    private String endAmount;//到手价
+    private String saleAmount;//售价（）
     private Double couponPrice;//优惠券金额
 
     private String goodsIcon;//商品图标
@@ -202,19 +202,19 @@ import java.math.BigDecimal;
         this.activityAmount = activityAmount;
     }
 
-    public Double getEndAmount() {
+    public String getEndAmount() {
         return endAmount;
     }
 
-    public void setEndAmount(Double endAmount) {
+    public void setEndAmount(String endAmount) {
         this.endAmount = endAmount;
     }
 
-    public Double getSaleAmount() {
+    public String getSaleAmount() {
         return saleAmount;
     }
 
-    public void setSaleAmount(Double saleAmount) {
+    public void setSaleAmount(String saleAmount) {
         this.saleAmount = saleAmount;
     }
 
