@@ -9,7 +9,6 @@ import com.ald.fanbei.api.biz.util.WxUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.SelfOpenRedPacketSourceType;
-import com.ald.fanbei.api.common.enums.UserThirdType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -18,7 +17,6 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.AfRedPacketSelfOpenDo;
 import com.ald.fanbei.api.dal.domain.AfRedPacketTotalDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserThirdInfoDo;
 import com.ald.fanbei.api.dal.domain.dto.AfRedPacketSelfOpenDto;
 import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
 import com.alibaba.fastjson.JSONObject;
@@ -133,15 +131,6 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		String secret = afResourceDo.getValue1();
 		JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
 		afUserThirdInfoService.bindUserWxInfo(userWxInfo, userId, modifier);
-
-		AfUserThirdInfoDo thirdInfo = getUserThirdInfoByUserId(userId, UserThirdType.WX.getCode());
-		if (thirdInfo != null) {
-			if (!thirdInfo.getThirdId().equals(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID))) {
-				throw new FanbeiException("您已经有微信号绑定过此手机号了，不能再绑定了");
-			} else {
-				return thirdInfo;
-			}
-		}
 
 		return open(userId, modifier, sourceType);
 	}
