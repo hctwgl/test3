@@ -43,8 +43,6 @@ public class SupplementSignInfoApi implements H5Handle {
     @Resource
     AfUserAuthService afUserAuthService;
     @Resource
-    AfUserService afUserService;
-    @Resource
     AfResourceService afResourceService;
     @Resource
     AfTaskService afTaskService;
@@ -58,15 +56,9 @@ public class SupplementSignInfoApi implements H5Handle {
     @Override
     public H5HandleResponse process(Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
-        String userName = ObjectUtils.toString(context.getData("userName"),null);//打开者手机号码
         Long userId = NumberUtil.objToLongDefault(context.getData("userId"),null);//分享用户id
-        String thirdId = ObjectUtils.toString(context.getData("third_id"),null);//打开者的微信openId
-        String thirdInfo = ObjectUtils.toString(context.getData("third_info"),null);//打开者的微信信息
         String push = ObjectUtils.toString(context.getData("push"),null);//用户是否打开手机推送权限
         String wxCode = ObjectUtils.toString(context.getData("wxCode"),null);
-        //判断用户和openId是否在爱上街绑定
-        boolean flag = checkBindOpen(userId,wxCode);
-        AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         //活动规则
         AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_RULE");
         if(null != afResourceDo){
@@ -74,14 +66,19 @@ public class SupplementSignInfoApi implements H5Handle {
         }else {
             resp.addResponseData("rewardRule","");
         }
-        if(afUserDo.getRid() == userId){//自己打开
-            if(!flag){
-                saveUserThirdInfo(userName,thirdId,thirdInfo,afUserDo);
-            }
+
+        //判断用户和openId是否在爱上街绑定
+        AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
+        if(thirdInfo == null){
+            resp.addResponseData("openType","2");
+            return resp;
+        }
+        Long firendUserId = thirdInfo.getUserId();
+        if(firendUserId == userId){//已经绑定并且是自己打开
             homeInfo(userId,resp,push);
             resp.addResponseData("openType","0");
-        } else if(flag){//已绑定
-            homeInfo(afUserDo.getRid(),resp,push);
+        } else if(firendUserId != userId ){//已绑定
+            homeInfo(firendUserId,resp,push);
             AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
             afSignRewardDo.setIsDelete(0);
             afSignRewardDo.setUserId(userId);
@@ -89,11 +86,10 @@ public class SupplementSignInfoApi implements H5Handle {
             afSignRewardDo.setGmtModified(new Date());
             afSignRewardDo.setType(SignRewardType.THREE.getCode());
             afSignRewardDo.setStatus(0);
-            afSignRewardDo.setFriendUserId(afUserDo.getRid());
+            afSignRewardDo.setFriendUserId(firendUserId);
             resp.addResponseData("openType","1");
         }else {//未绑定
             resp.addResponseData("openType","2");
-            saveUserThirdInfo(userName,thirdId,thirdInfo,afUserDo);
         }
         return resp;
     }
@@ -121,39 +117,18 @@ public class SupplementSignInfoApi implements H5Handle {
         return resp;
     }
 
-    private boolean saveUserThirdInfo(String userName,String thirdId,String thirdInfo ,AfUserDo eUserDo) {
-        AfUserThirdInfoDo afUserThirdInfoDo = new AfUserThirdInfoDo();
-        afUserThirdInfoDo.setCreator(userName);
-        afUserThirdInfoDo.setGmtCreate(new Date());
-        afUserThirdInfoDo.setGmtModified(new Date());
-        afUserThirdInfoDo.setModifier(userName);
-        afUserThirdInfoDo.setThirdId(thirdId);
-        afUserThirdInfoDo.setThirdType(ThirdType.WX.getCode());
-        afUserThirdInfoDo.setThirdInfo(thirdInfo);
-        if(null != eUserDo){
-            afUserThirdInfoDo.setUserId(eUserDo.getRid());
-        }
-        return afUserThirdInfoService.saveRecord(afUserThirdInfoDo)>0 ?true:false;
-    }
 
-    private boolean checkBindOpen(Long userId, String wxCode){
-        boolean flag = true;
+
+    private AfUserThirdInfoDo checkBindOpen(String wxCode){
         AfResourceDo afResourceDo = afResourceService.getWechatConfig();
         String appid = afResourceDo.getValue();
         String secret = afResourceDo.getValue1();
         JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
         AfUserThirdInfoDo thirdInfo = new AfUserThirdInfoDo();
-        thirdInfo.setUserId(userId);
+        thirdInfo.setThirdId(userWxInfo.get("openid").toString());
         thirdInfo.setThirdType(UserThirdType.WX.getCode());
         List<AfUserThirdInfoDo> thirdInfos = afUserThirdInfoService.getListByCommonCondition(thirdInfo);
-        thirdInfo = thirdInfos.size() == 0 ? null : thirdInfos.get(0);
-        if (thirdInfo != null) {
-            if (!thirdInfo.getThirdId().equals(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID))) {
-                flag = false;
-            }
-        }
-        return flag;
-
+        return  thirdInfos.size() == 0 ? null : thirdInfos.get(0);
     }
 
 

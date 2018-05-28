@@ -11,12 +11,15 @@ import com.ald.fanbei.api.common.CookieUtil;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SignRewardType;
 import com.ald.fanbei.api.common.enums.SmsType;
+import com.ald.fanbei.api.common.enums.UserThirdType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
+import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.TransactionStatus;
@@ -82,26 +85,50 @@ public class H5SupplementSignInfoOutController extends H5Controller {
     public String homePage(HttpServletRequest request, HttpServletResponse response) {
         String resultStr = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc() ).toString();
         try {
-            String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
+            final String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
             String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
             String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
             String push = ObjectUtils.toString(request.getParameter("push"), "").toString();
             Integer time = NumberUtil.objToIntDefault(request.getParameter("time"),1);
+            final String userWxInfo = ObjectUtils.toString(request.getParameter("userWxInfo"), "").toString();
             final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
             Map<String, Object> data = new HashMap<String, Object>();
-            AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
+            final AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
             if (eUserDo != null) {
-                AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
-                afSignRewardDo.setIsDelete(0);
-                afSignRewardDo.setUserId(rewardUserId);
-                afSignRewardDo.setGmtCreate(new Date());
-                afSignRewardDo.setGmtModified(new Date());
-                afSignRewardDo.setType(SignRewardType.THREE.getCode());
-                afSignRewardDo.setStatus(0);
-                afSignRewardDo.setFriendUserId(eUserDo.getRid());
-                afSignRewardDo.setAmount(BigDecimal.ZERO);
-                afSignRewardService.saveRecord(afSignRewardDo);
+                String status = transactionTemplate.execute(new TransactionCallback<String>() {
+                    @Override
+                    public String doInTransaction(TransactionStatus status) {
+                        try{
+                            //绑定openId
+                            JSONObject jsStr = JSONObject.parseObject(userWxInfo);
+                            String openId = jsStr.getString(UserWxInfoDto.KEY_OPEN_ID);
+                            AfUserThirdInfoDo userThirdInfoDo = new AfUserThirdInfoDo();
+                            userThirdInfoDo.setUserId(eUserDo.getRid());
+                            userThirdInfoDo.setThirdId(openId);
+                            userThirdInfoDo.setThirdType(UserThirdType.WX.getCode());
+                            userThirdInfoDo.setCreator(moblie);
+                            userThirdInfoDo.setModifier(moblie);
+                            userThirdInfoDo.setThirdInfo(userWxInfo);
+                            userThirdInfoDo.setUserName(moblie);
+                            afUserThirdInfoService.saveRecord(userThirdInfoDo);
+                            AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
+                            afSignRewardDo.setIsDelete(0);
+                            afSignRewardDo.setUserId(rewardUserId);
+                            afSignRewardDo.setGmtCreate(new Date());
+                            afSignRewardDo.setGmtModified(new Date());
+                            afSignRewardDo.setType(SignRewardType.THREE.getCode());
+                            afSignRewardDo.setStatus(0);
+                            afSignRewardDo.setFriendUserId(eUserDo.getRid());
+                            afSignRewardDo.setAmount(BigDecimal.ZERO);
+                            afSignRewardService.saveRecord(afSignRewardDo);
+                            return "success";
+                        }catch (Exception e){
+                            status.setRollbackOnly();
+                            return "fail";
+                        }
+                    }
+                });
                 homeInfo(eUserDo.getRid(),data,push);
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SUPPLEMENT_SIGN_FAIL.getDesc(),"",data).toString();
             }
@@ -144,8 +171,6 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             userDo.setPassword("");
             userDo.setRecommendId(0l);
             final long userId = afUserService.addUser(userDo);
-            //绑定微信的唯一标识open_id
-
             Long invteLong = Constants.INVITE_START_VALUE + userId;
             String inviteCode = Long.toString(invteLong, 36);
             userDo.setRecommendCode(inviteCode);
@@ -156,7 +181,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
             CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
             bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
-            if(!signReward(request,userId,moblie,time)){
+            if(!signReward(request,userId,moblie,time,userWxInfo)){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
             homeInfo(userId,data,push);
@@ -170,7 +195,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
         }
     }
 
-    private boolean signReward(HttpServletRequest request,final Long userId,final String moblie,final int time){
+    private boolean signReward(HttpServletRequest request,final Long userId,final String moblie,final int time,final String userWxInfo){
         boolean result ;
         final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
         final AfResourceDo afResource = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
@@ -184,6 +209,18 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             @Override
             public String doInTransaction(TransactionStatus status) {
                 try{
+                    //绑定openId
+                    JSONObject jsStr = JSONObject.parseObject(userWxInfo);
+                    String openId = jsStr.getString(UserWxInfoDto.KEY_OPEN_ID);
+                    AfUserThirdInfoDo userThirdInfoDo = new AfUserThirdInfoDo();
+                    userThirdInfoDo.setUserId(userId);
+                    userThirdInfoDo.setThirdId(openId);
+                    userThirdInfoDo.setThirdType(UserThirdType.WX.getCode());
+                    userThirdInfoDo.setCreator(moblie);
+                    userThirdInfoDo.setModifier(moblie);
+                    userThirdInfoDo.setThirdInfo(userWxInfo);
+                    userThirdInfoDo.setUserName(moblie);
+                    afUserThirdInfoService.saveRecord(userThirdInfoDo);
                     //补签成功 分享者增加余额
                     AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(rewardUserId);
                     afSignRewardExtDo.setAmount(rewardAmount);
