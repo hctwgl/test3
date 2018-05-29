@@ -271,6 +271,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				}
 			} else if (edspayBackCreditReqBo.getType() == 1 && edspayBackCreditReqBo.getCode()== 0) {
 				//放款结果
+				int resultValue =afAssetPackageDetailService.addPackageDetailLoanTime(orderNos, edspayBackCreditReqBo.getLoanTime(),debtType);
+				if (resultValue != 1) {
+					logger.error("EdspayController giveBackCreditInfo exist error records,appId=" + appId + ",sendTime=" + timestamp);
+					notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
+					return notifyRespBo;
+				}
 			}
 
 			notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.SUCCESS);

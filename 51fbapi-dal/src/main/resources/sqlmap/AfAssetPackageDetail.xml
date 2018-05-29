@@ -75,6 +75,9 @@
 	        <if test="profitRate != null">        
 	            profit_rate,
 	        </if>
+            <if test="loanTime != null">
+                loan_time,
+            </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -105,6 +108,9 @@
 		    <if test="profitRate != null" >
 		       #{profitRate,jdbcType=DECIMAL},
 		    </if>
+            <if test="loanTime != null">
+                #{loanTime,jdbcType=TIMESTAMP},
+            </if>
         </trim>
     </insert>
     
@@ -139,8 +145,11 @@
                 borrow_rate = #{borrowRate,jdbcType=DECIMAL},               
             </if>
             <if test="profitRate != null and profitRate != '' ">        
-                profit_rate = #{profitRate,jdbcType=DECIMAL}                
+                profit_rate = #{profitRate,jdbcType=DECIMAL},
             </if>
+              <if test="loanTime != null">
+                  loan_time = #{loanTime,jdbcType=TIMESTAMP}
+              </if>
         </set>    
         WHERE  id = #{rid ,jdbcType=BIGINT}
     </update>
