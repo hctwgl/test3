@@ -1200,7 +1200,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							 logger.info("weakverybo=" + verybo);
 							 boolean riskPassStatus = verybo.isSuccess();
 							 if ( ! riskPassStatus  && vipGoodsResourceDo!=null){
-								 Map<String, Object> riskReturnMap = new HashMap<String, Object>();
 								//标记此订单支付失败，根据软弱风控去选择是否引导权限包购买
 								orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 							    orderInfo.setStatus(OrderStatus.PAYFAIL.getCode());
@@ -1226,7 +1225,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 //return返回调用结果信息
 								 resultMap.put("success", false);
 								 resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
-								 return riskReturnMap;
+								 return resultMap;
 							 } 
 						 }
 				    	// ******* end *******
@@ -1303,7 +1302,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							 logger.info("cp weakverybo=" + verybo);
 							 boolean riskPassStatus = verybo.isSuccess();
 							 if ( ! riskPassStatus && vipGoodsResourceDo!=null){
-								Map<String, Object> riskReturnMap = new HashMap<String, Object>();
 								//标记此订单支付失败，根据软弱风控去选择是否引导权限包购买
 								orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 							    orderInfo.setStatus(OrderStatus.PAYFAIL.getCode());
@@ -1329,7 +1327,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 //return返回调用结果信息
 								 resultMap.put("success", false);
 								 resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
-								 return riskReturnMap;
+								 return resultMap;
 							 }
 						 }
 						
