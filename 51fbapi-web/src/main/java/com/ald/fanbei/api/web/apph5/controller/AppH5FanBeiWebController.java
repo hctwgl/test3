@@ -1539,6 +1539,13 @@ public class AppH5FanBeiWebController extends BaseController {
 			}
 			logger.info("userId=" + userId + ",status=" + status);
 			List<AfUserCouponDto> couponList = afUserCouponService.getH5UserCouponByUser(userId,status);
+
+
+			//获取用户预售商品
+			List<AfUserCouponDto> userResevrationCouponList = afUserCouponService.getUserResevrationCouponList(userId);
+			if(userResevrationCouponList != null && userResevrationCouponList.size() > 0 ){
+				couponList.addAll(userResevrationCouponList);
+			}
 			List<AfUserCouponVo> couponVoList = new ArrayList<AfUserCouponVo>();
 			for (AfUserCouponDto afUserCouponDto : couponList) {
 				AfUserCouponVo couponVo = getUserCouponVo(afUserCouponDto);

@@ -147,7 +147,7 @@ public class DemoTest extends BaseTest{
 	}
 
 	//根据活动ID获取活动商品列表
-	@Test
+//	@Test
 	public void  partActivityInfoV2() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/partActivityInfoV2";
 		Map<String,String> params = new HashMap<>();
@@ -164,9 +164,17 @@ public class DemoTest extends BaseTest{
 	}
 
 	//
-	@Test
+	//@Test
 	public void  getMineCouponInfo() {
 		String url = urlBase + "/fanbei-web/getMineCouponInfo";
+		Map<String,String> params = new HashMap<>();
+		params.put("pageNo", "1");
+		params.put("status", "NOUSE");
+		testH5(url, params, userName, true);
+	}
+	@Test
+	public void  getMineCouponList() {
+		String url = urlBase + "/fanbei-web/getMineCouponList";
 		Map<String,String> params = new HashMap<>();
 		params.put("pageNo", "1");
 		params.put("status", "NOUSE");

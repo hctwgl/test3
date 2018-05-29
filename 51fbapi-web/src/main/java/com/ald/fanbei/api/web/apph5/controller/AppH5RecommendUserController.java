@@ -185,10 +185,11 @@ public class AppH5RecommendUserController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "addShared", method = RequestMethod.POST)
     public String addUserShared(HttpServletRequest request,int type){
+
         FanbeiWebContext context = doWebCheck(request, false);
         String userName = context.getUserName();
         // String userName ="13588469645";
-
+        logger.info("addShared userName:" + userName );
         Map<String, Object> data = Maps.newHashMap();
         AfUserDo afUserDo = afUserDao.getUserByUserName(userName);
         AfRecommendShareDo afRecommendShareDo = new AfRecommendShareDo();
