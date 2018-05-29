@@ -11,8 +11,10 @@ import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfUserCouponStatus;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,6 +86,9 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 
 	@Resource
 	private SmsUtil smsUtil;
+
+	@Resource
+	private AfCouponDao afCouponDao;
 
 	@Override
 	public BaseDao<AfSeckillActivityDo, Long> getDao() {
@@ -316,6 +321,8 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 					if(null != AfActivityReservationGoodsUserDoList &&  AfActivityReservationGoodsUserDoList.size() > 0){
 						logger.info("updateUserActivityGoodsInfo payReservationAmount userId: " + orderInfo.getUserId() );
 						AfActivityReservationGoodsUserDo afActivityReservationGoodsUserDo1 = AfActivityReservationGoodsUserDoList.get(0);
+						Long couponId = afActivityReservationGoodsUserDo1.getCouponId();
+						Long userId = afActivityReservationGoodsUserDo1.getUserId();
 						//未购买时添加，购买时更新购买数量
 						afActivityReservationGoodsUserDo.setGoodsId(afActivityReservationGoodsUserDo1.getRid());
 						Long userReservationId = afActivityReservationGoodsUserDo1.getUserReservationId();
@@ -323,7 +330,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 						if(null !=  userReservationId &&  afActivityReservationGoodsUserDo1.getLimitCount() > goodsCount){
 							afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsUserDo1.getRid(), orderInfo.getUserId(), 1);
 						}else if(null == userReservationId){
-							afActivityReservationGoodsUserDo.setCouponId(Long.valueOf(afActivityReservationGoodsUserDo1.getCouponId()));
+							afActivityReservationGoodsUserDo.setCouponId(Long.valueOf(couponId));
 							afActivityReservationGoodsUserDo.setGoodsCount(1);
 							Date nowTime = new Date();
 							afActivityReservationGoodsUserDo.setGmtCreate(nowTime);
@@ -341,6 +348,24 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 							//发送短信
 							String mobile = orderInfo.getMobile();
 							smsUtil.sendSmsToDhstAishangjie(mobile, content);
+						}
+
+						//送优惠券
+						AfCouponDo couponDo = afCouponDao.getCouponById(couponId);
+						if (couponDo != null) {
+							AfUserCouponDo userCoupon = new AfUserCouponDo();
+							userCoupon.setCouponId(couponDo.getRid());
+							userCoupon.setGmtCreate(new Date());
+							userCoupon.setGmtStart(couponDo.getGmtStart());
+							userCoupon.setGmtEnd(couponDo.getGmtEnd());
+							userCoupon.setUserId(userId);
+							userCoupon.setStatus(AfUserCouponStatus.NOUSE.getCode());
+							userCoupon.setSourceType(CouponSenceRuleType.SHARE_ACTIVITY.getCode());
+							afUserCouponService.addUserCoupon(userCoupon);
+							AfCouponDo couponDoT = new AfCouponDo();
+							couponDoT.setRid(couponDo.getRid());
+							couponDoT.setQuotaAlready(1);
+							afCouponDao.updateCouponquotaAlreadyById(couponDoT);
 						}
 					}
 					//付售价
