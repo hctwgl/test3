@@ -129,6 +129,9 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                         }
                     }
                 });
+                if(StringUtil.equals(status,"fail")){
+                    return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.WX_BIND_FAIL.getDesc(),"",data).toString();
+                }
                 homeInfo(eUserDo.getRid(),data,push);
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SUPPLEMENT_SIGN_FAIL.getDesc(),"",data).toString();
             }
