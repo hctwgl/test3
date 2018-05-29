@@ -596,6 +596,11 @@
 				<entry key="/coupon/getDetailCouponList" value-ref="getDetailCouponListApi" />
 				<entry key="/coupon/getPickCoupon" value-ref="getPickCouponApi" />
 				<entry key="/coupon/getSaleServiceInfo" value-ref="getSaleServiceInfoApi" />
+
+				<!-- 签到领金币记录分享 -->
+				<entry key="/taskUser/addBrowseTaskUser" value-ref="addBrowseTaskUserApi" />
+				<entry key="/taskUser/receiveBrowseTaskRewards" value-ref="receiveBrowseTaskRewardsApi" />
+
 			</map>
 		</constructor-arg>
 	</bean>
