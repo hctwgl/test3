@@ -629,9 +629,17 @@ public class GetHomeInfoV3Api implements ApiHandle {
 			HashMap<String, Object> newConfigInfo =  (HashMap<String, Object>)bizCacheUtil.getMap(CacheConstants.ASJ_HOME_PAGE.NEW_CONFIG_INFO.getCode());
 			if (newConfigInfo == null || newConfigInfo.size()<1) {
 				List<AfResourceDo> backgroundList  = new ArrayList<AfResourceDo>();
-				backgroundList = afResourceService
-						.getBackGroundByTypeAndStatusOrder(ResourceType.CUBE_HOMEPAGE_BACKGROUND_ASJ.getCode());
+				backgroundList = afResourceService.getBackGroundByTypeAndStatusOrder(ResourceType.CUBE_HOMEPAGE_BACKGROUND_ASJ.getCode());
 				newConfigInfo = new HashMap<String, Object>();
+                newConfigInfo.put("searchBackColor","");
+                newConfigInfo.put("searchFontColor","");
+                newConfigInfo.put("searchGlass","");
+                newConfigInfo.put("messageIcon","");
+                newConfigInfo.put("fontColor","");
+                newConfigInfo.put("remainFontColor","");
+                newConfigInfo.put("navigationOpen","");
+                newConfigInfo.put("navigationClose","");
+                newConfigInfo.put("bannerBackImg","");
 				for (AfResourceDo afResourceDo :	backgroundList) {
 					if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_SEARCH_BACK_COLOR.getCode())) {
 						//app搜索栏背景色
