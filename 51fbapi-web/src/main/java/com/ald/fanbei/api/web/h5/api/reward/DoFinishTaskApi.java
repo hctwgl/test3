@@ -63,15 +63,9 @@ public class DoFinishTaskApi implements H5Handle {
         List<HashMap> goodsList = new ArrayList<HashMap>();
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         if(StringUtil.equals(taskType, TaskType.browse.getCode()) || StringUtil.equals(taskType, TaskType.shopping.getCode()) ){
-            if(StringUtil.equals(taskSecType, TaskSecType.brand.getCode())){
+            if(StringUtil.equals(taskSecType, TaskSecType.brand.getCode()) || StringUtil.equals(taskSecType, TaskSecType.category.getCode())){
                 AfGoodsQuery query = new AfGoodsQuery();
                 query.setBrandId(Long.parseLong(taskCondition));
-                query.setPageNo(pageNo);
-                query.setPageSize(pageSize);
-                goodsList = afGoodsService.getTaskGoodsList(query);
-            }else if(StringUtil.equals(taskSecType, TaskSecType.category.getCode())){
-                AfGoodsQuery query = new AfGoodsQuery();
-                query.setCategoryId(Long.parseLong(taskCondition));
                 query.setPageNo(pageNo);
                 query.setPageSize(pageSize);
                 goodsList = afGoodsService.getTaskGoodsList(query);
@@ -90,11 +84,11 @@ public class DoFinishTaskApi implements H5Handle {
             goodsInfo.put("priceAmount", goods.get("price_amount"));
             goodsInfo.put("saleAmount", goods.get("sale_amount"));
             goodsInfo.put("goodsIcon", goods.get("goods_icon"));
-            goodsInfo.put("goodsId", goods.get("id"));
+            goodsInfo.put("goodsId", goods.get("Rid"));
             // 如果是分期免息商品，则计算分期
-            Long goodsId = Long.parseLong(goods.get("id").toString());
-            if(!StringUtil.isEmpty(goods.get("special_price").toString())){
-                if(Double.parseDouble(goods.get("special_price").toString()) < Double.parseDouble(goods.get("sale_amount").toString())){
+            Long goodsId = Long.parseLong(goods.get("Rid").toString());
+            if(null != goods.get("special_price")){
+                if(Double.parseDouble(goods.get("special_price")+"") < Double.parseDouble(goods.get("sale_amount")+"")){
                     goodsInfo.put("saleAmount", goods.get("special_price"));
                 }
             }

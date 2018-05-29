@@ -747,10 +747,10 @@
 		   and g.id= v.goods_id
 		   and g.source= 'SELFSUPPORT'
 		   and g.status= 'PUBLISH'
-		<if test="category_id != null and category_id != ''">
+		<if test="categoryId != null and categoryId != ''">
 			AND g.category_id = #{categoryId}
 		</if>
-		<if test="brand_id != null and brand_id != ''">
+		<if test="brandId != null and brandId != ''">
 			AND g.brand_id = #{brandId}
 		</if>
 		 order by v.gmt_create DESC
