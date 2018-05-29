@@ -8,8 +8,8 @@
         id rid,gmt_create,gmt_modified,user_level,icon_url,task_type,task_sec_type,task_name,task_condition,is_daily_update,reward_type,coin_amount,cash_amount,coupon_id,coupon_type,is_open,creater,modifier,task_begin_time,task_end_time,is_delete,sort
     </sql>
 
-    <sql id="taskDto">
-        id rid,gmt_create,gmt_modified,user_level,icon_url,task_type,task_sec_type,task_name,task_condition,is_daily_update,reward_type,coin_amount,cash_amount,coupon_id,coupon_type,is_open,creater,modifier,task_begin_time,task_end_time,receiveReward,is_delete,sort
+    <sql id="taskDo">
+        t.id rid,t.gmt_create,t.gmt_modified,t.user_level,t.icon_url,t.task_type,t.task_sec_type,t.task_name,t.task_condition,t.is_daily_update,t.reward_type,t.coin_amount,t.cash_amount,t.coupon_id,t.coupon_type,t.is_open,t.creater,t.modifier,t.task_begin_time,t.task_end_time,t.is_delete,t.sort
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -287,13 +287,13 @@
 
     <select id="getNotDailyTaskListByUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskDo">
         SELECT
-        <include refid="queryFields" />
+        <include refid="taskDo" />
         FROM af_task t
         LEFT JOIN (
-            SELECT u.task_id, u.user_id, u.gmt_modified
+            SELECT u.task_id, u.user_id
             FROM af_task_user u
             WHERE u.is_delete = 0
-              AND u.user_id = #(userId)
+              AND u.user_id = #{userId}
         ) a ON t.id = a.task_id
         WHERE t.is_delete = 0
         AND t.is_open = 1
@@ -305,13 +305,13 @@
 
     <select id="getDailyTaskListByUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskDo">
         SELECT
-        <include refid="queryFields" />
+        <include refid="taskDo" />
         FROM af_task t
         LEFT JOIN (
-            SELECT u.task_id, u.user_id, u.gmt_modified
+            SELECT u.task_id, u.user_id
             FROM af_task_user u
             WHERE u.is_delete = 0
-              AND u.user_id = #(userId)
+              AND u.user_id = #{userId}
               AND date(u.gmt_create) = CURDATE()
         ) a ON t.id = a.task_id
         WHERE t.is_delete = 0

@@ -43,7 +43,6 @@ import java.util.*;
  */
 
 @Component("friendSignInfoApi")
-@Validator("friendSignInfoParam")
 public class FriendSignInfoApi implements H5Handle {
 
     @Resource

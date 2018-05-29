@@ -185,7 +185,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 	@Override
 	public List<AfTaskUserDo> taskHandler(Long userId, String afTaskType, String taskCondition) {
 		logger.info("afTaskUser start..");
-		List<AfTaskUserDo> toAddTaskUserList = Lists.newArrayList();
+		 List<AfTaskUserDo> toAddTaskUserList = Lists.newArrayList();
 		try {
 			// 获取用户能参加的活动
 			List<Integer> userLevelList = afTaskService.getUserLevelByUserId(userId);

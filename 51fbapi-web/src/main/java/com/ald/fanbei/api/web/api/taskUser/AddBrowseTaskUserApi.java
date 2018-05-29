@@ -20,6 +20,7 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 账号申诉-申诉并判定是否申诉成功
+ * 浏览商品
  * @author cfp
  */
 @Component("addBrowseTaskUserApi")
@@ -49,8 +50,8 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 			Long userId = context.getUserId();
 			if(null != userId){
 				Map<String, Object> data = Maps.newHashMap();
-				String goodsId = request.getParameter("goodsId");
-				String taskContition = request.getParameter("activityUrl");
+				String goodsId = ObjectUtils.toString(requestDataVo.getParams().get("goodsId"));
+				String taskContition = ObjectUtils.toString(requestDataVo.getParams().get("activityUrl"));
 
 				if(StringUtils.isNotEmpty(goodsId)) {
 					// 指定浏览商品、品牌、分类任务等

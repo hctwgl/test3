@@ -111,7 +111,7 @@ public class FanbeiController extends BaseController {
     		"/user/submitShareAction","/user/checkMobileRegistered","/user/checkQuickRegisteredPwd","/user/getImageCode","/user/getRecommedData","/user/getRecommendListByUserId","/user/getActivieResourceByType",
             "/user/getRecommendListSort","/user/getPrizeUser","/user/addRecommendShared","/user/getUserRecommed","/user/checkLoginVerifyCode",
             "/user/changeMobileIfAble", "/user/changeMobileCheckVerifyCode", "/user/changeMobileVerify", "/user/changeMobileSyncConacts","user/getBorrowCashProtocol","/user/getContractPdfUrl",
-            "/user/accountAppealCheckSms","/user/accountAppealDo","/user/getUserShareInfo","/user/replaceMainCard","/user/home"
+            "/user/accountAppealCheckSms","/user/accountAppealDo","/user/getUserShareInfo","/user/replaceMainCard","/user/home","/taskUser/addBrowseTaskUser","/taskUser/receiveBrowseTaskRewards"
 
     },method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
@@ -323,5 +323,8 @@ public class FanbeiController extends BaseController {
      response.setContentType("application/json;charset=utf-8");
      return this.processRequest(body, request, false);
  }
+
+
+
 
 }

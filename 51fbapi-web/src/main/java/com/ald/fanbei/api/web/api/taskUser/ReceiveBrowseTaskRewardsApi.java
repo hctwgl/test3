@@ -16,6 +16,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class ReceiveBrowseTaskRewardsApi  implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		try{
 			Map<String, Object> data = Maps.newHashMap();
-			String taskUserIds = request.getParameter("taskUserIds");
+			String taskUserIds = ObjectUtils.toString(requestDataVo.getParams().get("taskUserIds"));
 			if (StringUtils.isNotEmpty(taskUserIds)) {
 				List<Long> taskUserIdList = Lists.newArrayList();
 				String[] taskUserIdAray = taskUserIds.split(",");
