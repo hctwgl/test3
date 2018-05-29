@@ -481,4 +481,5 @@ public interface AfOrderService {
 	 */
 	Integer countSpecGoodsBuyNums(Long goodsId,Long userId);
 
+	String getRefundMsg(AfOrderDo order);
 }

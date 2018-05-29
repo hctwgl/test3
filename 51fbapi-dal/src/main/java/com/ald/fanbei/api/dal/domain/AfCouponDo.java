@@ -44,6 +44,7 @@ public class AfCouponDo extends AbstractSerial {
 	private String creator;
 	private String modifier;
 	private String shopUrl;
+	private String goodsIds;
 
 
 	public AfCouponDo(){

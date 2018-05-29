@@ -15,4 +15,5 @@ public interface AfContractPdfService {
 
     AfContractPdfDo getContractPdfDoByTypeAndTypeId(Long id, Byte type);
     List<AfLenderInfoDto> selectLenders(Long pdfId);
+    List<AfLenderInfoDto> selectLendersSummary(Long pdfId);
 }

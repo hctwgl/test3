@@ -1,35 +1,10 @@
 package com.ald.fanbei.api.web.api.order;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Component;
-
-import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
-import com.ald.fanbei.api.biz.service.AfGoodsPriceService;
-import com.ald.fanbei.api.biz.service.AfGoodsService;
-import com.ald.fanbei.api.biz.service.AfOrderRefundService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfAftersaleApplyStatus;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.OrderRefundStatus;
-import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.PayType;
-import com.ald.fanbei.api.common.enums.RefundSource;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -41,6 +16,18 @@ import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 
@@ -97,20 +84,37 @@ public class RefundOrderApplyApi implements ApiHandle{
 		if(!supportOrderTypes.contains(orderInfo.getOrderType())){
 			throw new FanbeiException(FanbeiExceptionCode.ORDER_REFUND_TYPE_ERROR);
 		}
+
 		//权限包商品不可退款
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
 		if(resourceDo!=null && orderInfo.getGoodsId().equals(NumberUtil.objToLongDefault(resourceDo.getValue(), 0L))){
 			throw new FanbeiException(FanbeiExceptionCode.AUTH_GOOD_CAN_NOT_REFUND);
 		}
 		
+		AfAftersaleApplyDo saleDo = null;
 		if(StringUtil.isNotBlank(contactsMobile)){
 			//联系人手机号方式售后
 			refundApply(userId, orderId, contactsMobile, orderInfo);
 		}else{
 			//退款原因及退款图片凭证方式 
-			afterSaleApply(userId, orderId, userReason, picVouchers, orderInfo);
+			saleDo = afterSaleApply(userId, orderId, userReason, picVouchers, orderInfo);
 		}
-		
+
+		//根据售后状态判断是否自动退款
+		if(PayType.BANK.getCode().equals(orderInfo.getPayType())&&BankCardType.CREDIT.getCode().equals(orderInfo.getCardType()))
+		{
+			if(orderInfo.getSupStatus()==0|| orderInfo.getSupStatus()==2||orderInfo.getSupStatus()==5){
+				//自动退款
+				afOrderService.dealBrandOrderRefund(orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getBankId(), orderInfo.getOrderNo(),orderInfo.getThirdOrderNo() ,
+						orderInfo.getActualAmount(), orderInfo.getActualAmount(),
+						orderInfo.getPayType(), orderInfo.getPayTradeNo(), orderInfo.getOrderNo(), RefundSource.USER.getCode());
+
+				//修改售后订单状态
+				saleDo.setStatus("FINISH");
+				afAftersaleApplyService.updateById(saleDo);
+			}
+		}
+
 		return resp;
 	}
 
@@ -149,7 +153,7 @@ public class RefundOrderApplyApi implements ApiHandle{
 		}
 	}
 
-	private void afterSaleApply(Long userId, Long orderId, String userReason,
+	private AfAftersaleApplyDo afterSaleApply(Long userId, Long orderId, String userReason,
 			String picVouchers, AfOrderDo orderInfo) {
 		if(StringUtil.isBlank(userReason)){
 			throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
@@ -193,6 +197,8 @@ public class RefundOrderApplyApi implements ApiHandle{
 			}
 		}
 		logger.info("refundOrderApply success,userReason and picVouchers. orderId="+orderId+",userId="+userId+",preStatus="+orderInfo.getPreStatus()+",currStatus="+orderInfo.getStatus());
+
+		return afAftersaleApplyDo;
 	}
 	
 }

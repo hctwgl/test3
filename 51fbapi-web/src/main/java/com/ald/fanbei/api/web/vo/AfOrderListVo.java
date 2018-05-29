@@ -1,10 +1,10 @@
 package com.ald.fanbei.api.web.vo;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 import com.ald.fanbei.api.common.AbstractSerial;
 import com.alibaba.fastjson.annotation.JSONField;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 
@@ -43,8 +43,18 @@ public class AfOrderListVo extends AbstractSerial {
 	private int count;
 	private Date rebateTime;
 	
-	private String secType;	
-	
+	private String secType;
+
+	private String refundMsg;
+
+	public String getRefundMsg() {
+		return refundMsg;
+	}
+
+	public void setRefundMsg(String refundMsg) {
+		this.refundMsg = refundMsg;
+	}
+
 	public String getSecType() {
 	    return secType;
 	}

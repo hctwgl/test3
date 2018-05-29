@@ -98,7 +98,7 @@
 <div>
     <div class="content">
         <h2 style="text-align: center" class="mid">收 据</h2>
-        <p>&nbsp;&nbsp;浙江阿拉丁电子商务股份有限公司已收到合同编号为<span style="color:red;">${orderNo}</span>的《借款协议》项下出借人${lender}出借给借款人 ${borrowUserInfo} 的借款本金${amount}元（大写：${cnAmount}），其中：${lenderAmountInfo}</p>
+        <p>&nbsp;&nbsp;浙江阿拉丁电子商务股份有限公司已收到合同编号为${orderNo}的《借款协议》项下出借人${lender}出借给借款人 ${borrowUserInfo} 的借款本金${amount}元（大写：${cnAmount}），其中：${lenderAmountInfo}</p>
 ##        <div class="block" style="float: left" >
 ##            <em style="color: white">recept</em>
 ##        </div>

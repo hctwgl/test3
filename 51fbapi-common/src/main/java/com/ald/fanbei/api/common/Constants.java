@@ -581,5 +581,8 @@ public class Constants {
 	public static final String ENJOYLIFE_ACTIVITY_GOODSINFO = "ENJOYLIFE_ACTIVITY_GOODSINFO";
 	public static final String ACTIVITY_INFO_GOODSID = "ACTIVITY_INFO_GOODSID";
 
+	// 商品详情服务配置
+	public static final String COUPON_SALESERVICE = "COUPON_SALESERVICE";
+
     public static final String BORROW_FINANCE = "borrow";
 }

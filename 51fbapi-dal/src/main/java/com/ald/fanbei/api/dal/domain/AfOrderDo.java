@@ -1,9 +1,9 @@
 package com.ald.fanbei.api.dal.domain;
 
+import com.ald.fanbei.api.common.AbstractSerial;
+
 import java.math.BigDecimal;
 import java.util.Date;
-
-import com.ald.fanbei.api.common.AbstractSerial;
 
 /**
  * @类描述：
@@ -95,6 +95,44 @@ public class AfOrderDo extends AbstractSerial{
 	private String iagentStatus;//智能电核状态
 	private String supportCreditStatus;//是否支持信用支付 Y：是 N：否
 	private String weakRiskOrderNo;//软弱风控编号
+
+	private Integer cardType;
+	private BigDecimal feeAmount =BigDecimal.ZERO;
+
+	private String goodsStatus;
+	private Integer supStatus;
+
+	public Integer getSupStatus() {
+		return supStatus;
+	}
+
+	public void setSupStatus(Integer supStatus) {
+		this.supStatus = supStatus;
+	}
+
+	public String getGoodsStatus() {
+		return goodsStatus;
+	}
+
+	public void setGoodsStatus(String goodsStatus) {
+		this.goodsStatus = goodsStatus;
+	}
+
+	public Integer getCardType() {
+		return cardType;
+	}
+
+	public void setCardType(Integer cardType) {
+		this.cardType = cardType;
+	}
+
+	public BigDecimal getFeeAmount() {
+		return feeAmount;
+	}
+
+	public void setFeeAmount(BigDecimal feeAmount) {
+		this.feeAmount = feeAmount;
+	}
 
 	public String getIagentStatus() {
 		return iagentStatus;

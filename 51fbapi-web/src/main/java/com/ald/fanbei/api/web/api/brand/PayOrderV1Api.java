@@ -18,7 +18,6 @@ import com.ald.fanbei.api.common.VersionCheckUitl;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -29,7 +28,6 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -39,7 +37,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +98,7 @@ public class PayOrderV1Api implements ApiHandle {
     AfSeckillActivityService afSeckillActivityService;
     @Resource
     AfUserAuthService  userAuthService;
-
+    
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -118,14 +115,14 @@ public class PayOrderV1Api implements ApiHandle {
         boolean fromCashier = true; //NumberUtil.objToIntDefault(request.getAttribute("fromCashier"), 0) == 0 ? false : true;
         String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
         String isCombinationPay = ObjectUtils.toString(requestDataVo.getParams().get("isCombinationPay"), "").toString();
-        String city = ObjectUtils.toString(requestDataVo.getParams().get("city"),"");
-        String county = ObjectUtils.toString(requestDataVo.getParams().get("county"),"");
-        String province = ObjectUtils.toString(requestDataVo.getParams().get("province"),"");
-        String gpsAddress = ObjectUtils.toString(requestDataVo.getParams().get("address"),"");
-        String bankChannel = ObjectUtils.toString(requestDataVo.getParams().get("bankChannel"),"");
-        logger.info(province+":"+city+":"+county+":"+gpsAddress);
-        
-        VersionCheckUitl.setVersion( context.getAppVersion());//addby hongzhengpei
+        String city = ObjectUtils.toString(requestDataVo.getParams().get("city"), "");
+        String county = ObjectUtils.toString(requestDataVo.getParams().get("county"), "");
+        String province = ObjectUtils.toString(requestDataVo.getParams().get("province"), "");
+        String gpsAddress = ObjectUtils.toString(requestDataVo.getParams().get("address"), "");
+        String bankChannel = ObjectUtils.toString(requestDataVo.getParams().get("bankChannel"), "");
+        logger.info(province + ":" + city + ":" + county + ":" + gpsAddress);
+
+        VersionCheckUitl.setVersion(context.getAppVersion());//addby hongzhengpei
 
 
         if (orderId == null || payId == null) {
@@ -143,6 +140,10 @@ public class PayOrderV1Api implements ApiHandle {
         if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())|| orderInfo.getStatus().equals(OrderStatus.PAID.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
         }
+        if (orderInfo == null) {
+            logger.error("orderId is invalid");
+            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
+        }
         orderInfo.setGpsAddress(gpsAddress);
         if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
             AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("BOLUOME_UNTRUST_SHOPGOODS");
@@ -152,11 +153,11 @@ public class PayOrderV1Api implements ApiHandle {
             }
         }
         //秒杀逻辑
-        if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())){
+        if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
             AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getActivityByOrderId(orderId);
-            if(afSeckillActivityDo!=null&&afSeckillActivityDo.getGoodsLimitCount()!=null){
-                AfSeckillActivityOrderDo seckillActivityOrderInfo = afSeckillActivityService.getActivityOrderByGoodsIdAndActId(orderInfo.getGoodsId(),afSeckillActivityDo.getRid(),userId);
-                if(seckillActivityOrderInfo!=null){
+            if (afSeckillActivityDo != null && afSeckillActivityDo.getGoodsLimitCount() != null) {
+                AfSeckillActivityOrderDo seckillActivityOrderInfo = afSeckillActivityService.getActivityOrderByGoodsIdAndActId(orderInfo.getGoodsId(), afSeckillActivityDo.getRid(), userId);
+                if (seckillActivityOrderInfo != null) {
                     return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SECKILL_ERROR_STOCK);
                 }
             }
@@ -215,54 +216,53 @@ public class PayOrderV1Api implements ApiHandle {
         if (fromCashier && nper != null) {
             orderInfo.setNper(nper);
 
-                //分期支付
-                BorrowRateBo borrowRate = null;
-                if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
-                    AfTradeOrderDo tradeOrderDo = afTradeOrderService.getById(orderInfo.getRid());
-                    AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(tradeOrderDo.getBusinessId());
-                    String configRebateModel = afTradeBusinessInfoDo.getConfigRebateModel();
-                    //region 没有配置就采用默认值
-                    AfTradeRebateModelBo rebateModel = null;
+            //分期支付
+            BorrowRateBo borrowRate = null;
+            if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
+                AfTradeOrderDo tradeOrderDo = afTradeOrderService.getById(orderInfo.getRid());
+                AfTradeBusinessInfoDo afTradeBusinessInfoDo = afTradeBusinessInfoService.getByBusinessId(tradeOrderDo.getBusinessId());
+                String configRebateModel = afTradeBusinessInfoDo.getConfigRebateModel();
+                //region 没有配置就采用默认值
+                AfTradeRebateModelBo rebateModel = null;
 
-                    //#endregion
-                    if (StringUtils.isNotBlank(configRebateModel)) {
-                        List<AfTradeRebateModelBo> rebateModels = JSON.parseArray(configRebateModel, AfTradeRebateModelBo.class);
-                        for (AfTradeRebateModelBo item : rebateModels) {
-                            if (item.getNper() == nper) {
-                                rebateModel = item;
-                            }
+                //#endregion
+                if (StringUtils.isNotBlank(configRebateModel)) {
+                    List<AfTradeRebateModelBo> rebateModels = JSON.parseArray(configRebateModel, AfTradeRebateModelBo.class);
+                    for (AfTradeRebateModelBo item : rebateModels) {
+                        if (item.getNper() == nper) {
+                            rebateModel = item;
                         }
                     }
-                    if (rebateModel == null) {
-                        rebateModel = new AfTradeRebateModelBo();
-                        rebateModel.setFreeNper(0);
-                        rebateModel.setNper(nper);
-                        rebateModel.setRebatePercent(BigDecimal.ZERO);
-                    }
-                    //region 没有配置就采用默认值
-                    JSONArray rebateModels = new JSONArray();
-                    //#endregion
-                    if (StringUtils.isNotBlank(configRebateModel)) {
-                        try {
-                            rebateModels = JSON.parseArray(configRebateModel);
-                        } catch (Exception e) {
-                            logger.info("GetTradeNperInfoApi process error", e.getCause());
-                        }
-
-                    }
-                    borrowRate = afResourceService.borrowRateWithResourceForTrade(nper);
-                    orderInfo.setInterestFreeJson(JSON.toJSONString(rebateModels));
-                    orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
-                    if (rebateModel.getRebatePercent() != null && rebateModel.getRebatePercent().compareTo(BigDecimal.ZERO) > 0 && afTradeBusinessInfoDo.getRebateMax().compareTo(BigDecimal.ZERO) > 0) {
-                        BigDecimal rebateAmount = orderInfo.getActualAmount().multiply(rebateModel.getRebatePercent()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
-                        rebateAmount = rebateAmount.compareTo(afTradeBusinessInfoDo.getRebateMax()) < 0 ? rebateAmount : afTradeBusinessInfoDo.getRebateMax();
-                        orderInfo.setRebateAmount(rebateAmount);
-                    }
-                } else {
-                    borrowRate = afResourceService.borrowRateWithResource(nper, context.getUserName(),orderInfo.getGoodsId());
-                    orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
                 }
+                if (rebateModel == null) {
+                    rebateModel = new AfTradeRebateModelBo();
+                    rebateModel.setFreeNper(0);
+                    rebateModel.setNper(nper);
+                    rebateModel.setRebatePercent(BigDecimal.ZERO);
+                }
+                //region 没有配置就采用默认值
+                JSONArray rebateModels = new JSONArray();
+                //#endregion
+                if (StringUtils.isNotBlank(configRebateModel)) {
+                    try {
+                        rebateModels = JSON.parseArray(configRebateModel);
+                    } catch (Exception e) {
+                        logger.info("GetTradeNperInfoApi process error", e.getCause());
+                    }
 
+                }
+                borrowRate = afResourceService.borrowRateWithResourceForTrade(nper);
+                orderInfo.setInterestFreeJson(JSON.toJSONString(rebateModels));
+                orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
+                if (rebateModel.getRebatePercent() != null && rebateModel.getRebatePercent().compareTo(BigDecimal.ZERO) > 0 && afTradeBusinessInfoDo.getRebateMax().compareTo(BigDecimal.ZERO) > 0) {
+                    BigDecimal rebateAmount = orderInfo.getActualAmount().multiply(rebateModel.getRebatePercent()).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+                    rebateAmount = rebateAmount.compareTo(afTradeBusinessInfoDo.getRebateMax()) < 0 ? rebateAmount : afTradeBusinessInfoDo.getRebateMax();
+                    orderInfo.setRebateAmount(rebateAmount);
+                }
+            } else {
+                borrowRate = afResourceService.borrowRateWithResource(nper, context.getUserName(), orderInfo.getGoodsId());
+                orderInfo.setBorrowRate(BorrowRateBoUtil.parseToDataTableStrFromBo(borrowRate));
+            }
 
 
         }
@@ -359,13 +359,13 @@ public class PayOrderV1Api implements ApiHandle {
             // ----------------
 
 
-            Map<String, Object> result = afOrderService.payBrandOrder(context.getUserName(),payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress, bankChannel);
+            Map<String, Object> result = afOrderService.payBrandOrder(context.getUserName(), payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress, bankChannel);
 
             Object success = result.get("success");
             Object payStatus = result.get("status");
             
             Integer toPayOrderNums =0;
-           
+            
             // 查询当前用户待支付的订单数
             toPayOrderNums = afOrderService.getALLNoFinishOrderCount(userId);
             result.put("toPayOrderNums", toPayOrderNums);
@@ -403,15 +403,17 @@ public class PayOrderV1Api implements ApiHandle {
                     }
 
                     //首次信用购物（自营信用支付）送还款券
-                    if(OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType()) ){
-             	   if(payType.equals(PayType.AGENT_PAY.getCode()) || payType.equals(PayType.COMBINATION_PAY.getCode()))
-     		       try{
-     		           afUserCouponService.sentFirstAuthShoppingUserCoupon(orderInfo);
-     		         }catch(Exception e){
-     		           logger.error("first selesupport shopping sentUserCoupon error:"+e+orderInfo.toString());
-     		       }
-		    
+                    if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
+                        if (payType.equals(PayType.AGENT_PAY.getCode()) || payType.equals(PayType.COMBINATION_PAY.getCode()))
+                            try {
+                                afUserCouponService.sentFirstAuthShoppingUserCoupon(orderInfo);
+                            } catch (Exception e) {
+                                logger.error("first selesupport shopping sentUserCoupon error:" + e + orderInfo.toString());
+                            }
+
                     }
+
+
                 } else {
                     FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
                     ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);
