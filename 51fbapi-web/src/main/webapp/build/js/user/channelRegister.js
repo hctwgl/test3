@@ -18,6 +18,19 @@ function toMaidian(data,data2) {
     maidianFnNew(data, channelCode, pointCode, data2);
 }
 
+function login() {
+    toMaidian('toLogin')
+    if(style == '25'){
+        if(os == 1){
+            window.location.href='http://sftp.51fanbei.com/jiekuanchaoren_v3.9.1_app.apk'
+        }else {
+            window.location.href='https://itunes.apple.com/cn/app/%E5%80%9F%E6%AC%BE%E8%B6%85%E4%BA%BA-%E5%B0%8F%E9%A2%9D%E5%88%86%E6%9C%9F%E8%B4%B7%E6%AC%BE%E5%80%9F%E9%92%B1%E5%80%9F%E8%B4%B7%E8%BD%AF%E4%BB%B6/id1263792729?mt=8'
+        }
+    }else {
+        window.location.href='http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www'
+    }
+}
+
 function formatDateTime() {
     var date = new Date();
     var y = date.getFullYear();
@@ -237,6 +250,15 @@ $(function(){
                                         toMaidian("registerSuccess", mobileNum);
                                         // js判断微信和QQ
                                         let ua = navigator.userAgent.toLowerCase();
+                                        if(style == '25'){
+                                            if(os == 1){
+                                                window.location.href='http://sftp.51fanbei.com/jiekuanchaoren_v3.9.1_app.apk'
+                                                return false
+                                            }else {
+                                                window.location.href='https://itunes.apple.com/cn/app/%E5%80%9F%E6%AC%BE%E8%B6%85%E4%BA%BA-%E5%B0%8F%E9%A2%9D%E5%88%86%E6%9C%9F%E8%B4%B7%E6%AC%BE%E5%80%9F%E9%92%B1%E5%80%9F%E8%B4%B7%E8%BD%AF%E4%BB%B6/id1263792729?mt=8'
+                                                return false
+                                            }
+                                        }
                                         if ( os==1&&ua.match(/MicroMessenger/i)!="micromessenger"&&ua.match(/QQ/i) != "qq"){
                                             window.location.href='http://sftp.51fanbei.com/51fanbei_app.apk';//安卓除了腾讯系，直接下载apk
                                             // setTimeout(function () {
@@ -337,7 +359,7 @@ $(function(){
     
 // 去下载
 (function (root) {
-        $("#toLoadAppBtn").on('click',function(){
+        $(".to_loadapp_btn").on('click',function(){
             let ua = navigator.userAgent.toLowerCase();
 
             // if (os==1 && ua.match(/MicroMessenger/i)!="micromessenger" && ua.match(/QQ/i) != "qq"){
@@ -357,8 +379,9 @@ $(function(){
                 root.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                 return;
             }
-
-            root.location.href='http://sftp.51fanbei.com/51fanbei_app_' + channelCode + '.apk';
+            //埋点
+            maidianFnNew('channel_'+style+'_download');
+            root.location.href='http://sftp.51fanbei.com/ishangjie_app_' + channelCode + '.apk';
             
         })
    
