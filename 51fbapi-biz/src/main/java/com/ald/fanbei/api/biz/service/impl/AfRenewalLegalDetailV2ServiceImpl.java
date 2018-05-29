@@ -214,6 +214,10 @@ public class AfRenewalLegalDetailV2ServiceImpl extends UpsPayKuaijieServiceAbstr
     
     @Override
     protected void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
+    	KuaijieRenewalPayBo kuaijieRenewalPayBo = JSON.parseObject(payBizObject, KuaijieRenewalPayBo.class);
+    	if (kuaijieRenewalPayBo.getRenewalDetail() != null) {
+    	    dealChangStatus(payTradeNo, payTradeNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), kuaijieRenewalPayBo.getRenewalDetail().getRid());
+    	}
     }
     
     @Override
@@ -226,10 +230,7 @@ public class AfRenewalLegalDetailV2ServiceImpl extends UpsPayKuaijieServiceAbstr
 
     @Override
     protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
-	KuaijieRenewalPayBo kuaijieRenewalPayBo = JSON.parseObject(payBizObject, KuaijieRenewalPayBo.class);
-	if (kuaijieRenewalPayBo.getRenewalDetail() != null) {
-	    dealChangStatus(payTradeNo, payTradeNo, AfBorrowLegalRepaymentStatus.PROCESS.getCode(), kuaijieRenewalPayBo.getRenewalDetail().getRid());
-	}
+    	KuaijieRenewalPayBo kuaijieRenewalPayBo = JSON.parseObject(payBizObject, KuaijieRenewalPayBo.class);
 
         Map<String, Object> resulMap = new HashMap<String, Object>();
         resulMap.put("outTradeNo", respBo.getOrderNo());
