@@ -256,6 +256,7 @@ $(function(){
                                                 return false
                                             }else {
                                                 window.location.href='https://itunes.apple.com/cn/app/%E5%80%9F%E6%AC%BE%E8%B6%85%E4%BA%BA-%E5%B0%8F%E9%A2%9D%E5%88%86%E6%9C%9F%E8%B4%B7%E6%AC%BE%E5%80%9F%E9%92%B1%E5%80%9F%E8%B4%B7%E8%BD%AF%E4%BB%B6/id1263792729?mt=8'
+                                                return false
                                             }
                                         }
                                         if ( os==1&&ua.match(/MicroMessenger/i)!="micromessenger"&&ua.match(/QQ/i) != "qq"){
