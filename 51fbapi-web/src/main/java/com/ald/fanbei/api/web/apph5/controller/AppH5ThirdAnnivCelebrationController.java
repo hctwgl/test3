@@ -460,11 +460,11 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
     public String ceshiPay(HttpServletRequest request, HttpServletResponse response) {
 
         // 预售商品回调 处理
-       /* AfOrderDo orderInfo = new AfOrderDo();
+        AfOrderDo orderInfo = new AfOrderDo();
         orderInfo.setUserId(13989456327L);
         orderInfo.setRid(193477L);
-        orderInfo.setGoodsId(136879L);
-        afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);*/
+        orderInfo.setGoodsId(136897L);
+        afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
         return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
     }
 

@@ -313,6 +313,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 				map.put("userId",orderInfo.getUserId() );
 				map.put("activityId",activityId );
 				map.put("goodsId",orderInfo.getGoodsId() );
+
 				//付定金
 				if(afSeckillActivityDo.getGmtStart().getTime() <= date  && date <= afSeckillActivityDo.getGmtEnd().getTime()){
 
@@ -322,7 +323,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 						logger.info("updateUserActivityGoodsInfo payReservationAmount userId: " + orderInfo.getUserId() );
 						AfActivityReservationGoodsUserDo afActivityReservationGoodsUserDo1 = AfActivityReservationGoodsUserDoList.get(0);
 						Long couponId = afActivityReservationGoodsUserDo1.getCouponId();
-						Long userId = afActivityReservationGoodsUserDo1.getUserId();
+						Long userId = orderInfo.getUserId();
 						//未购买时添加，购买时更新购买数量
 						afActivityReservationGoodsUserDo.setGoodsId(afActivityReservationGoodsUserDo1.getRid());
 						Long userReservationId = afActivityReservationGoodsUserDo1.getUserReservationId();

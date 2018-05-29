@@ -37,6 +37,7 @@ public class DemoTest extends BaseTest{
 	String urlBase = "http://localhost:8080";
 	//String userName = "17710378476";
 	String userName = "15258801185";
+
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -83,7 +84,7 @@ public class DemoTest extends BaseTest{
 	}
 
 	//新增优惠券
-	@Test
+	//@Test
 	public void  addShared() {
 		String url = urlBase + "/fanbei-web/addShared";
 		Map<String,String> params = new HashMap<>();
@@ -155,8 +156,8 @@ public class DemoTest extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	//根据活动ID获取活动商品列表
-	//@Test
-	public void  testGoodsInfo() {
+	@Test
+	public void  ceshiPay() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiPay";
 		Map<String,String> params = new HashMap<>();
 		params.put("modelId", "257");
