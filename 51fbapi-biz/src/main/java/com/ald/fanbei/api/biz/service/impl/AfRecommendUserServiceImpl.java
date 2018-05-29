@@ -628,6 +628,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 	}
 
 	public int addRecommendShared(AfRecommendShareDo afRecommendShareDo) {
+		logger.info("addShared userName:" + afRecommendShareDo.getUser_id() );
 		return afRecommendUserDao.addRecommendShared(afRecommendShareDo);
 	}
 
