@@ -35,8 +35,8 @@ public class DemoTest extends BaseTest{
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
 	String urlBase = "http://localhost:8080";
-	String userName = "17710378476";
-	//String userName = "13989456684";
+	//String userName = "17710378476";
+	String userName = "15258801185";
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -160,6 +160,16 @@ public class DemoTest extends BaseTest{
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiPay";
 		Map<String,String> params = new HashMap<>();
 		params.put("modelId", "257");
+		testH5(url, params, userName, true);
+	}
+
+	//
+	@Test
+	public void  getMineCouponInfo() {
+		String url = urlBase + "/fanbei-web/getMineCouponInfo";
+		Map<String,String> params = new HashMap<>();
+		params.put("pageNo", "1");
+		params.put("status", "NOUSE");
 		testH5(url, params, userName, true);
 	}
 

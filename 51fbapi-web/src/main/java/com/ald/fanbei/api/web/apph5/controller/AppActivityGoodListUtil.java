@@ -359,7 +359,6 @@ public class AppActivityGoodListUtil {
                 pool.execute(process);
             }
         }
-        activityList = null;
         if (activityList == null) {
             activityList = getActivityPartList(subjectList, resource, array);
             bizCacheUtil.saveListByTime(cacheKey, activityList, 10 * 60);
@@ -416,9 +415,6 @@ public class AppActivityGoodListUtil {
                     activityGoodsInfo.put("remark", goodsDo.getRemark());
                     activityGoodsInfo.put("activityName", activityName);
                     // 如果是分期免息商品，则计算分期
-                    if(goodsDo.getRid() == 129265){
-                        System.out.println("goodsId"+ 1234565);
-                    }
                     AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsDo.getRid());
                     JSONArray interestFreeArray = null;
                     if(null != afSchemeGoodsDo){

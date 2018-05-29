@@ -376,6 +376,12 @@ public class AppH5CouponController extends BaseController {
 				query.setUserId(userId);
 				query.setStatus(status);
 				List<AfUserCouponDto> couponList = afUserCouponService.getUserCouponByUser(query);
+
+				//获取用户预售商品
+				List<AfUserCouponDto> userResevrationCouponList = afUserCouponService.getUserResevrationCouponList(userId);
+				if(userResevrationCouponList != null && userResevrationCouponList.size() > 0 ){
+					couponList.addAll(userResevrationCouponList);
+				}
 				List<AfUserCouponVo> couponVoList = new ArrayList<AfUserCouponVo>();
 				for (AfUserCouponDto afUserCouponDto : couponList) {
 					AfUserCouponVo couponVo = getUserCouponVo(afUserCouponDto);
