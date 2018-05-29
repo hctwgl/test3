@@ -524,10 +524,12 @@ public class AfBorrowRecycleRepaymentServiceImpl implements AfBorrowRecycleRepay
 	private boolean sendRepaymentBorrowRecycleWarnMsg(String mobile,Long cashId,BigDecimal repayMoney, BigDecimal notRepayMoney) {
 		// 模版数据map处理
 		Map<String, String> replaceMapData = new HashMap<String, String>();
-		replaceMapData.put("repayMoney", repayMoney + "");
-		replaceMapData.put("remainAmount", notRepayMoney + "");
 		AfBorrowRecycleOrderDo recycleOrderDo = recycleOrderService.getBorrowRecycleOrderByBorrowId(cashId);
 		JSONObject propertyValue = (JSONObject) JSONObject.parse(recycleOrderDo.getPropertyValue());
+		replaceMapData.put("repayMoney", repayMoney + "");
+		replaceMapData.put("remainAmount", notRepayMoney + "");
+		replaceMapData.put("param2", recycleOrderDo.getGoodsName() + "");
+		replaceMapData.put("param3", String.valueOf(propertyValue.get("goodsModel")) + "");
 		if (notRepayMoney == null || notRepayMoney.compareTo(BigDecimal.ZERO) <= 0) {
 			String title = "恭喜您，借款已还清！";
 			String content = "成功支付&repayMoney元，您的”&param2“”&param3“回收订单已完成，信用分再度升级，给您点个大大的赞！";
