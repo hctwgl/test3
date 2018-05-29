@@ -1166,7 +1166,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			    if(null != riskReturnMap && (boolean)riskReturnMap.get("success")){
 					// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
 					if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
-
+						logger.info("周年庆时间自营商品订单支付成功，送优惠券1");
 						// 预售商品回调 处理
 						afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
 
@@ -1210,6 +1210,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							if (null != riskReturnMap && (boolean) riskReturnMap.get("success")) {
 								// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
 								if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
+									logger.info("周年庆时间自营商品订单支付成功，送优惠券");
 									// 预售商品回调 处理
 									afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
 
@@ -1829,6 +1830,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	if (result == 1) {
 		// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
 		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
+			logger.info("周年庆时间自营商品订单支付成功，送优惠券3");
 
 			// 预售商品回调 处理
 			afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);

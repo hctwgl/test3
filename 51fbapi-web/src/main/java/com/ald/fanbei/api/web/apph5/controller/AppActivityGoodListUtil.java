@@ -359,6 +359,7 @@ public class AppActivityGoodListUtil {
                 pool.execute(process);
             }
         }
+        activityList = null;
         if (activityList == null) {
             activityList = getActivityPartList(subjectList, resource, array);
             bizCacheUtil.saveListByTime(cacheKey, activityList, 10 * 60);
@@ -399,6 +400,9 @@ public class AppActivityGoodListUtil {
                     Map activityGoodsInfo = new HashMap();
                     activityGoodsInfo.put("goodName",goodsDo.getName());
                     activityGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+                    /*if(goodsDo.getRid() == 129264){
+                        System.out.println("hello");
+                    }*/
                     if(null != goodsDo.getActivityPrice()){
                         saleAmount = goodsDo.getActivityPrice();
                     }
@@ -436,6 +440,7 @@ public class AppActivityGoodListUtil {
                             }
                         }
                     }
+
 
                     List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
                             saleAmount, resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");

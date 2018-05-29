@@ -58,6 +58,7 @@
 		    FROM`af_seckill_activity_goods` a
 		    INNER JOIN af_seckill_activity b ON a.activity_id = b.id
 		    WHERE a.is_delete = 0
+		    AND b.is_disable = 0
 		    AND b.is_delete = 0
 		    AND b.gmt_pstart <![CDATA[<=]]> now()
 		    AND b.gmt_end <![CDATA[>=]]> now()

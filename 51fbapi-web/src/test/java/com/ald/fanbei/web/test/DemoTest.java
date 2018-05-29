@@ -148,15 +148,24 @@ public class DemoTest extends BaseTest{
 	}
 
 	//根据活动ID获取活动商品列表
-//	@Test
+	//@Test
 	public void  partActivityInfoV2() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/partActivityInfoV2";
 		Map<String,String> params = new HashMap<>();
 		params.put("modelId", "257");
 		testH5(url, params, userName, true);
 	}
-	//根据活动ID获取活动商品列表
+
+	//
 	@Test
+	public void  ceshiPayGoodsInfo() {
+		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiPayGoodsInfo";
+		Map<String,String> params = new HashMap<>();
+		params.put("modelId", "257");
+		testH5(url, params, userName, true);
+	}
+	//根据活动ID获取活动商品列表
+	//@Test
 	public void  ceshiPay() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiPay";
 		Map<String,String> params = new HashMap<>();
