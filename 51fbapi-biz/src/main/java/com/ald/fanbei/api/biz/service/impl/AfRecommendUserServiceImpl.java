@@ -307,6 +307,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 		afRecommendMoneyDo.setMoney(money);
 		afRecommendMoneyDo.setUserId(userId);
 		afRecommendMoneyDo.setParentId(afRecommendUserDo.getParentId());
+		logger.info("addShared5 userName:" +afRecommendMoneyDo.getUserId() );
 		afRecommendUserDao.addRecommendMoney(afRecommendMoneyDo);
 
 		if(len<1){
@@ -433,6 +434,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
         				afRecommendMoneyDo.setMoney(money);
         				afRecommendMoneyDo.setUserId(afRecommendUserDo.getUserId());
         				afRecommendMoneyDo.setParentId(afRecommendUserDo.getParentId());
+						logger.info("addShared6 userName:" + afRecommendMoneyDo.getUserId() );
         				afRecommendUserDao.addRecommendMoney(afRecommendMoneyDo);
 				}
 				
@@ -589,6 +591,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 	
 	@Override
 	public int insertShareWithData(String uuid, long userId, Integer type, String invitationCode) {
+		logger.info("addShared7 userName:" + userId );
 		return afRecommendUserDao.insertShareWithData(uuid,userId,type,invitationCode);
 	}
 
@@ -628,7 +631,7 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 	}
 
 	public int addRecommendShared(AfRecommendShareDo afRecommendShareDo) {
-		logger.info("addShared userName:" + afRecommendShareDo.getUser_id() );
+		logger.info("addShared8 userName:" + afRecommendShareDo.getUser_id() );
 		return afRecommendUserDao.addRecommendShared(afRecommendShareDo);
 	}
 
