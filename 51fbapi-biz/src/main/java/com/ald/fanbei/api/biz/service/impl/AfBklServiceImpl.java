@@ -5,11 +5,15 @@ import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.YFSmsUtil;
 import com.ald.fanbei.api.biz.third.util.bkl.BklUtils;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfGoodsSpecType;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.AfGoodsCategoryDao;
 import com.ald.fanbei.api.dal.dao.AfIagentResultDao;
 import com.ald.fanbei.api.dal.dao.AfIdNumberDao;
@@ -29,6 +33,7 @@ import javax.annotation.Resource;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,8 +94,20 @@ public class AfBklServiceImpl implements AfBklService {
 			return result;
 		}
 		
-		//购买过权限包的用户，电核直接通过
-		if(afUserAuthDo!=null && YesNoStatus.YES.getCode().equals(afUserAuthDo.getOrderWeakRiskStatus())){
+		//购买过权限包的用户，且在有效期限内，则电核直接通过
+		//权限包商品配置信息
+		AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
+		Integer vipGoodsValidDay = 0;
+		if (vipGoodsResourceDo != null){
+	    	vipGoodsValidDay = NumberUtil.objToIntDefault(vipGoodsResourceDo.getValue4(), 0);
+	    }
+		boolean vipGoodsIsValidForDate = true;
+		if(vipGoodsValidDay>0 && afUserAuthDo.getGmtOrderWeakRisk()!=null
+				&& DateUtil.compareDate(new Date(),DateUtil.addDays(afUserAuthDo.getGmtOrderWeakRisk(), vipGoodsValidDay))){
+		    //代表需要对权限包进行有效日期的校验
+			vipGoodsIsValidForDate = false;
+		}
+		if(afUserAuthDo!=null && YesNoStatus.YES.getCode().equals(afUserAuthDo.getOrderWeakRiskStatus()) && vipGoodsIsValidForDate){
 			result = "v1";
 			return result;
 		}

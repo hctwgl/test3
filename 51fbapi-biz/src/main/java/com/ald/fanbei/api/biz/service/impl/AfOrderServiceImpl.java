@@ -1199,7 +1199,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 							 logger.info("weakverybo=" + verybo);
 							 boolean riskPassStatus = verybo.isSuccess();
-							 if ( ! riskPassStatus){
+							 if ( ! riskPassStatus  && vipGoodsResourceDo!=null){
 								 Map<String, Object> riskReturnMap = new HashMap<String, Object>();
 								//标记此订单支付失败，根据软弱风控去选择是否引导权限包购买
 								orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
@@ -1302,7 +1302,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 							 logger.info("cp weakverybo=" + verybo);
 							 boolean riskPassStatus = verybo.isSuccess();
-							 if ( ! riskPassStatus){
+							 if ( ! riskPassStatus && vipGoodsResourceDo!=null){
 								Map<String, Object> riskReturnMap = new HashMap<String, Object>();
 								//标记此订单支付失败，根据软弱风控去选择是否引导权限包购买
 								orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());

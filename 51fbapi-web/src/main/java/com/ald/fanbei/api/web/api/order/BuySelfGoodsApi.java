@@ -137,7 +137,10 @@ public class BuySelfGoodsApi implements ApiHandle {
 		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		
 		AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
-		Integer vipGoodsValidDay = NumberUtil.objToIntDefault(vipGoodsResourceDo.getValue4(), 0);
+		Integer vipGoodsValidDay = 0;
+		if (vipGoodsResourceDo != null){
+	    	vipGoodsValidDay = NumberUtil.objToIntDefault(vipGoodsResourceDo.getValue4(), 0);
+	    }
 		//权限包是否在有效期限内
 		boolean vipGoodsIsValidForDate = true;
 		if(vipGoodsValidDay>0 && authDo.getGmtOrderWeakRisk()!=null
