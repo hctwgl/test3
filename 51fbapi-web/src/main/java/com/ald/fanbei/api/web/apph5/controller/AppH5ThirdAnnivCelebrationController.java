@@ -121,6 +121,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
             if (null != afUserDo) {
                 Integer sharedTimes = afRecommendUserService.getTodayShareTimes(afUserDo.getRid());
                 if (null != sharedTimes && sharedTimes == 1) {
+                    logger.info("sendCouponAfterSuccessShare groupId: " + request.getParameter("groupId"));
                     String groupId = ObjectUtils.toString(request.getParameter("groupId"), null).toString();
                     if (groupId == null) {
                         return H5CommonResponse.getNewInstance(false, "groupId can't be null or empty.", null, "").toString();

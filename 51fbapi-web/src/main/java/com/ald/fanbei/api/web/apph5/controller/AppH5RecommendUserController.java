@@ -198,8 +198,7 @@ public class AppH5RecommendUserController extends BaseController {
         if( null != afUserDo){
             afRecommendShareDo.setUser_id(afUserDo.getRid());
             afRecommendShareDo.setType(type);
-            //afRecommendShareDo.setRecommend_code(afUserDo.getRecommendCode());
-            afRecommendShareDo.setRecommend_code(Math.random()+"");
+            afRecommendShareDo.setRecommend_code(afUserDo.getRecommendCode());
             reInt = afRecommendUserService.addRecommendShared(afRecommendShareDo);
         }
         data.put("addSharedCount",reInt);
