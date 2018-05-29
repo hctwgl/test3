@@ -575,7 +575,7 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
     }
 
     private void notifyUserBySms(RepayDealBo repayDealBo, String isBalance) {
-	logger.info("notifyUserBySms info begin,sumAmount=" + repayDealBo.sumAmount + ",curSumRepayAmount=" + repayDealBo.curSumRepayAmount + ",sumRepaidAmount=" + repayDealBo.sumRepaidAmount + "Trade= " + repayDealBo.curTradeNo);
+	logger.info("notifyUserBySms info begin,sumAmount=" + repayDealBo.sumAmount + ",curSumRepayAmount=" + repayDealBo.curSumRepayAmount + ",sumRepaidAmount=" + repayDealBo.sumRepaidAmount + "Trade= " + repayDealBo.curTradeNo+",curType="+repayDealBo.curType+",borrowId="+repayDealBo.cashDo.getRid());
 	try {
 	    AfUserDo afUserDo = afUserService.getUserById(repayDealBo.userId);
 	    BigDecimal notRepayMoney = BigDecimal.ZERO;
