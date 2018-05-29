@@ -212,35 +212,35 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		try {
 			//获取对应资产方配置信息
 			AfResourceDo assideResourceInfo = getAssetSideConfigInfo(appId);
-			if(assideResourceInfo == null){
+			if (assideResourceInfo == null) {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_APPID_ERROR);
 				return notifyRespBo;
 			}
 			//资产方及启用状态校验
 			AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoDao.getByAssetSideFlag(appId);
-			if(afAssetSideInfoDo==null || YesNoStatus.NO.getCode().equals(afAssetSideInfoDo.getStatus()) ){
+			if (afAssetSideInfoDo == null || YesNoStatus.NO.getCode().equals(afAssetSideInfoDo.getStatus())) {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_FROZEN);
 				return notifyRespBo;
 			}
 			//请求时间校验
-			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
-			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
-			if(result>0){
+			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp, 0L);
+			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp, DateUtil.getCurrSecondTimeStamp(), 60);
+			if (result > 0) {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
 				return notifyRespBo;
 			}
 			//签名验证相关值处理
 			String realDataJson = "";
-			EdspayBackCreditReqBo edspayBackCreditReqBo  = null;
+			EdspayBackCreditReqBo edspayBackCreditReqBo = null;
 			try {
 				realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
-				edspayBackCreditReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackCreditReqBo.class);
+				 =JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackCreditReqBo.class);
 			} catch (Exception e) {
 				logger.error("EdspayController giveBackCreditInfo parseJosn error", e);
-			}finally{
-				logger.info("EdspayController giveBackCreditInfo,appId="+appId+ ",reqJsonData=" + realDataJson + ",sendTime=" + timestamp);
+			} finally {
+				logger.info("EdspayController giveBackCreditInfo,appId=" + appId + ",reqJsonData=" + realDataJson + ",sendTime=" + timestamp);
 			}
-			if(edspayBackCreditReqBo==null){
+			if (edspayBackCreditReqBo == null) {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
 				return notifyRespBo;
 			}
@@ -250,27 +250,33 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
 				return notifyRespBo;
 			}
-			
+
 			//签名成功,业务处理
 			List<String> orderNos = edspayBackCreditReqBo.getOrderNos();
-			logger.info("giveBackCreditInfo:"+orderNos);
-			if(orderNos==null || orderNos.size()==0 || orderNos.size()>100){
+			logger.info("giveBackCreditInfo:" + orderNos);
+			if (orderNos == null || orderNos.size() == 0 || orderNos.size() > 100) {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
 			}
 			Integer debtType = edspayBackCreditReqBo.getDebtType();
-			
+
 			//具体撤回操作
-			int resultValue = afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo,orderNos,debtType);
-			if(resultValue !=1){
-				logger.error("EdspayController giveBackCreditInfo exist error records,appId="+appId+ ",sendTime=" + timestamp);
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
-				return notifyRespBo;
+			if (edspayBackCreditReqBo.getType() == 0) {
+				//审核结果
+				int resultValue = afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo, orderNos, debtType);
+				if (resultValue != 1) {
+					logger.error("EdspayController giveBackCreditInfo exist error records,appId=" + appId + ",sendTime=" + timestamp);
+					notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
+					return notifyRespBo;
+				}
+			} else if (edspayBackCreditReqBo.getType() == 1 && edspayBackCreditReqBo.getCode()== 0) {
+				//放款结果
 			}
+
 			notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.SUCCESS);
 		} catch (Exception e) {
 			//系统异常
-			logger.error("EdspayController giveBackCreditInfo error,appId="+appId+ ",sendTime=" + timestamp, e);
+			logger.error("EdspayController giveBackCreditInfo error,appId=" + appId + ",sendTime=" + timestamp, e);
 			notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
 		}
 		return notifyRespBo;
@@ -858,6 +864,10 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					AfBorrowDo borrowDo = afBorrowService.getBorrowInfoByBorrowNo(PayResultReqBo.getOrderNo());
 					if (null != borrowDo) {
 						AfBorrowPushDo borrowPush = buildBorrowPush(borrowDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PayResultReqBo);
+						if(PayResultReqBo.getCode()==0)
+						{//记录放款时间
+							borrowPush.setLoanTime(PayResultReqBo.getLoanTime());
+						}
 						afBorrowPushService.saveOrUpdate(borrowPush);
 					}
 				}
