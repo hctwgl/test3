@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.biz.bo.assetside.edspay;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,7 +23,23 @@ public class EdspayBackCreditReqBo implements Serializable {
 	 * 债权类型，0现金贷，1消费分期
 	 */
 	private Integer debtType;
-	
+
+
+	private Integer type ;//回传类型 1审核结果，2放款结果
+	private Integer code ;//回传结果:0成功1失败
+	private String message ;
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	private Date loanTime;
+
+	public Date getLoanTime() {
+		return loanTime;
+	}
+
+	public void setLoanTime(Date loanTime) {
+		this.loanTime = loanTime;
+	}
+
 	public List<String> getOrderNos() {
 		return orderNos;
 	}
@@ -33,5 +52,39 @@ public class EdspayBackCreditReqBo implements Serializable {
 	public void setDebtType(Integer debtType) {
 		this.debtType = debtType;
 	}
-	
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public Integer getCode() {
+		return code;
+	}
+
+	public void setCode(Integer code) {
+		this.code = code;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	@Override
+	public String toString() {
+		return "EdspayBackCreditReqBo{" +
+				"orderNos=" + orderNos +
+				", debtType=" + debtType +
+				", type=" + type +
+				", code=" + code +
+				", message='" + message + '\'' +
+				'}';
+	}
 }
