@@ -1213,7 +1213,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 orderInfo.setWeakRiskOrderNo(softWeakRiskOrderNo);
 								 orderDao.updateOrder(orderInfo);
 								 
-								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 								 logger.info("softWeakverybo=" + softWeakverybo);
 								 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
 								 if(softWeakRiskStatus && vipGoodsId>0){
@@ -1316,7 +1316,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 orderInfo.setWeakRiskOrderNo(softWeakRiskOrderNo);
 								 orderDao.updateOrder(orderInfo);
 								 
-								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), softWeakRiskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), softWeakRiskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 								 logger.info("cp softWeakverybo=" + softWeakverybo);
 								 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
 								 if(softWeakRiskStatus && vipGoodsId>0){
