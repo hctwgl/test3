@@ -252,7 +252,12 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 			return 1;
 		}
 	}
-	
+
+	@Override
+	public int addPackageDetailLoanTime(List<String> orderNos, Date loanTime, Integer debtType) {
+		return 0;
+	}
+
 	/**
 	 * 单个债权包明细撤回操作
 	 * @param orderNo

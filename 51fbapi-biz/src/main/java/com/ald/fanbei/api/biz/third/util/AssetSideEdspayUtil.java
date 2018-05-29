@@ -234,7 +234,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			EdspayBackCreditReqBo edspayBackCreditReqBo = null;
 			try {
 				realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
-				 =JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackCreditReqBo.class);
+				edspayBackCreditReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackCreditReqBo.class);
 			} catch (Exception e) {
 				logger.error("EdspayController giveBackCreditInfo parseJosn error", e);
 			} finally {
@@ -281,7 +281,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		}
 		return notifyRespBo;
 	}
-	
+
 	/**
 	 * 获取债权信息
 	 * @param timestamp
@@ -306,7 +306,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_FROZEN);
 				return notifyRespBo;
 			}
-			
+
 			//请求时间校验
 			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
 		/*	int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
@@ -329,20 +329,20 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
 				return notifyRespBo;
 			}
-			
+
 			String currSign = DigestUtil.MD5(realDataJson);
 			if (!StringUtil.equals(currSign, sign)) {// 验签成功
 				//验证签名失败
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
 				return notifyRespBo;
 			}
-			
+
 			//签名成功,业务处理
 			if(NumberUtil.isNullOrZeroOrNegative(edspayGetCreditReqBo.getMoney())){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
 			}
-			
+
 			//校验当日限额
 			int debtType = NumberUtil.objToIntDefault(edspayGetCreditReqBo.getDebtType(), 0);
 			BigDecimal currDayHaveGetTotalBorrowAmount = afAssetPackageDao.getCurrDayHaveGetTotalBorrowAmount(afAssetSideInfoDo.getRid());
@@ -356,12 +356,12 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.CREDIT_BORROWCASH_AMOUNT_OVERRUN);
 				return notifyRespBo;
 			}
-			
+
 			Date nowDate = new Date();
 			Date startTime = DateUtil.getSpecDateBySecondDefault(edspayGetCreditReqBo.getLoanStartTime(),DateUtil.getStartOfDate(nowDate));
 			Date endTime = DateUtil.getSpecDateBySecondDefault(edspayGetCreditReqBo.getLoanEndTime(),DateUtil.getEndOfDate(nowDate));
-			BigDecimal minMoney = null;//借款期限的较小的 
-			BigDecimal maxMoney = null;//借款期限的较大的 
+			BigDecimal minMoney = null;//借款期限的较小的
+			BigDecimal maxMoney = null;//借款期限的较大的
 			EdspayCreditDetailInfo detailInfo = edspayGetCreditReqBo.getCreditDetails();
 			if(detailInfo != null && !NumberUtil.isNull(detailInfo.getMinMoney()) && !NumberUtil.isNull(detailInfo.getMaxMoney())){
 				minMoney = detailInfo.getMinMoney();
@@ -371,7 +371,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
 				return notifyRespBo;
 			}
-			
+
 			//获取开户行信息
 			FanbeiBorrowBankInfoBo bankInfo = getAssetSideBankInfo(getAssetSideBankInfo());
 			if(bankInfo==null){
@@ -390,7 +390,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				//白领贷
 				creditInfoList = afAssetPackageDetailService.getLoanBatchCreditInfo(bankInfo,afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime);
 			}
-			
+
 			if(creditInfoList!=null && creditInfoList.size()>0){
 				String sourceJsonStr = JSON.toJSONString(creditInfoList);
 				logger.info("EdspayController getBatchCreditInfo,appId="+appId+ ",returnJsonData=" + sourceJsonStr + ",sendTime=" + timestamp);
@@ -406,7 +406,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		}
 		return notifyRespBo;
 	}
-	
+
 	/**
 	 * 获取债权对应的用户信息接口
 	 * @param sendTime
@@ -432,7 +432,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_FROZEN);
 				return notifyRespBo;
 			}
-			
+
 			//请求时间校验
 			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
 			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
@@ -455,14 +455,14 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
 				return notifyRespBo;
 			}
-			
+
 			String currSign = DigestUtil.MD5(realDataJson);
 			if (!StringUtil.equals(currSign, sign)) {// 验签成功
 				//验证签名失败
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
 				return notifyRespBo;
 			}
-			
+
 			//签名成功,业务处理
 			if(edspayGetPlatUserInfoReqBo.getOrderNos()==null || edspayGetPlatUserInfoReqBo.getOrderNos().size()==0){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
@@ -485,7 +485,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		}
 		return notifyRespBo;
 	}
-	
+
 	/**
 	 * 获取资产方配置信息
 	 * 如果资产方未启用或者配置未开启，则返回null，否则返回正常配置信息
@@ -500,7 +500,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		}
 		return assideResourceInfo;
 	}
-	
+
 	/**
 	 * 获取资产方开户行信息
 	 * @param assetSideFlag
@@ -513,7 +513,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			if(bankInfoLists==null){
 				return bankInfoList;
 			}
-			
+
 			for (AfResourceDo afResourceDo : bankInfoLists) {
 				bankInfoList.add(JSON.toJavaObject(JSON.parseObject(afResourceDo.getValue()), FanbeiBorrowBankInfoBo.class));
 			}
@@ -522,7 +522,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		}
 		return bankInfoList;
 	}
-	
+
 	/**
 	 * 获取随机开户行对象
 	 * @return
@@ -601,7 +601,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 							assetPushResource.setGmtModified(now);
 							afResourceService.editResource(assetPushResource);
 						}
-						
+
 					} catch (Exception e) {
 						logger.error("borrowCashCurPush fail:"+e);
 					}
@@ -700,7 +700,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					afLoanDao.updateById(loanDo);
 				}
 			}
-		
+
 		}
 	}
 
@@ -834,7 +834,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 						} catch (Exception e) {
 							logger.error("updateAuAmountByRid is fail;msg=" + e);
 						}
-						// 减少额度，包括搭售商品借款 
+						// 减少额度，包括搭售商品借款
 						afUserAccountSenceService.syncLoanUsedAmount(borrowCashDo.getUserId(), SceneType.CASH, borrowCashDo.getAmount());
 						// 增加日志
 						AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash,
@@ -844,7 +844,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 						// FIXME 查询是否有订单，查询订单状态
 						final AfBorrowLegalOrderDo legalOrderDo = afBorrowLegalOrderService
 								.getLastBorrowLegalOrderByBorrowId(borrowCashDo.getRid());
-						
+
 						if (legalOrderDo != null) {
 							legalOrderDo.setStatus(BorrowLegalOrderStatus.AWAIT_DELIVER.getCode());
 							afBorrowLegalOrderService.updateById(legalOrderDo);

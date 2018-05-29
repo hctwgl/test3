@@ -34,7 +34,7 @@ public interface AfAssetPackageDetailService extends ParentService<AfAssetPackag
 	 * @param loanTime
 	 * @return
 	 */
-	int addPackageDetailLoanTime(List<String> orderNos, Date loanTime);
+	int addPackageDetailLoanTime(List<String> orderNos, Date loanTime,Integer debtType);
 
 	/**
 	 * 单个债权包明细撤回操作
