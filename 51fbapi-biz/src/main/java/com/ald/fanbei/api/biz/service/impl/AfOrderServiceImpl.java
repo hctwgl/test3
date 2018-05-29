@@ -1196,8 +1196,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							orderDao.updateOrder(orderInfo);
 							
 							 logger.info("verify userId" + userId);
-							 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-							 logger.info("weakverybo=" + verybo);
+// 							 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+//							 logger.info("weakverybo=" + verybo);
+							 verybo = new RiskVerifyRespBo();
+							 verybo.setSuccess(false);
 							 boolean riskPassStatus = verybo.isSuccess();
 							 if ( ! riskPassStatus  && vipGoodsResourceDo!=null){
 								 Map<String, Object> riskReturnMap = new HashMap<String, Object>();
@@ -1213,7 +1215,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 orderInfo.setWeakRiskOrderNo(softWeakRiskOrderNo);
 								 orderDao.updateOrder(orderInfo);
 								 
-								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+		//						 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+								 RiskVerifyRespBo softWeakverybo = new RiskVerifyRespBo();
+								 softWeakverybo.setSuccess(true);
 								 logger.info("softWeakverybo=" + softWeakverybo);
 								 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
 								 if(softWeakRiskStatus && vipGoodsId>0){
@@ -1226,7 +1230,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 //return返回调用结果信息
 								 resultMap.put("success", false);
 								 resultMap.put("errorCode", FanbeiExceptionCode.RISK_VERIFY_ERROR);
-								 return riskReturnMap;
+								 return resultMap;
 							 } 
 						 }
 				    	// ******* end *******
