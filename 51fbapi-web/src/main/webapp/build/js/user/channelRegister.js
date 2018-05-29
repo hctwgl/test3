@@ -250,11 +250,8 @@ $(function(){
                                         toMaidian("registerSuccess", mobileNum);
                                         // js判断微信和QQ
                                         let ua = navigator.userAgent.toLowerCase();
-                                        alert(1)
                                         if(style == '25'){
-                                            alert(2)
                                             if(os == 1){
-                                                alert(3)
                                                 window.location.href='http://sftp.51fanbei.com/jiekuanchaoren_v3.9.1_app.apk'
                                                 return false
                                             }else {
@@ -271,7 +268,6 @@ $(function(){
                                         if(style=='14'){
                                             _taq.push({convert_id:"92097724391", event_type:"form"});
                                         }
-                                        alert(4)
                                         window.location.href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www";
                                     } else {
                                         maidianFnNew("registerFail", channelCode, pointCode, returnData.msg);
