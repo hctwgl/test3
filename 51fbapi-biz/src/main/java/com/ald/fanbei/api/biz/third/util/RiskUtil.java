@@ -718,6 +718,7 @@ public class RiskUtil extends AbstractThird {
 	    	//软弱风控控制
 	    	softWeakFlag = NumberUtil.objToIntDefault(controlFlag[1], 0);
 	    }
+	    logger.info("RiskUtil weakRiskForXd,scene="+scene+",weakFlag="+weakFlag+",softWeakFlag="+softWeakFlag);
 	    if("40".equals(scene)){
 	    	if(weakFlag == 1){
 	    		RiskVerifyRespBo verybo = new RiskVerifyRespBo();
