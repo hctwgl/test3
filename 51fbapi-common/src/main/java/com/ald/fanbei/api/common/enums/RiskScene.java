@@ -24,7 +24,12 @@ public enum RiskScene {
 	ZHENGXIN_XJD_UNPASS("111","ZHENGXIN_XJD_UNPASS","现金贷(强风控不通过)"),
 	BANK_BLD("155","BANK_BLD","网银白领贷"),
 	CARDMAIL_XJD_PASS("60","CARDMAIL_XJD_PASS","信用卡邮箱现金贷(强风控通过)"),
-	CARDMAIL_ONLINE("66","CARDMAIL_ONLINE","信用卡邮箱消费分期线上(强风控通过)");
+	CARDMAIL_ONLINE("66","CARDMAIL_ONLINE","信用卡邮箱消费分期线上(强风控通过)"),
+	BUBBLE_BLD("172","BUBBLE_BLD","冒泡白领贷"),
+	BUBBLE_XJD_PASS("170","BUBBLE_XJD_PASS","冒泡现金贷(强风控通过)"),
+	BUBBLE_XJD_UNPASS("171","BUBBLE_XJD_UNPASS","冒泡现金贷(强风控不通过)"),
+	BUBBLE_ONLINE("173","BUBBLE_ONLINE","冒泡消费分期线上(强风控通过)"),
+	;
 	
     private String code;
     private String name;

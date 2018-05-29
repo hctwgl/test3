@@ -242,31 +242,60 @@ public class AfUserAccountSenceServiceImpl extends ParentServiceImpl<AfUserAccou
 
     @Override
     public void raiseOnlineQuato(Long userId, String scene, String riskScene, String riskSceneType, String authType) {
-	try {
-	    AfUserAuthStatusDo onlineDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
-	    if (onlineDo != null && StringUtils.equals("Y", onlineDo.getStatus())) {
-		RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId), new String[] { riskScene }, riskSceneType);
-		// 提额成功
-		if (respBo != null && respBo.isSuccess()) {
-		    // 获取提额结果
-		    String raiseStatus = respBo.getData().getFqResults()[0].getResult();
-		    if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
-			String fqAmount = respBo.getData().getFqAmount();
-			AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, scene, fqAmount);
-			saveOrUpdateAccountSence(bldAccountSenceDo);
-
-			AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, scene, "Y", new BigDecimal(fqAmount), new Date());
-			// 提额成功，记录提额状态
-			afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
-		    } else {
-			AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, scene, "F", BigDecimal.ZERO, new Date());
-			// 提额成功，记录提额状态
-			afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+		try {
+		    AfUserAuthStatusDo onlineDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
+		    if (onlineDo != null && StringUtils.equals("Y", onlineDo.getStatus())) {
+		    	RiskQuotaRespBo respBo = riskUtil.userSupplementQuota(ObjectUtils.toString(userId), new String[] { riskScene }, riskSceneType);
+		    	// 提额成功
+				if (respBo != null && respBo.isSuccess()) {
+				    // 获取提额结果
+				    String raiseStatus = respBo.getData().getFqResults()[0].getResult();
+				    if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+					String fqAmount = respBo.getData().getFqAmount();
+					AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, scene, fqAmount);
+					saveOrUpdateAccountSence(bldAccountSenceDo);
+		
+					AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, scene, "Y", new BigDecimal(fqAmount), new Date());
+					// 提额成功，记录提额状态
+					afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+				    } else {
+					AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, scene, "F", BigDecimal.ZERO, new Date());
+					// 提额成功，记录提额状态
+					afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+				    }
+				}
 		    }
+		} catch (Exception e) {
+		    logger.error("raiseOnlineQuato amount fail =>{}", e.getMessage());
 		}
-	    }
-	} catch (Exception e) {
-	    logger.error("raiseOnlineQuato amount fail =>{}", e.getMessage());
-	}
     }
+    
+	@Override
+	public void raiseOnlineQuatoForBuddle(Long userId, String scene, String riskScene, String riskSceneType,
+			String authType) {
+		try {
+			AfUserAuthStatusDo onlineDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
+			if (onlineDo != null && StringUtils.equals("Y", onlineDo.getStatus())) {
+				RiskQuotaRespBo respBo = riskUtil.userReplenishQuota(ObjectUtils.toString(userId), new String[] { riskScene }, riskSceneType);
+				// 提额成功
+				if (respBo != null && respBo.isSuccess()) {
+					// 获取提额结果
+					String raiseStatus = respBo.getData().getFqResults()[0].getResult();
+					if (StringUtils.equals(RiskRaiseResult.PASS.getCode(), raiseStatus)) {
+						String fqAmount = respBo.getData().getFqAmount();
+						AfUserAccountSenceDo bldAccountSenceDo = buildAccountScene(userId, scene, fqAmount);
+						saveOrUpdateAccountSence(bldAccountSenceDo);
+
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, authType, scene, "Y", new BigDecimal(fqAmount), new Date());
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+					} else {
+						AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId,authType, scene, "F", BigDecimal.ZERO, new Date());
+						afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("raiseOnlineQuato amount fail =>{}", e.getMessage());
+		}
+	}
 }

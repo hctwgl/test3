@@ -15,7 +15,10 @@ import com.ald.fanbei.api.dal.dao.AfActivityReservationGoodsDao;
 import com.ald.fanbei.api.dal.dao.AfActivityReservationGoodsUserDao;
 import com.ald.fanbei.api.dal.dao.AfSeckillActivityDao;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.web.api.goods.GetGoodsDetailInfoApi;
 import com.ald.fanbei.api.web.common.*;
+import com.ald.fanbei.api.web.common.InterestFreeUitl;
+import com.ald.fanbei.api.web.vo.AfGoodsDetailInfoVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -31,6 +34,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -87,6 +91,17 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
 
     @Resource
     private AfActivityReservationGoodsUserDao afActivityReservationGoodsUserDao;
+
+    @Resource
+    AfGoodsService afGoodsService;
+
+    @Resource
+    AfSchemeGoodsService afSchemeGoodsService;
+
+    @Resource
+    AfSchemeService afSchemeService;
+    @Resource
+    AfInterestFreeRulesService afInterestFreeRulesService ;
 
     @Resource
     private SmsUtil smsUtil ;
@@ -444,11 +459,11 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
     public String ceshiPay(HttpServletRequest request, HttpServletResponse response) {
 
         // 预售商品回调 处理
-        AfOrderDo orderInfo = new AfOrderDo();
+       /* AfOrderDo orderInfo = new AfOrderDo();
         orderInfo.setUserId(13989456327L);
         orderInfo.setRid(193477L);
         orderInfo.setGoodsId(136879L);
-        afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
+        afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);*/
         return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
     }
 

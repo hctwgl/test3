@@ -74,6 +74,11 @@ public class AuthSupplyVerifyingApi implements ApiHandle {
 			if (!StringUtil.equals(SupplyCertifyStatus.YES.getCode(), afUserAuthDo.getOnlinebankStatus()) && !StringUtil.equals(SupplyCertifyStatus.NO.getCode(), afUserAuthDo.getOnlinebankStatus())) {
 				authDo.setGmtOnlinebank(new Date());
 			}
+		} else if (StringUtil.equals("BUBBLE", authType)) {
+			if (!StringUtil.equals(SupplyCertifyStatus.YES.getCode(), afUserAuthDo.getBubbleStatus()) && !StringUtil.equals(SupplyCertifyStatus.NO.getCode(), afUserAuthDo.getBubbleStatus())) {
+				authDo.setGmtBubble(new Date());
+				authDo.setBubbleStatus(SupplyCertifyStatus.WAIT.getCode());
+			}
 		}
 
 		if (afUserAuthService.updateUserAuth(authDo) > 0) {

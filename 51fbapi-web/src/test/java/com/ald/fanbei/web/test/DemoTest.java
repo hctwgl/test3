@@ -1,15 +1,36 @@
 package com.ald.fanbei.web.test;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.web.common.ApiHandleResponse;
+import com.ald.fanbei.api.web.common.InterestFreeUitl;
+import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.vo.AfGoodsDetailInfoVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.web.test.common.BaseTest;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class DemoTest extends BaseTest{
+
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
@@ -126,11 +147,19 @@ public class DemoTest extends BaseTest{
 	}
 
 	//根据活动ID获取活动商品列表
-	//@Test
+	@Test
 	public void  partActivityInfoV2() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/partActivityInfoV2";
 		Map<String,String> params = new HashMap<>();
-		params.put("modelId", "248");
+		params.put("modelId", "257");
+		testH5(url, params, userName, true);
+	}
+	//根据活动ID获取活动商品列表
+	//@Test
+	public void  testGoodsInfo() {
+		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiPay";
+		Map<String,String> params = new HashMap<>();
+		params.put("modelId", "257");
 		testH5(url, params, userName, true);
 	}
 

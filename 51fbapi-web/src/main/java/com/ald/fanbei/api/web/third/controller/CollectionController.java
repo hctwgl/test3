@@ -104,6 +104,9 @@ public class CollectionController {
     
     @Resource
     AssetSideEdspayUtil assetSideEdspayUtil;
+
+    @Resource
+    AfBorrowRecycleOrderService recycleOrderService;
     /**
      * 用户通过催收平台还款，经财务审核通过后，系统自动调用此接口向爱上街推送,爱上街记录线下还款信息
      *
@@ -666,17 +669,18 @@ public class CollectionController {
                 return updteBo;
             }else {
                 AfContractPdfDo afContractPdfDo = afContractPdfService.getContractPdfDoByTypeAndTypeId(afBorrowCashDo.getRid(), (byte) type);
+                AfBorrowRecycleOrderDo  recycleOrderDo = recycleOrderService.getBorrowRecycleOrderByBorrowId(afBorrowCashDo.getRid());
                 if (afContractPdfDo == null){
                     if (afBorrowLegalOrderCashDao.tuchByBorrowId(afBorrowCashDo.getRid()) != null) {
                         afLegalContractPdfCreateService.protocolLegalCashLoan(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(), afBorrowCashDo.getUserId());//v1
                     }//合规线下还款V2
-                    else if (afBorrowLegalOrderService.isV2BorrowCash(afBorrowCashDo.getRid())) {
+                    else if (afBorrowLegalOrderService.isV2BorrowCash(afBorrowCashDo.getRid()) || recycleOrderDo != null) {
                         try {
                             afLegalContractPdfCreateServiceV2.getProtocalLegalByTypeWithoutSeal(type, borrowNo);
                         } catch (IOException e) {
                             logger.error("getContractProtocolPdf error = >[}",e);
                         }
-                    } else {//老版借钱协议
+                    }else {//老版借钱协议
                         afContractPdfCreateService.protocolCashLoan(afBorrowCashDo.getRid(), afBorrowCashDo.getAmount(), afBorrowCashDo.getUserId());
                     }
                 }

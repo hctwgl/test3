@@ -1,15 +1,9 @@
 package com.ald.fanbei.api.web.api.legalborrowV2;
 
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
@@ -40,6 +34,9 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 	private AfResourceService afResourceService;
 
 	@Resource
+	private AfBorrowRecycleOrderService recycleOrderService;
+
+	@Resource
 	AfBorrowLegalOrderService afBorrowLegalOrderService;
 	private static final String RESOURCE_TYPE = "BORROWTWO_BACK";
 
@@ -68,6 +65,7 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 			} else {
 				//查询用户是否有订单
 				AfBorrowLegalOrderDo borrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
+				AfBorrowRecycleOrderDo  recycleOrderDo = recycleOrderService.getBorrowRecycleOrderByBorrowId(afBorrowCashDo.getRid());
 				// 查询用户是否有订单借款信息
 				AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
 						.getBorrowLegalOrderCashByBorrowIdNoClosed(afBorrowCashDo.getRid());
@@ -88,7 +86,9 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 				}else if(StringUtils.equalsIgnoreCase("CLOSED", status)){
 					pageType = "V2";
 				} else {
-					if(null != borrowLegalOrder){
+					if (recycleOrderDo != null){
+						pageType = "V2";
+					} else if(null != borrowLegalOrder){
 						if (afBorrowLegalOrderCashDo != null) {
 							pageType = "V1";
 						} else {
@@ -108,6 +108,8 @@ public class GetCashPageTypeV2Api implements ApiHandle {
 			} else {
 				//查询用户是否有订单
 				AfBorrowLegalOrderDo borrowLegalOrder = afBorrowLegalOrderService.getLastBorrowLegalOrderByBorrowId(afBorrowCashDo.getRid());
+				//查询是否有回收订单
+				AfBorrowRecycleOrderDo  recycleOrderDo = recycleOrderService.getBorrowRecycleOrderByBorrowId(afBorrowCashDo.getRid());
 				// 查询用户是否有订单借款信息
 				AfBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = afBorrowLegalOrderCashService
 						.getBorrowLegalOrderCashByBorrowIdNoClosed(afBorrowCashDo.getRid());

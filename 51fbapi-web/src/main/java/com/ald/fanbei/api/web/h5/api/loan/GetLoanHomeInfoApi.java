@@ -4,10 +4,16 @@ import java.math.BigDecimal;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.Constants;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.AfBorrowLegalService;
+import com.ald.fanbei.api.biz.service.AfLoanService;
+import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountSenceService;
+import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.AfUserAuthService;
+import com.ald.fanbei.api.biz.service.AfUserAuthStatusService;
+import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.common.enums.SceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -45,15 +51,12 @@ public class GetLoanHomeInfoApi implements H5Handle {
 	
 	@Resource
 	private AfUserAccountSenceService afUserAccountSenceService;
-
-	@Resource
-	private AfLoanSupermarketService afLoanSupermarketService;
 	
 	@Override
 	public H5HandleResponse process(Context context) {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
-		String appType = context.getId().startsWith("i") ? "1" : "2";
+		
 		boolean loginFlag = userId == null?false:true;
 		if(loginFlag) {
 			AfUserAuthDo authInfo = afUserAuthService.getUserAuthInfoByUserId(userId);
@@ -96,7 +99,7 @@ public class GetLoanHomeInfoApi implements H5Handle {
 		resp.addResponseData("bannerList", afResourceService.getLoanHomeListByType());
 		resp.addResponseData("loanInfos", afLoanService.getHomeInfo(userId));
 		resp.addResponseData("xdInfo", afBorrowLegalService.getHomeInfo(userId));
-		resp.addResponseData("dchomeList", afLoanSupermarketService.getLoanHomeListByLable(Constants.DC_LABEL_HOME,appType));
+		
 		return resp;
 	}
 	

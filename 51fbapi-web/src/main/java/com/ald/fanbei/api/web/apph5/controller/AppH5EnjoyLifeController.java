@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.apph5.controller;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.ActivityGoodsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.JobThreadPoolUtils;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -12,12 +13,14 @@ import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
 import com.ald.fanbei.api.web.common.*;
-import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -36,7 +39,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -80,8 +82,6 @@ public class AppH5EnjoyLifeController extends BaseController {
     AfUserCouponService afUserCouponService;
 
     @Resource
-    AfModelH5Service afModelH5Service;
-    @Resource
     BizCacheUtil bizCacheUtil;
 
     @Resource
@@ -90,7 +90,8 @@ public class AppH5EnjoyLifeController extends BaseController {
     @Resource
     AfSeckillActivityService afSeckillActivityService;
 
-    ExecutorService pool = Executors.newFixedThreadPool(1);
+    @Resource
+    JobThreadPoolUtils jobThreadPoolUtils;
     @Resource
     ActivityGoodsUtil activityGoodsUtil;
     @Resource
@@ -170,8 +171,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                         BigDecimal onlineAmount = userAccountInfo.getAuAmount().subtract(userAccountInfo.getUsedAmount());
                         // 临时额度
                         AfInterimAuDo interimAuDo = afBorrowBillService.selectInterimAmountByUserId(userDo.getRid());
-                        if (interimAuDo != null
-                                && interimAuDo.getGmtFailuretime().getTime() > new Date().getTime()) {
+                        if (interimAuDo != null && interimAuDo.getGmtFailuretime().getTime() > new Date().getTime()) {
                             onlineAmount = onlineAmount.add(interimAuDo.getInterimAmount()).subtract(interimAuDo.getInterimUsed());
                         }
                         if(onlineAmount.compareTo(BigDecimal.ZERO)<0){
@@ -232,7 +232,7 @@ public class AppH5EnjoyLifeController extends BaseController {
                                     //bizCacheUtil.saveObjectForever(processKey,isProcess);
                                     Runnable process = new GetActivityListThread(subjectList,resource,array,afSubjectService,afSubjectGoodsService,afSchemeGoodsService,afInterestFreeRulesService,
                                             bizCacheUtil,afSeckillActivityService,activityGoodsUtil,query);
-                                    pool.execute(process);
+                                    jobThreadPoolUtils.asynProcessBusiness(process);
                                 }
                             }
                             if(activityList==null){
@@ -462,12 +462,12 @@ public class AppH5EnjoyLifeController extends BaseController {
                     Map activityGoodsInfo = new HashMap();
                     activityGoodsInfo.put("goodName",goodsDo.getName());
                     activityGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-                    activityGoodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+                    activityGoodsInfo.put("saleAmount",  goodsDo.getActivityPrice());
                     activityGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
                     activityGoodsInfo.put("goodsId", goodsDo.getRid());
                     activityGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
                     activityGoodsInfo.put("source", goodsDo.getSource());
-                    activityGoodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+                    activityGoodsInfo.put("priceAmount", goodsDo.getSaleAmount());
                     activityGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
                     activityGoodsInfo.put("remark", goodsDo.getRemark());
                     activityGoodsInfo.put("activityName", activityName);
@@ -493,7 +493,7 @@ public class AppH5EnjoyLifeController extends BaseController {
 
                     }
                     List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                            goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
+                            goodsDo.getActivityPrice(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
 
                     if(nperList!= null){
                         activityGoodsInfo.put("goodsType", "1");
@@ -626,12 +626,12 @@ class GetActivityListThread implements Runnable {
 
                     activityGoodsInfo.put("goodName",goodsDo.getName());
                     activityGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-                    activityGoodsInfo.put("saleAmount", goodsDo.getSaleAmount());
+                    activityGoodsInfo.put("saleAmount", goodsDo.getActivityPrice());
                     activityGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
                     activityGoodsInfo.put("goodsId", goodsDo.getRid());
                     activityGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
                     activityGoodsInfo.put("source", goodsDo.getSource());
-                    activityGoodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+                    activityGoodsInfo.put("priceAmount", goodsDo.getSaleAmount());
                     activityGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
                     activityGoodsInfo.put("remark", goodsDo.getRemark());
                     activityGoodsInfo.put("activityName", activityName);
@@ -657,7 +657,7 @@ class GetActivityListThread implements Runnable {
 
                     }
                     List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                            goodsDo.getSaleAmount(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
+                            goodsDo.getActivityPrice(), resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
                     if(nperList!= null){
                         activityGoodsInfo.put("goodsType", "1");
                         Map nperMap = nperList.get(nperList.size() - 1);

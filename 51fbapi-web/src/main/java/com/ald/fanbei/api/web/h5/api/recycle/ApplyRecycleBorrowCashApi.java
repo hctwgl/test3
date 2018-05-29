@@ -27,6 +27,7 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.ApplyLegalBorrowCashService;
 import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.impl.AfBorrowRecycleServiceImpl.ApplyCheckBo;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.common.RiskResultCode;
@@ -100,39 +101,49 @@ public class ApplyRecycleBorrowCashApi implements H5Handle {
 	public H5HandleResponse process(Context context) {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
 		String reqId = context.getId();
-		String appName = reqId.substring(reqId.lastIndexOf("_") + 1, reqId.length());
+		final String appName = reqId.substring(reqId.lastIndexOf("_") + 1, reqId.length());
 		String appType = reqId.startsWith("i") ? "alading_ios" : "alading_and";
 		final Long userId = context.getUserId();
 		String ipAddress = context.getClientIp();
 		
-		ApplyRecycleBorrowCashParam param = (ApplyRecycleBorrowCashParam) context.getParamEntity();
-		ApplyLegalBorrowCashBo paramBo =  new ApplyLegalBorrowCashBo();
-		BeanUtil.copyProperties(paramBo, param);
-		paramBo.setIpAddress(ipAddress);
-		paramBo.setAppName(appName);
-		
-		AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
-		AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode());
-		AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(userId);// 获取主卡信息
-		
-		applyLegalBorrowCashService.checkBusi(accountDo, authDo, rateInfoDo, mainCard, paramBo); // 业务逻辑校验
-		
 		String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
+		applyLegalBorrowCashService.checkLock(lockKey);// 业务加锁处理
 		try {
-			applyLegalBorrowCashService.checkLock(lockKey);// 业务加锁处理
-
-			final AfBorrowCashDo afBorrowCashDo = applyLegalBorrowCashService.buildRecycleBorrowCashDo(mainCard, userId, rateInfoDo, paramBo);
-			afBorrowCashDo.setMajiabaoName(appName);// 用户借钱时app来源区分
-			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode());
-			Map<String, Object> map = afResourceService.getRateInfo(afResourceDo.getValue2(),paramBo.getType(),"borrow","BORROW_RECYCLE_INFO_LEGAL_NEW");
-			AfBorrowRecycleOrderDo recycleOrderDo = new AfBorrowRecycleOrderDo();
-			recycleOrderDo.setPropertyValue(URLDecoder.decode(paramBo.getPropertyValue()));
-			recycleOrderDo.setUserId(userId);
-			recycleOrderDo.setGoodsImg(paramBo.getGoodsImg());
-			recycleOrderDo.setGoodsName(paramBo.getGoodsName());
-			recycleOrderDo.setOverdueRate(new BigDecimal((Double) map.get("overdueRate")));
-			Long borrowId = afBorrowRecycleService.addBorrowRecord(afBorrowCashDo, recycleOrderDo);
+			ApplyRecycleBorrowCashParam param = (ApplyRecycleBorrowCashParam) context.getParamEntity();
+			final ApplyLegalBorrowCashBo paramBo =  new ApplyLegalBorrowCashBo();
+			BeanUtil.copyProperties(paramBo, param);
+			paramBo.setIpAddress(ipAddress);
+			paramBo.setAppName(appName);
+			
+			final AfUserAccountDo accountDo = afUserAccountService.getUserAccountByUserId(userId);
+			final AfUserAuthDo authDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+			final AfResourceDo rateInfoDo = afResourceService.getConfigByTypesAndSecType(Constants.BORROW_RATE, AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode());
+			final AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(userId);// 获取主卡信息
+			final ApplyCheckBo applyCheckBo = new ApplyCheckBo();
+			
+			transactionTemplate.execute(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					applyLegalBorrowCashService.checkRecycleBusi(accountDo, authDo, rateInfoDo, mainCard, paramBo); // 业务逻辑校验
+		
+					applyCheckBo.afBorrowCashDo = applyLegalBorrowCashService.buildRecycleBorrowCashDo(mainCard, userId, rateInfoDo, paramBo);
+					applyCheckBo.afBorrowCashDo.setMajiabaoName(appName);// 用户借钱时app来源区分
+					AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_RECYCLE_INFO_LEGAL_NEW.getCode());
+					Map<String, Object> map = afResourceService.getRateInfo(afResourceDo.getValue2(),paramBo.getType(),"borrow","BORROW_RECYCLE_INFO_LEGAL_NEW");
+					AfBorrowRecycleOrderDo recycleOrderDo = new AfBorrowRecycleOrderDo();
+					recycleOrderDo.setPropertyValue(URLDecoder.decode(paramBo.getPropertyValue()));
+					recycleOrderDo.setUserId(userId);
+					recycleOrderDo.setGoodsImg(paramBo.getGoodsImg());
+					recycleOrderDo.setGoodsName(paramBo.getGoodsName());
+					recycleOrderDo.setOverdueRate(new BigDecimal((Double) map.get("overdueRate")));
+					applyCheckBo.borrowId = afBorrowRecycleService.addBorrowRecord(applyCheckBo.afBorrowCashDo, recycleOrderDo);
+					return 1l;
+				}
+			});
+			
+			final AfBorrowCashDo afBorrowCashDo = applyCheckBo.afBorrowCashDo;
+			Long borrowId = applyCheckBo.borrowId;
+			
 			RiskVerifyRespBo verifyBo;
 			try {
 				bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED, String.valueOf(userId));// 借过款的放入缓存，借钱按钮不需要高亮显示

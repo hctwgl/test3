@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.service.AfBorrowCacheAmountPerdayService;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalGoodsService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.AfBorrowRecycleService;
 import com.ald.fanbei.api.biz.service.AfGameResultService;
 import com.ald.fanbei.api.biz.service.AfGameService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
@@ -125,6 +126,9 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 	AfBorrowLegalOrderRepaymentDao afBorrowLegalOrderRepaymentDao;
 	@Resource
 	AfUserAccountSenceService afUserAccountSenceService;
+	
+	@Resource
+	AfBorrowRecycleService afBorrowRecycleService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -166,6 +170,10 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 		String inRejectLoan = YesNoStatus.NO.getCode();
 		String finishFlag = YesNoStatus.NO.getCode();
 		AfBorrowCashDo afBorrowCash = afBorrowCashService.getNowUnfinishedBorrowCashByUserId(userId);
+		// 屏蔽回收借款 5.11 By ZJF
+    	if(afBorrowCash != null && afBorrowRecycleService.isRecycleBorrow(afBorrowCash.getRid())) {
+    		afBorrowCash = null;
+    	}
 		if (afBorrowCash != null) {
 			finishFlag = YesNoStatus.YES.getCode();
 		}
@@ -219,6 +227,11 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 			// 查询最后一笔借款信息
 			afBorrowCashDo = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
 		}
+		// 屏蔽回收借款 5.11 By ZJF
+    	if(afBorrowCashDo != null && afBorrowRecycleService.isRecycleBorrow(afBorrowCashDo.getRid())) {
+    		afBorrowCashDo = null;
+    	}
+		
 		if (afBorrowCashDo == null) {
 			data.put("status", "DEFAULT");
 		} else {
@@ -348,12 +361,13 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 		String jumpToRejectPage = YesNoStatus.NO.getCode();
 		String jumpPageBannerUrl = "";
 
-		if (afBorrowCashDo != null && AfBorrowCashStatus.closed.getCode().equals(afBorrowCashDo.getStatus()) && AfBorrowCashReviewStatus.refuse.getCode().equals(afBorrowCashDo.getReviewStatus())) {
+		AfBorrowCashDo dealingBorrowCash = afBorrowCashService.getBorrowCashByUserIdDescById(userId);
+		if (dealingBorrowCash != null && AfBorrowCashStatus.closed.getCode().equals(dealingBorrowCash.getStatus()) && AfBorrowCashReviewStatus.refuse.getCode().equals(dealingBorrowCash.getReviewStatus())) {
 			// 借款被拒绝
 			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.RiskManagementBorrowcashLimit.getCode(), AfResourceSecType.RejectTimePeriod.getCode());
 			if (afResourceDo != null && AfCounponStatus.O.getCode().equals(afResourceDo.getValue4())) {
 				Integer rejectTimePeriod = NumberUtil.objToIntDefault(afResourceDo.getValue1(), 0);
-				Date desTime = DateUtil.addDays(afBorrowCashDo.getGmtCreate(), rejectTimePeriod);
+				Date desTime = DateUtil.addDays(dealingBorrowCash.getGmtCreate(), rejectTimePeriod);
 				if (DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(desTime), DateUtil.getToday()) < 0) {
 					// 风控拒绝日期内
 					inRejectLoan = YesNoStatus.YES.getCode();
@@ -363,7 +377,7 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 			// 如果存在风控限制，需校验是否需要跳转至不通过页面等信息
 			if (YesNoStatus.YES.getCode().equals(inRejectLoan)) {
 				// 从用户操作日志中获取用户是否存在在现金借款操作
-				AfUserOperationLogDo afUserOperationLogDo = new AfUserOperationLogDo(userId, AfUserOperationLogType.RISKBORROWCASH.getCode(), AfUserOperationLogRefType.AFBORROWCASH.getCode(), afBorrowCashDo.getRid() + "");
+				AfUserOperationLogDo afUserOperationLogDo = new AfUserOperationLogDo(userId, AfUserOperationLogType.RISKBORROWCASH.getCode(), AfUserOperationLogRefType.AFBORROWCASH.getCode(), dealingBorrowCash.getRid() + "");
 				Integer riskBcNums = afUserOperationLogService.getNumsByUserAndType(afUserOperationLogDo);
 				if (NumberUtil.isNullOrZero(riskBcNums)) {
 					jumpToRejectPage = YesNoStatus.YES.getCode();

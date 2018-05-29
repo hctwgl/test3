@@ -106,5 +106,14 @@ public interface AfUserAccountSenceService extends ParentService<AfUserAccountSe
     AfUserAccountSenceDo initTotalLoan(AfUserAccountDo accInfo);
     AfUserAccountSenceDo initTotalLoanSelection(AfUserAccountDo accInfo);
     
+    /**
+     * 线上分期提额
+     * @param userId
+     * @param scene
+     * @param riskScene
+     * @param riskSceneType
+     * @param authType
+     */
     void raiseOnlineQuato(Long userId, String scene, String riskScene, String riskSceneType, String authType);
+    void raiseOnlineQuatoForBuddle(Long userId, String scene, String riskScene, String riskSceneType, String authType);
 }

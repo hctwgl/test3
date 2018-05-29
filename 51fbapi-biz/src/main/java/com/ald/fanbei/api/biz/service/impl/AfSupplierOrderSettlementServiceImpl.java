@@ -7,6 +7,8 @@ import com.ald.fanbei.api.common.enums.SupplierSettlementOrderPayStatus;
 import com.ald.fanbei.api.dal.dao.AfSupplierOrderSettlementDao;
 import com.ald.fanbei.api.dal.domain.AfSupplierOrderSettlementDo;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -20,6 +22,7 @@ import javax.annotation.Resource;
  */
 @Service("afSupplierOrderSettlementService")
 public class AfSupplierOrderSettlementServiceImpl implements AfSupplierOrderSettlementService {
+    private static final Logger logger = LoggerFactory.getLogger(AfSupplierOrderSettlementServiceImpl.class);
     @Resource
     AfSupplierOrderSettlementDao afSupplierOrderSettlementDao;
     @Resource
@@ -36,6 +39,7 @@ public class AfSupplierOrderSettlementServiceImpl implements AfSupplierOrderSett
         transactionTemplate.execute(new TransactionCallback<Void>() {
             public Void doInTransaction(TransactionStatus status) {
 
+                logger.error("dealPayCallback, tradeState=" + tradeState);
                 if ("00".equals(tradeState)) {// 打款 成功，更新结算单状态 tradeState: 00 成功 01部分成功 02已签约 10 失败 20 处理中 30未知
                     afSupDo.setStatus(SupplierOrderSettlementStatus.SETTLEMENT_SUCCESS.getStatus());
                     afSupplierOrderSettlementDao.updateBatchOrderSettlementStatus(afSupDo);//修改结算订单为已结算
@@ -48,6 +52,7 @@ public class AfSupplierOrderSettlementServiceImpl implements AfSupplierOrderSett
                         String[] offsetNoArray = offsetNo.split(",");
                         for(int i = 0; i < offsetNoArray.length; i++){
                             if(StringUtils.isNotBlank(offsetNoArray[i])){
+                                logger.error("dealPayCallback, offsetNo=" + offsetNoArray[i]);
                                 //更新结算单的状态
                                 afSupDo.setSettlementNo(offsetNoArray[i]);
                                 afSupDo.setStatus(SupplierSettlementOrderPayStatus.PAY_SUCCESS.getStatus());
@@ -64,7 +69,7 @@ public class AfSupplierOrderSettlementServiceImpl implements AfSupplierOrderSett
                         }
                     }
                 }else{//记录错误日志
-                    //logger.error("dealPayCallback, tradeState=" + tradeState);
+                    logger.error("dealPayCallback, tradeState=" + tradeState);
                     afSupDo.setStatus(SupplierOrderSettlementStatus.SETTLEMENT_FAILED.getStatus());
                     afSupplierOrderSettlementDao.updateBatchOrderSettlementStatus(afSupDo);//修改结算订单为结算失败
                     afSupDo.setStatus(SupplierSettlementOrderPayStatus.PAY_FAILED.getStatus());

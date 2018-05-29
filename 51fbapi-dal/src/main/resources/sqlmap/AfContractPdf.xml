@@ -29,6 +29,14 @@
     ORDER by id desc
     limit 1
   </select>
+  <select id="selectLenders" resultType="com.ald.fanbei.api.dal.domain.dto.AfLenderInfoDto" >
+    SELECT b.`user_name` ,b.`edspay_user_card_id` ,a.`investor_amount`   FROM
+    `af_contract_pdf_edspay_seal` a LEFT JOIN `af_user_seal` b on a.`user_seal_id` =b.`id`  WHERE a.`pdf_id` =#{pdfId}
+  </select>
+  <select id="selectLendersSummary" resultType="com.ald.fanbei.api.dal.domain.dto.AfLenderInfoDto" >
+   SELECT b.`user_name` ,b.`edspay_user_card_id` ,SUM(a.`investor_amount`) as  investor_amount   FROM
+    `af_contract_pdf_edspay_seal` a LEFT JOIN `af_user_seal` b on a.`user_seal_id` =b.`id`  WHERE a.`pdf_id` =#{pdfId} GROUP BY `user_name` ;
+  </select>
   <insert id="insert" parameterType="AfContractPdfDo" keyProperty="id" useGeneratedKeys="true">
     insert into af_contract_pdf (id, type, type_id,
       contract_pdf_url,ev_id,gmt_create,is_delete,user_seal_id)

@@ -148,7 +148,7 @@
 
     <select id="getActivityReservationGoodsList" resultType="com.ald.fanbei.api.dal.domain.AfActivityReservationGoodsUserDo" >
         SELECT
-        aag.id rid,aag.goods_id,aag.gmt_create,aag.gmt_modified,aag.limit_count,aag.coupon_id,aag.sort
+        aag.id rid,aag.goods_id,aag.gmt_create,aag.gmt_modified,sag.limit_count,aag.coupon_id,aag.sort
         , sa.gmt_start, sa.gmt_end, ag.name goodsName, sag.special_price activityAmount
         , if(MIN(b.actual_amount) > 0, MIN(b.actual_amount), 0)  saleAmount
         , if((MIN(b.actual_amount) - ac.amount ) > 0, MIN(b.actual_amount) - ac.amount , 0) end_amount

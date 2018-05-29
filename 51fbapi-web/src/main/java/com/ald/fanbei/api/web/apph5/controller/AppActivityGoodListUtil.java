@@ -88,6 +88,9 @@ public class AppActivityGoodListUtil {
     AfUserCouponService afUserCouponService;
 
     @Resource
+    AfSchemeService afSchemeService;
+
+    @Resource
     AfModelH5Service afModelH5Service;
 
     @Resource
@@ -413,26 +416,31 @@ public class AppActivityGoodListUtil {
                     activityGoodsInfo.put("remark", goodsDo.getRemark());
                     activityGoodsInfo.put("activityName", activityName);
                     // 如果是分期免息商品，则计算分期
+                    if(goodsDo.getRid() == 129265){
+                        System.out.println("goodsId"+ 1234565);
+                    }
                     AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsDo.getRid());
                     JSONArray interestFreeArray = null;
                     if(null != afSchemeGoodsDo){
                         Long goodsId = goodsDo.getRid();
-                        AfSchemeGoodsDo  schemeGoodsDo = null;
+                        AfSchemeDo  afSchemeDo = null;
                         try {
-                            schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+                             afSchemeDo = afSchemeService.getSchemeById(afSchemeGoodsDo.getSchemeId());
                         } catch(Exception e){
                             logger.error(e.toString());
                         }
 
-                        if(schemeGoodsDo != null){
-                            AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
-                            String interestFreeJson = interestFreeRulesDo.getRuleJson();
-                            if (org.apache.commons.lang.StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-                                interestFreeArray = JSON.parseArray(interestFreeJson);
+                        if(afSchemeDo != null){
+                            if (freeflag(afSchemeDo.getGmtStart(),afSchemeDo.getGmtEnd(),afSchemeDo.getIsOpen()) ){
+                                AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(afSchemeGoodsDo.getInterestFreeId());
+                                String interestFreeJson = interestFreeRulesDo.getRuleJson();
+                                if (org.apache.commons.lang.StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+                                    interestFreeArray = JSON.parseArray(interestFreeJson);
+                                }
                             }
                         }
-
                     }
+
                     List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
                             saleAmount, resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
 
@@ -452,5 +460,23 @@ public class AppActivityGoodListUtil {
         return activityList;
     }
 
+    private boolean freeflag(Date start,Date end,String isOpen){
+        try {
+            if (!"Y".equals(isOpen)){
+                return false;
+            }
+            if (DateUtil.compareDate(end,new Date()) && DateUtil.compareDate(new Date(),start)){
+                return true;
+
+            }else {
+                return false;
+            }
+        }catch (Exception e){
+            logger.info("freeflag",e);
+            return false;
+
+        }
+
+    }
 
 }
