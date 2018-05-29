@@ -1196,10 +1196,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							orderDao.updateOrder(orderInfo);
 							
 							 logger.info("verify userId" + userId);
-// 							 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-//							 logger.info("weakverybo=" + verybo);
-							 verybo = new RiskVerifyRespBo();
-							 verybo.setSuccess(false);
+							 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+							 logger.info("weakverybo=" + verybo);
 							 boolean riskPassStatus = verybo.isSuccess();
 							 if ( ! riskPassStatus  && vipGoodsResourceDo!=null){
 								//标记此订单支付失败，根据软弱风控去选择是否引导权限包购买
@@ -1214,9 +1212,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 orderInfo.setWeakRiskOrderNo(softWeakRiskOrderNo);
 								 orderDao.updateOrder(orderInfo);
 								 
-		//						 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-								 RiskVerifyRespBo softWeakverybo = new RiskVerifyRespBo();
-								 softWeakverybo.setSuccess(true);
+								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 								 logger.info("softWeakverybo=" + softWeakverybo);
 								 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
 								 if(softWeakRiskStatus && vipGoodsId>0){
