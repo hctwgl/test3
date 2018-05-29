@@ -718,7 +718,7 @@ public class RiskUtil extends AbstractThird {
 	    	//软弱风控控制
 	    	softWeakFlag = NumberUtil.objToIntDefault(controlFlag[1], 0);
 	    }
-	    if("40".equals(scene) || "44".equals(scene)){
+	    if("40".equals(scene)){
 	    	if(weakFlag == 1){
 	    		RiskVerifyRespBo verybo = new RiskVerifyRespBo();
 	    		verybo.setSuccess(true);
@@ -726,6 +726,20 @@ public class RiskUtil extends AbstractThird {
 	    		return verybo;
 	    	}
 	    	if(weakFlag == 2){
+	    		RiskVerifyRespBo verybo = new RiskVerifyRespBo();
+	    		verybo.setSuccess(false);
+	    		verybo.setResult("20");
+	    		return verybo;
+	    	}
+	    }
+	    if("44".equals(scene)){
+	    	if(softWeakFlag == 1){
+	    		RiskVerifyRespBo verybo = new RiskVerifyRespBo();
+	    		verybo.setSuccess(true);
+	    		verybo.setResult("10");
+	    		return verybo;
+	    	}
+	    	if(softWeakFlag == 2){
 	    		RiskVerifyRespBo verybo = new RiskVerifyRespBo();
 	    		verybo.setSuccess(false);
 	    		verybo.setResult("20");
