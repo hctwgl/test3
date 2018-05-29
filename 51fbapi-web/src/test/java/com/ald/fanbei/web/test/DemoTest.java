@@ -83,7 +83,7 @@ public class DemoTest extends BaseTest{
 	}
 
 	//新增优惠券
-	//@Test
+	@Test
 	public void  addShared() {
 		String url = urlBase + "/fanbei-web/addShared";
 		Map<String,String> params = new HashMap<>();
@@ -172,7 +172,7 @@ public class DemoTest extends BaseTest{
 		params.put("status", "NOUSE");
 		testH5(url, params, userName, true);
 	}
-	@Test
+	//@Test
 	public void  getMineCouponList() {
 		String url = urlBase + "/fanbei-web/getMineCouponList";
 		Map<String,String> params = new HashMap<>();
