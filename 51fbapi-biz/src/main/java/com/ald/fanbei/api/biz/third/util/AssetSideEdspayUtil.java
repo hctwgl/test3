@@ -831,6 +831,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==0){
 						//打款成功
 						AfBorrowCashPushDo borrowCashPush = buildBorrowCashPush(borrowCashDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.PAYSUCCESS.getCode());
+						borrowCashPush.setLoanTime(PayResultReqBo.getLoanTime());//记录放款时间
 						afBorrowCashPushService.saveOrUpdate(borrowCashPush);
 						AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowCashDo.getRid());
 						// 打款成功，更新借款状态、可用额度等信息
@@ -935,6 +936,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 						}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==0){
 							//打款成功
 							AfLoanPushDo loanPushDo = buildLoanPush(loanDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.PAYSUCCESS.getCode());
+							loanPushDo.setLoanTime(PayResultReqBo.getLoanTime());//记录放款时间
 							afLoanPushService.saveOrUpdate(loanPushDo);
 							afLoanService.dealLoanSucc(loanDo.getRid(),"");
 						}	

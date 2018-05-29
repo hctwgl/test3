@@ -255,7 +255,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 
 	@Override
 	public int addPackageDetailLoanTime(List<String> orderNos, Date loanTime, Integer debtType) {
-		//不存在的记录
+		
 		for (String tempBorrowNo : orderNos) {
 			final String borrowNo = tempBorrowNo;
 			final AfAssetPackageDetailDo afAssetPackageDetail = afAssetPackageDetailDao.getByBorrowNo(borrowNo);
@@ -282,11 +282,7 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 						logger.error("batchGiveBackCreditInfo error ,borrow not exists,id=" + afAssetPackageDetail.getBorrowCashId());
 						return 0;
 					}
-					//记录放款时间
-					AfAssetPackageDetailDo afAssetPackageDetailTemp = new AfAssetPackageDetailDo();
-					afAssetPackageDetailTemp.setRid(afAssetPackageDetail.getRid());
-					afAssetPackageDetailTemp.setLoanTime(loanTime);
-					afAssetPackageDetailDao.updateById(afAssetPackageDetailTemp);
+					
 				} else if (debtType == 0) {
 					//现金贷
 					AfBorrowCashDo borrowCashDo = afBorrowCashDao.getBorrowCashByrid(afAssetPackageDetail.getBorrowCashId());
@@ -294,7 +290,6 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 						logger.error("batchGiveBackCreditInfo error ,borrowCash not exists,id=" + afAssetPackageDetail.getBorrowCashId());
 						return 0;
 					}
-					//记录放款时间
 
 				} else {
 					//白领贷
@@ -303,9 +298,14 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 						logger.error("batchGiveBackCreditInfo error ,loan not exists,id=" + afAssetPackageDetail.getBorrowCashId());
 						return 0;
 					}
-					//记录放款时间
 
 				}
+				
+				//记录放款时间
+				AfAssetPackageDetailDo afAssetPackageDetailTemp = new AfAssetPackageDetailDo();
+				afAssetPackageDetailTemp.setRid(afAssetPackageDetail.getRid());
+				afAssetPackageDetailTemp.setLoanTime(loanTime);
+				afAssetPackageDetailDao.updateById(afAssetPackageDetailTemp);
 			} catch (Exception e) {
 				logger.error("batchGiveBackCreditInfo exe exception ,borrowNo=" + borrowNo, e);
 				return 0;
