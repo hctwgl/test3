@@ -106,6 +106,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
                 afTaskDto.setReceiveReward("N");
                 afTaskDto.setIsDailyUpdate(1);
                 afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
+                afTaskDto.setIsDailyUpdate(1);
                 finalTaskList.add(afTaskDto);
             }
         }else{
@@ -132,6 +133,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
             afTaskDto.setSumTaskCondition(3);
             afTaskDto.setIsDailyUpdate(1);
             afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
+            afTaskDto.setIsDailyUpdate(1);
             finalTaskList.add(afTaskDto);
         }
         for(AfTaskDto afTaskDo : taskList){

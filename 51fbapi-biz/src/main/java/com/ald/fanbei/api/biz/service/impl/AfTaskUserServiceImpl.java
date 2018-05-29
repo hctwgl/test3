@@ -300,11 +300,11 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 	}
 
 	@Override
-	public BigDecimal getRewardAmount(List<AfTaskUserDo> taskUserDoList, int rewardType) {
+	public String getRewardAmount(List<AfTaskUserDo> taskUserDoList, int rewardType) {
 		Long coinAmount = 0l;
 		BigDecimal cashAmount = new BigDecimal(0d);
 		List<Long> couponIdList = Lists.newArrayList();
-
+		String message = "";
 		for (AfTaskUserDo taskUserDo : taskUserDoList) {
 			if (0 == rewardType) {
 				coinAmount += taskUserDo.getCoinAmount();
@@ -317,12 +317,17 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 
 		if(0 == rewardType){
 			cashAmount.add(new BigDecimal(coinAmount));
+			message = cashAmount.toString()+"金币已入账，继续逛逛能得到更多哦";
 		}
 		if(2 == rewardType){
 			cashAmount.add(getCouponAmountByIds(couponIdList));
+			message = cashAmount.toString()+"元优惠券已入账，继续逛逛能得到更多哦";
+		}
+		if(1 == rewardType){
+			message = cashAmount.toString()+"元现金已入账，继续逛逛能得到更多哦";
 		}
 
-		return cashAmount;
+		return message;
 	}
 
 	@Override

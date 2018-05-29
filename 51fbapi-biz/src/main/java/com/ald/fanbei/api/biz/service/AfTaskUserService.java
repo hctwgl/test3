@@ -106,7 +106,7 @@ public interface AfTaskUserService {
 
     /**
      * 判断用户完成的任务类型是否一致
-     * -1:没有完成的任务；-2：任务不一致；0：金币；1：现金；2：优惠券
+     * -1:没有完成的任务；-2：有多个任务完成；0：金币；1：现金；2：优惠券
      * @param taskUserDoList
      * @return
      */
@@ -124,7 +124,7 @@ public interface AfTaskUserService {
      * @param taskUserDoList
      * @return
      */
-    BigDecimal getRewardAmount(List<AfTaskUserDo> taskUserDoList, int rewardType);
+    String getRewardAmount(List<AfTaskUserDo> taskUserDoList, int rewardType);
 
     /**
      * 获取优惠券金额

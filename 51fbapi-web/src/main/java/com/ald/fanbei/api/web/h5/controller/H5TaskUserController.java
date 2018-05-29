@@ -118,12 +118,11 @@ public class H5TaskUserController extends BaseController {
                 if (-1 == rewardType) {
                     return H5CommonResponse.getNewInstance(false, "").toString();
                 } else if (-2 == rewardType) {
-                    data.put("rewardType", rewardType);
+                    data.put("message", "奖励已放入您的账户，继续逛逛能得到更多哦!");
                     afTaskUserService.batchUpdateTaskUserStatus(taskUserIdList);
                     return H5CommonResponse.getNewInstance(true, "", "", data).toString();
                 } else {
-                    data.put("rewardType", rewardType);
-                    data.put("rewardAmount", afTaskUserService.getRewardAmount(taskUserList, rewardType));
+                    data.put("message", afTaskUserService.getRewardAmount(taskUserList, rewardType));
                     afTaskUserService.batchUpdateTaskUserStatus(taskUserIdList);
                     return H5CommonResponse.getNewInstance(true, "", "", data).toString();
                 }

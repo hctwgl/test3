@@ -66,7 +66,6 @@ public class SupplementSignInfoApi implements H5Handle {
         }else {
             resp.addResponseData("rewardRule","");
         }
-
         //判断用户和openId是否在爱上街绑定
         AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
         if(thirdInfo == null){

@@ -78,10 +78,6 @@ public class FriendSignInfoApi implements H5Handle {
         }else {
             resp.addResponseData("rewardRule","");
         }
-        if(true){
-            resp.addResponseData("openType","2");
-            return resp;
-        }
         //判断用户和openId是否在爱上街绑定
         AfResourceDo afResource = afResourceService.getWechatConfig();
         String appid = afResource.getValue();
