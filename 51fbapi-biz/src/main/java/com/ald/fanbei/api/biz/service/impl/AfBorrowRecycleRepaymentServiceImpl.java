@@ -349,9 +349,9 @@ public class AfBorrowRecycleRepaymentServiceImpl implements AfBorrowRecycleRepay
 			}
 		    } else {
 			errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repaymentDo.getUserId());
-			smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
-			String title = "本次还款支付失败";
-			String content = "非常遗憾，本次还款失败：&errorMsg，您可更换银行卡或采用其他还款方式。";
+			smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RECYCLE_REPAYMENT_BORROWCASH_FAIL.getCode());
+			String title = "本次支付失败";
+			String content = "支付失败：&errorMsg，您可更换其他银行卡或关联支付宝支付，若有疑问请联系客服4000025151咨询";
 			content = content.replace("&errorMsg", errorMsg);
 			pushService.pushUtil(title, content, afUserDo.getMobile());
 		    }
