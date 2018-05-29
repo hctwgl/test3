@@ -463,7 +463,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         AfOrderDo orderInfo = new AfOrderDo();
         orderInfo.setUserId(13989456327L);
         orderInfo.setRid(193477L);
-        orderInfo.setGoodsId(136897L);
+        orderInfo.setGoodsId(136893L);
         afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
         return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
     }
