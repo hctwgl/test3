@@ -117,6 +117,7 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
                                 taskBrowseGoodsDaysDo = new AfTaskBrowseGoodsDaysDo();
                                 taskBrowseGoodsDaysDo.setContinueDays(continueDays + 1);
                                 taskBrowseGoodsDaysDo.setGmtCreate(new Date());
+                                taskBrowseGoodsDaysDo.setGmtModified(new Date());
                                 taskBrowseGoodsDaysDo.setLastCompleteTaskDate(new Date());
                                 taskBrowseGoodsDaysDo.setUserId(userId);
                                 afTaskBrowseGoodsDaysService.addTaskBrowseGoodsDays(taskBrowseGoodsDaysDo);

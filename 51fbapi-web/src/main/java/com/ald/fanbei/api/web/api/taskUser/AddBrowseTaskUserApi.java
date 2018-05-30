@@ -75,14 +75,14 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 						data.put("taskUserIds", taskUserIds);
 					}
 				}
-				resp.addResponseData("taskUserIds",data.get("taskUserIds"));
+				resp.setResponseData(data);
 			}
 
 		}catch(Exception e){
 			logger.error("addBrowseTaskUser error, ", e);
 		}
 		
-		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+		return resp;
 	}
 
 		/**

@@ -63,7 +63,7 @@ public class ReceiveBrowseTaskRewardsApi  implements ApiHandle {
 					afTaskUserService.batchUpdateTaskUserStatus(taskUserIdList);
 				}
 			}
-			resp.addResponseData("data",data);
+			resp.setResponseData(data);
 		}catch(Exception e){
 			logger.error("receiveBrowseTaskRewards error, ", e);
 		}
