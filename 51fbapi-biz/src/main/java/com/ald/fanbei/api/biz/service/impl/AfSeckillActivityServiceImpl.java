@@ -333,12 +333,14 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
                             if(null !=  userReservationId &&  afActivityReservationGoodsUserDo1.getLimitCount() > goodsCount){
                                 afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsUserDo1.getRid(), orderInfo.getUserId(), 1);
                             }else if(null == userReservationId){
-                                afActivityReservationGoodsUserDo.setCouponId(Long.valueOf(couponId));
-                                afActivityReservationGoodsUserDo.setGoodsCount(1);
-                                Date nowTime = new Date();
-                                afActivityReservationGoodsUserDo.setGmtCreate(nowTime);
-                                afActivityReservationGoodsUserDo.setGmtModified(nowTime);
-                                afActivityReservationGoodsUserDao.saveRecord(afActivityReservationGoodsUserDo);
+                            	if(i == 0){
+									afActivityReservationGoodsUserDo.setCouponId(Long.valueOf(couponId));
+									afActivityReservationGoodsUserDo.setGoodsCount(orderInfo.getCount());
+									Date nowTime = new Date();
+									afActivityReservationGoodsUserDo.setGmtCreate(nowTime);
+									afActivityReservationGoodsUserDo.setGmtModified(nowTime);
+									afActivityReservationGoodsUserDao.saveRecord(afActivityReservationGoodsUserDo);
+								}
                             }
 
                             //送优惠券

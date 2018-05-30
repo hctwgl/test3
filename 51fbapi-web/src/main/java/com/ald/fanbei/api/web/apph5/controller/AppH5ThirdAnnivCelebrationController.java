@@ -467,6 +467,25 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
         return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
     }
+
+    /**
+     * ceshi
+     * @param request
+     * @param response
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "ceshiSMS", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    public String ceshiSMS(HttpServletRequest request, HttpServletResponse response) {
+        //获取资源信息
+        AfResourceDo resourceInfo1 = afResourceService.getConfigByTypesAndSecType(Constants.SMS_TEMPLATE, Constants.SMS_ACTIVITY_RESERVATION_GOODS);
+        String content = resourceInfo1.getValue();
+        //发送短信
+        String mobile = "13685746702";
+        logger.info("sendSMS mobile:" + mobile + "  content: " + content);
+        smsUtil.sendSmsToDhstAishangjie(mobile, content);
+        return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
+    }
     /**
      * ceshi
      * @param request

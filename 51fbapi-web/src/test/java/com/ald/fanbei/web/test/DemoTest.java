@@ -36,7 +36,8 @@ public class DemoTest extends BaseTest{
 	 */
 	String urlBase = "http://localhost:8080";
 	//String userName = "17710378476";
-	String userName = "15258801185";
+	//String userName = "15258801185";
+	String userName = "13685746702";
 
 	
 	/**
@@ -131,8 +132,8 @@ public class DemoTest extends BaseTest{
 
 	//测试发送短信
 	//@Test
-	public void  ceshiSendSms() {
-		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiSendSms";
+	public void  ceshiSMS() {
+		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiSMS";
 		Map<String,String> params = new HashMap<>();
 		params.put("userName", "13656640521");
 		testH5(url, params, userName, true);
@@ -148,7 +149,7 @@ public class DemoTest extends BaseTest{
 	}
 
 	//根据活动ID获取活动商品列表
-	//@Test
+	@Test
 	public void  partActivityInfoV2() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/partActivityInfoV2";
 		Map<String,String> params = new HashMap<>();
@@ -156,7 +157,7 @@ public class DemoTest extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	//根据活动ID获取活动商品列表
-	@Test
+	//@Test
 	public void  getPushingGoods() {
 		String url = urlBase + "/visualH5/getPushingGoods";
 		Map<String,String> params = new HashMap<>();
