@@ -69,7 +69,7 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 					}
 				} else if(StringUtils.isNotEmpty(taskContition)){
 					// 浏览活动链接任务
-					List<AfTaskUserDo> specifiedTaskUserList = afTaskUserService.taskHandler(userId, taskContition, AfTaskType.BROWSE.getCode());
+					List<AfTaskUserDo> specifiedTaskUserList = afTaskUserService.taskHandler(userId, AfTaskType.BROWSE.getCode(),taskContition);
 					String taskUserIds = buildTaskUserIds(specifiedTaskUserList);
 					if(StringUtils.isNotEmpty(taskUserIds)){
 						data.put("taskUserIds", taskUserIds);

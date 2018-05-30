@@ -30,7 +30,7 @@ public interface AfSignRewardExtDao  {
 
     int saveRecordBatch(List<AfSignRewardExtDo> list );
 
-    int increaseMoneyBtach(List<AfSignRewardExtDo> list );
+    int increaseMoneyBtach(@Param("list") List<AfSignRewardExtDo> list );
 
     int updateSignRemind(AfSignRewardExtDo afSignRewardExtDo);
 

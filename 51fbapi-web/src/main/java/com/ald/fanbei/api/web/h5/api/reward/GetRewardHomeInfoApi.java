@@ -72,7 +72,7 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		String status = afSignRewardService.isExist(userId)==false?"N":"Y";
 		resp.addResponseData("rewardStatus",status);
 
-		Map<String,Object> map = afSignRewardExtService.getHomeInfo(userId,status);
+		Map<String,Object> map = afSignRewardExtService.getHomeInfo(userId,status,BigDecimal.ZERO);
 		resp.addResponseData("isOpenRemind",map.get("isOpenRemind"));
 		resp.addResponseData("rewardAmount",map.get("rewardAmount"));
 		resp.addResponseData("supplementSignDays",map.get("supplementSignDays"));
