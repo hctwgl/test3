@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 @Setter
  public class AfTaskUserDo extends AbstractSerial {
 
-    private static final long serialVersionUID = 1L;
 
     /**
      * 主键Rid
