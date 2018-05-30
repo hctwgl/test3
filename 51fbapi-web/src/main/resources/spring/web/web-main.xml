@@ -631,6 +631,10 @@
 				<entry key="/h5/recycle/getRecycleProtocol" value-ref="getRecycleProtocolApi" />
 				<!-- 回收业务接口 -->
 				<entry key="/h5/recycle/applyBorrowRecycleCash" value-ref="applyBorrowRecycleCashApi" />
+				
+				<!-- 支付相关接口 -->
+				<entry key="/h5/pay/recycleQuickPaymentResendCode" value-ref="recycleQuickPaymentResendCodeApi" />
+				<entry key="/h5/pay/recycleConfirmPayment" value-ref="recycleConfirmPaymentApi" />
 			</map>
 		</constructor-arg>
 	</bean>
