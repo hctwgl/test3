@@ -234,6 +234,12 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	}
 
 	@Override
+	public BigDecimal getTodayWithdrawAmount() {
+		Date now = new Date();
+		return afRedPacketTotalDao.getTotalWithdrawAmount(DateUtil.getStartOfDate(now), DateUtil.getEndOfDate(now));
+	}
+
+	@Override
 	public boolean isCanGainOne(Long id, Integer shareTime) {
 		if (shareTime != null) {
 			int openedNum = afRedPacketSelfOpenService.getOpenedNum(id);
@@ -323,6 +329,7 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 		result.put("withdrawLimitAmount", redPacketConfig.getString("thresholdAmount"));
 		BigDecimal restAmount = calcWithdrawRestAmount(theOpening, new BigDecimal(redPacketConfig.getString("thresholdAmount")));
 		result.put("restAmount", restAmount.setScale(2, RoundingMode.HALF_UP).toString());
+		result.put("gmtNow", DateUtil.formatDateTime(new Date()));
 		result.put("gmtOverdue",
 				DateUtil.formatDateTime(DateUtil.addHoures(theOpening.getGmtCreate(), overdueIntervalHour)));
 		result.put("isCanGainOne", isCanGainOne(theOpening.getRid(), redPacketConfig.getInteger("shareTime"))
