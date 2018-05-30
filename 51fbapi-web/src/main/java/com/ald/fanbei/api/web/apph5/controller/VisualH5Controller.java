@@ -296,6 +296,12 @@ public class VisualH5Controller extends BaseController {
                     HashMap afActivityGoods = afActivityGoodsService.getVisualActivityGoodsByGoodsId(goodsId);
                     if (afActivityGoods != null) {
                         goodsInfo.put("saleAmount", afActivityGoods.get("special_price"));
+
+                        //返利金额
+                        BigDecimal secKillRebAmount = BigDecimalUtil.multiply(new BigDecimal(afActivityGoods.get("special_price").toString()), new BigDecimal(goods.get("rebate_rate").toString())).setScale(2,BigDecimal.ROUND_HALF_UP);
+                        if(new BigDecimal(goods.get("rebate_amount").toString()).compareTo(secKillRebAmount)>0){
+                            goodsInfo.put("rebateAmount", secKillRebAmount);
+                        }
                     }
                     AfSchemeGoodsDo schemeGoodsDo = null;
                     try {
@@ -312,7 +318,7 @@ public class VisualH5Controller extends BaseController {
                         }
                     }
                     List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                            new BigDecimal(goodsInfo.get("priceAmount").toString()), resource.getValue1(), resource.getValue2(), goodsId, "0");
+                            new BigDecimal(goodsInfo.get("saleAmount").toString()), resource.getValue1(), resource.getValue2(), goodsId, "0");
                     if (nperList != null) {
                         Map<String, Object> nperMap = nperList.get(nperList.size() - 1);
                         String isFree = (String) nperMap.get("isFree");

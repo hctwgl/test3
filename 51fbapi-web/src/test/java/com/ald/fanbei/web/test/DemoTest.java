@@ -155,9 +155,19 @@ public class DemoTest extends BaseTest{
 		params.put("modelId", "257");
 		testH5(url, params, userName, true);
 	}
+	//根据活动ID获取活动商品列表
+	@Test
+	public void  getPushingGoods() {
+		String url = urlBase + "/visualH5/getPushingGoods";
+		Map<String,String> params = new HashMap<>();
+		params.put("modelId", "257");
+		params.put("pageIndex", "1");
+		params.put("pageSize", "100");
+		testH5(url, params, userName, true);
+	}
 
 	//
-	@Test
+	//@Test
 	public void  ceshiPayGoodsInfo() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiPayGoodsInfo";
 		Map<String,String> params = new HashMap<>();
