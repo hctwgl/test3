@@ -2,7 +2,9 @@ package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.bo.BorrowRateBo;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -16,6 +18,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,6 +51,9 @@ public class AppH5RecommendUserController extends BaseController {
 
     @Resource
     AfUserDao afUserDao;
+
+    @Autowired
+    private BizCacheUtil bizCacheUtil;
 
     @ResponseBody
     @RequestMapping(value = "getPrizeByLastMonth",produces = "text/html;charset=UTF-8")
@@ -196,10 +202,14 @@ public class AppH5RecommendUserController extends BaseController {
         int reInt = 0;
 
         if( null != afUserDo){
-            afRecommendShareDo.setUser_id(afUserDo.getRid());
-            afRecommendShareDo.setType(type);
-            afRecommendShareDo.setRecommend_code(afUserDo.getRecommendCode());
-            reInt = afRecommendUserService.addRecommendShared(afRecommendShareDo);
+            String lock = "addShareLock" + userName;
+            boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,2, Constants.SECOND_OF_TEN);
+            if (isLock) {
+                afRecommendShareDo.setUser_id(afUserDo.getRid());
+                afRecommendShareDo.setType(type);
+                afRecommendShareDo.setRecommend_code(afUserDo.getRecommendCode());
+                reInt = afRecommendUserService.addRecommendShared(afRecommendShareDo);
+            }
         }
         data.put("addSharedCount",reInt);
         return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();

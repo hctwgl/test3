@@ -11,6 +11,7 @@ import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
@@ -400,15 +401,20 @@ public class AppActivityGoodListUtil {
                     Map activityGoodsInfo = new HashMap();
                     activityGoodsInfo.put("goodName",goodsDo.getName());
                     activityGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
-                    /*if(goodsDo.getRid() == 129264){
-                        System.out.println("hello");
-                    }*/
+
                     if(null != goodsDo.getActivityPrice()){
                         saleAmount = goodsDo.getActivityPrice();
                     }
                     else{
                         saleAmount = goodsDo.getSaleAmount();
                     }
+
+                    //返利金额
+                    BigDecimal secKillRebAmount = BigDecimalUtil.multiply(saleAmount, goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+                        activityGoodsInfo.put("rebateAmount", secKillRebAmount);
+                    }
+
                     activityGoodsInfo.put("saleAmount", saleAmount);
                     activityGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
                     activityGoodsInfo.put("goodsId", goodsDo.getRid());

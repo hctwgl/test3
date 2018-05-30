@@ -477,7 +477,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
     @RequestMapping(value = "ceshiPayGoodsInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String ceshiPayGoodsInfo(HttpServletRequest request, HttpServletResponse response) {
 
-        Long goodsId = 129264L;
+        Long goodsId = 136567L;
         AfGoodsDo goods = afGoodsService.getGoodsById(goodsId);
         if(null == goods){
             throw new FanbeiException("goods not exist error", FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);

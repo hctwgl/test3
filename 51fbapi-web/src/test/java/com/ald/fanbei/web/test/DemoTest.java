@@ -157,7 +157,7 @@ public class DemoTest extends BaseTest{
 	}
 
 	//
-	//@Test
+	@Test
 	public void  ceshiPayGoodsInfo() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiPayGoodsInfo";
 		Map<String,String> params = new HashMap<>();
@@ -165,7 +165,7 @@ public class DemoTest extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	//测试支付回调
-	@Test
+	//@Test
 	public void  ceshiPay() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiPay";
 		Map<String,String> params = new HashMap<>();

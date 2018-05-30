@@ -13,14 +13,12 @@ import com.ald.fanbei.api.common.enums.H5OpenNativeType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
 import com.ald.fanbei.api.web.common.*;
+import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -622,6 +620,12 @@ class GetActivityListThread implements Runnable {
                     }
                     else{
                         saleAmount = goodsDo.getSaleAmount();
+                    }
+
+                    //返利金额
+                    BigDecimal secKillRebAmount = BigDecimalUtil.multiply(saleAmount, goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+                        activityGoodsInfo.put("rebateAmount", secKillRebAmount);
                     }
 
                     activityGoodsInfo.put("goodName",goodsDo.getName());

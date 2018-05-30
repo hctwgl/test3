@@ -324,21 +324,40 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 						AfActivityReservationGoodsUserDo afActivityReservationGoodsUserDo1 = AfActivityReservationGoodsUserDoList.get(0);
 						Long couponId = afActivityReservationGoodsUserDo1.getCouponId();
 						Long userId = orderInfo.getUserId();
-						//未购买时添加，购买时更新购买数量
-						afActivityReservationGoodsUserDo.setGoodsId(afActivityReservationGoodsUserDo1.getRid());
-						Long userReservationId = afActivityReservationGoodsUserDo1.getUserReservationId();
-						Integer goodsCount = afActivityReservationGoodsUserDo1.getGoodsCount();
-						if(null !=  userReservationId &&  afActivityReservationGoodsUserDo1.getLimitCount() > goodsCount){
-							afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsUserDo1.getRid(), orderInfo.getUserId(), 1);
-						}else if(null == userReservationId){
-							afActivityReservationGoodsUserDo.setCouponId(Long.valueOf(couponId));
-							afActivityReservationGoodsUserDo.setGoodsCount(1);
-							Date nowTime = new Date();
-							afActivityReservationGoodsUserDo.setGmtCreate(nowTime);
-							afActivityReservationGoodsUserDo.setGmtModified(nowTime);
-							afActivityReservationGoodsUserDao.saveRecord(afActivityReservationGoodsUserDo);
-						}
+                        AfCouponDo couponDo = afCouponDao.getCouponById(couponId);
+						for(int i = 0; i < orderInfo.getCount(); i++){
+                            //未购买时添加，购买时更新购买数量
+                            afActivityReservationGoodsUserDo.setGoodsId(afActivityReservationGoodsUserDo1.getRid());
+                            Long userReservationId = afActivityReservationGoodsUserDo1.getUserReservationId();
+                            Integer goodsCount = afActivityReservationGoodsUserDo1.getGoodsCount();
+                            if(null !=  userReservationId &&  afActivityReservationGoodsUserDo1.getLimitCount() > goodsCount){
+                                afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsUserDo1.getRid(), orderInfo.getUserId(), 1);
+                            }else if(null == userReservationId){
+                                afActivityReservationGoodsUserDo.setCouponId(Long.valueOf(couponId));
+                                afActivityReservationGoodsUserDo.setGoodsCount(1);
+                                Date nowTime = new Date();
+                                afActivityReservationGoodsUserDo.setGmtCreate(nowTime);
+                                afActivityReservationGoodsUserDo.setGmtModified(nowTime);
+                                afActivityReservationGoodsUserDao.saveRecord(afActivityReservationGoodsUserDo);
+                            }
 
+                            //送优惠券
+                            if (couponDo != null) {
+                                AfUserCouponDo userCoupon = new AfUserCouponDo();
+                                userCoupon.setCouponId(couponDo.getRid());
+                                userCoupon.setGmtCreate(new Date());
+                                userCoupon.setGmtStart(couponDo.getGmtStart());
+                                userCoupon.setGmtEnd(couponDo.getGmtEnd());
+                                userCoupon.setUserId(userId);
+                                userCoupon.setStatus(AfUserCouponStatus.NOUSE.getCode());
+                                userCoupon.setSourceType(CouponSenceRuleType.SHARE_ACTIVITY.getCode());
+                                afUserCouponService.addUserCoupon(userCoupon);
+                                AfCouponDo couponDoT = new AfCouponDo();
+                                couponDoT.setRid(couponDo.getRid());
+                                couponDoT.setQuotaAlready(1);
+                                afCouponDao.updateCouponquotaAlreadyById(couponDoT);
+                            }
+                        }
 						//修改订单状态为已完成
 						logger.info("updateUserActivityGoodsInfo updateOrderStatus rid: " + orderInfo.getRid() );
 						orderDao.updateOrderStatus(orderInfo.getRid());
@@ -351,24 +370,6 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 							logger.info("sendSMS mobile:" + mobile + "  content: " + content);
 							smsUtil.sendSmsToDhstAishangjie(mobile, content);
 						}
-
-						//送优惠券
-						AfCouponDo couponDo = afCouponDao.getCouponById(couponId);
-						if (couponDo != null) {
-							AfUserCouponDo userCoupon = new AfUserCouponDo();
-							userCoupon.setCouponId(couponDo.getRid());
-							userCoupon.setGmtCreate(new Date());
-							userCoupon.setGmtStart(couponDo.getGmtStart());
-							userCoupon.setGmtEnd(couponDo.getGmtEnd());
-							userCoupon.setUserId(userId);
-							userCoupon.setStatus(AfUserCouponStatus.NOUSE.getCode());
-							userCoupon.setSourceType(CouponSenceRuleType.SHARE_ACTIVITY.getCode());
-							afUserCouponService.addUserCoupon(userCoupon);
-							AfCouponDo couponDoT = new AfCouponDo();
-							couponDoT.setRid(couponDo.getRid());
-							couponDoT.setQuotaAlready(1);
-							afCouponDao.updateCouponquotaAlreadyById(couponDoT);
-						}
 					}
 					//付售价
 				}else if(date > afSeckillActivityDo.getGmtEnd().getTime()){
@@ -380,7 +381,9 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 						//查询是否已经购买, 当购买数量大于0时 更新购买数量
 						afActivityReservationGoodsUserDo.setGoodsId(afActivityReservationGoodsUserDo1.getRid());
 						if(afActivityReservationGoodsUserDo1.getGoodsCount() > 0){
-							afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsUserDo1.getRid(), orderInfo.getUserId(), 2);
+							for(int i = 0; i < orderInfo.getCount(); i++){
+								afActivityReservationGoodsUserDao.updateReservationInfo( afActivityReservationGoodsUserDo1.getRid(), orderInfo.getUserId(), 2);
+							}
 						}
 					}
 				}

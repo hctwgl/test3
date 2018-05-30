@@ -11,6 +11,7 @@ import com.ald.fanbei.api.common.enums.CouponWebFailStatus;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -200,7 +201,16 @@ public class VisualH5Controller extends BaseController {
                 HashMap afActivityGoods = afActivityGoodsService.getVisualActivityGoodsByGoodsId(goodsId);
                 if (afActivityGoods != null) {
                     goodsInfo.put("saleAmount", afActivityGoods.get("special_price"));
+
+                    //返利金额
+                    BigDecimal secKillRebAmount = BigDecimalUtil.multiply(new BigDecimal(afActivityGoods.get("special_price").toString()), new BigDecimal(goods.get("rebate_rate").toString())).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    if(new BigDecimal(goods.get("rebate_amount").toString()).compareTo(secKillRebAmount)>0){
+                        goodsInfo.put("rebateAmount", secKillRebAmount);
+                    }
                 }
+
+
+
                 AfSchemeGoodsDo schemeGoodsDo = null;
                 try {
                     schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
