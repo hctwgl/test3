@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,user_id,task_id,task_name,coin_amount,cash_amount,coupon_id,status,reward_time
+        id rid,gmt_create,gmt_modified,user_id,task_id,task_name,coin_amount,cash_amount,coupon_id,status,reward_time,reward_type
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->

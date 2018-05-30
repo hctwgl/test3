@@ -6,6 +6,7 @@ import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.biz.util.WxUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.CookieUtil;
 import com.ald.fanbei.api.common.enums.AfResourceType;
@@ -85,14 +86,18 @@ public class H5SupplementSignInfoOutController extends H5Controller {
     public String homePage(HttpServletRequest request, HttpServletResponse response) {
         String resultStr = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc() ).toString();
         try {
-            final String moblie = ObjectUtils.toString(request.getParameter("registerMobile"), "").toString();
-            String verifyCode = ObjectUtils.toString(request.getParameter("smsCode"), "").toString();
+            final String moblie = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
+            String verifyCode = ObjectUtils.toString(request.getParameter("verifyCode"), "").toString();
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
             String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
             String push = ObjectUtils.toString(request.getParameter("push"), "").toString();
             Integer time = NumberUtil.objToIntDefault(request.getParameter("time"),1);
-            final String userWxInfo = ObjectUtils.toString(request.getParameter("userWxInfo"), "").toString();
+            String wxCode = ObjectUtils.toString(request.getParameter("wxCode"), "").toString();
             final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
+            AfResourceDo afResource = afResourceService.getWechatConfig();
+            String appid = afResource.getValue();
+            String secret = afResource.getValue1();
+            final JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
             Map<String, Object> data = new HashMap<String, Object>();
             final AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
             if (eUserDo != null) {
@@ -101,15 +106,14 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                     public String doInTransaction(TransactionStatus status) {
                         try{
                             //绑定openId
-                            JSONObject jsStr = JSONObject.parseObject(userWxInfo);
-                            String openId = jsStr.getString(UserWxInfoDto.KEY_OPEN_ID);
+                            String openId = userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID);
                             AfUserThirdInfoDo userThirdInfoDo = new AfUserThirdInfoDo();
                             userThirdInfoDo.setUserId(eUserDo.getRid());
                             userThirdInfoDo.setThirdId(openId);
                             userThirdInfoDo.setThirdType(UserThirdType.WX.getCode());
                             userThirdInfoDo.setCreator(moblie);
                             userThirdInfoDo.setModifier(moblie);
-                            userThirdInfoDo.setThirdInfo(userWxInfo);
+                            userThirdInfoDo.setThirdInfo(userWxInfo.toJSONString());
                             userThirdInfoDo.setUserName(moblie);
                             afUserThirdInfoService.saveRecord(userThirdInfoDo);
                             AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
@@ -135,24 +139,24 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                 homeInfo(eUserDo.getRid(),data,push);
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SUPPLEMENT_SIGN_FAIL.getDesc(),"",data).toString();
             }
-            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
-            if (smsDo == null) {
-                logger.error("sms record is empty");
-                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
-            }
-            String realCode = smsDo.getVerifyCode();
-            if (!StringUtils.equals(verifyCode, realCode)) {
-                logger.error("verifyCode is invalid");
-                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
-            }
-            if (smsDo.getIsCheck() == 1) {
-                logger.error("verifyCode is already invalid");
-                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc()).toString();
-            }
-            // 判断验证码是否过期
-            if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
-                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc()).toString();
-            }
+//            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
+//            if (smsDo == null) {
+//                logger.error("sms record is empty");
+//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
+//            }
+//            String realCode = smsDo.getVerifyCode();
+//            if (!StringUtils.equals(verifyCode, realCode)) {
+//                logger.error("verifyCode is invalid");
+//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
+//            }
+//            if (smsDo.getIsCheck() == 1) {
+//                logger.error("verifyCode is already invalid");
+//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc()).toString();
+//            }
+//            // 判断验证码是否过期
+//            if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
+//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc()).toString();
+//            }
             try {
                 tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), moblie, moblie, "");
             } catch (Exception e) {
@@ -164,7 +168,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                 logger.error("h5Common commitRegisterLogin baiQiShiUtils getRegistResult error => {}",e.getMessage());
             }
             // 更新为已经验证
-            afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
+//            afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
             String salt = UserUtil.getSalt();
             AfUserDo userDo = new AfUserDo();
             userDo.setSalt(salt);
@@ -198,7 +202,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
         }
     }
 
-    private boolean signReward(HttpServletRequest request,final Long userId,final String moblie,final int time,final String userWxInfo){
+    private boolean signReward(HttpServletRequest request,final Long userId,final String moblie,final int time,final JSONObject userWxInfo){
         boolean result ;
         final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
         final AfResourceDo afResource = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
@@ -213,15 +217,14 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             public String doInTransaction(TransactionStatus status) {
                 try{
                     //绑定openId
-                    JSONObject jsStr = JSONObject.parseObject(userWxInfo);
-                    String openId = jsStr.getString(UserWxInfoDto.KEY_OPEN_ID);
+                    String openId = userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID);
                     AfUserThirdInfoDo userThirdInfoDo = new AfUserThirdInfoDo();
                     userThirdInfoDo.setUserId(userId);
                     userThirdInfoDo.setThirdId(openId);
                     userThirdInfoDo.setThirdType(UserThirdType.WX.getCode());
                     userThirdInfoDo.setCreator(moblie);
                     userThirdInfoDo.setModifier(moblie);
-                    userThirdInfoDo.setThirdInfo(userWxInfo);
+                    userThirdInfoDo.setThirdInfo(userWxInfo.toJSONString());
                     userThirdInfoDo.setUserName(moblie);
                     afUserThirdInfoService.saveRecord(userThirdInfoDo);
                     //补签成功 分享者增加余额
@@ -231,13 +234,13 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                     //补签成功 打开者增加余额
                     AfSignRewardExtDo afSignRewardExt = buildSignRewardExt(userId,amount);
                     afSignRewardExtService.saveRecord(afSignRewardExt);
-                    //绑定openId
-                    AfUserThirdInfoDo afUserThirdInfoDo = new AfUserThirdInfoDo();
-                    afUserThirdInfoDo.setUserId(userId);
-                    afUserThirdInfoDo.setGmtModified(new Date());
-                    afUserThirdInfoDo.setModifier(moblie);
-                    afUserThirdInfoDo.setUserName(moblie);
-                    afUserThirdInfoService.updateByUserName(afUserThirdInfoDo);
+//                    //绑定openId
+//                    AfUserThirdInfoDo afUserThirdInfoDo = new AfUserThirdInfoDo();
+//                    afUserThirdInfoDo.setUserId(userId);
+//                    afUserThirdInfoDo.setGmtModified(new Date());
+//                    afUserThirdInfoDo.setModifier(moblie);
+//                    afUserThirdInfoDo.setUserName(moblie);
+//                    afUserThirdInfoService.updateByUserName(afUserThirdInfoDo);
                     //补签成功 分享者获取相应的奖励
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(afSignRewardExtDo.getFirstDayParticipation());
