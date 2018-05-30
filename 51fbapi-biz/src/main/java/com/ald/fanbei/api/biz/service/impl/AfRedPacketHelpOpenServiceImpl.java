@@ -190,6 +190,14 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 
 		BigDecimal thresholdAmount = redPacketConfig.getBigDecimal("thresholdAmount");
 		BigDecimal withdrawRestAmount = afRedPacketTotalService.calcWithdrawRestAmount(shareRedPacket, thresholdAmount);
-		helpOpenDo.setAmount(withdrawRestAmount.multiply(helpOpenDo.getDiscountRate()));
+		BigDecimal amount = withdrawRestAmount.multiply(helpOpenDo.getDiscountRate());
+		// 如果算得的金额是0，则随机选择0或是0.01
+		if (amount.compareTo(BigDecimal.ZERO) == 0) {
+			long currTime = System.currentTimeMillis();
+			if (currTime % 2 == 1) {
+				amount = new BigDecimal(0.01);
+			}
+		}
+		helpOpenDo.setAmount(amount);
 	}
 }
