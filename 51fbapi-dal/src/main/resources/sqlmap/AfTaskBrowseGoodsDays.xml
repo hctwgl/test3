@@ -8,48 +8,51 @@
         id rid,gmt_create,gmt_modified,user_id,last_complete_task_date,continue_days 
     </sql>
 
-    <insert id="addTaskBrowseGoodsDays" parameterType="com.ald.fanbei.api.dal.domain.AfTaskBrowseGoodsDaysDo" keyProperty="rid">
-    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
-	      SELECT LAST_INSERT_ID()
-	    </selectKey>
-    
-        INSERT INTO af_task_browse_goods_days
-        <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">        
-	            gmt_create,
-	        </if>
-	        <if test="gmtModified != null">        
-	            gmt_modified,
-	        </if>
-	        <if test="userId != null">        
-	            user_id,
-	        </if>
-	        <if test="lastCompleteTaskDate != null">        
-	            last_complete_task_date,
-	        </if>
-	        <if test="continueDays != null">        
-	            continue_days,
-	        </if>
-        </trim>
-        
-        <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="userId != null" >
-		       #{userId,jdbcType=INTEGER},
-		    </if>
-		    <if test="lastCompleteTaskDate != null" >
-		       #{lastCompleteTaskDate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="continueDays != null" >
-		       #{continueDays,jdbcType=INTEGER},
-		    </if>
-        </trim>
-    </insert>
+
+	<insert id="addTaskBrowseGoodsDays" parameterType="com.ald.fanbei.api.dal.domain.AfTaskBrowseGoodsDaysDo" keyProperty="rid">
+		<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+
+		INSERT INTO af_task_browse_goods_days
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="gmtCreate != null">
+				gmt_create,
+			</if>
+			<if test="gmtModified != null">
+				gmt_modified,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="lastCompleteTaskDate != null">
+				last_complete_task_date,
+			</if>
+			<if test="continueDays != null">
+				continue_days,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="gmtCreate != null" >
+				#{gmtCreate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="gmtModified != null" >
+				#{gmtModified,jdbcType=TIMESTAMP},
+			</if>
+			<if test="userId != null" >
+				#{userId,jdbcType=INTEGER},
+			</if>
+			<if test="lastCompleteTaskDate != null" >
+				#{lastCompleteTaskDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="continueDays != null" >
+				#{continueDays,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+
+
     
     <update id="updateTaskBrowseGoodsDays">
         UPDATE af_task_browse_goods_days
