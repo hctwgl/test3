@@ -70,6 +70,7 @@ public class SupplementSignInfoApi implements H5Handle {
         AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
         if(thirdInfo == null){
             data.put("openType","2");
+            resp.setResponseData(data);
             return resp;
         }
         Long firendUserId = thirdInfo.getUserId();

@@ -82,10 +82,14 @@ public class FriendSignInfoApi implements H5Handle {
         AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
         if(thirdInfo == null){
             data.put("openType","2");
+            resp.setResponseData(data);
             return resp;
         }
+        //测试用
+//        AfUserThirdInfoDo thirdInfo = new AfUserThirdInfoDo();
+//        thirdInfo.setUserId(18637963763l);
         Long friendUserId = thirdInfo.getUserId();
-        if(friendUserId == userId){//已经绑定并且是自己打开
+        if(StringUtil.equals(friendUserId+"",userId+"")){//已经绑定并且是自己打开
             data = homeInfo(userId,data,push,BigDecimal.ZERO);
             data.put("openType","0");
         } else {//已绑定
@@ -101,7 +105,7 @@ public class FriendSignInfoApi implements H5Handle {
             if(afSignRewardService.frienddUserSignCountToDay(userId,friendUserId)){
                 return new H5HandleResponse(context.getId(),FanbeiExceptionCode.FRIEND_USER_SIGN_EXIST);
             }
-            if(friendSign(afSignRewardDo,userId,friendUserId,data)){
+            if(!friendSign(afSignRewardDo,userId,friendUserId,data)){
                 return  new H5HandleResponse(context.getId(),FanbeiExceptionCode.USER_SIGN_FAIL);
             }
 
@@ -129,8 +133,8 @@ public class FriendSignInfoApi implements H5Handle {
         }else{//多次帮签
             rewardAmount = randomNum(afResourceDo.getPic2(),afResourceDo.getPic1());
         }
-        final BigDecimal resultAmount = rewardAmount;
-        data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(rewardAmount));
+        final BigDecimal resultAmount = rewardAmount.setScale(2, RoundingMode.HALF_UP);
+        data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(rewardAmount).setScale(2, RoundingMode.HALF_UP));
         afSignRewardDo.setAmount(resultAmount);
         final AfSignRewardDo signRewardDo = afSignRewardDo;
         String status = transactionTemplate.execute(new TransactionCallback<String>() {
@@ -143,13 +147,13 @@ public class FriendSignInfoApi implements H5Handle {
                     afSignRewardExtService.increaseMoney(afSignRewardExtDo);
                     //打开者 帮签成功 获取相应的奖励
                     BigDecimal amount;
-                    if(flag){
-                        amount = randomNum(afResource.getValue1(),afResource.getValue2());
-                        AfSignRewardExtDo afSignRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(userId,amount);
+                    if(!flag){
+                        amount = randomNum(afResource.getValue1(),afResource.getValue2()).setScale(2, RoundingMode.HALF_UP);
+                        AfSignRewardExtDo afSignRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(friendUserId,amount);
                         afSignRewardExtService.saveRecord(afSignRewardExt);
                     }else{
-                        amount = randomNum(afResource.getValue3(),afResource.getValue4());
-                        AfSignRewardExtDo afSignRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(userId,amount);
+                        amount = randomNum(afResource.getValue3(),afResource.getValue4()).setScale(2, RoundingMode.HALF_UP);
+                        AfSignRewardExtDo afSignRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(friendUserId,amount);
                         afSignRewardExtService.increaseMoney(afSignRewardExt);
                     }
                     AfSignRewardDo rewardDo = H5SupplementSignInfoOutController.buildSignReward(userId, SignRewardType.FOUR.getCode(),null,amount,null);
