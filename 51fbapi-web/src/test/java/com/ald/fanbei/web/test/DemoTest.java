@@ -149,7 +149,7 @@ public class DemoTest extends BaseTest{
 	}
 
 	//根据活动ID获取活动商品列表
-	@Test
+	//@Test
 	public void  partActivityInfoV2() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/partActivityInfoV2";
 		Map<String,String> params = new HashMap<>();
@@ -176,7 +176,7 @@ public class DemoTest extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 	//测试支付回调
-	//@Test
+	@Test
 	public void  ceshiPay() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiPay";
 		Map<String,String> params = new HashMap<>();

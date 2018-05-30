@@ -374,8 +374,12 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 						}
 					}
 					//付售价
-				}else if(date > afSeckillActivityDo.getGmtEnd().getTime()){
+				}else {
 					logger.info("updateUserActivityGoodsInfo payEndAmount userId: " + orderInfo.getUserId() );
+
+					AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
+					afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
+
 					//查询预售活动商品
 					List<AfActivityReservationGoodsUserDo>  AfActivityReservationGoodsUserDoList = afActivityReservationGoodsUserDao.getActivityReservationGoodsList(map);
 					if(null != AfActivityReservationGoodsUserDoList &&  AfActivityReservationGoodsUserDoList.size() > 0){

@@ -1169,9 +1169,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						logger.info("周年庆时间自营商品订单支付成功，送优惠券1");
 						// 预售商品回调 处理
 						afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
-
-						AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
-						afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
 					}
 					// end by luoxiao
 				}
@@ -1214,9 +1211,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 									// 预售商品回调 处理
 									afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
 
-									AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
-									afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(), CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
-								}
+									}
 								// end by luoxiao
 							}
 							return riskReturnMap;
@@ -1834,10 +1829,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 
 			// 预售商品回调 处理
 			afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
-
-			//送优惠券
-			AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
-			afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(), CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
 
 		}
 		// end by luoxiao

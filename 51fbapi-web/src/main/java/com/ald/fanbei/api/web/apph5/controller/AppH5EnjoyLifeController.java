@@ -622,6 +622,7 @@ class GetActivityListThread implements Runnable {
                         saleAmount = goodsDo.getSaleAmount();
                     }
 
+
                     //返利金额
                     BigDecimal secKillRebAmount = BigDecimalUtil.multiply(saleAmount, goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
                     if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
