@@ -70,12 +70,13 @@ public class FriendSignInfoApi implements H5Handle {
         Long userId = NumberUtil.objToLongDefault(context.getData("userId"),null);//分享用户id
         String push = ObjectUtils.toString(context.getData("push"),"N");
         String wxCode = ObjectUtils.toString(context.getData("wxCode"),null);
+        Map<String,Object> data = new HashMap<String,Object>();
         //活动规则
         AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_RULE");
         if(null != afResourceDo){
-            resp.addResponseData("rewardRule",afResourceDo.getValue());
+            data.put("rewardRule",afResourceDo.getValue());
         }else {
-            resp.addResponseData("rewardRule","");
+            data.put("rewardRule","");
         }
         //判断用户和openId是否在爱上街绑定
         AfResourceDo afResource = afResourceService.getWechatConfig();
@@ -85,15 +86,15 @@ public class FriendSignInfoApi implements H5Handle {
         resp.addResponseData("userWxInfo",userWxInfo.toJSONString());
         AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
         if(thirdInfo == null){
-            resp.addResponseData("openType","2");
+            data.put("openType","2");
             return resp;
         }
         Long firendUserId = thirdInfo.getUserId();
         if(firendUserId == userId){//已经绑定并且是自己打开
-            homeInfo(userId,resp,push);
-            resp.addResponseData("openType","0");
+            data = homeInfo(userId,data,push,BigDecimal.ZERO);
+            data.put("openType","0");
         } else {//已绑定
-            homeInfo(firendUserId,resp,push);
+            data = homeInfo(firendUserId,data,push,BigDecimal.ZERO);
             AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
             afSignRewardDo.setIsDelete(0);
             afSignRewardDo.setUserId(userId);
@@ -102,16 +103,18 @@ public class FriendSignInfoApi implements H5Handle {
             afSignRewardDo.setType(SignRewardType.ONE.getCode());
             afSignRewardDo.setStatus(0);
             afSignRewardDo.setFriendUserId(firendUserId);
-            if(friendSign(afSignRewardDo,userId,firendUserId,resp)){
+            if(friendSign(afSignRewardDo,userId,firendUserId,data)){
                 return  new H5HandleResponse(context.getId(),FanbeiExceptionCode.USER_SIGN_FAIL);
             }
-            resp.addResponseData("openType","1");
+
+            data.put("openType","1");
         }
+        resp.setResponseData(data);
         return resp;
     }
 
 
-    private boolean friendSign(AfSignRewardDo afSignRewardDo,final Long userId, final Long friendUserId,H5HandleResponse resp){
+    private boolean friendSign(AfSignRewardDo afSignRewardDo,final Long userId, final Long friendUserId,Map<String,Object> data){
         boolean result;
         final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
         final AfResourceDo afResource = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
@@ -131,7 +134,7 @@ public class FriendSignInfoApi implements H5Handle {
             rewardAmount = randomNum(afResourceDo.getPic2(),afResourceDo.getPic1());
         }
         final BigDecimal resultAmount = rewardAmount;
-        resp.addResponseData("rewardAmount",rewardAmount);
+        data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(rewardAmount));
         afSignRewardDo.setAmount(resultAmount);
         final AfSignRewardDo signRewardDo = afSignRewardDo;
         String status = transactionTemplate.execute(new TransactionCallback<String>() {
@@ -174,27 +177,27 @@ public class FriendSignInfoApi implements H5Handle {
     }
 
 
-    private H5HandleResponse homeInfo (Long userId,H5HandleResponse resp,String push){
+    private Map<String,Object> homeInfo (Long userId,Map<String,Object> data,String push,BigDecimal rewardAmount){
         //今天是否签到
         String status = afSignRewardService.isExist(userId)==false?"N":"Y";
-        resp.addResponseData("rewardStatus",status);
-        Map<String,Object> map = afSignRewardExtService.getHomeInfo(userId,status);
-        resp.addResponseData("isOpenRemind",map.get("isOpenRemind"));
-        resp.addResponseData("rewardAmount",map.get("rewardAmount"));
-        resp.addResponseData("supplementSignDays",map.get("supplementSignDays"));
-        resp.addResponseData("signDays",map.get("signDays"));
+        data.put("rewardStatus",status);
+        Map<String,Object> map = afSignRewardExtService.getHomeInfo(userId,status,rewardAmount);
+        data.put("isOpenRemind",map.get("isOpenRemind"));
+        data.put("rewardAmount",map.get("rewardAmount"));
+        data.put("supplementSignDays",map.get("supplementSignDays"));
+        data.put("signDays",map.get("signDays"));
 
         // 正式环境和预发布环境区分
         String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
         String homeBanner = AfResourceType.RewardHomeBanner.getCode();
-        resp.addResponseData("rewardBannerList",afResourceService.rewardBannerList(type,homeBanner));
+        data.put("rewardBannerList",afResourceService.rewardBannerList(type,homeBanner));
 
         //任务列表
         AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
         AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
         String level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
-        resp.addResponseData("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
-        return resp;
+        data.put("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
+        return data;
     }
 
     public AfUserThirdInfoDo checkBindOpen(String wxCode){

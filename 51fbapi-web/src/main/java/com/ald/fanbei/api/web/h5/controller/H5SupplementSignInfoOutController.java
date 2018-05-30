@@ -135,7 +135,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                 if(StringUtil.equals(status,"fail")){
                     return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.WX_BIND_FAIL.getDesc(),"",data).toString();
                 }
-                data = homeInfo(eUserDo.getRid(),data,push);
+                data = homeInfo(eUserDo.getRid(),data,push,BigDecimal.ZERO);
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SUPPLEMENT_SIGN_FAIL.getDesc(),"",data).toString();
             }
 //            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
@@ -187,10 +187,12 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
             CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
             bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
-            if(!signReward(request,userId,moblie,time,userWxInfo)){
+            final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
+            final BigDecimal amount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
+            if(!signReward(request,userId,moblie,time,userWxInfo,amount)){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
-            data = homeInfo(userId,data,push);
+            data = homeInfo(userId,data,push,amount);
             return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
         } catch (FanbeiException e) {
             logger.error("commitRegister fanbei exception" + e.getMessage());
@@ -201,16 +203,16 @@ public class H5SupplementSignInfoOutController extends H5Controller {
         }
     }
 
-    private boolean signReward(HttpServletRequest request,final Long userId,final String moblie,final int time,final JSONObject userWxInfo){
+    private boolean signReward(HttpServletRequest request,final Long userId,final String moblie,final int time,final JSONObject userWxInfo,final BigDecimal amount){
         boolean result ;
         final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
-        final AfResourceDo afResource = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
+
         final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
-        if(afResourceDo == null || afResource == null || numberWordFormat.isNumeric(afResourceDo.getValue())){
+        if(afResourceDo == null ||  numberWordFormat.isNumeric(afResourceDo.getValue())){
             throw new FanbeiException("param error", FanbeiExceptionCode.PARAM_ERROR);
         }
         final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
-        final BigDecimal amount = randomNum(afResource.getValue1(),afResource.getValue2());
+
         String status = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus status) {
@@ -312,11 +314,11 @@ public class H5SupplementSignInfoOutController extends H5Controller {
 
     }
 
-    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push){
+    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push,BigDecimal amount){
         //今天是否签到
         String status = afSignRewardService.isExist(userId)==false?"N":"Y";
         resp.put("rewardStatus",status);
-        resp = afSignRewardExtService.getHomeInfo(userId,status);
+        resp = afSignRewardExtService.getHomeInfo(userId,status,amount);
         // 正式环境和预发布环境区分
         String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
         String homeBanner = AfResourceType.RewardHomeBanner.getCode();

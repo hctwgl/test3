@@ -113,19 +113,20 @@ public class AfTaskServiceImpl  implements AfTaskService {
             taskBrowseFlag = false;
         }
 
-        List<AfTaskDto> afTaskDtos = afTaskDao.getTaskByTaskIds(notFinishedList);
-        for (AfTaskDto afTaskDto : afTaskDtos){
-            if(StringUtil.equals(afTaskDto.getTaskSecType(), TaskSecType.quantity.getCode())){
-                afTaskDto.setFinishTaskCondition(Integer.parseInt(afTaskDto.getTaskCondition()));
-                afTaskDto.setSumTaskCondition(Integer.parseInt(afTaskDto.getTaskCondition()));
-            }else{
-                afTaskDto.setFinishTaskCondition(1);
-                afTaskDto.setSumTaskCondition(1);
+        if(notFinishedList.size()>0){
+            List<AfTaskDto> afTaskDtos = afTaskDao.getTaskByTaskIds(notFinishedList);
+            for (AfTaskDto afTaskDto : afTaskDtos){
+                if(StringUtil.equals(afTaskDto.getTaskSecType(), TaskSecType.quantity.getCode())){
+                    afTaskDto.setFinishTaskCondition(Integer.parseInt(afTaskDto.getTaskCondition()));
+                    afTaskDto.setSumTaskCondition(Integer.parseInt(afTaskDto.getTaskCondition()));
+                }else{
+                    afTaskDto.setFinishTaskCondition(1);
+                    afTaskDto.setSumTaskCondition(1);
+                }
+                afTaskDto.setReceiveReward("N");
+                finalTaskList.add(afTaskDto);
             }
-            afTaskDto.setReceiveReward("N");
-            finalTaskList.add(afTaskDto);
         }
-
         if(!taskBrowseFlag){
             int countToday = afTaskBrowseGoodsService.countBrowseGoodsToday(userId);
             AfTaskDto afTaskDto = new AfTaskDto();

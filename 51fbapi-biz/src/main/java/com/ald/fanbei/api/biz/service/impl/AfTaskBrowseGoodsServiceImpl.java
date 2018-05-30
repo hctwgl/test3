@@ -131,7 +131,6 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
                             taskUserDo.setRewardType(0);
                             taskUserDo.setCoinAmount(coinAmount);
                             taskUserDo.setUserId(userId);
-                            taskUserDo.setUserId(-999l);
                             taskUserDo.setTaskName(Constants.BROWSE_TASK_NAME);
                             taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
                             afTaskUserService.insertTaskUserDo(taskUserDo);

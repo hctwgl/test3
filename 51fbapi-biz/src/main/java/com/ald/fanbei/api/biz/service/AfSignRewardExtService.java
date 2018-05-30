@@ -28,7 +28,7 @@ public interface AfSignRewardExtService {
 
     int saveRecord(AfSignRewardExtDo afSignRewardExtDo);
 
-    Map<String,Object> getHomeInfo(Long userId,String status);
+    Map<String,Object> getHomeInfo(Long userId,String status,BigDecimal rewardAmount);
 
     List<AfSignRewardExtDo> selectByUserIds(List<Long> userIds);
 
