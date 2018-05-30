@@ -40,8 +40,8 @@
         </if>
     </sql>
 
-    <insert id="insertTaskUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" keyProperty="id">
-        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+    <insert id="insertTaskUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" keyProperty="rid">
+        <selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
             SELECT LAST_INSERT_ID()
         </selectKey>
 

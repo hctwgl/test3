@@ -167,8 +167,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 
 					if (!toAddTaskUserList.isEmpty()) {
 						for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
-							int rid = afTaskUserDao.insertTaskUserDo(afTaskUserDo);
-							afTaskUserDo.setRid(Long.parseLong(rid+""));
+							afTaskUserDao.insertTaskUserDo(afTaskUserDo);
 						}
 						return toAddTaskUserList;
 					}
@@ -224,8 +223,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 						toAddTaskUserList.add(taskUserDo);
 					}
 					for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
-						int rid = afTaskUserDao.insertTaskUserDo(afTaskUserDo);
-						afTaskUserDo.setRid(Long.parseLong(rid+""));
+						afTaskUserDao.insertTaskUserDo(afTaskUserDo);
 					}
 				}
 			}
