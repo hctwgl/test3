@@ -26,7 +26,7 @@ public interface AfSignRewardExtDao  {
 
     int saveRecord(AfSignRewardExtDo afSignRewardExtDo);
 
-    List<AfSignRewardExtDo> selectByUserIds(List<Long> userIds);
+    List<AfSignRewardExtDo> selectByUserIds(@Param("userIds") List<Long> userIds);
 
     int saveRecordBatch(List<AfSignRewardExtDo> list );
 
