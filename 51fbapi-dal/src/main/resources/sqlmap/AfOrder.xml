@@ -1541,6 +1541,7 @@
 		AND user_id = #{userId}
 		AND goods_id = #{goodsId}
 		and status !='CLOSED' 
+		and is_delete = 0
 	</select>
 	
 	<update id="batchUpdateToPayOrderCreditStatus">
@@ -1548,4 +1549,11 @@
 			where is_delete=0 and support_credit_status = 'N' and status in ('NEW','PAYFAIL','DEALING') 
 				and pay_type in ('AP','CP') and user_id=#{userId}
 	</update>
+	
+	<select id="getOrderByGoodsIdAndUserid" resultType="AfOrderDo">
+		SELECT
+		<include refid="queryAllFields" />
+		FROM af_order
+		WHERE user_id=#{userId} and is_delete=0 AND order_type='SELFSUPPORT' AND goods_id = #{goodsId} 
+	</select>
 </mapper>

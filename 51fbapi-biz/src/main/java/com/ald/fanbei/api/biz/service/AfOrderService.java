@@ -482,4 +482,6 @@ public interface AfOrderService {
 	Integer countSpecGoodsBuyNums(Long goodsId,Long userId);
 
 	String getRefundMsg(AfOrderDo order);
+
+	AfOrderDo getOrderByGoodsIdAndUserid(Long userId, Long goodsId);
 }

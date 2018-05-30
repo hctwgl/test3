@@ -28,6 +28,7 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -139,10 +141,6 @@ public class PayOrderV1Api implements ApiHandle {
 
         if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())|| orderInfo.getStatus().equals(OrderStatus.PAID.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
-        }
-        if (orderInfo == null) {
-            logger.error("orderId is invalid");
-            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
         orderInfo.setGpsAddress(gpsAddress);
         if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
@@ -363,11 +361,21 @@ public class PayOrderV1Api implements ApiHandle {
 
             Object success = result.get("success");
             Object payStatus = result.get("status");
-            
             Integer toPayOrderNums =0;
-            
-            // 查询当前用户待支付的订单数
+         // 查询当前用户待支付的订单数
             toPayOrderNums = afOrderService.getALLNoFinishOrderCount(userId);
+            String goodsType = AfGoodsSpecType.COMMON.getCode();
+		    Long vipGoodsId = 0L;
+			//权限包商品配置信息
+			final AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
+		    //权限包产品的有效期，大于0时有效
+		    if (vipGoodsResourceDo != null){
+		    	vipGoodsId = NumberUtil.objToLongDefault(vipGoodsResourceDo.getValue(), 0L);
+		    	if (orderInfo.getGoodsId().equals(vipGoodsId)){
+		    		goodsType = AfGoodsSpecType.AUTH.getCode();
+		    	}
+		    }
+			result.put("goodsType", goodsType);
             result.put("toPayOrderNums", toPayOrderNums);
             
             if (success != null) {

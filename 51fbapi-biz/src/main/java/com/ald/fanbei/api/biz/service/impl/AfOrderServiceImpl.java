@@ -25,6 +25,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.taobao.api.domain.XItem;
 import com.taobao.api.response.TaeItemDetailGetResponse;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -37,6 +38,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -1121,6 +1123,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						}// 微信支付
 						resultMap = UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, actualAmount, attach);
 						resultMap.put("success", true);
+//						resultMap.put("goodsType", goodsType);
+//						resultMap.put("isRecomend", isRecomend);
+//					    resultMap.put("goodsId", 0L);
+//					    resultMap.put("goodsBanner", "");
 						// 活动返利
 						return resultMap;
 					} else if (payType.equals(PayType.AGENT_PAY.getCode())) {
@@ -1150,9 +1156,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						logger.info("updateOrder orderInfo = {}", orderInfo);
 
 						String cardNo = card.getCardNumber();
-//						String riskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
-//						orderInfo.setRiskOrderNo(riskOrderNo);
-//						orderDao.updateOrder(orderInfo);
 
 						String name = orderInfo.getGoodsName();
 						if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
@@ -1198,7 +1201,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							 logger.info("verify userId" + userId);
 							 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 							 logger.info("weakverybo=" + verybo);
-							 boolean riskPassStatus = verybo.isSuccess();
+	//						 boolean riskPassStatus = verybo.isSuccess();
+							 boolean riskPassStatus = false;
 							 if ( ! riskPassStatus  && vipGoodsResourceDo!=null){
 								//标记此订单支付失败，根据软弱风控去选择是否引导权限包购买
 								orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
@@ -1211,10 +1215,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 String softWeakRiskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 								 orderInfo.setWeakRiskOrderNo(softWeakRiskOrderNo);
 								 orderDao.updateOrder(orderInfo);
-								 
-								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-								 logger.info("softWeakverybo=" + softWeakverybo);
-								 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
+//								 
+//								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+//								 logger.info("softWeakverybo=" + softWeakverybo);
+//								 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
+								 boolean softWeakRiskStatus = true;
 								 if(softWeakRiskStatus && vipGoodsId>0){
 									 //软弱风控通过，引导权限包
 									 resultMap.put("isRecomend", YesNoStatus.YES.getCode());
@@ -1376,7 +1381,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 
 							AfUserBankcardDo cardInfo = afUserBankcardService.getUserBankcardById(payId);
 
-							resultMap = new HashMap<String, Object>();
+//							resultMap = new HashMap<String, Object>();
 
 							if (null == cardInfo) {
 								throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
@@ -1445,12 +1450,16 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 									resultMap = doUpsPay(bankChannel, cardInfo.getRid(), tradeNo, actualAmount, userId, userAccountInfo.getRealName(),
 											userAccountInfo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_BRAND_SHOP, remark, merPriv);
 								}
-
+								resultMap.put("goodsType", goodsType);
+								resultMap.put("isRecomend", isRecomend);
+							    resultMap.put("goodsId", 0L);
+							    resultMap.put("goodsBanner", "");
                                 addOrderBankCardInfo(orderId,cardInfo,afOrderBankcardDo);
 							}
 						}
 						// 活动返利
 					}
+					
 					return resultMap;
 				} catch (FanbeiException exception) {
 					logger.error("payBrandOrder faied e = {}", exception);
@@ -3439,5 +3448,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			//批量更新当前用户下的待支付且不支持信用支付的订单，使之支持信用支付
 			orderDao.batchUpdateToPayOrderCreditStatus(order.getUserId());
 		}
+	}
+
+	@Override
+	public AfOrderDo getOrderByGoodsIdAndUserid(Long userId, Long goodsId) {
+		return orderDao.getOrderByGoodsIdAndUserid(userId,goodsId);
 	}
 }

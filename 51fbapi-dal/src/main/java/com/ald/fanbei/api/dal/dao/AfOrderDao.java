@@ -342,4 +342,5 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	int batchUpdateToPayOrderCreditStatus(@Param("userId")Long userId);
+	AfOrderDo getOrderByGoodsIdAndUserid(@Param(value="userId")Long userId, @Param(value="goodsId")Long goodsId);
 }
