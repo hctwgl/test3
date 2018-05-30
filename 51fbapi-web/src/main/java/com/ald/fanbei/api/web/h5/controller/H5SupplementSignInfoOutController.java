@@ -75,6 +75,9 @@ public class H5SupplementSignInfoOutController extends H5Controller {
     @Resource
     AfUserAuthStatusService afUserAuthStatusService;
 
+    @Resource
+    AfUserCouponService afUserCouponService;
+
 
     /**
      * 补签
@@ -132,10 +135,11 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                         }
                     }
                 });
+                data = homeInfo(eUserDo.getRid(),data,push,BigDecimal.ZERO);
+                data.put("flag","fail");
                 if(StringUtil.equals(status,"fail")){
                     return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.WX_BIND_FAIL.getDesc(),"",data).toString();
                 }
-                data = homeInfo(eUserDo.getRid(),data,push,BigDecimal.ZERO);
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SUPPLEMENT_SIGN_FAIL.getDesc(),"",data).toString();
             }
 //            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
@@ -193,6 +197,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
             data = homeInfo(userId,data,push,amount);
+            data.put("flag","success");
             data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(amount).setScale(2, RoundingMode.HALF_UP));
             return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
         } catch (FanbeiException e) {
@@ -229,20 +234,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                     userThirdInfoDo.setThirdInfo(userWxInfo.toJSONString());
                     userThirdInfoDo.setUserName(moblie);
                     afUserThirdInfoService.saveRecord(userThirdInfoDo);
-                    //补签成功 分享者增加余额
                     AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(rewardUserId);
-                    afSignRewardExtDo.setAmount(rewardAmount);
-                    afSignRewardExtService.increaseMoney(afSignRewardExtDo);
-                    //补签成功 打开者增加余额
-                    AfSignRewardExtDo afSignRewardExt = buildSignRewardExt(userId,amount);
-                    afSignRewardExtService.saveRecord(afSignRewardExt);
-//                    //绑定openId
-//                    AfUserThirdInfoDo afUserThirdInfoDo = new AfUserThirdInfoDo();
-//                    afUserThirdInfoDo.setUserId(userId);
-//                    afUserThirdInfoDo.setGmtModified(new Date());
-//                    afUserThirdInfoDo.setModifier(moblie);
-//                    afUserThirdInfoDo.setUserName(moblie);
-//                    afUserThirdInfoService.updateByUserName(afUserThirdInfoDo);
                     //补签成功 分享者获取相应的奖励
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(afSignRewardExtDo.getFirstDayParticipation());
@@ -255,6 +247,77 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                     signList.add(afSignRewardDo);
                     signList.add(rewardDo);
                     afSignRewardService.saveRecordBatch(signList);
+                    //补签成功 分享者增加余额
+                    Map<String,String> days = afSignRewardService.supplementSign(afSignRewardExtDo,0,"N");
+                    String str[] = days.get("signDays").toString().split(",");
+                    int count = 0;
+                    if(StringUtil.equals(days.get("signDays").toString(),"")){
+                        count = str.length;
+                    }else{
+                        count = str.length+1;
+                    }
+                    if(count == 1){
+                        afSignRewardExtDo.setAmount(rewardAmount);
+                        final AfSignRewardExtDo signRewardExtDo = afSignRewardExtDo;
+                        afSignRewardExtDo.setFirstDayParticipation(new Date());
+                        afSignRewardExtService.increaseMoney(signRewardExtDo);
+                    }else {
+                        if(str.length>1){
+                            sortStr(str);
+                        }
+                        int maxCount = maxCount(str);
+                        Date before = DateUtil.formatDateToYYYYMMdd(afSignRewardExtDo.getFirstDayParticipation());
+                        Date after = DateUtil.formatDateToYYYYMMdd(new Date());
+                        StringBuffer buffer = new StringBuffer(days.get("signDays"));
+                        if(str.length>1){
+                            buffer.append(",").append(DateUtil.getNumberOfDatesBetween(before,after)%10+1);
+                        }else {
+                            buffer.append(DateUtil.getNumberOfDatesBetween(before,after)%10+1);
+                        }
+                        String arrayStr[] = buffer.toString().split(",");
+                        sortStr(arrayStr);
+                        int newMaxCount = maxCount(arrayStr);
+                        if(count >= 5 && count < 7){
+                            //给予连续5天的奖励
+                            if(maxCount < 5 && newMaxCount == 5){
+                                fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
+                            }
+                        }else if(count >= 7 && count< 10){
+                            //给予连续5天的奖励
+                            if(maxCount < 5 && newMaxCount == 5){
+                                fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
+                            }else if(maxCount < 5 && newMaxCount == 7){//给予连续5天和7天的奖励
+                                afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2, RoundingMode.HALF_EVEN));
+                                fiveOrSevenSignDays(afSignRewardExtDo,afSignRewardExtDo.getAmount(),rewardDo,afResourceDo);
+                            }else if(maxCount >= 5 && newMaxCount == 7){//给予连续7天的奖励
+                                afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN));
+                                afSignRewardExtService.increaseMoney(afSignRewardExtDo);
+                            }
+                        }else if(count == 10){
+                            //给予连续7天和10天的奖励
+                            if(maxCount < 7){
+                                afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(4)).setScale(2,RoundingMode.HALF_EVEN));
+                                afSignRewardExtService.increaseMoney(afSignRewardExtDo);
+                            }
+                        }else {//给予普通签到的奖励
+                            afSignRewardExtDo.setAmount(rewardAmount);
+                            afSignRewardExtService.increaseMoney(afSignRewardExtDo);
+                        }
+                    }
+
+                    afSignRewardExtDo.setAmount(rewardAmount);
+                    afSignRewardExtService.increaseMoney(afSignRewardExtDo);
+                    //补签成功 打开者增加余额
+                    AfSignRewardExtDo afSignRewardExt = buildSignRewardExt(userId,amount);
+                    afSignRewardExtService.saveRecord(afSignRewardExt);
+//                    //绑定openId
+//                    AfUserThirdInfoDo afUserThirdInfoDo = new AfUserThirdInfoDo();
+//                    afUserThirdInfoDo.setUserId(userId);
+//                    afUserThirdInfoDo.setGmtModified(new Date());
+//                    afUserThirdInfoDo.setModifier(moblie);
+//                    afUserThirdInfoDo.setUserName(moblie);
+//                    afUserThirdInfoService.updateByUserName(afUserThirdInfoDo);
+
 
                     return "success";
                 }catch (Exception e){
@@ -331,6 +394,64 @@ public class H5SupplementSignInfoOutController extends H5Controller {
         resp.put("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
         return resp;
     }
+
+
+    public void sortStr(String[] str){
+        for (int sx=0; sx<str.length-1; sx++) {
+            for (int i=0; i<str.length-1-sx; i++) {
+                if (Integer.parseInt(str[i]) > Integer.parseInt(str[i+1]) ) {
+                    // 交换数据
+                    String temp = str[i];
+                    str[i] = str[i+1];
+                    str[i+1] = temp;
+                }
+            }
+        }
+    }
+
+
+    private  int maxCount(String[] nums) {
+        int count = 0;
+        int maxCount = 0;
+        for (int i = 0; i < nums.length-1; i++) {
+            if(Integer.parseInt(nums[i]) == Integer.parseInt(nums[i+1])-1){
+                count++;
+            }else {
+                if(count > maxCount){
+                    maxCount = count;
+                }
+                count = 0;
+            }
+        }
+        if(count > maxCount){
+            maxCount = count;
+        }
+        return maxCount+1;
+    }
+
+
+    /**
+     * 连续5天和7天的奖励 或者 连续5天的奖励
+     * @param afSignRewardExtDo
+     * @param rewardAmount
+     * @param rewardDo
+     * @param afResourceDo
+     * @return
+     */
+    private void fiveOrSevenSignDays(AfSignRewardExtDo afSignRewardExtDo ,BigDecimal rewardAmount,final AfSignRewardDo rewardDo,final AfResourceDo afResourceDo){
+        afSignRewardExtDo.setAmount(rewardAmount);
+        AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
+        afUserCouponDo.setUserId(rewardDo.getUserId());
+        afUserCouponDo.setCouponId(Long.parseLong(afResourceDo.getValue5()));
+        afUserCouponDo.setGmtCreate(new Date());
+        afUserCouponDo.setGmtModified(new Date());
+        afUserCouponDo.setSourceType("SIGN_REWARD");
+        afUserCouponDo.setSourceRef("SYS");
+        afUserCouponDo.setStatus("NOUSE");
+        afUserCouponService.addUserCoupon(afUserCouponDo);
+        afSignRewardExtService.increaseMoney(afSignRewardExtDo);
+    }
+
 
 
 

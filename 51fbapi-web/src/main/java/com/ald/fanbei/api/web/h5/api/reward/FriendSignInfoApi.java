@@ -103,10 +103,14 @@ public class FriendSignInfoApi implements H5Handle {
             afSignRewardDo.setStatus(0);
             afSignRewardDo.setFriendUserId(friendUserId);
             if(afSignRewardService.frienddUserSignCountToDay(userId,friendUserId)){
-                return new H5HandleResponse(context.getId(),FanbeiExceptionCode.FRIEND_USER_SIGN_EXIST);
+                H5HandleResponse resps = new H5HandleResponse(context.getId(),FanbeiExceptionCode.FRIEND_USER_SIGN_EXIST);
+                resps.setResponseData(data);
+                return resps;
             }
             if(!friendSign(afSignRewardDo,userId,friendUserId,data)){
-                return  new H5HandleResponse(context.getId(),FanbeiExceptionCode.USER_SIGN_FAIL);
+                H5HandleResponse resps = new H5HandleResponse(context.getId(),FanbeiExceptionCode.USER_SIGN_FAIL);
+                resps.setResponseData(data);
+                return  resps;
             }
 
             data.put("openType","1");

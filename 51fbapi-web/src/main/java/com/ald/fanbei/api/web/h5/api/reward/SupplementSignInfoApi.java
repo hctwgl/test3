@@ -87,6 +87,8 @@ public class SupplementSignInfoApi implements H5Handle {
             afSignRewardDo.setType(SignRewardType.THREE.getCode());
             afSignRewardDo.setStatus(0);
             afSignRewardDo.setFriendUserId(firendUserId);
+            afSignRewardDo.setAmount(BigDecimal.ZERO);
+            afSignRewardService.saveRecord(afSignRewardDo);
             data.put("openType","1");
         }else {//未绑定
             data.put("openType","2");
