@@ -347,7 +347,8 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 						if(resourceInfo1 != null){
 							String content = resourceInfo1.getValue();
 							//发送短信
-							String mobile = orderInfo.getMobile();
+							String mobile = orderInfo.getConsigneeMobile();
+							logger.info("sendSMS mobile:" + mobile + "  content: " + content);
 							smsUtil.sendSmsToDhstAishangjie(mobile, content);
 						}
 
