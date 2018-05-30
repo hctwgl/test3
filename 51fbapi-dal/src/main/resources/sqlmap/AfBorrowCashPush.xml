@@ -126,7 +126,7 @@
             <if test="profitRate != null and profitRate != '' ">        
                 profit_rate = #{profitRate,jdbcType=DECIMAL},                
             </if>
-            <if test="loanTime != null and profitRate != '' ">        
+            <if test="loanTime != null and loanTime != '' ">        
                 loan_time = #{profitRate,jdbcType=TIMESTAMP}                
             </if>
         </set>    
