@@ -46,12 +46,10 @@ public class signTest extends BaseTest{
 	@Test
 	public void getHomeInfo() {
 		Map<String,String> params = new HashMap<>();
-		params.put("taskType", "browse");
-		params.put("taskSecType", "brand");
-		params.put("taskCondition", "90253");
-		params.put("pageNo", "1");
-		params.put("pageSize", "10");
-		String url = urlBase + "/h5/reward/doFinishTask";
+		params.put("push", "Y");
+		params.put("wxCode", "001gvzE82OtpkS0ZNJF82SNaE82gvzEg");
+		params.put("userId", "18637962969");
+		String url = urlBase + "/h5/reward/friendSignInfo";
 		testH5(url, params, userName, true);
 	}
 	
@@ -60,10 +58,10 @@ public class signTest extends BaseTest{
 	 */
 	@Test
 	public void getSignReward() {
-		String url = urlBase + "/h5/reward/getSignReward";
+		String url = urlBase + "/taskUser/addBrowseTaskUser";
 		Map<String,String> params = new HashMap<>();
-		params.put("userId", "18637962969");
-		testH5(url, params, userName, true);
+		params.put("activityUrl", "https://atesth5.51fanbei.com/h5/activity/201804/visualization.html?addRightUiName=SEARCH&id=103&spread=app");
+		testApi(url, params, userName, true);
 	}
 	
 	/**
@@ -71,12 +69,11 @@ public class signTest extends BaseTest{
 	 */
 	@Test
 	public void confirmLoan() {
-		String url = urlBase + "/h5/reward/getWithdrawDetail";
+		String url = urlBase + "/taskUser/receiveBrowseTaskRewards";
 		Map<String,String> params = new HashMap<>();
 		params.put("userId", "18637962969");
-		params.put("pageNo", "1");
-		params.put("pageSize", "1");
-		testH5(url, params, userName, true);
+		params.put("taskUserIds", "100");
+		testApi(url, params, userName, true);
 	}
 	
 	/**

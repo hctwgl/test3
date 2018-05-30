@@ -79,22 +79,17 @@ public class FriendSignInfoApi implements H5Handle {
             data.put("rewardRule","");
         }
         //判断用户和openId是否在爱上街绑定
-        AfResourceDo afResource = afResourceService.getWechatConfig();
-        String appid = afResource.getValue();
-        String secret = afResource.getValue1();
-        JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
-        resp.addResponseData("userWxInfo",userWxInfo.toJSONString());
         AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
         if(thirdInfo == null){
             data.put("openType","2");
             return resp;
         }
-        Long firendUserId = thirdInfo.getUserId();
-        if(firendUserId == userId){//已经绑定并且是自己打开
+        Long friendUserId = thirdInfo.getUserId();
+        if(friendUserId == userId){//已经绑定并且是自己打开
             data = homeInfo(userId,data,push,BigDecimal.ZERO);
             data.put("openType","0");
         } else {//已绑定
-            data = homeInfo(firendUserId,data,push,BigDecimal.ZERO);
+            data = homeInfo(friendUserId,data,push,BigDecimal.ZERO);
             AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
             afSignRewardDo.setIsDelete(0);
             afSignRewardDo.setUserId(userId);
@@ -102,8 +97,11 @@ public class FriendSignInfoApi implements H5Handle {
             afSignRewardDo.setGmtModified(new Date());
             afSignRewardDo.setType(SignRewardType.ONE.getCode());
             afSignRewardDo.setStatus(0);
-            afSignRewardDo.setFriendUserId(firendUserId);
-            if(friendSign(afSignRewardDo,userId,firendUserId,data)){
+            afSignRewardDo.setFriendUserId(friendUserId);
+            if(afSignRewardService.frienddUserSignCountToDay(userId,friendUserId)){
+                return new H5HandleResponse(context.getId(),FanbeiExceptionCode.FRIEND_USER_SIGN_EXIST);
+            }
+            if(friendSign(afSignRewardDo,userId,friendUserId,data)){
                 return  new H5HandleResponse(context.getId(),FanbeiExceptionCode.USER_SIGN_FAIL);
             }
 
@@ -122,9 +120,7 @@ public class FriendSignInfoApi implements H5Handle {
             throw new FanbeiException("param error", FanbeiExceptionCode.PARAM_ERROR);
         }
         //帮签次数
-        if(afSignRewardService.frienddUserSignCountToDay(userId,friendUserId)){
-            throw new FanbeiException("friend user sign exist", FanbeiExceptionCode.FRIEND_USER_SIGN_EXIST);
-        }
+
         final boolean flag = afSignRewardService.checkUserSign(friendUserId);
         int count = afSignRewardService.frienddUserSignCount(userId,friendUserId);
         BigDecimal rewardAmount ;

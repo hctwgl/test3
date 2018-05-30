@@ -35,7 +35,6 @@ import java.util.*;
  */
 
 @Component("supplementSignInfoApi")
-@Validator("supplementSignInfoParam")
 public class SupplementSignInfoApi implements H5Handle {
 
     @Resource

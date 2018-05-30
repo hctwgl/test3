@@ -100,7 +100,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
             JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
             AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
             if (eUserDo != null) {
-                final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
+                final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2()).setScale(2, RoundingMode.HALF_UP);
                 if(!signReward(request,eUserDo.getRid(),rewardAmount,"old",moblie,userWxInfo)){
                     return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
                 }
@@ -199,19 +199,19 @@ public class H5FriendSignInfoOutController extends H5Controller {
                     userThirdInfoDo.setUserName(moblie);
                     afUserThirdInfoService.saveRecord(userThirdInfoDo);
                     //帮签成功 打开者获取相应的奖励金额
-                    BigDecimal amount;
+                    BigDecimal amount = BigDecimal.ZERO;
                     if(StringUtil.equals("new",user)){
-                        amount = randomNum(afResource.getValue1(),afResource.getValue2());
+                        amount = randomNum(afResource.getValue1(),afResource.getValue2()).setScale(2, RoundingMode.HALF_UP);
                     }else{
                         if(flag){
-                            amount = randomNum(afResource.getValue1(),afResource.getValue2());
+                            amount = randomNum(afResource.getValue1(),afResource.getValue2()).setScale(2, RoundingMode.HALF_UP);
                         }else{
-                            amount = randomNum(afResource.getValue3(),afResource.getValue4());
+                            amount = randomNum(afResource.getValue3(),afResource.getValue4()).setScale(2, RoundingMode.HALF_UP);
                         }
                     }
                     List<AfSignRewardDo> signRewardList = new ArrayList<AfSignRewardDo>();
                     //帮签成功 分享者获取相应的奖励
-                    AfSignRewardDo rewardDo = H5SupplementSignInfoOutController.buildSignReward(rewardUserId, SignRewardType.TWO.getCode(),userId,rewardAmount,null);
+                    AfSignRewardDo rewardDo = H5SupplementSignInfoOutController.buildSignReward(rewardUserId, SignRewardType.ONE.getCode(),userId,rewardAmount,null);
                     //帮签成功 打开者获取相应的奖励
                     AfSignRewardDo afSignRewardDo = H5SupplementSignInfoOutController.buildSignReward(userId, SignRewardType.FOUR.getCode(),null,amount,null);
                     signRewardList.add(afSignRewardDo);
