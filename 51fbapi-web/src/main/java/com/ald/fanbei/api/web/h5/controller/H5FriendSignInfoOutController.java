@@ -104,7 +104,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
                 if(!signReward(request,eUserDo.getRid(),rewardAmount,"old",moblie,userWxInfo)){
                     return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
                 }
-                homeInfo(eUserDo.getRid(),data,push);
+                data = homeInfo(eUserDo.getRid(),data,push);
                 return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
             }
 //            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
@@ -165,7 +165,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
             //首页信息
-            homeInfo(userId,data,push);
+            data = homeInfo(userId,data,push);
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
         } catch (FanbeiException e) {
             logger.error("commitRegister fanbei exception" + e.getMessage());

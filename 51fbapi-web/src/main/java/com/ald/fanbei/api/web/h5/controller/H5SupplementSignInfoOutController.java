@@ -84,7 +84,6 @@ public class H5SupplementSignInfoOutController extends H5Controller {
      */
     @RequestMapping(value = "/supplementSign", method = RequestMethod.POST)
     public String homePage(HttpServletRequest request, HttpServletResponse response) {
-        String resultStr = H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc() ).toString();
         try {
             final String moblie = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
             String verifyCode = ObjectUtils.toString(request.getParameter("verifyCode"), "").toString();
@@ -136,7 +135,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                 if(StringUtil.equals(status,"fail")){
                     return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.WX_BIND_FAIL.getDesc(),"",data).toString();
                 }
-                homeInfo(eUserDo.getRid(),data,push);
+                data = homeInfo(eUserDo.getRid(),data,push);
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SUPPLEMENT_SIGN_FAIL.getDesc(),"",data).toString();
             }
 //            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
@@ -191,8 +190,8 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             if(!signReward(request,userId,moblie,time,userWxInfo)){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
-            homeInfo(userId,data,push);
-            return resultStr;
+            data = homeInfo(userId,data,push);
+            return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
         } catch (FanbeiException e) {
             logger.error("commitRegister fanbei exception" + e.getMessage());
             return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
