@@ -24,4 +24,7 @@ public class AfOrderCountDto extends AbstractSerial {
     // 待返利订单数
     private Integer finishedOrderNum = 0;
 
+    //售后处理中订单数
+    private Integer afterSaleOrderNum = 0;
+
 }
