@@ -45,7 +45,6 @@ public class GetWithdrawDetailApi implements H5Handle {
         AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_PRIZE");
         List<AfSignRewardWithdrawDto> withdrawList = afSignRewardWithdrawService.getWithdrawList(withdrawQuery);
         for(AfSignRewardWithdrawDto afSignRewardWithdrawDto : withdrawList){
-            SignRewardType.ONE.getCode();
             switch (afSignRewardWithdrawDto.getWithdrawType()) {
                 case 0:
                     afSignRewardWithdrawDto.setName("兑换"+ afResourceDo.getValue1() +"元优惠券");
