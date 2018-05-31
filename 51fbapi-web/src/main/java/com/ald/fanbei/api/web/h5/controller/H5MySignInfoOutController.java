@@ -71,10 +71,12 @@ public class H5MySignInfoOutController extends H5Controller {
     @RequestMapping(value = "/mySign", method = RequestMethod.POST)
     public String homePage(HttpServletRequest request, HttpServletResponse response) {
         String userName = ObjectUtils.toString(request.getParameter("userName"),null);
+        logger.info("userName cfp 123"+userName);
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         if(null == afUserDo){
             return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
         }
+        logger.info("userName cfp 1223133"+afUserDo);
         Map<String,String> map = new HashMap<String,String>();
         try {
             AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
@@ -206,6 +208,7 @@ public class H5MySignInfoOutController extends H5Controller {
                         afSignRewardExtService.updateSignRewardExt(afSignRewardExtDo);
                         logger.info("cfp sign_reward22222233332" + rewardDo);
                         afSignRewardService.saveRecord(rewardDo);
+                        logger.info("cfp sign_reward11111" + rewardDo);
                         return "success";
                     }catch (Exception e){
                         status.setRollbackOnly();
