@@ -142,24 +142,24 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                 }
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SUPPLEMENT_SIGN_FAIL.getDesc(),"",data).toString();
             }
-//            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
-//            if (smsDo == null) {
-//                logger.error("sms record is empty");
-//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
-//            }
-//            String realCode = smsDo.getVerifyCode();
-//            if (!StringUtils.equals(verifyCode, realCode)) {
-//                logger.error("verifyCode is invalid");
-//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
-//            }
-//            if (smsDo.getIsCheck() == 1) {
-//                logger.error("verifyCode is already invalid");
-//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc()).toString();
-//            }
-//            // 判断验证码是否过期
-//            if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
-//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc()).toString();
-//            }
+            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
+            if (smsDo == null) {
+                logger.error("sms record is empty");
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
+            }
+            String realCode = smsDo.getVerifyCode();
+            if (!StringUtils.equals(verifyCode, realCode)) {
+                logger.error("verifyCode is invalid");
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
+            }
+            if (smsDo.getIsCheck() == 1) {
+                logger.error("verifyCode is already invalid");
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc()).toString();
+            }
+            // 判断验证码是否过期
+            if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc()).toString();
+            }
             try {
                 tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), moblie, moblie, "");
             } catch (Exception e) {
@@ -171,7 +171,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                 logger.error("h5Common commitRegisterLogin baiQiShiUtils getRegistResult error => {}",e.getMessage());
             }
             // 更新为已经验证
-//            afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
+            afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
             String salt = UserUtil.getSalt();
             AfUserDo userDo = new AfUserDo();
             userDo.setSalt(salt);
