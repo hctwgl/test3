@@ -92,15 +92,18 @@
     
     <update id="updateSignRewardExt"  parameterType="AfSignRewardExtDo">
         UPDATE af_sign_reward_ext SET gmt_modified = now()
-            <if test="firstDayParticipation != null and firstDayParticipation != '' ">        
-                ,first_day_participation = #{firstDayParticipation}
-            </if>
-            <if test="cycleDays != null and cycleDays != '' ">        
-                ,cycle_days = #{cycleDays}
-            </if>
-            <if test="isOpenRemind != null and isOpenRemind != '' ">        
-                ,is_open_remind = #{isOpenRemind}
-            </if>
+        <if test="firstDayParticipation != null and firstDayParticipation != '' ">
+            ,first_day_participation = #{firstDayParticipation}
+        </if>
+        <if test="cycleDays != null and cycleDays != '' ">
+            ,cycle_days = #{cycleDays}
+        </if>
+        <if test="isOpenRemind != null and isOpenRemind != '' ">
+            ,is_open_remind = #{isOpenRemind}
+        </if>
+        <if test="amount != null and amount != '' ">
+            ,amount = #{amount}
+        </if>
         WHERE is_delete = 0 AND user_id = #{userId}
     </update>
 
