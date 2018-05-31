@@ -42,50 +42,42 @@
     
         INSERT INTO af_sign_reward_ext
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">        
 	            gmt_create,
-	        </if>
-	        <if test="gmtModified != null">        
-	            gmt_modified,
-	        </if>
-	        <if test="userId != null">        
-	            user_id,
+	            gmt_modified
+	        <if test="userId != null">
+	            ,user_id
 	        </if>
 	        <if test="firstDayParticipation != null">        
-	            first_day_participation,
+	            ,first_day_participation
 	        </if>
 	        <if test="cycleDays != null">        
-	            cycle_days,
+	            ,cycle_days
 	        </if>
 	        <if test="isOpenRemind != null">        
-	            is_open_remind,
+	            ,is_open_remind
 	        </if>
             <if test="isDelete != null">
-                is_delete,
+                ,is_delete
             </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
-		    </if>
+
+		    now(),now()
 		    <if test="userId != null" >
-		       #{userId,jdbcType=BIGINT},
+		       ,#{userId,jdbcType=BIGINT}
 		    </if>
 		    <if test="firstDayParticipation != null" >
-		       #{firstDayParticipation,jdbcType=TIMESTAMP},
+		       ,#{firstDayParticipation,jdbcType=TIMESTAMP}
 		    </if>
 		    <if test="cycleDays != null" >
-		       #{cycleDays,jdbcType=INTEGER},
+		       ,#{cycleDays,jdbcType=INTEGER}
 		    </if>
 		    <if test="isOpenRemind != null" >
-		       #{isOpenRemind,jdbcType=INTEGER},
+		       ,#{isOpenRemind,jdbcType=INTEGER}
 		    </if>
             <if test="isDelete != null" >
-                #{isDelete,jdbcType=INTEGER},
+                ,#{isDelete,jdbcType=INTEGER}
             </if>
         </trim>
     </insert>

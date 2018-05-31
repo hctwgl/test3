@@ -45,56 +45,47 @@
     
         INSERT INTO af_sign_reward
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">        
 	            gmt_create,
+	            gmt_modified
+	        <if test="amount != null">
+                ,amount
 	        </if>
-	        <if test="gmtModified != null">        
-	            gmt_modified,
+	        <if test="type != null">
+                ,type
 	        </if>
-	        <if test="amount != null">        
-	            amount,
+	        <if test="status != null">
+                ,status
 	        </if>
-	        <if test="type != null">        
-	            type,
+	        <if test="userId != null">
+                ,user_id
 	        </if>
-	        <if test="status != null">        
-	            status,
-	        </if>
-	        <if test="userId != null">        
-	            user_id,
-	        </if>
-	        <if test="friendUserId != null">        
-	            friend_user_id,
+	        <if test="friendUserId != null">
+                ,friend_user_id
 	        </if>
             <if test="isDelete != null">
-                is_delete,
+                ,is_delete
             </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
-		    </if>
+		    now(),now()
 		    <if test="amount != null" >
-		       #{amount,jdbcType=DECIMAL},
+                ,#{amount,jdbcType=DECIMAL}
 		    </if>
 		    <if test="type != null" >
-		       #{type,jdbcType=INTEGER},
+                ,#{type,jdbcType=INTEGER}
 		    </if>
 		    <if test="status != null" >
-		       #{status,jdbcType=INTEGER},
+                ,#{status,jdbcType=INTEGER}
 		    </if>
 		    <if test="userId != null" >
-		       #{userId,jdbcType=INTEGER},
+                ,#{userId,jdbcType=INTEGER}
 		    </if>
 		    <if test="friendUserId != null" >
-		       #{friendUserId,jdbcType=INTEGER},
+                ,#{friendUserId,jdbcType=INTEGER}
 		    </if>
             <if test="isDelete != null" >
-                #{isDelete,jdbcType=INTEGER},
+                ,#{isDelete,jdbcType=INTEGER}
             </if>
         </trim>
     </insert>
