@@ -1302,6 +1302,15 @@
 		id = #{orderId}
 	</update>
 
+	<update id="updateOrderStatus">
+		UPDATE
+		af_order
+		SET
+		status = 'FINISHED'
+		WHERE
+		id = #{rid}
+	</update>
+
 	<insert id="addSceneAmount" parameterType="java.util.List">
 		INSERT INTO af_order_scene_amount(order_id , user_id , scene , au_amount , used_amount , gmt_create)
 		VALUES
