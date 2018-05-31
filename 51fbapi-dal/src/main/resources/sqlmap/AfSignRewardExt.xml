@@ -41,7 +41,7 @@
 	    </selectKey>
     
         INSERT INTO af_sign_reward_ext
-        <trim prefix="(" suffix=")" suffixOverrides="," >
+        <trim prefix="(" suffix=")"  >
 	            gmt_create,
 	            gmt_modified
 	        <if test="userId != null">
@@ -61,7 +61,7 @@
             </if>
         </trim>
         
-        <trim prefix="values (" suffix=")" suffixOverrides="," >
+        <trim prefix="values (" suffix=")" >
 
 		    now(),now()
 		    <if test="userId != null" >

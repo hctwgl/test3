@@ -44,7 +44,7 @@
 	    </selectKey>
     
         INSERT INTO af_sign_reward
-        <trim prefix="(" suffix=")" suffixOverrides="," >
+        <trim prefix="(" suffix=")" >
 	            gmt_create,
 	            gmt_modified
 	        <if test="amount != null">
@@ -67,7 +67,7 @@
             </if>
         </trim>
         
-        <trim prefix="values (" suffix=")" suffixOverrides="," >
+        <trim prefix="values (" suffix=")" >
 		    now(),now()
 		    <if test="amount != null" >
                 ,#{amount,jdbcType=DECIMAL}
