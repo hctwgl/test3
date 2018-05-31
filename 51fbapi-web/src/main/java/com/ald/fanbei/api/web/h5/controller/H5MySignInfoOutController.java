@@ -185,7 +185,7 @@ public class H5MySignInfoOutController extends H5Controller {
             }
             resp.put("amount",afSignRewardExtDo.getAmount().toString());
         }else {//第一次签到
-            BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2()).setScale(2,RoundingMode.HALF_EVEN);
+            final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2()).setScale(2,RoundingMode.HALF_EVEN);
             afSignRewardDo.setAmount(rewardAmount);
             final AfSignRewardDo rewardDo = afSignRewardDo;
             status = transactionTemplate.execute(new TransactionCallback<String>() {
@@ -196,7 +196,7 @@ public class H5MySignInfoOutController extends H5Controller {
                         afSignRewardExtDo.setUserId(rewardDo.getUserId());
                         afSignRewardExtDo.setGmtModified(new Date());
                         afSignRewardExtDo.setFirstDayParticipation(new Date());
-                        afSignRewardExtDo.setAmount(rewardDo.getAmount());
+                        afSignRewardExtDo.setAmount(rewardAmount);
                         afSignRewardService.saveRecord(rewardDo);
                         afSignRewardExtService.updateSignRewardExt(afSignRewardExtDo);
                         return "success";
