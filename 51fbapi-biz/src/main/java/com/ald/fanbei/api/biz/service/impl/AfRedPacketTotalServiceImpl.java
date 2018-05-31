@@ -287,6 +287,7 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 			@Override
 			public void run() {
 				AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+				logger.info("withdrawlimit==========" + config.getValue());
 				if (config.getValue().equals(YesNoStatus.NO.getCode()))
 					return;
 				JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
