@@ -1539,6 +1539,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			}
 			logger.info("userId=" + userId + ",status=" + status);
 			List<AfUserCouponDto> couponList = afUserCouponService.getH5UserCouponByUser(userId,status);
+
 			List<AfUserCouponVo> couponVoList = new ArrayList<AfUserCouponVo>();
 			for (AfUserCouponDto afUserCouponDto : couponList) {
 				AfUserCouponVo couponVo = getUserCouponVo(afUserCouponDto);

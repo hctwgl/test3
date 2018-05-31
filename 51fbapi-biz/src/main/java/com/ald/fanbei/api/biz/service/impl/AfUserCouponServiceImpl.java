@@ -66,6 +66,11 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	}
 
 	@Override
+	public List<AfUserCouponDto> getUserResevrationCouponList(Long userId) {
+		return afUserCouponDao.getUserResevrationCouponList(userId);
+	}
+
+	@Override
 	public int getUserCouponByUserNouse(Long userId) {
 		return afUserCouponDao.getUserCouponByUserNouse(userId);
 	}
