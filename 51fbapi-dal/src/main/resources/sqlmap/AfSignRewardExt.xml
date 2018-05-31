@@ -2,15 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- af_sign_reward_ext表 -->
 <mapper namespace="com.ald.fanbei.api.dal.dao.AfSignRewardExtDao">
-    
+
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
         id rid,gmt_create,gmt_modified,user_id,first_day_participation,cycle_days,is_open_remind,amount,is_delete
     </sql>
-    
+
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
-    	WHERE is_delete = 0
+        WHERE is_delete = 0
         <if test="rid !=null">
             AND id  = #{rid,jdbcType=INTEGER}
         </if>
@@ -34,54 +34,62 @@
         </if>
     </sql>
 
-    
+
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardExtDo" keyProperty="rid">
-    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
-	      SELECT LAST_INSERT_ID()
-	    </selectKey>
-    
+        <selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+
         INSERT INTO af_sign_reward_ext
-        <trim prefix="(" suffix=")"  >
-	            gmt_create,
-	            gmt_modified
-	        <if test="userId != null">
-	            ,user_id
-	        </if>
-	        <if test="firstDayParticipation != null">        
-	            ,first_day_participation
-	        </if>
-	        <if test="cycleDays != null">        
-	            ,cycle_days
-	        </if>
-	        <if test="isOpenRemind != null">        
-	            ,is_open_remind
-	        </if>
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="firstDayParticipation != null">
+                first_day_participation,
+            </if>
+            <if test="cycleDays != null">
+                cycle_days,
+            </if>
+            <if test="isOpenRemind != null">
+                is_open_remind,
+            </if>
             <if test="isDelete != null">
-                ,is_delete
+                is_delete,
             </if>
         </trim>
-        
-        <trim prefix="values (" suffix=")" >
 
-		    now(),now()
-		    <if test="userId != null" >
-		       ,#{userId,jdbcType=BIGINT}
-		    </if>
-		    <if test="firstDayParticipation != null" >
-		       ,#{firstDayParticipation,jdbcType=TIMESTAMP}
-		    </if>
-		    <if test="cycleDays != null" >
-		       ,#{cycleDays,jdbcType=INTEGER}
-		    </if>
-		    <if test="isOpenRemind != null" >
-		       ,#{isOpenRemind,jdbcType=INTEGER}
-		    </if>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="gmtCreate != null" >
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null" >
+                #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null" >
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="firstDayParticipation != null" >
+                #{firstDayParticipation,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cycleDays != null" >
+                #{cycleDays,jdbcType=INTEGER},
+            </if>
+            <if test="isOpenRemind != null" >
+                #{isOpenRemind,jdbcType=INTEGER},
+            </if>
             <if test="isDelete != null" >
-                ,#{isDelete,jdbcType=INTEGER}
+                #{isDelete,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
-    
+
     <update id="updateSignRewardExt"  parameterType="AfSignRewardExtDo">
         UPDATE af_sign_reward_ext SET gmt_modified = now()
         <if test="firstDayParticipation != null and firstDayParticipation != '' ">
@@ -104,7 +112,7 @@
         WHERE is_delete = 0 AND user_id = #{userId}
     </update>
 
-	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfSignRewardExtDo">
+    <select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfSignRewardExtDo">
         SELECT
         <include refid="queryFields" />
         FROM af_sign_reward_ext
@@ -112,14 +120,14 @@
         LIMIT 0,1
     </select>
 
-	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfSignRewardExtDo" parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardExtDo">
+    <select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfSignRewardExtDo" parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardExtDo">
         SELECT
         <include refid="queryFields" />
         FROM af_sign_reward_ext
-        <include refid="commonCondition"/> 
+        <include refid="commonCondition"/>
         limit 0,1
     </select>
-               
+
     <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfSignRewardExtDo" parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardExtDo">
         SELECT
         <include refid="queryFields" />
@@ -129,7 +137,7 @@
 
     <select id="selectByUserId" resultType="AfSignRewardExtDo">
         SELECT
-          <include refid="queryFields" />
+        <include refid="queryFields" />
         FROM af_sign_reward_ext
         WHERE  is_delete = 0
         AND user_id = #{userId}
@@ -181,5 +189,5 @@
             (0,now(),now(),#{item.userId},#{item.firstDayParticipation},#{item.cycleDays},#{item.isOpenRemind},#{item.amount})
         </foreach>
     </insert>
-    
+
 </mapper>
