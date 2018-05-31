@@ -200,8 +200,8 @@
         WHERE id = #{id}
     </update>
 
-    <select id="getTodayWithdrawAmount" resultType="java.math.BigDecimal">
-        SELECT IFNULL(sum(amount), 0)
+    <select id="getTotalWithdrawAmount" resultType="java.math.BigDecimal">
+        SELECT IFNULL(SUM(amount), 0)
         FROM af_red_packet_total
         WHERE is_delete = 0 AND is_withdraw = 1 AND gmt_withdraw <![CDATA[ >= ]]> #{gmtWithdrawStart}
           AND gmt_withdraw <![CDATA[ <= ]]> #{gmtWithdrawEnd}
