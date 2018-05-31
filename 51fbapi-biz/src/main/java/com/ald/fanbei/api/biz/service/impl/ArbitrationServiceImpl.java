@@ -325,8 +325,9 @@ public class ArbitrationServiceImpl extends BaseService implements
 		    .formatDateForPatternWithHyhen(afBorrowCashDo
 			    .getGmtArrival()));// 借款开始日期
 	    result.put("borrowEndDate", DateUtil
-		    .formatDateForPatternWithHyhen(afBorrowCashDo.getGmtPlanRepayment()));// 借款结束日期
-	    result.put("daysBorrowed", "");// 借款天数
+				.formatDateForPatternWithHyhen(DateUtil.addDays(afBorrowCashDo
+				.getGmtPlanRepayment(),1)));// 借款结束日期
+	    result.put("daysBorrowed", afBorrowCashDo.getType());// 借款天数
 	    result.put("violateStartDate", DateUtil
 				.formatDateForPatternWithHyhen(DateUtil.addDays(afBorrowCashDo
                 .getGmtPlanRepayment(),2)));// 违约金开始计算日期
