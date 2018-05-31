@@ -95,7 +95,9 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             String push = ObjectUtils.toString(request.getParameter("push"), "").toString();
             Integer time = NumberUtil.objToIntDefault(request.getParameter("time"),1);
             String wxCode = ObjectUtils.toString(request.getParameter("wxCode"), "").toString();
-            final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
+            String userName = ObjectUtils.toString(request.getParameter("rewardUserId"),null);
+            AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+            final Long rewardUserId = afUserDo.getRid();//分享者的userId
             AfResourceDo afResource = afResourceService.getWechatConfig();
             String appid = afResource.getValue();
             String secret = afResource.getValue1();

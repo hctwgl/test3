@@ -180,7 +180,9 @@ public class H5FriendSignInfoOutController extends H5Controller {
 
     private boolean signReward(HttpServletRequest request,final Long userId,final BigDecimal rewardAmount,final String user,final String moblie,final JSONObject userWxInfo){
         boolean result ;
-        final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);//分享者的userId
+        String userName = ObjectUtils.toString(request.getParameter("rewardUserId"),null);
+        AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+        final Long rewardUserId = afUserDo.getRid();//分享者的userId
         final boolean flag = afSignRewardService.checkUserSign(userId);
         final AfResourceDo afResource = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
         String status = transactionTemplate.execute(new TransactionCallback<String>() {

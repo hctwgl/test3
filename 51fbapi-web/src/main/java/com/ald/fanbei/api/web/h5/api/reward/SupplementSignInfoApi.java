@@ -16,6 +16,7 @@ import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
 import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
+import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
@@ -51,11 +52,13 @@ public class SupplementSignInfoApi implements H5Handle {
     AfUserAuthStatusService afUserAuthStatusService;
     @Resource
     AfSignRewardService afSignRewardService;
+    @Resource
+    AfUserService afUserService;
 
     @Override
     public H5HandleResponse process(Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
-        Long userId = NumberUtil.objToLongDefault(context.getData("userId"),null);//分享用户id
+        Long userId = context.getUserId();
         String push = ObjectUtils.toString(context.getData("push"),null);//用户是否打开手机推送权限
         String wxCode = ObjectUtils.toString(context.getData("wxCode"),null);
         Map<String,Object> data = new HashMap<String,Object>();
