@@ -1550,10 +1550,12 @@
 				and pay_type in ('AP','CP') and user_id=#{userId}
 	</update>
 	
-	<select id="getOrderByGoodsIdAndUserid" resultType="AfOrderDo">
+	<select id="getPayRelaOrderByGoodsIdAndUserid" resultType="AfOrderDo">
 		SELECT
 		<include refid="queryAllFields" />
 		FROM af_order
 		WHERE user_id=#{userId} and is_delete=0 AND order_type='SELFSUPPORT' AND goods_id = #{goodsId} 
+		and status in ('NEW','PAYFAIL','DEALING')
+		order by id desc limit 1
 	</select>
 </mapper>

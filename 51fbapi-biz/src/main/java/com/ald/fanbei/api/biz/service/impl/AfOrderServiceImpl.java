@@ -1220,24 +1220,21 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 String softWeakRiskOrderNo = riskUtil.getOrderNo("vefy", cardNo.substring(cardNo.length() - 4, cardNo.length()));
 								 orderInfo.setWeakRiskOrderNo(softWeakRiskOrderNo);
 								 orderDao.updateOrder(orderInfo);
-//								 
+								 
 								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 								 logger.info("softWeakverybo=" + softWeakverybo);
 								 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
 								 if(softWeakRiskStatus && vipGoodsId>0){
 									 //软弱风控通过，引导权限包 1 自动生成一个权限包订单 2 修改该付款失败订单的是否支持信用支付的状态
-									 long vipGoodsOrderId;
-									 AfOrderDo oldOrder = orderDao.getOrderByGoodsIdAndUserid(userId, vipGoodsId);
-									 if (oldOrder == null || OrderStatus.CLOSED.getCode().equals(oldOrder.getStatus())){
-										 oldOrder = generateOrder(vipGoodsId,userId,request);
-										 vipGoodsOrderId = afOrderService.createOrder(oldOrder);
-									 }else{
-										 vipGoodsOrderId = oldOrder.getRid();
+									 AfOrderDo vipGoodsOrder = orderDao.getPayRelaOrderByGoodsIdAndUserid(userId, vipGoodsId);
+									 if (vipGoodsOrder == null){
+										 vipGoodsOrder = generateOrder(vipGoodsId,userId,request);
+										 afOrderService.createOrder(vipGoodsOrder);
 									 }
 									 
 									 resultMap.put("isRecomend", YesNoStatus.YES.getCode());
-									 resultMap.put("vipGoodsOrderId", vipGoodsOrderId);
-									 resultMap.put("vipGoodsOrderPayStatus", oldOrder.getStatus());
+									 resultMap.put("vipGoodsOrderId", vipGoodsOrder.getRid());
+									 resultMap.put("vipGoodsOrderPayStatus", vipGoodsOrder.getStatus());
 									 resultMap.put("goodsId", vipGoodsId);
 									 resultMap.put("goodsBanner", vipGoodsBanner);
 								 }
@@ -1339,17 +1336,14 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
 								 if(softWeakRiskStatus && vipGoodsId>0){
 									//软弱风控通过，引导权限包 1 自动生成一个权限包订单 2 修改该付款失败订单的是否支持信用支付的状态
-									 long vipGoodsOrderId;
-									 AfOrderDo oldOrder = orderDao.getOrderByGoodsIdAndUserid(userId, vipGoodsId);
-									 if (oldOrder == null || OrderStatus.CLOSED.getCode().equals(oldOrder.getStatus())){
-										 oldOrder = generateOrder(vipGoodsId,userId,request);
-										 vipGoodsOrderId = afOrderService.createOrder(oldOrder);
-									 }else{
-										 vipGoodsOrderId = oldOrder.getRid();
+									 AfOrderDo vipGoodsOrder = orderDao.getPayRelaOrderByGoodsIdAndUserid(userId, vipGoodsId);
+									 if (vipGoodsOrder == null){
+										 vipGoodsOrder = generateOrder(vipGoodsId,userId,request);
+										 afOrderService.createOrder(vipGoodsOrder);
 									 }
 									 resultMap.put("isRecomend", YesNoStatus.YES.getCode());
-									 resultMap.put("vipGoodsOrderId", vipGoodsOrderId);
-									 resultMap.put("vipGoodsOrderPayStatus", oldOrder.getStatus());
+									 resultMap.put("vipGoodsOrderId", vipGoodsOrder.getRid());
+									 resultMap.put("vipGoodsOrderPayStatus", vipGoodsOrder.getStatus());
 									 resultMap.put("goodsId", vipGoodsId);
 									 resultMap.put("goodsBanner", vipGoodsBanner);
 								 }
@@ -1509,7 +1503,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	 */
 	private AfOrderDo generateOrder(Long vipGoodsId, Long userId, HttpServletRequest request) {
 		AfOrderDo afOrder = new AfOrderDo();
-//		Integer appversion = context.getAppVersion();
 		Date currTime = new Date();
 		int order_pay_time_limit= Constants.ORDER_PAY_TIME_LIMIT;
 		try{
@@ -1552,13 +1545,15 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		}
 		afOrder.setActualAmount(actualAmount);
 		afOrder.setCouponAmount(couponAmount);
-		afOrder.setSaleAmount(vipGoods.getSaleAmount().multiply(new BigDecimal(count)));// TODO:售价取规格的。
+		afOrder.setSaleAmount(vipGoods.getSaleAmount().multiply(new BigDecimal(count)));
 		afOrder.setIp(CommonUtil.getIpAddr(request));//用户ip地址
 		afOrder.setCount(count);
 		afOrder.setNper(nper);
 		afOrder.setPayType(PayType.BANK.getCode());
 		afOrder.setGmtCreate(currTime);
 		afOrder.setGmtPayEnd(gmtPayEnd);
+		afOrder.setPayStatus(PayStatus.NOTPAY.getCode());
+		afOrder.setStatus(OrderStatus.NEW.getCode());
 		return afOrder;
 	}
 	
@@ -3570,7 +3565,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	}
 
 	@Override
-	public AfOrderDo getOrderByGoodsIdAndUserid(Long userId, Long goodsId) {
-		return orderDao.getOrderByGoodsIdAndUserid(userId,goodsId);
+	public AfOrderDo getPayRelaOrderByGoodsIdAndUserid(Long userId, Long goodsId) {
+		return orderDao.getPayRelaOrderByGoodsIdAndUserid(userId,goodsId);
 	}
 }

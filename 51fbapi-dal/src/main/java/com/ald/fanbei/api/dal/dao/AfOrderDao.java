@@ -342,5 +342,11 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	int batchUpdateToPayOrderCreditStatus(@Param("userId")Long userId);
-	AfOrderDo getOrderByGoodsIdAndUserid(@Param(value="userId")Long userId, @Param(value="goodsId")Long goodsId);
+	/**
+	 * 获取指定用户指定商品下的最新订单，且订单状态为支付成功前状态 即待支付、支付中、支付失败
+	 * @param userId
+	 * @param goodsId
+	 * @return
+	 */
+	AfOrderDo getPayRelaOrderByGoodsIdAndUserid(@Param(value="userId")Long userId, @Param(value="goodsId")Long goodsId);
 }

@@ -486,5 +486,5 @@ public interface AfOrderService {
 
 	String getRefundMsg(AfOrderDo order);
 
-	AfOrderDo getOrderByGoodsIdAndUserid(Long userId, Long goodsId);
+	AfOrderDo getPayRelaOrderByGoodsIdAndUserid(Long userId, Long goodsId);
 }
