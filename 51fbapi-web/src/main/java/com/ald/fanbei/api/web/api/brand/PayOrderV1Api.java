@@ -378,16 +378,8 @@ public class PayOrderV1Api implements ApiHandle {
 		    }
 			result.put("goodsType", goodsType);
             result.put("toPayOrderNums", toPayOrderNums);
-            if (YesNoStatus.YES.getCode().equals(result.get("isRecomend"))){
-            	result.put("result", YesNoStatus.YES.getCode());
-            }else{
-            	result.put("result", YesNoStatus.NO.getCode());
-            }
-            AfOrderDo vipGoodsOrder = afOrderService.getOrderByGoodsIdAndUserid(userId, vipGoodsId);
-            if (vipGoodsOrder != null){
-            	result.put("vipGoodsOrderPayStatus", vipGoodsOrder.getPayStatus());
-            }else{
-            	result.put("vipGoodsOrderPayStatus",OrderStatus.NEW.getCode());
+            if (result.get("isRecomend") == null){
+            	result.put("isRecomend", YesNoStatus.NO.getCode());
             }
             
             if (success != null) {

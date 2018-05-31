@@ -53,7 +53,6 @@ import com.ald.fanbei.api.common.enums.AfGoodsStatus;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.CouponStatus;
-import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -115,8 +114,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 	AfUserAccountSenceService afUserAccountSenceService;
 	@Resource
 	private AfSeckillActivityService afSeckillActivityService;
-	@Resource
-	private AfGoodsService afgoodsPriceService;
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -157,45 +155,7 @@ public class BuySelfGoodsApi implements ApiHandle {
 					//如果用户之前没有购买成功过，则校验已下单数量
 					Integer countNums = afOrderService.countSpecGoodsBuyNums(goodsId,userId);
 					if(countNums!=null && countNums>0){
-				//		throw new FanbeiException(FanbeiExceptionCode.WEAK_VERIFY_VIP_GOODS_REPEAT_BUY);
-						/** 未成功购买权限包商品情况下重复下单，激活以前老的订单**/
-						AfOrderDo  oldOrder = afOrderService.getOrderByGoodsIdAndUserid(userId,goodsId);
-						if (oldOrder!= null){
-							String oldOrderStatus = oldOrder.getStatus();
-							if (OrderStatus.DELIVERED.getCode().equals(oldOrderStatus)){
-								throw new FanbeiException(FanbeiExceptionCode.WEAK_VERIFY_VIP_GOODS_REPEAT_BUY);
-							} else if (OrderStatus.CLOSED.getCode().equals(oldOrderStatus) || OrderStatus.NEW.getCode().equals(oldOrderStatus) || OrderStatus.PAYFAIL.getCode().equals(oldOrderStatus)){
-								if (OrderStatus.CLOSED.getCode().equals(oldOrderStatus)){
-									// 如果订单的状态关闭，则激活，更新库存
-									oldOrder.setStatus(OrderStatus.NEW.getCode());
-									afOrderService.updateOrder(oldOrder);
-									if (oldOrder.getGoodsId() != null && oldOrder.getGoodsId() > 0){
-										afGoodsPriceService.updateNewStockAndSaleByPriceId(goodsPriceId,count, true);
-									}
-								}
-								Map<String, Object> data = new HashMap<String, Object>();
-								AfUserAccountSenceDo userAccountDo = afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(), userId);
-								BigDecimal useableAmount = userAccountDo.getAuAmount().subtract(userAccountDo.getUsedAmount()).subtract(userAccountDo.getFreezeAmount());
-								String isEnoughAmount = "Y";
-								String isNoneQuota = "N";
-								actualAmount = oldOrder.getActualAmount();
-								if (!fromCashier) {
-									if (useableAmount.compareTo(actualAmount) < 0) {
-										isEnoughAmount = "N";
-									}
-									if (useableAmount.compareTo(BigDecimal.ZERO) == 0) {
-										isNoneQuota = "Y";
-									}
-								}
-								data.put("orderId", oldOrder.getRid());
-								data.put("isEnoughAmount", isEnoughAmount);
-								data.put("isNoneQuota", isNoneQuota);
-								resp.setResponseData(data);
-								return resp;
-							}
-							// 如果订单的状态未关闭，则直接返回订单信息
-						}
-						
+						throw new FanbeiException(FanbeiExceptionCode.WEAK_VERIFY_VIP_GOODS_REPEAT_BUY);
 					}
 				}else{
 					//如果在有效期限内，则不允许继续下单

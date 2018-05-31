@@ -1221,22 +1221,23 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 orderInfo.setWeakRiskOrderNo(softWeakRiskOrderNo);
 								 orderDao.updateOrder(orderInfo);
 //								 
-//								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-//								 logger.info("softWeakverybo=" + softWeakverybo);
-//								 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
-								 boolean softWeakRiskStatus = true;
+								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+								 logger.info("softWeakverybo=" + softWeakverybo);
+								 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
 								 if(softWeakRiskStatus && vipGoodsId>0){
 									 //软弱风控通过，引导权限包 1 自动生成一个权限包订单 2 修改该付款失败订单的是否支持信用支付的状态
 									 long vipGoodsOrderId;
 									 AfOrderDo oldOrder = orderDao.getOrderByGoodsIdAndUserid(userId, vipGoodsId);
 									 if (oldOrder == null || OrderStatus.CLOSED.getCode().equals(oldOrder.getStatus())){
-										 AfOrderDo vipGoodsOrder = generateOrder(vipGoodsId,userId,request);
-										 vipGoodsOrderId = afOrderService.createOrder(vipGoodsOrder);
+										 oldOrder = generateOrder(vipGoodsId,userId,request);
+										 vipGoodsOrderId = afOrderService.createOrder(oldOrder);
 									 }else{
 										 vipGoodsOrderId = oldOrder.getRid();
 									 }
+									 
 									 resultMap.put("isRecomend", YesNoStatus.YES.getCode());
 									 resultMap.put("vipGoodsOrderId", vipGoodsOrderId);
+									 resultMap.put("vipGoodsOrderPayStatus", oldOrder.getStatus());
 									 resultMap.put("goodsId", vipGoodsId);
 									 resultMap.put("goodsBanner", vipGoodsBanner);
 								 }
@@ -1341,13 +1342,14 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 									 long vipGoodsOrderId;
 									 AfOrderDo oldOrder = orderDao.getOrderByGoodsIdAndUserid(userId, vipGoodsId);
 									 if (oldOrder == null || OrderStatus.CLOSED.getCode().equals(oldOrder.getStatus())){
-										 AfOrderDo vipGoodsOrder = generateOrder(vipGoodsId,userId,request);
-										 vipGoodsOrderId = afOrderService.createOrder(vipGoodsOrder);
+										 oldOrder = generateOrder(vipGoodsId,userId,request);
+										 vipGoodsOrderId = afOrderService.createOrder(oldOrder);
 									 }else{
 										 vipGoodsOrderId = oldOrder.getRid();
 									 }
 									 resultMap.put("isRecomend", YesNoStatus.YES.getCode());
 									 resultMap.put("vipGoodsOrderId", vipGoodsOrderId);
+									 resultMap.put("vipGoodsOrderPayStatus", oldOrder.getStatus());
 									 resultMap.put("goodsId", vipGoodsId);
 									 resultMap.put("goodsBanner", vipGoodsBanner);
 								 }
@@ -3553,7 +3555,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
 		if(resourceDo!=null && order!=null && order.getGoodsId().equals(NumberUtil.objToLongDefault(resourceDo.getValue(), 0L))){
 			//更新当前订单的状态为已发货
-			order.setStatus(OrderStatus.DELIVERED.getCode());
+			order.setStatus(OrderStatus.PAID.getCode());
 			orderDao.updateOrder(order);
 			
 			//更新用户的消费分期权限包状态及时间
