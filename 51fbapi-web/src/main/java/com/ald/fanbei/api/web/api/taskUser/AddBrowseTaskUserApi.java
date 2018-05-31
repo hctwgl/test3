@@ -38,8 +38,6 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 	AfTaskUserService afTaskUserService;
 	@Resource
 	AfTaskBrowseGoodsService afTaskBrowseGoodsService;
-	@Resource
-	AfResourceService afResourceService;
 	
 	
 	@Override
@@ -72,9 +70,9 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 					String taskUserIds = buildTaskUserIds(specifiedTaskUserList);
 					if(StringUtils.isNotEmpty(taskUserIds)){
 						data.put("taskUserIds", taskUserIds);
-						data.put("message","太棒了!"+"\r\n"+"您已完成每日任务");
 					}
 				}
+				data.put("message","太棒了!"+"\r\n"+"您已完成每日任务");
 				resp.setResponseData(data);
 			}
 
