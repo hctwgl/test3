@@ -286,19 +286,24 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 		executorService.execute(new Runnable() {
 			@Override
 			public void run() {
-				AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-				logger.info("withdrawlimit==========" + config.getValue());
-				if (config.getValue().equals(YesNoStatus.NO.getCode()))
-					return;
-				JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-				BigDecimal everydayWithdrawAmount = redPacketConfig.getBigDecimal("withdrawAmount");
-				if (everydayWithdrawAmount != null) {
-					BigDecimal todayWithdrawAmount = getTodayWithdrawAmount();
-					if (everydayWithdrawAmount.compareTo(todayWithdrawAmount) < 0) {
-						config.setValue(YesNoStatus.NO.getCode());
-						afResourceService.editResource(config);
+				try {
+					AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+					logger.info("withdrawlimit:" + config.getValue());
+					if (config.getValue().equals(YesNoStatus.NO.getCode()))
+						return;
+					JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
+					BigDecimal everydayWithdrawAmount = redPacketConfig.getBigDecimal("withdrawAmount");
+					if (everydayWithdrawAmount != null) {
+						BigDecimal todayWithdrawAmount = getTodayWithdrawAmount();
+						if (everydayWithdrawAmount.compareTo(todayWithdrawAmount) < 0) {
+							config.setValue(YesNoStatus.NO.getCode());
+							afResourceService.editResource(config);
+						}
 					}
+				} catch (Exception e) {
+					logger.error("withdrawlimit,error=" + e.getStackTrace());
 				}
+
 			}
 		});
 	}
