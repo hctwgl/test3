@@ -107,6 +107,8 @@ public interface AfRedPacketTotalService extends ParentService<AfRedPacketTotalD
      */
     boolean isInvalid(AfRedPacketTotalDo redPacketTotalDo);
 
+//    boolean
+
     /**
      * 红包提现
      *
