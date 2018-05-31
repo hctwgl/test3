@@ -188,6 +188,7 @@ public class H5MySignInfoOutController extends H5Controller {
             final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2()).setScale(2,RoundingMode.HALF_EVEN);
             afSignRewardDo.setAmount(rewardAmount);
             final AfSignRewardDo rewardDo = afSignRewardDo;
+            logger.info("cfp sign_reward");
             status = transactionTemplate.execute(new TransactionCallback<String>() {
                 @Override
                 public String doInTransaction(TransactionStatus status) {
@@ -197,8 +198,11 @@ public class H5MySignInfoOutController extends H5Controller {
                         afSignRewardExtDo.setGmtModified(new Date());
                         afSignRewardExtDo.setFirstDayParticipation(new Date());
                         afSignRewardExtDo.setAmount(rewardAmount);
+                        logger.info("cfp sign_reward22222233332");
                         afSignRewardService.saveRecord(rewardDo);
+                        logger.info("cfp sign_reward2222");
                         afSignRewardExtService.updateSignRewardExt(afSignRewardExtDo);
+                        logger.info("cfp sign_reward111");
                         return "success";
                     }catch (Exception e){
                         status.setRollbackOnly();
