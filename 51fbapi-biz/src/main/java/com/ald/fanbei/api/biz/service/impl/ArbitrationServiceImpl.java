@@ -325,10 +325,10 @@ public class ArbitrationServiceImpl extends BaseService implements
 		    .formatDateForPatternWithHyhen(afBorrowCashDo
 			    .getGmtArrival()));// 借款开始日期
 	    result.put("borrowEndDate", DateUtil
-		    .formatDateForPatternWithHyhen(DateUtil.addDays(afBorrowCashDo
-			    .getGmtPlanRepayment(),1)));// 借款结束日期
+		    .formatDateForPatternWithHyhen(afBorrowCashDo.getGmtPlanRepayment()));// 借款结束日期
 	    result.put("daysBorrowed", "");// 借款天数
-	    result.put("violateStartDate", "");// 违约金开始计算日期
+	    result.put("violateStartDate", DateUtil.addDays(afBorrowCashDo
+                .getGmtPlanRepayment(),2));// 违约金开始计算日期
 	    result.put("violateEndDate", "");// 违约金结束计算日期
 	    result.put("dayOverdue", afBorrowCashDo.getOverdueDay()-1);// 逾期天数
 	    result.put("debtDate",DateUtil.formatDate( DateUtil.addDays( afBorrowCashDo.getGmtPlanRepayment(),2),"yyyy-MM-dd") );// 债转日期
