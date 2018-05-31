@@ -11,6 +11,15 @@
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
 	<context:annotation-config />
-	<import resource="spring/import-beans.xml" />
-
+	<import resource="biz-beans.xml" />
+    <import resource="../spring/dal-beans.xml" />
+    <import resource="../spring/encrypt-beans.xml" />
+    
+    <bean id="configProperties" class="com.ald.fanbei.api.common.util.ConfigProperties"
+        init-method="init">
+        <property name="configPath">
+            <value>test/config.properties</value>
+        </property>
+    </bean>
+	
 </beans>

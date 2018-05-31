@@ -12,8 +12,8 @@
         http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 	<import resource="biz-beans.xml" />
-	<import resource="dal-beans.xml" />
 	<import resource="encrypt-beans.xml" />
+	<import resource="dal-beans.xml" />
 	<import resource="common-beans.xml" />
 
 </beans>

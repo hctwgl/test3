@@ -20,6 +20,9 @@
 		<!-- 设定文件上传的最大值5MB，5*1024*1024 -->
 		<property name="maxUploadSize" value="5242880"></property>
 	</bean>
+	
+	<context:property-placeholder location="classpath:props/config.properties" />
+	
 	<bean class="com.ald.fanbei.api.common.DecrypPropertyPlaceholderConfigurer">
 		<property name="password" value="${fbapi.aes.password}"/>
 		<property name="encryptPropNames">
