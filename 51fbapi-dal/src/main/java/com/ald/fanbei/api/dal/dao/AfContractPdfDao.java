@@ -20,4 +20,5 @@ public interface AfContractPdfDao {
     int updateById(AfContractPdfDo record);
 
     List<AfLenderInfoDto> selectLenders(@Param("pdfId")Long pdfId);
+    List<AfLenderInfoDto> selectLendersSummary(@Param("pdfId")Long pdfId);
 }

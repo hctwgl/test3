@@ -1,8 +1,8 @@
 package com.ald.fanbei.api.web.validator.bean;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.stereotype.Component;
+
+import javax.validation.constraints.NotNull;
 
 @Component("submitBindBankcardParam")
 public class SubmitBindBankcardParam {
@@ -23,5 +23,8 @@ public class SubmitBindBankcardParam {
 	public Long bankCardId;
 	@NotNull
 	public String smsCode;
-	
+
+	public Integer cardType;
+	public String validDate;
+	public String safeCode;
 }

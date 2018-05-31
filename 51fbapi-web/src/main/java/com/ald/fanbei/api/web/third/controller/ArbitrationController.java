@@ -155,8 +155,8 @@ public class ArbitrationController {
             lenders.add(defaultLender);
         }
         for (AfLenderInfoDto lenderInfoDto:lenders) {
-            lender=lender+"<span style=\"color:red;\">"+lenderInfoDto.getUserName()+"</span>（身份证号：<span style=\"color:red;\">"+lenderInfoDto.getEdspayUserCardId()+"</span>）、";
-            lenderAmountInfo=lenderAmountInfo+"<span style=\"color:red;\">"+lenderInfoDto.getUserName()+lenderInfoDto.getInvestorAmount()+"元</span>，";
+            lender=lender+""+lenderInfoDto.getUserName()+"（身份证号："+lenderInfoDto.getEdspayUserCardId()+"）、";
+            lenderAmountInfo=lenderAmountInfo+""+lenderInfoDto.getUserName()+lenderInfoDto.getInvestorAmount()+"元，";
         }
         if(lender.contains("、")){
             lender= lender.substring(0,lender.lastIndexOf("、"));
@@ -167,7 +167,7 @@ public class ArbitrationController {
 
         lenderAmountInfo=lenderAmountInfo+"。";
         map.put("lender",lender);
-        map.put("borrowUserInfo","<span style=\"color:red;\">"+afUserDo.getRealName()+"</span>（身份证号：<span style=\"color:red;\">"+accountDo.getIdNumber()+"</span>）");
+        map.put("borrowUserInfo",""+afUserDo.getRealName()+"（身份证号："+accountDo.getIdNumber()+"）");
         map.put("amount",afBorrowCashDo.getAmount());
         map.put("cnAmount",NumberUtil.number2CNMontrayUnit(afBorrowCashDo.getAmount()));
         map.put("receptDate",simpleDateFormat.format(date));

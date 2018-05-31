@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.StringUtil;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -74,6 +75,9 @@ public class GetMineCouponListApi implements ApiHandle{
         List<AfUserCouponDto> couponList = afUserCouponService.getUserCouponByUser(query);
         List<AfUserCouponVo> couponVoList = new ArrayList<AfUserCouponVo>();
         for (AfUserCouponDto afUserCouponDto : couponList) {
+        	if(StringUtil.isNotBlank(afUserCouponDto.getType())&&StringUtil.equals("DISCOUNT",afUserCouponDto.getType())){
+        		continue;
+			}
         	AfUserCouponVo couponVo = getUserCouponVo(afUserCouponDto);
         	Date gmtEnd = couponVo.getGmtEnd();
         	// 如果当前时间离到期时间小于48小时,则显示即将过期
@@ -115,6 +119,12 @@ public class GetMineCouponListApi implements ApiHandle{
 		couponVo.setName(afUserCouponDto.getName());
 		couponVo.setStatus(afUserCouponDto.getStatus());
 		couponVo.setUseRule(afUserCouponDto.getUseRule());
+		if(StringUtil.isNotBlank(afUserCouponDto.getType())){
+			if(StringUtil.equals("LOAN",afUserCouponDto.getType())
+					||StringUtil.equals("BORROWCASH",afUserCouponDto.getType())||StringUtil.equals("BORROWBILL",afUserCouponDto.getType())){
+				afUserCouponDto.setType("REPAYMENT");
+			}
+		}
 		couponVo.setType(afUserCouponDto.getType());
 		couponVo.setUseRange(afUserCouponDto.getUseRange());
 		couponVo.setShopUrl(afUserCouponDto.getShopUrl());

@@ -1,25 +1,10 @@
 package com.ald.fanbei.api.web.api.user;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
-import org.dbunit.util.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
 import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -27,16 +12,18 @@ import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
-import com.ald.fanbei.api.dal.domain.dto.UpsBankStatusDto;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.alibaba.fastjson.JSON;
+import org.dbunit.util.Base64;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @类描述：
@@ -61,7 +48,10 @@ public class GetBankCardListApi implements ApiHandle {
 	if (userId == null) {
 	    throw new FanbeiException("user id is invalid", FanbeiExceptionCode.PARAM_ERROR);
 	}
-	List<AfBankUserBankDto> list = afUserBankcardService.getUserBankcardByUserId(userId, context.getAppVersion());
+
+	Object cardType = requestDataVo.getParams().get("cardType");
+
+	List<AfBankUserBankDto> list = afUserBankcardService.getUserBankcardByUserId(userId, context.getAppVersion(), cardType==null?null:cardType.toString());
 
 	resp.addResponseData("bankCardList", list);
 	String bankcardStatus = "N";

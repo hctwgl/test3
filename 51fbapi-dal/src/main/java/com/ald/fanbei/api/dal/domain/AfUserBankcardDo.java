@@ -1,8 +1,8 @@
 package com.ald.fanbei.api.dal.domain;
 
-import java.util.Date;
-
 import com.ald.fanbei.api.common.AbstractSerial;
+
+import java.util.Date;
 
 /**
  * 
@@ -31,6 +31,34 @@ public class AfUserBankcardDo extends AbstractSerial {
     private String bankChannel;
 
     private String payType;
+
+    private Integer cardType;
+    private String validDate;
+    private String safeCode;
+
+    public Integer getCardType() {
+        return cardType;
+    }
+
+    public void setCardType(Integer cardType) {
+        this.cardType = cardType;
+    }
+
+    public String getValidDate() {
+        return validDate;
+    }
+
+    public void setValidDate(String validDate) {
+        this.validDate = validDate;
+    }
+
+    public String getSafeCode() {
+        return safeCode;
+    }
+
+    public void setSafeCode(String safeCode) {
+        this.safeCode = safeCode;
+    }
 
     public String getIsValid() {
 	return isValid;

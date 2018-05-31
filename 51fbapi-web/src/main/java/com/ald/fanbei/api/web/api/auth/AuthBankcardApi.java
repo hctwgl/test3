@@ -1,18 +1,5 @@
 package com.ald.fanbei.api.web.api.auth;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.common.util.UserUtil;
-import org.apache.commons.lang.ObjectUtils;
-import org.dbunit.util.Base64;
-import org.springframework.stereotype.Component;
-
 import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
 import com.ald.fanbei.api.biz.service.AfAuthYdService;
 import com.ald.fanbei.api.biz.service.AfUserAccountService;
@@ -23,6 +10,7 @@ import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
@@ -30,6 +18,13 @@ import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import org.apache.commons.lang.ObjectUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *@类现描述：银行卡认证（添加银行卡）,用户在完成人脸识别之后可以绑定银行卡，绑定银行卡时需要调用第三方认证，直接调用支付通道（融都开发那套）相关接口
@@ -73,7 +68,7 @@ public class AuthBankcardApi implements ApiHandle {
 			throw new FanbeiException("user bankcard exist error", FanbeiExceptionCode.USER_BANKCARD_EXIST_ERROR);
 		}
 		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(context.getUserId());
-		UpsAuthSignRespBo upsResult = upsUtil.authSign(context.getUserId()+"",userAccount.getRealName(), mobile, userAccount.getIdNumber(), cardNumber, "02",bankCode);
+		UpsAuthSignRespBo upsResult = upsUtil.authSign(context.getUserId()+"",userAccount.getRealName(), mobile, userAccount.getIdNumber(), cardNumber, "02",bankCode,"00","","");
 
 		if(!upsResult.isSuccess()){
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_ERROR);
