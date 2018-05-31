@@ -362,9 +362,6 @@ public class PayOrderV1Api implements ApiHandle {
 
             Object success = result.get("success");
             Object payStatus = result.get("status");
-            Integer toPayOrderNums =0;
-         // 查询当前用户待支付的订单数
-            toPayOrderNums = afOrderService.getALLNoFinishOrderCount(userId);
             String goodsType = AfGoodsSpecType.COMMON.getCode();
 		    Long vipGoodsId = 0L;
 			//权限包商品配置信息
@@ -377,6 +374,9 @@ public class PayOrderV1Api implements ApiHandle {
 		    	}
 		    }
 			result.put("goodsType", goodsType);
+			Integer toPayOrderNums =0;
+            // 查询当前用户待支付的订单数
+            toPayOrderNums = afOrderService.getALLNoFinishOrderCount(userId,vipGoodsId);
             result.put("toPayOrderNums", toPayOrderNums);
             if (result.get("isRecomend") == null){
             	result.put("isRecomend", YesNoStatus.NO.getCode());

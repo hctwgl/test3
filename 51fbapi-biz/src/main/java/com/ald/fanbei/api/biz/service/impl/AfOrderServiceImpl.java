@@ -1230,6 +1230,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 									 if (vipGoodsOrder == null){
 										 vipGoodsOrder = generateOrder(vipGoodsId,userId,request);
 										 afOrderService.createOrder(vipGoodsOrder);
+										 logger.info("softWeakVerify pass,and create new order of authPackage success ,orderId="+vipGoodsOrder.getRid());
 									 }
 									 
 									 resultMap.put("isRecomend", YesNoStatus.YES.getCode());
@@ -1554,6 +1555,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		afOrder.setGmtPayEnd(gmtPayEnd);
 		afOrder.setPayStatus(PayStatus.NOTPAY.getCode());
 		afOrder.setStatus(OrderStatus.NEW.getCode());
+		afOrder.setOrderType(OrderType.SELFSUPPORT.getCode());
+		afOrder.setSupportCreditStatus(YesNoStatus.NO.getCode());
 		return afOrder;
 	}
 	
@@ -1583,7 +1586,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		afOrder.setRebateAmount(goodsDo.getRebateAmount().multiply(new BigDecimal(count)));
 		afOrder.setMobile("");
 		afOrder.setBankId(0L);
-		afOrder.setOrderType("SELFBUILD");
 		final String orderNo = generatorClusterNo.getOrderNo(OrderType.SELFSUPPORT);
 		afOrder.setOrderNo(orderNo);
 		return afOrder;
@@ -3536,8 +3538,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	}
 
 	@Override
-	public int getALLNoFinishOrderCount(Long userId) {
-		return orderDao.getALLNoFinishOrderCount(userId);
+	public int getALLNoFinishOrderCount(Long userId,Long excludeGoodsId) {
+		return orderDao.getALLNoFinishOrderCount(userId,excludeGoodsId);
 	}
 
 	/**

@@ -26,7 +26,7 @@ public interface AfOrderDao {
 	 * @param userId
 	 * @return
 	 */
-	int getALLNoFinishOrderCount(Long userId);
+	int getALLNoFinishOrderCount(@Param("userId") Long userId,@Param("excludeGoodsId") Long excludeGoodsId);
 	/**
 	 * 获取用户未支付订单数(新建)
 	 */
