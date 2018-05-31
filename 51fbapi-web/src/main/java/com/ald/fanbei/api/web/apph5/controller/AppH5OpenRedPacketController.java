@@ -268,6 +268,7 @@ public class AppH5OpenRedPacketController extends BaseController {
     @ResponseBody
     public String withdraw(HttpServletRequest request, OpenRedPacketParamVo param) {
         try {
+            logger.info("========================================================withdraw");
             logger.info("/redPacket/withdraw, param=" + param);
             AfUserDo userDo = getUserInfo(param.getCode(), request);
             afRedPacketTotalService.withdraw(param.getId(), userDo.getUserName());
