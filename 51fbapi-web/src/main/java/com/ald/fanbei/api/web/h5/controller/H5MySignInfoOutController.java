@@ -70,7 +70,7 @@ public class H5MySignInfoOutController extends H5Controller {
      */
     @RequestMapping(value = "/mySign", method = RequestMethod.POST)
     public String homePage(HttpServletRequest request, HttpServletResponse response) {
-        String userName = ObjectUtils.toString(request.getParameter("userName"),null);
+        String userName = ObjectUtils.toString(request.getParameter("userId"),null);
         logger.info("userName cfp 123"+userName);
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         if(null == afUserDo){
