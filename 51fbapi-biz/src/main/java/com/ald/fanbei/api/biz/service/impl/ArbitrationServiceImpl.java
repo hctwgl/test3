@@ -311,7 +311,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 				afBorrowCashDo.getRateAmount().multiply(
 						new BigDecimal(360)
 				).divide(
-						afBorrowCashDo.getAmount().multiply(new BigDecimal( afBorrowCashDo.getType()))
+						afBorrowCashDo.getAmount().multiply(new BigDecimal( afBorrowCashDo.getType())),10,BigDecimal.ROUND_HALF_UP
 				).multiply(
 						new BigDecimal( afBorrowCashDo.getType()).add(new BigDecimal(1)).multiply(afBorrowCashDo.getAmount())
 				).divide(
