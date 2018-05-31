@@ -29,6 +29,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -67,6 +69,8 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 
     @Autowired
 	private TransactionTemplate transactionTemplate;
+
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
 	@Override
 	public OpenRedPacketHomeBo getHomeInfoInSite(FanbeiWebContext context) {
@@ -275,6 +279,25 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 				updateById(redPacketTotalDo);
 
 				withdrawToUserAccount(redPacketTotalDo);
+			}
+		});
+
+		// TODO:由于统一线程池代码没有提交，将来改为统一的线程池异步处理
+		executorService.execute(new Runnable() {
+			@Override
+			public void run() {
+				AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+				if (config.getValue().equals(YesNoStatus.NO.getCode()))
+					return;
+				JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
+				BigDecimal everydayWithdrawAmount = redPacketConfig.getBigDecimal("withdrawAmount");
+				if (everydayWithdrawAmount != null) {
+					BigDecimal todayWithdrawAmount = getTodayWithdrawAmount();
+					if (everydayWithdrawAmount.compareTo(todayWithdrawAmount) < 0) {
+						config.setValue(YesNoStatus.NO.getCode());
+						afResourceService.editResource(config);
+					}
+				}
 			}
 		});
 	}

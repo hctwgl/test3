@@ -135,16 +135,6 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		if (helpOpenDo != null) {
 			throw new FanbeiException("您已帮此用户拆过红包了");
 		}
-
-		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-		JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-		BigDecimal everydayWithdrawAmount = redPacketConfig.getBigDecimal("withdrawAmount");
-		if (everydayWithdrawAmount != null) {
-			BigDecimal todayWithdrawAmount = afRedPacketTotalService.getTodayWithdrawAmount();
-			if (everydayWithdrawAmount.compareTo(todayWithdrawAmount) <= 0) {
-				throw new FanbeiException("今日红包已拆完，请明天再来哦");
-			}
-		}
 	}
 
 	// 填充拆得的金额和比率
