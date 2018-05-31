@@ -184,6 +184,11 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 
 			}
 		}
+
+		BigDecimal everydayWithdrawAmount = redPacketConfig.getBigDecimal("withdrawAmount");
+		if (afRedPacketTotalService.isReachWithdrawAmountThreshold(everydayWithdrawAmount)) {
+			throw new FanbeiException("今日红包已瓜分完喽");
+		}
 	}
 
 	// 计算拆红包比率

@@ -107,7 +107,13 @@ public interface AfRedPacketTotalService extends ParentService<AfRedPacketTotalD
      */
     boolean isInvalid(AfRedPacketTotalDo redPacketTotalDo);
 
-//    boolean
+    /**
+     * 是否到达提现金额阀值
+     *
+     * @author wangli
+     * @date 2018/5/31
+     */
+    boolean isReachWithdrawAmountThreshold(BigDecimal everydayWithdrawAmountThreshold);
 
     /**
      * 红包提现
