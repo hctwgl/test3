@@ -38,10 +38,8 @@ public class GetRewardDetailApi implements H5Handle {
         signQuery.setUserId(context.getUserId());
         signQuery.setPageNo(pageNo);
         signQuery.setPageSize(pageSize);
-
         List<AfSignRewardDto> signList = afSignRewardService.getRewardDetailList(signQuery);
         for(AfSignRewardDto afSignRewardDo : signList){
-            SignRewardType.ONE.getCode();
             switch (afSignRewardDo.getType()) {
                 case 0:
                     afSignRewardDo.setName("签到现金");

@@ -120,7 +120,7 @@
         <include refid="commonCondition"/>
     </select>
 
-    <select id="getWithdrawList" parameterType="AfSignRewardWithdrawQuery" resultType="AfSignRewardWithdrawDo">
+    <select id="getWithdrawList" parameterType="AfSignRewardWithdrawQuery" resultType="AfSignRewardWithdrawDto">
         SELECT
         <include refid="queryFields" />
         FROM af_sign_reward_withdraw
