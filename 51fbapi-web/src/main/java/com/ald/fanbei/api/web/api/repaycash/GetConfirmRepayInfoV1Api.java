@@ -215,7 +215,7 @@ public class GetConfirmRepayInfoV1Api implements ApiHandle {
 
 			if (cardId == -2) {// 余额支付
 				map = afRepaymentBorrowCashService.createRepayment(jfbAmount, repaymentAmount, actualAmount, coupon,
-						userAmount, borrowId, cardId, userId, "", userDto,null);
+						userAmount, borrowId, cardId, userId, "", userDto,null,"");
 				resp.addResponseData("refId", map.get("refId"));
 				resp.addResponseData("type", map.get("type"));
 			} else if (cardId == -1) {// 微信支付
@@ -274,7 +274,7 @@ public class GetConfirmRepayInfoV1Api implements ApiHandle {
 				}
 
 				map = afRepaymentBorrowCashService.createRepayment(jfbAmount, repaymentAmount, actualAmount, coupon,
-						userAmount, borrowId, cardId, userId, request.getRemoteAddr(), userDto,bankPayType);
+						userAmount, borrowId, cardId, userId, request.getRemoteAddr(), userDto,bankPayType,"");
 
 				// 代收
 				UpsCollectRespBo upsResult = null;

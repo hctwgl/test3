@@ -53,11 +53,12 @@ public class GetVerifyCodeApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+		String requestId = requestDataVo.getId();
+		String majiabaoName = requestId.substring(requestId.lastIndexOf("_") + 1, requestId.length());
 		String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
 		String typeParam = ObjectUtils.toString(requestDataVo.getParams().get("type"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
-		Integer version = context.getAppVersion();
 		String smsType = "";
 		if (StringUtils.isBlank(mobile) || StringUtils.isBlank(typeParam)) {
 			logger.error("verifyCode or type is empty mobile = " + mobile + " type = " + typeParam);
@@ -68,7 +69,7 @@ public class GetVerifyCodeApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_INVALID_MOBILE_NO);
 		}
 
-		if (version < 413){
+		if ("majiaborrowSupermanapp".equals(majiabaoName)){
 			smsType = "YS";
 		}
 		AfUserDo afUserDo = null;

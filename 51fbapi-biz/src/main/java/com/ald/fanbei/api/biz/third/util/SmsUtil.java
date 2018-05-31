@@ -779,6 +779,40 @@ public class SmsUtil extends AbstractThird {
         return false;
     }
 
+    /**
+     * 云树resource配置统一短信发送
+     * value:短信内容  value1:开关 1开 0关   value2:单日单个用户失败短信发送次数限制，防刷使用
+     * @param mobile
+     * @param errorTimes
+     * @param resourceType
+     * @param resourceSecType
+     * @return
+     */
+    public boolean sendYsSmsConfigMessageToMobile(String mobile, Map<String,String> replaceMapData, int errorTimes,String resourceType,String resourceSecType) {
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(resourceType, resourceSecType);
+        try {
+            //发送短信的大开关
+            if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
+                //单日单个用户发送次数限制校验
+                int maxSendTimes = NumberUtil.objToIntDefault(resourceDo.getValue2(), 0);
+                if (maxSendTimes < errorTimes) {
+                    logger.error("sendConfigMessageToMobile false,name="+resourceDo.getName()+",resourceType="+resourceType+",resourceSecType="+resourceSecType+",maxSendTimes:" + maxSendTimes + ",errorTimes:" + errorTimes + ",mobile:" + mobile);
+                    return false;
+                }
+                String content = StringUtil.null2Str(resourceDo.getValue());
+                content = StringUtil.convertMessageByMapInfo("&", content, replaceMapData);
+                logger.error("sendConfigMessageToMobile success,name="+resourceDo.getName()+",resourceType="+resourceType+",resourceSecType="+resourceSecType+",mobile:" + mobile + "content:" + content);
+                SmsResult smsResult = YSSmsUtil.send(mobile, content,YSSmsUtil.NOTITION_SECRET_YS);
+                return smsResult.isSucc();
+            } else {
+                logger.error("sendConfigMessageToMobile false,name="+resourceDo.getName()+",resourceType="+resourceType+",resourceSecType="+resourceSecType+",send onoff status:" + (resourceDo != null ? resourceDo.getValue1() : "off") + ",mobile:" + mobile);
+            }
+        } catch (Exception e) {
+            logger.error("sendConfigMessageToMobile exception,name="+resourceDo.getName()+",resourceType="+resourceType+",resourceSecType="+resourceSecType+",send onoff status:" + (resourceDo != null ? resourceDo.getValue1() : "off") + ",mobile:" + mobile);
+        }
+        return false;
+    }
+
 
     /**
      * 续借成功给用户
