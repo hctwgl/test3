@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 
 /**
  * 
@@ -172,10 +174,11 @@ public interface AfOrderService {
 	
 	/**
 	 * 支付菠萝觅订单
+	 * @param request 
 	 * @param afOrder
 	 * @return
 	 */
-	Map<String,Object> payBrandOrder(String userName, Long payId, String payType, Long rid, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal actualAmount, Integer nper, String appName, String ipAddress,String bankChannel);
+	Map<String,Object> payBrandOrder(String userName, Long payId, String payType, Long rid, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal actualAmount, Integer nper, String appName, String ipAddress,String bankChannel, HttpServletRequest request);
 	/**
 	 * 支付菠萝觅订单
 	 * @param afOrder

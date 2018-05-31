@@ -31,6 +31,7 @@ import com.alibaba.fastjson.JSONArray;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.annotations.ResultMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -357,7 +358,7 @@ public class PayOrderV1Api implements ApiHandle {
             // ----------------
 
 
-            Map<String, Object> result = afOrderService.payBrandOrder(context.getUserName(), payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress, bankChannel);
+            Map<String, Object> result = afOrderService.payBrandOrder(context.getUserName(), payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress, bankChannel,request);
 
             Object success = result.get("success");
             Object payStatus = result.get("status");
@@ -377,6 +378,17 @@ public class PayOrderV1Api implements ApiHandle {
 		    }
 			result.put("goodsType", goodsType);
             result.put("toPayOrderNums", toPayOrderNums);
+            if (YesNoStatus.YES.getCode().equals(result.get("isRecomend"))){
+            	result.put("result", YesNoStatus.YES.getCode());
+            }else{
+            	result.put("result", YesNoStatus.NO.getCode());
+            }
+            AfOrderDo vipGoodsOrder = afOrderService.getOrderByGoodsIdAndUserid(userId, vipGoodsId);
+            if (vipGoodsOrder != null){
+            	result.put("vipGoodsOrderPayStatus", vipGoodsOrder.getPayStatus());
+            }else{
+            	result.put("vipGoodsOrderPayStatus",OrderStatus.NEW.getCode());
+            }
             
             if (success != null) {
                 if (Boolean.parseBoolean(success.toString())) {

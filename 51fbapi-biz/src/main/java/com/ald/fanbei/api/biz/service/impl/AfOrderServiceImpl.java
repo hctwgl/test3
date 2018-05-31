@@ -38,6 +38,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -166,6 +167,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	AfUserCouponTigerMachineService afUserCouponTigerMachineService;
 	@Resource
 	AfUserAuthService afUserAuthService;
+	@Resource
+	private AfGoodsPriceService afGoodsPriceService;
+	
+	@Resource
+	private AfUserAddressService afUserAddressService;
 	
 	@Override
 	public AfOrderDo getOrderInfoByPayOrderNo(String payTradeNo) {
@@ -1019,7 +1025,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	// return orderDao.deleteOrder(id);
 	// }
     @Override
-    public Map<String, Object> payBrandOrder(final String userName, final Long payId, final String payType, final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount, final Integer nper, final String appName, final String ipAddress, final String bankChannel) {
+    public Map<String, Object> payBrandOrder(final String userName, final Long payId, final String payType, final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount, final Integer nper, final String appName, final String ipAddress, final String bankChannel, final HttpServletRequest request) {
 		final AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);
 		final HashMap<String, HashMap> riskDataMap = new HashMap();
 
@@ -1055,9 +1061,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 				Map<String, Object> resultMap = new HashMap<String, Object>();
 
 				String goodsType = AfGoodsSpecType.COMMON.getCode();
+				String isRecomend = YesNoStatus.NO.getCode();
 				String vipGoodsBanner = "";
 			    Long vipGoodsId = 0L;
-			    String  isRecomend = YesNoStatus.NO.getCode();
 			    //权限包产品的有效期，大于0时有效
 			    Integer vipGoodsValidDay = 0;
 			    if (vipGoodsResourceDo != null){
@@ -1069,7 +1075,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			    	}
 			    }
 				resultMap.put("goodsType", goodsType);
-				resultMap.put("isRecomend", isRecomend);
+				resultMap.put("isRecomend",isRecomend);
 			    resultMap.put("goodsId", 0L);
 			    resultMap.put("goodsBanner", "");
 			    
@@ -1123,10 +1129,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						}// 微信支付
 						resultMap = UpsUtil.buildWxpayTradeOrder(tradeNo, userId, goodsName, actualAmount, attach);
 						resultMap.put("success", true);
-//						resultMap.put("goodsType", goodsType);
-//						resultMap.put("isRecomend", isRecomend);
-//					    resultMap.put("goodsId", 0L);
-//					    resultMap.put("goodsBanner", "");
+						resultMap.put("isRecomend",isRecomend);
+					    resultMap.put("goodsId", 0L);
+					    resultMap.put("goodsBanner", "");
 						// 活动返利
 						return resultMap;
 					} else if (payType.equals(PayType.AGENT_PAY.getCode())) {
@@ -1221,8 +1226,17 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 //								 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
 								 boolean softWeakRiskStatus = true;
 								 if(softWeakRiskStatus && vipGoodsId>0){
-									 //软弱风控通过，引导权限包
+									 //软弱风控通过，引导权限包 1 自动生成一个权限包订单 2 修改该付款失败订单的是否支持信用支付的状态
+									 long vipGoodsOrderId;
+									 AfOrderDo oldOrder = orderDao.getOrderByGoodsIdAndUserid(userId, vipGoodsId);
+									 if (oldOrder == null || OrderStatus.CLOSED.getCode().equals(oldOrder.getStatus())){
+										 AfOrderDo vipGoodsOrder = generateOrder(vipGoodsId,userId,request);
+										 vipGoodsOrderId = afOrderService.createOrder(vipGoodsOrder);
+									 }else{
+										 vipGoodsOrderId = oldOrder.getRid();
+									 }
 									 resultMap.put("isRecomend", YesNoStatus.YES.getCode());
+									 resultMap.put("vipGoodsOrderId", vipGoodsOrderId);
 									 resultMap.put("goodsId", vipGoodsId);
 									 resultMap.put("goodsBanner", vipGoodsBanner);
 								 }
@@ -1323,8 +1337,17 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 logger.info("cp softWeakverybo=" + softWeakverybo);
 								 boolean softWeakRiskStatus = softWeakverybo.isSuccess();
 								 if(softWeakRiskStatus && vipGoodsId>0){
-									 //软弱风控通过，引导权限包
+									//软弱风控通过，引导权限包 1 自动生成一个权限包订单 2 修改该付款失败订单的是否支持信用支付的状态
+									 long vipGoodsOrderId;
+									 AfOrderDo oldOrder = orderDao.getOrderByGoodsIdAndUserid(userId, vipGoodsId);
+									 if (oldOrder == null || OrderStatus.CLOSED.getCode().equals(oldOrder.getStatus())){
+										 AfOrderDo vipGoodsOrder = generateOrder(vipGoodsId,userId,request);
+										 vipGoodsOrderId = afOrderService.createOrder(vipGoodsOrder);
+									 }else{
+										 vipGoodsOrderId = oldOrder.getRid();
+									 }
 									 resultMap.put("isRecomend", YesNoStatus.YES.getCode());
+									 resultMap.put("vipGoodsOrderId", vipGoodsOrderId);
 									 resultMap.put("goodsId", vipGoodsId);
 									 resultMap.put("goodsBanner", vipGoodsBanner);
 								 }
@@ -1451,9 +1474,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 											userAccountInfo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_BRAND_SHOP, remark, merPriv);
 								}
 								resultMap.put("goodsType", goodsType);
-								resultMap.put("isRecomend", isRecomend);
 							    resultMap.put("goodsId", 0L);
 							    resultMap.put("goodsBanner", "");
+							    resultMap.put("isRecomend", isRecomend);
                                 addOrderBankCardInfo(orderId,cardInfo,afOrderBankcardDo);
 							}
 						}
@@ -1470,9 +1493,103 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					throw e;
 				}
 			}
+			
 
 		});
 		return resultMap;
+	}
+    /**
+	 * 生成一个权限报订单
+	 * @param vipGoodsId
+	 * @param userId
+     * @param request 
+	 * @return
+	 */
+	private AfOrderDo generateOrder(Long vipGoodsId, Long userId, HttpServletRequest request) {
+		AfOrderDo afOrder = new AfOrderDo();
+//		Integer appversion = context.getAppVersion();
+		Date currTime = new Date();
+		int order_pay_time_limit= Constants.ORDER_PAY_TIME_LIMIT;
+		try{
+			AfResourceDo resourceDo= afResourceService.getSingleResourceBytype("order_pay_time_limit");
+			if(resourceDo!=null){
+				order_pay_time_limit=Integer.valueOf(resourceDo.getValue()) ;
+				if(order_pay_time_limit==0){
+					order_pay_time_limit= Constants.ORDER_PAY_TIME_LIMIT;
+				}
+			}
+		}catch (Exception e){
+			logger.error("resource config error:",e);
+		}
+		Date gmtPayEnd = DateUtil.addHoures(currTime, order_pay_time_limit);
+		List<AfGoodsPriceDo> goodsPriceList = afGoodsPriceService.getByGoodsId(vipGoodsId);
+		AfGoodsPriceDo priceDo = null;
+		if (CollectionUtil.isNotEmpty(goodsPriceList)){
+			priceDo = goodsPriceList.get(0);
+		}
+		AfGoodsDo vipGoods = afGoodsService.getGoodsById(vipGoodsId);
+		if (vipGoods == null || priceDo == null){
+			throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
+		}
+		if (!AfGoodsStatus.PUBLISH.getCode().equals(vipGoods.getStatus())) {
+			throw new FanbeiException(FanbeiExceptionCode.GOODS_HAVE_CANCEL);
+		}
+		AfUserAddressDo addressDo = afUserAddressService.selectUserAddressDefaultByUserId(userId);
+		if (addressDo == null) {
+			throw new FanbeiException(FanbeiExceptionCode.USER_ADDRESS_NOT_EXIST);
+		}
+		int count = 1;
+		Integer nper = 0;
+		afOrder = orderDoWithGoodsAndAddressDo(addressDo, vipGoods, count);
+		afOrder.setUserId(userId);
+		afOrder.setGoodsPriceId(priceDo.getRid());
+		BigDecimal couponAmount=BigDecimal.ZERO;
+		BigDecimal actualAmount= priceDo.getActualAmount().multiply(new BigDecimal(count)).subtract(couponAmount);
+		if(actualAmount.compareTo(BigDecimal.ZERO)<=0){
+			actualAmount = new BigDecimal(0.01);
+		}
+		afOrder.setActualAmount(actualAmount);
+		afOrder.setCouponAmount(couponAmount);
+		afOrder.setSaleAmount(vipGoods.getSaleAmount().multiply(new BigDecimal(count)));// TODO:售价取规格的。
+		afOrder.setIp(CommonUtil.getIpAddr(request));//用户ip地址
+		afOrder.setCount(count);
+		afOrder.setNper(nper);
+		afOrder.setPayType(PayType.BANK.getCode());
+		afOrder.setGmtCreate(currTime);
+		afOrder.setGmtPayEnd(gmtPayEnd);
+		return afOrder;
+	}
+	
+	public AfOrderDo orderDoWithGoodsAndAddressDo(AfUserAddressDo addressDo, AfGoodsDo goodsDo, int count) {
+		AfOrderDo afOrder = new AfOrderDo();
+		afOrder.setConsignee(addressDo.getConsignee());
+		afOrder.setConsigneeMobile(addressDo.getMobile());
+		afOrder.setSaleAmount(goodsDo.getSaleAmount());// TODO:售价改成从规格中取得。
+
+		afOrder.setPriceAmount(goodsDo.getPriceAmount());
+		afOrder.setGoodsIcon(goodsDo.getGoodsIcon());
+		afOrder.setGoodsName(goodsDo.getName());
+		
+		//新增下单时记录 省、 市、 区 、详细地址 、IP 、设备指纹 2017年12月12日11:17:51 cxk
+		String province = addressDo.getProvince() !=null?addressDo.getProvince():"";
+		String city = addressDo.getCity() !=null?addressDo.getCity():"";
+		String district = addressDo.getCounty() !=null?addressDo.getCounty():"";
+		String address = addressDo.getAddress() !=null?addressDo.getAddress():"";
+		afOrder.setProvince(province);//省
+		afOrder.setCity(city);//市
+		afOrder.setDistrict(district);//区
+		afOrder.setAddress(address);//详细地址
+		afOrder.setGoodsId(goodsDo.getRid());
+		afOrder.setOpenId(goodsDo.getOpenId());
+		afOrder.setNumId(goodsDo.getNumId());
+		afOrder.setShopName(goodsDo.getShopName());
+		afOrder.setRebateAmount(goodsDo.getRebateAmount().multiply(new BigDecimal(count)));
+		afOrder.setMobile("");
+		afOrder.setBankId(0L);
+		afOrder.setOrderType("SELFBUILD");
+		final String orderNo = generatorClusterNo.getOrderNo(OrderType.SELFSUPPORT);
+		afOrder.setOrderNo(orderNo);
+		return afOrder;
 	}
 
 	private void addOrderBankCardInfo(Long orderId,AfUserBankcardDo cardInfo,AfOrderBankcardDo afOrderBankcardDo){
