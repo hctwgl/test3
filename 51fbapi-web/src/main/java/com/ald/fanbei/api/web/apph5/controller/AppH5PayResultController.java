@@ -5,7 +5,6 @@ import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
-import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.OrderStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -14,7 +13,6 @@ import com.ald.fanbei.api.dal.dao.AfOrderDao;
 import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.OrderInfoDto;
@@ -25,7 +23,6 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
@@ -69,7 +66,8 @@ public class AppH5PayResultController extends BaseController {
                     PayResultInfoDto payResultInfoDto = new PayResultInfoDto();
 
                     OrderInfoDto orderInfoDto = new OrderInfoDto();
-                    orderInfoDto.setActualAmount(orderDo.getActualAmount());
+                    //实付金额需要加上信用卡手续费
+                    orderInfoDto.setActualAmount(orderDo.getActualAmount().add(orderDo.getFeeAmount()));
                     orderInfoDto.setAddress(orderDo.getAddress());
                     orderInfoDto.setConsignee(orderDo.getConsignee());
                     orderInfoDto.setConsigneeMobile(orderDo.getConsigneeMobile());

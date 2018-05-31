@@ -23,6 +23,12 @@ public interface AfUserCouponDao {
 	 * @return
 	 */
 	List<AfUserCouponDto> getUserCouponByUser(AfUserCouponQuery query);
+
+	/**
+	 * 获取用户预售优惠券列表
+	 * @return
+	 */
+	List<AfUserCouponDto> getUserResevrationCouponList(Long userId);
 	
 	/**
 	 * 获取可用优惠券数量
@@ -141,5 +147,19 @@ public interface AfUserCouponDao {
 
 	Integer getUserCouponByUserIdAndCouponCource(@Param("userId")Long userId,@Param("sourceType")String sourceType);
 
+    List<AfUserCouponDto> getUserAllAcgencyCouponByAmount(@Param("userId")Long userId, @Param("amount") BigDecimal actualAmount);
+
+	List<AfUserCouponDto> getUserAllCoupon();
+
+	List<AfUserCouponDto> getUserAllCouponByUserId(Long userId);
+
+    List<AfUserCouponDto> getH5UserCouponByUser(@Param("userId")Long userId, @Param("status")String status);
+
 	AfUserCouponDto getUserCouponAfterPaidSuccess(@Param("userId") Long userId);
+
+    List<AfUserCouponDto> getUserCouponByTypeV1(@Param("userId") Long userId, @Param("type") String type, @Param("repaymentType") String repaymentType);
+
+    List<AfUserCouponDto> getUserBillCouponByUserIdAndType(@Param("userId")Long userId,@Param("type")String type,@Param("amount")BigDecimal amount);
+
+    List<AfUserCouponDto> getUserOldAllAcgencyCouponByAmount(@Param("userId")Long userId, @Param("amount")BigDecimal actualAmount);
 }

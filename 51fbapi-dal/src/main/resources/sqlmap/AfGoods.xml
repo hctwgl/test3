@@ -439,6 +439,24 @@
 		<if test="keyword != null and keyword != ''">
 		AND name LIKE CONCAT('%',#{keyword},'%')
 		</if>
+		<if test="goodsIds != null and goodsIds.size > 0">
+			AND id IN
+			<foreach item="item" index="index" collection="goodsIds" open="(" separator="," close=")">
+				#{goodsIds[${index}],jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="categoryIds != null and categoryIds.size > 0">
+			AND category_id IN
+			<foreach item="item" index="index" collection="categoryIds" open="(" separator="," close=")">
+				#{categoryIds[${index}],jdbcType=BIGINT}
+			</foreach>
+		</if>
+		<if test="brandIds != null and brandIds.size > 0">
+			AND brand_id IN
+			<foreach item="item" index="index" collection="brandIds" open="(" separator="," close=")">
+				#{brandIds[${index}],jdbcType=BIGINT}
+			</foreach>
+		</if>
 		<if test="sortword != null and sortword != ''">
 		order by ${sortword}
 		</if>
@@ -651,7 +669,7 @@
 	</select>
 
 	<select id="getVisualGoodsByGoodsId" resultType="HashMap">
-		SELECT a.name,a.rebate_amount,a.price_amount,a.sale_amount,a.goods_icon,a.id FROM af_goods as a
+		SELECT a.name,a.rebate_amount,a.price_amount,a.sale_amount,a.goods_icon,a.id, a.rebate_rate FROM af_goods as a
 		WHERE  a.is_delete = 0 AND a.status = 'PUBLISH'
 		AND a.id in (
 		<foreach collection="ids" item="item" index="index" separator="," >
@@ -664,4 +682,30 @@
 		)
 	</select>
 
+	<select id="getGoodsisGlobal3" parameterType="list" resultType="java.lang.Long">
+		SELECT
+		a.goods_id
+		FROM
+		af_subject_goods a
+		WHERE
+		a.is_delete=0
+		AND a.subject_id IN
+		<foreach item="item" collection="list" index="index" separator="," open="("
+				 close=")">
+			#{item, jdbcType=BIGINT}
+		</foreach>
+	</select>
+
+	<select id="getGoodsisGlobal1" parameterType="java.lang.Long" resultType="java.lang.Long">
+		SELECT
+		item_value
+		FROM
+		af_model_h5_item
+		WHERE
+		item_type = 'GOODS_ID'
+		AND
+		model_id=#{modelId}
+		AND
+		is_delete = 0
+	</select>
 </mapper>

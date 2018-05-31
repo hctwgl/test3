@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 
@@ -11,6 +13,8 @@ import com.ald.fanbei.api.common.AbstractSerial;
  *@author 何鑫 2017年1月20日  14:49:25
  *@注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
+@Getter
+@Setter
 public class AfUserCouponVo extends AbstractSerial{
 	
 	private static final long serialVersionUID = 3223281017295487747L;
@@ -37,6 +41,12 @@ public class AfUserCouponVo extends AbstractSerial{
 	private String shopUrl;
 	
 	private String useRange;
+
+	private Integer isGlobal;
+
+	private BigDecimal discount;
+
+	private String activityType;
 
 	public String getName() {
 		return name;

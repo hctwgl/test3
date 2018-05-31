@@ -7,7 +7,8 @@
 		UPDATE af_shop_sup_settle_order_result
 		SET gmt_modified = now(),
 		finish_date = now(),
-		`status` = #{status}
+		`status` = #{status},
+		 ups_response = #{upsResponse}
 		WHERE id = #{rid}
 	</update>
 

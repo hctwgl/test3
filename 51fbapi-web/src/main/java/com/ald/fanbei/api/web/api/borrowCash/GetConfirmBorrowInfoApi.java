@@ -13,6 +13,7 @@ import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.*;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -223,6 +224,7 @@ public class GetConfirmBorrowInfoApi extends GetBorrowCashBase implements ApiHan
 																		// 去掉利息
 
 			try{
+				logger.info("getConfirmBorrowInfoApi type="+type+",info="+JSON.toJSONString(requestDataVo.getParams()));
 				AfResourceDo afResourceDo= afResourceService.getSingleResourceBytype("enabled_type_borrow");//是否允许这种类型的借款
 				if(afResourceDo!=null&&afResourceDo.getValue().equals(YesNoStatus.YES.getCode())&&afResourceDo.getValue1().contains(type)){
 					throw new FanbeiException(afResourceDo.getValue2(),true);

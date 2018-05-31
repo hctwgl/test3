@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.druid.util.StringUtils;
 import com.google.common.collect.Lists;
@@ -39,10 +40,6 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.Base64;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -276,6 +273,15 @@ public class AppH5CouponController extends BaseController {
 						AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(couponId));
 						if (afCouponDo == null)
 							continue;
+						if(StringUtil.isNotBlank(afCouponDo.getType())){
+							if(StringUtil.equals("LOAN",afCouponDo.getType())
+									||StringUtil.equals("BORROWCASH",afCouponDo.getType())||StringUtil.equals("BORROWBILL",afCouponDo.getType())){
+								afCouponDo.setType("REPAYMENT");
+							}
+							if(StringUtil.equals("DISCOUNT",afCouponDo.getType())){
+								continue;
+							}
+						}
 						couponInfoMap.put("couponType", 0);
 						couponInfoMap.put("shopUrl", afCouponCategoryDo.getUrl());
 						couponInfoMap.put("couponId", afCouponDo.getRid());
@@ -370,6 +376,7 @@ public class AppH5CouponController extends BaseController {
 				query.setUserId(userId);
 				query.setStatus(status);
 				List<AfUserCouponDto> couponList = afUserCouponService.getUserCouponByUser(query);
+
 				List<AfUserCouponVo> couponVoList = new ArrayList<AfUserCouponVo>();
 				for (AfUserCouponDto afUserCouponDto : couponList) {
 					AfUserCouponVo couponVo = getUserCouponVo(afUserCouponDto);
@@ -468,6 +475,10 @@ public class AppH5CouponController extends BaseController {
 					couponInfoMap.put("useRange", afCouponDo.getUseRange());
 					couponInfoMap.put("limitAmount", afCouponDo.getLimitAmount());
 					couponInfoMap.put("drawStatus", "N");
+					couponInfoMap.put("isFinish", "Y");
+					if(afCouponDo.getQuota() == -1 || afCouponDo.getQuota() > afCouponDo.getQuotaAlready()){
+						couponInfoMap.put("isFinish", "N");
+					}
 					if (isLogin) {
 						int count = afUserCouponService.getUserCouponByUserIdAndCouponId(userId,
 								Long.parseLong(couponId));

@@ -10,8 +10,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.common.util.StringUtil;
-
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -21,6 +19,7 @@ import com.ald.fanbei.api.biz.bo.PickBrandCouponRequestBo;
 import com.ald.fanbei.api.biz.service.AfAbtestDeviceNewService;
 import com.ald.fanbei.api.biz.service.AfActivityGoodsService;
 import com.ald.fanbei.api.biz.service.AfActivityService;
+import com.ald.fanbei.api.biz.service.AfAdvertiseService;
 import com.ald.fanbei.api.biz.service.AfCategoryService;
 import com.ald.fanbei.api.biz.service.AfGoodsService;
 import com.ald.fanbei.api.biz.service.AfHomePageChannelService;
@@ -40,6 +39,8 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.enums.AfAdvertisePositionCode;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.HomePageType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
@@ -53,11 +54,13 @@ import com.ald.fanbei.api.common.util.Converter;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfHomePageChannelDo;
 import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfResourceH5ItemDo;
 import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.dto.AfAdvertiseDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.common.ApiHandle;
@@ -125,7 +128,8 @@ public class GetHomeInfoV3Api implements ApiHandle {
 	JpushService jpushService;
 	@Resource
 	AfUserCouponService afUserCouponService;
-	
+	@Resource
+	AfAdvertiseService afAdvertiseService;
 	
 
 	private static final String TABBAR =		              HomePageType.TABBAR.getCode(); 
@@ -157,7 +161,8 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		    	userId = userDo.getRid();
 		    }
 		}
-		doStrongRiseAndCoupon(userId,userName,appVersion);
+		  doStrongRiseAndCoupon(userId,userName,appVersion);
+
 		
 		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_INFO.getCode()+"_"+envType;
 		 Object cacheResult =(Map<String, Object>) bizCacheUtil.getMap(cacheKey);
@@ -222,18 +227,21 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				  tabbarList = afResourceH5ItemService.getByTagAndValue2(TABBAR,TABBAR_HOME_TOP);
 				 
 				// 顶部导航信息
-				List<Object> topBannerList = new ArrayList<Object>();
-		
-				String topBanner = AfResourceType.HomeBannerV401.getCode();
-				// 正式环境和预发布环境区分
-				if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
-						  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(topBanner));
-					
-				} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
-						  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topBanner));
-					
-				}
-		
+
+
+//				String topBanner = AfResourceType.HomeBannerV401.getCode();
+//				// 正式环境和预发布环境区分
+//				if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
+//						  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(topBanner));
+//
+//				} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
+//						  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topBanner));
+//
+//				}
+//				if(userId != null){
+//				 toAddImage(topBannerList,AfAdvertisePositionCode.HOME_TOP_BANNER.getCode(),userId);
+//				}
+
 				   String sloganImage = "";
 				   List<AfResourceH5ItemDo> sloganList = new ArrayList<AfResourceH5ItemDo>();
 						  sloganList =    afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,HOME_IAMGE_SLOGAN);
@@ -243,21 +251,25 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				// 快速导航信息
 				Map<String, Object> navigationInfo =  new  HashMap<String, Object>();
 				
-					  navigationInfo = getNavigationInfoWithResourceDolist(
+			    navigationInfo = getNavigationInfoWithResourceDolist(
 								afResourceService.getHomeIndexListByOrderby(AfResourceType.HomeNavigation.getCode()),navigationBackground);
 //				
 				// 新增运营位1,快捷导航上方活动专场
-				List<Object> navigationUpOne = new  ArrayList<Object>();
+
 //				  if(navigationUpOne == null || navigationUpOne.size()<1){
-					  navigationUpOne = 	getNavigationUpOneResourceDoList(
-								afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOneV401.getCode()));
-		
+//					  navigationUpOne = 	getNavigationUpOneResourceDoList(
+//								afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOneV401.getCode()));
+//				if(userId != null){
+//				  toAddImage(navigationUpOne,AfAdvertisePositionCode.HOME_NAVIGATION_UP_ONE.getCode(),userId);
+//			    }
+
 				// 新增运营位2,快捷导航下方活动专场
-					List<Object> navigationDownOne = new  ArrayList<Object>();
-						  navigationDownOne = getNavigationDownTwoResourceDoList(afResourceService
-									.getNavigationDownTwoResourceDoList(AfResourceType.HomeNavigationDownTwoV401.getCode()));
-//				
-				
+//						  navigationDownOne = getNavigationDownTwoResourceDoList(afResourceService
+//									.getNavigationDownTwoResourceDoList(AfResourceType.HomeNavigationDownTwoV401.getCode()));
+//				if(userId != null){
+//				   toAddImage(navigationDownOne,AfAdvertisePositionCode.HOME_NAVIGATION_DOWN_ONE.getCode(),userId);
+//				}
+
 				
 				// 获取金融服务入口
 				
@@ -530,10 +542,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				if (!ecommerceAreaInfo.isEmpty()) {
 					data.put("ecommerceAreaInfo", ecommerceAreaInfo);
 				}
-				// 顶部轮播
-				if (!topBannerList.isEmpty()) {
-					data.put("topBannerList", topBannerList);
-				}
+
 				// 快速导航
 				if (!navigationInfo.isEmpty()) {
 						if(navigationBackground != null){
@@ -546,14 +555,8 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				if (!sloganImage.isEmpty()) {
 					data.put("sloganImage", sloganImage);
 				}
-				// 新增运营位1,快捷导航上方活动专场
-				if (!navigationUpOne.isEmpty()) {
-					data.put("navigationUpOneList", navigationUpOne);
-				}
-		
-				// 新增运营位2,快捷导航下方活动专场
-				if (!navigationDownOne.isEmpty()) {
-					data.put("navigationDownOneList", navigationDownOne);
+				if (!backgroundList.isEmpty()) {
+					data.put("backgroundList", backgroundList);
 				}
 				// 常驻运营位
 				if (!homeNomalPositionList.isEmpty()) {
@@ -563,10 +566,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				if (!ecommerceAreaInfo.isEmpty()) {
 					data.put("ecommerceAreaInfo", ecommerceAreaInfo);
 				}
-				// 首页背景图
-				if (!backgroundList.isEmpty()) {
-					data.put("backgroundList", backgroundList);
-				}
+
 				// 金融服务入口
 				if (!financialEntranceInfo.isEmpty()) {
 					data.put("financialEntranceInfo", financialEntranceInfo);
@@ -584,7 +584,8 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				if (!brandInfo.isEmpty()) {
 					data.put("brandInfo", brandInfo);
 				}
-			  bizCacheUtil.saveMap(cacheKey, data, Constants.MINITS_OF_TWO);
+				
+				 bizCacheUtil.saveMap(cacheKey, data, Constants.MINITS_OF_TWO);	 	
          }
            try{
 
@@ -620,9 +621,82 @@ public class GetHomeInfoV3Api implements ApiHandle {
 					     	}
 					 }
 	      }
-         }catch(Exception  e){
-        	 logger.error("getHomeInfoV3 newExclusive error = " + e);
-         }
+           //
+           }catch(Exception  e){
+          	 logger.error("getHomeInfoV3 newExclusive error = " + e);
+           }
+		        List<Object> navigationUpOne = new  ArrayList<Object>();
+		 		List<Object> navigationDownOne = new  ArrayList<Object>();
+		 		List<Object> topBannerList = new ArrayList<Object>();
+
+//               // 去掉缓存
+//		   	    String navigationUpOneCacheKey = CacheConstants.ASJ_HOME_PAGE.ADVERTISE_HOME_NAVIGATION_UP_ONE +":"+userId;
+//		   	    String navigationDownOneCacheKey = CacheConstants.ASJ_HOME_PAGE.ADVERTISE_HOME_NAVIGATION_DOWN_ONE +":"+userId;
+//		   	    String topBannerCacheKey = CacheConstants.ASJ_HOME_PAGE.ADVERTISE_HOME_TOP_BANNER +":"+userId;
+//		   	    navigationUpOne = null;
+//		   	    navigationDownOne = null;
+//		   	    topBannerList = null;
+//		   	    navigationUpOne = bizCacheUtil.getObjectList(navigationUpOneCacheKey);
+//		   	    navigationDownOne = bizCacheUtil.getObjectList(navigationDownOneCacheKey);
+//		   	    topBannerList = bizCacheUtil.getObjectList(topBannerCacheKey);
+		   	    if(navigationUpOne == null || navigationUpOne.size()<1){
+			   	    navigationUpOne = 	getNavigationUpOneResourceDoList(
+				            afResourceService.getNavigationUpOneResourceDoList(AfResourceType.HomeNavigationUpOneV401.getCode()));
+			   	   if(userId != null){
+			   	      toAddImage(navigationUpOne,AfAdvertisePositionCode.HOME_NAVIGATION_UP_ONE.getCode(),userId);
+			   	   }
+			        if(navigationUpOne!= null && navigationUpOne.size()>0){
+			        	navigationUpOne =  navigationUpOne.subList(0, 1);
+			        	// bizCacheUtil.saveObjectListExpire(navigationUpOneCacheKey, navigationUpOne, Constants.MINITS_OF_TWO);
+			        }
+
+		   	    }
+		   	   if(navigationDownOne == null || navigationDownOne.size()<1){
+				   navigationDownOne = getNavigationDownTwoResourceDoList(afResourceService
+							.getNavigationDownTwoResourceDoList(AfResourceType.HomeNavigationDownTwoV401.getCode()));
+				   if(userId != null){
+					   toAddImage(navigationDownOne,AfAdvertisePositionCode.HOME_NAVIGATION_DOWN_ONE.getCode(),userId);
+				   }
+				    if(navigationDownOne!= null && navigationDownOne.size()>0){
+				    	navigationDownOne = navigationDownOne.subList(0, 1);
+				    	//bizCacheUtil.saveObjectListExpire(navigationDownOneCacheKey, navigationDownOne, Constants.MINITS_OF_TWO);
+				    }
+
+
+		   	   }
+			   	if(topBannerList == null || topBannerList.size()<1){
+					String topBanner = AfResourceType.HomeBannerV401.getCode();
+					// 正式环境和预发布环境区分
+					if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
+							  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderBy(topBanner));
+
+					} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
+							  topBannerList = getBannerInfoWithResourceDolist(afResourceService.getResourceHomeListByTypeOrderByOnPreEnv(topBanner));
+
+					}
+					 if(userId != null){
+						 toAddImage(topBannerList,AfAdvertisePositionCode.HOME_TOP_BANNER.getCode(),userId);
+					 }
+			   	  if(topBannerList!= null && topBannerList.size()>0){
+					//bizCacheUtil.saveObjectListExpire(topBannerCacheKey, topBannerList, Constants.MINITS_OF_TWO);
+			   	  }
+			   	}
+
+
+         	// 首页背景图
+         // 顶部轮播
+				if (!topBannerList.isEmpty()) {
+					data.put("topBannerList", topBannerList);
+				}
+				// 新增运营位1,快捷导航上方活动专场
+				if (!navigationUpOne.isEmpty()) {
+					data.put("navigationUpOneList", navigationUpOne);
+				}
+
+				// 新增运营位2,快捷导航下方活动专场
+				if (!navigationDownOne.isEmpty()) {
+					data.put("navigationDownOneList", navigationDownOne);
+				}
 
 		//首页搜索栏位等优化为可配置 cxk 2018年5月23日13:49:18
 		try{
@@ -631,15 +705,15 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				List<AfResourceDo> backgroundList  = new ArrayList<AfResourceDo>();
 				backgroundList = afResourceService.getBackGroundByTypeAndStatusOrder(ResourceType.CUBE_HOMEPAGE_BACKGROUND_ASJ.getCode());
 				newConfigInfo = new HashMap<String, Object>();
-                newConfigInfo.put("searchBackColor","");
-                newConfigInfo.put("searchFontColor","");
-                newConfigInfo.put("searchGlass","");
-                newConfigInfo.put("messageIcon","");
-                newConfigInfo.put("fontColor","");
-                newConfigInfo.put("remainFontColor","");
-                newConfigInfo.put("navigationOpen","");
-                newConfigInfo.put("navigationClose","");
-                newConfigInfo.put("bannerBackImg","");
+				newConfigInfo.put("searchBackColor","");
+				newConfigInfo.put("searchFontColor","");
+				newConfigInfo.put("searchGlass","");
+				newConfigInfo.put("messageIcon","");
+				newConfigInfo.put("fontColor","");
+				newConfigInfo.put("remainFontColor","");
+				newConfigInfo.put("navigationOpen","");
+				newConfigInfo.put("navigationClose","");
+				newConfigInfo.put("bannerBackImg","");
 				for (AfResourceDo afResourceDo :	backgroundList) {
 					if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_SEARCH_BACK_COLOR.getCode())) {
 						//app搜索栏背景色
@@ -680,10 +754,50 @@ public class GetHomeInfoV3Api implements ApiHandle {
 			logger.error("getHomeInfoV3 newConfigInfo error = " + e);
 		}
 
-         //新人运营位查库
+
+		//新人运营位查库
 		logger.info("getHomeInfoV3data = " + data);
 		resp.setResponseData(data);
 		return resp;
+	}
+
+	private void toAddImage(List<Object> topBannerList, String code, Long userId) {
+		// TODO Auto-generated method stub
+		try {
+
+			AfAdvertiseDto  afAdvertiseDto  = afAdvertiseService.getDirectionalRecommendInfo(code,userId);
+			logger.info("getDirectionalRecommendInfo = "+JSONObject.toJSONString(afAdvertiseDto)+"userId = "+userId);
+		   	 if(afAdvertiseDto != null){
+		   		 Integer appendMode = afAdvertiseDto.getAppendMode();
+		   		 String imageUrl = afAdvertiseDto.getImage();
+		   		 String type = afAdvertiseDto.getUrlType();
+		   		 String content = afAdvertiseDto.getUrl();
+		   		 if(appendMode != null && imageUrl != null  && type!= null ){
+		   			 if(appendMode.intValue() == 1 || appendMode.intValue() == 2){
+
+		   			    Map<String, Object> dataMap = new HashMap<String, Object>();
+	   					dataMap.put("imageUrl", imageUrl);
+	   					dataMap.put("type",type);
+	   					dataMap.put("content", content);
+	   					Integer sort = 0;
+		   				if(appendMode.intValue() == 1 ){
+		   					sort = 9999;
+		   					dataMap.put("sort", sort);
+		   					topBannerList.add(0, dataMap);
+		   				}
+		   				if(appendMode.intValue() == 2){
+		   					sort = -1;
+		   					dataMap.put("sort", sort);
+		   					topBannerList.add(dataMap);
+		   				}
+
+		   			 }
+		   		 }
+		   	 }
+
+			} catch (Exception e) {
+				logger.error("toAddImage  error =>" + e.getMessage());
+			}
 	}
 
 	private void doStrongRiseAndCoupon(Long userId, String userName,

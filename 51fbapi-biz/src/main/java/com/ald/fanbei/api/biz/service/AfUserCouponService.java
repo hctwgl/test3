@@ -27,6 +27,12 @@ public interface AfUserCouponService {
 	 * @return
 	 */
 	List<AfUserCouponDto> getUserCouponByUser(AfUserCouponQuery query);
+
+	/**
+	 * 获取预售优惠券列表
+	 * @return
+	 */
+	List<AfUserCouponDto> getUserResevrationCouponList(Long userId);
 	
 	/**
 	 * 获取可用优惠券数量
@@ -153,10 +159,22 @@ public interface AfUserCouponService {
 
 	Integer getUserCouponByUserIdAndCouponCource(Long userId, String sourceType);
 
+    List<AfUserCouponDto> getUserAllAcgencyCouponByAmount(Long userId, BigDecimal actualAmount);
+
+    List<AfUserCouponDto> getUserAllCoupon();
+
+	List<AfUserCouponDto> getUserAllCouponByUserId(Long userId);
+
+    List<AfUserCouponDto> getH5UserCouponByUser(Long userId, String status);
 	AfUserCouponDo sendActivityCouponByCouponGroupRandom(Long userId, String couponSenceRuleType, AfResourceDo resourceDo);
 
 	AfUserCouponDto getUserCouponAfterPaidSuccess(Long userId);
 
+	List<AfUserCouponDto> getUserCouponByTypeV1(Long userId, String type, String repaymentType);
+
+    List<AfUserCouponDto> getUserBillCouponByUserIdAndType(Long userId, String code, BigDecimal repayAmount);
+
+    List<AfUserCouponDto> getUserOldAllAcgencyCouponByAmount(Long userId, BigDecimal actualAmount);
 }
 
 

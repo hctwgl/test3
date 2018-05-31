@@ -471,4 +471,5 @@ public interface AfOrderService {
 
 	String getUserFirstBigOrderDate(Long userId, Integer amount);
 
+	String getRefundMsg(AfOrderDo order);
 }

@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -85,13 +87,20 @@ public class CancelAgentBuyOrder implements ApiHandle {
 
                 //优惠券处理
                 if (currAfOrderDo.getUserCouponId() > 0) {
-                    AfUserCouponDo couponDo = afUserCouponService.getUserCouponById(currAfOrderDo.getUserCouponId());
-                    if (couponDo != null && couponDo.getGmtEnd().after(new Date())) {
-                        couponDo.setStatus(CouponStatus.NOUSE.getCode());
-                        afUserCouponService.updateUserCouponSatusNouseById(currAfOrderDo.getUserCouponId());
-                    } else if (couponDo != null && couponDo.getGmtEnd().before(new Date())) {
-                        couponDo.setStatus(CouponStatus.EXPIRE.getCode());
-                        afUserCouponService.updateUserCouponSatusExpireById(currAfOrderDo.getUserCouponId());
+                    AfUserCouponDto couponDo = afUserCouponService.getUserCouponById(currAfOrderDo.getUserCouponId());
+                    if(couponDo != null){
+                        if(StringUtil.equals("O",couponDo.getCouponStatus())){
+                            if (couponDo.getGmtEnd().after(new Date())) {
+                                couponDo.setStatus(CouponStatus.NOUSE.getCode());
+                                afUserCouponService.updateUserCouponSatusNouseById(currAfOrderDo.getUserCouponId());
+                            } else if (couponDo.getGmtEnd().before(new Date())) {
+                                couponDo.setStatus(CouponStatus.EXPIRE.getCode());
+                                afUserCouponService.updateUserCouponSatusExpireById(currAfOrderDo.getUserCouponId());
+                            }
+                        }else{
+                            couponDo.setStatus(CouponStatus.EXPIRE.getCode());
+                            afUserCouponService.updateUserCouponSatusExpireById(currAfOrderDo.getUserCouponId());
+                        }
                     }
                 }
                 //区分代买和非代买

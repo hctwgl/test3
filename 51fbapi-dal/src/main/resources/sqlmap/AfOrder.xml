@@ -16,7 +16,8 @@
 		price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
 		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
-		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status
+		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,
+		closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status
 	</sql>
 	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"  parameterType="AfOrderDo">
 		INSERT INTO af_order(
@@ -26,6 +27,9 @@
 			order_no , 
 			<if test="userCouponId != null">
 		    	user_coupon_id, 
+			</if>
+			<if test="couponAmount != null">
+				coupon_amount,
 			</if>
 			<if test="payTradeNo != null">
 		    	pay_trade_no, 
@@ -158,6 +162,9 @@
 		    #{orderNo},
 		    <if test="userCouponId != null">
 		    	 #{userCouponId},
+			</if>
+			<if test="couponAmount != null">
+				#{couponAmount},
 			</if>
 			<if test="payTradeNo != null">
 		    	 #{payTradeNo},
@@ -622,20 +629,40 @@
 	
 	<select id="getOrderInfoById" resultType="AfOrderDo">
 		SELECT
-			<include refid="queryAllFields"/>
+			o.id rid,o.gmt_create,o.gmt_modified,o.user_id,order_no,third_order_no,third_detail_url,
+			o.status,user_coupon_id,order_type,sec_type,goods_id,o.open_id,o.num_id,goods_name,o.goods_icon,o.count,
+			o.price_amount,o.sale_amount,o.actual_amount,o.shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
+			gmt_rebated,mobile,gmt_finished,o.rebate_amount,o.commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
+			borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
+			goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,
+			closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,
+			ifnull(c.fee_amount,0) feeAmount, c.card_type,g.`status` goodsStatus,IFNULL(a.`status`,0) supStatus
 		FROM
-			af_order
+			af_order o left join af_order_bankcard c on o.id = c.order_id and o.pay_type in ( 'BANK','CP')
+			LEFT JOIN af_goods g on o.goods_id = g.id
+			LEFT JOIN af_shop_sup_allot a on a.order_id = o.id
 		WHERE
-			is_delete=0 AND id = #{rid} AND user_id = #{userId}
+			o.is_delete=0 AND o.id = #{rid} AND o.user_id = #{userId}
+			order by c.gmt_create desc
+			limit 1
 	</select>
 	
 	<select id="getOrderInfoByIdWithoutDeleted" resultType="AfOrderDo">
 		SELECT
-			<include refid="queryAllFields"/>
+			o.id rid,o.gmt_create,o.gmt_modified,o.user_id,order_no,third_order_no,third_detail_url,
+			status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
+			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
+			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
+			borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
+			goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,
+			closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,
+			ifnull(c.fee_amount,0) feeAmount, c.card_type
 		FROM
-			af_order
+			af_order o left join af_order_bankcard c on o.id = c.order_id and o.pay_type in ( 'BANK','CP')
 		WHERE
-			id = #{rid} AND user_id = #{userId}
+			o.id = #{rid} AND o.user_id = #{userId}
+			order by c.gmt_create desc
+			limit 1
 	</select>
 	
 	<select id="getOrderInfoByOrderNo" resultType="AfOrderDo">
@@ -703,57 +730,59 @@
 	
 	<select id="getOrderListByStatus" resultType="AfOrderDo" parameterType="AfOrderQuery">
 		SELECT
-			id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
+			o.id rid,o.gmt_create,o.gmt_modified,o.user_id,order_no,third_order_no,third_detail_url,
 			status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
 			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,logistics_no,
-			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,status_remark,goods_price_name,bank_amount,borrow_amount
+			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
+			status_remark,goods_price_name,bank_amount,borrow_amount,
+			ifnull(c.fee_amount,0) feeAmount, c.card_type
 		FROM
-			af_order
+			af_order o left join af_order_bankcard c on o.id = c.order_id and o.pay_type in ( 'BANK','CP')
 		WHERE
-        is_hide=0 AND is_delete=0 AND order_type != 'LEASE' and user_id = #{userId}
+        is_hide=0 AND o.is_delete=0 AND order_type != 'LEASE' and o.user_id = #{userId}
 		<if test="orderStatus == 'WC'" >
-			and (status = 'NEW' or status = 'PAID')
+			and (o.status = 'NEW' or o.status = 'PAID')
 		</if>
 		<if test="orderStatus == 'WR'">
-			and status = 'FINISHED'
+			and o.status = 'FINISHED'
 		</if>
 		<if test="orderStatus == 'AR'">
-			and status = 'REBATED'
+			and o.status = 'REBATED'
 		</if>
 		<if test="orderStatus == 'NEW'">
-			and status in('NEW','PAYFAIL')
+			and o.status in('NEW','PAYFAIL')
 		</if>
 		<if test="orderStatus == 'DEALING'">
-			and status = 'DEALING'
+			and o.status = 'DEALING'
 		</if>
 		<if test="orderStatus == 'TOREVIEW'">
-			and status = 'PAID' and order_type='AGENTBUY'
+			and o.status = 'PAID' and order_type='AGENTBUY'
 		</if>
 		<if test="orderStatus == 'REVIEWING'">
-			and status = 'REVIEW' and order_type='AGENTBUY'
+			and o.status = 'REVIEW' and order_type='AGENTBUY'
 		</if>
 		<if test="orderStatus == 'TODELIVER'">
-			and (( status = 'PAID' and order_type!='AGENTBUY' ) or status = 'AGENCYCOMPLETED')
+			and (( o.status = 'PAID' and order_type!='AGENTBUY' ) or o.status = 'AGENCYCOMPLETED')
 		</if>
 		<if test="orderStatus == 'DELIVERED'">
-			and status = 'DELIVERED'
+			and o.status = 'DELIVERED'
 		</if>
 		<if test="orderStatus == 'TOREBATE'">
-			and status = 'FINISHED' and rebate_amount <![CDATA[ > ]]> 0
+			and o.status = 'FINISHED' and rebate_amount <![CDATA[ > ]]> 0
 		</if>
 		<if test="orderStatus == 'FINISHED'">
-			and ((status = 'FINISHED' and rebate_amount <![CDATA[ = ]]> 0) or status = 'REBATED')
+			and ((o.status = 'FINISHED' and rebate_amount <![CDATA[ = ]]> 0) or o.status = 'REBATED')
 		</if>
 		<if test="orderStatus == 'CLOSED'">
-			and status = 'CLOSED'
+			and o.status = 'CLOSED'
 		</if>
 		<if test="orderStatus == 'WAIT_REFUND'">
-			and status = 'WAIT_REFUND'
+			and o.status = 'WAIT_REFUND'
 		</if>
 		<if test="orderStatus == 'DEAL_REFUNDING'">
-			and status = 'DEAL_REFUNDING'
+			and o.status = 'DEAL_REFUNDING'
 		</if>
-		order by gmt_create desc
+		order by o.gmt_create desc
 	</select>
 	
 	<select id="getOrderCountByStatusAndUserId" resultType="java.lang.Integer" parameterType="AfOrderDo">
@@ -964,14 +993,21 @@
 	</update>
 	
 	<select id="getOrderById" resultType="AfOrderDo">
-		SELECT
-			<include refid="queryAllFields"/>
-		FROM
-			af_order 
-		WHERE
-			is_delete=0 
-		AND
-			id = #{orderId}
+        SELECT
+        o.id rid,o.gmt_create,o.gmt_modified,o.user_id,order_no,third_order_no,third_detail_url,
+        status,user_coupon_id,order_type,sec_type,goods_id,open_id,num_id,goods_name,goods_icon,count,
+        price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,
+        gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
+        borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
+        goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,
+        closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,
+        ifnull(c.fee_amount,0) feeAmount, c.card_type
+        FROM
+        af_order o left join af_order_bankcard c on o.id = c.order_id and o.pay_type in ( 'BANK','CP')
+        WHERE
+        o.is_delete=0 AND o.id = #{orderId}
+        order by c.gmt_create desc
+        limit 1
 	</select>
 	
 	<select id="getCurrentLastPayNo" resultType="java.lang.String">
@@ -1264,6 +1300,15 @@
 		used_amount = #{usedAmount}
 		WHERE
 		id = #{orderId}
+	</update>
+
+	<update id="updateOrderStatus">
+		UPDATE
+		af_order
+		SET
+		status = 'FINISHED'
+		WHERE
+		id = #{rid}
 	</update>
 
 	<insert id="addSceneAmount" parameterType="java.util.List">

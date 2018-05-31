@@ -80,12 +80,12 @@ public class ArbitrationController {
     AfUserAccountService afUserAccountService;
     public static final String Y_M_D_H_M_S = "yyyy-MM-dd HH:mm:ss";
     //线上客户号
-    private static final String MERCHANTCODE = "150778004447";
+    private static final String MERCHANTCODE = "152090914419";
     //测试客户号
     //private static final String MERCHANTCODE = "15254170930";
     //线上地址:https://api.arbexpress.cn/arbinter/v1/third.htm
     //测试地址:http://test.arbexpress.cn/arbinter/v1/third.htm
-    private static final String URL = "https://api.arbexpress.cn/arbinter/v1/third.htm";
+    private static final String URL = "http://api.arbexpress.cn/arbinter/v1/third.htm";
     private static final String TRACK_PREFIX = "track_arb_";
     //分页查询返回结果
     public static final String MAP_VALUE_COUNT = "count";
@@ -155,8 +155,8 @@ public class ArbitrationController {
             lenders.add(defaultLender);
         }
         for (AfLenderInfoDto lenderInfoDto:lenders) {
-            lender=lender+"<span style=\"color:red;\">"+lenderInfoDto.getUserName()+"</span>（身份证号：<span style=\"color:red;\">"+lenderInfoDto.getEdspayUserCardId()+"</span>）、";
-            lenderAmountInfo=lenderAmountInfo+"<span style=\"color:red;\">"+lenderInfoDto.getUserName()+lenderInfoDto.getInvestorAmount()+"元</span>，";
+            lender=lender+""+lenderInfoDto.getUserName()+"（身份证号："+lenderInfoDto.getEdspayUserCardId()+"）、";
+            lenderAmountInfo=lenderAmountInfo+""+lenderInfoDto.getUserName()+lenderInfoDto.getInvestorAmount()+"元，";
         }
         if(lender.contains("、")){
             lender= lender.substring(0,lender.lastIndexOf("、"));
@@ -167,7 +167,7 @@ public class ArbitrationController {
 
         lenderAmountInfo=lenderAmountInfo+"。";
         map.put("lender",lender);
-        map.put("borrowUserInfo","<span style=\"color:red;\">"+afUserDo.getRealName()+"</span>（身份证号：<span style=\"color:red;\">"+accountDo.getIdNumber()+"</span>）");
+        map.put("borrowUserInfo",""+afUserDo.getRealName()+"（身份证号："+accountDo.getIdNumber()+"）");
         map.put("amount",afBorrowCashDo.getAmount());
         map.put("cnAmount",NumberUtil.number2CNMontrayUnit(afBorrowCashDo.getAmount()));
         map.put("receptDate",simpleDateFormat.format(date));

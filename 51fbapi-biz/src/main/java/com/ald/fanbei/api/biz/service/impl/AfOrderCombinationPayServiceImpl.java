@@ -1,48 +1,33 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.ald.fanbei.api.biz.service.*;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.ald.fanbei.api.biz.bo.KuaijieOrderCombinationPayBo;
 import com.ald.fanbei.api.biz.bo.RiskVerifyRespBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.boluome.BoluomeUtil;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.VersionCheckUitl;
-import com.ald.fanbei.api.common.enums.BankPayChannel;
-import com.ald.fanbei.api.common.enums.CouponStatus;
-import com.ald.fanbei.api.common.enums.OrderStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
-import com.ald.fanbei.api.common.enums.PayStatus;
-import com.ald.fanbei.api.common.enums.PayType;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowExtendDao;
 import com.ald.fanbei.api.dal.dao.AfOrderDao;
-import com.ald.fanbei.api.dal.domain.AfAgentOrderDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowDo;
-import com.ald.fanbei.api.dal.domain.AfBorrowExtendDo;
-import com.ald.fanbei.api.dal.domain.AfOrderDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.AfUserCouponDo;
-import com.ald.fanbei.api.dal.domain.AfUserVirtualAccountDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service("afOrderCombinationPayService")
 public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstract implements AfOrderCombinationPayService {
@@ -102,7 +87,6 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 	 * @param tradeNo
 	 * @param resultMap
 	 * @param isSelf
-	 * @param virtualCode
 	 * @param bankAmount
 	 * @param borrow
 	 * @param verybo
@@ -211,11 +195,6 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 
 			AfOrderDo orderInfo = kuaijieOrderCombinationPayBo.getOrderInfo();
 
-			AfOrderDo afOrder = new AfOrderDo();
-			afOrder.setRid(orderInfo.getRid());
-			afOrder.setPayStatus(PayStatus.DEALING.getCode());
-			afOrder.setStatus(OrderStatus.DEALING.getCode());
-
 			AfBorrowDo borrow = kuaijieOrderCombinationPayBo.getBorrow();
 			AfUserAccountDo userAccountInfo = kuaijieOrderCombinationPayBo.getUserAccountInfo();
 			Map<String, Object> virtualMap = kuaijieOrderCombinationPayBo.getVirtualMap();
@@ -247,8 +226,6 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 
 			// 更新拆分场景使用额度
 			riskUtil.updateUsedAmount(orderInfo, borrow);
-			logger.info("updateOrder orderInfo = {}", afOrder);
-            afOrderDao.updateOrder(afOrder);
 			logger.info("upsPaySuccess bklUtils submitBklInfo orderInfo ="+JSONObject.toJSONString(orderInfo));
 			if (orderInfo.getOrderType().equals(OrderType.SELFSUPPORT.getCode())) {
 				//新增白名单逻辑

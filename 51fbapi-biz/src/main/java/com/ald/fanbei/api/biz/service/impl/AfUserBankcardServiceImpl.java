@@ -1,26 +1,12 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.enums.BankCardType;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.CollectionUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
@@ -28,7 +14,17 @@ import com.ald.fanbei.api.dal.domain.dto.AfBankUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBankDto;
 import com.ald.fanbei.api.dal.domain.dto.UpsBankStatusDto;
 import com.alibaba.fastjson.JSON;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @类现描述：
@@ -55,47 +51,67 @@ public class AfUserBankcardServiceImpl implements AfUserBankcardService {
     }
 
     @Override
-    public List<AfBankUserBankDto> getUserBankcardByUserId(Long userId, Integer appVersion) {
-	List<AfBankUserBankDto> list = afUserBankcardDao.getUserBankcardByUserId(userId);
-	if (CollectionUtil.isNotEmpty(list)) {
-	    AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
-	    for (AfBankUserBankDto item : list) {
-		UpsBankStatusDto bankStatus = getUpsBankStatus(item.getBankCode(),item.getBankChannel());
-		item.setBankStatus(bankStatus);
+    public List<AfBankUserBankDto> getUserBankcardByUserId(Long userId, Integer appVersion,String cardType) {
+		List<AfBankUserBankDto> list = afUserBankcardDao.getUserBankcardByUserId(userId, cardType);
+		if (CollectionUtil.isNotEmpty(list)) {
+			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType("CASHIER", "AP_NAME");
+			for (AfBankUserBankDto item : list) {
+				UpsBankStatusDto bankStatus;
+				if(BankCardType.CREDIT.getCode().equals(item.getCardType()))
+				{
+					bankStatus = getUpsBankStatus(item.getBankCode(), BankPayChannel.KUAIJIE.getCode());
+				}
+				else {
+					bankStatus = getUpsBankStatus(item.getBankCode(), item.getBankChannel());
+				}
+				item.setBankStatus(bankStatus);
+				if (bankStatus.getIsMaintain() == 1) {
+					item.setMessage(afResourceDo.getValue1());
+					item.setIsValid("N");
+				}
+				if (appVersion < 412) {
+					if (BankPayChannel.KUAIJIE.getCode().equals(item.getBankChannel())) {
+						item.setMessage(afResourceDo.getValue1());
+						item.setIsValid("N");
+					}
+					if(BankCardType.CREDIT.getCode().equals(item.getCardType()))
+					{//老版本信用卡显示维护中（不可用，还未支持快捷支付）
+						item.setMessage(afResourceDo.getValue1());
+						item.setIsValid("N");
+						item.setCreditRate(BigDecimal.valueOf(Double.parseDouble(afResourceDo.getValue4())));
+					}
+				}
+				else
+				{
+					if(BankCardType.CREDIT.getCode().equals(item.getCardType()))
+					{//信用卡为快捷支付
+						item.setBankChannel(BankPayChannel.KUAIJIE.getCode());
+						item.setCreditRate(BigDecimal.valueOf(Double.parseDouble(afResourceDo.getValue4())));
+					}
+				}
+			}
 
-		if (bankStatus.getIsMaintain() == 1) {
-		    item.setMessage(afResourceDo.getValue1());
-		    item.setIsValid("N");
+			// 集合重新排序可用状态在前不可用状态在后
+			List<AfBankUserBankDto> listMaintain = new ArrayList<AfBankUserBankDto>();
+			Iterator<AfBankUserBankDto> iterator = list.iterator();
+			while (iterator.hasNext()) {
+				AfBankUserBankDto afBankUserBankDto = iterator.next();
+				if ("N".equals(afBankUserBankDto.getIsValid())) {
+					// 移除维护状态的银行卡，循环结束后重新添加到集合的尾部
+					iterator.remove();
+					listMaintain.add(afBankUserBankDto);
+				}
+			}
+			if (listMaintain.size() > 0) {
+				// 重新添加维护状态的银行卡到集合的尾部
+				for (AfBankUserBankDto item : listMaintain) {
+					list.add(item);
+				}
+			}
 		}
-		if (appVersion < 412) {
-		    if (BankPayChannel.KUAIJIE.getCode().equals(item.getBankChannel())) {
-			item.setMessage(afResourceDo.getValue1());
-			item.setIsValid("N");
-		    }
-		}
-	    }
 
-	    // 集合重新排序可用状态在前不可用状态在后
-	    List<AfBankUserBankDto> listMaintain = new ArrayList<AfBankUserBankDto>();
-	    Iterator<AfBankUserBankDto> iterator = list.iterator();
-	    while (iterator.hasNext()) {
-		AfBankUserBankDto afBankUserBankDto = iterator.next();
-		if ("N".equals(afBankUserBankDto.getIsValid())) {
-		    // 移除维护状态的银行卡，循环结束后重新添加到集合的尾部
-		    iterator.remove();
-		    listMaintain.add(afBankUserBankDto);
-		}
-	    }
-	    if (listMaintain.size() > 0) {
-		// 重新添加维护状态的银行卡到集合的尾部
-		for (AfBankUserBankDto item : listMaintain) {
-		    list.add(item);
-		}
-	    }
+		return list;
 	}
-
-	return list;
-    }
 
     @Override
     public int deleteUserBankcardByIdAndUserId(Long userId, Long rid) {

@@ -107,7 +107,7 @@ public class ArbitrationServiceImpl extends BaseService implements
 			afBorrowCashDo.getAmount(),
 			afBorrowCashDo.getRateAmount(),
 			afBorrowCashDo.getPoundage(),
-				new BigDecimal(0.015).multiply(new BigDecimal(afBorrowCashDo.getOverdueDay()))
+				new BigDecimal(0.015).multiply(new BigDecimal(afBorrowCashDo.getOverdueDay()-1))
 						.multiply(afBorrowCashDo.getAmount()).divide(new BigDecimal(360),2,RoundingMode.HALF_UP))
 			.subtract(afBorrowCashDo.getRepayAmount()))
 			.multiply(BigDecimalUtil.ONE_HUNDRED).intValue()); // 标的金额:实际借款金额+利息+服务费+罚息+其他金额-已还金额
@@ -307,12 +307,11 @@ public class ArbitrationServiceImpl extends BaseService implements
 			    BigDecimalUtil.ONE_HUNDRED).intValue());// 授信金额
 	    result.put("amtCapital", afBorrowCashDo.getAmount().multiply(
 		    BigDecimalUtil.ONE_HUNDRED).intValue());// 实际借款本金
-	    result.put("amtInterest", afBorrowCashDo.getRateAmount().multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 利息
-	    
-	    if("N".equals(afBorrowCashDo.getOverdueStatus())) {
+		result.put("amtInterest", afBorrowCashDo.getRateAmount().multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 利息
+		if("N".equals(afBorrowCashDo.getOverdueStatus())) {
 		    result.put("amtPenalty", afBorrowCashDo.getOverdueAmount().multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 罚息
 	    } else {
-		    result.put("amtPenalty",new BigDecimal(0.015).multiply(new BigDecimal(afBorrowCashDo.getOverdueDay()))
+		    result.put("amtPenalty",new BigDecimal(0.015).multiply(new BigDecimal(afBorrowCashDo.getOverdueDay()-1))
 					.multiply(afBorrowCashDo.getAmount()).divide(new BigDecimal(360),2,RoundingMode.HALF_UP).multiply(BigDecimalUtil.ONE_HUNDRED).intValue());
 	    }
 	    result.put("amtService",  afBorrowCashDo.getAmount().subtract(afBorrowCashDo.getArrivalAmount()).multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 服务费
@@ -326,13 +325,14 @@ public class ArbitrationServiceImpl extends BaseService implements
 		    .formatDateForPatternWithHyhen(afBorrowCashDo
 			    .getGmtArrival()));// 借款开始日期
 	    result.put("borrowEndDate", DateUtil
-		    .formatDateForPatternWithHyhen(afBorrowCashDo
-			    .getGmtPlanRepayment()));// 借款结束日期
+		    .formatDateForPatternWithHyhen(afBorrowCashDo.getGmtPlanRepayment()));// 借款结束日期
 	    result.put("daysBorrowed", "");// 借款天数
-	    result.put("violateStartDate", "");// 违约金开始计算日期
+	    result.put("violateStartDate", DateUtil
+				.formatDateForPatternWithHyhen(DateUtil.addDays(afBorrowCashDo
+                .getGmtPlanRepayment(),2)));// 违约金开始计算日期
 	    result.put("violateEndDate", "");// 违约金结束计算日期
-	    result.put("dayOverdue", afBorrowCashDo.getOverdueDay());// 逾期天数
-	    result.put("debtDate",DateUtil.formatDate( DateUtil.addDays( afBorrowCashDo.getGmtPlanRepayment(),1),"yyyy-MM-dd") );// 债转日期
+	    result.put("dayOverdue", afBorrowCashDo.getOverdueDay()-1);// 逾期天数
+	    result.put("debtDate",DateUtil.formatDate( DateUtil.addDays( afBorrowCashDo.getGmtPlanRepayment(),2),"yyyy-MM-dd") );// 债转日期
 
 	    resp.setErrCode(ArbitrationStatus.SUCCESS.getCode());
 	    resp.setErrMsg(ArbitrationStatus.SUCCESS.getName());
