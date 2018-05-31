@@ -1,9 +1,6 @@
 package com.ald.fanbei.api.web.api.taskUser;
 
-import com.ald.fanbei.api.biz.service.AfTaskBrowseGoodsService;
-import com.ald.fanbei.api.biz.service.AfTaskUserService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -41,6 +38,8 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 	AfTaskUserService afTaskUserService;
 	@Resource
 	AfTaskBrowseGoodsService afTaskBrowseGoodsService;
+	@Resource
+	AfResourceService afResourceService;
 	
 	
 	@Override
@@ -73,6 +72,7 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 					String taskUserIds = buildTaskUserIds(specifiedTaskUserList);
 					if(StringUtils.isNotEmpty(taskUserIds)){
 						data.put("taskUserIds", taskUserIds);
+						data.put("message","太棒了!"+"\r\n"+"您已完成每日任务");
 					}
 				}
 				resp.setResponseData(data);
