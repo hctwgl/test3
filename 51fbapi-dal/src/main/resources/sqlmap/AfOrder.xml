@@ -661,7 +661,7 @@
 			borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
 			goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,
 			closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,
-			ifnull(c.fee_amount,0) feeAmount, c.card_type,g.`status` goodsStatus,IFNULL(a.`status`,0) supStatus
+			ifnull(c.fee_amount,0) feeAmount, c.card_type,g.`status` goodsStatus,IFNULL(a.`status`,0) supStatus,o.support_credit_status,o.weak_risk_order_no
 		FROM
 			af_order o left join af_order_bankcard c on o.id = c.order_id and o.pay_type in ( 'BANK','CP')
 			LEFT JOIN af_goods g on o.goods_id = g.id
@@ -681,7 +681,7 @@
 			borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
 			goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,
 			closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,
-			ifnull(c.fee_amount,0) feeAmount, c.card_type
+			ifnull(c.fee_amount,0) feeAmount, c.card_type,o.support_credit_status,o.weak_risk_order_no
 		FROM
 			af_order o left join af_order_bankcard c on o.id = c.order_id and o.pay_type in ( 'BANK','CP')
 		WHERE
@@ -1045,7 +1045,7 @@
         borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
         goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,
         closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,
-        ifnull(c.fee_amount,0) feeAmount, c.card_type
+        ifnull(c.fee_amount,0) feeAmount, c.card_type,o.support_credit_status,o.weak_risk_order_no
         FROM
         af_order o left join af_order_bankcard c on o.id = c.order_id and o.pay_type in ( 'BANK','CP')
         WHERE
@@ -1544,7 +1544,6 @@
 		AND user_id = #{userId}
 		AND goods_id = #{goodsId}
 		and status !='CLOSED' 
-		and is_delete = 0
 	</select>
 	
 	<update id="batchUpdateToPayOrderCreditStatus">

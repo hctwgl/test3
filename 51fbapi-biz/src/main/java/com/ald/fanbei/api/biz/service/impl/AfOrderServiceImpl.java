@@ -1230,7 +1230,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 									 if (vipGoodsOrder == null){
 										 vipGoodsOrder = generateOrder(vipGoodsId,userId,request);
 										 afOrderService.createOrder(vipGoodsOrder);
-										 logger.info("softWeakVerify pass,and create new order of authPackage success ,orderId="+vipGoodsOrder.getRid());
+										 logger.info("ap softWeakVerify pass,and create new order of authPackage success ,orderId="+vipGoodsOrder.getRid());
 									 }
 									 
 									 resultMap.put("isRecomend", YesNoStatus.YES.getCode());
@@ -1341,6 +1341,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 									 if (vipGoodsOrder == null){
 										 vipGoodsOrder = generateOrder(vipGoodsId,userId,request);
 										 afOrderService.createOrder(vipGoodsOrder);
+										 logger.info("cp softWeakVerify pass,and create new order of authPackage success ,orderId="+vipGoodsOrder.getRid());
 									 }
 									 resultMap.put("isRecomend", YesNoStatus.YES.getCode());
 									 resultMap.put("vipGoodsOrderId", vipGoodsOrder.getRid());
