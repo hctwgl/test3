@@ -156,7 +156,7 @@
         AND gmt_create BETWEEN #{startTime} AND date_format(DATE_ADD(now(),INTERVAL 1 DAY),'%Y-%m-%d')
     </select>
 
-    <select id="getRewardDetailList" resultType="AfSignRewardDo" parameterType="AfSignRewardQuery">
+    <select id="getRewardDetailList" resultType="AfSignRewardDto" parameterType="AfSignRewardQuery">
         SELECT
         <include refid="queryFields" />
         FROM af_sign_reward
