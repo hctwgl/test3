@@ -66,6 +66,9 @@
 	        <if test="friendUserId != null">        
 	            friend_user_id,
 	        </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -90,6 +93,9 @@
 		    <if test="friendUserId != null" >
 		       #{friendUserId,jdbcType=INTEGER},
 		    </if>
+            <if test="isDelete != null" >
+                #{isDelete,jdbcType=INTEGER},
+            </if>
         </trim>
     </insert>
     
