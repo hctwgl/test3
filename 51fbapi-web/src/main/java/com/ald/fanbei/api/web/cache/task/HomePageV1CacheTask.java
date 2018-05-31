@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.redisson.api.RLock;
+import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -26,6 +27,7 @@ import com.alibaba.fastjson.JSONArray;
  * @author rongbo
  *
  */
+@Component
 public class HomePageV1CacheTask extends AbstractCacheTask {
 
 	private static final String LOCK_NAME = "HOME_PAGE_V1_CACHE_TASK";
