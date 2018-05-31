@@ -134,6 +134,29 @@ public class SmsUtil extends AbstractThird {
     }
 
     /**
+     * 发送注册短信验证码
+     *
+     * @param mobile
+     */
+    public boolean sendJKCRRegistVerifyCode(String mobile) {
+        if (!CommonUtil.isMobile(mobile)) {
+            throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+        }
+
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
+        if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue())) {
+            int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.REGIST.getCode());
+            if (countRegist >= Integer.valueOf(resourceDo.getValue()))
+                throw new FanbeiException("发送注册验证码超过每日限制次数", FanbeiExceptionCode.SMS_REGIST_EXCEED_TIME);
+        }
+        String verifyCode = CommonUtil.getRandomNumber(6);
+        String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
+        SmsResult smsResult = switchJKCRSmsSend(mobile, content);
+        this.addSmsRecord(SmsType.REGIST, mobile, verifyCode, 0l, smsResult);
+        return smsResult.isSucc();
+    }
+
+    /**
      * 发送快捷注册短信验证码
      *
      * @param mobile
@@ -155,6 +178,30 @@ public class SmsUtil extends AbstractThird {
         this.addSmsRecord(SmsType.QUICK_REGIST, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
+
+    /**
+     * 发送快捷注册短信验证码
+     *
+     * @param mobile
+     */
+    public boolean sendJKCRQuickRegistVerifyCode(String mobile) {
+        if (!CommonUtil.isMobile(mobile)) {
+            throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+        }
+
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
+        if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue())) {
+            int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.QUICK_REGIST.getCode());
+            if (countRegist >= Integer.valueOf(resourceDo.getValue()))
+                throw new FanbeiException("发送注册验证码超过每日限制次数", FanbeiExceptionCode.SMS_REGIST_EXCEED_TIME);
+        }
+        String verifyCode = CommonUtil.getRandomNumber(6);
+        String content = REGIST_TEMPLATE.replace("&param1", verifyCode);
+        SmsResult smsResult = switchJKCRSmsSend(mobile, content);
+        this.addSmsRecord(SmsType.QUICK_REGIST, mobile, verifyCode, 0l, smsResult);
+        return smsResult.isSucc();
+    }
+
     /**
      * 发送登录验证码（可信登录）
      *
@@ -175,6 +222,30 @@ public class SmsUtil extends AbstractThird {
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = LOGIN_TEMPLATE.replace("&param1", verifyCode);
         SmsResult smsResult = switchSmsSend(mobile, content);
+        this.addSmsRecord(SmsType.LOGIN, mobile, verifyCode, userId, smsResult);
+        return smsResult.isSucc();
+    }
+
+    /**
+     * 发送借款超人登录验证码（可信登录）
+     *
+     * @param mobile
+     * @return
+     */
+    public boolean sendJKCRLoginVerifyCode(String mobile, Long userId) {
+        if (!CommonUtil.isMobile(mobile)) {
+            throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+        }
+
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
+        if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue4())) {
+            int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.LOGIN.getCode());
+            if (countRegist >= Integer.valueOf(resourceDo.getValue4()))
+                throw new FanbeiException("发送登录验证码超过每日限制次数", FanbeiExceptionCode.SMS_LOGIN_EXCEED_TIME);
+        }
+        String verifyCode = CommonUtil.getRandomNumber(6);
+        String content = LOGIN_TEMPLATE.replace("&param1", verifyCode);
+        SmsResult smsResult = switchJKCRSmsSend(mobile, content);
         this.addSmsRecord(SmsType.LOGIN, mobile, verifyCode, userId, smsResult);
         return smsResult.isSucc();
     }
@@ -204,6 +275,31 @@ public class SmsUtil extends AbstractThird {
     }
 
     /**
+     * 发送借款超人登录验证码（快捷登录）
+     *
+     * @param mobile
+     * @return
+     */
+    public boolean sendJKCRQuickLoginVerifyCode(String mobile, Long userId) {
+        if (!CommonUtil.isMobile(mobile)) {
+            throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+        }
+
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
+        if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue4())) {
+            int countRegist = afSmsRecordService.countMobileCodeToday(mobile, SmsType.QUICK_LOGIN.getCode());
+            if (countRegist >= Integer.valueOf(resourceDo.getValue4()))
+                throw new FanbeiException("发送登录验证码超过每日限制次数", FanbeiExceptionCode.SMS_LOGIN_EXCEED_TIME);
+        }
+        String verifyCode = CommonUtil.getRandomNumber(6);
+        String content = LOGIN_TEMPLATE.replace("&param1", verifyCode);
+        SmsResult smsResult = switchJKCRSmsSend(mobile, content);
+        this.addSmsRecord(SmsType.QUICK_LOGIN, mobile, verifyCode, userId, smsResult);
+        return smsResult.isSucc();
+    }
+
+
+    /**
      * 借款成功发送短信提醒用户
      *
      * @param mobile
@@ -214,6 +310,22 @@ public class SmsUtil extends AbstractThird {
         if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
             String content = resourceDo.getValue().replace("&bankCardNo", bank);
             SmsResult smsResult = sendSmsToDhst(mobile, content);
+            return smsResult.isSucc();
+        }
+        return false;
+    }
+
+    /**
+     * 借款成功发送短信提醒用户
+     *
+     * @param mobile
+     * @param bank
+     */
+    public boolean sendJKCRBorrowCashCode(String mobile, String bank) {
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BORROW_AUDIT.getCode());
+        if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
+            String content = resourceDo.getValue().replace("&bankCardNo", bank);
+            SmsResult smsResult = YSSmsUtil.send(mobile,content,YSSmsUtil.NOTITION_YS);
             return smsResult.isSucc();
         }
         return false;
@@ -435,6 +547,32 @@ public class SmsUtil extends AbstractThird {
         this.addSmsRecord(SmsType.FORGET_PASS, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
+
+    /**
+     * 借款超人忘记密码发送短信验证码
+     *
+     * @param mobile 用户绑定的手机号（注意：不是userName）
+     * @param userId 用户id
+     * @return
+     */
+    public boolean sendJKCRForgetPwdVerifyCode(String mobile) {
+        if (!CommonUtil.isMobile(mobile)) {
+            throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+        }
+
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
+        if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue1())) {
+            int countForgetPwd = afSmsRecordService.countMobileCodeToday(mobile, SmsType.FORGET_PASS.getCode());
+            if (countForgetPwd >= Integer.valueOf(resourceDo.getValue1()))
+                throw new FanbeiException("发送找回密码验证码超过每日限制次数", FanbeiExceptionCode.SMS_FORGET_PASSWORD_EXCEED_TIME);
+        }
+        String verifyCode = CommonUtil.getRandomNumber(6);
+        String content = FORGET_TEMPLATE.replace("&param1", verifyCode);
+        SmsResult smsResult = switchJKCRSmsSend(mobile, content);
+        this.addSmsRecord(SmsType.FORGET_PASS, mobile, verifyCode, 0l, smsResult);
+        return smsResult.isSucc();
+    }
+
     /**
      * 设置快捷登录初始密码发送短信验证码
      *
@@ -456,6 +594,31 @@ public class SmsUtil extends AbstractThird {
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = SET_TEMPLATE.replace("&param1", verifyCode);
         SmsResult smsResult = sendSmsToDhst(mobile, content);
+        this.addSmsRecord(SmsType.QUICK_SET, mobile, verifyCode, 0l, smsResult);
+        return smsResult.isSucc();
+    }
+
+    /**
+     * 设置借款超人快捷登录初始密码发送短信验证码
+     *
+     * @param mobile 用户绑定的手机号（注意：不是userName）
+     * @param userId 用户id
+     * @return
+     */
+    public boolean sendJKCRSetQuickPwdVerifyCode(String mobile) {
+        if (!CommonUtil.isMobile(mobile)) {
+            throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+        }
+
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
+        if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue1())) {
+            int countForgetPwd = afSmsRecordService.countMobileCodeToday(mobile, SmsType.QUICK_SET.getCode());
+            if (countForgetPwd >= Integer.valueOf(resourceDo.getValue1()))
+                throw new FanbeiException("发送设置密码验证码超过每日限制次数", FanbeiExceptionCode.SMS_FORGET_PASSWORD_EXCEED_TIME);
+        }
+        String verifyCode = CommonUtil.getRandomNumber(6);
+        String content = SET_TEMPLATE.replace("&param1", verifyCode);
+        SmsResult smsResult = YSSmsUtil.send(mobile, content,YSSmsUtil.VERIFYCODE_YS);
         this.addSmsRecord(SmsType.QUICK_SET, mobile, verifyCode, 0l, smsResult);
         return smsResult.isSucc();
     }
@@ -486,7 +649,33 @@ public class SmsUtil extends AbstractThird {
         this.addSmsRecord(smsType, mobile, verifyCode, userid, smsResult);
         return smsResult.isSucc();
     }
-    
+
+    /**
+     * 借款超人绑定手机发送短信验证码
+     *
+     * @param mobile 用户绑定的手机号（注意：不是userName）
+     * @return
+     */
+    public boolean sendJKCRMobileBindVerifyCode(String mobile,SmsType smsType,long userid) {
+        if (!CommonUtil.isMobile(mobile)) {
+            throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+        }
+
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
+        if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue2())) {
+            int countBind = afSmsRecordService.countMobileCodeToday(mobile, smsType.getCode());
+            if (countBind >= Integer.valueOf(resourceDo.getValue2()))
+                throw new FanbeiException("发送绑定手机号短信超过每日限制次数", FanbeiExceptionCode.SMS_MOBILE_BIND_EXCEED_TIME);
+        }
+        String verifyCode = CommonUtil.getRandomNumber(6);
+        String content = BIND_TEMPLATE.replace("&param1", verifyCode);
+        if (SmsType.ZHI_BIND.equals(smsType)){
+            content = ZHI_BIND.replace("&param1", verifyCode);
+        }
+        SmsResult smsResult = YSSmsUtil.send(mobile, content,YSSmsUtil.VERIFYCODE_YS);
+        this.addSmsRecord(smsType, mobile, verifyCode, userid, smsResult);
+        return smsResult.isSucc();
+    }
 
     /**
      * 设置支付发送短信验证码
@@ -992,12 +1181,16 @@ public class SmsUtil extends AbstractThird {
         }
     }
     private  SmsResult switchSmsSend(String mobile, String content){
-
         if("YF".contains(this.rules(mobile))){
             return YFSmsUtil.send(mobile, content,YFSmsUtil.VERIFYCODE);
         }else{
             return this.sendSmsToDhstAishangjie(mobile, content);
         }
+    }
+
+    private  SmsResult switchJKCRSmsSend(String mobile, String content){
+        content = content.replaceAll("爱上街","借款超人");
+        return YSSmsUtil.send(mobile, content,YSSmsUtil.VERIFYCODE_YS);
     }
 
     public   String rules(String mobile){
