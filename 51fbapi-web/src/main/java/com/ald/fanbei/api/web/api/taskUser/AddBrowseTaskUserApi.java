@@ -16,6 +16,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,6 +31,7 @@ import java.util.Map;
  * 浏览商品
  * @author cfp
  */
+@NeedLogin
 @Component("addBrowseTaskUserApi")
 public class AddBrowseTaskUserApi implements ApiHandle{
 	
