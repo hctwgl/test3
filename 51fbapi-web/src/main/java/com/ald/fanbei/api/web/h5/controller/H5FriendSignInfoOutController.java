@@ -228,6 +228,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
                 }
                 data.put("openType","1");
             }
+            logger.info("data cfp = "+data);
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
         } catch (FanbeiException e) {
             resultStr = H5CommonResponse.getNewInstance(false, "getOpenId error", "", e.getErrorCode().getDesc()).toString();
