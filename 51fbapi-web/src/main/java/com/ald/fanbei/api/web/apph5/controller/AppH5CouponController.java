@@ -376,6 +376,7 @@ public class AppH5CouponController extends BaseController {
 				query.setUserId(userId);
 				query.setStatus(status);
 				List<AfUserCouponDto> couponList = afUserCouponService.getUserCouponByUser(query);
+
 				List<AfUserCouponVo> couponVoList = new ArrayList<AfUserCouponVo>();
 				for (AfUserCouponDto afUserCouponDto : couponList) {
 					AfUserCouponVo couponVo = getUserCouponVo(afUserCouponDto);
@@ -474,6 +475,10 @@ public class AppH5CouponController extends BaseController {
 					couponInfoMap.put("useRange", afCouponDo.getUseRange());
 					couponInfoMap.put("limitAmount", afCouponDo.getLimitAmount());
 					couponInfoMap.put("drawStatus", "N");
+					couponInfoMap.put("isFinish", "Y");
+					if(afCouponDo.getQuota() == -1 || afCouponDo.getQuota() > afCouponDo.getQuotaAlready()){
+						couponInfoMap.put("isFinish", "N");
+					}
 					if (isLogin) {
 						int count = afUserCouponService.getUserCouponByUserIdAndCouponId(userId,
 								Long.parseLong(couponId));

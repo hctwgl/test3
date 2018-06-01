@@ -27,6 +27,12 @@ public interface AfUserCouponService {
 	 * @return
 	 */
 	List<AfUserCouponDto> getUserCouponByUser(AfUserCouponQuery query);
+
+	/**
+	 * 获取预售优惠券列表
+	 * @return
+	 */
+	List<AfUserCouponDto> getUserResevrationCouponList(Long userId);
 	
 	/**
 	 * 获取可用优惠券数量

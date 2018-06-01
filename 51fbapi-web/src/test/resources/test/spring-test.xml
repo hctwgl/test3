@@ -10,7 +10,20 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd 
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
 
-	<context:annotation-config />
-	<import resource="spring/import-beans.xml" />
+    <bean id="configProperties" class="com.ald.fanbei.api.common.util.ConfigProperties"
+        init-method="init">
+        <property name="configPath">
+            <value>test/config.properties</value>
+        </property>
+    </bean>
 
+	<context:component-scan base-package="com.ald.fanbei.api">
+	   <context:exclude-filter type="regex" expression="com\.ald\.fanbei\.api\.abtest.*"/>
+	   <context:exclude-filter type="regex" expression="com\.ald\.fanbei\.api\.web.*"/>
+	</context:component-scan>
+	
+	<import resource="biz-beans.xml" />
+    <import resource="../spring/dal-beans.xml" />
+    <import resource="../spring/encrypt-beans.xml" />
+    
 </beans>

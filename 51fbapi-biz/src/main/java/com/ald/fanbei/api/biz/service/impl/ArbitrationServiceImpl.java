@@ -307,20 +307,8 @@ public class ArbitrationServiceImpl extends BaseService implements
 			    BigDecimalUtil.ONE_HUNDRED).intValue());// 授信金额
 	    result.put("amtCapital", afBorrowCashDo.getAmount().multiply(
 		    BigDecimalUtil.ONE_HUNDRED).intValue());// 实际借款本金
-	    result.put("amtInterest",
-				afBorrowCashDo.getRateAmount().multiply(
-						new BigDecimal(360)
-				).divide(
-						afBorrowCashDo.getAmount().multiply(new BigDecimal( afBorrowCashDo.getType()))
-				).multiply(
-						new BigDecimal( afBorrowCashDo.getType()).add(new BigDecimal(1)).multiply(afBorrowCashDo.getAmount())
-				).divide(
-						new BigDecimal(360),2,BigDecimal.ROUND_HALF_UP
-				).multiply(
-						BigDecimalUtil.ONE_HUNDRED).intValue()
-		);// 利息
-	    
-	    if("N".equals(afBorrowCashDo.getOverdueStatus())) {
+		result.put("amtInterest", afBorrowCashDo.getRateAmount().multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 利息
+		if("N".equals(afBorrowCashDo.getOverdueStatus())) {
 		    result.put("amtPenalty", afBorrowCashDo.getOverdueAmount().multiply( BigDecimalUtil.ONE_HUNDRED).intValue());// 罚息
 	    } else {
 		    result.put("amtPenalty",new BigDecimal(0.015).multiply(new BigDecimal(afBorrowCashDo.getOverdueDay()-1))
@@ -337,10 +325,12 @@ public class ArbitrationServiceImpl extends BaseService implements
 		    .formatDateForPatternWithHyhen(afBorrowCashDo
 			    .getGmtArrival()));// 借款开始日期
 	    result.put("borrowEndDate", DateUtil
-		    .formatDateForPatternWithHyhen(DateUtil.addDays(afBorrowCashDo
-			    .getGmtPlanRepayment(),1)));// 借款结束日期
-	    result.put("daysBorrowed", "");// 借款天数
-	    result.put("violateStartDate", "");// 违约金开始计算日期
+				.formatDateForPatternWithHyhen(DateUtil.addDays(afBorrowCashDo
+				.getGmtPlanRepayment(),1)));// 借款结束日期
+	    result.put("daysBorrowed", afBorrowCashDo.getType());// 借款天数
+	    result.put("violateStartDate", DateUtil
+				.formatDateForPatternWithHyhen(DateUtil.addDays(afBorrowCashDo
+                .getGmtPlanRepayment(),2)));// 违约金开始计算日期
 	    result.put("violateEndDate", "");// 违约金结束计算日期
 	    result.put("dayOverdue", afBorrowCashDo.getOverdueDay()-1);// 逾期天数
 	    result.put("debtDate",DateUtil.formatDate( DateUtil.addDays( afBorrowCashDo.getGmtPlanRepayment(),2),"yyyy-MM-dd") );// 债转日期
