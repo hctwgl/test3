@@ -22,7 +22,6 @@ import com.ald.fanbei.api.web.cache.Cache;
  * @author rongbo
  *
  */
-@Component
 public class HomePageV2CacheTask extends AbstractCacheTask{
 	
 	private static final String LOCK_NAME = "HOME_PAGE_V2_CACHE_TASK";
