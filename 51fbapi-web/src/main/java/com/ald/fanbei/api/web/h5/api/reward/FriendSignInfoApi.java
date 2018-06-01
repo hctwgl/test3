@@ -68,6 +68,7 @@ public class FriendSignInfoApi implements H5Handle {
     public H5HandleResponse process(Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
         Long userId = context.getUserId();
+        logger.info("userId cfp = " + userId);
         String push = ObjectUtils.toString(context.getData("push"),"N");
         String wxCode = ObjectUtils.toString(context.getData("wxCode"),null);
         logger.info("wxCode = " + wxCode);
