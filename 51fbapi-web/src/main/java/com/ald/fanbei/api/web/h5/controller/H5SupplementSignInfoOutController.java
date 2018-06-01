@@ -460,7 +460,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
     public String getSupplementSign(HttpServletRequest request, HttpServletResponse response) {
         String resultStr = "";
         try {
-            String userName = ObjectUtils.toString(request.getParameter("userId"),null);
+            String userName = ObjectUtils.toString(request.getParameter("userName"),null);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
             if(null == afUserDo){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();

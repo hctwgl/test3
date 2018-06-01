@@ -186,7 +186,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
     public String getFriendSignIn(HttpServletRequest request, HttpServletResponse response) {
         String resultStr = "";
         try {
-            String userName = ObjectUtils.toString(request.getParameter("userId"),null);
+            String userName = ObjectUtils.toString(request.getParameter("userName"),null);
             logger.info("userName cfp = "+userName);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
             if(null == afUserDo){
