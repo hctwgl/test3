@@ -8,10 +8,7 @@ import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
-import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -53,6 +50,8 @@ public class H5WalletController extends BaseController{
     AfUserService afUserService;
     @Resource
     AfUserBankcardService afUserBankcardService;
+    @Resource
+    AfIdNumberService afIdNumberService;
 
     @ResponseBody
     @RequestMapping(value = "valletPage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -167,6 +166,14 @@ public class H5WalletController extends BaseController{
             Long userId = afUserDo.getRid();
             int count = afUserBankcardService.getUserBankcardCountByUserId(userId);
             data.put("count",count);
+            AfIdNumberDo afIdNumberDo = afIdNumberService.getIdNumberInfoByUserId(userId);
+            if(null == afIdNumberDo){
+                data.put("idNumber","");
+                data.put("realName","");
+            }else {
+                data.put("idNumber",afIdNumberDo.getName());
+                data.put("realName",afIdNumberDo.getCitizenId());
+            }
             return H5CommonResponse.getNewInstance(true,"", "", data).toString();
         } catch (Exception e){
             logger.error("unknown error", e);
