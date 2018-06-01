@@ -59,8 +59,9 @@ public class H5WalletController extends BaseController{
     public String valletPage(HttpServletRequest request, HttpServletResponse response){
         Map<String, Object> data = Maps.newHashMap();
         try{
-            FanbeiWebContext context = doWebCheck(request, true);
-            String userName = context.getUserName();
+            String userName = ObjectUtils.toString(request.getParameter("userName"),null);
+//            FanbeiWebContext context = doWebCheck(request, true);
+//            String userName = context.getUserName();
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
             if(null == afUserDo){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
@@ -111,8 +112,9 @@ public class H5WalletController extends BaseController{
     public String getIncomeDetails(HttpServletRequest request, HttpServletResponse response){
         Map<String, Object> data = Maps.newHashMap();
         try{
-            FanbeiWebContext context = doWebCheck(request, true);
-            String userName = context.getUserName();
+//            FanbeiWebContext context = doWebCheck(request, true);
+//            String userName = context.getUserName();
+            String userName = ObjectUtils.toString(request.getParameter("userName"),null);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
             if(null == afUserDo){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
@@ -136,7 +138,7 @@ public class H5WalletController extends BaseController{
     public String getWithDrawDetail(HttpServletRequest request, HttpServletResponse response){
         Map<String, Object> data = Maps.newHashMap();
         try{
-            FanbeiWebContext context = doWebCheck(request, true);
+//            FanbeiWebContext context = doWebCheck(request, true);
             String withdrawId = request.getParameter("withdrawId");
             AfCashRecordDo cashRecordDo = afCashRecordService.getCashRecordById(Long.parseLong(withdrawId));
             data.put("cashRecord",cashRecordDo);
@@ -152,11 +154,12 @@ public class H5WalletController extends BaseController{
 
     @ResponseBody
     @RequestMapping(value = "getBindBackStatus", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String getBindBackStatus(HttpServletRequest request, HttpServletResponse response){
+    public String getBindBackStatus(HttpServletRequest request, HttpServletResponse response ){
         Map<String, Object> data = Maps.newHashMap();
         try{
-            FanbeiWebContext context = doWebCheck(request, true);
-            String userName = context.getUserName();
+//            FanbeiWebContext context = doWebCheck(request, true);
+//            String userName = context.getUserName();
+            String userName = ObjectUtils.toString(request.getParameter("userName"),null);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
             if(null == afUserDo){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
