@@ -70,6 +70,7 @@ public class FriendSignInfoApi implements H5Handle {
         Long userId = context.getUserId();
         String push = ObjectUtils.toString(context.getData("push"),"N");
         String wxCode = ObjectUtils.toString(context.getData("wxCode"),null);
+        logger.info("wxCode = " + wxCode);
         Map<String,Object> data = new HashMap<String,Object>();
 //        //活动规则
 //        AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_RULE");
@@ -80,6 +81,7 @@ public class FriendSignInfoApi implements H5Handle {
 //        }
         //判断用户和openId是否在爱上街绑定
         AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
+        logger.info("thirdInfo = " + thirdInfo);
         if(thirdInfo == null){
             data.put("openType","2");
             resp.setResponseData(data);
