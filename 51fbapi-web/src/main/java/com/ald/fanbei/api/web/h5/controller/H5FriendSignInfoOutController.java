@@ -187,6 +187,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
         String resultStr = "";
         try {
             String userName = ObjectUtils.toString(request.getParameter("userId"),null);
+            logger.info("userName cfp = "+userName);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
             if(null == afUserDo){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
