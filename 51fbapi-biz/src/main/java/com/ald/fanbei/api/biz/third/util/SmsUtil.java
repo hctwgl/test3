@@ -322,7 +322,7 @@ public class SmsUtil extends AbstractThird {
      * @param bank
      */
     public boolean sendJKCRBorrowCashCode(String mobile, String bank) {
-        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_BORROW_AUDIT.getCode());
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_JKCR_BORROW_AUDIT.getCode());
         if (resourceDo != null && "1".equals(resourceDo.getValue1())) {
             String content = resourceDo.getValue().replace("&bankCardNo", bank);
             SmsResult smsResult = YSSmsUtil.send(mobile,content,YSSmsUtil.NOTITION_YS);
