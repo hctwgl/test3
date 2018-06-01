@@ -51,6 +51,8 @@ public class H5WalletController extends BaseController{
     private AfTaskCoinChangeProportionService afTaskCoinChangeProportionService;
     @Resource
     AfUserService afUserService;
+    @Resource
+    AfUserBankcardService afUserBankcardService;
 
     @ResponseBody
     @RequestMapping(value = "valletPage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -139,6 +141,29 @@ public class H5WalletController extends BaseController{
             AfCashRecordDo cashRecordDo = afCashRecordService.getCashRecordById(Long.parseLong(withdrawId));
             data.put("cashRecord",cashRecordDo);
 
+            return H5CommonResponse.getNewInstance(true,"", "", data).toString();
+        } catch (Exception e){
+            logger.error("unknown error", e);
+        }
+
+        return H5CommonResponse.getNewInstance(false,"").toString();
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "getBindBackStatus", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public String getBindBackStatus(HttpServletRequest request, HttpServletResponse response){
+        Map<String, Object> data = Maps.newHashMap();
+        try{
+            FanbeiWebContext context = doWebCheck(request, true);
+            String userName = context.getUserName();
+            AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+            if(null == afUserDo){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
+            }
+            Long userId = afUserDo.getRid();
+            int count = afUserBankcardService.getUserBankcardCountByUserId(userId);
+            data.put("count",count);
             return H5CommonResponse.getNewInstance(true,"", "", data).toString();
         } catch (Exception e){
             logger.error("unknown error", e);
