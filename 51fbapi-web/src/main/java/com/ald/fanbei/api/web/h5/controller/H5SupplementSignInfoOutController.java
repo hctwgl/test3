@@ -20,6 +20,7 @@ import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
 import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
+import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -454,6 +455,69 @@ public class H5SupplementSignInfoOutController extends H5Controller {
         afSignRewardExtService.increaseMoney(afSignRewardExtDo);
     }
 
+
+    @RequestMapping(value = "/supplementSignIn", method = RequestMethod.POST)
+    public String getSupplementSign(HttpServletRequest request, HttpServletResponse response) {
+        String resultStr = "";
+        try {
+            String userName = ObjectUtils.toString(request.getParameter("userId"),null);
+            AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+            if(null == afUserDo){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
+            }
+            String push = ObjectUtils.toString(request.getParameter("push"),"N");
+            String wxCode = ObjectUtils.toString(request.getParameter("wxCode"),null);
+            Map<String,Object> data = new HashMap<String,Object>();
+            Long userId = afUserDo.getRid();
+            //判断用户和openId是否在爱上街绑定
+            AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
+            logger.info("thirdInfo = " + thirdInfo);
+            if(thirdInfo == null){
+                data.put("openType","2");
+                return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
+            }
+            Long firendUserId = thirdInfo.getUserId();
+            if(firendUserId == userId){//已经绑定并且是自己打开
+                data = homeInfo(userId,data,push,BigDecimal.ZERO);
+                data.put("openType","0");
+            } else if(firendUserId != userId ){//已绑定
+                data = homeInfo(firendUserId,data,push,BigDecimal.ZERO);
+                AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
+                afSignRewardDo.setIsDelete(0);
+                afSignRewardDo.setUserId(userId);
+                afSignRewardDo.setGmtCreate(new Date());
+                afSignRewardDo.setGmtModified(new Date());
+                afSignRewardDo.setType(SignRewardType.THREE.getCode());
+                afSignRewardDo.setStatus(0);
+                afSignRewardDo.setFriendUserId(firendUserId);
+                afSignRewardDo.setAmount(BigDecimal.ZERO);
+                afSignRewardService.saveRecord(afSignRewardDo);
+                data.put("openType","1");
+            }else {//未绑定
+                data.put("openType","2");
+            }
+            return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
+
+        } catch (FanbeiException e) {
+            resultStr = H5CommonResponse.getNewInstance(false, "getOpenId error", "", e.getErrorCode().getDesc()).toString();
+        } catch (Exception e) {
+            resultStr = H5CommonResponse.getNewInstance(false, "getOpenId error", "", e).toString();
+        }
+        return resultStr;
+    }
+
+
+    private AfUserThirdInfoDo checkBindOpen(String wxCode){
+        AfResourceDo afResourceDo = afResourceService.getWechatConfig();
+        String appid = afResourceDo.getValue();
+        String secret = afResourceDo.getValue1();
+        JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
+        AfUserThirdInfoDo thirdInfo = new AfUserThirdInfoDo();
+        thirdInfo.setThirdId(userWxInfo.get("openid").toString());
+        thirdInfo.setThirdType(UserThirdType.WX.getCode());
+        List<AfUserThirdInfoDo> thirdInfos = afUserThirdInfoService.getListByCommonCondition(thirdInfo);
+        return  thirdInfos.size() == 0 ? null : thirdInfos.get(0);
+    }
 
 
 
