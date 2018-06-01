@@ -3161,6 +3161,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		list = orderDao.getOrderListByStatus(query);
 		result.setFinishedOrderNum(list.size());
 
+		query.setOrderStatus(AppOrderSearchStatus.WAIT_REFUND.getCode());
+		list = orderDao.getOrderListByStatus(query);
+		result.setAfterSaleOrderNum(list.size());
 		return result;
 	}
 

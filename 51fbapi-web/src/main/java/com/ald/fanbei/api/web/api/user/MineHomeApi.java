@@ -269,6 +269,7 @@ public class MineHomeApi implements ApiHandle {
         data.setPaidOrderNum(orderCountDto.getPaidOrderNum());
         data.setDeliveredOrderNum(orderCountDto.getDeliveredOrderNum());
         data.setFinishedOrderNum(orderCountDto.getFinishedOrderNum());
+        data.setAfterSaleOrderNum(orderCountDto.getAfterSaleOrderNum());
     }
 
     // 填充banner和快速导航信息
