@@ -122,6 +122,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 						AfRecommendUserDo afRecommendUserDo = new AfRecommendUserDo();
 						afRecommendUserDo.setUser_id(afUserDo.getRid());
 						afRecommendUserDo.setParentId(recommendId);
+						logger.info("addShared1 userName:" + afUserDo.getRid() );
 						afRecommendUserDao.addRecommendUser(afRecommendUserDo);
 					}
 			        
@@ -177,6 +178,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 						afRecommendUserDo.setParentId(recommendId);
 						afRecommendUserDo.setSource(source);
 						if(!"oneYuan".equals(source)){
+							logger.info("addShared2 userName:" + afUserDo.getRid() );
 						        afRecommendUserDao.addRecommendUser(afRecommendUserDo);
 						}else if("oneYuan".equals(source)){
 						    try{
@@ -190,6 +192,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 			                		     swtich = biddingSwitch.getValue1();
 			                		 }
 							if(StringUtil.isNotBlank(swtich) && "O".equals(swtich) ){
+								logger.info("addShared3 userName:" + afRecommendUserDo.getUserId());
 							    afRecommendUserDao.addRecommendUser(afRecommendUserDo);
 						        }
 						     }catch(Exception e){
@@ -257,6 +260,7 @@ public class AfUserServiceImpl extends BaseService implements AfUserService {
 						AfRecommendUserDo afRecommendUserDo = new AfRecommendUserDo();
 						afRecommendUserDo.setUser_id(afUserDo.getRid());
 						afRecommendUserDo.setParentId(recommendId);
+						logger.info("addShared4 userName:" + afRecommendUserDo.getUserId() );
 						afRecommendUserDao.addRecommendUser(afRecommendUserDo);
 					}
 					//#endregion

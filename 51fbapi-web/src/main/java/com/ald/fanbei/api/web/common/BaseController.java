@@ -67,7 +67,7 @@ public abstract class BaseController {
 
 	@Resource
 	AfAppUpgradeService afAppUpgradeService;
-	@Resource
+	@Autowired
 	private BizCacheUtil bizCacheUtil;
 
 	@Resource

@@ -11,6 +11,7 @@ import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.enums.UserAccountSceneType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
@@ -86,6 +87,9 @@ public class AppActivityGoodListUtil {
 
     @Resource
     AfUserCouponService afUserCouponService;
+
+    @Resource
+    AfSchemeService afSchemeService;
 
     @Resource
     AfModelH5Service afModelH5Service;
@@ -207,24 +211,24 @@ public class AppActivityGoodListUtil {
         for (HomePageSecKillGoods homePageSecKillGoods : list) {
             Map<String, Object> goodsInfo = new HashMap<String, Object>();
             goodsInfo.put("goodsName", homePageSecKillGoods.getGoodName());
-            goodsInfo.put("rebateAmount", homePageSecKillGoods.getRebateAmount());
-            goodsInfo.put("saleAmount", homePageSecKillGoods.getSaleAmount());
-            goodsInfo.put("priceAmount", homePageSecKillGoods.getPriceAmount());
-            goodsInfo.put("activityAmount", homePageSecKillGoods.getActivityAmount());
-            goodsInfo.put("goodsIcon", homePageSecKillGoods.getGoodsIcon());
-            goodsInfo.put("goodsId", homePageSecKillGoods.getGoodsId());
-            goodsInfo.put("goodsUrl", homePageSecKillGoods.getGoodsUrl());
-            goodsInfo.put("goodsType", "0");
-            goodsInfo.put("subscribe", homePageSecKillGoods.getSubscribe());
-            goodsInfo.put("volume", homePageSecKillGoods.getVolume());
-            goodsInfo.put("goodsCount", homePageSecKillGoods.getTotal());
+            goodsInfo.put("rebateAmount", homePageSecKillGoods.getRebateAmount());//返利金额
+            goodsInfo.put("saleAmount", homePageSecKillGoods.getSaleAmount());//折后价
+            goodsInfo.put("priceAmount", homePageSecKillGoods.getPriceAmount());//商品原价
+            goodsInfo.put("activityAmount", homePageSecKillGoods.getActivityAmount());//活动价
+            goodsInfo.put("goodsIcon", homePageSecKillGoods.getGoodsIcon());//商品图标
+            goodsInfo.put("goodsId", homePageSecKillGoods.getGoodsId());//
+            goodsInfo.put("goodsUrl", homePageSecKillGoods.getGoodsUrl());//商品链接
+            goodsInfo.put("goodsType", "0");//（0:不分期;1:分期）
+            goodsInfo.put("subscribe", homePageSecKillGoods.getSubscribe());//是否秒杀（1：已秒杀）
+            goodsInfo.put("volume", homePageSecKillGoods.getVolume());//售出数量
+            goodsInfo.put("goodsCount", homePageSecKillGoods.getTotal());//商品限购数量
             goodsInfo.put("source", homePageSecKillGoods.getSource());
             goodsInfo.put("activityId", homePageSecKillGoods.getActivityId());
             goodsInfo.put("saleCount", 0);
             // 如果是分期免息商品，则计算分期
             Long goodsId = homePageSecKillGoods.getGoodsId();
             JSONArray interestFreeArray = null;
-            if (homePageSecKillGoods.getInterestFreeId() != null) {
+            if (homePageSecKillGoods.getInterestFreeId() != null) {//interestFreeId : 免息规则id
                 AfInterestFreeRulesDo interestFreeRulesDo = afInterestFreeRulesService.getById(homePageSecKillGoods.getInterestFreeId().longValue());
                 String interestFreeJson = interestFreeRulesDo.getRuleJson();
                 if (StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
@@ -329,6 +333,7 @@ public class AppActivityGoodListUtil {
         final List<AfModelH5ItemDo> subjectList = afModelH5ItemService.getModelH5ItemListByModelIdAndModelTypeSortById(Long.parseLong(modelId), "SUBJECT");
         if (subjectList == null || subjectList.size() == 0) {
             jsonObj.put("error", "分会场信息为空");
+            return jsonObj;
         }
         AfModelH5ItemDo subjectH5ItemDo = subjectList.get(0);
         String secSubjectId = subjectH5ItemDo.getItemValue();
@@ -355,6 +360,7 @@ public class AppActivityGoodListUtil {
                 pool.execute(process);
             }
         }
+       // activityList = null;
         if (activityList == null) {
             activityList = getActivityPartList(subjectList, resource, array);
             bizCacheUtil.saveListByTime(cacheKey, activityList, 10 * 60);
@@ -395,12 +401,20 @@ public class AppActivityGoodListUtil {
                     Map activityGoodsInfo = new HashMap();
                     activityGoodsInfo.put("goodName",goodsDo.getName());
                     activityGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+
                     if(null != goodsDo.getActivityPrice()){
                         saleAmount = goodsDo.getActivityPrice();
                     }
                     else{
                         saleAmount = goodsDo.getSaleAmount();
                     }
+
+                    //返利金额
+                    BigDecimal secKillRebAmount = BigDecimalUtil.multiply(saleAmount, goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+                        activityGoodsInfo.put("rebateAmount", secKillRebAmount);
+                    }
+
                     activityGoodsInfo.put("saleAmount", saleAmount);
                     activityGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
                     activityGoodsInfo.put("goodsId", goodsDo.getRid());
@@ -415,22 +429,25 @@ public class AppActivityGoodListUtil {
                     JSONArray interestFreeArray = null;
                     if(null != afSchemeGoodsDo){
                         Long goodsId = goodsDo.getRid();
-                        AfSchemeGoodsDo  schemeGoodsDo = null;
+                        AfSchemeDo  afSchemeDo = null;
                         try {
-                            schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
+                             afSchemeDo = afSchemeService.getSchemeById(afSchemeGoodsDo.getSchemeId());
                         } catch(Exception e){
                             logger.error(e.toString());
                         }
 
-                        if(schemeGoodsDo != null){
-                            AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(schemeGoodsDo.getInterestFreeId());
-                            String interestFreeJson = interestFreeRulesDo.getRuleJson();
-                            if (org.apache.commons.lang.StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
-                                interestFreeArray = JSON.parseArray(interestFreeJson);
+                        if(afSchemeDo != null){
+                            if (freeflag(afSchemeDo.getGmtStart(),afSchemeDo.getGmtEnd(),afSchemeDo.getIsOpen()) ){
+                                AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(afSchemeGoodsDo.getInterestFreeId());
+                                String interestFreeJson = interestFreeRulesDo.getRuleJson();
+                                if (org.apache.commons.lang.StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+                                    interestFreeArray = JSON.parseArray(interestFreeJson);
+                                }
                             }
                         }
-
                     }
+
+
                     List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
                             saleAmount, resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
 
@@ -450,5 +467,23 @@ public class AppActivityGoodListUtil {
         return activityList;
     }
 
+    private boolean freeflag(Date start,Date end,String isOpen){
+        try {
+            if (!"Y".equals(isOpen)){
+                return false;
+            }
+            if (DateUtil.compareDate(end,new Date()) && DateUtil.compareDate(new Date(),start)){
+                return true;
+
+            }else {
+                return false;
+            }
+        }catch (Exception e){
+            logger.info("freeflag",e);
+            return false;
+
+        }
+
+    }
 
 }
