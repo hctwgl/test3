@@ -89,12 +89,12 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		Integer appVersion = context.getAppVersion();
 
-    	String lockKey = Constants.CACHEKEY_APPLY_STRONG_RISK_LOCK + userId;
-    	if (bizCacheUtil.getObject(lockKey) == null) {
-    	    bizCacheUtil.saveObject(lockKey, lockKey, 30);
-    	} else {
-    	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.STRONG_RISK_STATUS_ERROR);
-    	}
+        	String lockKey = Constants.CACHEKEY_APPLY_STRONG_RISK_LOCK + userId;
+        	if (bizCacheUtil.getObject(lockKey) == null) {
+        	    bizCacheUtil.saveObject(lockKey, lockKey, 30);
+        	} else {
+        	    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.STRONG_RISK_STATUS_ERROR);
+        	}
 
 		logger.info("authStrongRiskV1Api requestDataVo:"+requestDataVo.toString());
 		//认证场景 20（现金），21（线上），22（线下）
@@ -118,78 +118,112 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 
 		String riskCheckStatus = "0";
 		AfUserAuthStatusDo afUserAuthStatus = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
-        	if (afUserAuthStatus == null || !UserAuthSceneStatus.PASSING.getCode().equals(afUserAuthStatus.getStatus())) {
-        	    JSONObject riskCheckData = riskUtil.authDataCheck(userId, riskScene);
-        	    riskCheckStatus = riskCheckData.getString("success");
-        	    // 有数据过期了
-        	    if ("55".equals(riskCheckStatus)) {
-        		ApiHandleResponse apiHandleResponse = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILURE_DATA_ERROR);
-        		String failureData = riskCheckData.get("failureData").toString();
-        		String[] failureDataArray = failureData.split(",");
-        		JSONArray jsonArray = new JSONArray();
-        		for (int i = 0; i < failureDataArray.length; i++) {
-        		    JSONObject jsonObject = new JSONObject();
-        		    jsonObject.put("auth", failureDataArray[i]);
-        		    jsonObject.put("status", "N");// 失效状态
-        		    jsonArray.add(jsonObject);
-        		}
-        		afUserAuthStatusDo.setStatus(UserAuthSceneStatus.NO.getCode());
-        		afUserAuthStatusDo.setCauseReason(jsonArray.toString());
-        		afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
-        		bizCacheUtil.delCache(lockKey);
-        		return apiHandleResponse;
-        	    }
-        	}
+		if (afUserAuthStatus == null || !UserAuthSceneStatus.PASSING.getCode().equals(afUserAuthStatus.getStatus())) {
+			JSONObject riskCheckData = riskUtil.authDataCheck(userId, riskScene);
+			riskCheckStatus = riskCheckData.getString("success");
+			//有数据过期了
+			if ("55".equals(riskCheckStatus)) {
+				//if(true){
+				ApiHandleResponse apiHandleResponse = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILURE_DATA_ERROR);
+				String failureData = riskCheckData.get("failureData").toString();
+				//String failureData= "operator";
+				String[] failureDataArray = failureData.split(",");
+				//AfUserAuthStatusDo afUserAuthStatusFail = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, scene);
+				//if (afUserAuthStatusFail == null) {
+					JSONArray jsonArray = new JSONArray();
+					for (int i = 0; i < failureDataArray.length; i++) {
+						JSONObject jsonObject = new JSONObject();
+						jsonObject.put("auth", failureDataArray[i]);
+						jsonObject.put("status", "N");//失效状态
+						jsonArray.add(jsonObject);
+					}
+					afUserAuthStatusDo.setStatus(UserAuthSceneStatus.NO.getCode());
+					afUserAuthStatusDo.setCauseReason(jsonArray.toString());
+					afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+					//apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
+					return apiHandleResponse;
+//				} else {
+//					JSONArray jsonArray = JSON.parseArray(afUserAuthStatusFail.getCauseReason());
+//					Boolean existJudge = false;//已失败原因里 跟现在失败原因里不相同,直接返回
+//					Boolean judge = false;//已失效状态还是已失效状态
+//
+//                		    Integer failureDataLength = failureDataArray.length;
+//                		    for (int i = 0; i < failureDataLength; i++) {
+//                			Boolean oldEqual = true;// 相等过了
+//                			String failure = failureDataArray[i];
+//                			for (int j = 0; j < jsonArray.size(); j++) {
+//                			    String failJson = jsonArray.getJSONObject(j).getString("auth");
+//                			    String status = jsonArray.getJSONObject(j).getString("status");
+//                			    if (oldEqual) {
+//                				if (!failure.equals(failJson)) {
+//                				    if (j == jsonArray.size() - 1) {
+//                					existJudge = true;// 已失败原因里
+//                							  // 跟现在失败原因里不相同
+//                					JSONObject jsonObject = new JSONObject();
+//                					jsonObject.put("auth", failure);
+//                					jsonObject.put("status", "N");// 失效状态
+//                					jsonArray.add(jsonObject);
+//                					j = j + 1;
+//                				    }
+//                				} else {// 已失败原因里 跟现在失败原因里相同,且状态为未失效
+//                				    if ("N".equals(status)) {
+//                					judge = true;
+//                				    }
+//                				    oldEqual = false;
+//                				}
+//                			    }                
+//                			}
+//                    			
+//                    			if (existJudge && (i == failureDataLength - 1)) {
+//                    			    afUserAuthStatusDo.setStatus(UserAuthSceneStatus.NO.getCode());
+//                    			    afUserAuthStatusDo.setCauseReason(jsonArray.toString());
+//                    			    afUserAuthStatusService.addOrUpdateAfUserAuthStatus(afUserAuthStatusDo);
+//                    			    // apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
+//                    			    return apiHandleResponse;
+//                    			}
+//                    			if (judge) {
+//                    			    // apiHandleResponse.setResponseData(riskCheckData.get("failureData"));
+//                    			    return apiHandleResponse;
+//                    			}
+//                    
+//                    		    }
+//                    		}
+                    		//afUserAuthStatus = afUserAuthStatusDo;
+                    	    }
+		}
 
 		//调用风控失败了
 		if (!"0".equals(riskCheckStatus) && !"55".equals(riskCheckStatus)) {
-    			bizCacheUtil.delCache(lockKey);
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CALL_RISK_FAIL);
 		}
 
-		//try {
+		try {
 			AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 
 			if (StringUtils.equals(afUserAuthDo.getZmStatus(), YesNoStatus.NO.getCode())) {// 请先完成芝麻信用授权
-	        		bizCacheUtil.delCache(lockKey);
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZHIMA_CREDIT_INFO_EXIST_ERROR);
 			}
-			if (StringUtils.equals(afUserAuthDo.getMobileStatus(), YesNoStatus.NO.getCode())) {// 请先完成运营商授权
-	        		bizCacheUtil.delCache(lockKey);
+			if (!StringUtils.equals(afUserAuthDo.getMobileStatus(), YesNoStatus.YES.getCode())) {// 请先完成运营商授权
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.OPERATOR_INFO_EXIST_ERROR);
 			}
 			if (appVersion < 368 && StringUtils.equals(afUserAuthDo.getTeldirStatus(), YesNoStatus.NO.getCode())) {// 请先完成紧急联系人设置
-	        		bizCacheUtil.delCache(lockKey);
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.EMERGENCY_CONTACT_INFO_EXIST_ERROR);
 			}
 
-                	if (SceneType.CASH.getCode().equals(riskScene)) {
-                	    if (!StringUtils.equals(afUserAuthDo.getBasicStatus(), RiskStatus.A.getCode()) && !StringUtils.equals(afUserAuthDo.getBasicStatus(), RiskStatus.SECTOR.getCode())) {
-                		bizCacheUtil.delCache(lockKey);
-                		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
-                	    }
-                	} else {
-                	    if (afUserAuthStatus != null) {
-                		if (StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.CHECKING.getCode())) {
-                		    bizCacheUtil.delCache(lockKey);
-                		    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
-                		} else if (StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.FAILED.getCode())) {
-                		    Date afterTenDay = DateUtil.addDays(DateUtil.getEndOfDate(afUserAuthStatus.getGmtModified()), 10);
-                		    long between = DateUtil.getNumberOfDatesBetween(DateUtil.getEndOfDate(new Date(System.currentTimeMillis())), afterTenDay);
-                
-                		    if (between > 1) {
-                			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR, "请" + between + "天后尝试重新提交");
-                
-                		    } else if (between == 1) {
-                			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR, "明天可以重新提交审核");
-                		    }
-                		}
-                	    }
-                	}
+			if (SceneType.CASH.getCode().equals(riskScene)) {
+				if (!StringUtils.equals(afUserAuthDo.getBasicStatus(), RiskStatus.A.getCode()) && !StringUtils.equals(afUserAuthDo.getBasicStatus(), RiskStatus.SECTOR.getCode())) {
+					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
+				}
+			} else {
+				if(afUserAuthStatus!=null) {
+					if (!StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.NO.getCode()) && !StringUtils.equals(afUserAuthStatus.getStatus(), UserAuthSceneStatus.PASSING.getCode())) {
+						return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.RISK_OREADY_FINISH_ERROR);
+					}
+				}
+			}
 
 			Object directoryCache = bizCacheUtil.getObject(Constants.CACHEKEY_USER_CONTACTS + userId);
 			if (directoryCache == null) {
-	        		bizCacheUtil.delCache(lockKey);
 				if (appVersion < 368) {
 					return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.CANOT_FIND_DIRECTORY_ERROR);// 没取到通讯录时，让用户重新设置紧急联系人
 				} else {
@@ -201,7 +235,6 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 
 			AfIdNumberDo idNumberDo = afIdNumberService.selectUserIdNumberByUserId(userId);
 			if (idNumberDo == null) {
-	        		bizCacheUtil.delCache(lockKey);
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_CARD_INFO_EXIST_ERROR);
 			} else {
 				AfUserDo afUserDo = afUserService.getUserById(userId);
@@ -271,14 +304,13 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 						}
 					}
 					logger.error("提交用户认证信息到风控失败,场景" + idNumberDo.getUserId() + "," + scene);
-		        		bizCacheUtil.delCache(lockKey);
 					throw new FanbeiException(FanbeiExceptionCode.RISK_REGISTER_ERROR, e);
 				}
 				return resp;
 			}
-//		} finally {
-//			bizCacheUtil.delCache(lockKey);
-//		}
+		} finally {
+			bizCacheUtil.delCache(lockKey);
+		}
 
 	}
 
