@@ -84,6 +84,8 @@ public class H5WalletController extends BaseController{
             AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.TASK_COIN_CHANGE_TO_CASH_NAME, userId);
             if(null == taskUserDo){
                 data.put("changeCoinFlag", false);
+                data.put("yesterdayProportion", 0);
+                data.put("changedCoinAmount", 0);
             }
             else{
                 BigDecimal yesterdayProportion = afTaskCoinChangeProportionService.getYesterdayProportion();
