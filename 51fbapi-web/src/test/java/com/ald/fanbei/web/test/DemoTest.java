@@ -122,7 +122,7 @@ public class DemoTest extends BaseTest{
 	}
 
 	//活动预售商品列表
-	//@Test
+	@Test
 	public void  getReservationGoodsList() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/getReservationGoodsList";
 		Map<String,String> params = new HashMap<>();
@@ -131,7 +131,7 @@ public class DemoTest extends BaseTest{
 	}
 
 	//测试发送短信
-	@Test
+	//@Test
 	public void  ceshiSMS() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiSMS";
 		Map<String,String> params = new HashMap<>();
