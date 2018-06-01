@@ -59,13 +59,13 @@ public class GetRewardHomeInfoApi implements H5Handle {
 	public H5HandleResponse process(Context context) {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
 		String push = ObjectUtils.toString(context.getData("push"),"N");
-		//活动规则
-		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_RULE");
-		if(null != afResourceDo){
-			resp.addResponseData("rewardRule",afResourceDo.getValue());
-		}else {
-			resp.addResponseData("rewardRule","");
-		}
+//		//活动规则
+//		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_RULE");
+//		if(null != afResourceDo){
+//			resp.addResponseData("rewardRule",afResourceDo.getValue());
+//		}else {
+//			resp.addResponseData("rewardRule","");
+//		}
 		Long userId = context.getUserId();
 
 		//今天是否签到

@@ -62,13 +62,13 @@ public class SupplementSignInfoApi implements H5Handle {
         String push = ObjectUtils.toString(context.getData("push"),null);//用户是否打开手机推送权限
         String wxCode = ObjectUtils.toString(context.getData("wxCode"),null);
         Map<String,Object> data = new HashMap<String,Object>();
-        //活动规则
-        AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_RULE");
-        if(null != afResourceDo){
-            data.put("rewardRule",afResourceDo.getValue());
-        }else {
-            data.put("rewardRule","");
-        }
+//        //活动规则
+//        AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_RULE");
+//        if(null != afResourceDo){
+//            data.put("rewardRule",afResourceDo.getValue());
+//        }else {
+//            data.put("rewardRule","");
+//        }
         //判断用户和openId是否在爱上街绑定
         AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
         if(thirdInfo == null){
