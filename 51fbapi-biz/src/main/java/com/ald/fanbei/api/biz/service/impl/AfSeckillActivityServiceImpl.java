@@ -378,8 +378,8 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 					logger.info("updateUserActivityGoodsInfo payEndAmount userId: " + orderInfo.getUserId() );
 
 					//添加指定商品券
-					AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
-					afUserCouponService.sendActivityCouponByGoods(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo, orderInfo.getGoodsId());
+//					AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
+//					afUserCouponService.sendActivityCouponByGoods(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo, orderInfo.getGoodsId());
 
 					AfResourceDo resourceDo1 = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
 					afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo1);
