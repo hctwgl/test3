@@ -154,7 +154,7 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 	        		bizCacheUtil.delCache(lockKey);
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ZHIMA_CREDIT_INFO_EXIST_ERROR);
 			}
-			if (StringUtils.equals(afUserAuthDo.getMobileStatus(), YesNoStatus.NO.getCode())) {// 请先完成运营商授权
+			if (!StringUtils.equals(afUserAuthDo.getMobileStatus(), YesNoStatus.YES.getCode())) {// 请先完成运营商授权
 	        		bizCacheUtil.delCache(lockKey);
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.OPERATOR_INFO_EXIST_ERROR);
 			}

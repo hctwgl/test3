@@ -1,12 +1,11 @@
 package com.ald.fanbei.api.web.h5.api.recycle;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Date;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +18,6 @@ import com.ald.fanbei.api.biz.service.AfUserBankcardService;
 import com.ald.fanbei.api.biz.service.AfUserCouponService;
 import com.ald.fanbei.api.biz.service.impl.AfBorrowRecycleRepaymentServiceImpl.RepayBo;
 import com.ald.fanbei.api.common.enums.AfBorrowCashRepmentStatus;
-import com.ald.fanbei.api.common.enums.AfBorrowLegalRepaymentStatus;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -38,7 +36,6 @@ import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.RecycleRepayDoParam;
 import com.alibaba.fastjson.JSON;
-import com.google.common.collect.Maps;
 
 /**
  * @author yanghailong
@@ -69,6 +66,7 @@ public class RecycleRepayDoApi implements H5Handle {
 
     @Override
 	public H5HandleResponse process(Context context) {
+    	String bankPayType = ObjectUtils.toString(context.getData("bankChannel"),null);
     	RepayBo bo = this.extractAndCheck(context);
         bo.remoteIp = context.getClientIp();
 
@@ -77,25 +75,9 @@ public class RecycleRepayDoApi implements H5Handle {
             throw new FanbeiException("分期还款处理中,无法进行还款操作", true);
         }
 
-        this.afBorrowRecycleRepaymentService.repay(bo);
+        Map<String, Object> data = this.afBorrowRecycleRepaymentService.repay(bo,bankPayType);
         
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
-        Map<String, Object> data = Maps.newHashMap();
-		data.put("rid", bo.borrowId);
-		data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
-		data.put("gmtCreate", new Date());
-		data.put("status", AfBorrowLegalRepaymentStatus.YES.getCode());
-		if(bo.userCouponDto != null) {
-			data.put("couponAmount", bo.userCouponDto.getAmount());
-		}
-		if(bo.rebateAmount.compareTo(BigDecimal.ZERO) > 0) {
-			data.put("userAmount", bo.rebateAmount);
-		}
-		data.put("actualAmount", bo.actualAmount);
-		data.put("cardName", bo.cardName);
-		data.put("cardNumber", bo.cardNo);
-		data.put("repayNo", bo.tradeNo);
-		data.put("jfbAmount", BigDecimal.ZERO);
         resp.setResponseData(data);
 
         return resp;

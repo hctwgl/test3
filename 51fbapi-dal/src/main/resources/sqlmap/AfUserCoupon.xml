@@ -58,6 +58,35 @@
 		ORDER BY u.gmt_end
 	</select>
 
+	<select id="getUserResevrationCouponList" resultType="AfUserCouponDto">
+		SELECT
+			agu.user_id
+			,agu.coupon_id
+			,sa.gmt_start
+			,sa.gmt_end
+			,c.amount
+			,c.limit_amount
+			,c.name
+			,c.use_rule
+			,c.type
+			,c.valid_days
+			,c.use_range
+			,c.shop_url
+			,c.is_global
+			,c.discount
+			,c.activity_type
+			,ifnull(null, 'NOUSE') status
+			FROM af_activity_reservation_goods_user agu
+			left join af_activity_reservation_goods  aag on agu.goods_id = aag.id
+			left join af_seckill_activity_goods sag on sag.goods_id = aag.goods_id and  sag.is_delete = 0
+			left join af_seckill_activity sa on sa.id = sag.activity_id
+			left join af_coupon c on c.id = aag.coupon_id
+			WHERE aag.is_delete = 0
+			and agu.goods_count > 0
+			and agu.user_id = #{userId}
+			and sag.activity_id = (select value from af_resource where type = 'ACTIVITY_RESERVATION_GOODS' limit 1)
+	</select>
+
 	<select id="getH5UserCouponByUser" resultType="AfUserCouponDto">
 		SELECT
 		<include refid="queryAllFields" />

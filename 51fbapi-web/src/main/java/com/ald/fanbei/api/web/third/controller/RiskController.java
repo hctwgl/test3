@@ -107,8 +107,13 @@ public class RiskController {
 		}
 	}
 	
-	
 
+	/**
+	 * 运营商认证回调
+	 * @param request
+	 * @param response
+	 * @return
+	 */
 	@RequestMapping(value = { "/operator" }, method = RequestMethod.POST)
 	@ResponseBody
 	public String operator(HttpServletRequest request, HttpServletResponse response) {

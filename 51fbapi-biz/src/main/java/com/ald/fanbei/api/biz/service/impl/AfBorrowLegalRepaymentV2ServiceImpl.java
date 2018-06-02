@@ -815,13 +815,13 @@ public class AfBorrowLegalRepaymentV2ServiceImpl extends UpsPayKuaijieServiceAbs
 	    throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
 	}
 
-	BigDecimal restAmount = calculateRestAmount(cashDo);
+	/* BigDecimal restAmount = calculateRestAmount(cashDo);
 	BigDecimal offlineRepayAmountYuan = NumberUtil.objToBigDecimalDivideOnehundredDefault(offlineRepayAmount, BigDecimal.ZERO);
 	// 因为有用户会多还几分钱，所以加个安全金额限制，当还款金额 > 用户应还金额+1元 时，返回错误
-	if (offlineRepayAmountYuan.compareTo(restAmount.add(BigDecimal.valueOf(200))) > 0) {
+	 TODO 去除多还钱的限制 By ZJF，允许用户一次还两笔借款， if (offlineRepayAmountYuan.compareTo(restAmount.add(BigDecimal.valueOf(200))) > 0) {
 	    logger.warn("CheckOfflineRepayment error, offlineRepayAmount=" + offlineRepayAmount + ", restAmount=" + restAmount);
 	    throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
-	}
+	}*/
     }
 
     private long changBorrowRepaymentStatus(String outTradeNo, String status, Long rid) {
