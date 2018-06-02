@@ -299,7 +299,12 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	// 检查活动是否停止
 	private void checkActivityIsStop(AfResourceDo config) {
 		if (config.getValue().trim().equals(YesNoStatus.NO.getCode())) {
-			throw new FanbeiException(FanbeiExceptionCode.OPEN_REDPACKET_ACTIVITY_OVER);
+			AfResourceDo msgConfig = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET_MSG.getCode());
+			if (msgConfig == null) {
+				throw new FanbeiException(FanbeiExceptionCode.OPEN_REDPACKET_ACTIVITY_OVER);
+			} else {
+				throw new FanbeiException(msgConfig.getValue());
+			}
 		}
 	}
 
