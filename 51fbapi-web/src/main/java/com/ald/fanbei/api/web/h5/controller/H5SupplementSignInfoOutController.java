@@ -492,9 +492,9 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
 
         } catch (FanbeiException e) {
-            return H5CommonResponse.getNewInstance(false, "getOpenId error", "", e.getErrorCode().getDesc()).toString();
+            return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
         } catch (Exception e) {
-            return H5CommonResponse.getNewInstance(false, "getOpenId error", "", e).toString();
+            return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
         }
     }
 
