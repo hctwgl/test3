@@ -201,7 +201,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             }
             data = homeInfo(userId,data,push,amount);
             data.put("flag","success");
-            data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(amount).setScale(2, RoundingMode.HALF_UP));
+//            data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(amount).setScale(2, RoundingMode.HALF_UP));
             return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
         } catch (FanbeiException e) {
             logger.error("commitRegister fanbei exception" + e.getMessage());
@@ -313,6 +313,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                     //补签成功 打开者增加余额
                     AfSignRewardExtDo afSignRewardExt = buildSignRewardExt(userId,amount);
                     afSignRewardExtService.saveRecord(afSignRewardExt);
+//
                     return "success";
                 }catch (Exception e){
                     status.setRollbackOnly();
