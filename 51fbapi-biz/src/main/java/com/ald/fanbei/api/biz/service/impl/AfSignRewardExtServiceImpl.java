@@ -83,7 +83,7 @@ public class AfSignRewardExtServiceImpl  implements AfSignRewardExtService {
     }
 
     @Override
-    public Map<String,Object> getHomeInfo(Long userId,String status,BigDecimal rewardAmount){
+    public Map<String,Object> getHomeInfo(Long userId,String status ){
         Map<String,Object> map = new HashMap<>();
         AfSignRewardExtDo afSignRewardExtDo = selectByUserId(userId);
         if(null == afSignRewardExtDo){
@@ -109,7 +109,7 @@ public class AfSignRewardExtServiceImpl  implements AfSignRewardExtService {
             //签到提醒
             map.put("isOpenRemind",afSignRewardExtDo.getIsOpenRemind()>0?"Y":"N");
             //是否有余额
-            map.put("rewardAmount",afSignRewardExtDo.getAmount().add(rewardAmount));
+            map.put("rewardAmount",afSignRewardExtDo.getAmount());
             //已签到天数
             Map<String,String> days = afSignRewardService.supplementSign(afSignRewardExtDo,0,status);
             map.put("supplementSignDays",days.get("supplementSignDays"));

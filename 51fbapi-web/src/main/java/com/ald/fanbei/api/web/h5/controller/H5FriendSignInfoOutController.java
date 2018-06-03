@@ -105,7 +105,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
                 if(!signReward(request,eUserDo.getRid(),rewardAmount,"old",moblie,userWxInfo)){
                     return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
                 }
-                data = homeInfo(eUserDo.getRid(),data,push,rewardAmount);
+                data = homeInfo(eUserDo.getRid(),data,push);
 //                data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(rewardAmount));
                 return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
             }
@@ -167,7 +167,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
             //首页信息
-            data = homeInfo(userId,data,push,rewardAmount);
+            data = homeInfo(userId,data,push);
 //            data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(rewardAmount).setScale(2, RoundingMode.HALF_UP));
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
         } catch (FanbeiException e) {
@@ -208,10 +208,10 @@ public class H5FriendSignInfoOutController extends H5Controller {
 //        thirdInfo.setUserId(18637963763l);
             Long friendUserId = thirdInfo.getUserId();
             if(StringUtil.equals(friendUserId+"",userId+"")){//已经绑定并且是自己打开
-                data = homeInfo(userId,data,push,BigDecimal.ZERO);
+                data = homeInfo(userId,data,push);
                 data.put("openType","0");
             } else {//已绑定
-                data = homeInfo(friendUserId,data,push,BigDecimal.ZERO);
+                data = homeInfo(friendUserId,data,push);
                 AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
                 afSignRewardDo.setIsDelete(0);
                 afSignRewardDo.setUserId(userId);
@@ -349,11 +349,11 @@ public class H5FriendSignInfoOutController extends H5Controller {
 
     }
 
-    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push,BigDecimal rewardAmount){
+    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push ){
         //今天是否签到
         String status = afSignRewardService.isExist(userId)==false?"N":"Y";
         resp.put("rewardStatus",status);
-        resp = afSignRewardExtService.getHomeInfo(userId,status,rewardAmount);
+        resp = afSignRewardExtService.getHomeInfo(userId,status);
         // 正式环境和预发布环境区分
         String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
         String homeBanner = AfResourceType.RewardHomeBanner.getCode();

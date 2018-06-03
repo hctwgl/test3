@@ -138,7 +138,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                         }
                     }
                 });
-                data = homeInfo(eUserDo.getRid(),data,push,BigDecimal.ZERO);
+                data = homeInfo(eUserDo.getRid(),data,push);
                 data.put("flag","fail");
                 if(StringUtil.equals(status,"fail")){
                     return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.WX_BIND_FAIL.getDesc(),"",data).toString();
@@ -199,7 +199,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             if(!signReward(request,userId,moblie,time,userWxInfo,amount)){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
-            data = homeInfo(userId,data,push,amount);
+            data = homeInfo(userId,data,push);
             data.put("flag","success");
 //            data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(amount).setScale(2, RoundingMode.HALF_UP));
             return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
@@ -373,11 +373,11 @@ public class H5SupplementSignInfoOutController extends H5Controller {
 
     }
 
-    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push,BigDecimal amount){
+    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push){
         //今天是否签到
         String status = afSignRewardService.isExist(userId)==false?"N":"Y";
         resp.put("rewardStatus",status);
-        resp = afSignRewardExtService.getHomeInfo(userId,status,amount);
+        resp = afSignRewardExtService.getHomeInfo(userId,status);
         // 正式环境和预发布环境区分
         String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
         String homeBanner = AfResourceType.RewardHomeBanner.getCode();
@@ -470,10 +470,10 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             }
             Long firendUserId = thirdInfo.getUserId();
             if(firendUserId == userId){//已经绑定并且是自己打开
-                data = homeInfo(userId,data,push,BigDecimal.ZERO);
+                data = homeInfo(userId,data,push);
                 data.put("openType","0");
             } else if(firendUserId != userId ){//已绑定
-                data = homeInfo(firendUserId,data,push,BigDecimal.ZERO);
+                data = homeInfo(firendUserId,data,push);
                 AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
                 afSignRewardDo.setIsDelete(0);
                 afSignRewardDo.setUserId(userId);

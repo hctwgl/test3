@@ -74,11 +74,18 @@ public interface AfTaskUserService {
     Long getYestadayChangedCoinAmount(Long userId);
 
     /**
-     * 获取最近7天收益
+     * 获取最近7天收益(cashAmount)
      * @param userId
      * @return
      */
     List<Map<String, Object>> getIncomeOfNearlySevenDays(Long userId);
+
+    /**
+     * 获取最近7天收益(coinAmount)
+     * @param userId
+     * @return
+     */
+    List<Map<String, Object>> getIncomeCoinOfNearlySevenDays(Long userId);
 
     /**
      * 查询零钱/金币明细
