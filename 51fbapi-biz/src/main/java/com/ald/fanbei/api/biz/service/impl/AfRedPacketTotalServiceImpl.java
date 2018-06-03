@@ -2,7 +2,9 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.bo.OpenRedPacketHomeBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.WxUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AccountLogType;
 import com.ald.fanbei.api.common.enums.ResourceType;
@@ -69,6 +71,9 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 
     @Autowired
 	private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private BizCacheUtil bizCacheUtil;
 
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -275,40 +280,50 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 
 	@Override
 	public void withdraw(final Long id, final String modifier) {
-		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				AfRedPacketTotalDo redPacketTotalDo = getById(id);
+		String lock = "AfRedPacketTotalServiceImpl_withdraw_lock_" + id;
+		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,200, Constants.SECOND_OF_TEN_MINITS);
+		if (isLock) {
+			try {
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+						AfRedPacketTotalDo redPacketTotalDo = getById(id);
 
-				checkIsCanWithdraw(redPacketTotalDo);
+						checkIsCanWithdraw(redPacketTotalDo);
 
-				if (redPacketTotalDo.getIsWithdraw() == 1) return;
+						if (redPacketTotalDo.getIsWithdraw() == 1) return;
 
-				redPacketTotalDo.setIsWithdraw(1);
-				redPacketTotalDo.setModifier(modifier);
-				redPacketTotalDo.setGmtWithdraw(new Date());
-				updateById(redPacketTotalDo);
+						redPacketTotalDo.setIsWithdraw(1);
+						redPacketTotalDo.setModifier(modifier);
+						redPacketTotalDo.setGmtWithdraw(new Date());
+						updateById(redPacketTotalDo);
 
-				withdrawToUserAccount(redPacketTotalDo);
+						withdrawToUserAccount(redPacketTotalDo);
+					}
+				});
+
+				// TODO:由于统一线程池代码没有提交，将来改为统一的线程池异步处理
+				executorService.execute(new Runnable() {
+					@Override
+					public void run() {
+						AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+						if (config.getValue().equals(YesNoStatus.NO.getCode()))
+							return;
+
+						JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
+						BigDecimal everydayWithdrawAmount = redPacketConfig.getBigDecimal("withdrawAmount");
+						if (isReachWithdrawAmountThreshold(everydayWithdrawAmount)) {
+							config.setValue(YesNoStatus.NO.getCode());
+							afResourceService.editResource(config);
+						}
+					}
+				});
+			} finally {
+				bizCacheUtil.delCache(lock);
 			}
-		});
-
-		// TODO:由于统一线程池代码没有提交，将来改为统一的线程池异步处理
-		executorService.execute(new Runnable() {
-			@Override
-			public void run() {
-				AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-				if (config.getValue().equals(YesNoStatus.NO.getCode()))
-					return;
-
-				JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-				BigDecimal everydayWithdrawAmount = redPacketConfig.getBigDecimal("withdrawAmount");
-				if (isReachWithdrawAmountThreshold(everydayWithdrawAmount)) {
-					config.setValue(YesNoStatus.NO.getCode());
-					afResourceService.editResource(config);
-				}
-			}
-		});
+		} else {
+			throw new RuntimeException(lock + "锁没有获取到");
+		}
 	}
 
 	@Override

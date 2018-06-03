@@ -120,7 +120,7 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 				bizCacheUtil.delCache(lock);
 			}
 		} else {
-			throw new RuntimeException("没有获取到锁");
+			throw new RuntimeException(lock + "锁没有获取到");
 		}
 	}
 
