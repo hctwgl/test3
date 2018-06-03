@@ -63,6 +63,9 @@
             <if test="isDelete != null">
                 is_delete,
             </if>
+            <if test="amount != null">
+                amount,
+            </if>
         </trim>
 
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -86,6 +89,9 @@
             </if>
             <if test="isDelete != null" >
                 #{isDelete,jdbcType=INTEGER},
+            </if>
+            <if test="amount != null" >
+                #{amount,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>

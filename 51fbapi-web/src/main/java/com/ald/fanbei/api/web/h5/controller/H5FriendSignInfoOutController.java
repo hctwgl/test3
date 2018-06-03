@@ -102,7 +102,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
             AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
             if (eUserDo != null) {
                 final BigDecimal rewardAmount = randomNum(afResourceDo.getValue3(),afResourceDo.getValue4()).setScale(2, RoundingMode.HALF_UP);
-                if(!signReward(request,eUserDo.getRid(),rewardAmount,"old",moblie,userWxInfo)){
+                if(!signReward(request,eUserDo.getRid(),rewardAmount,"old",moblie,userWxInfo )){
                     return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
                 }
                 data = homeInfo(eUserDo.getRid(),data,push);
@@ -168,7 +168,6 @@ public class H5FriendSignInfoOutController extends H5Controller {
             }
             //首页信息
             data = homeInfo(userId,data,push);
-//            data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(rewardAmount).setScale(2, RoundingMode.HALF_UP));
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
         } catch (FanbeiException e) {
             logger.error("commitRegister fanbei exception" + e.getMessage());
@@ -203,9 +202,6 @@ public class H5FriendSignInfoOutController extends H5Controller {
                 data.put("openType","2");
                 return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
             }
-            //测试用
-//        AfUserThirdInfoDo thirdInfo = new AfUserThirdInfoDo();
-//        thirdInfo.setUserId(18637963763l);
             Long friendUserId = thirdInfo.getUserId();
             if(StringUtil.equals(friendUserId+"",userId+"")){//已经绑定并且是自己打开
                 data = homeInfo(userId,data,push);
@@ -297,12 +293,12 @@ public class H5FriendSignInfoOutController extends H5Controller {
                             afSignRewardExtService.increaseMoneyBtach(signList);
                         }else {
                             if(StringUtil.equals(signList.get(0).getUserId()+"",userId+"")){
-                                signList.get(0).setAmount(rewardDo.getAmount());
+                                signList.get(0).setAmount(afSignRewardDo.getAmount());
                                 afSignRewardExtService.increaseMoney(signList.get(0));
-                                AfSignRewardExtDo signRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(rewardUserId,afSignRewardDo.getAmount());
+                                AfSignRewardExtDo signRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(rewardUserId,rewardDo.getAmount());
                                 afSignRewardExtService.saveRecord(signRewardExt);
                             }else{
-                                signList.get(0).setAmount(afSignRewardDo.getAmount());
+                                signList.get(0).setAmount(rewardDo.getAmount());
                                 afSignRewardExtService.increaseMoney(signList.get(0));
                                 AfSignRewardExtDo signRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(userId,afSignRewardDo.getAmount());
                                 afSignRewardExtService.saveRecord(signRewardExt);
