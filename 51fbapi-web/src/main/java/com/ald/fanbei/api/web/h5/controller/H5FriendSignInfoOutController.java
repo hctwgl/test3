@@ -416,7 +416,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
                     AfSignRewardExtDo afSignRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(friendUserId,friendAmount);
                     afSignRewardExtService.increaseMoney(afSignRewardExt);
 
-                    AfSignRewardDo rewardDo = H5SupplementSignInfoOutController.buildSignReward(userId, SignRewardType.FOUR.getCode(),null,friendAmount,null);
+                    AfSignRewardDo rewardDo = H5SupplementSignInfoOutController.buildSignReward(friendUserId, SignRewardType.FOUR.getCode(),null,friendAmount,null);
                     afSignRewardService.saveRecord(signRewardDo);
                     afSignRewardService.saveRecord(rewardDo);
                     return "success";
