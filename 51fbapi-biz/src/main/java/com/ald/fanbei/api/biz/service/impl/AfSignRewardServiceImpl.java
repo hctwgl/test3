@@ -148,6 +148,7 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
             for(int x=0;x<maxNum;x++){
                 for(int k=0;k<count;k++){
                     int num = Integer.parseInt(arr[k]);
+                    flag = true;
                     if(num == x+1){
                         flag = false;
                         break;
