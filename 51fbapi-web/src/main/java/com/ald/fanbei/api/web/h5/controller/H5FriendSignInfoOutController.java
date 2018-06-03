@@ -101,7 +101,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
             JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
             AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
             if (eUserDo != null) {
-                final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2()).setScale(2, RoundingMode.HALF_UP);
+                final BigDecimal rewardAmount = randomNum(afResourceDo.getValue3(),afResourceDo.getValue4()).setScale(2, RoundingMode.HALF_UP);
                 if(!signReward(request,eUserDo.getRid(),rewardAmount,"old",moblie,userWxInfo)){
                     return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
                 }
@@ -267,7 +267,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
                     if(StringUtil.equals("new",user)){
                         amount = randomNum(afResource.getValue1(),afResource.getValue2()).setScale(2, RoundingMode.HALF_UP);
                     }else{
-                        if(flag){
+                        if(!flag){
                             amount = randomNum(afResource.getValue1(),afResource.getValue2()).setScale(2, RoundingMode.HALF_UP);
                         }else{
                             amount = randomNum(afResource.getValue3(),afResource.getValue4()).setScale(2, RoundingMode.HALF_UP);
