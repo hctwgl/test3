@@ -160,7 +160,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
             String  newtoken = UserUtil.generateToken(moblie);
             String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + moblie;
             CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
-//            CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
+            CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
             bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
             final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
             if(!signReward(request,userId,rewardAmount,"new",moblie,userWxInfo)){
@@ -286,10 +286,11 @@ public class H5FriendSignInfoOutController extends H5Controller {
                             for(AfSignRewardExtDo signRewardExt : signList){
                                 if(StringUtil.equals(signRewardExt.getUserId()+"",userId+"")){
                                     signRewardExt.setAmount(amount);
+                                    afSignRewardExtService.increaseMoney(signRewardExt);
                                 }else if(StringUtil.equals(signRewardExt.getUserId()+"",rewardUserId+"")){
                                     signRewardExt.setAmount(rewardAmount);
+                                    afSignRewardExtService.increaseMoney(signRewardExt);
                                 }
-                                afSignRewardExtService.increaseMoney(signRewardExt);
                             }
                         }else {
                             if(StringUtil.equals(signList.get(0).getUserId()+"",userId+"")){
