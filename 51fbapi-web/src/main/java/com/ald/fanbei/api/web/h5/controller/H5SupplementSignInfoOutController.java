@@ -86,7 +86,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
      * @param response
      * @return
      */
-    @RequestMapping(value = "/supplementSign", method = RequestMethod.POST)
+    @RequestMapping(value = "/supplementSign", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String homePage(HttpServletRequest request, HttpServletResponse response) {
         try {
             final String moblie = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
@@ -448,10 +448,11 @@ public class H5SupplementSignInfoOutController extends H5Controller {
     }
 
 
-    @RequestMapping(value = "/supplementSignIn", method = RequestMethod.POST)
+    @RequestMapping(value = "/supplementSignIn", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String getSupplementSign(HttpServletRequest request, HttpServletResponse response) {
         try {
             String userName = ObjectUtils.toString(request.getParameter("userName"),null);
+            logger.info("userName =  supplementSignIn =" + userName);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
             if(null == afUserDo){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
@@ -462,7 +463,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             Long userId = afUserDo.getRid();
             //判断用户和openId是否在爱上街绑定
             AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
-            logger.info("thirdInfo = " + thirdInfo);
+            logger.info("thirdInfo =  supplementSignIn =" + thirdInfo);
             if(thirdInfo == null){
                 data.put("openType","2");
                 return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
