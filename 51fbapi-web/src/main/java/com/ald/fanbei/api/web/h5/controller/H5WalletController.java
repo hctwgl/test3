@@ -173,8 +173,8 @@ public class H5WalletController extends BaseController{
                 data.put("idNumber","");
                 data.put("realName","");
             }else {
-                data.put("idNumber",afIdNumberDo.getName());
-                data.put("realName",afIdNumberDo.getCitizenId());
+                data.put("idNumber",afIdNumberDo.getCitizenId());
+                data.put("realName",afIdNumberDo.getName());
             }
             return H5CommonResponse.getNewInstance(true,"", "", data).toString();
         } catch (Exception e){
