@@ -289,8 +289,8 @@ public class H5FriendSignInfoOutController extends H5Controller {
                                 }else if(StringUtil.equals(signRewardExt.getUserId()+"",rewardUserId+"")){
                                     signRewardExt.setAmount(rewardAmount);
                                 }
+                                afSignRewardExtService.increaseMoney(signRewardExt);
                             }
-                            afSignRewardExtService.increaseMoneyBtach(signList);
                         }else {
                             if(StringUtil.equals(signList.get(0).getUserId()+"",userId+"")){
                                 signList.get(0).setAmount(afSignRewardDo.getAmount());
