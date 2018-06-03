@@ -106,7 +106,7 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
                                         coinAmount = Long.parseLong(coinAmountArray[continueDays - 1]);
                                     }
                                     else{
-                                        coinAmount = Long.parseLong(coinAmountArray[continueDays]);
+                                        coinAmount = Long.parseLong(coinAmountArray[coinAmountArray.length-1]);
                                     }
                                 }
 
