@@ -388,7 +388,6 @@ public class H5FriendSignInfoOutController extends H5Controller {
             throw new FanbeiException("param error", FanbeiExceptionCode.PARAM_ERROR);
         }
         //帮签次数
-
         final boolean flag = afSignRewardService.checkUserSign(friendUserId);
         int count = afSignRewardService.frienddUserSignCount(userId,friendUserId);
         BigDecimal rewardAmount ;
@@ -398,7 +397,15 @@ public class H5FriendSignInfoOutController extends H5Controller {
             rewardAmount = randomNum(afResourceDo.getPic2(),afResourceDo.getPic1());
         }
         final BigDecimal resultAmount = rewardAmount.setScale(2, RoundingMode.HALF_UP);
-        data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(rewardAmount).setScale(2, RoundingMode.HALF_UP));
+
+        BigDecimal amount;
+        if(!flag){
+            amount =  randomNum(afResource.getValue1(),afResource.getValue2()).setScale(2, RoundingMode.HALF_UP);
+        }else{
+            amount = randomNum(afResource.getValue3(),afResource.getValue4()).setScale(2, RoundingMode.HALF_UP);
+        }
+        final BigDecimal friendAmount = amount.setScale(2, RoundingMode.HALF_UP);
+        data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(amount).setScale(2, RoundingMode.HALF_UP));
         afSignRewardDo.setAmount(resultAmount);
         final AfSignRewardDo signRewardDo = afSignRewardDo;
         String status = transactionTemplate.execute(new TransactionCallback<String>() {
@@ -410,17 +417,11 @@ public class H5FriendSignInfoOutController extends H5Controller {
                     afSignRewardExtDo.setAmount(resultAmount);
                     afSignRewardExtService.increaseMoney(afSignRewardExtDo);
                     //打开者 帮签成功 获取相应的奖励
-                    BigDecimal amount;
-                    if(!flag){
-                        amount = randomNum(afResource.getValue1(),afResource.getValue2()).setScale(2, RoundingMode.HALF_UP);
-                        AfSignRewardExtDo afSignRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(friendUserId,amount);
-                        afSignRewardExtService.saveRecord(afSignRewardExt);
-                    }else{
-                        amount = randomNum(afResource.getValue3(),afResource.getValue4()).setScale(2, RoundingMode.HALF_UP);
-                        AfSignRewardExtDo afSignRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(friendUserId,amount);
-                        afSignRewardExtService.increaseMoney(afSignRewardExt);
-                    }
-                    AfSignRewardDo rewardDo = H5SupplementSignInfoOutController.buildSignReward(userId, SignRewardType.FOUR.getCode(),null,amount,null);
+
+                    AfSignRewardExtDo afSignRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(friendUserId,friendAmount);
+                    afSignRewardExtService.increaseMoney(afSignRewardExt);
+
+                    AfSignRewardDo rewardDo = H5SupplementSignInfoOutController.buildSignReward(userId, SignRewardType.FOUR.getCode(),null,friendAmount,null);
                     List<AfSignRewardDo> list = new ArrayList<>();
                     list.add(rewardDo);
                     list.add(signRewardDo);
