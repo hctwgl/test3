@@ -488,6 +488,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             }else {//未绑定
                 data.put("openType","2");
             }
+            logger.info("data =  supplementSignIn =" + data);
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
 
         } catch (FanbeiException e) {
