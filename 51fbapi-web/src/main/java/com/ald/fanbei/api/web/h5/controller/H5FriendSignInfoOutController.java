@@ -263,7 +263,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
                     userThirdInfoDo.setUserName(moblie);
                     afUserThirdInfoService.saveRecord(userThirdInfoDo);
                     //帮签成功 打开者获取相应的奖励金额
-                    BigDecimal amount = BigDecimal.ZERO;
+                    BigDecimal amount ;
                     if(StringUtil.equals("new",user)){
                         amount = randomNum(afResource.getValue1(),afResource.getValue2()).setScale(2, RoundingMode.HALF_UP);
                     }else{
@@ -288,15 +288,15 @@ public class H5FriendSignInfoOutController extends H5Controller {
                     if(signList.size()>0){
                         if(signList.size() == 2){
                             for(AfSignRewardExtDo signRewardExt : signList){
-                                if(signRewardExt.getUserId() == userId){
+                                if(StringUtil.equals(signRewardExt.getUserId()+"",userId+"")){
                                     signRewardExt.setAmount(amount);
-                                }else if(signRewardExt.getUserId() == rewardUserId){
+                                }else if(StringUtil.equals(signRewardExt.getUserId()+"",rewardUserId+"")){
                                     signRewardExt.setAmount(rewardAmount);
                                 }
                             }
                             afSignRewardExtService.increaseMoneyBtach(signList);
                         }else {
-                            if(signList.get(0).getUserId() == userId){
+                            if(StringUtil.equals(signList.get(0).getUserId()+"",userId+"")){
                                 signList.get(0).setAmount(amount);
                                 afSignRewardExtService.increaseMoney(signList.get(0));
                                 AfSignRewardExtDo signRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(rewardUserId,rewardAmount);
