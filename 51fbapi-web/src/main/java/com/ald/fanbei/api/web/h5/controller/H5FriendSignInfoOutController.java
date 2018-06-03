@@ -276,7 +276,9 @@ public class H5FriendSignInfoOutController extends H5Controller {
                     AfSignRewardDo afSignRewardDo = H5SupplementSignInfoOutController.buildSignReward(userId, SignRewardType.FOUR.getCode(),null,amount,null);
                     signRewardList.add(afSignRewardDo);
                     signRewardList.add(rewardDo);
-                    afSignRewardService.saveRecordBatch(signRewardList);
+                    for (AfSignRewardDo signRewardDo : signRewardList){
+                        afSignRewardService.saveRecord(signRewardDo);
+                    }
                     List<Long> list = new ArrayList<>();
                     list.add(userId);
                     list.add(rewardUserId);
