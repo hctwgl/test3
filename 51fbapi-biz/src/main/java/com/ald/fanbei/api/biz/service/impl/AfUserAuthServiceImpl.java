@@ -1047,7 +1047,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
      * @param userId
      * @return
      */
-    public String signRewardUserLevel(Long userId,AfUserAuthDo userAuthDo) {
+    public List<Integer> signRewardUserLevel(Long userId,AfUserAuthDo userAuthDo) {
         String loyalUsers;
         String ordinaryUser;
         String specialUser;
@@ -1055,7 +1055,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
         //用户层级
         int count = afOrderService.getFinishOrderCount(userId);
         //是否是忠实用户(count超过二次)
-        if (count > 1) {
+        if (count > 2) {
             loyalUsers = "Y";
         } else {
             loyalUsers = "N";
@@ -1089,25 +1089,24 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
             }
         }
 
-        StringBuffer sb = new StringBuffer();
-        sb.append("'").append("0").append("',");
+        List<Integer> list = new ArrayList<>();
+		list.add(0);
         if (newUser.equals("Y")) {
-            sb.append("'").append("1").append("',");
+			list.add(1);
         }
         if (onLicneStatus.equals("Y")) {
-            sb.append("'").append("2").append("',");
+            list.add(2);
         }
         if (ordinaryUser.equals("Y")) {
-            sb.append("'").append("3").append("',");
+			list.add(3);
         }
         if (loyalUsers.equals("Y")) {
-            sb.append("'").append("4").append("',");
+			list.add(4);
         }
         if (specialUser.equals("Y")) {
-            sb.append("'").append("5").append("',");
+			list.add(5);
         }
-        sb.deleteCharAt(sb.length() - 1);
-        return sb.toString();
+        return list;
     }
 
 

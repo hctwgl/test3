@@ -297,22 +297,22 @@ public class H5FriendSignInfoOutController extends H5Controller {
                             afSignRewardExtService.increaseMoneyBtach(signList);
                         }else {
                             if(StringUtil.equals(signList.get(0).getUserId()+"",userId+"")){
-                                signList.get(0).setAmount(amount);
+                                signList.get(0).setAmount(rewardDo.getAmount());
                                 afSignRewardExtService.increaseMoney(signList.get(0));
-                                AfSignRewardExtDo signRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(rewardUserId,rewardAmount);
+                                AfSignRewardExtDo signRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(rewardUserId,afSignRewardDo.getAmount());
                                 afSignRewardExtService.saveRecord(signRewardExt);
                             }else{
-                                signList.get(0).setAmount(rewardAmount);
+                                signList.get(0).setAmount(afSignRewardDo.getAmount());
                                 afSignRewardExtService.increaseMoney(signList.get(0));
-                                AfSignRewardExtDo signRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(userId,amount);
+                                AfSignRewardExtDo signRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(userId,afSignRewardDo.getAmount());
                                 afSignRewardExtService.saveRecord(signRewardExt);
                             }
                         }
                     }else{
                         //帮签成功 打开者增加余额
-                        AfSignRewardExtDo afSignRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(userId,amount);
+                        AfSignRewardExtDo afSignRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(userId,afSignRewardDo.getAmount());
                         //帮签成功 分享者增加余额
-                        AfSignRewardExtDo signRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(rewardUserId,rewardAmount);
+                        AfSignRewardExtDo signRewardExt = H5SupplementSignInfoOutController.buildSignRewardExt(rewardUserId,rewardDo.getAmount());
                         List<AfSignRewardExtDo> signExtlist = new ArrayList<>();
                         signExtlist.add(afSignRewardExt);
                         signExtlist.add(signRewardExt);
@@ -361,7 +361,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
         //任务列表
         AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
         AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
-        String level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
+        List<Integer> level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
         resp.put("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
         return resp;
     }

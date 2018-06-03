@@ -7,7 +7,9 @@ import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
@@ -27,6 +29,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -79,16 +82,16 @@ public class H5WalletController extends BaseController{
             // 我的金币
             Long availableCoinAmount = afTaskUserService.getAvailableCoinAmount(userId);
             data.put("availableCoinAmount", availableCoinAmount ==null?0.00:availableCoinAmount);
-
+            BigDecimal yesterdayProportion = BigDecimal.ZERO;
             // 我的金币兑换，是否昨天已经兑换过
             AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.TASK_COIN_CHANGE_TO_CASH_NAME, userId);
             if(null == taskUserDo){
                 data.put("changeCoinFlag", false);
-                data.put("yesterdayProportion", 0);
+                data.put("yesterdayProportion", yesterdayProportion);
                 data.put("changedCoinAmount", 0);
             }
             else{
-                BigDecimal yesterdayProportion = afTaskCoinChangeProportionService.getYesterdayProportion();
+                yesterdayProportion = afTaskCoinChangeProportionService.getYesterdayProportion();
                 Long changedCoinAmount = afTaskUserService.getYestadayChangedCoinAmount(userId);
 
                 data.put("changeCoinFlag", true);
@@ -96,8 +99,22 @@ public class H5WalletController extends BaseController{
                 data.put("changedCoinAmount", changedCoinAmount);
             }
 
-            // 近七天的收益情况
+            // 近七天的收益情况(cashAmount)
             List<Map<String, Object>> IncomeList = afTaskUserService.getIncomeOfNearlySevenDays(userId);
+            // 近七天的收益情况(coinAmount)
+            List<Map<String, Object>> IncomeLists = afTaskUserService.getIncomeCoinOfNearlySevenDays(userId);
+//            for(Map<String, Object> idata : IncomeList){
+//                for(Map<String, Object> datas : IncomeLists){
+//                    if(StringUtil.equals(DateUtil.getNumberOfDatesBetween((Date)idata.get("rewardDate"),(Date)datas.get("rewardDate"))+"","0")){
+//                        if(Integer.parseInt(idata.get("coinAmount").toString()) <= 0){
+//                            break;
+//                        }else {
+//
+//                        }
+//                    }
+//                }
+//            }
+
             data.put("IncomeList", IncomeList);
 
             return H5CommonResponse.getNewInstance(true,"","", data).toString();

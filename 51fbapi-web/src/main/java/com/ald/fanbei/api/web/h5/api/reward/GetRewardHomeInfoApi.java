@@ -89,7 +89,7 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		//任务列表
 		AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
-		String level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
+		List<Integer>  level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
 		resp.addResponseData("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
 
 		return resp;

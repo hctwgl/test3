@@ -19,7 +19,7 @@ import java.util.List;
  */
 public interface AfTaskService {
 
-    List<AfTaskDto> getTaskListByUserIdAndUserLevel(String userLevel);
+    List<AfTaskDto> getTaskListByUserIdAndUserLevel(List<Integer>  userLevel);
 
     AfTaskDo getTaskByTaskId(Long taskId);
 
@@ -37,7 +37,7 @@ public interface AfTaskService {
      * @return
      */
     List<AfTaskDo> getTaskListByTaskTypeAndUserLevel(String taskType, List<Integer> userLevelList, String taskContition);
-    List<AfTaskDto> getTaskInfo(String level, Long userId,String push,AfUserAuthDo userAuthDo,AfUserAuthStatusDo authStatusDo);
+    List<AfTaskDto> getTaskInfo(List<Integer> level, Long userId,String push,AfUserAuthDo userAuthDo,AfUserAuthStatusDo authStatusDo);
 
     /**
      * 获取用户已完成的非每日任务
