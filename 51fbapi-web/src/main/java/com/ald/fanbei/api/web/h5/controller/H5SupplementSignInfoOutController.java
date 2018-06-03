@@ -313,15 +313,6 @@ public class H5SupplementSignInfoOutController extends H5Controller {
                     //补签成功 打开者增加余额
                     AfSignRewardExtDo afSignRewardExt = buildSignRewardExt(userId,amount);
                     afSignRewardExtService.saveRecord(afSignRewardExt);
-//                    //绑定openId
-//                    AfUserThirdInfoDo afUserThirdInfoDo = new AfUserThirdInfoDo();
-//                    afUserThirdInfoDo.setUserId(userId);
-//                    afUserThirdInfoDo.setGmtModified(new Date());
-//                    afUserThirdInfoDo.setModifier(moblie);
-//                    afUserThirdInfoDo.setUserName(moblie);
-//                    afUserThirdInfoService.updateByUserName(afUserThirdInfoDo);
-
-
                     return "success";
                 }catch (Exception e){
                     status.setRollbackOnly();
