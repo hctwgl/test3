@@ -269,16 +269,12 @@ public class H5FriendSignInfoOutController extends H5Controller {
                             amount = randomNum(afResource.getValue3(),afResource.getValue4()).setScale(2, RoundingMode.HALF_UP);
                         }
                     }
-                    List<AfSignRewardDo> signRewardList = new ArrayList<AfSignRewardDo>();
                     //帮签成功 分享者获取相应的奖励
                     AfSignRewardDo rewardDo = H5SupplementSignInfoOutController.buildSignReward(rewardUserId, SignRewardType.ONE.getCode(),userId,rewardAmount,null);
                     //帮签成功 打开者获取相应的奖励
                     AfSignRewardDo afSignRewardDo = H5SupplementSignInfoOutController.buildSignReward(userId, SignRewardType.FOUR.getCode(),null,amount,null);
-                    signRewardList.add(afSignRewardDo);
-                    signRewardList.add(rewardDo);
-                    for (AfSignRewardDo signRewardDo : signRewardList){
-                        afSignRewardService.saveRecord(signRewardDo);
-                    }
+                    afSignRewardService.saveRecord(rewardDo);
+                    afSignRewardService.saveRecord(afSignRewardDo);
                     List<Long> list = new ArrayList<>();
                     list.add(userId);
                     list.add(rewardUserId);
