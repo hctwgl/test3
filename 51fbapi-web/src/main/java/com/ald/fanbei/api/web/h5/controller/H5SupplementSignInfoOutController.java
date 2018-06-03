@@ -450,7 +450,6 @@ public class H5SupplementSignInfoOutController extends H5Controller {
 
     @RequestMapping(value = "/supplementSignIn", method = RequestMethod.POST)
     public String getSupplementSign(HttpServletRequest request, HttpServletResponse response) {
-        String resultStr = "";
         try {
             String userName = ObjectUtils.toString(request.getParameter("userName"),null);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
@@ -491,11 +490,10 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
 
         } catch (FanbeiException e) {
-            resultStr = H5CommonResponse.getNewInstance(false, "getOpenId error", "", e.getErrorCode().getDesc()).toString();
+            return H5CommonResponse.getNewInstance(false, "getOpenId error", "", e.getErrorCode().getDesc()).toString();
         } catch (Exception e) {
-            resultStr = H5CommonResponse.getNewInstance(false, "getOpenId error", "", e).toString();
+            return H5CommonResponse.getNewInstance(false, "getOpenId error", "", e).toString();
         }
-        return resultStr;
     }
 
 
