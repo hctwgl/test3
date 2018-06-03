@@ -93,7 +93,9 @@ public class AfTaskServiceImpl  implements AfTaskService {
         }
         isDailyTaskList.addAll(isNotDailyTaskList);
         for(AfTaskUserDo taskUserDo : isDailyTaskList){
-            notFinishedList.add(taskUserDo.getTaskId());
+            if(StringUtil.equals(taskUserDo.getStatus().toString(),"0")){
+                notFinishedList.add(taskUserDo.getTaskId());
+            }
         }
 
         AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId);

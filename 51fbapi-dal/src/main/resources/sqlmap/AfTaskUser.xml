@@ -222,7 +222,6 @@
         LEFT JOIN af_task b ON a.task_id = b.id and b.is_daily_update = 0
         WHERE a.is_delete = 0
         AND a.user_id = #{userId}
-        AND a.status = 0
         ORDER BY a.gmt_create desc
     </select>
 
