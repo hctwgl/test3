@@ -288,8 +288,6 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 
 						checkIsCanWithdraw(redPacketTotalDo);
 
-						if (redPacketTotalDo.getIsWithdraw() == 1) return;
-
 						redPacketTotalDo.setIsWithdraw(1);
 						redPacketTotalDo.setModifier(modifier);
 						redPacketTotalDo.setGmtWithdraw(new Date());
@@ -419,9 +417,12 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 
 	// 检查是否能提现
 	private void checkIsCanWithdraw(AfRedPacketTotalDo redPacketTotalDo) {
+        if (redPacketTotalDo.getIsWithdraw() == 1) {
+            throw new FanbeiException("您已成功提现，请刷新页面");
+        }
+
 		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
 		JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-
 		if (isOverdue(redPacketTotalDo, redPacketConfig)) {
 			throw new FanbeiException("红包已过期");
 		}
