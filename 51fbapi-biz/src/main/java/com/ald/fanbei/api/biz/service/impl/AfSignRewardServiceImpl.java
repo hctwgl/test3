@@ -21,7 +21,7 @@ import java.util.*;
 
 
 /**
- * 分类运营位配置ServiceImpl
+ *
  * 
  * @author liutengyuan
  * @version 1.0.0 初始化
@@ -85,6 +85,13 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
         return afSignRewardDao.saveRecordBatch(list);
     }
 
+    /**
+     * 获取补签和已签的天数
+     * @param afSignRewardExtDo
+     * @param num
+     * @param status
+     * @return
+     */
     @Override
     public Map<String,String> supplementSign(AfSignRewardExtDo afSignRewardExtDo, int num,String status){
         StringBuffer sb = new StringBuffer();

@@ -185,7 +185,8 @@ public class AfTaskServiceImpl  implements AfTaskService {
             }
         }
         for(AfTaskDto task :finalTaskList){
-            if(StringUtil.equals(task.getTaskType(),TaskType.push.getCode())){
+            if(StringUtil.equals(task.getTaskType(),TaskType.push.getCode()) &&
+                    (StringUtil.equals(push,TaskType.push.getCode()))){
             }else{
                 taskDtos.add(task);
             }

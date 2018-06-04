@@ -23,4 +23,6 @@ import lombok.Setter;
       private Integer sumTaskCondition;
 
       private Integer finishTaskCondition;
+
+      private String rewardName;
 }

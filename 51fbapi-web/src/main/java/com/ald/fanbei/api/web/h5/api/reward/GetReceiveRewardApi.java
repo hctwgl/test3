@@ -63,8 +63,9 @@ public class GetReceiveRewardApi implements H5Handle {
         String key = "";
         if(isDailyUpdate != null){
             if(StringUtil.equals(isDailyUpdate,"1")){//每日任务
-                if(StringUtil.equals(taskName, Constants.BROWSE_TASK_NAME)){
+                if(StringUtil.equals(taskName, Constants.BROWSE_TASK_NAME)){//每日浏览3个商品任务(特殊处理)
                     key = userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+Constants.BROWSE_TASK_NAME;
+                    //幂等性(防止领取奖励多次领取)
                     if(null == bizCacheUtil.getObject(key)){
                         bizCacheUtil.saveObject(key,new Date(),Constants.SECOND_OF_ONE_DAY);
                         count = afTaskUserService.updateDailyByTaskNameAndUserId(afTaskUserDo);

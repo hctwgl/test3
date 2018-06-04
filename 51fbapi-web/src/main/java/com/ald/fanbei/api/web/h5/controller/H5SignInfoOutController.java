@@ -580,7 +580,7 @@ public class H5SignInfoOutController extends H5Controller {
             //判断用户和openId是否在爱上街绑定
             AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
             logger.info("thirdInfo =  supplementSignIn =" + thirdInfo);
-            if(thirdInfo == null){
+            if(thirdInfo == null){//未绑定
                 data.put("openType","2");
                 return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
             }
@@ -601,8 +601,6 @@ public class H5SignInfoOutController extends H5Controller {
                 afSignRewardDo.setAmount(BigDecimal.ZERO);
                 afSignRewardService.saveRecord(afSignRewardDo);
                 data.put("openType","1");
-            }else {//未绑定
-                data.put("openType","2");
             }
             logger.info("data =  supplementSignIn =" + data);
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
