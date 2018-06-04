@@ -73,10 +73,12 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
 
     @Override
     public AfTaskUserDo addBrowseGoodsTaskUserRecord(final Long userId, final Long goodsId){
+        logger.info("addBrowseGoodsTaskUserRecord start..");
         // 今天的每日浏览任务是否完成
         AfTaskBrowseGoodsDaysDo todayTaskBorrowGoods = afTaskBrowseGoodsDaysService.isCompletedTaskToday(userId);
         // 已完成
         if(null != todayTaskBorrowGoods){
+            logger.info("addBrowseGoodsTaskUserRecord today task has bean completed.");
             return null;
         }
         else{
@@ -144,6 +146,7 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
                                 taskUserDo.setTaskId(-3l);
                                 afTaskUserService.insertTaskUserDo(taskUserDo);
 
+                                logger.info("addBrowseGoodsTaskUserRecord end..");
                                 return taskUserDo;
                             }
                         }
@@ -152,9 +155,12 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
                         status.setRollbackOnly();
                     }
 
+                    logger.info("addBrowseGoodsTaskUserRecord end..");
                     return null;
                 }
             });
         }
+
     }
+
 }

@@ -219,10 +219,4 @@ public static enum ASJ_HOME_PAGE{
 	 */
 	public static final String CACHE_KEY_ACTIVITY_START_HOUR_ARRAY = "CACHE_KEY_ACTIVITY_START_HOUR_ARRAY:";
 
-	/**
-	 * 金币兑换比例
-	 */
-	public static final String CACHE_KEY_COIN_EXCHANGE_PROPORTION = "CACHE_KEY_COIN_EXCHANGE_PROPORTION:";
-
-
 }

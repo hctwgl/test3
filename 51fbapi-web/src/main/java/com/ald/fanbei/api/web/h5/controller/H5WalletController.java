@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.h5.controller;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiH5Context;
@@ -20,6 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import jodd.util.ObjectUtil;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,6 +57,8 @@ public class H5WalletController extends BaseController{
     AfUserBankcardService afUserBankcardService;
     @Resource
     AfIdNumberService afIdNumberService;
+    @Resource
+    private BizCacheUtil bizCacheUtil;
 
     @ResponseBody
     @RequestMapping(value = "valletPage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -66,6 +70,20 @@ public class H5WalletController extends BaseController{
             if(null == afUserDo){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
             }
+
+            // 每天首次登陆钱包页面展示提示框
+            String currentDate = DateUtil.formatDate(new Date());
+            String isFirstTimeKey = currentDate + "-" + userName;
+            Integer times = (Integer) bizCacheUtil.getObject(isFirstTimeKey);
+            if(null == times){
+                times = 1;
+                bizCacheUtil.saveObject(isFirstTimeKey, times, Constants.SECOND_OF_ONE_DAY);
+                data.put("isTodayFirstTime", true);
+            }
+            else{
+                data.put("isTodayFirstTime", false);
+            }
+
             Long userId = afUserDo.getRid();
             // 累计收益
             AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(userId);
