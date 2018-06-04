@@ -48,4 +48,9 @@ public class AfTaskBrowseGoodsDaysServiceImpl implements AfTaskBrowseGoodsDaysSe
 	public AfTaskBrowseGoodsDaysDo isCompletedTaskYestaday(Long userId){
 		return afTaskBrowseGoodsDaysDao.isCompletedTaskYestaday(userId);
 	}
+
+	@Override
+	public AfTaskBrowseGoodsDaysDo isCompletedTaskToday(Long userId) {
+		return afTaskBrowseGoodsDaysDao.isCompletedTaskToday(userId);
+	}
 }
