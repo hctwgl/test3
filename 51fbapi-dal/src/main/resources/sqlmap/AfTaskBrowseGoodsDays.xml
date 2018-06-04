@@ -72,6 +72,15 @@
         LIMIT 0,1
     </select>
 
+	<select id="isCompletedTaskToday" resultType="com.ald.fanbei.api.dal.domain.AfTaskBrowseGoodsDaysDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM af_task_browse_goods_days
+		WHERE is_delete = 0 AND user_id=#{userId ,jdbcType=BIGINT}
+		AND date(last_complete_task_date) = date(now())
+		LIMIT 0,1
+	</select>
+
 	<select id="isCompletedTaskYestaday" resultType="com.ald.fanbei.api.dal.domain.AfTaskBrowseGoodsDaysDo">
 		SELECT
 		<include refid="queryFields" />

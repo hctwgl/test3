@@ -19,5 +19,7 @@ public interface AfTaskBrowseGoodsDaysDao {
     AfTaskBrowseGoodsDaysDo isUserAttend(Long userId);
 
     AfTaskBrowseGoodsDaysDo isCompletedTaskYestaday(@Param("userId") Long userId);
-    
+
+    AfTaskBrowseGoodsDaysDo isCompletedTaskToday(@Param("userId") Long userId);
+
 }
