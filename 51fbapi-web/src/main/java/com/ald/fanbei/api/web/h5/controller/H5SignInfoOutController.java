@@ -184,7 +184,6 @@ public class H5SignInfoOutController extends H5Controller {
 
 
     @RequestMapping(value = "/friendSignIn", method = RequestMethod.POST)
-    @Deprecated
     public String getFriendSignIn(HttpServletRequest request, HttpServletResponse response) {
         String resultStr = "";
         try {
@@ -564,7 +563,6 @@ public class H5SignInfoOutController extends H5Controller {
         afSignRewardExtService.increaseMoney(afSignRewardExtDo);
     }
 
-    @ResponseBody
     @RequestMapping(value = "/supplementSignIn", method = RequestMethod.POST)
     public String getSupplementSignIn(HttpServletRequest request, HttpServletResponse response) {
         try {

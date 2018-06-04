@@ -64,11 +64,14 @@ public class DoFinishTaskApi implements H5Handle {
         List<HashMap> goodsList = new ArrayList<HashMap>();
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         if(StringUtil.equals(taskType, TaskType.browse.getCode()) || StringUtil.equals(taskType, TaskType.shopping.getCode()) ){
-            if(StringUtil.equals(taskSecType, TaskSecType.brand.getCode()) || StringUtil.equals(taskSecType, TaskSecType.category.getCode())){
-                AfGoodsQuery query = new AfGoodsQuery();
+            AfGoodsQuery query = new AfGoodsQuery();
+            query.setPageNo(pageNo);
+            query.setPageSize(pageSize);
+            if(StringUtil.equals(taskSecType, TaskSecType.brand.getCode())){
                 query.setBrandId(Long.parseLong(taskCondition));
-                query.setPageNo(pageNo);
-                query.setPageSize(pageSize);
+                goodsList = afGoodsService.getTaskGoodsList(query);
+            }else if(StringUtil.equals(taskSecType, TaskSecType.category.getCode())){
+                query.setCategoryId(Long.parseLong(taskCondition));
                 goodsList = afGoodsService.getTaskGoodsList(query);
             }
             //获取借款分期配置信息

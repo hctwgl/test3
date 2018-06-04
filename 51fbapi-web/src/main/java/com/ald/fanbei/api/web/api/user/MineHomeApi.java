@@ -114,7 +114,12 @@ public class MineHomeApi implements ApiHandle {
         if (userId != null) {
             //金币数量
             Long availableCoinAmount = afTaskUserService.getAvailableCoinAmount(userId);
-            data.setAvailableCoinAmount(availableCoinAmount);
+            if(availableCoinAmount == null){
+                data.setAvailableCoinAmount(0l);
+            }else {
+                data.setAvailableCoinAmount(availableCoinAmount);
+            }
+
             AfUserAccountDto userAccountInfo = afUserAccountService.getUserAndAccountByUserId(userId);
             if (userAccountInfo != null) {
                 data.setIsLogin(YesNoStatus.YES.getCode());

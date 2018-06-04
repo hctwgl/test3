@@ -158,16 +158,22 @@ public class AfTaskServiceImpl  implements AfTaskService {
                     if(StringUtil.equals(userAuthDo.getRealnameStatus(),"Y")){
                         break;
                     }
+                    afTaskDo.setFinishTaskCondition(0);
+                    afTaskDo.setSumTaskCondition(1);
                 }else if(StringUtil.equals(afTaskDo.getTaskType(), TaskType.strong_risk.getCode())){
                     if (authStatusDo != null) {
                         if (StringUtils.equals("Y", authStatusDo.getStatus())) {
                             break;
                         }
                     }
+                    afTaskDo.setFinishTaskCondition(0);
+                    afTaskDo.setSumTaskCondition(1);
                 }else if(StringUtil.equals(afTaskDo.getTaskType(), TaskType.push.getCode())){
                     if(StringUtil.equals(push, "Y")){
                         break;
                     }
+                    afTaskDo.setFinishTaskCondition(0);
+                    afTaskDo.setSumTaskCondition(1);
                 }else if(StringUtil.equals(afTaskDo.getTaskSecType(), TaskSecType.quantity.getCode())){
                     afTaskDo.setFinishTaskCondition(afOrderService.getSignFinishOrderCount(userId,(Date)bizCacheUtil.getObject(userId+Constants.SIGN_DATE)));
                     afTaskDo.setSumTaskCondition(Integer.parseInt(afTaskDo.getTaskCondition()));
