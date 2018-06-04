@@ -102,7 +102,7 @@ public class H5WalletController extends BaseController{
             // 近七天的收益情况(cashAmount)
             List<Map<String, Object>> IncomeList = afTaskUserService.getIncomeOfNearlySevenDays(userId);
             // 近七天的收益情况(coinAmount)
-            List<Map<String, Object>> IncomeLists = afTaskUserService.getIncomeCoinOfNearlySevenDays(userId);
+//            List<Map<String, Object>> IncomeLists = afTaskUserService.getIncomeCoinOfNearlySevenDays(userId);
 //            for(Map<String, Object> idata : IncomeList){
 //                for(Map<String, Object> datas : IncomeLists){
 //                    if(StringUtil.equals(DateUtil.getNumberOfDatesBetween((Date)idata.get("rewardDate"),(Date)datas.get("rewardDate"))+"","0")){
