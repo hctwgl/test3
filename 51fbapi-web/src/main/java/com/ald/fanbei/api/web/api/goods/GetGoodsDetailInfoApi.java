@@ -12,6 +12,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.*;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,9 @@ import com.ald.fanbei.api.biz.third.util.TaobaoApiUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfGoodsSource;
+import com.ald.fanbei.api.common.enums.AfGoodsSpecType;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -307,6 +311,17 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		}else{
 			vo.setLimitedPurchase(-1);
 		}
+		// add the logic of quanxianbao  start 
+		String goodsType = AfGoodsSpecType.COMMON.getCode();
+		final AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
+		 if (vipGoodsResourceDo != null){
+			 Long vipGoodsId = NumberUtil.objToLongDefault(vipGoodsResourceDo.getValue(), 0L);
+		     if (goods.getRid() == vipGoodsId){
+		    	 goodsType = AfGoodsSpecType.AUTH.getCode();
+		     }
+		   }
+		 vo.setGoodsType(goodsType);
+		 // end
 		return vo;
 	}
 private boolean freeflag(Date start,Date end,String isOpen){

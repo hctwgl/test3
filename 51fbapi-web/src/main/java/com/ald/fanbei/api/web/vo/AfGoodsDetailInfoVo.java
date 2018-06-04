@@ -52,6 +52,15 @@ public class AfGoodsDetailInfoVo extends AbstractSerial{
 	private String interestCutMark;
 	private String interestFreeMark;
 	private int isShow=0;
+	private String goodsType; // 商品类型(common ,auth 与权限包区别)
+
+	public String getGoodsType() {
+		return goodsType;
+	}
+
+	public void setGoodsType(String goodsType) {
+		this.goodsType = goodsType;
+	}
 
 	public String getInterestCutMark() {
 		return interestCutMark;
