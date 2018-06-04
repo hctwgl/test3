@@ -41,6 +41,9 @@ public class AfTaskCoinChangeProportionServiceImpl implements AfTaskCoinChangePr
 		BigDecimal exchangeProportion = (BigDecimal) bizCacheUtil.getObject(CacheConstants.CACHE_KEY_COIN_EXCHANGE_PROPORTION);
 		if(null == exchangeProportion){
 			AfTaskCoinChangeProportionDo changeProportionDo = afTaskCoinChangeProportionDao.getYesterdayProportion();
+			if(null == changeProportionDo){
+				return new BigDecimal(0);
+			}
 			exchangeProportion = changeProportionDo.getChangeProportion();
 			bizCacheUtil.saveObject(CacheConstants.CACHE_KEY_COIN_EXCHANGE_PROPORTION, exchangeProportion, Constants.SECOND_OF_AN_HOUR);
 		}
