@@ -454,6 +454,11 @@ public class H5SupplementSignInfoOutController extends H5Controller {
     @RequestMapping(value = "/supplementSignIn", method = RequestMethod.POST)
     public String getSupplementSign(HttpServletRequest request, HttpServletResponse response) {
         try {
+            Map<String,Object> data = new HashMap<String,Object>();
+            data.put("openType","2");
+            if(true){
+                return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
+            }
             String userName = ObjectUtils.toString(request.getParameter("userName"),null);
             logger.info("userName =  supplementSignIn =" + userName);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
@@ -462,7 +467,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
             }
             String push = ObjectUtils.toString(request.getParameter("push"),"N");
             String wxCode = ObjectUtils.toString(request.getParameter("wxCode"),null);
-            Map<String,Object> data = new HashMap<String,Object>();
+
             Long userId = afUserDo.getRid();
             //判断用户和openId是否在爱上街绑定
             AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
