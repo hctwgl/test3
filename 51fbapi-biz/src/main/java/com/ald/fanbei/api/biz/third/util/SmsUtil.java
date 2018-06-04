@@ -57,6 +57,7 @@ public class SmsUtil extends AbstractThird {
     private static String SET_TEMPLATE = "验证码为:&param1;您正在设置爱上街的账户密码，请在30分钟内完成";
     private static String BIND_TEMPLATE = "验证码为:&param1;您正在爱上街绑定手机号，请在30分钟内完成";
     private static String SETPAY_TEMPLATE = "验证码为:&param1;您正在设置爱上街支付密码，请在30分钟内完成";
+    private static String SET_JKCR_PAY_TEMPLATE = "验证码为:&param1;您正在设置借款超人支付密码，请在30分钟内完成";
     private static String EMAIL_TEMPLATE = "验证码为:&param1;您正在设置爱上街更换绑定邮箱，请在30分钟内完成";
     private static String GOODS_RESERVATION_SUCCESS = "恭喜你！预约成功！OPPOR11将于6月22日10点准时开售，提前0元预约购机享12期免息更有超级返利300元，有！ 且只在爱上街。回复td退订";
     private static String IPHONE_RESERVATION_SUCCESS = "恭喜你预约成功！9月20日正式发售苹果新机，下单立减100元！分期无忧，返利抵账单！http://t.cn/RI7CSL2 回T退订";
@@ -697,6 +698,30 @@ public class SmsUtil extends AbstractThird {
         String verifyCode = CommonUtil.getRandomNumber(6);
         String content = SETPAY_TEMPLATE.replace("&param1", verifyCode);
         SmsResult smsResult = sendSmsToDhstAishangjie(mobile, content);
+        this.addSmsRecord(SmsType.SET_PAY_PWD, mobile, verifyCode, userId, smsResult);
+        return smsResult.isSucc();
+    }
+
+    /**
+     * 设置支付发送短信验证码
+     *
+     * @param mobile 用户绑定的手机号（注意：不是userName）
+     * @param userId 用户id
+     * @return
+     */
+    public boolean sendSetJKCRPayPwdVerifyCode(String mobile, Long userId) {
+        if (!CommonUtil.isMobile(mobile)) {
+            throw new FanbeiException("无效手机号", FanbeiExceptionCode.SMS_MOBILE_NO_ERROR);
+        }
+        AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.SMS_LIMIT.getCode(), AfResourceSecType.SMS_LIMIT.getCode());
+        if (resourceDo != null && StringUtil.isNotBlank(resourceDo.getValue3())) {
+            int countSetPayPwd = afSmsRecordService.countMobileCodeToday(mobile, SmsType.SET_PAY_PWD.getCode());
+            if (countSetPayPwd >= Integer.valueOf(resourceDo.getValue3()))
+                throw new FanbeiException("发送设置支付密码短信超过每日限制次数", FanbeiExceptionCode.SMS_SET_PAY_PASSWORD_EXCEED_TIME);
+        }
+        String verifyCode = CommonUtil.getRandomNumber(6);
+        String content = SET_JKCR_PAY_TEMPLATE.replace("&param1", verifyCode);
+        SmsResult smsResult = YSSmsUtil.send(mobile, content,YSSmsUtil.VERIFYCODE_YS);
         this.addSmsRecord(SmsType.SET_PAY_PWD, mobile, verifyCode, userId, smsResult);
         return smsResult.isSucc();
     }
