@@ -60,32 +60,37 @@ public class GetReceiveRewardApi implements H5Handle {
         afTaskUserDo.setStatus(1);
         afTaskUserDo.setRewardTime(new Date());
         afTaskUserDo.setTaskName(taskName);
+        String key = "";
         if(isDailyUpdate != null){
             if(StringUtil.equals(isDailyUpdate,"1")){//每日任务
                 if(StringUtil.equals(taskName, Constants.BROWSE_TASK_NAME)){
-                    if(null == bizCacheUtil.getObject(userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+Constants.BROWSE_TASK_NAME)){
-                        bizCacheUtil.saveObject(userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+Constants.BROWSE_TASK_NAME,new Date(),Constants.SECOND_OF_ONE_DAY);
+                    key = userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+Constants.BROWSE_TASK_NAME;
+                    if(null == bizCacheUtil.getObject(key)){
+                        bizCacheUtil.saveObject(key,new Date(),Constants.SECOND_OF_ONE_DAY);
                         count = afTaskUserService.updateDailyByTaskNameAndUserId(afTaskUserDo);
                     }else {
                         count = 1;
                     }
                 }else{
-                    if(null == bizCacheUtil.getObject(userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+taskId)){
-                        bizCacheUtil.saveObject(userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+taskId,new Date(),Constants.SECOND_OF_ONE_DAY);
+                    key = userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+taskId;
+                    if(null == bizCacheUtil.getObject(key)){
+                        bizCacheUtil.saveObject(key,new Date(),Constants.SECOND_OF_ONE_DAY);
                         count = afTaskUserService.updateDailyByTaskNameAndUserId(afTaskUserDo);
                     }else {
                         count = 1;
                     }
                 }
             }else if(StringUtil.equals(isDailyUpdate,"0")){//非每日任务
-                if(null == bizCacheUtil.getObject(userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+taskId)){
-                    bizCacheUtil.saveObjectForever(userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+taskId,new Date());
+                key = userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+taskId;
+                if(null == bizCacheUtil.getObject(key)){
+                    bizCacheUtil.saveObjectForever(key,new Date());
                     count = afTaskUserService.updateDailyByTaskNameAndUserId(afTaskUserDo);
                 }else {
                     count = 1;
                 }
             }
             if(count<1){
+                bizCacheUtil.delCache(key);
                 return new H5HandleResponse(context.getId(), FanbeiExceptionCode.RECEIVE_REWARD_FAIL);
             }
         }else{
