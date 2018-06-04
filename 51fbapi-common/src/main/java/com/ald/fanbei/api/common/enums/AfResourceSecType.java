@@ -105,7 +105,10 @@ public enum AfResourceSecType {
 		//v:开放Y/N v1:展示 0文字1数 v2:Y严格认证 N默认通过v3:分界app版本v4:老用户重认时间界限
 		ZHIMA_VERIFY_RULE_CONFIG("ZHIMA_VERIFY_RULE_CONFIG","芝麻信用认证相关配置"),
 		BUBBLE_AUTH_RULE_CONFIG("BUBBLE_AUTH_RULE_CONFIG","芝麻信用认证相关配置"),
-		ZHIMA_VERIFY_APP_POP_IMAGE("ZHIMA_VERIFY_APP_POP_IMAGE","芝麻信用认证首页弹窗配置");
+		ZHIMA_VERIFY_APP_POP_IMAGE("ZHIMA_VERIFY_APP_POP_IMAGE","芝麻信用认证首页弹窗配置"),
+		BORROW_SUPERMAN_POPUP_SWITCH("BORROW_SUPERMAN_POPUP_SWITCH", "借款超人弹窗开关")
+		
+		;
 
 	 	private String code;
 		private String name;

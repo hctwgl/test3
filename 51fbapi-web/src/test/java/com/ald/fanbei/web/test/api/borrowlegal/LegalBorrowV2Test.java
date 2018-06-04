@@ -173,4 +173,11 @@ public class LegalBorrowV2Test  extends BaseTest{
 		testApi(url, paramsT, userName ,false);
 	}
 	
+	
+	@Test
+	public void  homePage() {
+		String url = urlBase + "/legalborrowV2/getLegalBorrowCashHomeInfo";
+		Map<String,String> params = new HashMap<>();		
+		testApi(url, params, userName ,true);
+	}
 }
