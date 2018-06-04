@@ -39,6 +39,8 @@ public interface AfTaskUserDao  {
 
     List<Map<String, Object>> getIncomeOfNearlySevenDays(@Param("userId") Long userId);
 
+    List<Map<String, Object>> getIncomeCoinOfNearlySevenDays(@Param("userId")Long userId);
+
     List<AfTaskUserDo> getDetailsByUserId(@Param("userId") Long userId, @Param("rewardType") Integer rewardType);
 
     AfTaskUserDo getTodayTaskUserDoByTaskName(@Param("taskName") String taskName, @Param("userId") Long userId);

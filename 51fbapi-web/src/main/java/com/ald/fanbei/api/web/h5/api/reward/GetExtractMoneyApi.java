@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.web.h5.api.reward;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WithdrawType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -11,6 +13,7 @@ import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import org.apache.commons.lang.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -42,64 +45,77 @@ public class GetExtractMoneyApi implements H5Handle {
     AfTaskUserService afTaskUserService;
     @Resource
     AfResourceService afResourceService;
+    @Resource
+    private BizCacheUtil bizCacheUtil;
 
     @Override
     public H5HandleResponse process(final Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
-        final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_PRIZE");
-        final String withdrawType = ObjectUtils.toString(context.getData("withdrawType").toString(),null);
         final Long userId = context.getUserId();
-        if(withdrawType != null){
-            String status = transactionTemplate.execute(new TransactionCallback<String>() {
-                @Override
-                public String doInTransaction(TransactionStatus status) {
-                    try{
-                        BigDecimal amount = BigDecimal.ZERO;
-                        if(StringUtil.equals(WithdrawType.ZERO.getCode(),withdrawType)){
-                            amount = new BigDecimal(afResourceDo.getValue1());
-                        }else if(StringUtil.equals(WithdrawType.ONE.getCode(),withdrawType)){
-                            amount = new BigDecimal(afResourceDo.getValue2());
-                        }else if(StringUtil.equals(WithdrawType.TWO.getCode(),withdrawType)){
-                            amount = new BigDecimal(afResourceDo.getValue3());
-                        }else if(StringUtil.equals(WithdrawType.THREE.getCode(),withdrawType)){
-                            amount = new BigDecimal(afResourceDo.getValue4());
-                        }
-                        if(StringUtil.equals(WithdrawType.ZERO.getCode(),withdrawType)){//送10元无门槛优惠券
-                            AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
-                            afUserCouponDo.setUserId(userId);
-                            afUserCouponDo.setCouponId(Long.parseLong(afResourceDo.getValue5()));
-                            afUserCouponDo.setGmtCreate(new Date());
-                            afUserCouponDo.setGmtModified(new Date());
-                            afUserCouponDo.setSourceType("SIGN_REWARD");
-                            afUserCouponDo.setSourceRef("SYS");
-                            afUserCouponDo.setStatus("NOUSE");
-                            afUserCouponService.addUserCoupon(afUserCouponDo);
-                        }else{//提现到余额
-                            AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
-                            afUserAccountDo.setUserId(userId);
-                            afUserAccountDo.setRebateAmount(amount);
-                            afUserAccountService.updateRebateAmount(afUserAccountDo);
+        String lock = "GetExtractMoneyApi_lock" + userId;
+        boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,200, Constants.SECOND_OF_TEN_MINITS);
+        if (isLock) {
+            try{
+                final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_PRIZE");
+                final String withdrawType = ObjectUtils.toString(context.getData("withdrawType").toString(),null);
+                if(withdrawType != null){
+                    String status = transactionTemplate.execute(new TransactionCallback<String>() {
+                        @Override
+                        public String doInTransaction(TransactionStatus status) {
+                            try{
+                                BigDecimal amount = BigDecimal.ZERO;
+                                if(StringUtil.equals(WithdrawType.ZERO.getCode(),withdrawType)){
+                                    amount = new BigDecimal(afResourceDo.getValue1());
+                                }else if(StringUtil.equals(WithdrawType.ONE.getCode(),withdrawType)){
+                                    amount = new BigDecimal(afResourceDo.getValue2());
+                                }else if(StringUtil.equals(WithdrawType.TWO.getCode(),withdrawType)){
+                                    amount = new BigDecimal(afResourceDo.getValue3());
+                                }else if(StringUtil.equals(WithdrawType.THREE.getCode(),withdrawType)){
+                                    amount = new BigDecimal(afResourceDo.getValue4());
+                                }
+                                if(StringUtil.equals(WithdrawType.ZERO.getCode(),withdrawType)){//送10元无门槛优惠券
+                                    AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
+                                    afUserCouponDo.setUserId(userId);
+                                    afUserCouponDo.setCouponId(Long.parseLong(afResourceDo.getValue5()));
+                                    afUserCouponDo.setGmtCreate(new Date());
+                                    afUserCouponDo.setGmtModified(new Date());
+                                    afUserCouponDo.setSourceType("SIGN_REWARD");
+                                    afUserCouponDo.setSourceRef("SYS");
+                                    afUserCouponDo.setStatus("NOUSE");
+                                    afUserCouponService.addUserCoupon(afUserCouponDo);
+                                }else{//提现到余额
+                                    AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+                                    afUserAccountDo.setUserId(userId);
+                                    afUserAccountDo.setRebateAmount(amount);
+                                    afUserAccountService.updateRebateAmount(afUserAccountDo);
 
-                            // add by luoxiao for 边逛边赚，增加零钱明细
-                            afTaskUserService.addTaskUser(userId, UserAccountLogType.WITHDRAW_TO_REBATE.getName(), amount);
-                            // end by luoxiao
+                                    // add by luoxiao for 边逛边赚，增加零钱明细
+                                    afTaskUserService.addTaskUser(userId, UserAccountLogType.WITHDRAW_TO_REBATE.getName(), amount);
+                                    // end by luoxiao
+                                }
+                                //除去相应的金额amount
+                                afSignRewardExtService.extractMoney(userId,amount);
+                                return "success";
+                            }catch (Exception e){
+                                status.setRollbackOnly();
+                                return "fail";
+                            }
                         }
-                        //除去相应的金额amount
-                        afSignRewardExtService.extractMoney(userId,amount);
-                        return "success";
-                    }catch (Exception e){
-                        status.setRollbackOnly();
-                        return "fail";
+                    });
+                    if(StringUtil.equals(status,"fail")){
+                        resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.WITHDRAW_FAIL);
                     }
+                }else {
+                    resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.CHOOSE_WITHDRAW_TYPE);
                 }
-            });
-            if(StringUtil.equals(status,"fail")){
-                resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.WITHDRAW_FAIL);
+                return resp;
+            }finally {
+                bizCacheUtil.delCache(lock);
             }
         }else {
-            resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.CHOOSE_WITHDRAW_TYPE);
+            throw new RuntimeException("open:" + "没有获取到锁");
         }
-        return resp;
+
     }
 
 

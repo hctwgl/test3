@@ -6,6 +6,7 @@ import com.ald.fanbei.api.common.enums.SignRewardType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
+import com.ald.fanbei.api.dal.domain.dto.AfSignRewardDto;
 import com.ald.fanbei.api.dal.domain.query.AfSignRewardQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,7 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
     }
 
     @Override
-    public List<AfSignRewardDo> getRewardDetailList(AfSignRewardQuery query){
+    public List<AfSignRewardDto> getRewardDetailList(AfSignRewardQuery query){
         return  afSignRewardDao.getRewardDetailList(query);
     }
 
@@ -147,6 +148,7 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
             for(int x=0;x<maxNum;x++){
                 for(int k=0;k<count;k++){
                     int num = Integer.parseInt(arr[k]);
+                    flag = true;
                     if(num == x+1){
                         flag = false;
                         break;

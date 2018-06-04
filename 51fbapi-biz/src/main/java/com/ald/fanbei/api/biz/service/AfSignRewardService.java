@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfSignRewardDo;
 import com.ald.fanbei.api.dal.domain.AfSignRewardExtDo;
+import com.ald.fanbei.api.dal.domain.dto.AfSignRewardDto;
 import com.ald.fanbei.api.dal.domain.query.AfSignRewardQuery;
 
 import java.util.Date;
@@ -23,7 +24,7 @@ public interface AfSignRewardService {
 
     List<AfSignRewardDo> sumSignDays(Long userId,Date startTime);
 
-    List<AfSignRewardDo> getRewardDetailList(AfSignRewardQuery query);
+    List<AfSignRewardDto> getRewardDetailList(AfSignRewardQuery query);
 
     int saveRecord(AfSignRewardDo afSignRewardDo);
 

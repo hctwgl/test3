@@ -59,20 +59,20 @@ public class GetRewardHomeInfoApi implements H5Handle {
 	public H5HandleResponse process(Context context) {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
 		String push = ObjectUtils.toString(context.getData("push"),"N");
-		//活动规则
-		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_RULE");
-		if(null != afResourceDo){
-			resp.addResponseData("rewardRule",afResourceDo.getValue());
-		}else {
-			resp.addResponseData("rewardRule","");
-		}
+//		//活动规则
+//		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_RULE");
+//		if(null != afResourceDo){
+//			resp.addResponseData("rewardRule",afResourceDo.getValue());
+//		}else {
+//			resp.addResponseData("rewardRule","");
+//		}
 		Long userId = context.getUserId();
 
 		//今天是否签到
 		String status = afSignRewardService.isExist(userId)==false?"N":"Y";
 		resp.addResponseData("rewardStatus",status);
 
-		Map<String,Object> map = afSignRewardExtService.getHomeInfo(userId,status,BigDecimal.ZERO);
+		Map<String,Object> map = afSignRewardExtService.getHomeInfo(userId,status);
 		resp.addResponseData("isOpenRemind",map.get("isOpenRemind"));
 		resp.addResponseData("rewardAmount",map.get("rewardAmount"));
 		resp.addResponseData("supplementSignDays",map.get("supplementSignDays"));
@@ -89,7 +89,7 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		//任务列表
 		AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
-		String level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
+		List<Integer>  level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
 		resp.addResponseData("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
 
 		return resp;

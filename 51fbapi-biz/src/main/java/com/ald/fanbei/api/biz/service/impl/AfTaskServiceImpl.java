@@ -57,7 +57,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
     BizCacheUtil bizCacheUtil;
 
     @Override
-	public List<AfTaskDto> getTaskListByUserIdAndUserLevel( String userLevel){
+	public List<AfTaskDto> getTaskListByUserIdAndUserLevel( List<Integer> userLevel){
 		return afTaskDao.getTaskListByUserIdAndUserLevel(userLevel);
 	}
 
@@ -67,7 +67,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
     }
 
     @Override
-    public List<AfTaskDto> getTaskInfo(String level, Long userId,String push,AfUserAuthDo userAuthDo,AfUserAuthStatusDo authStatusDo){
+    public List<AfTaskDto> getTaskInfo(List<Integer> level, Long userId,String push,AfUserAuthDo userAuthDo,AfUserAuthStatusDo authStatusDo){
         List<AfTaskUserDo> isDailyTaskList = new ArrayList<AfTaskUserDo>();
         List<AfTaskUserDo> isNotDailyTaskList =	new ArrayList<AfTaskUserDo>();
         List<Long> isDailyList = new ArrayList<Long>();
@@ -93,7 +93,9 @@ public class AfTaskServiceImpl  implements AfTaskService {
         }
         isDailyTaskList.addAll(isNotDailyTaskList);
         for(AfTaskUserDo taskUserDo : isDailyTaskList){
-            notFinishedList.add(taskUserDo.getTaskId());
+            if(StringUtil.equals(taskUserDo.getStatus().toString(),"0")){
+                notFinishedList.add(taskUserDo.getTaskId());
+            }
         }
 
         AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId);
@@ -175,7 +177,11 @@ public class AfTaskServiceImpl  implements AfTaskService {
                 finalTaskList.add(afTaskDo);
             }
         }
-
+        for(AfTaskDto task :finalTaskList){
+            if(StringUtil.equals(task.getTaskType(),TaskType.push.getCode())){
+                finalTaskList.remove(task);
+            }
+        }
 
         return finalTaskList;
     }

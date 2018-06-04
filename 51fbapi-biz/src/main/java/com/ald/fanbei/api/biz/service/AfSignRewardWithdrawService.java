@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo;
+import com.ald.fanbei.api.dal.domain.dto.AfSignRewardWithdrawDto;
 import com.ald.fanbei.api.dal.domain.query.AfSignRewardWithdrawQuery;
 
 import java.util.List;
@@ -15,6 +16,6 @@ import java.util.List;
  */
 public interface AfSignRewardWithdrawService {
 
-    List<AfSignRewardWithdrawDo> getWithdrawList(AfSignRewardWithdrawQuery query);
+    List<AfSignRewardWithdrawDto> getWithdrawList(AfSignRewardWithdrawQuery query);
 
 }

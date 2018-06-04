@@ -46,20 +46,9 @@ public class GetFinishedTaskApi implements H5Handle {
         Long userId = context.getUserId();
         List<Long> taskIds = new ArrayList<Long>();
         List<AfTaskDto> finalTaskList = new ArrayList<>();
-        AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId);
-        if(null != taskUserDo){
-            if(StringUtil.equals(taskUserDo.getStatus().toString(),"1")){
-                AfTaskDto afTaskDto = new AfTaskDto();
-                afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
-                finalTaskList.add(afTaskDto);
-            }
-        }
-        if(isDailyList.size()>0){
-            isDailyTaskList = afTaskUserService.isDailyFinishTaskList(userId);
-        }
-        if(isNotDailyList.size()>0){
-            isNotDailyTaskList = afTaskUserService.isNotDailyFinishTaskList(userId);
-        }
+
+        isDailyTaskList = afTaskUserService.isDailyFinishTaskList(userId);
+        isNotDailyTaskList = afTaskUserService.isNotDailyFinishTaskList(userId);
         isDailyTaskList.addAll(isNotDailyTaskList);
 
         for (AfTaskUserDo afTaskUserDo : isDailyTaskList){
@@ -67,6 +56,14 @@ public class GetFinishedTaskApi implements H5Handle {
         }
         if(taskIds.size()>0){
             finalTaskList = afTaskService.getTaskByTaskIds(taskIds);
+        }
+        AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId);
+        if(null != taskUserDo){
+            if(StringUtil.equals(taskUserDo.getStatus().toString(),"1")){
+                AfTaskDto afTaskDto = new AfTaskDto();
+                afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
+                finalTaskList.add(afTaskDto);
+            }
         }
         resp.addResponseData("taskList",finalTaskList);
         return resp;

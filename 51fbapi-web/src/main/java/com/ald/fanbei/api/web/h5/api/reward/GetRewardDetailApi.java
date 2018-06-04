@@ -2,10 +2,12 @@ package com.ald.fanbei.api.web.h5.api.reward;
 
 import com.ald.fanbei.api.biz.service.AfSignRewardService;
 import com.ald.fanbei.api.biz.service.AfSignRewardWithdrawService;
+import com.ald.fanbei.api.common.enums.SignRewardType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.AfSignRewardDo;
+import com.ald.fanbei.api.dal.domain.dto.AfSignRewardDto;
 import com.ald.fanbei.api.dal.domain.query.AfSignRewardQuery;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
@@ -36,7 +38,26 @@ public class GetRewardDetailApi implements H5Handle {
         signQuery.setUserId(context.getUserId());
         signQuery.setPageNo(pageNo);
         signQuery.setPageSize(pageSize);
-        List<AfSignRewardDo> signList = afSignRewardService.getRewardDetailList(signQuery);
+        List<AfSignRewardDto> signList = afSignRewardService.getRewardDetailList(signQuery);
+        for(AfSignRewardDto afSignRewardDo : signList){
+            switch (afSignRewardDo.getType()) {
+                case 0:
+                    afSignRewardDo.setName("签到现金");
+                    continue;
+                case 1:
+                    afSignRewardDo.setName("帮签现金");
+                    continue;
+                case 2:
+                    afSignRewardDo.setName("补签现金");
+                    continue;
+                case 4:
+                    afSignRewardDo.setName("帮签额外现金");
+                    continue;
+                case 5:
+                    afSignRewardDo.setName("补签额外现金");
+                    continue;
+            }
+        }
         resp.addResponseData("signList",signList);
         return resp;
     }

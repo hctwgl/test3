@@ -261,7 +261,11 @@
         select
           <include refid="queryFields" />
         from af_task
-        WHERE user_level in (#{userLevel})
+        WHERE user_level in
+        <foreach collection="userLevel" item="item" index="index"
+                 separator="," open="(" close=")">
+            #{item}
+        </foreach>
         ORDER BY sort desc , gmt_create desc
     </select>
 

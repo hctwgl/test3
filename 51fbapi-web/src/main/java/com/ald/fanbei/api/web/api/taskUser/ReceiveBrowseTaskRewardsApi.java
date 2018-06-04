@@ -12,6 +12,7 @@ import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
 import com.ald.fanbei.api.web.common.*;
+import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
@@ -33,6 +34,7 @@ import java.util.Map;
  *@version
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
+@NeedLogin
 @Controller("receiveBrowseTaskRewardsApi")
 public class ReceiveBrowseTaskRewardsApi  implements ApiHandle {
 

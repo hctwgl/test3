@@ -1,20 +1,25 @@
 package com.ald.fanbei.api.web.h5.controller;
 
-import com.ald.fanbei.api.biz.service.AfCashRecordService;
-import com.ald.fanbei.api.biz.service.AfTaskCoinChangeProportionService;
-import com.ald.fanbei.api.biz.service.AfTaskUserService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiH5Context;
-import com.ald.fanbei.api.dal.domain.AfCashRecordDo;
-import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserAccountDo;
+import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
+import jodd.util.ObjectUtil;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,6 +29,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -43,15 +49,26 @@ public class H5WalletController extends BaseController{
     private AfCashRecordService afCashRecordService;
     @Resource
     private AfTaskCoinChangeProportionService afTaskCoinChangeProportionService;
+    @Resource
+    AfUserService afUserService;
+    @Resource
+    AfUserBankcardService afUserBankcardService;
+    @Resource
+    AfIdNumberService afIdNumberService;
 
     @ResponseBody
     @RequestMapping(value = "valletPage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String valletPage(HttpServletRequest request, HttpServletResponse response){
         Map<String, Object> data = Maps.newHashMap();
         try{
-            FanbeiH5Context context = doH5Check(request, true);
-            Long userId = context.getUserId();
-
+            String userName = ObjectUtils.toString(request.getParameter("userName"),null);
+//            FanbeiWebContext context = doWebCheck(request, true);
+//            String userName = context.getUserName();
+            AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+            if(null == afUserDo){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
+            }
+            Long userId = afUserDo.getRid();
             // 累计收益
             AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(userId);
             BigDecimal rebateAmount = userAccountDo.getRebateAmount();
@@ -64,15 +81,17 @@ public class H5WalletController extends BaseController{
 
             // 我的金币
             Long availableCoinAmount = afTaskUserService.getAvailableCoinAmount(userId);
-            data.put("availableCoinAmount", availableCoinAmount);
-
+            data.put("availableCoinAmount", availableCoinAmount ==null?0.00:availableCoinAmount);
+            BigDecimal yesterdayProportion = BigDecimal.ZERO;
             // 我的金币兑换，是否昨天已经兑换过
             AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.TASK_COIN_CHANGE_TO_CASH_NAME, userId);
             if(null == taskUserDo){
                 data.put("changeCoinFlag", false);
+                data.put("yesterdayProportion", yesterdayProportion);
+                data.put("changedCoinAmount", 0);
             }
             else{
-                BigDecimal yesterdayProportion = afTaskCoinChangeProportionService.getYesterdayProportion();
+                yesterdayProportion = afTaskCoinChangeProportionService.getYesterdayProportion();
                 Long changedCoinAmount = afTaskUserService.getYestadayChangedCoinAmount(userId);
 
                 data.put("changeCoinFlag", true);
@@ -80,8 +99,22 @@ public class H5WalletController extends BaseController{
                 data.put("changedCoinAmount", changedCoinAmount);
             }
 
-            // 近七天的收益情况
+            // 近七天的收益情况(cashAmount)
             List<Map<String, Object>> IncomeList = afTaskUserService.getIncomeOfNearlySevenDays(userId);
+            // 近七天的收益情况(coinAmount)
+            List<Map<String, Object>> IncomeLists = afTaskUserService.getIncomeCoinOfNearlySevenDays(userId);
+//            for(Map<String, Object> idata : IncomeList){
+//                for(Map<String, Object> datas : IncomeLists){
+//                    if(StringUtil.equals(DateUtil.getNumberOfDatesBetween((Date)idata.get("rewardDate"),(Date)datas.get("rewardDate"))+"","0")){
+//                        if(Integer.parseInt(idata.get("coinAmount").toString()) <= 0){
+//                            break;
+//                        }else {
+//
+//                        }
+//                    }
+//                }
+//            }
+
             data.put("IncomeList", IncomeList);
 
             return H5CommonResponse.getNewInstance(true,"","", data).toString();
@@ -97,8 +130,14 @@ public class H5WalletController extends BaseController{
     public String getIncomeDetails(HttpServletRequest request, HttpServletResponse response){
         Map<String, Object> data = Maps.newHashMap();
         try{
-            FanbeiH5Context context = doH5Check(request, true);
-            Long userId = context.getUserId();
+//            FanbeiWebContext context = doWebCheck(request, true);
+//            String userName = context.getUserName();
+            String userName = ObjectUtils.toString(request.getParameter("userName"),null);
+            AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+            if(null == afUserDo){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
+            }
+            Long userId = afUserDo.getRid();
 
             String rewardType = request.getParameter("rewardType");
             List<AfTaskUserDo> taskUserList = afTaskUserService.getDetailsByUserId(userId, Integer.parseInt(rewardType));
@@ -117,11 +156,43 @@ public class H5WalletController extends BaseController{
     public String getWithDrawDetail(HttpServletRequest request, HttpServletResponse response){
         Map<String, Object> data = Maps.newHashMap();
         try{
-            FanbeiH5Context context = doH5Check(request, true);
+//            FanbeiWebContext context = doWebCheck(request, true);
             String withdrawId = request.getParameter("withdrawId");
             AfCashRecordDo cashRecordDo = afCashRecordService.getCashRecordById(Long.parseLong(withdrawId));
             data.put("cashRecord",cashRecordDo);
 
+            return H5CommonResponse.getNewInstance(true,"", "", data).toString();
+        } catch (Exception e){
+            logger.error("unknown error", e);
+        }
+
+        return H5CommonResponse.getNewInstance(false,"").toString();
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "getBindBackStatus", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public String getBindBackStatus(HttpServletRequest request, HttpServletResponse response ){
+        Map<String, Object> data = Maps.newHashMap();
+        try{
+//            FanbeiWebContext context = doWebCheck(request, true);
+//            String userName = context.getUserName();
+            String userName = ObjectUtils.toString(request.getParameter("userName"),null);
+            AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+            if(null == afUserDo){
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
+            }
+            Long userId = afUserDo.getRid();
+            int count = afUserBankcardService.getUserBankcardCountByUserId(userId);
+            data.put("count",count);
+            AfIdNumberDo afIdNumberDo = afIdNumberService.getIdNumberInfoByUserId(userId);
+            if(null == afIdNumberDo){
+                data.put("idNumber","");
+                data.put("realName","");
+            }else {
+                data.put("idNumber",afIdNumberDo.getCitizenId());
+                data.put("realName",afIdNumberDo.getName());
+            }
             return H5CommonResponse.getNewInstance(true,"", "", data).toString();
         } catch (Exception e){
             logger.error("unknown error", e);
@@ -137,7 +208,17 @@ public class H5WalletController extends BaseController{
 
     @Override
     public RequestDataVo parseRequestData(String requestData, HttpServletRequest request) {
-        return null;
+        try {
+            RequestDataVo reqVo = new RequestDataVo();
+            JSONObject jsonObj = JSON.parseObject(requestData);
+            reqVo.setId(jsonObj.getString("id"));
+            reqVo.setMethod(request.getRequestURI());
+            reqVo.setSystem(jsonObj);
+            return reqVo;
+        } catch (Exception e) {
+            throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+        }
+
     }
 
     @Override

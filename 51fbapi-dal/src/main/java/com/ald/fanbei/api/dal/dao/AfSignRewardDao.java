@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.AfSignRewardDo;
+import com.ald.fanbei.api.dal.domain.dto.AfSignRewardDto;
 import com.ald.fanbei.api.dal.domain.query.AfSignRewardQuery;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,7 +22,7 @@ public interface AfSignRewardDao  {
 
     List<AfSignRewardDo> sumSignDays(@Param("userId")Long userId,@Param("startTime")Date startTime);
 
-    List<AfSignRewardDo> getRewardDetailList(AfSignRewardQuery query);
+    List<AfSignRewardDto> getRewardDetailList(AfSignRewardQuery query);
 
     int saveRecord(AfSignRewardDo afSignRewardDo);
 

@@ -1,9 +1,6 @@
 package com.ald.fanbei.api.web.api.taskUser;
 
-import com.ald.fanbei.api.biz.service.AfTaskBrowseGoodsService;
-import com.ald.fanbei.api.biz.service.AfTaskUserService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -19,6 +16,7 @@ import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -33,6 +31,7 @@ import java.util.Map;
  * 浏览商品
  * @author cfp
  */
+@NeedLogin
 @Component("addBrowseTaskUserApi")
 public class AddBrowseTaskUserApi implements ApiHandle{
 	
@@ -66,13 +65,16 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 					String taskUserIds = buildTaskUserIds(specifiedTaskUserList);
 					if(StringUtils.isNotEmpty(taskUserIds)){
 						data.put("taskUserIds", taskUserIds);
+						data.put("message","太棒了!"+"\r\n"+"您已完成每日任务");
 					}
+
 				} else if(StringUtils.isNotEmpty(taskContition)){
 					// 浏览活动链接任务
 					List<AfTaskUserDo> specifiedTaskUserList = afTaskUserService.taskHandler(userId, AfTaskType.BROWSE.getCode(),taskContition);
 					String taskUserIds = buildTaskUserIds(specifiedTaskUserList);
 					if(StringUtils.isNotEmpty(taskUserIds)){
 						data.put("taskUserIds", taskUserIds);
+						data.put("message","太棒了!"+"\r\n"+"您已完成每日任务");
 					}
 				}
 				resp.setResponseData(data);
@@ -81,7 +83,7 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 		}catch(Exception e){
 			logger.error("addBrowseTaskUser error, ", e);
 		}
-		
+
 		return resp;
 	}
 

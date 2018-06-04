@@ -70,12 +70,16 @@ public class H5MySignInfoOutController extends H5Controller {
      */
     @RequestMapping(value = "/mySign", method = RequestMethod.POST)
     public String homePage(HttpServletRequest request, HttpServletResponse response) {
-        Long userId = NumberUtil.objToLongDefault(request.getParameter("userId"),null);
+        String userName = ObjectUtils.toString(request.getParameter("userId"),null);
+        AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+        if(null == afUserDo){
+            return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
+        }
         Map<String,String> map = new HashMap<String,String>();
         try {
             AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
             afSignRewardDo.setIsDelete(0);
-            afSignRewardDo.setUserId(userId);
+            afSignRewardDo.setUserId(afUserDo.getRid());
             afSignRewardDo.setGmtCreate(new Date());
             afSignRewardDo.setGmtModified(new Date());
             afSignRewardDo.setType(SignRewardType.ZERO.getCode());
@@ -120,7 +124,7 @@ public class H5MySignInfoOutController extends H5Controller {
             }else{
                 count = str.length+1;
             }
-            final BigDecimal rewardAmount = randomNum(afResourceDo.getValue3(),afResourceDo.getValue4());
+            final BigDecimal rewardAmount = randomNum(afResourceDo.getValue3(),afResourceDo.getValue4()).setScale(2,RoundingMode.HALF_EVEN);
             afSignRewardDo.setAmount(rewardAmount);
             final AfSignRewardDo rewardDo = afSignRewardDo;
             if(count == 1){
@@ -185,9 +189,10 @@ public class H5MySignInfoOutController extends H5Controller {
             }
             resp.put("amount",afSignRewardExtDo.getAmount().toString());
         }else {//第一次签到
-            BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
+            final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2()).setScale(2,RoundingMode.HALF_EVEN);
             afSignRewardDo.setAmount(rewardAmount);
             final AfSignRewardDo rewardDo = afSignRewardDo;
+            logger.info("cfp sign_reward" + rewardDo);
             status = transactionTemplate.execute(new TransactionCallback<String>() {
                 @Override
                 public String doInTransaction(TransactionStatus status) {
@@ -196,9 +201,9 @@ public class H5MySignInfoOutController extends H5Controller {
                         afSignRewardExtDo.setUserId(rewardDo.getUserId());
                         afSignRewardExtDo.setGmtModified(new Date());
                         afSignRewardExtDo.setFirstDayParticipation(new Date());
-                        afSignRewardExtDo.setAmount(rewardDo.getAmount());
-                        afSignRewardService.saveRecord(rewardDo);
+                        afSignRewardExtDo.setAmount(rewardAmount);
                         afSignRewardExtService.updateSignRewardExt(afSignRewardExtDo);
+                        afSignRewardService.saveRecord(rewardDo);
                         return "success";
                     }catch (Exception e){
                         status.setRollbackOnly();

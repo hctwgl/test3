@@ -251,6 +251,11 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
     	return afTaskUserDao.getIncomeOfNearlySevenDays(userId);
 	}
 
+	@Override
+	public List<Map<String, Object>> getIncomeCoinOfNearlySevenDays(Long userId){
+		return afTaskUserDao.getIncomeCoinOfNearlySevenDays(userId);
+	}
+
 	public List<AfTaskUserDo> getDetailsByUserId(Long userId, Integer rewardType){
 		return afTaskUserDao.getDetailsByUserId(userId,rewardType);
 	}

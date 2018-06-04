@@ -222,7 +222,6 @@
         LEFT JOIN af_task b ON a.task_id = b.id and b.is_daily_update = 0
         WHERE a.is_delete = 0
         AND a.user_id = #{userId}
-        AND a.status = 0
         ORDER BY a.gmt_create desc
     </select>
 
@@ -300,6 +299,32 @@
             SELECT date(reward_time) AS rewardDate, SUM(cash_amount) AS cashAmount
             FROM af_task_user where user_id = #{userId} and status = 1
             GROUP BY rewardDate
+        ) b ON a.rewardDate = b.rewardDate
+        ORDER BY a.rewardDate DESC
+    </select>
+
+
+    <select id="getIncomeCoinOfNearlySevenDays" resultType="java.util.HashMap">
+        SELECT a.rewardDate AS rewardDate, IFNULL(b.coinAmount, 0) AS coinAmount
+        FROM (
+        SELECT curdate() AS rewardDate
+        UNION ALL
+        SELECT date_sub(curdate(), INTERVAL 1 DAY) AS rewardDate
+        UNION ALL
+        SELECT date_sub(curdate(), INTERVAL 2 DAY) AS rewardDate
+        UNION ALL
+        SELECT date_sub(curdate(), INTERVAL 3 DAY) AS rewardDate
+        UNION ALL
+        SELECT date_sub(curdate(), INTERVAL 4 DAY) AS rewardDate
+        UNION ALL
+        SELECT date_sub(curdate(), INTERVAL 5 DAY) AS rewardDate
+        UNION ALL
+        SELECT date_sub(curdate(), INTERVAL 6 DAY) AS rewardDate
+        ) a
+        LEFT JOIN (
+        SELECT date(reward_time) AS rewardDate, SUM(coin_amount) AS coinAmount
+        FROM af_task_user where user_id = #{userId} and status = 1
+        GROUP BY rewardDate
         ) b ON a.rewardDate = b.rewardDate
         ORDER BY a.rewardDate DESC
     </select>
