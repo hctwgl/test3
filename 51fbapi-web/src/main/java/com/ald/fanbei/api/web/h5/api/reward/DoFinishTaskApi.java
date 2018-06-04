@@ -126,11 +126,14 @@ public class DoFinishTaskApi implements H5Handle {
                 }else {
                     resp.addResponseData("realName",afIdNumberDo.getName());
                 }
+            }else {
+                resp.addResponseData("realnameStatus","N");
             }
             if(StringUtil.equals(afUserAuthDo.getBankcardStatus(),"Y")){
                 resp.addResponseData("bankcardStatus","Y");
+            }else {
+                resp.addResponseData("bankcardStatus","N");
             }
-
         }
 
         return resp;
