@@ -87,7 +87,7 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 		final JSONObject selfOpenRateConfig = JSONObject.parseObject(config.getValue2());
 
 		String lock = "AfRedPacketSelfOpenServiceImpl_open_lock_" + userId;
-		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,200, Constants.SECOND_OF_TEN_MINITS);
+		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,500, Constants.SECOND_OF_TEN_MINITS);
 		if (isLock) {
 			try {
 				return transactionTemplate.execute(new TransactionCallback<AfRedPacketSelfOpenDo>() {

@@ -86,7 +86,7 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
         final JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
 
         String lock = "AfRedPacketHelpOpenServiceImpl_open_lock_" + wxCode;
-		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,200, Constants.SECOND_OF_TEN_MINITS);
+		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,500, Constants.SECOND_OF_TEN_MINITS);
 		if (isLock) {
 			try {
 				return transactionTemplate.execute(new TransactionCallback<AfRedPacketHelpOpenDo>() {
@@ -116,7 +116,7 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 				bizCacheUtil.delCache(lock);
 			}
 		} else {
-			throw new RuntimeException("没有获取到锁");
+			throw new RuntimeException(lock + "锁没有获取到");
 		}
 	}
 

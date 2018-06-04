@@ -11,10 +11,7 @@ import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CollectionConverterUtil;
-import com.ald.fanbei.api.common.util.CollectionUtil;
-import com.ald.fanbei.api.common.util.Converter;
-import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.AfRedPacketTotalDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.*;
@@ -281,7 +278,7 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	@Override
 	public void withdraw(final Long id, final String modifier) {
 		String lock = "AfRedPacketTotalServiceImpl_withdraw_lock_" + id;
-		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,200, Constants.SECOND_OF_TEN_MINITS);
+		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,500, Constants.SECOND_OF_TEN_MINITS);
 		if (isLock) {
 			try {
 				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -352,11 +349,11 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	// 检查活动是否停止
 	private void checkActivityIsStop(AfResourceDo config) {
 		if (config.getValue().trim().equals(YesNoStatus.NO.getCode())) {
-			AfResourceDo msgConfig = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET_MSG.getCode());
-			if (msgConfig == null) {
+			String msg = config.getValue4();
+			if (StringUtil.isBlank(msg)) {
 				throw new FanbeiException(FanbeiExceptionCode.OPEN_REDPACKET_ACTIVITY_OVER);
 			} else {
-				throw new FanbeiException(msgConfig.getValue());
+				throw new FanbeiException(msg);
 			}
 		}
 	}
