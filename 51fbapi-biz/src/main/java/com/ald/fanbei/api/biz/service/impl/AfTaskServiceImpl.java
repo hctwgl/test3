@@ -74,6 +74,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
         List<Long> isNotDailyList = new ArrayList<Long>();
         List<Long> notFinishedList = new ArrayList<Long>();
         List<AfTaskDto> finalTaskList = new ArrayList<AfTaskDto>();
+        List<AfTaskDto> taskDtos = new ArrayList<AfTaskDto>();
         List<AfTaskDto> taskList = afTaskDao.getTaskListByUserIdAndUserLevel(level);
         if(null == bizCacheUtil.getObject(userId+Constants.SIGN_DATE)){
             bizCacheUtil.saveObjectForever(userId+Constants.SIGN_DATE,new Date());
@@ -179,11 +180,12 @@ public class AfTaskServiceImpl  implements AfTaskService {
         }
         for(AfTaskDto task :finalTaskList){
             if(StringUtil.equals(task.getTaskType(),TaskType.push.getCode())){
-                finalTaskList.remove(task);
+            }else{
+                taskDtos.add(task);
             }
         }
 
-        return finalTaskList;
+        return taskDtos;
     }
 
     @Override
