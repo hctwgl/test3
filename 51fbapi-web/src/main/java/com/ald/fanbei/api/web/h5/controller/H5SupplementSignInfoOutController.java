@@ -456,6 +456,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
         try {
             Map<String,Object> data = new HashMap<String,Object>();
             data.put("openType","2");
+            logger.info("supplementSignIn data =" + data);
             if(true){
                 return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
             }
