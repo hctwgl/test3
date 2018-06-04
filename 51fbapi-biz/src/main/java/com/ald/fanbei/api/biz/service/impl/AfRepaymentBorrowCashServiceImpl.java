@@ -635,7 +635,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"));
                     //}
                 } else {
-                    sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"), tempSmsDataMap.get("notRepayMoneyStr"));
+                    if ("majiaborrowSupermanapp".equals(afBorrowCashDo.getMajiabaoName())){
+                        sendJKCRRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"), tempSmsDataMap.get("notRepayMoneyStr"));
+                    }else {
+                        sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"), tempSmsDataMap.get("notRepayMoneyStr"));
+                    }
                 }
             } catch (Exception e) {
                 logger.error("还款成功发送短信异常,userId:" + afBorrowCashDo.getUserId() + ",nowRepayAmount:" + tempSmsDataMap.get("nowRepayAmountStr") + ",notRepayMoney" + tempSmsDataMap.get("notRepayMoneyStr"), e);
@@ -1265,7 +1269,11 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                 }
             } else {
                 errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repayment.getUserId());
-                smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
+                if ("majiaborrowSupermanapp".equals(afBorrowCashDo.getMajiabaoName())){
+                    smsUtil.sendYsSmsConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_JKCR_REPAYMENT_BORROWCASH_FAIL.getCode());
+                }else {
+                    smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
+                }
                 String title = "本次还款支付失败";
                 String content = "非常遗憾，本次还款失败：&errorMsg，您可更换银行卡或采用其他还款方式。";
                 content = content.replace("&errorMsg", errorMsg);
