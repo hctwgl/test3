@@ -311,14 +311,14 @@
         SELECT
         <include refid="taskDo" />
         FROM af_task t
-        LEFT JOIN (
+        , (
             SELECT u.task_id, u.user_id
             FROM af_task_user u
             WHERE u.is_delete = 0
               AND u.user_id = #{userId}
               AND date(u.gmt_create) = CURDATE()
-        ) a ON t.id = a.task_id
-        WHERE t.is_delete = 0
+        ) a WHERE t.id = a.task_id
+        AND t.is_delete = 0
         AND t.is_open = 1
         AND t.is_daily_update = 1
         AND t.task_type = #{taskType}
