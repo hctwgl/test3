@@ -21,6 +21,7 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.ApplyBindBankcardParam;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -76,9 +77,9 @@ public class ApplyBindBankcardApi implements ApiHandle {
 
 		AfUserAccountDo userAccount = afUserAccountService.getUserAccountByUserId(userId);
 		if(userAccount !=null) {
-			if (userAccount.getRealName() != null)
+			if (StringUtils.isNotBlank(userAccount.getRealName()))
 				param.realname = userAccount.getRealName();
-			if (userAccount.getIdNumber() != null)
+			if (StringUtils.isNotBlank(userAccount.getIdNumber()))
 				param.idNumber = userAccount.getIdNumber();
 		}
 

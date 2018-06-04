@@ -2507,7 +2507,7 @@ public class RiskUtil extends AbstractThird {
 
 	}
 
-	public void payOrderChangeAmount(Long rid) throws InterruptedException {
+	public void payOrderChangeAmount(Long rid){
 		AfOrderDo orderInfo = orderDao.getOrderById(rid);
 		logger.info("payOrderChangeAmount orderInfo = {}", orderInfo);
 		if (orderInfo != null && StringUtils.equals(orderInfo.getOrderType(), OrderType.BOLUOME.getCode())) {

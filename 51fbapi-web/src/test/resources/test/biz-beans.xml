@@ -8,11 +8,12 @@
 	   xmlns:mongo="http://www.springframework.org/schema/data/mongo"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd 
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd">
+	
 	<bean id="multipartResolver"
 		  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<!-- 设定默认编码 -->
@@ -20,13 +21,17 @@
 		<!-- 设定文件上传的最大值5MB，5*1024*1024 -->
 		<property name="maxUploadSize" value="5242880"></property>
 	</bean>
+	
 	<bean class="com.ald.fanbei.api.common.DecrypPropertyPlaceholderConfigurer">
-		<property name="password" value="${fbapi.aes.password}"/>
+		<property name="password" value="testC1b6x@6aH$2dlw"/>
 		<property name="encryptPropNames">
 			<list>
 				<value>fbapi.db.url</value>
 				<value>fbapi.db.username</value>
 				<value>fbapi.db.password</value>
+				<value>loan.fbapi.db.url</value>
+				<value>loan.fbapi.db.username</value>
+				<value>loan.fbapi.db.password</value>
 				<!-- redis -->
 				<value>fbapi.redis.hostname</value>
 				<value>fbapi.redis.port</value>
@@ -42,7 +47,7 @@
 				<!-- face++ -->
 				<value>fbapi.face.plus.appkey</value>
 				<value>fbapi.face.plus.secret</value>
-
+				
 				<value>fbfile.oss.access.key</value>
 				<value>fbfile.oss.access.secret</value>
 				<!--<value>fbapi.esign.project.id</value>-->
@@ -51,66 +56,66 @@
 		</property>
 		<property name="locations">
 			<list>
-				<value>classpath:props/encrypt.properties</value>
+				<value>classpath:test/config.properties</value>
 			</list>
 		</property>
-	</bean>
-
+	</bean>	
+	
 	<!-- 申请退款等接口 提供给第三方的Appkey和secrete -->
 	<bean class="com.ald.fanbei.api.biz.service.boluome.ThirdCore">
-		<property name="appKeyMap">
-			<map>
-				<entry key="${third.offer.boluome.appKey}" value="${third.offer.boluome.appSecret}"></entry>
-			</map>
-		</property>
+		<property name="appKeyMap">  
+            <map>  
+                <entry key="${third.offer.boluome.appKey}" value="${third.offer.boluome.appSecret}"></entry>  
+            </map>  
+        </property>
 	</bean>
-
+	
 	<!-- redis 192.168.11.118 foobared	 -->
-	<bean id="poolConfigBiz" class="redis.clients.jedis.JedisPoolConfig">
-		<property name="minIdle" value="10" />
-		<property name="maxIdle" value="300" />
-		<property name="maxTotal" value="60000" />
-		<property name="maxWaitMillis" value="10000" />
-		<property name="testOnBorrow" value="true" />
-	</bean>
+    <bean id="poolConfigBiz" class="redis.clients.jedis.JedisPoolConfig">
+    	<property name="minIdle" value="10" />
+        <property name="maxIdle" value="300" />  
+        <property name="maxTotal" value="60000" />  
+        <property name="maxWaitMillis" value="10000" />
+        <property name="testOnBorrow" value="true" />  
+    </bean> 
 	<!-- redis 192.168.11.118 foobared -->
-	<bean id="poolConfigToken" class="redis.clients.jedis.JedisPoolConfig">
-		<property name="minIdle" value="8" />
-		<property name="maxIdle" value="200" />
-		<property name="maxTotal" value="300" />
-		<property name="maxWaitMillis" value="1000" />
-		<property name="testOnBorrow" value="true" />
-	</bean>
-
+    <bean id="poolConfigToken" class="redis.clients.jedis.JedisPoolConfig">
+    	<property name="minIdle" value="8" />
+        <property name="maxIdle" value="200" />  
+        <property name="maxTotal" value="300" />  
+        <property name="maxWaitMillis" value="1000" />  
+        <property name="testOnBorrow" value="true" />  
+    </bean>
+	
 	<!-- redis template definition -->
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
 		<property name="connectionFactory" ref="jedisConnFactory" />
-		<property name="keySerializer">
-			<bean
-					class="org.springframework.data.redis.serializer.StringRedisSerializer" />
-		</property>
-		<property name="valueSerializer">
-			<bean
-					class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
-		</property>
+		<property name="keySerializer">  
+            <bean  
+                class="org.springframework.data.redis.serializer.StringRedisSerializer" />  
+        </property>  
+        <property name="valueSerializer">  
+            <bean  
+                class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />  
+        </property>
 	</bean>
 	<bean id="redisIntegerTemplate" class="org.springframework.data.redis.core.RedisTemplate">
 		<property name="connectionFactory" ref="jedisConnFactory" />
 		<property name="keySerializer">
-			<bean
-					class="org.springframework.data.redis.serializer.StringRedisSerializer" />
-		</property>
-		<property name="valueSerializer">
-			<bean
-					class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
-		</property>
+            <bean
+                class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </property>
+        <property name="valueSerializer">
+            <bean
+                class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+        </property>
 	</bean>
 	<bean id="redisStringTemplate" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="jedisConnFactory" />
-		<property name="defaultSerializer">
-			<bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
-		</property>
-	</bean>
+        <property name="connectionFactory" ref="jedisConnFactory" />
+        <property name="defaultSerializer">  
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </property>
+    </bean>
 	<!-- redis template definition  -->
 	<bean id="cacheRedisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
 		<property name="connectionFactory" ref="cacheJedisConnFactory" />
@@ -173,4 +178,21 @@
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
 	</bean>
 	<!-- MONGODB -->
+
+	<bean id="threadPoolMaidianTaskExecutor"
+		  class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<!-- 核心线程数，默认为1 -->
+		<property name="corePoolSize" value="15" />
+		<!-- 最大线程数，默认为Integer.MAX_VALUE -->
+		<property name="maxPoolSize" value="90" />
+		<!-- 队列最大长度，一般需要设置值>=notifyScheduledMainExecutor.maxNum；默认为nteger.MAX_VALUE -->
+		<property name="queueCapacity" value="3000" />
+		<!-- 线程池维护线程所允许的空闲时间，默认为60s -->
+		<property name="keepAliveSeconds" value="300" />
+	</bean>
+
+    <!-- solrServer -->
+	<bean id="httpSolrServer" class="org.apache.solr.client.solrj.impl.HttpSolrServer">
+		<constructor-arg name="baseURL" value="${solrServer.address}"/>
+	</bean>
 </beans>

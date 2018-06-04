@@ -213,6 +213,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 
 	@Resource
 	AfBklService afBklService;
+
+	@Resource
+	private AfSeckillActivityService afSeckillActivityService;
+
 	@Override
 	public int createOrderTrade(final String content) {
 		logger.info("createOrderTrade_content:" + content);
@@ -1164,7 +1168,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 
 						String name = orderInfo.getGoodsName();
 						if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
-							name = orderInfo.getShopName();
+						    name = orderInfo.getShopName();
 						}
 						AfBorrowDo borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(), nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(), orderInfo.getSecType());
 						borrow.setVersion(1);
@@ -1174,14 +1178,14 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						String _vcode = getVirtualCode(virtualMap);
 						String str = orderInfo.getGoodsName();
 						if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-							str = OrderType.BOLUOME.getCode();
+						    str = OrderType.BOLUOME.getCode();
 						}
 						if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
-							AfTradeOrderDo afTradeOrderDo = new AfTradeOrderDo();
-							afTradeOrderDo.setOrderId(orderInfo.getRid());
-							AfTradeOrderDo result = afTradeOrderService.getByCommonCondition(afTradeOrderDo);
-							str = String.valueOf(result.getBusinessId());
-							_vcode = "99";
+						    AfTradeOrderDo afTradeOrderDo = new AfTradeOrderDo();
+						    afTradeOrderDo.setOrderId(orderInfo.getRid());
+						    AfTradeOrderDo result = afTradeOrderService.getByCommonCondition(afTradeOrderDo);
+						    str = String.valueOf(result.getBusinessId());
+						    _vcode = "99";
 						}
 						// ****** modify by liutengyuan and chengkang start  *****
 				    	// 如果用户有权限包，无需调用风控
@@ -1247,7 +1251,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							 } 
 						 }
 				    	// ******* end *******
-						
 						if (verybo.isSuccess()) {
 							logger.info("pay result is true");
 							// #region add by honghzengpei
@@ -1257,9 +1260,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							if (null != riskReturnMap && (boolean) riskReturnMap.get("success")) {
 								// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
 								if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
-									AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
-									afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(), CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
-								}
+									logger.info("周年庆时间自营商品订单支付成功，送优惠券");
+									// 预售商品回调 处理
+									afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
+
+									}
 								// end by luoxiao
 							}
 							return riskReturnMap;
@@ -2044,8 +2049,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	if (result == 1) {
 		// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
 		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
-			AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
-			afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(), CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
+			logger.info("周年庆时间自营商品订单支付成功，送优惠券3");
+
+			// 预售商品回调 处理
+			afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
+
 		}
 		// end by luoxiao
 

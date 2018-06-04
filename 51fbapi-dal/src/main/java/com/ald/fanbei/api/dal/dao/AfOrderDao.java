@@ -349,4 +349,5 @@ public interface AfOrderDao {
 	 * @return
 	 */
 	AfOrderDo getPayRelaOrderByGoodsIdAndUserid(@Param(value="userId")Long userId, @Param(value="goodsId")Long goodsId);
+	int updateOrderStatus(Long rid);
 }

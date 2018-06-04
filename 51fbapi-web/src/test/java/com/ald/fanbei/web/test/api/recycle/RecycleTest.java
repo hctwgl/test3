@@ -24,9 +24,9 @@ public class RecycleTest extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-	String urlBase = "https://btestapp.51fanbei.com";
-//	String urlBase = "http://localhost:8080";
-	String userName = AccountOfTester.俞佳楠.mobile;
+//	String urlBase = "https://btestapp.51fanbei.com";
+	String urlBase = "http://localhost:80";
+	String userName = AccountOfTester.夏枫.mobile;
 	
 	@Before
 	public void init(){
@@ -132,20 +132,6 @@ public class RecycleTest extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 
-	/**
-	 * 回收 取消订单
-	 */
-	@Test
-	public void repayDo() {
-		String url = urlBase + "/h5/recycle/recycleRepayDo";
-		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 50+"");//351.27
-		params.put("payPwd", DigestUtils.md5Hex("123456"));
-		params.put("cardId", "3111464125");
-		params.put("borrowId", "3340038");		
-		
-		testH5(url, params, userName, true);
-	}
 	
 	/* 模拟三方系统回调 */
 	/**
@@ -164,6 +150,45 @@ public class RecycleTest extends BaseTest{
 		
 		testH5(url, null, userName ,true);
 	}
+
+	/**
+	 * 回收 取消订单
+	 */
+	@Test
+	public void repayDo() {
+		String url = urlBase + "/h5/recycle/recycleRepayDo";
+		Map<String,String> params = new HashMap<>();
+		params.put("repaymentAmount", 1+"");//351.27
+		params.put("payPwd", DigestUtils.md5Hex("369369"));
+		params.put("cardId", "3111464791");
+		params.put("borrowId", "3339771");		
+		params.put("bankChannel", "KUAIJIE");		
+		
+		testH5(url, params, userName, true);
+	}
+	
+	// 重发验证码
+	@Test
+	public void  resendCode() {
+		String url = urlBase + "/h5/pay/recycleQuickPaymentResendCode";
+		Map<String,String> params = new HashMap<>();
+		params.put("tradeNo", "hq2018052415574200918");
+
+		testH5(url, params, userName ,true);
+	}
+
+	
+	// 还款验证码确认
+	@Test
+	public void  repayConfirmPayment() {
+		String url = urlBase + "/h5/pay/recycleConfirmPayment";
+		Map<String,String> params = new HashMap<>();
+		params.put("smsCode", "410468");
+		params.put("tradeNo", "hqkj2018042815533300083");
+
+		testH5(url, params, userName ,true);
+	}
+	
 	/**
 	 * 支付成功后，模拟 UPS 回调 返呗API
 	 */

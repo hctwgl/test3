@@ -577,6 +577,17 @@ public class Constants {
 	 */
 	public static final String TAC_ACTIVITY = "TAC_ACTIVITY";
 
+	/**
+	 * 预售商品定金支付成功发送短信
+	 */
+	public static final String SMS_TEMPLATE = "SMS_TEMPLATE";
+	public static final String SMS_ACTIVITY_RESERVATION_GOODS = "SMS_ACTIVITY_RESERVATION_GOODS";
+
+	/**
+	 * 预售商品活动
+	 */
+	public static final String ACTIVITY_RESERVATION_GOODS = "ACTIVITY_RESERVATION_GOODS";
+
 	//乐享生活节
 	public static final String ENJOYLIFE_ACTIVITY_GOODSINFO = "ENJOYLIFE_ACTIVITY_GOODSINFO";
 	public static final String ACTIVITY_INFO_GOODSID = "ACTIVITY_INFO_GOODSID";
