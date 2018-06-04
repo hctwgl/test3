@@ -44,7 +44,7 @@ import java.util.*;
  *签到领金币 补签
  */
 @RestController
-@RequestMapping(value = "/supplementSignReward/")
+@RequestMapping(value = "/supplementSignReward/", produces = "application/json;charset=UTF-8")
 public class H5SupplementSignInfoOutController extends H5Controller {
 
     @Resource
@@ -86,7 +86,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
      * @param response
      * @return
      */
-    @RequestMapping(value = "/supplementSign", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/supplementSign", method = RequestMethod.POST)
     public String homePage(HttpServletRequest request, HttpServletResponse response) {
         try {
             final String moblie = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
@@ -448,7 +448,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
     }
 
 
-    @RequestMapping(value = "/supplementSignIn", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/supplementSignIn", method = RequestMethod.POST)
     public String getSupplementSign(HttpServletRequest request, HttpServletResponse response) {
         try {
             String userName = ObjectUtils.toString(request.getParameter("userName"),null);
