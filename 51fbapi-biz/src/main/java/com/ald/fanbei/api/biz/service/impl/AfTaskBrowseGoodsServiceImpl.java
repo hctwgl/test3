@@ -88,56 +88,57 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
                         if(setCount > countToday){
                             addBrowseGoodsTaskUser(userId, goodsId);
                             countToday = countToday + 1;
-                            // 今日任务完成
-                            if(setCount == countToday){
-                                String value1 = resourceDo.getValue1();
-                                String[] coinAmountArray = value1.split(",");
-                                AfTaskBrowseGoodsDaysDo taskBrowseGoodsDaysDo;
-
-                                // 获取奖励的金币数量
-                                int continueDays = 0;
-                                Long coinAmount = Long.parseLong(coinAmountArray[continueDays]);
-                                taskBrowseGoodsDaysDo = afTaskBrowseGoodsDaysService.isCompletedTaskYestaday(userId);
-                                if(null != taskBrowseGoodsDaysDo){
-                                    continueDays = taskBrowseGoodsDaysDo.getContinueDays();
-                                    String value2 = resourceDo.getValue2();
-                                    Integer setCoutinueDays = Integer.parseInt(value2);
-                                    if(setCoutinueDays < continueDays){
-                                        coinAmount = Long.parseLong(coinAmountArray[continueDays - 1]);
-                                    }
-                                    else{
-                                        coinAmount = Long.parseLong(coinAmountArray[coinAmountArray.length-1]);
-                                    }
-                                }
-
-                                // 判断用户是否已经参加过任务活动
-                                if(null == afTaskBrowseGoodsDaysService.isUserAttend(userId)){
-                                    taskBrowseGoodsDaysDo = new AfTaskBrowseGoodsDaysDo();
-                                    taskBrowseGoodsDaysDo.setContinueDays(continueDays + 1);
-                                    taskBrowseGoodsDaysDo.setGmtCreate(new Date());
-                                    taskBrowseGoodsDaysDo.setGmtModified(new Date());
-                                    taskBrowseGoodsDaysDo.setLastCompleteTaskDate(new Date());
-                                    taskBrowseGoodsDaysDo.setUserId(userId);
-                                    afTaskBrowseGoodsDaysService.addTaskBrowseGoodsDays(taskBrowseGoodsDaysDo);
-                                }
-                                else{
-                                    afTaskBrowseGoodsDaysService.updateTaskBrowseGoodsDays(userId, continueDays + 1);
-                                }
-
-                                AfTaskUserDo taskUserDo = new AfTaskUserDo();
-                                taskUserDo.setGmtCreate(new Date());
-                                taskUserDo.setRewardType(0);
-                                taskUserDo.setCoinAmount(coinAmount);
-                                taskUserDo.setUserId(userId);
-                                taskUserDo.setTaskName(Constants.BROWSE_TASK_NAME);
-                                taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
-                                afTaskUserService.insertTaskUserDo(taskUserDo);
-
-                                return taskUserDo;
-                            }
                         }
 
+                        // 今日任务完成
+                        if(setCount == countToday){
+                            String value1 = resourceDo.getValue1();
+                            String[] coinAmountArray = value1.split(",");
+                            AfTaskBrowseGoodsDaysDo taskBrowseGoodsDaysDo;
 
+                            // 获取奖励的金币数量
+                            int continueDays = 0;
+                            Long coinAmount = Long.parseLong(coinAmountArray[continueDays]);
+                            // 昨天是否完成任务
+                            taskBrowseGoodsDaysDo = afTaskBrowseGoodsDaysService.isCompletedTaskYestaday(userId);
+                            if(null != taskBrowseGoodsDaysDo){
+                                continueDays = taskBrowseGoodsDaysDo.getContinueDays();
+                                String value2 = resourceDo.getValue2();
+                                Integer setCoutinueDays = Integer.parseInt(value2);
+                                if(setCoutinueDays <= continueDays){
+                                    coinAmount = Long.parseLong(coinAmountArray[setCoutinueDays - 1]);
+                                }
+                                else{
+                                    coinAmount = Long.parseLong(coinAmountArray[continueDays]);
+                                }
+                            }
+
+                            // 判断用户是否已经参加过任务活动
+                            if(null == afTaskBrowseGoodsDaysService.isUserAttend(userId)){
+                                taskBrowseGoodsDaysDo = new AfTaskBrowseGoodsDaysDo();
+                                taskBrowseGoodsDaysDo.setContinueDays(continueDays + 1);
+                                taskBrowseGoodsDaysDo.setGmtCreate(new Date());
+                                taskBrowseGoodsDaysDo.setGmtModified(new Date());
+                                taskBrowseGoodsDaysDo.setLastCompleteTaskDate(new Date());
+                                taskBrowseGoodsDaysDo.setUserId(userId);
+                                afTaskBrowseGoodsDaysService.addTaskBrowseGoodsDays(taskBrowseGoodsDaysDo);
+                            }
+                            else{
+                                afTaskBrowseGoodsDaysService.updateTaskBrowseGoodsDays(userId, continueDays + 1);
+                            }
+
+                            AfTaskUserDo taskUserDo = new AfTaskUserDo();
+                            taskUserDo.setGmtCreate(new Date());
+                            taskUserDo.setRewardType(0);
+                            taskUserDo.setCoinAmount(coinAmount);
+                            taskUserDo.setUserId(userId);
+                            taskUserDo.setTaskName(Constants.BROWSE_TASK_NAME);
+                            taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
+                            taskUserDo.setTaskId(-3l);
+                            afTaskUserService.insertTaskUserDo(taskUserDo);
+
+                            return taskUserDo;
+                        }
                     }
                 }catch(Exception e){
                     logger.error("addBrowseGoodsTaskUserRecord error, ", e);
