@@ -261,7 +261,9 @@
         select
           <include refid="queryFields" />
         from af_task
-        WHERE user_level in
+        WHERE is_delete = 0
+        AND is_open = 1
+        AND user_level in
         <foreach collection="userLevel" item="item" index="index"
                  separator="," open="(" close=")">
             #{item}
@@ -331,7 +333,9 @@
         SELECT
         <include refid="queryFields" />
         FROM af_task
-        WHERE  id in
+        where is_delete = 0
+        and is_open = 1
+        and  id in
         <foreach collection="taskIds" item="item" index="index" separator="," open="(" close=")">
             #{item}
         </foreach>
