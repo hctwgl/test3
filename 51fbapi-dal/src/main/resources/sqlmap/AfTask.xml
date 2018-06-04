@@ -311,7 +311,7 @@
         SELECT
         <include refid="taskDo" />
         FROM af_task t
-        LEFT JOIN (
+        , (
             SELECT u.task_id, u.user_id
             FROM af_task_user u
             WHERE u.is_delete = 0
