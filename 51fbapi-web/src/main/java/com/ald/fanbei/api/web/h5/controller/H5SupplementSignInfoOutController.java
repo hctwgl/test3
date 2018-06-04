@@ -455,11 +455,6 @@ public class H5SupplementSignInfoOutController extends H5Controller {
     public String getSupplementSign(HttpServletRequest request, HttpServletResponse response) {
         try {
             Map<String,Object> data = new HashMap<String,Object>();
-            data.put("openType","2");
-            logger.info("supplementSignIn data =" + data);
-            if(true){
-                return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
-            }
             String userName = ObjectUtils.toString(request.getParameter("userName"),null);
             logger.info("userName =  supplementSignIn =" + userName);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
