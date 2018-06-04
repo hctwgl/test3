@@ -5,10 +5,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.domain.AfTaskDo;
-import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
-import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
@@ -32,37 +29,50 @@ public class GetFinishedTaskApi implements H5Handle {
     @Resource
     AfTaskService afTaskService;
     @Resource
-    AfUserAuthService afUserAuthService;
+    AfCouponService afCouponService;
     @Resource
     AfTaskUserService afTaskUserService;
+
 
     @Override
     public H5HandleResponse process(Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
-        List<Long> isDailyList = new ArrayList<Long>();
-        List<Long> isNotDailyList = new ArrayList<Long>();
         List<AfTaskUserDo> isDailyTaskList = new ArrayList<AfTaskUserDo>();
         List<AfTaskUserDo> isNotDailyTaskList =	new ArrayList<AfTaskUserDo>();
         Long userId = context.getUserId();
         List<Long> taskIds = new ArrayList<Long>();
         List<AfTaskDto> finalTaskList = new ArrayList<>();
-
+        //每日任务(完成的)
         isDailyTaskList = afTaskUserService.isDailyFinishTaskList(userId);
+        //非每日任务(完成的)
         isNotDailyTaskList = afTaskUserService.isNotDailyFinishTaskList(userId);
+        //已完成的任务
         isDailyTaskList.addAll(isNotDailyTaskList);
 
         for (AfTaskUserDo afTaskUserDo : isDailyTaskList){
             taskIds.add(afTaskUserDo.getTaskId());
         }
+        //排除失效的任务
         if(taskIds.size()>0){
             finalTaskList = afTaskService.getTaskByTaskIds(taskIds);
         }
+        //每日浏览3个商品任务(特殊处理)
         AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId);
         if(null != taskUserDo){
             if(StringUtil.equals(taskUserDo.getStatus().toString(),"1")){
                 AfTaskDto afTaskDto = new AfTaskDto();
                 afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
                 finalTaskList.add(afTaskDto);
+            }
+        }
+        for (AfTaskDto afTaskDto :finalTaskList){
+            if(StringUtil.equals(taskUserDo.getRewardType()+"","0")){
+                afTaskDto.setRewardName("成功获得"+taskUserDo.getCoinAmount()+"金币");
+            }else if(StringUtil.equals(taskUserDo.getRewardType()+"","1")){
+                afTaskDto.setRewardName("成功获得"+taskUserDo.getCashAmount()+"元");
+            }else if(StringUtil.equals(taskUserDo.getRewardType()+"","2")){
+                AfCouponDo afCouponDo = afCouponService.getCouponById(taskUserDo.getCouponId());
+                afTaskDto.setRewardName("成功获得"+afCouponDo.getAmount()+"元优惠券");
             }
         }
         resp.addResponseData("taskList",finalTaskList);
