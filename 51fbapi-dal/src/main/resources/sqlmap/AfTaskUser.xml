@@ -304,7 +304,7 @@
     </select>
 
 
-    <select id="getCoinIncomeOfNearlySevenDays" resultType="java.util.HashMap">
+    <select id="getIncomeCoinOfNearlySevenDays" resultType="java.util.HashMap">
         SELECT a.rewardDate AS rewardDate, IFNULL(b.coinAmount, 0) AS coinAmount
         FROM (
         SELECT curdate() AS rewardDate
