@@ -489,7 +489,11 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
 			String bankNumber = mainCard.getCardNumber();
 			String lastBank = bankNumber.substring(bankNumber.length() - 4);
-			smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
+			if ("majiaborrowSupermanapp".equals(afBorrowCashDo.getMajiabaoName())){
+				smsUtil.sendJKCRBorrowCashCode(afUserDo.getUserName(), lastBank);
+			}else {
+				smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
+			}
 			String title = "恭喜您，审核通过啦！";
 			String msgContent = "您的借款审核通过，请留意您尾号&bankCardNo的银行卡资金变动，请注意按时还款，保持良好的信用记录。";
 			msgContent = msgContent.replace("&bankCardNo", lastBank);
