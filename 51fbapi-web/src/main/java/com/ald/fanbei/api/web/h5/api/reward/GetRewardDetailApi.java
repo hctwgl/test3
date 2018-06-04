@@ -50,10 +50,10 @@ public class GetRewardDetailApi implements H5Handle {
                 case 2:
                     afSignRewardDo.setName("补签现金");
                     continue;
-                case 3:
+                case 4:
                     afSignRewardDo.setName("帮签额外现金");
                     continue;
-                case 4:
+                case 5:
                     afSignRewardDo.setName("补签额外现金");
                     continue;
             }
