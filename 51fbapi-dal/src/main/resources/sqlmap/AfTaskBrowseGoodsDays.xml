@@ -77,7 +77,7 @@
 		<include refid="queryFields" />
 		FROM af_task_browse_goods_days
 		WHERE is_delete = 0 AND user_id=#{userId ,jdbcType=BIGINT}
-		AND TO_DAYS( NOW( ) ) - TO_DAYS(last_complete_task_date) <![CDATA[  <  ]]> 1
+		AND TO_DAYS( NOW( ) ) - TO_DAYS(last_complete_task_date) = 1
 		LIMIT 0,1
 	</select>
 

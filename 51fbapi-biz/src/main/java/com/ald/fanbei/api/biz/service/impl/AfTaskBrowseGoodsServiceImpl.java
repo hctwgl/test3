@@ -99,13 +99,14 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
                             // 获取奖励的金币数量
                             int continueDays = 0;
                             Long coinAmount = Long.parseLong(coinAmountArray[continueDays]);
+                            // 昨天是否完成任务
                             taskBrowseGoodsDaysDo = afTaskBrowseGoodsDaysService.isCompletedTaskYestaday(userId);
                             if(null != taskBrowseGoodsDaysDo){
                                 continueDays = taskBrowseGoodsDaysDo.getContinueDays();
                                 String value2 = resourceDo.getValue2();
                                 Integer setCoutinueDays = Integer.parseInt(value2);
-                                if(setCoutinueDays < continueDays){
-                                    coinAmount = Long.parseLong(coinAmountArray[continueDays - 1]);
+                                if(setCoutinueDays <= continueDays){
+                                    coinAmount = Long.parseLong(coinAmountArray[setCoutinueDays - 1]);
                                 }
                                 else{
                                     coinAmount = Long.parseLong(coinAmountArray[continueDays]);
@@ -133,6 +134,7 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
                             taskUserDo.setUserId(userId);
                             taskUserDo.setTaskName(Constants.BROWSE_TASK_NAME);
                             taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
+                            taskUserDo.setTaskId(-3l);
                             afTaskUserService.insertTaskUserDo(taskUserDo);
 
                             return taskUserDo;

@@ -94,7 +94,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 
 	@Override
 	public List<AfTaskUserDo> browerAndShoppingHandler(Long userId, Long goodsId, String afTaskType){
-		logger.info("afTaskUser start..");
+		logger.info("browerAndShoppingHandler start..");
 		List<AfTaskUserDo> toAddTaskUserList = Lists.newArrayList();
 		try {
 			// 获取用户能参加的活动
@@ -166,24 +166,25 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 					}
 
 					if (!toAddTaskUserList.isEmpty()) {
+						logger.info("browerAndShoppingHandler completeTaskCount:" + toAddTaskUserList.size());
 						for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
-							afTaskUserDao.insertTaskUserDo(afTaskUserDo);
+							insertTaskUserDo(afTaskUserDo);
 						}
 						return toAddTaskUserList;
 					}
 				}
 			}
 		} catch (Exception e) {
-			logger.error("afTaskUser failed, ", e);
+			logger.error("browerAndShoppingHandler failed, ", e);
 		}
 
-		logger.info("afTaskUser end..");
+		logger.info("browerAndShoppingHandler end..");
 		return toAddTaskUserList;
 	}
 
 	@Override
 	public List<AfTaskUserDo> taskHandler(Long userId, String afTaskType, String taskCondition) {
-		logger.info("afTaskUser start..");
+		logger.info("taskHandler start..");
 		 List<AfTaskUserDo> toAddTaskUserList = Lists.newArrayList();
 		try {
 			// 获取用户能参加的活动
@@ -223,14 +224,15 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 						toAddTaskUserList.add(taskUserDo);
 					}
 					for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
-						afTaskUserDao.insertTaskUserDo(afTaskUserDo);
+						logger.info("taskHandler completeTaskCount:" + toAddTaskUserList.size());
+						insertTaskUserDo(afTaskUserDo);
 					}
 				}
 			}
 		} catch (Exception e) {
-			logger.error("afTaskUser failed, ", e);
+			logger.error("taskHandler failed, ", e);
 		}
-		logger.info("afTaskUser end..");
+		logger.info("taskHandler end..");
 		return toAddTaskUserList;
 	}
 
@@ -258,7 +260,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
     	AfTaskUserDo afTaskUserDo = new AfTaskUserDo();
 		afTaskUserDo.setTaskName(taskName);
 		afTaskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_1);
-		afTaskUserDo.setTaskId(-1l);
+		afTaskUserDo.setTaskId(-5l);
 		afTaskUserDo.setUserId(userId);
 		afTaskUserDo.setRewardType(1);
 		afTaskUserDo.setCashAmount(cashAmount);
