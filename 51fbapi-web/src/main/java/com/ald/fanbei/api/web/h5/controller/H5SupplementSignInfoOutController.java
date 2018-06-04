@@ -24,11 +24,13 @@ import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -43,7 +45,7 @@ import java.util.*;
 /**
  *签到领金币 补签
  */
-@RestController
+@Controller
 @RequestMapping(value = "/supplementSignReward/", produces = "application/json;charset=UTF-8")
 public class H5SupplementSignInfoOutController extends H5Controller {
 
@@ -86,6 +88,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
      * @param response
      * @return
      */
+    @ResponseBody
     @RequestMapping(value = "/supplementSign", method = RequestMethod.POST)
     public String homePage(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -447,7 +450,7 @@ public class H5SupplementSignInfoOutController extends H5Controller {
         afSignRewardExtService.increaseMoney(afSignRewardExtDo);
     }
 
-
+    @ResponseBody
     @RequestMapping(value = "/supplementSignIn", method = RequestMethod.POST)
     public String getSupplementSign(HttpServletRequest request, HttpServletResponse response) {
         try {
