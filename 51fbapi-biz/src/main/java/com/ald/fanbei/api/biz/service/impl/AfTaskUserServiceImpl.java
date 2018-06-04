@@ -167,7 +167,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 
 					if (!toAddTaskUserList.isEmpty()) {
 						for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
-							afTaskUserDao.insertTaskUserDo(afTaskUserDo);
+							insertTaskUserDo(afTaskUserDo);
 						}
 						return toAddTaskUserList;
 					}
