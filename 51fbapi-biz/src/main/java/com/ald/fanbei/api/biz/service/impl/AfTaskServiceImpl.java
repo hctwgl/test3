@@ -177,7 +177,11 @@ public class AfTaskServiceImpl  implements AfTaskService {
                 finalTaskList.add(afTaskDo);
             }
         }
-
+        for(AfTaskDto task :finalTaskList){
+            if(StringUtil.equals(task.getTaskType(),TaskType.push.getCode())){
+                finalTaskList.remove(task);
+            }
+        }
 
         return finalTaskList;
     }
