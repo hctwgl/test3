@@ -44,7 +44,7 @@ import java.util.*;
  *签到领金币朋友帮签
  */
 @RestController
-@RequestMapping(value = "/friendSignReward/")
+@RequestMapping(value = "/friendSignReward/",produces = "application/json;charset=UTF-8")
 public class H5FriendSignInfoOutController extends H5Controller {
 
     @Resource
@@ -180,7 +180,7 @@ public class H5FriendSignInfoOutController extends H5Controller {
 
 
 
-    @RequestMapping(value = "/friendSignIn", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
+    @RequestMapping(value = "/friendSignIn", method = RequestMethod.POST)
     @Deprecated
     public String getFriendSignIn(HttpServletRequest request, HttpServletResponse response) {
         String resultStr = "";
