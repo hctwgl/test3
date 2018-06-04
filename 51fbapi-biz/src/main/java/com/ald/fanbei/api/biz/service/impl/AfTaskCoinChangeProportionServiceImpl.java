@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import com.ald.fanbei.api.dal.domain.AfTaskCoinChangeProportionDo;
 import com.ald.fanbei.api.biz.service.AfTaskCoinChangeProportionService;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 
 /**
@@ -38,14 +40,17 @@ public class AfTaskCoinChangeProportionServiceImpl implements AfTaskCoinChangePr
 
 	@Override
 	public BigDecimal getYesterdayProportion() {
-		BigDecimal exchangeProportion = (BigDecimal) bizCacheUtil.getObject(CacheConstants.CACHE_KEY_COIN_EXCHANGE_PROPORTION);
+		String currentDate = DateUtil.formatDate(new Date());
+		String key = currentDate + "-proportion";
+
+		BigDecimal exchangeProportion = (BigDecimal) bizCacheUtil.getObject(key);
 		if(null == exchangeProportion){
 			AfTaskCoinChangeProportionDo changeProportionDo = afTaskCoinChangeProportionDao.getYesterdayProportion();
 			if(null == changeProportionDo){
 				return new BigDecimal(0);
 			}
 			exchangeProportion = changeProportionDo.getChangeProportion();
-			bizCacheUtil.saveObject(CacheConstants.CACHE_KEY_COIN_EXCHANGE_PROPORTION, exchangeProportion, Constants.SECOND_OF_AN_HOUR);
+			bizCacheUtil.saveObject(key, exchangeProportion, Constants.SECOND_OF_ONE_DAY);
 		}
 
 		return exchangeProportion;
