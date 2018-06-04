@@ -62,8 +62,6 @@ public class H5WalletController extends BaseController{
         Map<String, Object> data = Maps.newHashMap();
         try{
             String userName = ObjectUtils.toString(request.getParameter("userName"),null);
-//            FanbeiWebContext context = doWebCheck(request, true);
-//            String userName = context.getUserName();
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
             if(null == afUserDo){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
@@ -81,40 +79,28 @@ public class H5WalletController extends BaseController{
 
             // 我的金币
             Long availableCoinAmount = afTaskUserService.getAvailableCoinAmount(userId);
-            data.put("availableCoinAmount", availableCoinAmount ==null?0.00:availableCoinAmount);
-            BigDecimal yesterdayProportion = BigDecimal.ZERO;
+            data.put("availableCoinAmount", availableCoinAmount == null ? 0l : availableCoinAmount);
+            BigDecimal yesterdayProportion = afTaskCoinChangeProportionService.getYesterdayProportion();
+
             // 我的金币兑换，是否昨天已经兑换过
             AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.TASK_COIN_CHANGE_TO_CASH_NAME, userId);
             if(null == taskUserDo){
                 data.put("changeCoinFlag", false);
                 data.put("yesterdayProportion", yesterdayProportion);
                 data.put("changedCoinAmount", 0);
+                data.put("changedCashAmount", 0);
             }
             else{
-                yesterdayProportion = afTaskCoinChangeProportionService.getYesterdayProportion();
-                Long changedCoinAmount = afTaskUserService.getYestadayChangedCoinAmount(userId);
+                Long changedCoinAmount =  Math.abs(taskUserDo.getCoinAmount());
 
                 data.put("changeCoinFlag", true);
                 data.put("yesterdayProportion", yesterdayProportion);
                 data.put("changedCoinAmount", changedCoinAmount);
+                data.put("changedCashAmount", taskUserDo.getCashAmount());
             }
 
             // 近七天的收益情况(cashAmount)
             List<Map<String, Object>> IncomeList = afTaskUserService.getIncomeOfNearlySevenDays(userId);
-            // 近七天的收益情况(coinAmount)
-            List<Map<String, Object>> IncomeLists = afTaskUserService.getIncomeCoinOfNearlySevenDays(userId);
-//            for(Map<String, Object> idata : IncomeList){
-//                for(Map<String, Object> datas : IncomeLists){
-//                    if(StringUtil.equals(DateUtil.getNumberOfDatesBetween((Date)idata.get("rewardDate"),(Date)datas.get("rewardDate"))+"","0")){
-//                        if(Integer.parseInt(idata.get("coinAmount").toString()) <= 0){
-//                            break;
-//                        }else {
-//
-//                        }
-//                    }
-//                }
-//            }
-
             data.put("IncomeList", IncomeList);
 
             return H5CommonResponse.getNewInstance(true,"","", data).toString();
@@ -130,8 +116,6 @@ public class H5WalletController extends BaseController{
     public String getIncomeDetails(HttpServletRequest request, HttpServletResponse response){
         Map<String, Object> data = Maps.newHashMap();
         try{
-//            FanbeiWebContext context = doWebCheck(request, true);
-//            String userName = context.getUserName();
             String userName = ObjectUtils.toString(request.getParameter("userName"),null);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
             if(null == afUserDo){
@@ -156,7 +140,6 @@ public class H5WalletController extends BaseController{
     public String getWithDrawDetail(HttpServletRequest request, HttpServletResponse response){
         Map<String, Object> data = Maps.newHashMap();
         try{
-//            FanbeiWebContext context = doWebCheck(request, true);
             String withdrawId = request.getParameter("withdrawId");
             AfCashRecordDo cashRecordDo = afCashRecordService.getCashRecordById(Long.parseLong(withdrawId));
             data.put("cashRecord",cashRecordDo);
@@ -175,8 +158,6 @@ public class H5WalletController extends BaseController{
     public String getBindBackStatus(HttpServletRequest request, HttpServletResponse response ){
         Map<String, Object> data = Maps.newHashMap();
         try{
-//            FanbeiWebContext context = doWebCheck(request, true);
-//            String userName = context.getUserName();
             String userName = ObjectUtils.toString(request.getParameter("userName"),null);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
             if(null == afUserDo){

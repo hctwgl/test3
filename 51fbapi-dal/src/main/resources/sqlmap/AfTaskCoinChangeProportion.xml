@@ -32,7 +32,7 @@
         SELECT
         <include refid="queryFields" />
         FROM af_task_coin_change_proportion
-        WHERE is_delete = 0 AND TO_DAYS(change_date) - TO_DAYS(now()) = 1
+        WHERE is_delete = 0 AND date(gmt_create) = date(now())
         LIMIT 0,1
     </select>
 
