@@ -303,8 +303,9 @@
         ) a where  t.id = a.task_id
         and t.is_delete = 0
         AND t.is_open = 1
+        AND t.is_daily_update = 0
         AND t.task_type = #{taskType}
-        AND t.task_begin_time) <![CDATA[   <=  ]]> now()
+        AND t.task_begin_time <![CDATA[   <=  ]]> now()
         And date(t.task_end_time) <![CDATA[   >=  ]]> date(now())
         ORDER BY t.gmt_create DESC
     </select>
