@@ -142,7 +142,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 				if(!taskList.isEmpty()){
 					for (AfTaskDo taskDo : taskList) {
 						if (StringUtils.equals(AfTaskSecType.CATEGORY.getCode(), taskDo.getTaskSecType())) {
-							if (isMatchedId(taskDo.getTaskCondition(), goodsId)) {
+							if (isMatchedId(taskDo.getTaskCondition(), categoryId)) {
 								taskUserDo = buildTaskUserDo(taskDo, userId);
 								toAddTaskUserList.add(taskUserDo);
 							}
@@ -153,7 +153,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 							}
 
 						} else if (StringUtils.equals(AfTaskSecType.COMMODITY.getCode(), taskDo.getTaskSecType())) {
-							if (isMatchedId(taskDo.getTaskCondition(), categoryId)) {
+							if (isMatchedId(taskDo.getTaskCondition(), goodsId)) {
 								taskUserDo = buildTaskUserDo(taskDo, userId);
 								toAddTaskUserList.add(taskUserDo);
 							}
