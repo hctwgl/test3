@@ -298,7 +298,10 @@
         ) a
         LEFT JOIN (
             SELECT date(reward_time) AS rewardDate, SUM(cash_amount) AS cashAmount
-            FROM af_task_user where user_id = #{userId} and status = 1 and cash_amount > 0
+            FROM af_task_user where user_id = #{userId}
+            and status = 1
+            and reward_type = 1
+            and cash_amount > 0
             GROUP BY rewardDate
         ) b ON a.rewardDate = b.rewardDate
         ORDER BY a.rewardDate DESC

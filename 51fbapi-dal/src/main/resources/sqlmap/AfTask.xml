@@ -280,7 +280,7 @@
         and task_condition = #{taskContition}
         </if>
         and task_begin_time <![CDATA[<=]]>  now()
-        and task_end_time <![CDATA[>]]> now()
+        and date(task_end_time) <![CDATA[>=]]> date(now())
         and user_level in
         <foreach collection="userLevelList" item="item" index="index"
                  separator="," open="(" close=")">
@@ -302,8 +302,8 @@
         and t.is_delete = 0
         AND t.is_open = 1
         AND t.task_type = #{taskType}
-        AND t.task_begin_time <![CDATA[   <=  ]]> now()
-        And t.task_end_time <![CDATA[   >  ]]> now()
+        AND t.task_begin_time) <![CDATA[   <=  ]]> now()
+        And date(t.task_end_time) <![CDATA[   >=  ]]> date(now())
         ORDER BY t.gmt_create DESC
     </select>
 
@@ -323,7 +323,7 @@
         AND t.is_daily_update = 1
         AND t.task_type = #{taskType}
         AND t.task_begin_time <![CDATA[   <=  ]]> now()
-        And t.task_end_time <![CDATA[   >  ]]> now()
+        And date(t.task_end_time) <![CDATA[   >=  ]]> date(now())
         ORDER BY t.gmt_create DESC
     </select>
 

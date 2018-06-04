@@ -44,6 +44,7 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 	
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
+		logger.info("addBrowseTaskUser start..");
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		try{
 			Long userId = context.getUserId();
