@@ -316,7 +316,7 @@ public class GetGoodsDetailInfoApi implements ApiHandle{
 		final AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
 		 if (vipGoodsResourceDo != null){
 			 Long vipGoodsId = NumberUtil.objToLongDefault(vipGoodsResourceDo.getValue(), 0L);
-		     if (goods.getRid() == vipGoodsId){
+		     if (goods.getRid().longValue() == vipGoodsId.longValue()){
 		    	 goodsType = AfGoodsSpecType.AUTH.getCode();
 		     }
 		   }
