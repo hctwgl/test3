@@ -99,7 +99,7 @@ public class H5SignInfoOutController extends H5Controller {
                 throw new FanbeiException("param error", FanbeiExceptionCode.PARAM_ERROR);
             }
 
-            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
+            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.MOBILE_BIND.getCode());
             if (smsDo == null) {
                 logger.error("sms record is empty");
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
@@ -255,7 +255,7 @@ public class H5SignInfoOutController extends H5Controller {
             String secret = afResource.getValue1();
             final JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
             Map<String, Object> data = new HashMap<String, Object>();
-            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.REGIST.getCode());
+            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.MOBILE_BIND.getCode());
             if (smsDo == null) {
                 logger.error("sms record is empty");
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
