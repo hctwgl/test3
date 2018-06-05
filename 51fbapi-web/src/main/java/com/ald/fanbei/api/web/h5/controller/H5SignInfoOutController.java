@@ -312,9 +312,9 @@ public class H5SignInfoOutController extends H5Controller {
                 data = homeInfo(eUserDo.getRid(),data,push);
                 data.put("flag","fail");
                 if(StringUtil.equals(status,"fail")){
-                    return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.WX_BIND_FAIL.getDesc(),"",data).toString();
+                    return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.WX_BIND_FAIL.getDesc(),"",data).toString();
                 }
-                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.SUPPLEMENT_SIGN_FAIL.getDesc(),"",data).toString();
+                return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUPPLEMENT_SIGN_FAIL.getDesc(),"",data).toString();
             }
             try {
                 tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), moblie, moblie, "");
