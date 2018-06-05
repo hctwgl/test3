@@ -13,9 +13,11 @@ import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfUserCouponStatus;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.druid.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -346,10 +348,26 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
                             //送优惠券
                             if (couponDo != null) {
                                 AfUserCouponDo userCoupon = new AfUserCouponDo();
+
+								if (StringUtils.equals(couponDo.getExpiryType(), "R")) {
+									userCoupon.setGmtStart(couponDo.getGmtStart());
+									userCoupon.setGmtEnd(couponDo.getGmtEnd());
+									if (DateUtil.afterDay(new Date(), couponDo.getGmtEnd())) {
+										userCoupon.setStatus(CouponStatus.EXPIRE.getCode());
+									}
+								} else {
+									userCoupon.setGmtStart(new Date());
+									if (couponDo.getValidDays() == -1) {
+										userCoupon.setGmtEnd(DateUtil.getFinalDate());
+									} else {
+										userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+									}
+								}
+
                                 userCoupon.setCouponId(couponDo.getRid());
                                 userCoupon.setGmtCreate(new Date());
-                                userCoupon.setGmtStart(couponDo.getGmtStart());
-                                userCoupon.setGmtEnd(couponDo.getGmtEnd());
+                              //  userCoupon.setGmtStart(couponDo.getGmtStart());
+                               // userCoupon.setGmtEnd(couponDo.getGmtEnd());
                                 userCoupon.setUserId(userId);
                                 userCoupon.setStatus(AfUserCouponStatus.NOUSE.getCode());
                                 userCoupon.setSourceType(CouponSenceRuleType.SHARE_ACTIVITY.getCode());
