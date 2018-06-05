@@ -367,7 +367,9 @@ public class H5SignInfoOutController extends H5Controller {
         boolean result ;
         final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
 
-        final Long rewardUserId = NumberUtil.objToLongDefault(request.getParameter("rewardUserId"),null);
+        String userName = ObjectUtils.toString(request.getParameter("rewardUserId"),null);
+        AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+        final Long rewardUserId = afUserDo.getRid();//分享者的userId
         if(afResourceDo == null ||  numberWordFormat.isNumeric(afResourceDo.getValue())){
             throw new FanbeiException("param error", FanbeiExceptionCode.PARAM_ERROR);
         }
