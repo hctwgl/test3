@@ -38,21 +38,24 @@ import java.util.Date;
 public class GetReceiveRewardApi implements H5Handle {
 
     @Resource
-    AfTaskService afTaskService;
+    AfUserCouponService afUserCouponService;
     @Resource
     AfTaskUserService afTaskUserService;
     @Resource
     BizCacheUtil bizCacheUtil;
+    @Resource
+    TransactionTemplate transactionTemplate;
+    @Resource
+    AfUserAccountService afUserAccountService;
 
     @Override
     public H5HandleResponse process(final Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
-        String isDailyUpdate = ObjectUtils.toString(context.getData("isDailyUpdate").toString(),null);
-        String taskName = ObjectUtils.toString(context.getData("taskName").toString(),null);
-        Long taskId = NumberUtil.objToLongDefault(context.getData("taskId"),0l);
-        Long userId = context.getUserId();
+        final String isDailyUpdate = ObjectUtils.toString(context.getData("isDailyUpdate").toString(),null);
+        final String taskName = ObjectUtils.toString(context.getData("taskName").toString(),null);
+        final Long taskId = NumberUtil.objToLongDefault(context.getData("taskId"),0l);
+        final Long userId = context.getUserId();
         Calendar now = Calendar.getInstance();
-        int count = 0;
         AfTaskUserDo afTaskUserDo = new AfTaskUserDo();
         afTaskUserDo.setTaskId(taskId);
         afTaskUserDo.setUserId(userId);
@@ -61,6 +64,7 @@ public class GetReceiveRewardApi implements H5Handle {
         afTaskUserDo.setRewardTime(new Date());
         afTaskUserDo.setTaskName(taskName);
         String key = "";
+        String status = "";
         if(isDailyUpdate != null){
             if(StringUtil.equals(isDailyUpdate,"1")){//每日任务
                 if(StringUtil.equals(taskName, Constants.BROWSE_TASK_NAME)){//每日浏览3个商品任务(特殊处理)
@@ -68,29 +72,23 @@ public class GetReceiveRewardApi implements H5Handle {
                     //幂等性(防止领取奖励多次领取)
                     if(null == bizCacheUtil.getObject(key)){
                         bizCacheUtil.saveObject(key,new Date(),Constants.SECOND_OF_ONE_DAY);
-                        count = afTaskUserService.updateDailyByTaskNameAndUserId(afTaskUserDo);
-                    }else {
-                        count = 1;
+                        status = getStatus(taskId,userId,taskName);
                     }
                 }else{
                     key = userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+taskId;
                     if(null == bizCacheUtil.getObject(key)){
                         bizCacheUtil.saveObject(key,new Date(),Constants.SECOND_OF_ONE_DAY);
-                        count = afTaskUserService.updateDailyByTaskNameAndUserId(afTaskUserDo);
-                    }else {
-                        count = 1;
+                        status = getStatus(taskId,userId,taskName);
                     }
                 }
             }else if(StringUtil.equals(isDailyUpdate,"0")){//非每日任务
                 key = userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+taskId;
                 if(null == bizCacheUtil.getObject(key)){
                     bizCacheUtil.saveObjectForever(key,new Date());
-                    count = afTaskUserService.updateDailyByTaskNameAndUserId(afTaskUserDo);
-                }else {
-                    count = 1;
+                    status = getStatus(taskId,userId,taskName);
                 }
             }
-            if(count<1){
+            if(StringUtil.equals(status,"fail")){
                 bizCacheUtil.delCache(key);
                 return new H5HandleResponse(context.getId(), FanbeiExceptionCode.RECEIVE_REWARD_FAIL);
             }
@@ -100,6 +98,46 @@ public class GetReceiveRewardApi implements H5Handle {
         return resp;
     }
 
+
+    private String getStatus (final Long taskId,final Long userId,final String taskName){
+        String status = transactionTemplate.execute(new TransactionCallback<String>() {
+            @Override
+            public String doInTransaction(TransactionStatus status) {
+                try{
+                    AfTaskUserDo afTaskUserDo = new AfTaskUserDo();
+                    afTaskUserDo.setTaskId(taskId);
+                    afTaskUserDo.setUserId(userId);
+                    afTaskUserDo.setGmtModified(new Date());
+                    afTaskUserDo.setStatus(1);
+                    afTaskUserDo.setRewardTime(new Date());
+                    afTaskUserDo.setTaskName(taskName);
+                    afTaskUserService.updateDailyByTaskNameAndUserId(afTaskUserDo);
+                    AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(taskName,userId);
+                    if(taskUserDo.getRewardType() == 1){
+                        AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
+                        afUserAccountDo.setRebateAmount(taskUserDo.getCashAmount());
+                        afUserAccountDo.setUserId(userId);
+                        afUserAccountService.updateRebateAmount(afUserAccountDo);
+                    }else if(taskUserDo.getRewardType() == 2){
+                        AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
+                        afUserCouponDo.setUserId(userId);
+                        afUserCouponDo.setCouponId(taskUserDo.getCouponId());
+                        afUserCouponDo.setGmtCreate(new Date());
+                        afUserCouponDo.setGmtModified(new Date());
+                        afUserCouponDo.setSourceType("SIGN_REWARD");
+                        afUserCouponDo.setSourceRef("SYS");
+                        afUserCouponDo.setStatus("NOUSE");
+                        afUserCouponService.addUserCoupon(afUserCouponDo);
+                    }
+                    return "success";
+                }catch (Exception e){
+                    status.setRollbackOnly();
+                    return "fail";
+                }
+            }
+        });
+        return status;
+    }
 
 
 }
