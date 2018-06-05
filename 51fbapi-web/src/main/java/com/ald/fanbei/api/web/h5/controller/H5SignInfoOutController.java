@@ -371,8 +371,6 @@ public class H5SignInfoOutController extends H5Controller {
         if(afResourceDo == null ||  numberWordFormat.isNumeric(afResourceDo.getValue())){
             throw new FanbeiException("param error", FanbeiExceptionCode.PARAM_ERROR);
         }
-        final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
-
         String status = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus status) {
@@ -653,6 +651,7 @@ public class H5SignInfoOutController extends H5Controller {
                             afSignRewardExtService.saveRecord(signRewardExt);
                         }else {
                             AfSignRewardExtDo signRewardExtDo = afSignRewardExtService.selectByUserId(userId);
+                            signRewardExtDo.setAmount(amount);
                             afSignRewardExtService.increaseMoney(signRewardExtDo);
                         }
                     }
