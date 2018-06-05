@@ -263,14 +263,22 @@ public class LoginApi implements ApiHandle {
 				if(StringUtil.equals(afResourceDo.getValue(),"1")){
 					AfCouponDo afCouponDo=afCouponService.getCouponById(Long.valueOf(afResourceDo.getValue1()));
 					if(afCouponDo!=null){
+						Long totalCount = afCouponDo.getQuota();
+						if(totalCount != -1 && totalCount != 0 && totalCount <= afCouponDo.getQuotaAlready()){
+							resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR);
+						}
 						AfUserCouponDo afUserCouponDo=new AfUserCouponDo();
 						afUserCouponDo.setGmtStart(afCouponDo.getGmtStart());
 						afUserCouponDo.setGmtEnd(afCouponDo.getGmtEnd());
 						afUserCouponDo.setUserId(userId);
 						afUserCouponDo.setStatus(CouponStatus.NOUSE.getCode());
 						afUserCouponDo.setCouponId(afCouponDo.getRid());
-						afUserCouponDo.setSourceType(afCouponDo.getType());
+						afUserCouponDo.setSourceType(afResourceDo.getType());
 						if(afUserCouponService.addUserCoupon(afUserCouponDo)==1){
+							AfCouponDo couponDo=new AfCouponDo();
+							couponDo.setRid(afCouponDo.getRid());
+							couponDo.setQuotaAlready(1);
+							afCouponService.updateCouponquotaAlreadyById(afCouponDo);
 							try {
 								smsUtil.sendSmsToDhst(afUserDo.getMobile(),afCouponDo.getName());
 							} catch (Exception e) {

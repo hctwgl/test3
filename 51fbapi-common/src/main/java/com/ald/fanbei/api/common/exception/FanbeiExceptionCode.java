@@ -110,6 +110,8 @@ public enum FanbeiExceptionCode {
     USER_GET_TO_COUPON_CENTER("USER_GET_TO_COUPON_CENTER",1215,"user get coupon to my coupon center ","您已领取，可前往我的优惠券中查看~"),
     USER_SIGNIN_SUCCESS("USER_SIGNIN_SUCCESS", 1000, "success", "签到成功"),
     REPLACE_MAIN_CARD_FAIL("REPLACE_MAIN_CARD_FAIL",1216,"replace main card fail","更换银行主副卡失败~"),
+    USER_GET_LOGIN_SUPERMAN_COUPON_ERROR("USER_GET_LOGIN_SUPERMAN_COUPON_ERROR",1217,"coupon nothing  ","优惠券已发完"),
+
     // 1300 -
     USER_CASH_MONEY_ERROR("USER_CASH_MONEY_ERROR",1300,"user cash money error","取现金额超过上限"),
     USER_MAIN_BANKCARD_NOT_EXIST_ERROR("USER_MAIN_BANKCARD_NOT_EXIST_ERROR",1301,"user main bankcard not exist error","您未绑定主卡"),
