@@ -294,12 +294,12 @@ public class H5SignInfoOutController extends H5Controller {
                             afUserThirdInfoService.saveRecord(userThirdInfoDo);
                             AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
                             afSignRewardDo.setIsDelete(0);
-                            afSignRewardDo.setUserId(rewardUserId);
+                            afSignRewardDo.setUserId(eUserDo.getRid());
                             afSignRewardDo.setGmtCreate(new Date());
                             afSignRewardDo.setGmtModified(new Date());
                             afSignRewardDo.setType(SignRewardType.THREE.getCode());
                             afSignRewardDo.setStatus(0);
-                            afSignRewardDo.setFriendUserId(eUserDo.getRid());
+                            afSignRewardDo.setFriendUserId(rewardUserId);
                             afSignRewardDo.setAmount(BigDecimal.ZERO);
                             afSignRewardService.saveRecord(afSignRewardDo);
                             return "success";
