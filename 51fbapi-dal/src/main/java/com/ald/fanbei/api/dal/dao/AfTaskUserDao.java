@@ -53,4 +53,6 @@ public interface AfTaskUserDao  {
 
     int updateDailyByTaskNameAndUserId(AfTaskUserDo afTaskUserDo);
 
+    BigDecimal getAccumulatedIncome(Long userId);
+
 }

@@ -85,14 +85,14 @@ public class H5WalletController extends BaseController{
             }
 
             Long userId = afUserDo.getRid();
-            // 累计收益
+
+            // 可用余额
             AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(userId);
             BigDecimal rebateAmount = userAccountDo.getRebateAmount();
-            BigDecimal ucAmount = userAccountDo.getUcAmount();
-            BigDecimal totalAmount = rebateAmount.add(ucAmount);
-            // 可用余额
             data.put("rebateAmount", rebateAmount);
+
             // 累计收益
+            BigDecimal totalAmount = afTaskUserService.getAccumulatedIncome(userId);
             data.put("totalAmount", totalAmount);
 
             // 我的金币

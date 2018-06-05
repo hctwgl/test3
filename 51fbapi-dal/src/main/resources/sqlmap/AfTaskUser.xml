@@ -412,5 +412,16 @@
         LIMIT 0,1
     </select>
 
+    <select id="getAccumulatedIncome" resultType="java.math.BigDecimal">
+        SELECT
+        sum(cash_amount)
+        FROM af_task_user
+        WHERE is_delete = 0
+        AND reward_type = 1
+        AND `status` = 1
+        AND cash_amount > 0
+        AND user_id = #{userId}
+        LIMIT 0,1
+    </select>
 
 </mapper>
