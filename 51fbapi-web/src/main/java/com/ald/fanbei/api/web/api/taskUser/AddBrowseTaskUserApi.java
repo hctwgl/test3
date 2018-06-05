@@ -52,7 +52,7 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 				Map<String, Object> data = Maps.newHashMap();
 				String goodsId = ObjectUtils.toString(requestDataVo.getParams().get("goodsId"));
 				String taskContition = ObjectUtils.toString(requestDataVo.getParams().get("activityUrl"));
-
+				logger.info("cfp addBrowseTaskUserApi cfp taskContition = " + taskContition);
 				if(StringUtils.isNotEmpty(goodsId)) {
 					// 指定浏览商品、品牌、分类任务等
 					List<AfTaskUserDo> specifiedTaskUserList = afTaskUserService.browerAndShoppingHandler(userId, Long.parseLong(goodsId), AfTaskType.BROWSE.getCode());
