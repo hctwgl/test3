@@ -199,7 +199,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
 //            }
 //        }
 
-        return taskDtos;
+        return finalTaskList;
     }
 
     @Override
