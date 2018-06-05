@@ -264,7 +264,7 @@ public class LoginApi implements ApiHandle {
 					AfCouponDo afCouponDo=afCouponService.getCouponById(Long.valueOf(afResourceDo.getValue1()));
 					if(afCouponDo!=null){
 						Long totalCount = afCouponDo.getQuota();
-						if(totalCount != -1 && totalCount != 0 && totalCount <= afCouponDo.getQuotaAlready()){
+						if(totalCount <= afCouponDo.getQuotaAlready()){
 							resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR);
 						}
 						AfUserCouponDo afUserCouponDo=new AfUserCouponDo();
