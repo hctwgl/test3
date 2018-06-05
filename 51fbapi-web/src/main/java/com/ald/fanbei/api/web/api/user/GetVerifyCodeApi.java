@@ -69,7 +69,7 @@ public class GetVerifyCodeApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_INVALID_MOBILE_NO);
 		}
 
-		if ("majiaborrowSupermanapp".equals(majiabaoName)){
+		if (majiabaoName.contains("borrowSuperman")){
 			smsType = "YS";
 		}
 		AfUserDo afUserDo = null;

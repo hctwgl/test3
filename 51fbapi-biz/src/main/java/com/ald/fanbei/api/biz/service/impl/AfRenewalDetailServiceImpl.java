@@ -217,7 +217,7 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 		//用户信息及当日还款失败次数校验
 		int errorTimes = afRenewalDetailDao.getCurrDayRepayErrorTimes(afRenewalDetailDo.getUserId());
 		try {
-			if ("majiaborrowSupermanapp".equals(majiabaoName)){
+			if (majiabaoName.contains("borrowSuperman")){
 				smsUtil.sendYsSmsConfigMessageToMobile(userDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_JKCR_RENEWAL_DETAIL_FAIL.getCode());
 			}else {
 				smsUtil.sendConfigMessageToMobile(userDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_RENEWAL_DETAIL_FAIL.getCode());

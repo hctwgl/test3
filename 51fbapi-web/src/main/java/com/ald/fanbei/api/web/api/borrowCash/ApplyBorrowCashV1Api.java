@@ -519,7 +519,7 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
                     currDate);
             String bankNumber = card.getCardNumber();
             String lastBank = bankNumber.substring(bankNumber.length() - 4);
-            if ("majiaborrowSupermanapp".equals(afBorrowCashDo.getMajiabaoName())){
+            if (afBorrowCashDo.getMajiabaoName().contains("borrowSuperman")){
                 smsUtil.sendJKCRBorrowCashCode(afUserDo.getUserName(), lastBank);
             }else {
                 smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
