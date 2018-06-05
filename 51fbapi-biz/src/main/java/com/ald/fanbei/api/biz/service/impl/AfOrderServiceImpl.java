@@ -1174,48 +1174,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 				}
 				return riskReturnMap;
 			}
-						 name = orderInfo.getGoodsName();
-						if (orderInfo.getOrderType().equals(OrderType.TRADE.getCode())) {
-							name = orderInfo.getShopName();
-						}
-						 borrow = buildAgentPayBorrow(name, BorrowType.TOCONSUME, userId, orderInfo.getActualAmount(), nper, BorrowStatus.APPLY.getCode(), orderId, orderNo, orderInfo.getBorrowRate(), orderInfo.getInterestFreeJson(), orderInfo.getOrderType(), orderInfo.getSecType());
-						borrow.setVersion(1);
-						 sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						 borrowTime = sdf.format(borrow.getGmtCreate());
-						// 最后调用风控控制
-						 _vcode = getVirtualCode(virtualMap);
-						 str = orderInfo.getGoodsName();
-						if (OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType())) {
-							str = OrderType.BOLUOME.getCode();
-						}
-						if (OrderType.TRADE.getCode().equals(orderInfo.getOrderType())) {
-							AfTradeOrderDo afTradeOrderDo = new AfTradeOrderDo();
-							afTradeOrderDo.setOrderId(orderInfo.getRid());
-							AfTradeOrderDo result = afTradeOrderService.getByCommonCondition(afTradeOrderDo);
-							str = String.valueOf(result.getBusinessId());
-							_vcode = "99";
-						}
-						logger.info("verify userId" + userId);
-						 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), riskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
-						logger.info("verybo=" + verybo);
-						if (verybo.isSuccess()) {
-							logger.info("pay result is true");
-							// #region add by honghzengpei
-							// afRecommendUserService.updateRecommendByBorrow(userId,borrow.getGmtCreate());
-							// #endregion
-							Map<String, Object> riskReturnMap = riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap, orderInfo);
-							if (null != riskReturnMap && (boolean) riskReturnMap.get("success")) {
-								// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
-								if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
-									logger.info("周年庆时间自营商品订单支付成功，送优惠券");
-									// 预售商品回调 处理
-									afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
 
-									}
-								// end by luoxiao
-							}
-							return riskReturnMap;
-						}
 
 						// verybo.getResult()=10,则成功，活动返利
 					} else if (payType.equals(PayType.COMBINATION_PAY.getCode())) {// 组合支付
