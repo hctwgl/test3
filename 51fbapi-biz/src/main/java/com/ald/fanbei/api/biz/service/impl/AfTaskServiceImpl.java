@@ -76,9 +76,6 @@ public class AfTaskServiceImpl  implements AfTaskService {
         List<AfTaskDto> finalTaskList = new ArrayList<AfTaskDto>();
         List<AfTaskDto> taskDtos = new ArrayList<AfTaskDto>();
         List<AfTaskDto> taskList = afTaskDao.getTaskListByUserIdAndUserLevel(level);
-        if(null == bizCacheUtil.getObject(userId+Constants.SIGN_DATE)){
-            bizCacheUtil.saveObjectForever(userId+Constants.SIGN_DATE,new Date());
-        }
         for(AfTaskDo afTaskDo : taskList){
             if(afTaskDo.getIsDailyUpdate().equals("1")){
                 isDailyList.add(afTaskDo.getRid());
@@ -149,6 +146,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
                     break;
                 }
             }
+
             if(StringUtil.equals(afTaskDo.getIsOpen().toString(),"0") || StringUtil.equals(afTaskDo.getIsDelete().toString(),"1")
                     || afTaskDo.getTaskBeginTime().getTime() > new Date().getTime() || afTaskDo.getTaskEndTime().getTime() < new Date().getTime() ){
                 taskFlag = false;

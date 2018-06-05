@@ -101,11 +101,6 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 			List<Integer> userLevelList = afTaskService.getUserLevelByUserId(userId);
 			List<AfTaskDo> taskList = afTaskService.getTaskListByTaskTypeAndUserLevel(afTaskType, userLevelList, null);
 
-			// 用户购物数量
-			if(null == bizCacheUtil.getObject(userId+Constants.SIGN_DATE)){
-				bizCacheUtil.saveObjectForever(userId+Constants.SIGN_DATE,new Date());
-			}
-			int orderCount = afOrderService.getSignFinishOrderCount(userId,(Date)bizCacheUtil.getObject(userId+Constants.SIGN_DATE));
 
 			if(null != taskList && !taskList.isEmpty()) {
 				// 获取商品ID、商品品牌ID、商品分类ID
@@ -158,6 +153,8 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 								toAddTaskUserList.add(taskUserDo);
 							}
 						} else if (StringUtils.equals(AfTaskType.SHOPPING.getCode(), taskDo.getTaskType()) && StringUtils.equals(AfTaskSecType.QUANTITY.getCode(), taskDo.getTaskSecType())) {
+							// 用户购物数量
+							int orderCount = afOrderService.getSignFinishOrderCount(userId,taskDo.getTaskBeginTime());
 							if (orderCount == Integer.parseInt(taskDo.getTaskCondition())) {
 								taskUserDo = buildTaskUserDo(taskDo, userId);
 								toAddTaskUserList.add(taskUserDo);
