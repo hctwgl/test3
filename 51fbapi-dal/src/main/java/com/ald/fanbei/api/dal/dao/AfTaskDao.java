@@ -29,5 +29,6 @@ public interface AfTaskDao {
 
     List<AfTaskDto> getTaskByTaskIds(@Param("taskIds")List<Long> taskIds);
 
+    AfTaskDo getTaskByTaskDo(AfTaskDo afTaskDo);
 
 }

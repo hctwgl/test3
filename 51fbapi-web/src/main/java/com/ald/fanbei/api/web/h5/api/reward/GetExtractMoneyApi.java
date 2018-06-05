@@ -51,8 +51,6 @@ public class GetExtractMoneyApi implements H5Handle {
 
     @Override
     public H5HandleResponse process(final Context context) {
-        StopWatch watch = new StopWatch();
-        watch.start();
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
         final Long userId = context.getUserId();
         String lock = "GetExtractMoneyApi_lock" + userId;
@@ -114,8 +112,6 @@ public class GetExtractMoneyApi implements H5Handle {
                 return resp;
             }finally {
                 bizCacheUtil.delCache(lock);
-                watch.stop();
-                logger.info("watch cfp getExtractMoney"+watch.getTime());
             }
         }else {
             throw new RuntimeException("open:" + "没有获取到锁");

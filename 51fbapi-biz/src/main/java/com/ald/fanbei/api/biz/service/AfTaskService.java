@@ -57,4 +57,6 @@ public interface AfTaskService {
 
     List<AfTaskDto> getTaskByTaskIds(List<Long> taskIds);
 
+    AfTaskDo getTaskByTaskDo(AfTaskDo afTaskDo);
+
 }

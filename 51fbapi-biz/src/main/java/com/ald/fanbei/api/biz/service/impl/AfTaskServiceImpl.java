@@ -247,4 +247,9 @@ public class AfTaskServiceImpl  implements AfTaskService {
         return afTaskDao.getTaskByTaskIds(taskIds);
     }
 
+    @Override
+    public AfTaskDo getTaskByTaskDo(AfTaskDo afTaskDo){
+        return afTaskDao.getTaskByTaskDo(afTaskDo);
+    }
+
 }

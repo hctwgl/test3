@@ -345,5 +345,16 @@
         order by sort desc , gmt_create desc
     </select>
 
+    <select id="getTaskByTaskDo" resultType="AfTaskDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task
+        where is_delete = 0
+        AND is_open = #{isOpen}
+        AND task_type = #{taskType}
+        AND task_sec_type = #{taskSecType}
+        AND task_condition = #{taskCondition}
+    </select>
+
 
 </mapper>
