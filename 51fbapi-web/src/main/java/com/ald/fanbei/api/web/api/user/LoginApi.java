@@ -285,11 +285,10 @@ public class LoginApi implements ApiHandle {
 								logger.error("sendLoginSupermanCouponMsg is Fail.",e);
 							}
 						}
-						loginDo.setResult("true,"+loginChannel);
 					}
 				}
 			}
-
+			loginDo.setResult("true,"+loginChannel);
 		}else {
 			loginDo.setResult("true");
 		}
