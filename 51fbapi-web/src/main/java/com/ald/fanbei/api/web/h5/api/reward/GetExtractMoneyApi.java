@@ -13,6 +13,7 @@ import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -50,10 +51,12 @@ public class GetExtractMoneyApi implements H5Handle {
 
     @Override
     public H5HandleResponse process(final Context context) {
+        StopWatch watch = new StopWatch();
+        watch.start();
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
         final Long userId = context.getUserId();
         String lock = "GetExtractMoneyApi_lock" + userId;
-        boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,200, Constants.SECOND_OF_TEN_MINITS);
+        boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,200, Constants.SECOND_OF_TEN);
         if (isLock) {
             try{
                 final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_PRIZE");
@@ -111,10 +114,13 @@ public class GetExtractMoneyApi implements H5Handle {
                 return resp;
             }finally {
                 bizCacheUtil.delCache(lock);
+                watch.stop();
+                logger.info("watch cfp getExtractMoney"+watch.getTime());
             }
         }else {
             throw new RuntimeException("open:" + "没有获取到锁");
         }
+
 
     }
 
