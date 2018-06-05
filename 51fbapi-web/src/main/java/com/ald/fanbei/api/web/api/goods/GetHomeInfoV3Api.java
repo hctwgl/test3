@@ -714,6 +714,7 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				newConfigInfo.put("navigationOpen","");
 				newConfigInfo.put("navigationClose","");
 				newConfigInfo.put("bannerBackImg","");
+				newConfigInfo.put("statusBarColor","");
 				for (AfResourceDo afResourceDo :	backgroundList) {
 					if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_SEARCH_BACK_COLOR.getCode())) {
 						//app搜索栏背景色
@@ -742,8 +743,9 @@ public class GetHomeInfoV3Api implements ApiHandle {
 					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.BANNER_BACKIMG.getCode())) {
 						//Banner背景图片
 						newConfigInfo.put("bannerBackImg",afResourceDo.getValue());
-					}else {
-						continue;
+					}else if (StringUtil.equals(afResourceDo.getValue1(),AfResourceType.APP_STATUS_BAR_COLOR.getCode())) {
+                        //状态栏颜色0黑色，1白色
+                        newConfigInfo.put("statusBarColor",afResourceDo.getValue3());
 					}
 				}
 				//添加缓存
