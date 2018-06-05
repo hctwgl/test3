@@ -73,12 +73,16 @@ public class GetReceiveRewardApi implements H5Handle {
                     if(null == bizCacheUtil.getObject(key)){
                         bizCacheUtil.saveObject(key,new Date(),Constants.SECOND_OF_ONE_DAY);
                         status = getStatus(taskId,userId,taskName);
+                    }else {
+                        status = "success";
                     }
                 }else{
                     key = userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+taskId;
                     if(null == bizCacheUtil.getObject(key)){
                         bizCacheUtil.saveObject(key,new Date(),Constants.SECOND_OF_ONE_DAY);
                         status = getStatus(taskId,userId,taskName);
+                    }else {
+                        status = "success";
                     }
                 }
             }else if(StringUtil.equals(isDailyUpdate,"0")){//非每日任务
@@ -86,6 +90,8 @@ public class GetReceiveRewardApi implements H5Handle {
                 if(null == bizCacheUtil.getObject(key)){
                     bizCacheUtil.saveObjectForever(key,new Date());
                     status = getStatus(taskId,userId,taskName);
+                }else {
+                    status = "success";
                 }
             }
             if(StringUtil.equals(status,"fail")){
