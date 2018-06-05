@@ -363,7 +363,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 						//修改订单状态为已完成
 						logger.info("updateUserActivityGoodsInfo updateOrderStatus rid: " + orderInfo.getRid() );
 						orderDao.updateOrderStatus(orderInfo.getRid());
-						//获取资源信息
+						/*//获取资源信息
 						AfResourceDo resourceInfo1 = afResourceService.getConfigByTypesAndSecType(Constants.SMS_TEMPLATE, Constants.SMS_ACTIVITY_RESERVATION_GOODS);
 						if(resourceInfo1 != null){
 							String content = resourceInfo1.getValue();
@@ -371,7 +371,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 							String mobile = orderInfo.getConsigneeMobile();
 							logger.info("sendSMS mobile:" + mobile + "  content: " + content);
 							smsUtil.sendSmsToDhstAishangjie(mobile, content);
-						}
+						}*/
 					}
 					//付售价
 				}else {
