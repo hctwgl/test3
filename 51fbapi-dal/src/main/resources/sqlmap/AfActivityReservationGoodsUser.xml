@@ -204,7 +204,7 @@
     <select id="getReservationGoodsList" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDo" >
         SELECT g.id rid,ifnull(t.activity_price,g.`sale_amount` ) activity_price,g.*
         FROM af_activity_reservation_goods s
-        INNER JOIN af_goods g ON s.goods_id = g.id
+        INNER JOIN af_goods g ON s.goods_id = g.id and g.status = 'PUBLISH'
         LEFT JOIN (SELECT min(a.special_price) 'activity_price',a.goods_id
         FROM`af_seckill_activity_goods` a
         INNER JOIN af_seckill_activity b ON a.activity_id = b.id
