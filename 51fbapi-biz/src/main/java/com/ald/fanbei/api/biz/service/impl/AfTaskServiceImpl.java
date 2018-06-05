@@ -74,10 +74,9 @@ public class AfTaskServiceImpl  implements AfTaskService {
         List<Long> isNotDailyList = new ArrayList<Long>();
         List<Long> notFinishedList = new ArrayList<Long>();
         List<AfTaskDto> finalTaskList = new ArrayList<AfTaskDto>();
-        List<AfTaskDto> taskDtos = new ArrayList<AfTaskDto>();
         List<AfTaskDto> taskList = afTaskDao.getTaskListByUserIdAndUserLevel(level);
         for(AfTaskDo afTaskDo : taskList){
-            if(afTaskDo.getIsDailyUpdate().equals("1")){
+            if(afTaskDo.getIsDailyUpdate()== 1){
                 isDailyList.add(afTaskDo.getRid());
             }else{
                 isNotDailyList.add(afTaskDo.getRid());
@@ -191,13 +190,6 @@ public class AfTaskServiceImpl  implements AfTaskService {
                 finalTaskList.add(afTaskDo);
             }
         }
-//        for(AfTaskDto task :finalTaskList){
-//            if(StringUtil.equals(task.getTaskType(),TaskType.push.getCode()) &&
-//                    (StringUtil.equals(push,"Y"))){
-//            }else{
-//                taskDtos.add(task);
-//            }
-//        }
 
         return finalTaskList;
     }
