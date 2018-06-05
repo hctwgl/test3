@@ -1200,10 +1200,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
 					}
 					// end by luoxiao
-
-					// add by luoxiao for 边逛边赚,满足任务就给与奖励
-					afTaskUserService.browerAndShoppingHandler(orderInfo.getUserId(), orderInfo.getGoodsId(), AfTaskType.SHOPPING.getCode());
-					// end by luoxiao
 				}
 				return riskReturnMap;
 			}
@@ -1821,10 +1817,6 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		}
 		// end by luoxiao
 
-		// add by luoxiao for 边逛边赚,满足任务就给与奖励
-		afTaskUserService.browerAndShoppingHandler(orderInfo.getUserId(), orderInfo.getGoodsId(), AfTaskType.SHOPPING.getCode());
-		// end by luoxiao
-
 			// ----------------------------begin map:add one time for tiger
 			// machine in the certain date---------------------------------
 			AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY",
@@ -2278,6 +2270,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							userAccount.setRebateAmount(userAccount.getRebateAmount().add(refundAmount).subtract(getCreditCardRefundFee(refundAmount)));
 							afUserAccountDao.updateOriginalUserAccount(userAccount);
 							afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CREDIT_CARD_REFUND, refundAmount, userId, orderInfo.getRid()));
+
+							// add by luoxiao for 边逛边赚，增加零钱明细
+							afTaskUserService.addTaskUser(userAccount.getUserId(),UserAccountLogType.CREDIT_CARD_REFUND.getName(),refundAmount.subtract(getCreditCardRefundFee(refundAmount)));
+							// end by luoxiao
 
 							//修改订单状态
 							AfOrderDo tempOrderInfoCredit = new AfOrderDo();
