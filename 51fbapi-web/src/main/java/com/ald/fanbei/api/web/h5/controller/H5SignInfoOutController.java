@@ -199,7 +199,6 @@ public class H5SignInfoOutController extends H5Controller {
             Long userId = afUserDo.getRid();
             //判断用户和openId是否在爱上街绑定
             AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
-            logger.info("thirdInfo = " + thirdInfo);
             if(thirdInfo == null){
                 data.put("openType","2");
                 return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
@@ -389,19 +388,21 @@ public class H5SignInfoOutController extends H5Controller {
                     userThirdInfoDo.setThirdInfo(userWxInfo.toJSONString());
                     userThirdInfoDo.setUserName(moblie);
                     afUserThirdInfoService.saveRecord(userThirdInfoDo);
+
+                    //补签成功 打开者获取相应的奖励
+                    AfSignRewardDo rewardDo = buildSignReward(userId, SignRewardType.FIVE.getCode(),null,amount,null);
+                    afSignRewardService.saveRecord(rewardDo);
+                    //补签成功 打开者增加余额
+                    AfSignRewardExtDo afSignRewardExt = buildSignRewardExt(userId,amount);
+                    afSignRewardExtService.saveRecord(afSignRewardExt);
+
                     AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(rewardUserId);
                     //补签成功 分享者获取相应的奖励
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(afSignRewardExtDo.getFirstDayParticipation());
                     calendar.add(Calendar.DAY_OF_MONTH,time);
                     Date date =calendar.getTime();
-                    AfSignRewardDo afSignRewardDo = buildSignReward(rewardUserId,SignRewardType.TWO.getCode(),userId,rewardAmount,date);
-                    //补签成功 打开者获取相应的奖励
-                    AfSignRewardDo rewardDo = buildSignReward(userId, SignRewardType.FIVE.getCode(),null,amount,null);
-                    List<AfSignRewardDo> signList = new ArrayList<>();
-                    signList.add(afSignRewardDo);
-                    signList.add(rewardDo);
-                    afSignRewardService.saveRecordBatch(signList);
+
                     //补签成功 分享者增加余额
                     Map<String,String> days = afSignRewardService.supplementSign(afSignRewardExtDo,0,"N");
                     String str[] = days.get("signDays").toString().split(",");
@@ -411,11 +412,11 @@ public class H5SignInfoOutController extends H5Controller {
                     }else{
                         count = str.length+1;
                     }
+                    BigDecimal rewardAmount  = randomNum(afResourceDo.getValue3(),afResourceDo.getValue4()).setScale(2, RoundingMode.HALF_EVEN);
                     if(count == 1){
                         afSignRewardExtDo.setAmount(rewardAmount);
-                        final AfSignRewardExtDo signRewardExtDo = afSignRewardExtDo;
                         afSignRewardExtDo.setFirstDayParticipation(new Date());
-                        afSignRewardExtService.increaseMoney(signRewardExtDo);
+                        afSignRewardExtService.increaseMoney(afSignRewardExtDo);
                     }else {
                         if(str.length>1){
                             sortStr(str);
@@ -435,23 +436,28 @@ public class H5SignInfoOutController extends H5Controller {
                         if(count >= 5 && count < 7){
                             //给予连续5天的奖励
                             if(maxCount < 5 && newMaxCount == 5){
+                                rewardAmount = rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN);
+                                afSignRewardExtDo.setAmount(rewardAmount);
                                 fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
                             }
                         }else if(count >= 7 && count< 10){
                             //给予连续5天的奖励
                             if(maxCount < 5 && newMaxCount == 5){
+                                rewardAmount = rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN);
                                 fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
                             }else if(maxCount < 5 && newMaxCount == 7){//给予连续5天和7天的奖励
-                                afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2, RoundingMode.HALF_EVEN));
+                                rewardAmount = rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN);
                                 fiveOrSevenSignDays(afSignRewardExtDo,afSignRewardExtDo.getAmount(),rewardDo,afResourceDo);
                             }else if(maxCount >= 5 && newMaxCount == 7){//给予连续7天的奖励
-                                afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN));
+                                rewardAmount = rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN);
+                                afSignRewardExtDo.setAmount(rewardAmount);
                                 afSignRewardExtService.increaseMoney(afSignRewardExtDo);
                             }
                         }else if(count == 10){
                             //给予连续7天和10天的奖励
                             if(maxCount < 7){
-                                afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(4)).setScale(2,RoundingMode.HALF_EVEN));
+                                rewardAmount = rewardAmount.multiply(new BigDecimal(4)).setScale(2,RoundingMode.HALF_EVEN);
+                                afSignRewardExtDo.setAmount(rewardAmount);
                                 afSignRewardExtService.increaseMoney(afSignRewardExtDo);
                             }
                         }else {//给予普通签到的奖励
@@ -459,13 +465,8 @@ public class H5SignInfoOutController extends H5Controller {
                             afSignRewardExtService.increaseMoney(afSignRewardExtDo);
                         }
                     }
-
-                    afSignRewardExtDo.setAmount(rewardAmount);
-                    afSignRewardExtService.increaseMoney(afSignRewardExtDo);
-                    //补签成功 打开者增加余额
-                    AfSignRewardExtDo afSignRewardExt = buildSignRewardExt(userId,amount);
-                    afSignRewardExtService.saveRecord(afSignRewardExt);
-//
+                    AfSignRewardDo afSignRewardDo = buildSignReward(rewardUserId,SignRewardType.TWO.getCode(),userId,rewardAmount,date);
+                    afSignRewardService.saveRecord(afSignRewardDo);
                     return "success";
                 }catch (Exception e){
                     status.setRollbackOnly();
@@ -635,61 +636,27 @@ public class H5SignInfoOutController extends H5Controller {
                     userThirdInfoDo.setThirdInfo(userWxInfo.toJSONString());
                     userThirdInfoDo.setUserName(moblie);
                     afUserThirdInfoService.saveRecord(userThirdInfoDo);
-                    //帮签成功 打开者获取相应的奖励金额
-                    BigDecimal amount ;
-                    if(StringUtil.equals("new",user)){
-                        amount = randomNum(afResource.getValue1(),afResource.getValue2()).setScale(2, RoundingMode.HALF_UP);
-                    }else{
-                        if(!flag){
-                            amount = randomNum(afResource.getValue1(),afResource.getValue2()).setScale(2, RoundingMode.HALF_UP);
-                        }else{
-                            amount = randomNum(afResource.getValue3(),afResource.getValue4()).setScale(2, RoundingMode.HALF_UP);
-                        }
-                    }
+
                     //帮签成功 分享者获取相应的奖励
                     AfSignRewardDo rewardDo = buildSignReward(rewardUserId, SignRewardType.ONE.getCode(),userId,rewardAmount,null);
-                    //帮签成功 打开者获取相应的奖励
-                    AfSignRewardDo afSignRewardDo = buildSignReward(userId, SignRewardType.FOUR.getCode(),null,amount,null);
                     afSignRewardService.saveRecord(rewardDo);
-                    afSignRewardService.saveRecord(afSignRewardDo);
-                    List<Long> list = new ArrayList<>();
-                    list.add(userId);
-                    list.add(rewardUserId);
-                    List<AfSignRewardExtDo> signList = afSignRewardExtService.selectByUserIds(list);
-                    if(signList.size()>0){
-                        if(signList.size() == 2){
-                            for(AfSignRewardExtDo signRewardExt : signList){
-                                if(StringUtil.equals(signRewardExt.getUserId()+"",userId+"")){
-                                    signRewardExt.setAmount(amount);
-                                    afSignRewardExtService.increaseMoney(signRewardExt);
-                                }else if(StringUtil.equals(signRewardExt.getUserId()+"",rewardUserId+"")){
-                                    signRewardExt.setAmount(rewardAmount);
-                                    afSignRewardExtService.increaseMoney(signRewardExt);
-                                }
-                            }
+                    AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(rewardUserId);
+                    afSignRewardExtService.increaseMoney(afSignRewardExtDo);
+
+                    //帮签成功 打开者获取相应的奖励金额(第一次签到)
+                    if(StringUtil.equals("new",user) || ((StringUtil.equals("old",user) && !flag))){
+                        BigDecimal amount = randomNum(afResource.getValue1(),afResource.getValue2()).setScale(2, RoundingMode.HALF_UP);
+                        AfSignRewardDo afSignRewardDo = buildSignReward(userId, SignRewardType.FOUR.getCode(),null,amount,null);
+                        afSignRewardService.saveRecord(afSignRewardDo);
+                        if(StringUtil.equals("new",user)){
+                            AfSignRewardExtDo signRewardExt = buildSignRewardExt(userId,afSignRewardDo.getAmount());
+                            afSignRewardExtService.saveRecord(signRewardExt);
                         }else {
-                            if(StringUtil.equals(signList.get(0).getUserId()+"",userId+"")){
-                                signList.get(0).setAmount(afSignRewardDo.getAmount());
-                                afSignRewardExtService.increaseMoney(signList.get(0));
-                                AfSignRewardExtDo signRewardExt = buildSignRewardExt(rewardUserId,rewardDo.getAmount());
-                                afSignRewardExtService.saveRecord(signRewardExt);
-                            }else{
-                                signList.get(0).setAmount(rewardDo.getAmount());
-                                afSignRewardExtService.increaseMoney(signList.get(0));
-                                AfSignRewardExtDo signRewardExt = buildSignRewardExt(userId,afSignRewardDo.getAmount());
-                                afSignRewardExtService.saveRecord(signRewardExt);
-                            }
+                            AfSignRewardExtDo signRewardExtDo = afSignRewardExtService.selectByUserId(userId);
+                            afSignRewardExtService.increaseMoney(signRewardExtDo);
                         }
-                    }else{
-                        //帮签成功 打开者增加余额
-                        AfSignRewardExtDo afSignRewardExt = buildSignRewardExt(userId,afSignRewardDo.getAmount());
-                        //帮签成功 分享者增加余额
-                        AfSignRewardExtDo signRewardExt = buildSignRewardExt(rewardUserId,rewardDo.getAmount());
-                        List<AfSignRewardExtDo> signExtlist = new ArrayList<>();
-                        signExtlist.add(afSignRewardExt);
-                        signExtlist.add(signRewardExt);
-                        afSignRewardExtService.saveRecordBatch(signExtlist);
                     }
+//                      amount = randomNum(afResource.getValue3(),afResource.getValue4()).setScale(2, RoundingMode.HALF_UP);
                     return "success";
                 }catch (Exception e){
                     status.setRollbackOnly();
@@ -770,14 +737,12 @@ public class H5SignInfoOutController extends H5Controller {
         }
         final BigDecimal resultAmount = rewardAmount.setScale(2, RoundingMode.HALF_UP);
 
-        BigDecimal amount;
+        BigDecimal amount = BigDecimal.ZERO;
         if(!flag){
             amount =  randomNum(afResource.getValue1(),afResource.getValue2()).setScale(2, RoundingMode.HALF_UP);
-        }else{
-            amount = randomNum(afResource.getValue3(),afResource.getValue4()).setScale(2, RoundingMode.HALF_UP);
         }
         final BigDecimal friendAmount = amount.setScale(2, RoundingMode.HALF_UP);
-        data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(amount).setScale(2, RoundingMode.HALF_UP));
+        data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(friendAmount).setScale(2, RoundingMode.HALF_UP));
         afSignRewardDo.setAmount(resultAmount);
         final AfSignRewardDo signRewardDo = afSignRewardDo;
         String status = transactionTemplate.execute(new TransactionCallback<String>() {
@@ -788,14 +753,14 @@ public class H5SignInfoOutController extends H5Controller {
                     AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(userId);
                     afSignRewardExtDo.setAmount(resultAmount);
                     afSignRewardExtService.increaseMoney(afSignRewardExtDo);
-                    //打开者 帮签成功 获取相应的奖励
-
-                    AfSignRewardExtDo afSignRewardExt = buildSignRewardExt(friendUserId,friendAmount);
-                    afSignRewardExtService.increaseMoney(afSignRewardExt);
-
-                    AfSignRewardDo rewardDo = buildSignReward(friendUserId, SignRewardType.FOUR.getCode(),null,friendAmount,null);
                     afSignRewardService.saveRecord(signRewardDo);
-                    afSignRewardService.saveRecord(rewardDo);
+                    //打开者 帮签成功 获取相应的奖励(第一次签到才有奖励)
+                    if(!flag){
+                        AfSignRewardExtDo afSignRewardExt = buildSignRewardExt(friendUserId,friendAmount);
+                        afSignRewardExtService.increaseMoney(afSignRewardExt);
+                        AfSignRewardDo rewardDo = buildSignReward(friendUserId, SignRewardType.FOUR.getCode(),null,friendAmount,null);
+                        afSignRewardService.saveRecord(rewardDo);
+                    }
                     return "success";
                 }catch (Exception e){
                     status.setRollbackOnly();
