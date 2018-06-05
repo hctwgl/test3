@@ -162,6 +162,7 @@
         FROM af_sign_reward
         WHERE is_delete = 0
         AND user_id = #{userId}
+        AND type != 3
         ORDER BY gmt_create desc
     </select>
 
