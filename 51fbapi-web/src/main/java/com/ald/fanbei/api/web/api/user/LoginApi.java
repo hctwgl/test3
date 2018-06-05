@@ -272,7 +272,7 @@ public class LoginApi implements ApiHandle {
 						afUserCouponDo.setSourceType(afCouponDo.getType());
 						if(afUserCouponService.addUserCoupon(afUserCouponDo)==1){
 							try {
-								smsUtil.sendSmsToDhst(userName,afUserDo.getMobile());
+								smsUtil.sendSmsToDhst(afUserDo.getMobile(),afCouponDo.getName());
 							} catch (Exception e) {
 								logger.error("sendLoginSupermanCouponMsg is Fail.",e);
 							}
