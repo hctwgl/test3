@@ -72,6 +72,7 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 				} else if(StringUtils.isNotEmpty(taskContition)){
 					// 浏览活动链接任务
 					List<AfTaskUserDo> specifiedTaskUserList = afTaskUserService.taskHandler(userId, AfTaskType.BROWSE.getCode(),taskContition);
+					logger.info("cfp addBrowseTaskUserApi cfp specifiedTaskUserList = " + specifiedTaskUserList);
 					String taskUserIds = buildTaskUserIds(specifiedTaskUserList);
 					if(StringUtils.isNotEmpty(taskUserIds)){
 						data.put("taskUserIds", taskUserIds);
