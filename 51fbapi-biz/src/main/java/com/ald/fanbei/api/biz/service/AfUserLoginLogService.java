@@ -35,4 +35,8 @@ public interface AfUserLoginLogService {
 
 
 	long getCountByUserNameAndResultTrue(String userName);
+
+	long getCountByUserNameAndResultSupermanTrue(String userName);
+
+
 }

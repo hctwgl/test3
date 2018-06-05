@@ -139,9 +139,9 @@ public enum AfResourceType {
 
 	ZHIMA_VERIFY_CONFIG("ZHIMA_VERIFY_CONFIG","芝麻信用认证相关配置"),
 
-	BUBBLE_AUTH_CONFIG("BUBBLE_AUTH_CONFIG","芝麻信用认证相关配置");
+	BUBBLE_AUTH_CONFIG("BUBBLE_AUTH_CONFIG","芝麻信用认证相关配置"),
 
-
+	LOGIN_SUPERMAN_COUPON("LOGIN_SUPERMAN_COUPON","贷款超人首次登陆优惠配置");
 	private String code;
     private String name;
     AfResourceType(String code, String name) {

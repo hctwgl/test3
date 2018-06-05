@@ -92,7 +92,8 @@ public enum AfResourceSecType {
 		SMS_APPLY_BORROWCASH_TRANSED_FAIL("SMS_APPLY_BORROWCASH_TRANSED_FAIL","现金借贷放款失败通知用户"),
 		SMS_EDSPAY_LOAN_TIMEOUT("SMS_EDSPAY_LOAN_TIMEOUT","浙商实时放款超时通知钱包相关人员"),
 		SMS_MOBILE_OPERATE_FAIL("SMS_MOBILE_OPERATE_FAIL","运营商认证异步失败通知用户"),
-		FUND_SIDE_BORROW_CASH_ONOFF("FUND_SIDE_BORROW_CASH_ONOFF", "打款时引入资金方配置开关"),
+	    SMS_SUPERMAN_LOGIN_COUPON("SMS_SUPERMAN_LOGIN_COUPON","借款超人首次登陆优惠卷发放"),
+	    FUND_SIDE_BORROW_CASH_ONOFF("FUND_SIDE_BORROW_CASH_ONOFF", "打款时引入资金方配置开关"),
 		ASSET_SIDE_CONFIG_BANK_INFOS("ASSET_SIDE_CONFIG_BANK_INFOS", "资产方债权对应开户行信息配置"),
 		YIXIN_AFU_SEARCH("YIXIN_AFU_SEARCH","宜信阿福查询限制配置"),
 		RISK_POUNDAGE_USERNAME_LIST("RISK_POUNDAGE_USERNAME_LIST","用户分层利率从风控直接取的手机号配置"),
@@ -105,7 +106,8 @@ public enum AfResourceSecType {
 		//v:开放Y/N v1:展示 0文字1数 v2:Y严格认证 N默认通过v3:分界app版本v4:老用户重认时间界限
 		ZHIMA_VERIFY_RULE_CONFIG("ZHIMA_VERIFY_RULE_CONFIG","芝麻信用认证相关配置"),
 		BUBBLE_AUTH_RULE_CONFIG("BUBBLE_AUTH_RULE_CONFIG","芝麻信用认证相关配置"),
-		ZHIMA_VERIFY_APP_POP_IMAGE("ZHIMA_VERIFY_APP_POP_IMAGE","芝麻信用认证首页弹窗配置");
+		ZHIMA_VERIFY_APP_POP_IMAGE("ZHIMA_VERIFY_APP_POP_IMAGE","芝麻信用认证首页弹窗配置"),
+	;
 
 	 	private String code;
 		private String name;
