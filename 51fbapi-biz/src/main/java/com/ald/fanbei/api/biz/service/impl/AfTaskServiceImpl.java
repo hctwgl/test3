@@ -184,7 +184,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
                     afTaskDo.setFinishTaskCondition(0);
                     afTaskDo.setSumTaskCondition(1);
                 }else if(StringUtil.equals(afTaskDo.getTaskSecType(), TaskSecType.quantity.getCode())){
-                    afTaskDo.setFinishTaskCondition(afOrderService.getSignFinishOrderCount(userId,(Date)bizCacheUtil.getObject(userId+Constants.SIGN_DATE)));
+                    afTaskDo.setFinishTaskCondition(afOrderService.getSignFinishOrderCount(userId,afTaskDo.getTaskBeginTime()));
                     afTaskDo.setSumTaskCondition(Integer.parseInt(afTaskDo.getTaskCondition()));
                 }else {
                     afTaskDo.setFinishTaskCondition(0);
