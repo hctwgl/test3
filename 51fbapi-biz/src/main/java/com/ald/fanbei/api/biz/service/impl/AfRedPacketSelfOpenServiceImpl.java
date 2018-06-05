@@ -82,14 +82,14 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 
 	@Override
 	public AfRedPacketSelfOpenDo open(final Long userId, final String modifier, final String sourceType) {
-		String lock = "AfRedPacketSelfOpenServiceImpl_open_lock";
-		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,200, Constants.SECOND_OF_TEN_MINITS);
+		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+		final JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
+		final JSONObject selfOpenRateConfig = JSONObject.parseObject(config.getValue2());
+
+		String lock = "AfRedPacketSelfOpenServiceImpl_open_lock_" + userId;
+		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,500, Constants.SECOND_OF_TEN_MINITS);
 		if (isLock) {
 			try {
-				AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-				final JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-				final JSONObject selfOpenRateConfig = JSONObject.parseObject(config.getValue2());
-
 				return transactionTemplate.execute(new TransactionCallback<AfRedPacketSelfOpenDo>() {
 					@Override
 					public AfRedPacketSelfOpenDo doInTransaction(TransactionStatus transactionStatus) {
@@ -120,7 +120,7 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 				bizCacheUtil.delCache(lock);
 			}
 		} else {
-			throw new RuntimeException("open:" + "没有获取到锁");
+			throw new RuntimeException(lock + "锁没有获取到");
 		}
 	}
 
@@ -183,6 +183,11 @@ public class AfRedPacketSelfOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 				throw new FanbeiException("今日已不能再拆红包，请明天再来哦");
 
 			}
+		}
+
+		BigDecimal everydayWithdrawAmount = redPacketConfig.getBigDecimal("withdrawAmount");
+		if (afRedPacketTotalService.isReachWithdrawAmountThreshold(everydayWithdrawAmount)) {
+			throw new FanbeiException("今日红包已瓜分完喽");
 		}
 	}
 

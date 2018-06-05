@@ -84,6 +84,14 @@ public interface AfRedPacketTotalService extends ParentService<AfRedPacketTotalD
     int getTodayWithdrawedNum(Long userId);
 
     /**
+     * 获取今日红包提现金额
+     *
+     * @author wangli
+     * @date 2018/5/30
+     */
+    BigDecimal getTodayWithdrawAmount();
+
+    /**
      * 判断用户拆完红包后，是否能再拆一个红包
      *
      * @author wangli
@@ -98,6 +106,14 @@ public interface AfRedPacketTotalService extends ParentService<AfRedPacketTotalD
      * @date 2018/5/10 17:33
      */
     boolean isInvalid(AfRedPacketTotalDo redPacketTotalDo);
+
+    /**
+     * 是否到达提现金额阀值
+     *
+     * @author wangli
+     * @date 2018/5/31
+     */
+    boolean isReachWithdrawAmountThreshold(BigDecimal everydayWithdrawAmountThreshold);
 
     /**
      * 红包提现

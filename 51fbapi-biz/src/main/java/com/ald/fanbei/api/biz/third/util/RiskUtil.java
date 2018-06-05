@@ -706,7 +706,7 @@ public class RiskUtil extends AbstractThird {
 			BigDecimal amount, BigDecimal poundage, String time, String productName, String virtualCode,
 			String SecSence, String ThirdSence, long orderid, String cardName, AfBorrowDo borrow, String payType,
 			HashMap<String, HashMap> riskDataMap, String bqsBlackBox, AfOrderDo orderDo) {
-		//TODO modify by chengkang start  待测试完成后进行删除
+		/*//TODO modify by chengkang start  待测试完成后进行删除
 		Integer weakFlag = 0 ;
 		Integer softWeakFlag = 0;
 		AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
@@ -748,7 +748,7 @@ public class RiskUtil extends AbstractThird {
 	    	}
 	    }
 		//modify by chengkang end 
-		
+*/		
 		
 		AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 		if (orderDo != null) {
@@ -1139,6 +1139,7 @@ public class RiskUtil extends AbstractThird {
 				afUserAccountSenceService.raiseQuota(userId, SceneType.BLD_LOAN, au_amount, totalamount);
 			}else {
 				au_amount = new BigDecimal(dataObj.getString("amount"));
+				BigDecimal totalamount = new BigDecimal(dataObj.getString("totalAmount"));
 				AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 				// 强风控未通过，则不经额度处理
 				if (afUserAuthDo==null || !RiskStatus.YES.getCode().equals(afUserAuthDo.getRiskStatus())) {
@@ -1167,7 +1168,7 @@ public class RiskUtil extends AbstractThird {
 
 				Long consumerNum = Long.parseLong(consumerNo);
 				AfUserAccountDo userAccountDo = afUserAccountService.getUserAccountByUserId(consumerNum);
-				updateUserScenceAmount(userAccountDo, consumerNum, au_amount, onlineAmount, offlineAmount);
+				updateUserScenceAmount(userAccountDo, consumerNum, au_amount, onlineAmount, offlineAmount,totalamount);
 				
 			}
 			
@@ -1953,6 +1954,65 @@ public class RiskUtil extends AbstractThird {
 			afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNo,
 					offlineAmount);
 			// }
+		}
+	}
+
+	private void updateUserScenceAmount(AfUserAccountDo userAccountDo, Long consumerNo, BigDecimal au_amount,
+										BigDecimal onlineAmount, BigDecimal offlineAmount,BigDecimal totalAmount) {
+		/*
+		 * 如果用户已使用的额度>0(说明有做过消费分期、并且未还或者未还完成)的用户，当已使用额度小于风控返回额度，则变更，否则不做变更。
+		 * 如果用户已使用的额度=0，则把用户的额度设置成分控返回的额度
+		 */
+		if (au_amount.compareTo(new BigDecimal(0)) > 0) {
+			AfUserAccountDo accountDo = new AfUserAccountDo();
+			accountDo.setUserId(consumerNo);
+			accountDo.setAuAmount(au_amount);
+			afUserAccountService.updateUserAccount(accountDo);
+			// }
+		}
+
+		if (onlineAmount.compareTo(new BigDecimal(0)) > 0) {
+			// AfUserAccountSenceDo afUserAccountOnlineDo =
+			// afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.ONLINE.getCode(),
+			// consumerNo);
+			// if(afUserAccountOnlineDo!=null) {
+			// if
+			// (afUserAccountOnlineDo.getUsedAmount().compareTo(BigDecimal.ZERO)
+			// == 0 ||
+			// afUserAccountOnlineDo.getUsedAmount().compareTo(au_amount) < 0) {
+			// afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(),
+			// consumerNo, onlineAmount);
+			// }
+			// }
+			// else{
+			afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.ONLINE.getCode(), consumerNo,
+					onlineAmount);
+			// }
+		}
+		if (offlineAmount.compareTo(new BigDecimal(0)) > 0) {
+			// AfUserAccountSenceDo afUserAccountOfflineDo =
+			// afUserAccountSenceService.getByUserIdAndScene(UserAccountSceneType.TRAIN.getCode(),
+			// consumerNo);
+			// if(afUserAccountOfflineDo!=null) {
+			// if
+			// (afUserAccountOfflineDo.getUsedAmount().compareTo(BigDecimal.ZERO)
+			// == 0 ||
+			// afUserAccountOfflineDo.getUsedAmount().compareTo(au_amount) < 0)
+			// {
+			// afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(),
+			// consumerNo, offlineAmount);
+			// }
+			// }
+			// else
+			// {
+			afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.TRAIN.getCode(), consumerNo,
+					offlineAmount);
+			// }
+		}
+
+		if (totalAmount.compareTo(new BigDecimal(0)) > 0) {
+			afUserAccountSenceService.updateUserSceneAuAmount(UserAccountSceneType.LOAN_TOTAL.getCode(), consumerNo,
+					totalAmount);
 		}
 	}
 

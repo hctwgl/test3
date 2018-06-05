@@ -5,6 +5,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
 import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.WxUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -81,6 +82,9 @@ public class AppH5OpenRedPacketController extends BaseController {
 
     @Resource
     private SmsUtil smsUtil;
+
+    @Resource
+    private BizCacheUtil bizCacheUtil;
 
     /**
      * 获取红包主页信息（站内）
@@ -334,13 +338,22 @@ public class AppH5OpenRedPacketController extends BaseController {
     // 获取或注册用户
     private AfUserDo getOrRegisterUser(HttpServletRequest request, String token, String bsqToken,
                                        String mobile, Map<String, String> data) {
-        AfUserDo userDo = afUserService.getUserByUserName(mobile);
-        if (userDo == null) {
-            userDo = registerUser(request, mobile, token, bsqToken);
-            data.put("isRegister", YesNoStatus.YES.getCode());
+        String lock = "AppH5OpenRedPacketController_getOrRegisterUser_lock_" + mobile;
+        boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,500, Constants.SECOND_OF_TEN_MINITS);
+        if (isLock) {
+            try {
+                AfUserDo userDo = afUserService.getUserByUserName(mobile);
+                if (userDo == null) {
+                    userDo = registerUser(request, mobile, token, bsqToken);
+                    data.put("isRegister", YesNoStatus.YES.getCode());
+                }
+                return userDo;
+            } finally {
+                bizCacheUtil.delCache(lock);
+            }
+        } else {
+            throw new RuntimeException(lock + "锁没有获取到");
         }
-
-        return userDo;
     }
 
     // 验证验证码

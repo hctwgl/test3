@@ -5,6 +5,7 @@ import com.ald.fanbei.api.dal.domain.query.AfRedPacketTotalQueryNoPage;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -58,4 +59,13 @@ public interface AfRedPacketTotalDao extends BaseDao<AfRedPacketTotalDo, Long> {
      */
     void updateAmount(@Param("id") Long id, @Param("openAmount") BigDecimal openAmount,
                       @Param("modifier") String modifier);
+
+    /**
+     * 获取用户今日红包提现数量
+     *
+     * @author wangli
+     * @date 2018/5/30
+     */
+    BigDecimal getTotalWithdrawAmount(@Param("gmtWithdrawStart") Date gmtWithdrawStart,
+                                      @Param("gmtWithdrawEnd") Date gmtWithdrawEnd);
 }
