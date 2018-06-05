@@ -29,6 +29,14 @@ public interface AfAssetPackageDetailService extends ParentService<AfAssetPackag
 	int batchGiveBackCreditInfo(AfAssetSideInfoDo afAssetSideInfoDo,List<String> orderNos, Integer debtType);
 
 	/**
+	 * 非实时债权，更新放款时间
+	 * @param orderNos
+	 * @param loanTime
+	 * @return
+	 */
+	int addPackageDetailLoanTime(List<String> orderNos, Date loanTime,Integer debtType);
+
+	/**
 	 * 单个债权包明细撤回操作
 	 * @param orderNo
 	 */

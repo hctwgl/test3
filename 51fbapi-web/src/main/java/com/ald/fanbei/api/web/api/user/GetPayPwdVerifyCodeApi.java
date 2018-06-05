@@ -35,13 +35,18 @@ public class GetPayPwdVerifyCodeApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		Long userId = context.getUserId();
+		String requestId = requestDataVo.getId();
         AfUserDo userInfo = afUserService.getUserById(userId);
-
+		String majiabaoName = requestId.substring(requestId.lastIndexOf("_") + 1, requestId.length());
 		if (userInfo == null) {
 			throw new FanbeiException("userInfo id   is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
-
-		boolean resultReg = smsUtil.sendSetPayPwdVerifyCode(userInfo.getMobile(), userId);
+		boolean resultReg;
+		if (majiabaoName.contains("borrowSuperman")){
+			resultReg = smsUtil.sendSetJKCRPayPwdVerifyCode(userInfo.getMobile(), userId);
+		}else {
+			resultReg = smsUtil.sendSetPayPwdVerifyCode(userInfo.getMobile(), userId);
+		}
 		if (!resultReg) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_SEND_SMS_ERROR);
 		}

@@ -519,8 +519,11 @@ public class ApplyBorrowCashV1Api extends GetBorrowCashBase implements
                     currDate);
             String bankNumber = card.getCardNumber();
             String lastBank = bankNumber.substring(bankNumber.length() - 4);
-
-            smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
+            if (afBorrowCashDo.getMajiabaoName().contains("borrowSuperman")){
+                smsUtil.sendJKCRBorrowCashCode(afUserDo.getUserName(), lastBank);
+            }else {
+                smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);
+            }
             // 审核通过
             cashDo.setGmtArrival(currDate);
             cashDo.setStatus(AfBorrowCashStatus.transeding.getCode());

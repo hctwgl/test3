@@ -251,7 +251,15 @@
 	</update>
 
 	<select id="getCountByIdNumer" resultType="java.lang.Integer">
-			select count(1) from af_user_account a left join af_user_auth b on a.user_id = b.user_id where a.id_number=#{citizenId} and a.user_id != #{userId} and b.bankcard_status='Y' and a.is_delete = 0 and b.is_delete = 0
+		select count(1) from af_user_account a left join af_user_auth b on a.user_id = b.user_id
+		where a.id_number=#{citizenId} <!-- and a.user_id != #{userId} -->
+		and b.bankcard_status='Y' and a.is_delete = 0 and b.is_delete = 0
+	</select>
+
+	<select id="getCountByIdNumerByUserId" resultType="java.lang.Integer">
+		select count(1) from af_user_account a left join af_user_auth b on a.user_id = b.user_id
+		where a.id_number=#{citizenId} and a.user_id = #{userId}
+		and b.bankcard_status='Y' and a.is_delete = 0 and b.is_delete = 0
 	</select>
 
 	<select id="getUserAccountInfoByUserName" resultType="AfUserAccountDo">
