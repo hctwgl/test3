@@ -1210,8 +1210,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							 logger.info("verify userId" + userId);
 							 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 							 logger.info("weakverybo=" + verybo);
-	//						 boolean riskPassStatus = verybo.isSuccess();
-							 boolean riskPassStatus = false;
+							 boolean riskPassStatus = verybo.isSuccess();
+	//						 boolean riskPassStatus = false;
 							 if ( ! riskPassStatus  && vipGoodsResourceDo!=null){
 								//标记此订单支付失败，根据软弱风控去选择是否引导权限包购买
 								orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
