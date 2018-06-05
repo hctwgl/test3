@@ -277,12 +277,14 @@ public class LoginApi implements ApiHandle {
 								logger.error("sendLoginSupermanCouponMsg is Fail.",e);
 							}
 						}
+						loginDo.setResult("true,"+loginChannel);
 					}
 				}
 			}
 
+		}else {
+			loginDo.setResult("true");
 		}
-		loginDo.setResult("true,"+loginChannel);
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// save token to cache
 		String token = UserUtil.generateToken(userName);
