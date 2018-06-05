@@ -79,6 +79,7 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 					}
 				}
 				resp.setResponseData(data);
+				logger.info("cfp addBrowseTaskUserApi cfp " + data);
 			}
 
 		}catch(Exception e){
