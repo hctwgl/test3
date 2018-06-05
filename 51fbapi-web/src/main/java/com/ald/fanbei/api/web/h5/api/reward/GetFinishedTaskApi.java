@@ -71,7 +71,7 @@ public class GetFinishedTaskApi implements H5Handle {
             }else if(StringUtil.equals(afTaskDto.getRewardType()+"","1")){
                 afTaskDto.setRewardName("成功获得"+afTaskDto.getCashAmount()+"元");
             }else if(StringUtil.equals(afTaskDto.getRewardType()+"","2")){
-                AfCouponDo afCouponDo = afCouponService.getCouponById(taskUserDo.getCouponId());
+                AfCouponDo afCouponDo = afCouponService.getCouponById(afTaskDto.getCouponId());
                 afTaskDto.setRewardName("成功获得"+afCouponDo.getAmount()+"元优惠券");
             }
         }
