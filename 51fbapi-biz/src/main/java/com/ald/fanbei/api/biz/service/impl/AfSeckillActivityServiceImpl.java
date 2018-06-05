@@ -364,6 +364,7 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 						logger.info("updateUserActivityGoodsInfo updateOrderStatus rid: " + orderInfo.getRid() );
 						orderDao.updateOrderStatus(orderInfo.getRid());
 						/*//获取资源信息
+
 						AfResourceDo resourceInfo1 = afResourceService.getConfigByTypesAndSecType(Constants.SMS_TEMPLATE, Constants.SMS_ACTIVITY_RESERVATION_GOODS);
 						if(resourceInfo1 != null){
 							String content = resourceInfo1.getValue();
