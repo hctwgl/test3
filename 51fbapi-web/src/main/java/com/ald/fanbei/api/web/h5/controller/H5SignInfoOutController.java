@@ -585,10 +585,10 @@ public class H5SignInfoOutController extends H5Controller {
                 return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
             }
             Long firendUserId = thirdInfo.getUserId();
-            if(firendUserId == userId){//已经绑定并且是自己打开
+            if(StringUtil.equals(firendUserId+"",userId+"")){//已经绑定并且是自己打开
                 data = homeInfo(userId,data,push);
                 data.put("openType","0");
-            } else if(firendUserId != userId ){//已绑定
+            } else if(!StringUtil.equals(firendUserId+"",userId+"") ){//已绑定
                 data = homeInfo(firendUserId,data,push);
                 AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
                 afSignRewardDo.setIsDelete(0);

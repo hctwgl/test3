@@ -156,6 +156,9 @@ public class AfTaskServiceImpl  implements AfTaskService {
             if(flag && taskFlag){
                 if(StringUtil.equals(afTaskDo.getTaskType(), TaskType.verified.getCode())){
                     if(StringUtil.equals(userAuthDo.getRealnameStatus(),"Y")){
+                        if(StringUtil.equals(afTaskDo.getReceiveReward(),"N")){
+                            finalTaskList.add(afTaskDo);
+                        }
                         break;
                     }
                     afTaskDo.setFinishTaskCondition(0);
@@ -163,6 +166,9 @@ public class AfTaskServiceImpl  implements AfTaskService {
                 }else if(StringUtil.equals(afTaskDo.getTaskType(), TaskType.strong_risk.getCode())){
                     if (authStatusDo != null) {
                         if (StringUtils.equals("Y", authStatusDo.getStatus())) {
+                            if(StringUtil.equals(afTaskDo.getReceiveReward(),"N")){
+                                finalTaskList.add(afTaskDo);
+                            }
                             break;
                         }
                     }
@@ -170,6 +176,9 @@ public class AfTaskServiceImpl  implements AfTaskService {
                     afTaskDo.setSumTaskCondition(1);
                 }else if(StringUtil.equals(afTaskDo.getTaskType(), TaskType.push.getCode())){
                     if(StringUtil.equals(push, "Y")){
+                        if(StringUtil.equals(afTaskDo.getReceiveReward(),"N")){
+                            finalTaskList.add(afTaskDo);
+                        }
                         break;
                     }
                     afTaskDo.setFinishTaskCondition(0);
@@ -184,13 +193,13 @@ public class AfTaskServiceImpl  implements AfTaskService {
                 finalTaskList.add(afTaskDo);
             }
         }
-        for(AfTaskDto task :finalTaskList){
-            if(StringUtil.equals(task.getTaskType(),TaskType.push.getCode()) &&
-                    (StringUtil.equals(push,TaskType.push.getCode()))){
-            }else{
-                taskDtos.add(task);
-            }
-        }
+//        for(AfTaskDto task :finalTaskList){
+//            if(StringUtil.equals(task.getTaskType(),TaskType.push.getCode()) &&
+//                    (StringUtil.equals(push,"Y"))){
+//            }else{
+//                taskDtos.add(task);
+//            }
+//        }
 
         return taskDtos;
     }
