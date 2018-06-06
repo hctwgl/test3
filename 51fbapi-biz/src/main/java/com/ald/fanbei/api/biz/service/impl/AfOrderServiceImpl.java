@@ -1210,9 +1210,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							 logger.info("verify userId" + userId);
 							 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 							 logger.info("weakverybo=" + verybo);
-							 String result = verybo.getResult();
-	//						 boolean riskPassStatus = false;
-							 if ( ! "10".equals(result) && vipGoodsResourceDo!=null){
+							 boolean isPassWeakRisk = verybo.isPassWeakRisk();
+							 if ( !isPassWeakRisk && vipGoodsResourceDo!=null){
 								//标记此订单支付失败，根据软弱风控去选择是否引导权限包购买
 								orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 							    orderInfo.setStatus(OrderStatus.PAYFAIL.getCode());
@@ -1227,8 +1226,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 
 								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 								 logger.info("softWeakverybo=" + softWeakverybo);
-								 String softWeakRiskResult = softWeakverybo.getResult();
-								 if( "10".equals(softWeakRiskResult) && vipGoodsId>0){
+								 boolean isPassSoftWeakRisk = softWeakverybo.isPassWeakRisk();
+								 if( isPassSoftWeakRisk && vipGoodsId>0){
 									 //软弱风控通过，引导权限包 1 自动生成一个权限包订单 2 修改该付款失败订单的是否支持信用支付的状态
 									 AfOrderDo vipGoodsOrder = orderDao.getPayRelaOrderByGoodsIdAndUserid(userId, vipGoodsId);
 									 if (vipGoodsOrder == null){
@@ -1323,8 +1322,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							 logger.info("cp verify userId" + userId);
 							 verybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "40", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 							 logger.info("cp weakverybo=" + verybo);
-							 String result = verybo.getResult();
-							 if ( !"10".equals(result) && vipGoodsResourceDo!=null){
+							 boolean isPassWeakRisk = verybo.isPassWeakRisk();
+							 if ( !isPassWeakRisk && vipGoodsResourceDo!=null){
 								//标记此订单支付失败，根据软弱风控去选择是否引导权限包购买
 								orderInfo.setPayStatus(PayStatus.NOTPAY.getCode());
 							    orderInfo.setStatus(OrderStatus.PAYFAIL.getCode());
@@ -1339,8 +1338,8 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 
 								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), softWeakRiskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 								 logger.info("cp softWeakverybo=" + softWeakverybo);
-								 String softWeakRiskResult = softWeakverybo.getResult();
-								 if( "10".equals(softWeakRiskResult) && vipGoodsId>0){
+								 boolean isPassSoftWeakRisk = softWeakverybo.isPassWeakRisk();
+								 if( isPassSoftWeakRisk && vipGoodsId>0){
 									//软弱风控通过，引导权限包 1 自动生成一个权限包订单 2 修改该付款失败订单的是否支持信用支付的状态
 									 AfOrderDo vipGoodsOrder = orderDao.getPayRelaOrderByGoodsIdAndUserid(userId, vipGoodsId);
 									 if (vipGoodsOrder == null){
@@ -1623,6 +1622,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	private RiskVerifyRespBo skipRisk() {
 		RiskVerifyRespBo verybo = new RiskVerifyRespBo();
 		verybo.setSuccess(true);
+		verybo.setPassWeakRisk(true);
 		verybo.setResult("10");
 		return verybo;
 	}
