@@ -189,12 +189,13 @@ public class GetHomeInfoV3Api implements ApiHandle {
 				 Runnable process = new GetHomeCache(cacheKey, cacheKey2,userId,deviceType);
 				 jobThreadPoolUtils.asynProcessBusiness(process);
 			 }
-		 }
-		if(data== null || data.isEmpty()){
-			data = toAddHomeCacheInfo(userId,deviceType);
-			if(data != null && !data.isEmpty()) {
-				bizCacheUtil.saveMap(cacheKey, data, Constants.MINITS_OF_TWO);
-				bizCacheUtil.saveMapForever(cacheKey2, data);
+
+			if(data== null || data.isEmpty()) {
+				data = toAddHomeCacheInfo(userId, deviceType);
+				if (data != null && !data.isEmpty()) {
+					bizCacheUtil.saveMap(cacheKey, data, Constants.MINITS_OF_TWO);
+					bizCacheUtil.saveMapForever(cacheKey2, data);
+				}
 			}
 
 		/*
@@ -750,12 +751,12 @@ public class GetHomeInfoV3Api implements ApiHandle {
 		}
 		@Override
 		public void run() {
-			logger.info("pool:GetMoreGoodsInfo"+Thread.currentThread().getName() + "GetMoreGoodsInfo");
+			logger.info("pool:getHomeCache"+Thread.currentThread().getName() + "getHomeCache");
 			try{
 				getHomeCacheInfo( firstKey,secondKey , userId, deviceType);
 
 			}catch (Exception e){
-				logger.error("pool:GetMoreGoodsInfo error for" + e);
+				logger.error("pool:getHomeCache error for" + e);
 			}
 		}
 	}

@@ -252,12 +252,12 @@ public class GetChannelMoreGoodsApi implements ApiHandle {
 		}
 		@Override
 		public void run() {
-			logger.info("pool:GetMoreGoodsInfo"+Thread.currentThread().getName() + "GetMoreGoodsInfo");
+			logger.info("pool:getChannelMoreGoodsApi"+Thread.currentThread().getName() + "getChannelMoreGoodsApi");
 			try{
 				GetMoreGoodsInfoMap( firstKey,secondKey , userId, pageNo, tabId);
 
 			}catch (Exception e){
-				logger.error("pool:GetMoreGoodsInfo error for" + e);
+				logger.error("pool:getChannelMoreGoodsApi error for" + e);
 			}
 		}
 	}

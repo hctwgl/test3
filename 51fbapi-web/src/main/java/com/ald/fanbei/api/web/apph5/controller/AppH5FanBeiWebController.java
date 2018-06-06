@@ -1266,7 +1266,7 @@ public class AppH5FanBeiWebController extends BaseController {
 			   logger.info("getMoreGoods h5" + Thread.currentThread().getName() + "isGetLock:" + isGetLock + "goodsInfo= " + JSONArray.toJSONString(goodsInfo) + "cacheKey2 = " + cacheKey2);
 			   //调用异步请求加入缓存
 			   if (isGetLock) {
-				   logger.info("getMoreGoodsApi" + Thread.currentThread().getName() + "getMoreGoodsApi is null" + "cacheKey = " + cacheKey);
+				   logger.info("getMoreGoods h5" + Thread.currentThread().getName() + "getMoreGoods h5 is null" + "cacheKey = " + cacheKey);
 				   Runnable process = new GetH5MoreGoodsInfo(cacheKey, cacheKey2, null, pageNo, pageFlag, source);
 				   jobThreadPoolUtils.asynProcessBusiness(process);
 			   }
@@ -1349,12 +1349,12 @@ public class AppH5FanBeiWebController extends BaseController {
 		}
 		@Override
 		public void run() {
-			logger.info("pool:GetMoreGoodsInfo"+Thread.currentThread().getName() + "GetMoreGoodsInfo");
+			logger.info("pool:getMoreGoods h5"+Thread.currentThread().getName() + "GetMoreGoodsInfo");
 			try{
 				GetMoreGoodsInfoMap( firstKey,secondKey , userId, pageNo, pageFlag,source);
 
 			}catch (Exception e){
-				logger.error("pool:GetMoreGoodsInfo error for" + e);
+				logger.error("pool:getMoreGoods h5 error for" + e);
 			}
 		}
 	}
