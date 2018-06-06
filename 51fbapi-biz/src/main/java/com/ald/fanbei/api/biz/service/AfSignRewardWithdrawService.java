@@ -18,4 +18,6 @@ public interface AfSignRewardWithdrawService {
 
     List<AfSignRewardWithdrawDto> getWithdrawList(AfSignRewardWithdrawQuery query);
 
+    int saveRecord(AfSignRewardWithdrawDo afSignRewardWithdrawDo);
+
 }

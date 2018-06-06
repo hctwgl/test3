@@ -10,6 +10,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.query.AfSignRewardWithdrawQuery;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
@@ -51,6 +52,8 @@ public class GetExtractMoneyApi implements H5Handle {
     private BizCacheUtil bizCacheUtil;
     @Resource
     AfCouponService afCouponService;
+    @Resource
+    AfSignRewardWithdrawService afSignRewardWithdrawService;
 
     @Override
     public H5HandleResponse process(final Context context) {
@@ -68,15 +71,22 @@ public class GetExtractMoneyApi implements H5Handle {
                         @Override
                         public String doInTransaction(TransactionStatus status) {
                             try{
+                                AfSignRewardWithdrawDo afSignRewardWithdrawDo = new AfSignRewardWithdrawDo();
+                                afSignRewardWithdrawDo.setGmtCreate(new Date());
+                                afSignRewardWithdrawDo.setGmtModified(new Date());
                                 BigDecimal amount = BigDecimal.ZERO;
                                 if(StringUtil.equals(WithdrawType.ZERO.getCode(),withdrawType)){
                                     amount = new BigDecimal(afResourceDo.getValue1());
+                                    afSignRewardWithdrawDo.setWithdrawType(0);
                                 }else if(StringUtil.equals(WithdrawType.ONE.getCode(),withdrawType)){
                                     amount = new BigDecimal(afResourceDo.getValue2());
+                                    afSignRewardWithdrawDo.setWithdrawType(1);
                                 }else if(StringUtil.equals(WithdrawType.TWO.getCode(),withdrawType)){
                                     amount = new BigDecimal(afResourceDo.getValue3());
+                                    afSignRewardWithdrawDo.setWithdrawType(2);
                                 }else if(StringUtil.equals(WithdrawType.THREE.getCode(),withdrawType)){
                                     amount = new BigDecimal(afResourceDo.getValue4());
+                                    afSignRewardWithdrawDo.setWithdrawType(3);
                                 }
                                 if(StringUtil.equals(WithdrawType.ZERO.getCode(),withdrawType)){//送10元无门槛优惠券
                                     AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
@@ -110,6 +120,9 @@ public class GetExtractMoneyApi implements H5Handle {
                                 }
                                 //除去相应的金额amount
                                 afSignRewardExtService.extractMoney(userId,amount);
+                                afSignRewardWithdrawDo.setWithdrawAmount(amount);
+                                afSignRewardWithdrawDo.setUserId(userId);
+                                afSignRewardWithdrawService.saveRecord(afSignRewardWithdrawDo);
                                 return "success";
                             }catch (Exception e){
                                 status.setRollbackOnly();

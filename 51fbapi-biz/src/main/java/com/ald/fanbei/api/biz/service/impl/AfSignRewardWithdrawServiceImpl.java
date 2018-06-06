@@ -37,4 +37,8 @@ public class AfSignRewardWithdrawServiceImpl  implements AfSignRewardWithdrawSer
         return afSignRewardWithdrawDao.getWithdrawList(query);
     }
 
+    @Override
+    public int saveRecord(AfSignRewardWithdrawDo afSignRewardWithdrawDo){
+        return afSignRewardWithdrawDao.saveRecord(afSignRewardWithdrawDo);
+    }
 }
