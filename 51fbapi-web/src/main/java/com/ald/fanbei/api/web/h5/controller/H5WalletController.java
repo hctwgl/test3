@@ -65,6 +65,10 @@ public class H5WalletController extends BaseController{
     @ResponseBody
     @RequestMapping(value = "valletPage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String valletPage(HttpServletRequest request, HttpServletResponse response){
+
+//        afTaskUserService.taskHandler(15295517400l, AfTaskType.VERIFIED.getCode(), null);
+//        afTaskUserService.browerAndShoppingHandler(18637963288l, Long.parseLong("136896"), AfTaskType.SHOPPING.getCode());
+
         Map<String, Object> data = Maps.newHashMap();
         try{
             String userName = ObjectUtils.toString(request.getParameter("userName"),null);
@@ -95,6 +99,9 @@ public class H5WalletController extends BaseController{
 
             // 累计收益
             BigDecimal totalAmount = afTaskUserService.getAccumulatedIncome(userId);
+            if(null == totalAmount){
+                totalAmount = new BigDecimal(0);
+            }
             data.put("totalAmount", totalAmount);
 
             // 我的金币
