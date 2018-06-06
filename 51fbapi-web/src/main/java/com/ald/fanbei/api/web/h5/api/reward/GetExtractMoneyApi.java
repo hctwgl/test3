@@ -59,6 +59,7 @@ public class GetExtractMoneyApi implements H5Handle {
             try{
                 final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_PRIZE");
                 final String withdrawType = ObjectUtils.toString(context.getData("withdrawType").toString(),null);
+                logger.info("GetExtractMoneyApi_lock cfp =" + withdrawType);
                 if(withdrawType != null){
                     String status = transactionTemplate.execute(new TransactionCallback<String>() {
                         @Override
