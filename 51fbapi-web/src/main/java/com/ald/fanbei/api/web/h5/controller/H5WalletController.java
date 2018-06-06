@@ -65,10 +65,6 @@ public class H5WalletController extends BaseController{
     @ResponseBody
     @RequestMapping(value = "valletPage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String valletPage(HttpServletRequest request, HttpServletResponse response){
-
-        String activityUrl = request.getParameter("activityUrl");
-        List<AfTaskUserDo> specifiedTaskUserList = afTaskUserService.taskHandler(18637963326l, AfTaskType.BROWSE.getCode(),activityUrl);
-
         Map<String, Object> data = Maps.newHashMap();
         try{
             String userName = ObjectUtils.toString(request.getParameter("userName"),null);
