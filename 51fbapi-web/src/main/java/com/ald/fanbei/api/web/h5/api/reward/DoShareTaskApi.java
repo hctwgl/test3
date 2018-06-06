@@ -44,13 +44,9 @@ public class DoShareTaskApi implements H5Handle {
             List<AfTaskDo> taskList = afTaskService.getTaskListByTaskTypeAndUserLevel(TaskType.share.getCode(), userLevelList, taskCondition);
             if (null != taskList && !taskList.isEmpty()) {
                 List<AfTaskDo> notDailyTaskUserList = afTaskService.getNotDailyTaskListByUserId(userId, TaskType.share.getCode());
-                List<AfTaskDo> dailyTaskUserList = null;
                 List<AfTaskDo> taskUserCompleteList = Lists.newArrayList();
                 if (null != notDailyTaskUserList && !notDailyTaskUserList.isEmpty()) {
                     taskUserCompleteList.addAll(notDailyTaskUserList);
-                }
-                if (null != dailyTaskUserList && !dailyTaskUserList.isEmpty()) {
-                    taskUserCompleteList.addAll(dailyTaskUserList);
                 }
                 if (!taskUserCompleteList.isEmpty()) {
                     Iterator<AfTaskDo> iter = taskList.iterator();
