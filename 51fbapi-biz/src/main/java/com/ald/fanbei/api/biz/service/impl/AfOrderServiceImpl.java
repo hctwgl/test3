@@ -1231,7 +1231,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 									 //软弱风控通过，引导权限包 1 自动生成一个权限包订单 2 修改该付款失败订单的是否支持信用支付的状态
 									 AfOrderDo vipGoodsOrder = orderDao.getPayRelaOrderByGoodsIdAndUserid(userId, vipGoodsId);
 									 if (vipGoodsOrder == null){
-										 vipGoodsOrder = generateOrder(vipGoodsId,userId,request);
+										 vipGoodsOrder = generateOrder(vipGoodsId,userId,orderInfo.getOrderNo(),request);
 										 afOrderService.createOrder(vipGoodsOrder);
 										 logger.info("ap softWeakVerify pass,and create new order of authPackage success ,orderId="+vipGoodsOrder.getRid());
 									 }
@@ -1343,7 +1343,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 									//软弱风控通过，引导权限包 1 自动生成一个权限包订单 2 修改该付款失败订单的是否支持信用支付的状态
 									 AfOrderDo vipGoodsOrder = orderDao.getPayRelaOrderByGoodsIdAndUserid(userId, vipGoodsId);
 									 if (vipGoodsOrder == null){
-										 vipGoodsOrder = generateOrder(vipGoodsId,userId,request);
+										 vipGoodsOrder = generateOrder(vipGoodsId,userId,orderInfo.getOrderNo(),request);
 										 afOrderService.createOrder(vipGoodsOrder);
 										 logger.info("cp softWeakVerify pass,and create new order of authPackage success ,orderId="+vipGoodsOrder.getRid());
 									 }
@@ -1507,7 +1507,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
      * @param request 
 	 * @return
 	 */
-	private AfOrderDo generateOrder(Long vipGoodsId, Long userId, HttpServletRequest request) {
+	private AfOrderDo generateOrder(Long vipGoodsId, Long userId,String relaOrderNo, HttpServletRequest request) {
 		AfOrderDo afOrder = new AfOrderDo();
 		Date currTime = new Date();
 		int order_pay_time_limit= Constants.ORDER_PAY_TIME_LIMIT;
@@ -1562,6 +1562,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		afOrder.setStatus(OrderStatus.NEW.getCode());
 		afOrder.setOrderType(OrderType.SELFSUPPORT.getCode());
 		afOrder.setSupportCreditStatus(YesNoStatus.NO.getCode());
+		afOrder.setRelaOrderNo(relaOrderNo);
 		return afOrder;
 	}
 	

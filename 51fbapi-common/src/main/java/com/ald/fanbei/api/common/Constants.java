@@ -596,4 +596,6 @@ public class Constants {
 	public static final String COUPON_SALESERVICE = "COUPON_SALESERVICE";
 
     public static final String BORROW_FINANCE = "borrow";
+    //软弱风控订单特殊标识
+    public static final String SOFT_WEAK_VERIFY_ORDER_NO_FLAG = "SWV";
 }

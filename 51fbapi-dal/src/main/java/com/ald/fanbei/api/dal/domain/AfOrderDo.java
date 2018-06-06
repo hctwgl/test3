@@ -95,6 +95,7 @@ public class AfOrderDo extends AbstractSerial{
 	private String iagentStatus;//智能电核状态
 	private String supportCreditStatus;//是否支持信用支付 Y：是 N：否
 	private String weakRiskOrderNo;//软弱风控编号
+	private String relaOrderNo;//关联订单编号
 
 	private Integer cardType;
 	private BigDecimal feeAmount =BigDecimal.ZERO;
@@ -698,6 +699,14 @@ public class AfOrderDo extends AbstractSerial{
 
 	public void setWeakRiskOrderNo(String weakRiskOrderNo) {
 		this.weakRiskOrderNo = weakRiskOrderNo;
+	}
+
+	public String getRelaOrderNo() {
+		return relaOrderNo;
+	}
+
+	public void setRelaOrderNo(String relaOrderNo) {
+		this.relaOrderNo = relaOrderNo;
 	}
 	
 }

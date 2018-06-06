@@ -723,12 +723,14 @@ public class RiskUtil extends AbstractThird {
 	    	if(weakFlag == 1){
 	    		RiskVerifyRespBo verybo = new RiskVerifyRespBo();
 	    		verybo.setSuccess(true);
+	    		verybo.setPassWeakRisk(true);
 	    		verybo.setResult("10");
 	    		return verybo;
 	    	}
 	    	if(weakFlag == 2){
 	    		RiskVerifyRespBo verybo = new RiskVerifyRespBo();
 	    		verybo.setSuccess(false);
+	    		verybo.setPassWeakRisk(false);
 	    		verybo.setResult("20");
 	    		return verybo;
 	    	}
@@ -737,21 +739,28 @@ public class RiskUtil extends AbstractThird {
 	    	if(softWeakFlag == 1){
 	    		RiskVerifyRespBo verybo = new RiskVerifyRespBo();
 	    		verybo.setSuccess(true);
+	    		verybo.setPassWeakRisk(true);
 	    		verybo.setResult("10");
 	    		return verybo;
 	    	}
 	    	if(softWeakFlag == 2){
 	    		RiskVerifyRespBo verybo = new RiskVerifyRespBo();
 	    		verybo.setSuccess(false);
+	    		verybo.setPassWeakRisk(false);
 	    		verybo.setResult("20");
 	    		return verybo;
 	    	}
 	    }
 		//modify by chengkang end 
 */		
-		
 		AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 		if (orderDo != null) {
+			//如果为订单对软弱风控的调用，则订单号加上特殊标识，避免风控系统订单重复问题 alter by chengkang start
+		    if("44".equals(scene)){
+		    	riskDataMap.get("summaryOrderData").put("orderNo", orderDo.getOrderNo()+Constants.SOFT_WEAK_VERIFY_ORDER_NO_FLAG);
+		    }
+		    //alter by chengkang start
+		    
 			// 获取不同场景的强风控认证
 			if (StringUtils.equals(OrderType.TRADE.getCode(), orderDo.getOrderType())) {
 				// 商圈认证

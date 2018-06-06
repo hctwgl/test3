@@ -8,7 +8,7 @@
 		gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
 		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
 		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,
-		lat,lng,support_credit_status,weak_risk_order_no
+		lat,lng,support_credit_status,weak_risk_order_no,rela_order_no
 	</sql>
 	<sql id="queryAllFields">
 		id rid,gmt_create,gmt_modified,user_id,order_no,third_order_no,third_detail_url,
@@ -18,7 +18,7 @@
 		borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
 		goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,
 		closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,
-		support_credit_status,weak_risk_order_no
+		support_credit_status,weak_risk_order_no,rela_order_no
 	</sql>
 	<insert id="createOrder" keyProperty="rid" useGeneratedKeys="true"  parameterType="AfOrderDo">
 		INSERT INTO af_order(
@@ -158,6 +158,9 @@
 	        </if>
 	        <if test="weakRiskOrderNo != null and '' != weakRiskOrderNo">
 	            weak_risk_order_no,
+	        </if>
+	        <if test="relaOrderNo != null and '' != relaOrderNo">
+	            rela_order_no,
 	        </if>
 			gmt_create ,
 			gmt_modified
@@ -299,6 +302,9 @@
 	        </if>
 	        <if test="weakRiskOrderNo != null and '' != weakRiskOrderNo">
 	            #{weakRiskOrderNo},
+	        </if>
+	        <if test="relaOrderNo != null and '' != relaOrderNo">
+	            #{relaOrderNo},
 	        </if>
 			NOW(),
 			NOW()
@@ -523,6 +529,9 @@
 		<if test="weakRiskOrderNo != null">
 			,weak_risk_order_no=#{weakRiskOrderNo}
 		</if>
+		<if test="relaOrderNo != null">
+            ,rela_order_no=#{relaOrderNo}
+        </if>
 		where is_delete=0 and pay_trade_no = #{payTradeNo}
 	</update>
 
@@ -645,6 +654,9 @@
 		<if test="weakRiskOrderNo != null">
 		    ,weak_risk_order_no=#{weakRiskOrderNo}
 		</if>	
+		<if test="relaOrderNo != null">
+		    ,rela_order_no=#{relaOrderNo}
+		</if>
 		where is_delete=0 and order_no = #{orderNo} 
 	</update>
 	
@@ -661,7 +673,7 @@
 			borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
 			goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,
 			closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,
-			ifnull(c.fee_amount,0) feeAmount, c.card_type,g.`status` goodsStatus,IFNULL(a.`status`,0) supStatus,o.support_credit_status,o.weak_risk_order_no
+			ifnull(c.fee_amount,0) feeAmount, c.card_type,g.`status` goodsStatus,IFNULL(a.`status`,0) supStatus,o.support_credit_status,o.weak_risk_order_no,o.rela_order_no
 		FROM
 			af_order o left join af_order_bankcard c on o.id = c.order_id and o.pay_type in ( 'BANK','CP')
 			LEFT JOIN af_goods g on o.goods_id = g.id
@@ -681,7 +693,7 @@
 			borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
 			goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,
 			closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,
-			ifnull(c.fee_amount,0) feeAmount, c.card_type,o.support_credit_status,o.weak_risk_order_no
+			ifnull(c.fee_amount,0) feeAmount, c.card_type,o.support_credit_status,o.weak_risk_order_no,o.rela_order_no
 		FROM
 			af_order o left join af_order_bankcard c on o.id = c.order_id and o.pay_type in ( 'BANK','CP')
 		WHERE
@@ -773,7 +785,7 @@
 			price_amount,sale_amount,actual_amount,shop_name,pay_status,pay_type,pay_trade_no,gmt_pay,trade_no,logistics_no,
 			gmt_rebated,mobile,gmt_finished,rebate_amount,commission_amount,bank_id,gmt_pay_end,service_provider,nper,risk_order_no,
 			status_remark,goods_price_name,bank_amount,borrow_amount,
-			ifnull(c.fee_amount,0) feeAmount, c.card_type,o.support_credit_status,o.weak_risk_order_no
+			ifnull(c.fee_amount,0) feeAmount, c.card_type,o.support_credit_status,o.weak_risk_order_no,o.rela_order_no
 		FROM
 			af_order o left join af_order_bankcard c on o.id = c.order_id and o.pay_type in ( 'BANK','CP')
 		WHERE
@@ -1033,6 +1045,9 @@
 			<if test="weakRiskOrderNo != null">
 				,weak_risk_order_no=#{weakRiskOrderNo}
 			</if>
+			<if test="relaOrderNo != null">
+				,rela_order_no=#{relaOrderNo}
+			</if>
 		WHERE id = #{rid}
 	</update>
 	
@@ -1045,7 +1060,7 @@
         borrow_rate,coupon_amount,interest_free_json,consignee,address,consignee_mobile,invoice_header,logistics_info,pre_status,
         goods_price_id,goods_price_name,logistics_company,logistics_no,gmt_deliver,gmt_closed,cancel_reason,cancel_detail,closed_reason,
         closed_detail,status_remark,bank_amount,borrow_amount,province,city,district,black_box,bqs_black_box,iagent_status,
-        ifnull(c.fee_amount,0) feeAmount, c.card_type,o.support_credit_status,o.weak_risk_order_no
+        ifnull(c.fee_amount,0) feeAmount, c.card_type,o.support_credit_status,o.weak_risk_order_no,o.rela_order_no
         FROM
         af_order o left join af_order_bankcard c on o.id = c.order_id and o.pay_type in ( 'BANK','CP')
         WHERE
