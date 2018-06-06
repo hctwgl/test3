@@ -357,6 +357,11 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		return afTaskUserDao.getTaskUserByTaskIdAndUserId(taskId,userId);
 	}
 
+	@Override
+	public AfTaskUserDo getTodayTaskUserByTaskIdAndUserId(Long taskId,Long userId){
+		return afTaskUserDao.getTodayTaskUserByTaskIdAndUserId(taskId,userId);
+	}
+
 	/**
 	 * 是否匹配任务ID
 	 * @param taskCondition  任务条件

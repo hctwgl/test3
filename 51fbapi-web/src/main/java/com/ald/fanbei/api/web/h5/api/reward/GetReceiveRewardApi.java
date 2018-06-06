@@ -72,7 +72,7 @@ public class GetReceiveRewardApi implements H5Handle {
                     //幂等性(防止领取奖励多次领取)
                     if(null == bizCacheUtil.getObject(key)){
                         bizCacheUtil.saveObject(key,new Date(),Constants.SECOND_OF_ONE_DAY);
-                        status = getStatus(taskId,userId,taskName);
+                        status = getStatus(taskId,userId,taskName,isDailyUpdate);
                     }else {
                         status = "success";
                     }
@@ -80,7 +80,7 @@ public class GetReceiveRewardApi implements H5Handle {
                     key = userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+taskId;
                     if(null == bizCacheUtil.getObject(key)){
                         bizCacheUtil.saveObject(key,new Date(),Constants.SECOND_OF_ONE_DAY);
-                        status = getStatus(taskId,userId,taskName);
+                        status = getStatus(taskId,userId,taskName,isDailyUpdate);
                     }else {
                         status = "success";
                     }
@@ -89,7 +89,7 @@ public class GetReceiveRewardApi implements H5Handle {
                 key = userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+taskId;
                 if(null == bizCacheUtil.getObject(key)){
                     bizCacheUtil.saveObjectForever(key,new Date());
-                    status = getStatus(taskId,userId,taskName);
+                    status = getStatus(taskId,userId,taskName,isDailyUpdate);
                 }else {
                     status = "success";
                 }
@@ -105,7 +105,7 @@ public class GetReceiveRewardApi implements H5Handle {
     }
 
 
-    private String getStatus (final Long taskId,final Long userId,final String taskName){
+    private String getStatus (final Long taskId,final Long userId,final String taskName,final String isDailyUpdate){
         String status = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus status) {
@@ -118,7 +118,16 @@ public class GetReceiveRewardApi implements H5Handle {
                     afTaskUserDo.setRewardTime(new Date());
                     afTaskUserDo.setTaskName(taskName);
                     afTaskUserService.updateDailyByTaskNameAndUserId(afTaskUserDo);
-                    AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(taskName,userId, null);
+                    AfTaskUserDo taskUserDo = new AfTaskUserDo();
+                    if(StringUtil.equals(isDailyUpdate,"1")){
+                        if(StringUtil.equals(taskName, Constants.BROWSE_TASK_NAME)) {//每日浏览3个商品任务(特殊处理)
+                            taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(taskName,userId, null);
+                        }else {
+                            taskUserDo = afTaskUserService.getTodayTaskUserByTaskIdAndUserId(taskId,userId);
+                        }
+                    }else if(StringUtil.equals(isDailyUpdate,"0")){
+                        taskUserDo = afTaskUserService.getTaskUserByTaskIdAndUserId(taskId,userId);
+                    }
                     if(taskUserDo.getRewardType() == 1){
                         AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
                         afUserAccountDo.setRebateAmount(taskUserDo.getCashAmount());
