@@ -618,6 +618,7 @@ public class H5SignInfoOutController extends H5Controller {
         final Long userId = afUserDo.getRid();//分享者的userId
         final boolean flag = afSignRewardService.checkUserSign(frienduserId);//好友是否有签到次数
         final AfResourceDo afResource = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
+        logger.info("userName cfp friendSign = " + userName);
         String status = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus status) {
@@ -632,8 +633,8 @@ public class H5SignInfoOutController extends H5Controller {
                     userThirdInfoDo.setModifier(moblie);
                     userThirdInfoDo.setThirdInfo(userWxInfo.toJSONString());
                     userThirdInfoDo.setUserName(moblie);
+                    logger.info("userName cfp friendSign = " + userThirdInfoDo);
                     afUserThirdInfoService.saveRecord(userThirdInfoDo);
-
                     //帮签成功 分享者获取相应的奖励
                     AfSignRewardDo rewardDo = buildSignReward(userId, SignRewardType.ONE.getCode(),frienduserId,rewardAmount,null);
                     afSignRewardService.saveRecord(rewardDo);
@@ -651,8 +652,14 @@ public class H5SignInfoOutController extends H5Controller {
                             afSignRewardExtService.saveRecord(signRewardExt);
                         }else {
                             AfSignRewardExtDo signRewardExtDo = afSignRewardExtService.selectByUserId(frienduserId);
-                            signRewardExtDo.setAmount(amount);
-                            afSignRewardExtService.increaseMoney(signRewardExtDo);
+                            if(null == signRewardExtDo){
+                                AfSignRewardExtDo signRewardExt = buildSignRewardExt(frienduserId,afSignRewardDo.getAmount());
+                                afSignRewardExtService.saveRecord(signRewardExt);
+                            }else {
+                                signRewardExtDo.setAmount(amount);
+                                afSignRewardExtService.increaseMoney(signRewardExtDo);
+                            }
+
                         }
                     }
                     return "success";
