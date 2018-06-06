@@ -706,7 +706,7 @@ public class RiskUtil extends AbstractThird {
 			BigDecimal amount, BigDecimal poundage, String time, String productName, String virtualCode,
 			String SecSence, String ThirdSence, long orderid, String cardName, AfBorrowDo borrow, String payType,
 			HashMap<String, HashMap> riskDataMap, String bqsBlackBox, AfOrderDo orderDo) {
-		/*//TODO modify by chengkang start  待测试完成后进行删除
+		//TODO modify by chengkang start  待测试完成后进行删除
 		Integer weakFlag = 0 ;
 		Integer softWeakFlag = 0;
 		AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
@@ -752,7 +752,7 @@ public class RiskUtil extends AbstractThird {
 	    	}
 	    }
 		//modify by chengkang end 
-*/		
+		
 		AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 		if (orderDo != null) {
 			//如果为订单对软弱风控的调用，则订单号加上特殊标识，避免风控系统订单重复问题 alter by chengkang start

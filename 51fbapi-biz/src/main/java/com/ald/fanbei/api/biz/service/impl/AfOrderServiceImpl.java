@@ -1224,7 +1224,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 orderInfo.setWeakRiskOrderNo(softWeakRiskOrderNo);
 								 orderDao.updateOrder(orderInfo);
 								 
-								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), weakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
+								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), softWeakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 								 logger.info("softWeakverybo=" + softWeakverybo);
 								 boolean isPassSoftWeakRisk = softWeakverybo.isPassWeakRisk();
 								 if( isPassSoftWeakRisk && vipGoodsId>0){
