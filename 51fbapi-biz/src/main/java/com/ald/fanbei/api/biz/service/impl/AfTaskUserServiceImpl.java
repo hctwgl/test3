@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.dal.dao.AfTaskUserDao;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -307,7 +304,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 	public String getRewardAmount(List<AfTaskUserDo> taskUserDoList, int rewardType) {
 		Long coinAmount = 0l;
 		BigDecimal cashAmount = BigDecimal.ZERO;
-		List<Long> couponIdList = Lists.newArrayList();
+		List<Long> couponIdList = new ArrayList<>();
 		String message = "";
 		for (AfTaskUserDo taskUserDo : taskUserDoList) {
 			if (0 == rewardType) {
