@@ -78,6 +78,8 @@ public class H5SignInfoOutController extends H5Controller {
     AfUserAuthStatusService afUserAuthStatusService;
     @Resource
     AfUserCouponService afUserCouponService;
+    @Resource
+    AfCouponService afCouponService;
     /**
      * 朋友帮签(站外)
      * @param request
@@ -243,6 +245,7 @@ public class H5SignInfoOutController extends H5Controller {
             String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
             String push = ObjectUtils.toString(request.getParameter("push"), "").toString();
             Integer time = NumberUtil.objToIntDefault(request.getParameter("time"),1);
+            logger.info("supplementSign time cfp "+time);
             String wxCode = ObjectUtils.toString(request.getParameter("wxCode"), "").toString();
             String userName = ObjectUtils.toString(request.getParameter("rewardUserId"),null);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
@@ -271,7 +274,7 @@ public class H5SignInfoOutController extends H5Controller {
             if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc()).toString();
             }
-//            // 更新为已经验证
+            // 更新为已经验证
             afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
             final AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
             if (eUserDo != null) {
@@ -345,7 +348,7 @@ public class H5SignInfoOutController extends H5Controller {
             bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
             final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
             final BigDecimal amount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
-            if(!signRewardSupplement(request,userId,moblie,time,userWxInfo,amount)){
+            if(!signRewardSupplement(request,userId,moblie,time,userWxInfo,amount,Long.parseLong(afResourceDo.getValue5()))){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
             data = homeInfo(userId,data,push);
@@ -360,7 +363,7 @@ public class H5SignInfoOutController extends H5Controller {
         }
     }
 
-    private boolean signRewardSupplement(HttpServletRequest request,final Long userId,final String moblie,final int time,final JSONObject userWxInfo,final BigDecimal amount){
+    private boolean signRewardSupplement(HttpServletRequest request,final Long userId,final String moblie,final int time,final JSONObject userWxInfo,final BigDecimal amount,final Long couponId){
         boolean result ;
         final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
 
@@ -435,16 +438,16 @@ public class H5SignInfoOutController extends H5Controller {
                             if(maxCount < 5 && newMaxCount == 5){
                                 rewardAmount = rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN);
                                 afSignRewardExtDo.setAmount(rewardAmount);
-                                fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
+                                fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,couponId);
                             }
                         }else if(count >= 7 && count< 10){
                             //给予连续5天的奖励
                             if(maxCount < 5 && newMaxCount == 5){
                                 rewardAmount = rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN);
-                                fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
+                                fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,couponId);
                             }else if(maxCount < 5 && newMaxCount == 7){//给予连续5天和7天的奖励
                                 rewardAmount = rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN);
-                                fiveOrSevenSignDays(afSignRewardExtDo,afSignRewardExtDo.getAmount(),rewardDo,afResourceDo);
+                                fiveOrSevenSignDays(afSignRewardExtDo,afSignRewardExtDo.getAmount(),rewardDo,couponId);
                             }else if(maxCount >= 5 && newMaxCount == 7){//给予连续7天的奖励
                                 rewardAmount = rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN);
                                 afSignRewardExtDo.setAmount(rewardAmount);
@@ -544,14 +547,24 @@ public class H5SignInfoOutController extends H5Controller {
      * @param afSignRewardExtDo
      * @param rewardAmount
      * @param rewardDo
-     * @param afResourceDo
+     * @param couponId
      * @return
      */
-    private void fiveOrSevenSignDays(AfSignRewardExtDo afSignRewardExtDo ,BigDecimal rewardAmount,final AfSignRewardDo rewardDo,final AfResourceDo afResourceDo){
-        afSignRewardExtDo.setAmount(rewardAmount);
+    private void fiveOrSevenSignDays(AfSignRewardExtDo afSignRewardExtDo ,BigDecimal rewardAmount,final AfSignRewardDo rewardDo,final Long couponId){
         AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
+        AfCouponDo afCouponDo = afCouponService.getCouponById(couponId);
+        if(afCouponDo==null){
+            if(StringUtil.equals(afCouponDo.getExpiryType(),"D")){
+                afUserCouponDo.setGmtStart(new Date());
+                afUserCouponDo.setGmtEnd(DateUtil.addDays(new Date(),afCouponDo.getValidDays()));
+            }else if(StringUtil.equals(afCouponDo.getExpiryType(),"R")){
+                afUserCouponDo.setGmtStart(afCouponDo.getGmtStart());
+                afUserCouponDo.setGmtEnd(afCouponDo.getGmtEnd());
+            }
+        }
+        afSignRewardExtDo.setAmount(rewardAmount);
         afUserCouponDo.setUserId(rewardDo.getUserId());
-        afUserCouponDo.setCouponId(Long.parseLong(afResourceDo.getValue5()));
+        afUserCouponDo.setCouponId(couponId);
         afUserCouponDo.setGmtCreate(new Date());
         afUserCouponDo.setGmtModified(new Date());
         afUserCouponDo.setSourceType("SIGN_REWARD");

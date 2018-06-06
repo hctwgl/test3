@@ -60,6 +60,8 @@ public class H5MySignInfoOutController extends H5Controller {
     AfSignRewardExtService afSignRewardExtService;
     @Resource
     AfUserCouponService afUserCouponService;
+    @Resource
+    AfCouponService afCouponService;
 
 
     /**
@@ -285,8 +287,18 @@ public class H5MySignInfoOutController extends H5Controller {
             @Override
             public String doInTransaction(TransactionStatus status) {
                 try{
-                    afSignRewardService.saveRecord(rewardDo);
                     AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
+                    AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(afResourceDo.getValue5()));
+                    if(afCouponDo==null){
+                        if(StringUtil.equals(afCouponDo.getExpiryType(),"D")){
+                            afUserCouponDo.setGmtStart(new Date());
+                            afUserCouponDo.setGmtEnd(DateUtil.addDays(new Date(),afCouponDo.getValidDays()));
+                        }else if(StringUtil.equals(afCouponDo.getExpiryType(),"R")){
+                            afUserCouponDo.setGmtStart(afCouponDo.getGmtStart());
+                            afUserCouponDo.setGmtEnd(afCouponDo.getGmtEnd());
+                        }
+                    }
+                    afSignRewardService.saveRecord(rewardDo);
                     afUserCouponDo.setUserId(rewardDo.getUserId());
                     afUserCouponDo.setCouponId(Long.parseLong(afResourceDo.getValue5()));
                     afUserCouponDo.setGmtCreate(new Date());
