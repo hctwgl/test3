@@ -6,6 +6,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.enums.WithdrawType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
@@ -48,6 +49,8 @@ public class GetExtractMoneyApi implements H5Handle {
     AfResourceService afResourceService;
     @Resource
     private BizCacheUtil bizCacheUtil;
+    @Resource
+    AfCouponService afCouponService;
 
     @Override
     public H5HandleResponse process(final Context context) {
@@ -77,6 +80,16 @@ public class GetExtractMoneyApi implements H5Handle {
                                 }
                                 if(StringUtil.equals(WithdrawType.ZERO.getCode(),withdrawType)){//送10元无门槛优惠券
                                     AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
+                                    AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(afResourceDo.getValue5()));
+                                    if(afCouponDo==null){
+                                        if(StringUtil.equals(afCouponDo.getExpiryType(),"D")){
+                                            afUserCouponDo.setGmtStart(new Date());
+                                            afUserCouponDo.setGmtEnd(DateUtil.addDays(new Date(),afCouponDo.getValidDays()));
+                                        }else if(StringUtil.equals(afCouponDo.getExpiryType(),"R")){
+                                            afUserCouponDo.setGmtStart(afCouponDo.getGmtStart());
+                                            afUserCouponDo.setGmtEnd(afCouponDo.getGmtEnd());
+                                        }
+                                    }
                                     afUserCouponDo.setUserId(userId);
                                     afUserCouponDo.setCouponId(Long.parseLong(afResourceDo.getValue5()));
                                     afUserCouponDo.setGmtCreate(new Date());
