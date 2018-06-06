@@ -22,7 +22,7 @@ import java.util.List;
 
 
 /**
- * 去完成分享任务
+ * 去完成消息推送任务
  * @author cfp
  * @类描述：签到领金币
  */

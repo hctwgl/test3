@@ -358,7 +358,8 @@
         <if test="taskCondition != null and taskCondition != '' ">
             AND task_condition = #{taskCondition}
         </if>
-
+        AND task_begin_time <![CDATA[   <=  ]]> now()
+        And task_end_time <![CDATA[   >=  ]]> now()
     </select>
 
 
