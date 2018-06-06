@@ -191,8 +191,8 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 				List<AfTaskDo> notDailyTaskUserList = afTaskService.getNotDailyTaskListByUserId(userId, afTaskType);
 				List<AfTaskDo> dailyTaskUserList = null;
 
-				// 实名认证、强风控通过没有每日更新任务
-				if (!StringUtils.equals(AfTaskType.VERIFIED.getCode(), afTaskType) || !StringUtils.equals(AfTaskType.STRONG_RISK.getCode(), afTaskType)) {
+				// 实名认证、强风控提交、消息推送没有每日更新任务
+				if (!StringUtils.equals(AfTaskType.VERIFIED.getCode(), afTaskType) || !StringUtils.equals(AfTaskType.STRONG_RISK.getCode(), afTaskType) || !StringUtils.equals(AfTaskType.PUSH.getCode(), afTaskType)) {
 					dailyTaskUserList = afTaskService.getDailyTaskListByUserId(userId, afTaskType);
 				}
 

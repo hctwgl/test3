@@ -623,5 +623,12 @@ public class Constants {
 	 */
 	public static final String TASK_COIN_CHANGE_TO_CASH_NAME = "金币兑换零钱";
 
+	/**
+	 * 边逛边赚奖励类型
+	 */
+	public static final int REWARD_TYPE_COIN = 0;
+	public static final int REWARD_TYPE_CASH = 1;
+	public static final int REWARD_TYPE_COUPON = 2;
+
 	public static final String SIGN_DATE = "SIGN_DATE";
 }

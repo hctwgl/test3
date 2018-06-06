@@ -6,6 +6,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.FanbeiH5Context;
 import com.ald.fanbei.api.common.FanbeiWebContext;
+import com.ald.fanbei.api.common.enums.AfTaskType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -61,12 +62,13 @@ public class H5WalletController extends BaseController{
     @Resource
     private BizCacheUtil bizCacheUtil;
 
-    @Resource
-    AddBrowseTaskUserApi addBrowseTaskUserApi;
-
     @ResponseBody
     @RequestMapping(value = "valletPage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String valletPage(HttpServletRequest request, HttpServletResponse response){
+
+//        afTaskUserService.taskHandler(15295517400l, AfTaskType.VERIFIED.getCode(), null);
+//        afTaskUserService.browerAndShoppingHandler(18637963288l, Long.parseLong("136896"), AfTaskType.SHOPPING.getCode());
+
         Map<String, Object> data = Maps.newHashMap();
         try{
             String userName = ObjectUtils.toString(request.getParameter("userName"),null);
@@ -97,6 +99,9 @@ public class H5WalletController extends BaseController{
 
             // 累计收益
             BigDecimal totalAmount = afTaskUserService.getAccumulatedIncome(userId);
+            if(null == totalAmount){
+                totalAmount = new BigDecimal(0);
+            }
             data.put("totalAmount", totalAmount);
 
             // 我的金币
@@ -105,7 +110,7 @@ public class H5WalletController extends BaseController{
             BigDecimal yesterdayProportion = afTaskCoinChangeProportionService.getYesterdayProportion();
 
             // 我的金币兑换，是否昨天已经兑换过
-            AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.TASK_COIN_CHANGE_TO_CASH_NAME, userId, 1);
+            AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.TASK_COIN_CHANGE_TO_CASH_NAME, userId, Constants.REWARD_TYPE_CASH);
 
             if(null == taskUserDo){
                 data.put("changeCoinFlag", false);

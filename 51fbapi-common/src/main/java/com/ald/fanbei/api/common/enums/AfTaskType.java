@@ -14,6 +14,7 @@ public enum AfTaskType {
     SHARE("share","分享"),
     VERIFIED("verified","实名"),
     STRONG_RISK("strong_risk","强风控通过"),
+    PUSH("push","消息推送"),
     LOAN_MARKET_ACCESS("loan_market_access","借贷超市注册");
 
 

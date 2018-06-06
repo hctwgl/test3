@@ -567,6 +567,10 @@ public class RiskUtil extends AbstractThird {
 		// fail,consumerNo="+consumerNo);
 		// }
 
+		// add by luoxiao 边逛边赚，提交强风控送奖励
+		afTaskUserService.taskHandler(userId, AfTaskType.STRONG_RISK.getCode(), null);
+		// end by luoxiao
+
 		String reqResult = requestProxy.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
 
 		logThird(reqResult, "registerAndRisk", reqBo);
@@ -576,11 +580,6 @@ public class RiskUtil extends AbstractThird {
 		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
 			riskResp.setSuccess(true);
-
-			// add by luoxiao 边逛边赚，强风控通过送奖励
-			afTaskUserService.taskHandler(userId, AfTaskType.STRONG_RISK.getCode(), null);
-			// end by luoxiao
-
 			return riskResp;
 		} else {
 			riskResp.setSuccess(false);
