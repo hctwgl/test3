@@ -12,18 +12,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.JobThreadPoolUtils;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.dal.dao.AfUserDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.ald.fanbei.api.dal.domain.query.AfGoodsDoQuery;
 import com.ald.fanbei.api.dal.domain.query.AfUserCouponQuery;
 import com.ald.fanbei.api.dal.domain.supplier.AfSolrSearchResultDo;
+import com.ald.fanbei.api.web.api.goods.GetMoreGoodsApi;
 import com.ald.fanbei.api.web.vo.AfSearchGoodsVo;
 import com.ald.fanbei.api.web.vo.AfUserCouponVo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,7 +48,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.AfResourceDao;
 import com.ald.fanbei.api.dal.dao.AfUserCouponDao;
-import com.ald.fanbei.api.dal.dao.AfUserDao;
+
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
 import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery;
@@ -117,6 +122,12 @@ public class AppH5FanBeiWebController extends BaseController {
 	private final static int EXPIRE_DAY = 2;
 	@Resource
 	AfCouponCategoryService afCouponCategoryService;
+   @Resource
+   JobThreadPoolUtils jobThreadPoolUtils;
+
+	private final static String ASJ_IMAGES = 		   HomePageType.ASJ_IMAGES.getCode();//爱上街顶部图组
+	private final static String GUESS_YOU_LIKE_TOP_IMAGE = 		   HomePageType.GUESS_YOU_LIKE_TOP_IMAGE.getCode();//猜你喜欢顶部图
+
 	/**
 	 * 首页弹窗页面
 	 * 
@@ -1212,9 +1223,8 @@ public class AppH5FanBeiWebController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "/getMoreGoods", method = RequestMethod.POST,  produces = "application/json;charset=utf-8")
 	public String getMoreGoods(HttpServletRequest request, ModelMap model) throws IOException {
-		String ASJ_IMAGES = 		   HomePageType.ASJ_IMAGES.getCode();//爱上街顶部图组
-		String GUESS_YOU_LIKE_TOP_IMAGE = 		   HomePageType.GUESS_YOU_LIKE_TOP_IMAGE.getCode();//猜你喜欢顶部图
-		
+
+
 		FanbeiWebContext context = doWebCheck(request, false);
 		Map<String, Object> returnData = new HashMap<String, Object>();
 		// 获取用户信息
@@ -1238,50 +1248,72 @@ public class AppH5FanBeiWebController extends BaseController {
 	try{
 		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
 		 //更换查询表
-		 Map<String, Object> moreGoodsTemp = new HashMap<String, Object>();
+		// Map<String, Object> moreGoodsTemp = new HashMap<String, Object>();
 		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_PAY_SESULT_PAGE_GOODS_PAGENO.getCode()+ ":"+pageFlag+":"+pageNo;
-		 moreGoodsTemp =  (Map<String, Object>) bizCacheUtil.getMap(cacheKey);
-		   if(moreGoodsTemp != null){
+		String cacheKey2 = CacheConstants.ASJ_HOME_PAGE.ASJ_PAY_SESULT_PAGE_GOODS_PAGENO_SECOND.getCode()+ ":"+pageFlag+":"+pageNo;
+		String processKey = CacheConstants.ASJ_HOME_PAGE.ASJ_PAY_SESULT_PAGE_GOODS_PAGENO_SECOND_PROCESS_KEY.getCode()+ ":"+pageFlag+":"+pageNo;
+		String source = "H5";
+
+		goodsInfo =  (Map<String, Object>) bizCacheUtil.getMap(cacheKey);
+		logger.info("getMoreGoods h5"+Thread.currentThread().getName() + "goodsInfo  = "+JSONArray.toJSONString(goodsInfo)+"cacheKey = "+ cacheKey);
+		 /*  if(goodsInfo != null){
 			   goodsInfo = moreGoodsTemp;
-		   }	
-		   if(moreGoodsTemp == null || moreGoodsTemp.isEmpty()){
-		 
-		 
-		 
-		 Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag,"H5");
-		 List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
-		// List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
-		 List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
-		    
-		     String imageUrl = "";
-		     String type = "";
-		     String content = "";
-		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,GUESS_YOU_LIKE_TOP_IMAGE);
-		     if(recommendList != null && recommendList.size() >0){
-		    	 AfResourceH5ItemDo recommend = recommendList.get(0);
-		    	 imageUrl = recommend.getValue3();
-		    	 type = recommend.getValue4();
-		    	 content = recommend.getValue1();
-		    	 
-		     }
-				if(StringUtil.isNotEmpty(imageUrl) && moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
-					 HomePageSecKillByBottomGoodsQuery homePageSecKillGoods = (HomePageSecKillByBottomGoodsQuery)goodsListMap.get("query");
-					 if(homePageSecKillGoods != null){
-						 int pageSize = homePageSecKillGoods.getPageSize();
-						 int size = goodsList.size();
-						 if(pageSize > size){
-							 goodsInfo.put("nextPageNo",-1); 
-						 }else{
-							 goodsInfo.put("nextPageNo",pageNo+1); 
-						 }
-						 goodsInfo.put("imageUrl",imageUrl); 
-						 goodsInfo.put("type",type); 
-						 goodsInfo.put("content",content); 
-						 goodsInfo.put("moreGoodsList", moreGoodsInfoList);
-					 }
-				}
-				 bizCacheUtil.saveMap(cacheKey, goodsInfo, Constants.MINITS_OF_TWO);	 	
+		   }	*/
+		   if(goodsInfo == null || goodsInfo.isEmpty()) {
+
+			   boolean isGetLock = bizCacheUtil.getLock30Second(processKey, "1");
+			   goodsInfo = (Map<String, Object>) bizCacheUtil.getMap(cacheKey2);
+			   logger.info("getMoreGoods h5" + Thread.currentThread().getName() + "isGetLock:" + isGetLock + "goodsInfo= " + JSONArray.toJSONString(goodsInfo) + "cacheKey2 = " + cacheKey2);
+			   //调用异步请求加入缓存
+			   if (isGetLock) {
+				   logger.info("getMoreGoods h5" + Thread.currentThread().getName() + "getMoreGoods h5 is null" + "cacheKey = " + cacheKey);
+				   Runnable process = new GetH5MoreGoodsInfo(cacheKey, cacheKey2, null, pageNo, pageFlag, source);
+				   jobThreadPoolUtils.asynProcessBusiness(process);
+			   }
 		   }
+		//调用异步请求加入缓存
+		if(goodsInfo==null){
+			goodsInfo = toGetMoreGoodsInfoMap(null,pageNo,pageFlag,source);
+			if(goodsInfo != null) {
+				bizCacheUtil.saveMap(cacheKey, goodsInfo, Constants.MINITS_OF_TWO);
+				bizCacheUtil.saveMapForever(cacheKey2, goodsInfo);
+			}
+		}
+//
+//			   Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag,"H5");
+//		 List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
+//		// List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
+//		 List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
+//
+//		     String imageUrl = "";
+//		     String type = "";
+//		     String content = "";
+//		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,GUESS_YOU_LIKE_TOP_IMAGE);
+//		     if(recommendList != null && recommendList.size() >0){
+//		    	 AfResourceH5ItemDo recommend = recommendList.get(0);
+//		    	 imageUrl = recommend.getValue3();
+//		    	 type = recommend.getValue4();
+//		    	 content = recommend.getValue1();
+//
+//		     }
+//				if(StringUtil.isNotEmpty(imageUrl) && moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
+//					 HomePageSecKillByBottomGoodsQuery homePageSecKillGoods = (HomePageSecKillByBottomGoodsQuery)goodsListMap.get("query");
+//					 if(homePageSecKillGoods != null){
+//						 int pageSize = homePageSecKillGoods.getPageSize();
+//						 int size = goodsList.size();
+//						 if(pageSize > size){
+//							 goodsInfo.put("nextPageNo",-1);
+//						 }else{
+//							 goodsInfo.put("nextPageNo",pageNo+1);
+//						 }
+//						 goodsInfo.put("imageUrl",imageUrl);
+//						 goodsInfo.put("type",type);
+//						 goodsInfo.put("content",content);
+//						 goodsInfo.put("moreGoodsList", moreGoodsInfoList);
+//					 }
+//				}
+//				 bizCacheUtil.saveMap(cacheKey, goodsInfo, Constants.MINITS_OF_TWO);
+//		   }
 		     
 			 if (!goodsInfo.isEmpty()) {
 					returnData.put("moreGoodsInfo", goodsInfo);
@@ -1294,7 +1326,85 @@ public class AppH5FanBeiWebController extends BaseController {
 					"", returnData).toString();
 		
 	}
-	
+	class GetH5MoreGoodsInfo implements Runnable {
+
+		protected  final Logger logger = LoggerFactory.getLogger(GetH5MoreGoodsInfo.class);
+
+		private String source;
+		private String  pageFlag;
+		private Integer pageNo;
+		private Long userId;
+		private String  firstKey;
+		private String  secondKey;
+		@Resource
+		BizCacheUtil bizCacheUtil;
+		GetH5MoreGoodsInfo(String firstKey,String secondKey,Long userId,Integer pageNo,String pageFlag,String source) {
+
+			this.source = source;
+			this.pageFlag = pageFlag;
+			this.pageNo = pageNo;
+			this.userId = userId;
+			this.firstKey = firstKey;
+			this.secondKey = secondKey;
+		}
+		@Override
+		public void run() {
+			logger.info("pool:getMoreGoods h5"+Thread.currentThread().getName() + "GetMoreGoodsInfo");
+			try{
+				GetMoreGoodsInfoMap( firstKey,secondKey , userId, pageNo, pageFlag,source);
+
+			}catch (Exception e){
+				logger.error("pool:getMoreGoods h5 error for" + e);
+			}
+		}
+	}
+	private Map<String, Object> GetMoreGoodsInfoMap(String firstKey , String secondKey ,Long userId,Integer pageNo,String pageFlag,String source) {
+		//获取所有活动
+		Map<String, Object> goodsInfo =  toGetMoreGoodsInfoMap(userId, pageNo, pageFlag, source);
+		if(goodsInfo != null) {
+			bizCacheUtil.saveMap(firstKey, goodsInfo, Constants.MINITS_OF_TWO);
+			bizCacheUtil.saveMapForever(secondKey, goodsInfo);
+		}
+		return null;
+	}
+	Map<String, Object> toGetMoreGoodsInfoMap(Long userId,Integer pageNo,String pageFlag,String source ){
+		Map<String, Object> goodsInfo = new HashMap<String, Object>();
+		userId = null; // 不查，且放入缓存会有问题。
+		Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag,"H5");
+		 List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
+		// List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag);
+		 List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
+
+		     String imageUrl = "";
+		     String type = "";
+		     String content = "";
+		     List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,GUESS_YOU_LIKE_TOP_IMAGE);
+		     if(recommendList != null && recommendList.size() >0){
+		    	 AfResourceH5ItemDo recommend = recommendList.get(0);
+		    	 imageUrl = recommend.getValue3();
+		    	 type = recommend.getValue4();
+		    	 content = recommend.getValue1();
+
+		     }
+				if(StringUtil.isNotEmpty(imageUrl) && moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
+					 HomePageSecKillByBottomGoodsQuery homePageSecKillGoods = (HomePageSecKillByBottomGoodsQuery)goodsListMap.get("query");
+					 if(homePageSecKillGoods != null){
+						 int pageSize = homePageSecKillGoods.getPageSize();
+						 int size = goodsList.size();
+						 if(pageSize > size){
+							 goodsInfo.put("nextPageNo",-1);
+						 }else{
+							 goodsInfo.put("nextPageNo",pageNo+1);
+						 }
+						 goodsInfo.put("imageUrl",imageUrl);
+						 goodsInfo.put("type",type);
+						 goodsInfo.put("content",content);
+						 goodsInfo.put("moreGoodsList", moreGoodsInfoList);
+					 }
+				}
+				return goodsInfo;
+	}
+
 
 	private List<Map<String, Object>> getGoodsInfoList(List<HomePageSecKillGoods> list,String tag,AfResourceH5ItemDo afResourceH5ItemDo){
 		List<Map<String, Object>> goodsList = new ArrayList<Map<String, Object>>();

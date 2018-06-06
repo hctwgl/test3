@@ -2,17 +2,16 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.bo.OpenRedPacketHomeBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.WxUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AccountLogType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CollectionConverterUtil;
-import com.ald.fanbei.api.common.util.CollectionUtil;
-import com.ald.fanbei.api.common.util.Converter;
-import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.AfRedPacketTotalDao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.*;
@@ -29,6 +28,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -67,6 +68,11 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 
     @Autowired
 	private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private BizCacheUtil bizCacheUtil;
+
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
 	@Override
 	public OpenRedPacketHomeBo getHomeInfoInSite(FanbeiWebContext context) {
@@ -234,6 +240,12 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	}
 
 	@Override
+	public BigDecimal getTodayWithdrawAmount() {
+		Date now = new Date();
+		return afRedPacketTotalDao.getTotalWithdrawAmount(DateUtil.getStartOfDate(now), DateUtil.getEndOfDate(now));
+	}
+
+	@Override
 	public boolean isCanGainOne(Long id, Integer shareTime) {
 		if (shareTime != null) {
 			int openedNum = afRedPacketSelfOpenService.getOpenedNum(id);
@@ -253,24 +265,60 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	}
 
 	@Override
-	public void withdraw(final Long id, final String modifier) {
-		transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-			@Override
-			protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-				AfRedPacketTotalDo redPacketTotalDo = getById(id);
-
-				checkIsCanWithdraw(redPacketTotalDo);
-
-				if (redPacketTotalDo.getIsWithdraw() == 1) return;
-
-				redPacketTotalDo.setIsWithdraw(1);
-				redPacketTotalDo.setModifier(modifier);
-				redPacketTotalDo.setGmtWithdraw(new Date());
-				updateById(redPacketTotalDo);
-
-				withdrawToUserAccount(redPacketTotalDo);
+	public boolean isReachWithdrawAmountThreshold(BigDecimal everydayWithdrawAmountThreshold) {
+		if (everydayWithdrawAmountThreshold != null) {
+			BigDecimal todayWithdrawAmount = getTodayWithdrawAmount();
+			if (everydayWithdrawAmountThreshold.compareTo(todayWithdrawAmount) < 0) {
+				return true;
 			}
-		});
+		}
+		return false;
+	}
+
+	@Override
+	public void withdraw(final Long id, final String modifier) {
+		String lock = "AfRedPacketTotalServiceImpl_withdraw_lock_" + id;
+		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,500, Constants.SECOND_OF_TEN_MINITS);
+		if (isLock) {
+			try {
+				transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+					@Override
+					protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+						AfRedPacketTotalDo redPacketTotalDo = getById(id);
+
+						checkIsCanWithdraw(redPacketTotalDo);
+
+						redPacketTotalDo.setIsWithdraw(1);
+						redPacketTotalDo.setModifier(modifier);
+						redPacketTotalDo.setGmtWithdraw(new Date());
+						updateById(redPacketTotalDo);
+
+						withdrawToUserAccount(redPacketTotalDo);
+					}
+				});
+
+				// TODO:由于统一线程池代码没有提交，将来改为统一的线程池异步处理
+				executorService.execute(new Runnable() {
+					@Override
+					public void run() {
+						AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+						if (config.getValue().equals(YesNoStatus.NO.getCode()))
+							return;
+
+						JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
+						BigDecimal everydayWithdrawAmount = redPacketConfig.getBigDecimal("withdrawAmount");
+						if (isReachWithdrawAmountThreshold(everydayWithdrawAmount)) {
+							config.setValue(YesNoStatus.NO.getCode());
+							afResourceService.editResource(config);
+						}
+					}
+				});
+			} finally {
+				bizCacheUtil.delCache(lock);
+			}
+		} else {
+			throw new RuntimeException(lock + "锁没有获取到");
+		}
 	}
 
 	@Override
@@ -299,7 +347,12 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 	// 检查活动是否停止
 	private void checkActivityIsStop(AfResourceDo config) {
 		if (config.getValue().trim().equals(YesNoStatus.NO.getCode())) {
-			throw new FanbeiException(FanbeiExceptionCode.OPEN_REDPACKET_ACTIVITY_OVER);
+			String msg = config.getValue4();
+			if (StringUtil.isBlank(msg)) {
+				throw new FanbeiException(FanbeiExceptionCode.OPEN_REDPACKET_ACTIVITY_OVER);
+			} else {
+				throw new FanbeiException(msg);
+			}
 		}
 	}
 
@@ -323,6 +376,7 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 		result.put("withdrawLimitAmount", redPacketConfig.getString("thresholdAmount"));
 		BigDecimal restAmount = calcWithdrawRestAmount(theOpening, new BigDecimal(redPacketConfig.getString("thresholdAmount")));
 		result.put("restAmount", restAmount.setScale(2, RoundingMode.HALF_UP).toString());
+		result.put("gmtNow", DateUtil.formatDateTime(new Date()));
 		result.put("gmtOverdue",
 				DateUtil.formatDateTime(DateUtil.addHoures(theOpening.getGmtCreate(), overdueIntervalHour)));
 		result.put("isCanGainOne", isCanGainOne(theOpening.getRid(), redPacketConfig.getInteger("shareTime"))
@@ -363,9 +417,12 @@ public class AfRedPacketTotalServiceImpl extends ParentServiceImpl<AfRedPacketTo
 
 	// 检查是否能提现
 	private void checkIsCanWithdraw(AfRedPacketTotalDo redPacketTotalDo) {
+        if (redPacketTotalDo.getIsWithdraw() == 1) {
+            throw new FanbeiException("您已成功提现，请刷新页面");
+        }
+
 		AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
 		JSONObject redPacketConfig = JSONObject.parseObject(config.getValue1());
-
 		if (isOverdue(redPacketTotalDo, redPacketConfig)) {
 			throw new FanbeiException("红包已过期");
 		}

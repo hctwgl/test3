@@ -151,7 +151,7 @@
         aag.id rid,aag.goods_id,aag.gmt_create,aag.gmt_modified,sag.limit_count,aag.coupon_id,aag.sort
         , sa.gmt_start, sa.gmt_end, ag.name goodsName, sag.special_price activityAmount
         , if(MIN(b.actual_amount) > 0, MIN(b.actual_amount), 0)  saleAmount
-        , if((MIN(b.actual_amount) - ac.amount ) > 0, MIN(b.actual_amount) - ac.amount , 0) end_amount
+        , if((MIN(b.actual_amount) - ac.amount + sag.special_price ) > 0, MIN(b.actual_amount) - ac.amount + sag.special_price , 0) end_amount
         , ac.amount couponPrice, agu.id userReservationId, ifnull(agu.goods_count, 0)  goodsCount
         , ag.goods_icon, ag.thumbnail_icon, ag.goods_url
         FROM af_activity_reservation_goods  aag
@@ -180,7 +180,7 @@
         aag.id rid,aag.goods_id,aag.gmt_create,aag.gmt_modified,sag.limit_count,aag.coupon_id,aag.sort
         , sa.gmt_start, sa.gmt_end, ag.name goodsName, sag.special_price activityAmount
         , if(MIN(b.actual_amount) > 0, MIN(b.actual_amount), 0)  saleAmount
-        , if((MIN(b.actual_amount) - ac.amount ) > 0, MIN(b.actual_amount) - ac.amount , 0) end_amount
+        , if((MIN(b.actual_amount) - ac.amount + sag.special_price) > 0, MIN(b.actual_amount) - ac.amount  + sag.special_price, 0) end_amount
         , ac.amount couponPrice, ifnull(agu.goods_count, 0) goods_count
         , ag.goods_icon, ag.thumbnail_icon, ag.goods_url
         FROM af_activity_reservation_goods  aag

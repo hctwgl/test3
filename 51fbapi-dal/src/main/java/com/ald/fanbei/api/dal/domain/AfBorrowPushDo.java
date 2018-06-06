@@ -51,6 +51,15 @@ import java.math.BigDecimal;
     
     private BigDecimal profitRate;
 
+    private Date loanTime;
+
+    public Date getLoanTime() {
+        return loanTime;
+    }
+
+    public void setLoanTime(Date loanTime) {
+        this.loanTime = loanTime;
+    }
 
     /**
      * 获取主键Id

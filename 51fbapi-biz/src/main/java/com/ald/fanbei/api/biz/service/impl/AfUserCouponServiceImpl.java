@@ -456,6 +456,58 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 	}
 
 	@Override
+	public AfUserCouponDo sendActivityCouponByGoods(Long userId, String couponSenceRuleType, AfResourceDo resourceDo, Long goodsId){
+		try {
+			if(null != resourceDo) {
+				String value = resourceDo.getValue();
+				String[] activityPeriodTime = value.split(",");
+				Date startTime = DateUtil.parseDateTimeShortExpDefault(activityPeriodTime[0], null);
+				Date endTime = DateUtil.parseDateTimeShortExpDefault(activityPeriodTime[1], null);
+				if (null != startTime && null != endTime) {
+					Date now = new Date();
+					// 在活动期间
+					if (DateUtil.compareDate(now, startTime) && DateUtil.compareDate(endTime, now)) {
+						String[] goodsArr = resourceDo.getValue1().split(",");
+						String[] couponArr = resourceDo.getValue().split(",");
+						if (null != goodsArr && goodsArr.length > 0) {
+							Long couponId = null;
+							for(int i = 0; i < goodsArr.length; i++){
+								if(goodsId == Long.valueOf(goodsArr[i].toString())){
+									couponId = Long.valueOf(couponArr[i].toString());
+									break;
+								}
+							}
+							if (null != couponId) {
+								AfCouponDo couponDo = afCouponService.getCouponById(couponId);
+								AfUserCouponDo userCoupon = new AfUserCouponDo();
+								userCoupon.setCouponId(couponDo.getRid());
+								userCoupon.setGmtCreate(new Date());
+								userCoupon.setGmtStart(couponDo.getGmtStart());
+								userCoupon.setGmtEnd(couponDo.getGmtEnd());
+								userCoupon.setUserId(userId);
+								userCoupon.setStatus(AfUserCouponStatus.NOUSE.getCode());
+								userCoupon.setSourceType(couponSenceRuleType);
+								afUserCouponService.addUserCoupon(userCoupon);
+								AfCouponDo couponDoT = new AfCouponDo();
+								couponDoT.setRid(couponDo.getRid());
+								couponDoT.setQuotaAlready(1);
+								afCouponService.updateCouponquotaAlreadyById(couponDoT);
+
+								return userCoupon;
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("random send coupon error.", e);
+		}
+
+		return null;
+	}
+
+
+	@Override
 	public AfUserCouponDto getUserCouponAfterPaidSuccess(Long userId){
 		return afUserCouponDao.getUserCouponAfterPaidSuccess(userId);
 	}

@@ -9,11 +9,14 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.util.JobThreadPoolUtils;
 import jodd.util.StringUtil;
 
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.AfAbtestDeviceNewService;
@@ -106,6 +109,8 @@ public class GetHomeChannelApi implements ApiHandle {
 	AfSeckillActivityService afSeckillActivityService;
 	@Resource
 	AfResourceH5ItemService afResourceH5ItemService;
+	@Resource
+	JobThreadPoolUtils jobThreadPoolUtils;
 	
 	private String HOME_PAGE_CHANNEL_RECOMMEND_GOODS = 	HomePageType.HOME_PAGE_CHANNEL_RECOMMEND_GOODS.getCode(); //频道页推荐商品id组
 	private String ASJ_IMAGES = 		   HomePageType.ASJ_IMAGES.getCode();//爱上街顶部图组
@@ -124,14 +129,40 @@ public class GetHomeChannelApi implements ApiHandle {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
 	      }
 		
-		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_CHANNEL_TABID.getCode() + tabId+"_"+envType;
+		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_CHANNEL_TABID_FIRST.getCode() + tabId+"_"+envType;
+		 String cacheKey2 = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_CHANNEL_TABID_SECOND.getCode() + tabId+"_"+envType;
+		 String processKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_PAGE_CHANNEL_TABID__PROCESS_KEY.getCode() + tabId+"_"+envType;
 		 Object cacheResult =(Map<String, Object>) bizCacheUtil.getMap(cacheKey);
-		 
+
          if (cacheResult != null) {
              data =  (Map<String, Object>) cacheResult;
          }else{
-		
-			//用户信息用于查预约。页面不显示，放缓存没关系
+			 Long userId = null;
+			 if (context.getUserName() != null) {
+				 AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
+				 if(userDo != null){
+					 userId = userDo.getRid();
+				 }
+			 }
+
+			 boolean isGetLock = bizCacheUtil.getLock30Second(processKey, "1");
+			 data = (Map<String, Object>) bizCacheUtil.getMap(cacheKey2);
+			 logger.info("getHomeChannelApi cache2" + Thread.currentThread().getName() + "isGetLock:" + isGetLock + "data= " + JSONArray.toJSONString(data) + "cacheKey2 = " + cacheKey2);
+			 //调用异步请求加入缓存
+			 if (isGetLock) {
+				 logger.info("getHomeChannelApi" + Thread.currentThread().getName() + "getHomeCache is null" + "cacheKey2 = " + cacheKey2);
+				 Runnable process = new GetHomeChannelCache(cacheKey,cacheKey2,userId,tabId,envType);
+				 jobThreadPoolUtils.asynProcessBusiness(process);
+			 }
+
+		if(data== null || data.isEmpty()) {
+			data = toAddHomeChannelCache(userId, tabId, envType);
+			if (data != null && !data.isEmpty()) {
+				bizCacheUtil.saveMap(cacheKey, data, Constants.MINITS_OF_TWO);
+				bizCacheUtil.saveMapForever(cacheKey2, data);
+			}
+		}
+			/*//用户信息用于查预约。页面不显示，放缓存没关系
 			Long userId = null;
 			if (context.getUserName() != null) {
 			    AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
@@ -293,13 +324,209 @@ public class GetHomeChannelApi implements ApiHandle {
 				data.put("recommendGoodsInfo", recommendGoodsInfo);
 			}
 		 // 
-		 bizCacheUtil.saveMap(cacheKey, data, Constants.MINITS_OF_TWO);	 	
+		 bizCacheUtil.saveMap(cacheKey, data, Constants.MINITS_OF_TWO);	 */
 	}
 		resp.setResponseData(data);
 		return resp;
 	}
-	
-	
+	class GetHomeChannelCache implements Runnable {
+
+		protected  final Logger logger = LoggerFactory.getLogger(GetHomeChannelCache.class);
+
+		private String  envType;
+		private Long tabId;
+		private Long userId;
+		private String  firstKey;
+		private String  secondKey;
+		@Resource
+		BizCacheUtil bizCacheUtil;
+		GetHomeChannelCache(String firstKey,String secondKey,Long userId,Long tabId,String envType) {
+
+			this.envType = envType;
+			this.tabId = tabId;
+			this.userId = userId;
+			this.firstKey = firstKey;
+			this.secondKey = secondKey;
+		}
+		@Override
+		public void run() {
+			logger.info("pool:getHomeChannelCacheInfo"+Thread.currentThread().getName() + "getHomeChannelCacheInfo");
+			try{
+				getHomeChannelCacheInfo( firstKey,secondKey , userId, tabId,envType);
+
+			}catch (Exception e){
+				logger.error("pool:getHomeChannelCacheInfo error for" + e);
+			}
+		}
+	}
+	private Map<String, Object> getHomeChannelCacheInfo(String firstKey , String secondKey ,Long userId,Long tabId,String envType) {
+		//获取所有活动
+		Map<String, Object> data =  toAddHomeChannelCache(userId, tabId,envType);
+		if(data != null) {
+			bizCacheUtil.saveMap(firstKey, data, Constants.MINITS_OF_TWO);
+			bizCacheUtil.saveMapForever(secondKey, data);
+		}
+		return null;
+	}
+
+
+	Map<String, Object>  toAddHomeChannelCache(Long userId,Long tabId,String envType){
+		Map<String, Object> data = new HashMap<String, Object>();
+		List<Object> topBannerList = new ArrayList<Object>();
+		List<Object> navigationList = new ArrayList<Object>();
+		List<Object> onePlusThreeArea = new ArrayList<Object>();
+		Map<String, Object> navigationInfo = new HashMap<String, Object>();
+		Map<String, Object> onePlusThreeInfo = new HashMap<String, Object>();
+		Map<String, Object> onePlusThreeBanner = new HashMap<String, Object>();
+		List<AfHomePageChannelConfigureDo> channelConfigureList =  afHomePageChannelConfigureService.getByChannelId(tabId);
+		if(channelConfigureList != null && channelConfigureList.size() >0){
+			for(AfHomePageChannelConfigureDo homePageChannelConfigure:channelConfigureList){
+				//0轮播
+				if(0 == homePageChannelConfigure.getConfigureType() ){
+					Map<String, Object> bannerInfo = new HashMap<String, Object>();
+					bannerInfo.put("imageUrl", homePageChannelConfigure.getImageUrl());
+					bannerInfo.put("type", H5_URL);
+					bannerInfo.put("content", homePageChannelConfigure.getJumpUrl());
+					bannerInfo.put("sort", homePageChannelConfigure.getSort());
+					if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
+						if(1 == homePageChannelConfigure.getStatus()){
+							topBannerList.add(bannerInfo);
+						}
+					} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
+						topBannerList.add(bannerInfo);
+					}
+				}
+				//1导航
+				if(1 == homePageChannelConfigure.getConfigureType() ){
+					//跳转类型。1:品牌；2:类目；3:H5
+					String type = "";
+					if(homePageChannelConfigure.getJumpType() == 2){
+						type = CATEGORY_ID;
+					}else{
+						type = H5_URL;
+					}
+					Map<String, Object> navigation = new HashMap<String, Object>();
+					navigation.put("imageUrl", homePageChannelConfigure.getImageUrl());
+					navigation.put("type",type );
+					navigation.put("titleName", homePageChannelConfigure.getName());
+					navigation.put("content", homePageChannelConfigure.getJumpUrl());
+					navigation.put("sort", homePageChannelConfigure.getSort());
+					if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
+						if(1 == homePageChannelConfigure.getStatus()){
+							navigationList.add(navigation);
+						}
+					} else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)) {
+						navigationList.add(navigation);
+					}
+
+				}
+				//2运营
+				if(2 == homePageChannelConfigure.getConfigureType() ){
+					if(0 ==  homePageChannelConfigure.getPosition()&& 1 == homePageChannelConfigure.getStatus()){
+						onePlusThreeBanner.put("imageUrl", homePageChannelConfigure.getImageUrl());
+						onePlusThreeBanner.put("type", H5_URL);
+						onePlusThreeBanner.put("content", homePageChannelConfigure.getJumpUrl());
+					}else if (0 <  homePageChannelConfigure.getPosition() && 1 == homePageChannelConfigure.getStatus()){
+						Map<String, Object> onePlusThree = new HashMap<String, Object>();
+						if(homePageChannelConfigure.getSort() == 1){
+
+						}
+						onePlusThree.put("imageUrl", homePageChannelConfigure.getImageUrl());
+						onePlusThree.put("type", H5_URL);
+						onePlusThree.put("content", homePageChannelConfigure.getJumpUrl());
+						onePlusThree.put("sort", homePageChannelConfigure.getSort());
+						onePlusThreeArea.add(onePlusThree);
+					}
+				}
+			}
+			navigationInfo = getNavigationInfolist(navigationList);
+			onePlusThreeArea = getOnePlusThreeArea(onePlusThreeArea);
+
+
+
+
+			if (!topBannerList.isEmpty()) {
+				data.put("topBannerList", topBannerList);
+			}
+			if (!navigationInfo.isEmpty()) {
+				data.put("navigationInfo", navigationInfo);
+			}
+			if (!onePlusThreeBanner.isEmpty()) {
+				onePlusThreeInfo.put("onePlusThreeBanner", onePlusThreeBanner);
+			}
+			if (!onePlusThreeArea.isEmpty()) {
+				onePlusThreeInfo.put("onePlusThreeArea", onePlusThreeArea);
+			}
+			if (!onePlusThreeInfo.isEmpty()) {
+				data.put("onePlusThreeInfo", onePlusThreeInfo);
+			}
+
+		}
+		//推荐商品
+		Map<String, Object> recommendGoodsInfo = new HashMap<String, Object>();
+		try{
+
+			//String recommendTag = "HC_IMAGE";
+			AfResourceDo recommendGoods =  afResourceService.getConfigByTypesAndValue(HOME_PAGE_CHANNEL_RECOMMEND_GOODS, tabId.toString());
+			if(recommendGoods != null){
+				String goodsIds = recommendGoods.getValue3();
+				if(goodsIds != null){
+					String[] goodsId = goodsIds.split(",");
+					Long[] gids = (Long[]) ConvertUtils.convert(goodsId,Long.class);
+					List<Long> goodsIdList = new ArrayList<Long>();
+					for(Long gid: gids){
+						goodsIdList.add(gid);
+					}
+					List<HomePageSecKillGoods> goodsLists = afSeckillActivityService.getHomePageSecKillGoodsByConfigureResourceH5(userId,goodsIdList);
+					//重新排序，in 会重排，sql里保持排序，性能差
+					List<HomePageSecKillGoods> goodsList = new  ArrayList<HomePageSecKillGoods>();
+					// List<Long> goodsIdList = new ArrayList<Long>();
+					if(goodsLists != null && goodsLists.size()>0){
+						for(Long goodsid:goodsIdList){
+							for(HomePageSecKillGoods goods:goodsLists ){
+								if(goodsid.longValue() == goods.getGoodsId().longValue()){
+									goodsList.add(goods);
+								}
+							}
+						}
+					}
+
+					List<Map<String, Object>> recommendGoodsInfoList = getGoodsInfoList(goodsList,null,null);
+
+					String imageUrl = "";
+					String content = "";
+					String type = "";
+					List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,CHANNEL_RECOMMEND_GOODS_TOP_IMAGE);
+					if(recommendList != null && recommendList.size() >0){
+						AfResourceH5ItemDo recommend = recommendList.get(0);
+						content =  recommend.getValue1();
+						imageUrl = recommend.getValue3();
+						type = recommend.getValue4();
+					}
+
+					if(StringUtil.isNotEmpty(imageUrl)){
+						if(recommendGoodsInfoList.size()>=3){
+							recommendGoodsInfo.put("imageUrl", imageUrl);
+							recommendGoodsInfo.put("content", content);
+							recommendGoodsInfo.put("type", type);
+							recommendGoodsInfo.put("goodsList", recommendGoodsInfoList);
+						}
+					}
+				}
+			}
+
+
+		}catch(Exception e){
+			logger.error("recommendGoodsInfo goodsInfo error "+ e);
+		}
+		if (!recommendGoodsInfo.isEmpty()) {
+			data.put("recommendGoodsInfo", recommendGoodsInfo);
+		}
+	  return data;
+
+	}
+
+
 	private List<Object> getOnePlusThreeArea(List<Object> onePlusThreeArea) {
 		List<Object>  onePlusThreeAreaList = new ArrayList<Object>();
 		if(onePlusThreeArea != null && onePlusThreeArea.size() > 0 ){
