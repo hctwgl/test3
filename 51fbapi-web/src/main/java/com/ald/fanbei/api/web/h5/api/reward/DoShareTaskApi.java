@@ -2,30 +2,18 @@ package com.ald.fanbei.api.web.h5.api.reward;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfTaskType;
-import com.ald.fanbei.api.common.enums.InterestfreeCode;
-import com.ald.fanbei.api.common.enums.TaskSecType;
 import com.ald.fanbei.api.common.enums.TaskType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.query.AfGoodsQuery;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
-import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -95,7 +83,7 @@ public class DoShareTaskApi implements H5Handle {
      * @param taskUserDoList
      * @return
      */
-    private static String buildTaskUserIds(List<AfTaskUserDo> taskUserDoList) {
+    public String buildTaskUserIds(List<AfTaskUserDo> taskUserDoList) {
         if(null == taskUserDoList || taskUserDoList.isEmpty()){
             return null;
         }
@@ -115,16 +103,13 @@ public class DoShareTaskApi implements H5Handle {
      */
     public AfTaskUserDo buildTaskUserDo(AfTaskDo taskDo, Long userId){
         AfTaskUserDo taskUserDo = new AfTaskUserDo();
-
         int rewardType = taskDo.getRewardType();
         taskUserDo.setRewardType(rewardType);
         if(0 == rewardType){
             taskUserDo.setCoinAmount(taskDo.getCoinAmount());
-        }
-        else if(1 == rewardType){
+        } else if(1 == rewardType){
             taskUserDo.setCashAmount(taskDo.getCashAmount());
-        }
-        else{
+        } else{
             taskUserDo.setCouponId(taskDo.getCouponId());
         }
         taskUserDo.setTaskId(taskDo.getRid());
@@ -132,7 +117,6 @@ public class DoShareTaskApi implements H5Handle {
         taskUserDo.setUserId(userId);
         taskUserDo.setGmtCreate(new Date());
         taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
-
         return taskUserDo;
     }
 
