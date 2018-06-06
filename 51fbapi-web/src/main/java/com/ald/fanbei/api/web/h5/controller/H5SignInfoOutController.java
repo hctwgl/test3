@@ -98,19 +98,15 @@ public class H5SignInfoOutController extends H5Controller {
             if(afResourceDo == null || numberWordFormat.isNumeric(afResourceDo.getValue())){
                 throw new FanbeiException("param error", FanbeiExceptionCode.PARAM_ERROR);
             }
-
             AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.MOBILE_BIND.getCode());
             if (smsDo == null) {
-                logger.error("sms record is empty");
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
             }
             String realCode = smsDo.getVerifyCode();
             if (!StringUtils.equals(verifyCode, realCode)) {
-                logger.error("verifyCode is invalid");
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
             }
             if (smsDo.getIsCheck() == 1) {
-                logger.error("verifyCode is already invalid");
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc()).toString();
             }
             // 判断验证码是否过期
@@ -130,7 +126,7 @@ public class H5SignInfoOutController extends H5Controller {
                     return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
                 }
                 data = homeInfo(eUserDo.getRid(),data,push);
-//                data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(rewardAmount));
+                logger.info("friendSign cfp = "+data);
                 return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
             }
             try {
