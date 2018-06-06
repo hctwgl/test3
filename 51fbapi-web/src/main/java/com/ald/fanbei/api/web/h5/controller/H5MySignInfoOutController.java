@@ -62,6 +62,12 @@ public class H5MySignInfoOutController extends H5Controller {
     AfUserCouponService afUserCouponService;
     @Resource
     AfCouponService afCouponService;
+    @Resource
+    AfUserAuthService afUserAuthService;
+    @Resource
+    AfUserAuthStatusService afUserAuthStatusService;
+    @Resource
+    AfTaskService afTaskService;
 
 
     /**
@@ -73,11 +79,12 @@ public class H5MySignInfoOutController extends H5Controller {
     @RequestMapping(value = "/mySign", method = RequestMethod.POST)
     public String homePage(HttpServletRequest request, HttpServletResponse response) {
         String userName = ObjectUtils.toString(request.getParameter("userId"),null);
+        String push = ObjectUtils.toString(request.getParameter("push"),"N");
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
         if(null == afUserDo){
             return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
         }
-        Map<String,String> map = new HashMap<String,String>();
+        Map<String,Object> map = new HashMap<String,Object>();
         try {
             AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
             afSignRewardDo.setIsDelete(0);
@@ -96,6 +103,7 @@ public class H5MySignInfoOutController extends H5Controller {
             if(!userSign(afSignRewardDo,afResourceDo,map)){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SIGN_FAIL.getDesc()).toString();
             }
+            map = homeInfo(afUserDo.getRid(),map,push);
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",map ).toString();
         } catch (FanbeiException e) {
             logger.error("commitRegister fanbei exception" + e.getMessage());
@@ -111,7 +119,7 @@ public class H5MySignInfoOutController extends H5Controller {
      * @param afSignRewardDo
      * @return
      */
-    private boolean userSign(AfSignRewardDo afSignRewardDo, final AfResourceDo afResourceDo,Map<String,String> resp){
+    private boolean userSign(AfSignRewardDo afSignRewardDo, final AfResourceDo afResourceDo,Map<String,Object> resp){
         boolean flag = afSignRewardService.checkUserSign(afSignRewardDo.getUserId());
         boolean result;
         String status = "" ;
@@ -342,7 +350,22 @@ public class H5MySignInfoOutController extends H5Controller {
     }
 
 
-
+    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push ){
+        //今天是否签到
+        String status = afSignRewardService.isExist(userId)==false?"N":"Y";
+        resp.put("rewardStatus",status);
+        resp = afSignRewardExtService.getHomeInfo(userId,status);
+        // 正式环境和预发布环境区分
+        String type = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
+        String homeBanner = AfResourceType.RewardHomeBanner.getCode();
+        resp.put("rewardBannerList",afResourceService.rewardBannerList(type,homeBanner));
+        //任务列表
+        AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
+        AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
+        List<Integer> level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
+        resp.put("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
+        return resp;
+    }
 
 
 
