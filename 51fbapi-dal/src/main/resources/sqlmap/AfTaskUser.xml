@@ -183,7 +183,12 @@
         SELECT
         <include refid="queryFields" />
         FROM af_task_user
-        WHERE is_delete = 0 AND user_id = #{userId} AND task_name = #{taskName}
+        WHERE is_delete = 0
+        <if test="rewardType != null and rewardType != '' ">
+            AND reward_type = #{rewardType,jdbcType=INTEGER}
+        </if>
+        AND user_id = #{userId}
+        AND task_name = #{taskName}
         AND date(gmt_create) = date(now())
         LIMIT 0,1
     </select>

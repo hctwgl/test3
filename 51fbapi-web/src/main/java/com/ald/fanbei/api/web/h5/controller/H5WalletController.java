@@ -12,6 +12,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.web.api.taskUser.AddBrowseTaskUserApi;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.BaseResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
@@ -60,6 +61,9 @@ public class H5WalletController extends BaseController{
     @Resource
     private BizCacheUtil bizCacheUtil;
 
+    @Resource
+    AddBrowseTaskUserApi addBrowseTaskUserApi;
+
     @ResponseBody
     @RequestMapping(value = "valletPage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String valletPage(HttpServletRequest request, HttpServletResponse response){
@@ -101,7 +105,8 @@ public class H5WalletController extends BaseController{
             BigDecimal yesterdayProportion = afTaskCoinChangeProportionService.getYesterdayProportion();
 
             // 我的金币兑换，是否昨天已经兑换过
-            AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.TASK_COIN_CHANGE_TO_CASH_NAME, userId);
+            AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.TASK_COIN_CHANGE_TO_CASH_NAME, userId, 1);
+
             if(null == taskUserDo){
                 data.put("changeCoinFlag", false);
                 data.put("yesterdayProportion", yesterdayProportion);

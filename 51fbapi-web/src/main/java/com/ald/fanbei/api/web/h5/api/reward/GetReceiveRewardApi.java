@@ -118,7 +118,7 @@ public class GetReceiveRewardApi implements H5Handle {
                     afTaskUserDo.setRewardTime(new Date());
                     afTaskUserDo.setTaskName(taskName);
                     afTaskUserService.updateDailyByTaskNameAndUserId(afTaskUserDo);
-                    AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(taskName,userId);
+                    AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(taskName,userId, null);
                     if(taskUserDo.getRewardType() == 1){
                         AfUserAccountDo afUserAccountDo = new AfUserAccountDo();
                         afUserAccountDo.setRebateAmount(taskUserDo.getCashAmount());
