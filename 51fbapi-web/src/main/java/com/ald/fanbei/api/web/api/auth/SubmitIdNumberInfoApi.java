@@ -9,15 +9,13 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.AfTaskType;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RiskRespBo;
-import com.ald.fanbei.api.biz.service.AfIdNumberService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -55,6 +53,8 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 	RiskUtil riskUtil;
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	@Resource
+	AfTaskUserService afTaskUserService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -152,6 +152,10 @@ public class SubmitIdNumberInfoApi implements ApiHandle {
 				}
 
 				afUserAuthService.updateUserAuth(auth);
+
+				// add by luoxiao 边逛边赚，实名认证通过送奖励
+				afTaskUserService.taskHandler(context.getUserId(), AfTaskType.VERIFIED.getCode(), null);
+				// end by luoxiao
 
 				AfUserDo afUserDo = new AfUserDo();
 				afUserDo.setRid(userId);
