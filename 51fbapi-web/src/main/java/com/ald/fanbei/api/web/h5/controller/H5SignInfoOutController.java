@@ -129,7 +129,7 @@ public class H5SignInfoOutController extends H5Controller {
                     return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
                 }
                 data = homeInfo(eUserDo.getRid(),data,push);
-                logger.info("friendSign cfp = "+data);
+                data.put("flag","success");
                 return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
             }
             try {
@@ -170,6 +170,7 @@ public class H5SignInfoOutController extends H5Controller {
             }
             //首页信息
             data = homeInfo(userId,data,push);
+            data.put("flag","success");
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
         } catch (FanbeiException e) {
             logger.error("commitRegister fanbei exception" + e.getMessage());
@@ -223,8 +224,8 @@ public class H5SignInfoOutController extends H5Controller {
                     return H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_SIGN_FAIL.getDesc(),"",data ).toString();
                 }
                 data.put("openType","1");
+                data.put("flag","success");
             }
-            logger.info("data cfp = "+data);
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
         } catch (FanbeiException e) {
             resultStr = H5CommonResponse.getNewInstance(false, "getOpenId error", "", e.getErrorCode().getDesc()).toString();

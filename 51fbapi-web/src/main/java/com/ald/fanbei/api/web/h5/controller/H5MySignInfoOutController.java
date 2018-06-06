@@ -189,7 +189,7 @@ public class H5MySignInfoOutController extends H5Controller {
                     status = tenSignDays(rewardDo,afSignRewardExtDo);
                 }
             }
-            resp.put("amount",afSignRewardExtDo.getAmount().toString());
+            resp.put("rewardAmount",afSignRewardExtDo.getAmount().toString());
         }else {//第一次签到
             final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2()).setScale(2,RoundingMode.HALF_EVEN);
             afSignRewardDo.setAmount(rewardAmount);
@@ -213,7 +213,7 @@ public class H5MySignInfoOutController extends H5Controller {
                     }
                 }
             });
-            resp.put("amount",rewardAmount.toString());
+            resp.put("rewardAmount",rewardAmount.toString());
         }
         if(StringUtil.equals(status,"success")){
             result =true;
