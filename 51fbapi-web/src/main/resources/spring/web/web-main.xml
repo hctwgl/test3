@@ -646,6 +646,8 @@
 				<entry key="/h5/reward/getReceiveReward" value-ref="getReceiveRewardApi" />
 				<entry key="/h5/reward/getSignRemind" value-ref="getSignRemindApi" />
 				<entry key="/h5/reward/doFinishTask" value-ref="doFinishTaskApi" />
+				<entry key="/h5/reward/doShareTask" value-ref="doShareTaskApi" />
+				<entry key="/h5/reward/doPushTask" value-ref="doPushTaskApi" />
 
 			</map>
 		</constructor-arg>
