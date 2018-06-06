@@ -441,6 +441,9 @@ public class H5SignInfoOutController extends H5Controller {
                                 rewardAmount = rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN);
                                 afSignRewardExtDo.setAmount(rewardAmount);
                                 fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,couponId);
+                            }else{
+                                afSignRewardExtDo.setAmount(rewardAmount);
+                                afSignRewardExtService.increaseMoney(afSignRewardExtDo);
                             }
                         }else if(count >= 7 && count< 10){
                             //给予连续5天的奖励
@@ -454,11 +457,17 @@ public class H5SignInfoOutController extends H5Controller {
                                 rewardAmount = rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN);
                                 afSignRewardExtDo.setAmount(rewardAmount);
                                 afSignRewardExtService.increaseMoney(afSignRewardExtDo);
+                            }else{
+                                afSignRewardExtDo.setAmount(rewardAmount);
+                                afSignRewardExtService.increaseMoney(afSignRewardExtDo);
                             }
                         }else if(count == 10){
                             //给予连续7天和10天的奖励
                             if(maxCount < 7){
                                 rewardAmount = rewardAmount.multiply(new BigDecimal(4)).setScale(2,RoundingMode.HALF_EVEN);
+                                afSignRewardExtDo.setAmount(rewardAmount);
+                                afSignRewardExtService.increaseMoney(afSignRewardExtDo);
+                            }else{
                                 afSignRewardExtDo.setAmount(rewardAmount);
                                 afSignRewardExtService.increaseMoney(afSignRewardExtDo);
                             }
