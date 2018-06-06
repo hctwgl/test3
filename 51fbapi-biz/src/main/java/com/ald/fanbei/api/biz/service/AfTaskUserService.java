@@ -151,4 +151,7 @@ public interface AfTaskUserService {
     // 累计收益
     BigDecimal getAccumulatedIncome(Long userId);
 
+    //获取此任务用户是否完成
+    AfTaskUserDo getTaskUserByTaskIdAndUserId(Long taskId,Long userId);
+
 }

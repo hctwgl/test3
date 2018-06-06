@@ -55,4 +55,6 @@ public interface AfTaskUserDao  {
 
     BigDecimal getAccumulatedIncome(Long userId);
 
+    AfTaskUserDo getTaskUserByTaskIdAndUserId(@Param("taskId")Long taskId,@Param("userId")Long userId);
+
 }

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -42,22 +43,24 @@ public class DoPushTaskApi implements H5Handle {
             AfTaskDo afTaskDo = new AfTaskDo();
             afTaskDo.setTaskType(TaskType.push.getCode());
             afTaskDo.setIsOpen(1);
-            AfTaskDo taskDo = afTaskService.getTaskByTaskDo(afTaskDo);
-            if(null != taskDo){
-                AfTaskUserDo taskUserDo = new AfTaskUserDo();
-                taskUserDo.setGmtCreate(new Date());
-                taskUserDo.setRewardType(afTaskDo.getRewardType());
-                taskUserDo.setCoinAmount(taskDo.getCoinAmount());
-                taskUserDo.setCashAmount(taskDo.getCashAmount());
-                taskUserDo.setCouponId(taskDo.getCouponId());
-                taskUserDo.setUserId(userId);
-                taskUserDo.setTaskName(taskDo.getTaskName());
-                taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
-                taskUserDo.setTaskId(taskDo.getRid());
-                taskUserDo.setGmtCreate(new Date());
-                taskUserDo.setGmtModified(new Date());
-                if(afTaskUserService.insertTaskUserDo(taskUserDo)<1){
-                    return new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
+            List<AfTaskDo> taskDos = afTaskService.getTaskByTaskDo(afTaskDo);
+            if(taskDos.size()>0){
+                for(AfTaskDo taskDo : taskDos){
+                    if(afTaskUserService.getTaskUserByTaskIdAndUserId(taskDo.getRid(),userId) == null){
+                        AfTaskUserDo taskUserDo = new AfTaskUserDo();
+                        taskUserDo.setGmtCreate(new Date());
+                        taskUserDo.setRewardType(afTaskDo.getRewardType());
+                        taskUserDo.setCoinAmount(taskDo.getCoinAmount());
+                        taskUserDo.setCashAmount(taskDo.getCashAmount());
+                        taskUserDo.setCouponId(taskDo.getCouponId());
+                        taskUserDo.setUserId(userId);
+                        taskUserDo.setTaskName(taskDo.getTaskName());
+                        taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
+                        taskUserDo.setTaskId(taskDo.getRid());
+                        taskUserDo.setGmtCreate(new Date());
+                        taskUserDo.setGmtModified(new Date());
+                        afTaskUserService.insertTaskUserDo(taskUserDo);
+                    }
                 }
             }
         }catch (Exception e){

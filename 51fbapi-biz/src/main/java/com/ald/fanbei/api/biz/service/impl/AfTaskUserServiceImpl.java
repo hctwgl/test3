@@ -352,6 +352,11 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		return afTaskUserDao.getAccumulatedIncome(userId);
 	}
 
+	@Override
+	public AfTaskUserDo getTaskUserByTaskIdAndUserId(Long taskId,Long userId){
+		return afTaskUserDao.getTaskUserByTaskIdAndUserId(taskId,userId);
+	}
+
 	/**
 	 * 是否匹配任务ID
 	 * @param taskCondition  任务条件

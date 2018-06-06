@@ -434,4 +434,13 @@
         LIMIT 0,1
     </select>
 
+    <select id="getTaskUserByTaskIdAndUserId" resultType="AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0
+        AND user_id = #{userId}
+        AND task_id = #{taskId}
+    </select>
+
 </mapper>
