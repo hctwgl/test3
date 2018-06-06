@@ -48,6 +48,7 @@ public class DoShareTaskApi implements H5Handle {
         try{
             String taskCondition = ObjectUtils.toString(context.getData("taskCondition"),null);
             Long userId = context.getUserId();
+            List<Long> taskIds = new ArrayList<>();
             AfTaskDo afTaskDo = new AfTaskDo();
             afTaskDo.setTaskCondition(taskCondition);
             afTaskDo.setTaskType(TaskType.share.getCode());
@@ -70,9 +71,11 @@ public class DoShareTaskApi implements H5Handle {
                         taskUserDo.setGmtCreate(new Date());
                         taskUserDo.setGmtModified(new Date());
                         afTaskUserService.insertTaskUserDo(taskUserDo);
+                        taskIds.add(taskDo.getRid());
                     }
                 }
             }
+            resp.addResponseData("taskIds",taskIds);
         }catch (Exception e){
             logger.error(" doShareTaskApi error =", e);
         }
