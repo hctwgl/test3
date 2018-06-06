@@ -598,6 +598,7 @@ public class H5SignInfoOutController extends H5Controller {
                 afSignRewardDo.setFriendUserId(firendUserId);
                 afSignRewardDo.setAmount(BigDecimal.ZERO);
                 afSignRewardService.saveRecord(afSignRewardDo);
+                data.put("flag","fail");
                 data.put("openType","1");
             }
             logger.info("data =  supplementSignIn =" + data);

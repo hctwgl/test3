@@ -87,6 +87,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
         List<AfTaskUserDo> isNotDailyFinishTaskList = afTaskUserService.isNotDailyFinishTaskList(userId);
         isDailyFinishTaskList.addAll(isNotDailyFinishTaskList);
         //每日浏览任务(特色处理)
+        //若每日浏览任务已完成但是未领奖,则排序到未领奖第一个
         AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId, null);
         boolean taskBrowseFlag = true;
         if(null != taskUserDo){
@@ -118,6 +119,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
                 finalTaskList.add(afTaskDto);
             }
         }
+        //若每日浏览任务未完成,则排序到未完成第一个
         if(!taskBrowseFlag){
             int countToday = afTaskBrowseGoodsService.countBrowseGoodsToday(userId);
             AfTaskDto afTaskDto = new AfTaskDto();
