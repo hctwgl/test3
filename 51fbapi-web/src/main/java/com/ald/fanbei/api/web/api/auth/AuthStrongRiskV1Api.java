@@ -80,6 +80,8 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 
 	@Resource
 	AfRecommendUserService afRecommendUserService;
+	@Resource
+	AfTaskUserService afTaskUserService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -88,6 +90,10 @@ public class AuthStrongRiskV1Api implements ApiHandle {
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		Integer appVersion = context.getAppVersion();
+
+		// add by luoxiao 边逛边赚，提交强风控送奖励
+		afTaskUserService.taskHandler(userId, AfTaskType.STRONG_RISK.getCode(), null);
+		// end by luoxiao
 
     	String lockKey = Constants.CACHEKEY_APPLY_STRONG_RISK_LOCK + userId;
     	if (bizCacheUtil.getObject(lockKey) == null) {

@@ -335,9 +335,6 @@ public class RiskUtil extends AbstractThird {
 	@Resource
 	AfBorrowPushService afBorrowPushService;
 
-	@Resource
-	AfTaskUserService afTaskUserService;
-
 	public static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_RISK_URL);
@@ -567,10 +564,6 @@ public class RiskUtil extends AbstractThird {
 		// fail,consumerNo="+consumerNo);
 		// }
 
-		// add by luoxiao 边逛边赚，提交强风控送奖励
-		afTaskUserService.taskHandler(userId, AfTaskType.STRONG_RISK.getCode(), null);
-		// end by luoxiao
-
 		String reqResult = requestProxy.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
 
 		logThird(reqResult, "registerAndRisk", reqBo);
@@ -619,10 +612,6 @@ public class RiskUtil extends AbstractThird {
 		// fail,consumerNo="+consumerNo);
 		// }
 
-        // add by luoxiao 边逛边赚，提交强风控送奖励
-        afTaskUserService.taskHandler(userId, AfTaskType.STRONG_RISK.getCode(), null);
-        // end by luoxiao
-
 		String reqResult = requestProxy.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
 
 		logThird(reqResult, "registerAndRisk", reqBo);
@@ -632,10 +621,6 @@ public class RiskUtil extends AbstractThird {
 		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
 			riskResp.setSuccess(true);
-
-			// add by luoxiao 边逛边赚，强风控通过送奖励
-			afTaskUserService.taskHandler(userId, AfTaskType.STRONG_RISK.getCode(), null);
-			// end by luoxiao
 
 			return riskResp;
 		} else {
@@ -660,10 +645,6 @@ public class RiskUtil extends AbstractThird {
 				afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY,
 				directory, getNotifyHost(), bqsBlackBox, riskScene, extUserInfo,selectedType,address,censusRegister);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-
-		// add by luoxiao 边逛边赚，提交强风控送奖励
-		afTaskUserService.taskHandler(afUserDo.getRid(), AfTaskType.STRONG_RISK.getCode(), null);
-		// end by luoxiao
 
 		String reqResult = requestProxy.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
 
