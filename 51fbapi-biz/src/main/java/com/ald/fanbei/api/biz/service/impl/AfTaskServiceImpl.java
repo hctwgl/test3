@@ -212,8 +212,10 @@ public class AfTaskServiceImpl  implements AfTaskService {
             }
         }
 
-        // 用户已购物次数
+        // 用户已购物次数,调用此接口时，已完成一次购物（已收货），所以购物次数需减去1
         int count = afOrderService.getFinishOrderCount(userId);
+        count = count - 1;
+
         AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId, "ONLINE");
         if (authStatusDo != null) {
             if (StringUtils.equals("Y", authStatusDo.getStatus())) {
