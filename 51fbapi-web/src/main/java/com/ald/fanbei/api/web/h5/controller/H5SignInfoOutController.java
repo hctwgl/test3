@@ -555,7 +555,7 @@ public class H5SignInfoOutController extends H5Controller {
     private void fiveOrSevenSignDays(AfSignRewardExtDo afSignRewardExtDo ,BigDecimal rewardAmount,final AfSignRewardDo rewardDo,final Long couponId){
         AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
         AfCouponDo afCouponDo = afCouponService.getCouponById(couponId);
-        if(afCouponDo==null){
+        if(afCouponDo!=null){
             if(StringUtil.equals(afCouponDo.getExpiryType(),"D")){
                 afUserCouponDo.setGmtStart(new Date());
                 afUserCouponDo.setGmtEnd(DateUtil.addDays(new Date(),afCouponDo.getValidDays()));
