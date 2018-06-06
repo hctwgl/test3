@@ -156,7 +156,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
             }
         }
         //每日浏览任务(特色处理)
-        AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId);
+        AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId, null);
         boolean taskBrowseFlag = true;
         if(null != taskUserDo){
             if(StringUtil.equals(taskUserDo.getStatus().toString(),"0")){

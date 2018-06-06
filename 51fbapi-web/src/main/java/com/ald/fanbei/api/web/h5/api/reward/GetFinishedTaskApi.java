@@ -57,7 +57,7 @@ public class GetFinishedTaskApi implements H5Handle {
             finalTaskList = afTaskService.getTaskByTaskIds(taskIds);
         }
         //每日浏览3个商品任务(特殊处理)
-        AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId);
+        AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId, null);
         if(null != taskUserDo){
             if(StringUtil.equals(taskUserDo.getStatus().toString(),"1")){
                 AfTaskDto afTaskDto = new AfTaskDto();

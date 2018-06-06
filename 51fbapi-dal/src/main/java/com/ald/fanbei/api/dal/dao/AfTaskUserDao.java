@@ -43,7 +43,7 @@ public interface AfTaskUserDao  {
 
     List<AfTaskUserDo> getDetailsByUserId(@Param("userId") Long userId, @Param("rewardType") Integer rewardType);
 
-    AfTaskUserDo getTodayTaskUserDoByTaskName(@Param("taskName") String taskName, @Param("userId") Long userId);
+    AfTaskUserDo getTodayTaskUserDoByTaskName(@Param("taskName") String taskName, @Param("userId") Long userId, @Param("rewardType") Integer rewardType);
 
     List<AfTaskUserDo> getTaskUserListByIds(@Param("taskUserIdList") List<Long> taskUserIdList);
 
