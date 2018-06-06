@@ -125,7 +125,7 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
                     if(StringUtil.equals(SignRewardType.ZERO.getCode().toString(),afSignRewardDo.getType().toString())){
                         days = DateUtil.getNumberOfDatesBetween(startTime,DateUtil.formatDateToYYYYMMdd(afSignRewardDo.getGmtCreate()));
                         sb.append(days+1).append(",");
-                    }else if(StringUtil.equals(SignRewardType.ONE.getCode().toString(),afSignRewardDo.getType().toString())){
+                    }else if(StringUtil.equals(SignRewardType.TWO.getCode().toString(),afSignRewardDo.getType().toString())){
                         days = DateUtil.getNumberOfDatesBetween(startTime,DateUtil.formatDateToYYYYMMdd(afSignRewardDo.getTime()));
                         sb.append(days+1).append(",");
                     }

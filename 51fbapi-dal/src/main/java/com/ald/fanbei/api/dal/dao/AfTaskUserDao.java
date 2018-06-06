@@ -57,4 +57,6 @@ public interface AfTaskUserDao  {
 
     AfTaskUserDo getTaskUserByTaskIdAndUserId(@Param("taskId")Long taskId,@Param("userId")Long userId);
 
+    AfTaskUserDo getTodayTaskUserByTaskIdAndUserId(@Param("taskId")Long taskId,@Param("userId")Long userId);
+
 }

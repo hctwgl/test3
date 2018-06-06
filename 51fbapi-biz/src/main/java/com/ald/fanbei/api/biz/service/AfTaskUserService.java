@@ -153,5 +153,7 @@ public interface AfTaskUserService {
 
     //获取此任务用户是否完成
     AfTaskUserDo getTaskUserByTaskIdAndUserId(Long taskId,Long userId);
+    //获取此任务用户是否完成(每日任务)
+    AfTaskUserDo getTodayTaskUserByTaskIdAndUserId(Long taskId,Long userId);
 
 }

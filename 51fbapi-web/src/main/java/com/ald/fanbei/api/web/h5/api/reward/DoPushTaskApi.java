@@ -16,6 +16,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class DoPushTaskApi implements H5Handle {
             AfTaskDo afTaskDo = new AfTaskDo();
             afTaskDo.setTaskType(TaskType.push.getCode());
             afTaskDo.setIsOpen(1);
+            List<Long> taskIds = new ArrayList<>();
             List<AfTaskDo> taskDos = afTaskService.getTaskByTaskDo(afTaskDo);
             if(taskDos.size()>0){
                 for(AfTaskDo taskDo : taskDos){
@@ -60,9 +62,11 @@ public class DoPushTaskApi implements H5Handle {
                         taskUserDo.setGmtCreate(new Date());
                         taskUserDo.setGmtModified(new Date());
                         afTaskUserService.insertTaskUserDo(taskUserDo);
+                        taskIds.add(taskDo.getRid());
                     }
                 }
             }
+            resp.addResponseData("taskIds",taskIds);
         }catch (Exception e){
             logger.error(" doShareTaskApi error =", e);
         }
