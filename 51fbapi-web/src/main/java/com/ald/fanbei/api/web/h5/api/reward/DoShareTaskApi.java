@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.h5.api.reward;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfTaskType;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.enums.TaskSecType;
 import com.ald.fanbei.api.common.enums.TaskType;
@@ -18,6 +19,7 @@ import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -45,41 +47,93 @@ public class DoShareTaskApi implements H5Handle {
     @Override
     public H5HandleResponse process(Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
-        try{
+        List<AfTaskUserDo> toAddTaskUserList = Lists.newArrayList();
+        try {
             String taskCondition = ObjectUtils.toString(context.getData("taskCondition"),null);
             Long userId = context.getUserId();
-            List<Long> taskIds = new ArrayList<>();
-            AfTaskDo afTaskDo = new AfTaskDo();
-            afTaskDo.setTaskCondition(taskCondition);
-            afTaskDo.setTaskType(TaskType.share.getCode());
-            afTaskDo.setTaskSecType(TaskSecType.activity.getCode());
-            afTaskDo.setIsOpen(1);
-            List<AfTaskDo> taskDos = afTaskService.getTaskByTaskDo(afTaskDo);
-            if(taskDos.size()>0){
-                for(AfTaskDo taskDo : taskDos){
-                    if(afTaskUserService.getTaskUserByTaskIdAndUserId(taskDo.getRid(),userId) == null){
-                        AfTaskUserDo taskUserDo = new AfTaskUserDo();
-                        taskUserDo.setGmtCreate(new Date());
-                        taskUserDo.setRewardType(afTaskDo.getRewardType());
-                        taskUserDo.setCoinAmount(taskDo.getCoinAmount());
-                        taskUserDo.setCashAmount(taskDo.getCashAmount());
-                        taskUserDo.setCouponId(taskDo.getCouponId());
-                        taskUserDo.setUserId(userId);
-                        taskUserDo.setTaskName(taskDo.getTaskName());
-                        taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
-                        taskUserDo.setTaskId(taskDo.getRid());
-                        taskUserDo.setGmtCreate(new Date());
-                        taskUserDo.setGmtModified(new Date());
-                        afTaskUserService.insertTaskUserDo(taskUserDo);
-                        taskIds.add(taskDo.getRid());
+            // 获取用户能参加的活动
+            List<Integer> userLevelList = afTaskService.getUserLevelByUserId(userId);
+            List<AfTaskDo> taskList = afTaskService.getTaskListByTaskTypeAndUserLevel(TaskType.share.getCode(), userLevelList, taskCondition);
+            if (null != taskList && !taskList.isEmpty()) {
+                List<AfTaskDo> notDailyTaskUserList = afTaskService.getNotDailyTaskListByUserId(userId, TaskType.share.getCode());
+                List<AfTaskDo> dailyTaskUserList = null;
+                List<AfTaskDo> taskUserCompleteList = Lists.newArrayList();
+                if (null != notDailyTaskUserList && !notDailyTaskUserList.isEmpty()) {
+                    taskUserCompleteList.addAll(notDailyTaskUserList);
+                }
+                if (null != dailyTaskUserList && !dailyTaskUserList.isEmpty()) {
+                    taskUserCompleteList.addAll(dailyTaskUserList);
+                }
+                if (!taskUserCompleteList.isEmpty()) {
+                    Iterator<AfTaskDo> iter = taskList.iterator();
+                    while(iter.hasNext()){
+                        if(taskUserCompleteList.contains(iter.next())){
+                            iter.remove();
+                        }
+                    }
+                }
+                if (!taskList.isEmpty()) {
+                    AfTaskUserDo taskUserDo;
+                    for (AfTaskDo taskDo : taskList) {
+                        taskUserDo = buildTaskUserDo(taskDo, userId);
+                        toAddTaskUserList.add(taskUserDo);
+                    }
+                    for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
+                        afTaskUserService.insertTaskUserDo(afTaskUserDo);
                     }
                 }
             }
-            resp.addResponseData("taskIds",taskIds);
-        }catch (Exception e){
-            logger.error(" doShareTaskApi error =", e);
+        } catch (Exception e) {
+            logger.error("taskHandler failed, ", e);
         }
+        resp.addResponseData("taskIds",buildTaskUserIds(toAddTaskUserList));
         return resp;
+    }
+
+    /**
+     * 生成完成任务IDs
+     * @param taskUserDoList
+     * @return
+     */
+    private static String buildTaskUserIds(List<AfTaskUserDo> taskUserDoList) {
+        if(null == taskUserDoList || taskUserDoList.isEmpty()){
+            return null;
+        }
+        StringBuffer idStringBuffer = new StringBuffer();
+        for (AfTaskUserDo tempTaskUser : taskUserDoList) {
+            idStringBuffer.append(tempTaskUser.getRid()).append(",");
+        }
+        idStringBuffer.deleteCharAt(idStringBuffer.length() - 1);
+        return idStringBuffer.toString();
+    }
+
+    /**
+     * 构造taskUserDo 对象
+     * @param taskDo
+     * @param userId
+     * @return
+     */
+    public AfTaskUserDo buildTaskUserDo(AfTaskDo taskDo, Long userId){
+        AfTaskUserDo taskUserDo = new AfTaskUserDo();
+
+        int rewardType = taskDo.getRewardType();
+        taskUserDo.setRewardType(rewardType);
+        if(0 == rewardType){
+            taskUserDo.setCoinAmount(taskDo.getCoinAmount());
+        }
+        else if(1 == rewardType){
+            taskUserDo.setCashAmount(taskDo.getCashAmount());
+        }
+        else{
+            taskUserDo.setCouponId(taskDo.getCouponId());
+        }
+        taskUserDo.setTaskId(taskDo.getRid());
+        taskUserDo.setTaskName(taskDo.getTaskName());
+        taskUserDo.setUserId(userId);
+        taskUserDo.setGmtCreate(new Date());
+        taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
+
+        return taskUserDo;
     }
 
 
