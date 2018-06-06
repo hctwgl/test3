@@ -154,7 +154,11 @@
     </update>
 
     <update id="increaseMoney" parameterType="AfSignRewardExtDo">
-        UPDATE af_sign_reward_ext SET gmt_modified = now() , amount = amount + #{amount} where user_id = #{userId} and is_delete = 0 and (amount + #{amount}) <![CDATA[>]]> 0
+        UPDATE af_sign_reward_ext SET gmt_modified = now() , amount = amount + #{amount}
+        <if test="firstDayParticipation != null and firstDayParticipation != '' ">
+            ,first_day_participation = #{firstDayParticipation}
+        </if>
+         where user_id = #{userId} and is_delete = 0 and (amount + #{amount}) <![CDATA[>]]> 0
     </update>
 
     <select id="selectByUserIds" resultType="AfSignRewardExtDo">

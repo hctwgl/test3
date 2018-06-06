@@ -297,7 +297,7 @@ public class H5MySignInfoOutController extends H5Controller {
                 try{
                     AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
                     AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(afResourceDo.getValue5()));
-                    if(afCouponDo==null){
+                    if(afCouponDo!=null){
                         if(StringUtil.equals(afCouponDo.getExpiryType(),"D")){
                             afUserCouponDo.setGmtStart(new Date());
                             afUserCouponDo.setGmtEnd(DateUtil.addDays(new Date(),afCouponDo.getValidDays()));

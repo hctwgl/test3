@@ -352,8 +352,13 @@
         where is_delete = 0
         AND is_open = #{isOpen}
         AND task_type = #{taskType}
-        AND task_sec_type = #{taskSecType}
-        AND task_condition = #{taskCondition}
+        <if test="taskSecType != null and taskSecType != '' ">
+            AND task_sec_type = #{taskSecType}
+        </if>
+        <if test="taskCondition != null and taskCondition != '' ">
+            AND task_condition = #{taskCondition}
+        </if>
+
     </select>
 
 

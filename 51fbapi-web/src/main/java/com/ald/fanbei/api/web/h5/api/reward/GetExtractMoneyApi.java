@@ -81,7 +81,7 @@ public class GetExtractMoneyApi implements H5Handle {
                                 if(StringUtil.equals(WithdrawType.ZERO.getCode(),withdrawType)){//送10元无门槛优惠券
                                     AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
                                     AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(afResourceDo.getValue5()));
-                                    if(afCouponDo==null){
+                                    if(afCouponDo!=null){
                                         if(StringUtil.equals(afCouponDo.getExpiryType(),"D")){
                                             afUserCouponDo.setGmtStart(new Date());
                                             afUserCouponDo.setGmtEnd(DateUtil.addDays(new Date(),afCouponDo.getValidDays()));
