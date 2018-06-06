@@ -68,8 +68,6 @@ public class AfTaskServiceImpl  implements AfTaskService {
 
     @Override
     public List<AfTaskDto> getTaskInfo(List<Integer> level, Long userId,String push,AfUserAuthDo userAuthDo,AfUserAuthStatusDo authStatusDo){
-        List<Long> isDailyList = new ArrayList<Long>();
-        List<Long> isNotDailyList = new ArrayList<Long>();
         List<Long> notFinishedList = new ArrayList<Long>();
         List<AfTaskDto> finalTaskList = new ArrayList<AfTaskDto>();
         List<AfTaskDto> taskList = afTaskDao.getTaskListByUserIdAndUserLevel(level);
@@ -88,7 +86,23 @@ public class AfTaskServiceImpl  implements AfTaskService {
         //非每日任务完成但是已领奖的任务
         List<AfTaskUserDo> isNotDailyFinishTaskList = afTaskUserService.isNotDailyFinishTaskList(userId);
         isDailyFinishTaskList.addAll(isNotDailyFinishTaskList);
-
+        //每日浏览任务(特色处理)
+        AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId, null);
+        boolean taskBrowseFlag = true;
+        if(null != taskUserDo){
+            if(StringUtil.equals(taskUserDo.getStatus().toString(),"0")){
+                AfTaskDto afTaskDto = new AfTaskDto();
+                afTaskDto.setFinishTaskCondition(3);
+                afTaskDto.setSumTaskCondition(3);
+                afTaskDto.setReceiveReward("N");
+                afTaskDto.setIsDailyUpdate(1);
+                afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
+                afTaskDto.setIsDailyUpdate(1);
+                finalTaskList.add(afTaskDto);
+            }
+        }else{
+            taskBrowseFlag = false;
+        }
         //给完成但是为领奖的任务进行标识处理
         if(notFinishedList.size()>0){
             List<AfTaskDto> afTaskDtos = afTaskDao.getTaskByTaskIds(notFinishedList);
@@ -103,6 +117,16 @@ public class AfTaskServiceImpl  implements AfTaskService {
                 afTaskDto.setReceiveReward("N");
                 finalTaskList.add(afTaskDto);
             }
+        }
+        if(!taskBrowseFlag){
+            int countToday = afTaskBrowseGoodsService.countBrowseGoodsToday(userId);
+            AfTaskDto afTaskDto = new AfTaskDto();
+            afTaskDto.setFinishTaskCondition(countToday);
+            afTaskDto.setSumTaskCondition(3);
+            afTaskDto.setIsDailyUpdate(1);
+            afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
+            afTaskDto.setIsDailyUpdate(1);
+            finalTaskList.add(afTaskDto);
         }
         //将已完成的任务去重
         for(AfTaskDto afTaskDo : taskList){
@@ -155,33 +179,8 @@ public class AfTaskServiceImpl  implements AfTaskService {
                 finalTaskList.add(afTaskDo);
             }
         }
-        //每日浏览任务(特色处理)
-        AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId, null);
-        boolean taskBrowseFlag = true;
-        if(null != taskUserDo){
-            if(StringUtil.equals(taskUserDo.getStatus().toString(),"0")){
-                AfTaskDto afTaskDto = new AfTaskDto();
-                afTaskDto.setFinishTaskCondition(3);
-                afTaskDto.setSumTaskCondition(3);
-                afTaskDto.setReceiveReward("N");
-                afTaskDto.setIsDailyUpdate(1);
-                afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
-                afTaskDto.setIsDailyUpdate(1);
-                finalTaskList.add(afTaskDto);
-            }
-        }else{
-            taskBrowseFlag = false;
-        }
-        if(!taskBrowseFlag){
-            int countToday = afTaskBrowseGoodsService.countBrowseGoodsToday(userId);
-            AfTaskDto afTaskDto = new AfTaskDto();
-            afTaskDto.setFinishTaskCondition(countToday);
-            afTaskDto.setSumTaskCondition(3);
-            afTaskDto.setIsDailyUpdate(1);
-            afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
-            afTaskDto.setIsDailyUpdate(1);
-            finalTaskList.add(afTaskDto);
-        }
+
+
         return finalTaskList;
     }
 
