@@ -38,6 +38,8 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
    
     @Resource
     private AfTaskUserDao afTaskUserDao;
+    @Resource
+	AfCouponService afCouponService;
 
     @Resource
     private AfTaskService afTaskService;
@@ -322,7 +324,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 			message = cashAmount.toString()+"金币已入账，继续逛逛能得到更多哦";
 		}
 		if(2 == rewardType){
-			cashAmount = cashAmount.add(getCouponAmountByIds(couponIdList));
+			cashAmount = cashAmount.add(getCouponAmountByIds(couponIdList)==null?BigDecimal.ZERO:getCouponAmountByIds(couponIdList));
 			message = cashAmount.toString()+"元优惠券已入账，继续逛逛能得到更多哦";
 		}
 		if(1 == rewardType){

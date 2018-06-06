@@ -174,6 +174,9 @@ public class H5MySignInfoOutController extends H5Controller {
                     //给予连续5天的奖励
                     if(maxCount < 5 && newMaxCount == 5){
                         status = fiveOrSevenSignDays(afSignRewardExtDo,rewardAmount,rewardDo,afResourceDo);
+                    }else{
+                        afSignRewardExtDo.setAmount(rewardAmount);
+                        status = tenSignDays(rewardDo,afSignRewardExtDo);
                     }
                 }else if(count >= 7 && count< 10){
                     //给予连续5天的奖励
@@ -185,11 +188,17 @@ public class H5MySignInfoOutController extends H5Controller {
                     }else if(maxCount >= 5 && newMaxCount == 7){//给予连续7天的奖励
                         afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(2)).setScale(2,RoundingMode.HALF_EVEN));
                         status = tenSignDays(rewardDo,afSignRewardExtDo);
+                    }else{
+                        afSignRewardExtDo.setAmount(rewardAmount);
+                        status = tenSignDays(rewardDo,afSignRewardExtDo);
                     }
                 }else if(count == 10){
                     //给予连续7天和10天的奖励
                     if(maxCount < 7){
                         afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(4)).setScale(2,RoundingMode.HALF_EVEN));
+                        status = tenSignDays(rewardDo,afSignRewardExtDo);
+                    }else{
+                        afSignRewardExtDo.setAmount(rewardAmount);
                         status = tenSignDays(rewardDo,afSignRewardExtDo);
                     }
                 }else {//给予普通签到的奖励

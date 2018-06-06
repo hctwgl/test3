@@ -397,7 +397,7 @@
 
     <select id="getCouponAmountByIds" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
         SELECT
-        sum(amount)
+          sum(amount) amount
         FROM af_coupon
         WHERE is_delete = 0
         AND id IN
