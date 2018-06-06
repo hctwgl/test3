@@ -8,6 +8,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfTaskSecType;
 import com.ald.fanbei.api.common.enums.AfTaskType;
 import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -98,8 +99,9 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		try {
 			// 获取用户能参加的活动
 			List<Integer> userLevelList = afTaskService.getUserLevelByUserId(userId);
+			logger.info("browerAndShoppingHandler userLevelList:" + JSON.toJSONString(userLevelList));
 			List<AfTaskDo> taskList = afTaskService.getTaskListByTaskTypeAndUserLevel(afTaskType, userLevelList, null);
-
+			logger.info("browerAndShoppingHandler taskList0:" + JSON.toJSONString(taskList));
 
 			if(null != taskList && !taskList.isEmpty()) {
 				// 获取商品ID、商品品牌ID、商品分类ID
@@ -152,8 +154,12 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 								toAddTaskUserList.add(taskUserDo);
 							}
 						} else if (StringUtils.equals(AfTaskType.SHOPPING.getCode(), taskDo.getTaskType()) && StringUtils.equals(AfTaskSecType.QUANTITY.getCode(), taskDo.getTaskSecType())) {
-							// 用户购物数量
+							// 用户购物数量,调用此接口时，已完成一次购物（已收货），所以购物次数需减去1
+							logger.info("browerAndShoppingHandler quantity:" + JSON.toJSONString(taskDo));
 							int orderCount = afOrderService.getSignFinishOrderCount(userId,taskDo.getTaskBeginTime());
+                            orderCount = orderCount - 1;
+							logger.info("browerAndShoppingHandler getTaskCondition:" + taskDo.getTaskCondition());
+							logger.info("browerAndShoppingHandler orderCount:" + orderCount);
 							if (orderCount == Integer.parseInt(taskDo.getTaskCondition())) {
 								taskUserDo = buildTaskUserDo(taskDo, userId);
 								toAddTaskUserList.add(taskUserDo);
@@ -162,7 +168,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 					}
 
 					if (!toAddTaskUserList.isEmpty()) {
-						logger.info("browerAndShoppingHandler completeTaskCount:" + toAddTaskUserList.size());
+						logger.info("browerAndShoppingHandler completeTask:" + JSON.toJSONString(toAddTaskUserList));
 						for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
 							insertTaskUserDo(afTaskUserDo);
 						}
