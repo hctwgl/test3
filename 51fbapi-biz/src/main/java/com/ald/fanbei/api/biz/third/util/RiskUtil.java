@@ -619,6 +619,10 @@ public class RiskUtil extends AbstractThird {
 		// fail,consumerNo="+consumerNo);
 		// }
 
+        // add by luoxiao 边逛边赚，提交强风控送奖励
+        afTaskUserService.taskHandler(userId, AfTaskType.STRONG_RISK.getCode(), null);
+        // end by luoxiao
+
 		String reqResult = requestProxy.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
 
 		logThird(reqResult, "registerAndRisk", reqBo);
@@ -656,6 +660,10 @@ public class RiskUtil extends AbstractThird {
 				afUserDo, afUserAuthDo, appName, ipAddress, accountDo, blackBox, cardNum, CHANNEL, PRIVATE_KEY,
 				directory, getNotifyHost(), bqsBlackBox, riskScene, extUserInfo,selectedType,address,censusRegister);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+
+		// add by luoxiao 边逛边赚，提交强风控送奖励
+		afTaskUserService.taskHandler(afUserDo.getRid(), AfTaskType.STRONG_RISK.getCode(), null);
+		// end by luoxiao
 
 		String reqResult = requestProxy.post(getUrl() + "/modules/api/user/registerAndRisk.htm", reqBo);
 
