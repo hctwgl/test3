@@ -349,7 +349,6 @@ public class H5SignInfoOutController extends H5Controller {
             }
             data = homeInfo(userId,data,push);
             data.put("flag","success");
-//            data.put("rewardAmount",new BigDecimal(data.get("rewardAmount").toString()).add(amount).setScale(2, RoundingMode.HALF_UP));
             return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
         } catch (FanbeiException e) {
             logger.error("commitRegister fanbei exception" + e.getMessage());
