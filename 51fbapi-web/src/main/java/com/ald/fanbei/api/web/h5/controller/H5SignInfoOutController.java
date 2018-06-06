@@ -349,7 +349,7 @@ public class H5SignInfoOutController extends H5Controller {
             bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
             final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
             final BigDecimal amount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
-            if(!signRewardSupplement(request,userId,moblie,time,userWxInfo,amount,Long.parseLong(afResourceDo.getValue5()))){
+            if(!signRewardSupplement(request,userId,moblie,time,userWxInfo,amount,Long.parseLong(afResourceDo.getValue5()==null?"0":afResourceDo.getValue5()),Long.parseLong(afResourceDo.getValue5()==null?"0":afResourceDo.getValue5()))){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
             data = homeInfo(userId,data,push);
@@ -364,7 +364,7 @@ public class H5SignInfoOutController extends H5Controller {
         }
     }
 
-    private boolean signRewardSupplement(HttpServletRequest request,final Long userId,final String moblie,final int time,final JSONObject userWxInfo,final BigDecimal amount,final Long couponId){
+    private boolean signRewardSupplement(HttpServletRequest request,final Long userId,final String moblie,final int time,final JSONObject userWxInfo,final BigDecimal amount,final Long couponId,final Long tenCouponId){
         boolean result ;
         final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
 
@@ -471,6 +471,7 @@ public class H5SignInfoOutController extends H5Controller {
                                 afSignRewardExtDo.setAmount(rewardAmount);
                                 afSignRewardExtService.increaseMoney(afSignRewardExtDo);
                             }
+                            addCoupon(tenCouponId,rewardUserId);
                         }else {//给予普通签到的奖励
                             afSignRewardExtDo.setAmount(rewardAmount);
                             afSignRewardExtService.increaseMoney(afSignRewardExtDo);
@@ -562,6 +563,12 @@ public class H5SignInfoOutController extends H5Controller {
      * @return
      */
     private void fiveOrSevenSignDays(AfSignRewardExtDo afSignRewardExtDo ,BigDecimal rewardAmount,final AfSignRewardDo rewardDo,final Long couponId){
+        addCoupon(couponId,rewardDo.getUserId());
+        afSignRewardExtDo.setAmount(rewardAmount);
+        afSignRewardExtService.increaseMoney(afSignRewardExtDo);
+    }
+
+    public void addCoupon(final Long couponId,final Long userId){
         AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
         AfCouponDo afCouponDo = afCouponService.getCouponById(couponId);
         if(afCouponDo!=null){
@@ -572,17 +579,15 @@ public class H5SignInfoOutController extends H5Controller {
                 afUserCouponDo.setGmtStart(afCouponDo.getGmtStart());
                 afUserCouponDo.setGmtEnd(afCouponDo.getGmtEnd());
             }
+            afUserCouponDo.setUserId(userId);
+            afUserCouponDo.setCouponId(couponId);
+            afUserCouponDo.setGmtCreate(new Date());
+            afUserCouponDo.setGmtModified(new Date());
+            afUserCouponDo.setSourceType("SIGN_REWARD");
+            afUserCouponDo.setSourceRef("SYS");
+            afUserCouponDo.setStatus("NOUSE");
+            afUserCouponService.addUserCoupon(afUserCouponDo);
         }
-        afSignRewardExtDo.setAmount(rewardAmount);
-        afUserCouponDo.setUserId(rewardDo.getUserId());
-        afUserCouponDo.setCouponId(couponId);
-        afUserCouponDo.setGmtCreate(new Date());
-        afUserCouponDo.setGmtModified(new Date());
-        afUserCouponDo.setSourceType("SIGN_REWARD");
-        afUserCouponDo.setSourceRef("SYS");
-        afUserCouponDo.setStatus("NOUSE");
-        afUserCouponService.addUserCoupon(afUserCouponDo);
-        afSignRewardExtService.increaseMoney(afSignRewardExtDo);
     }
 
     @RequestMapping(value = "/supplementSignIn", method = RequestMethod.POST)

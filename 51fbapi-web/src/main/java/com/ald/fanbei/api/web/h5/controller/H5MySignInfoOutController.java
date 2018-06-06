@@ -196,11 +196,12 @@ public class H5MySignInfoOutController extends H5Controller {
                     //给予连续7天和10天的奖励
                     if(maxCount < 7){
                         afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(4)).setScale(2,RoundingMode.HALF_EVEN));
-                        status = tenSignDays(rewardDo,afSignRewardExtDo);
+                        status = signDays(rewardDo,afSignRewardExtDo,afResourceDo);
                     }else{
                         afSignRewardExtDo.setAmount(rewardAmount);
-                        status = tenSignDays(rewardDo,afSignRewardExtDo);
+                        status = signDays(rewardDo,afSignRewardExtDo,afResourceDo);
                     }
+
                 }else {//给予普通签到的奖励
                     afSignRewardExtDo.setAmount(rewardAmount);
                     status = tenSignDays(rewardDo,afSignRewardExtDo);
@@ -305,7 +306,7 @@ public class H5MySignInfoOutController extends H5Controller {
             public String doInTransaction(TransactionStatus status) {
                 try{
                     AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
-                    AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(afResourceDo.getValue5()));
+                    AfCouponDo afCouponDo = afCouponService.getCouponById(Long.parseLong(afResourceDo.getValue5()==null?"0":afResourceDo.getValue5()));
                     if(afCouponDo!=null){
                         if(StringUtil.equals(afCouponDo.getExpiryType(),"D")){
                             afUserCouponDo.setGmtStart(new Date());
@@ -314,16 +315,16 @@ public class H5MySignInfoOutController extends H5Controller {
                             afUserCouponDo.setGmtStart(afCouponDo.getGmtStart());
                             afUserCouponDo.setGmtEnd(afCouponDo.getGmtEnd());
                         }
+                        afUserCouponDo.setUserId(rewardDo.getUserId());
+                        afUserCouponDo.setCouponId(Long.parseLong(afResourceDo.getValue5()));
+                        afUserCouponDo.setGmtCreate(new Date());
+                        afUserCouponDo.setGmtModified(new Date());
+                        afUserCouponDo.setSourceType("SIGN_REWARD");
+                        afUserCouponDo.setSourceRef("SYS");
+                        afUserCouponDo.setStatus("NOUSE");
+                        afUserCouponService.addUserCoupon(afUserCouponDo);
                     }
                     afSignRewardService.saveRecord(rewardDo);
-                    afUserCouponDo.setUserId(rewardDo.getUserId());
-                    afUserCouponDo.setCouponId(Long.parseLong(afResourceDo.getValue5()));
-                    afUserCouponDo.setGmtCreate(new Date());
-                    afUserCouponDo.setGmtModified(new Date());
-                    afUserCouponDo.setSourceType("SIGN_REWARD");
-                    afUserCouponDo.setSourceRef("SYS");
-                    afUserCouponDo.setStatus("NOUSE");
-                    afUserCouponService.addUserCoupon(afUserCouponDo);
                     afSignRewardExtService.increaseMoney(signRewardExtDo);
                     return "success";
                 }catch (Exception e){
@@ -333,6 +334,28 @@ public class H5MySignInfoOutController extends H5Controller {
             }
         });
         return status;
+    }
+
+    public void addCoupon(final Long couponId,final Long userId){
+        AfUserCouponDo afUserCouponDo = new AfUserCouponDo();
+        AfCouponDo afCouponDo = afCouponService.getCouponById(couponId);
+        if(afCouponDo!=null){
+            if(StringUtil.equals(afCouponDo.getExpiryType(),"D")){
+                afUserCouponDo.setGmtStart(new Date());
+                afUserCouponDo.setGmtEnd(DateUtil.addDays(new Date(),afCouponDo.getValidDays()));
+            }else if(StringUtil.equals(afCouponDo.getExpiryType(),"R")){
+                afUserCouponDo.setGmtStart(afCouponDo.getGmtStart());
+                afUserCouponDo.setGmtEnd(afCouponDo.getGmtEnd());
+            }
+            afUserCouponDo.setUserId(userId);
+            afUserCouponDo.setCouponId(couponId);
+            afUserCouponDo.setGmtCreate(new Date());
+            afUserCouponDo.setGmtModified(new Date());
+            afUserCouponDo.setSourceType("SIGN_REWARD");
+            afUserCouponDo.setSourceRef("SYS");
+            afUserCouponDo.setStatus("NOUSE");
+            afUserCouponService.addUserCoupon(afUserCouponDo);
+        }
     }
 
     /**
@@ -346,6 +369,31 @@ public class H5MySignInfoOutController extends H5Controller {
             @Override
             public String doInTransaction(TransactionStatus status) {
                 try{
+                    afSignRewardService.saveRecord(rewardDo);
+                    afSignRewardExtService.increaseMoney(signRewardExtDo);
+                    return "success";
+                }catch (Exception e){
+                    status.setRollbackOnly();
+                    return "fail";
+                }
+            }
+        });
+        return status;
+    }
+
+    /**
+     * 签到10天
+     * @param rewardDo
+     * @param signRewardExtDo
+     * @return
+     */
+    private String signDays(final AfSignRewardDo rewardDo,final AfSignRewardExtDo signRewardExtDo,final AfResourceDo afResourceDo){
+        String status = transactionTemplate.execute(new TransactionCallback<String>() {
+            @Override
+            public String doInTransaction(TransactionStatus status) {
+                try{
+                    Long couponId = Long.parseLong(afResourceDo.getPic1()==null?"0":afResourceDo.getPic1());
+                    addCoupon(couponId,rewardDo.getUserId());
                     afSignRewardService.saveRecord(rewardDo);
                     afSignRewardExtService.increaseMoney(signRewardExtDo);
                     return "success";

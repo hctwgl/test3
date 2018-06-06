@@ -395,7 +395,7 @@
         </foreach>
     </select>
 
-    <select id="getCouponAmountByIds" >
+    <select id="getCouponAmountByIds" resultType="java.lang.Integer" >
         SELECT
           sum(amount) amount
         FROM af_coupon

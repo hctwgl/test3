@@ -138,7 +138,7 @@ public interface AfTaskUserService {
      * @param couponIdList
      * @return
      */
-    BigDecimal getCouponAmountByIds(List<Long> couponIdList);
+    int getCouponAmountByIds(List<Long> couponIdList);
 
     /**
      * 批量更新用户状态
