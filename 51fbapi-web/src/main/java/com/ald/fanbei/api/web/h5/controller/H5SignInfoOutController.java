@@ -394,6 +394,7 @@ public class H5SignInfoOutController extends H5Controller {
                     afSignRewardService.saveRecord(rewardDo);
                     //补签成功 打开者增加余额
                     AfSignRewardExtDo afSignRewardExt = buildSignRewardExt(userId,amount);
+                    afSignRewardExt.setFirstDayParticipation(new Date());
                     afSignRewardExtService.saveRecord(afSignRewardExt);
 
                     AfSignRewardExtDo afSignRewardExtDo = afSignRewardExtService.selectByUserId(rewardUserId);
