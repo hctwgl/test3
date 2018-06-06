@@ -1263,7 +1263,7 @@ public class AppH5FanBeiWebController extends BaseController {
 
 			   boolean isGetLock = bizCacheUtil.getLock30Second(processKey, "1");
 			   goodsInfo = (Map<String, Object>) bizCacheUtil.getMap(cacheKey2);
-			   logger.info("getMoreGoods h5" + Thread.currentThread().getName() + "isGetLock:" + isGetLock + "goodsInfo= " + JSONArray.toJSONString(goodsInfo) + "cacheKey = " + cacheKey);
+			   logger.info("getMoreGoods h5" + Thread.currentThread().getName() + "isGetLock:" + isGetLock + "goodsInfo= " + JSONArray.toJSONString(goodsInfo) + "cacheKey2 = " + cacheKey2);
 			   //调用异步请求加入缓存
 			   if (isGetLock) {
 				   logger.info("getMoreGoodsApi" + Thread.currentThread().getName() + "getMoreGoodsApi is null" + "cacheKey = " + cacheKey);

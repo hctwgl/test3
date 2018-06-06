@@ -133,11 +133,11 @@ public class GetMoreGoodsApi implements ApiHandle {
 		   if(goodsInfo == null || goodsInfo.isEmpty()){
 			   boolean isGetLock = bizCacheUtil.getLock30Second(processKey, "1");
 			   goodsInfo = (Map<String, Object>) bizCacheUtil.getMap(cacheKey2);
-			   logger.info("getMoreGoodsApi"+Thread.currentThread().getName() + "getMoreGoodsApi isGetLock:"+isGetLock+"goodsInfo= "+JSONArray.toJSONString(goodsInfo)+"cacheKey = "+ cacheKey);
+			   logger.info("getMoreGoodsApi"+Thread.currentThread().getName() + "getMoreGoodsApi isGetLock:"+isGetLock+"goodsInfo= "+JSONArray.toJSONString(goodsInfo)+"cacheKey2 = "+ cacheKey2);
 
 			   //调用异步请求加入缓存
 			   if(isGetLock){
-				   logger.info("getMoreGoodsApi"+Thread.currentThread().getName() + "getMoreGoodsApi is null"+"cacheKey = "+ cacheKey);
+				   logger.info("getMoreGoodsApi"+Thread.currentThread().getName() + "getMoreGoodsApi is null"+"cacheKey2 = "+ cacheKey2);
 				   Runnable process = new GetMoreGoodsInfo(cacheKey,cacheKey2,null,pageNo,pageFlag,source);
 				   jobThreadPoolUtils.asynProcessBusiness(process);
 			   }
