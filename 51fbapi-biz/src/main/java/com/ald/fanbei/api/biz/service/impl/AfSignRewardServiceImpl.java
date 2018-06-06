@@ -132,13 +132,33 @@ public class AfSignRewardServiceImpl  implements AfSignRewardService {
                 }
                 String str = sb.length()>0?sb.deleteCharAt(sb.length()-1).toString():sb.toString();
                 map.put("signDays",str);
-                map.put("supplementSignDays",signDays(str,maxNum,status));
+                String[] param = str.split(",");
+                map.put("supplementSignDays",signDays(sortStr(param),maxNum,status));
             }else{
                 map= supplementSign(afSignRewardExtDo,num,status);
                 return map;
             }
         }
         return map;
+    }
+
+
+    public String sortStr(String[] str){
+        StringBuffer sb = new StringBuffer();
+        for (int sx=0; sx<str.length-1; sx++) {
+            for (int i=0; i<str.length-1-sx; i++) {
+                if (Integer.parseInt(str[i]) > Integer.parseInt(str[i+1]) ) {
+                    // 交换数据
+                    String temp = str[i];
+                    str[i] = str[i+1];
+                    str[i+1] = temp;
+                }
+            }
+        }
+        for (int x=0; x<str.length; x++) {
+            sb.append(str[x]).append(",");
+        }
+        return sb.deleteCharAt(sb.length()-1).toString();
     }
 
     public String signDays(String sb,int maxNum,String status){
