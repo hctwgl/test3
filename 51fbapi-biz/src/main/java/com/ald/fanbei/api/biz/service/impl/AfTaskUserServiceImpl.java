@@ -136,7 +136,6 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 
 				AfTaskUserDo taskUserDo;
 				if(!taskList.isEmpty()){
-					logger.info("browerAndShoppingHandler taskList1:" + JSON.toJSONString(taskList));
 					for (AfTaskDo taskDo : taskList) {
 						if (StringUtils.equals(AfTaskSecType.CATEGORY.getCode(), taskDo.getTaskSecType())) {
 							if (isMatchedId(taskDo.getTaskCondition(), categoryId)) {
@@ -156,7 +155,10 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 							}
 						} else if (StringUtils.equals(AfTaskType.SHOPPING.getCode(), taskDo.getTaskType()) && StringUtils.equals(AfTaskSecType.QUANTITY.getCode(), taskDo.getTaskSecType())) {
 							// 用户购物数量
+							logger.info("browerAndShoppingHandler quantity:" + JSON.toJSONString(taskDo));
 							int orderCount = afOrderService.getSignFinishOrderCount(userId,taskDo.getTaskBeginTime());
+							logger.info("browerAndShoppingHandler getTaskCondition:" + taskDo.getTaskCondition());
+							logger.info("browerAndShoppingHandler orderCount:" + orderCount);
 							if (orderCount == Integer.parseInt(taskDo.getTaskCondition())) {
 								taskUserDo = buildTaskUserDo(taskDo, userId);
 								toAddTaskUserList.add(taskUserDo);
@@ -165,7 +167,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 					}
 
 					if (!toAddTaskUserList.isEmpty()) {
-						logger.info("browerAndShoppingHandler completeTaskCount:" + toAddTaskUserList.size());
+						logger.info("browerAndShoppingHandler completeTask:" + JSON.toJSONString(toAddTaskUserList));
 						for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
 							insertTaskUserDo(afTaskUserDo);
 						}
