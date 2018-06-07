@@ -96,6 +96,9 @@ public class H5SignInfoOutController extends H5Controller {
             String push = ObjectUtils.toString(request.getParameter("push"), "").toString();
             String wxCode = ObjectUtils.toString(request.getParameter("wxCode"), "").toString();
             Map<String, Object> data = new HashMap<String, Object>();
+            String userName = ObjectUtils.toString(request.getParameter("rewardUserId"),null);
+            AfUserDo afUserDo = afUserService.getUserByUserName(userName);
+            final Long rewardUserId = afUserDo.getRid();//分享者的userId
             final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("NEW_FRIEND_USER_SIGN");
             if(afResourceDo == null || numberWordFormat.isNumeric(afResourceDo.getValue())){
                 throw new FanbeiException("param error", FanbeiExceptionCode.PARAM_ERROR);
@@ -124,9 +127,11 @@ public class H5SignInfoOutController extends H5Controller {
 //            JSONObject userWxInfo = new JSONObject();
             AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
             if (eUserDo != null) {
-                final BigDecimal rewardAmount = randomNum(afResourceDo.getValue3(),afResourceDo.getValue4()).setScale(2, RoundingMode.HALF_UP);
-                if(!signReward(request,eUserDo.getRid(),rewardAmount,"old",moblie,userWxInfo )){
-                    return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
+                if(!StringUtil.equals(eUserDo.getRid()+"",rewardUserId+"")){
+                    final BigDecimal rewardAmount = randomNum(afResourceDo.getValue3(),afResourceDo.getValue4()).setScale(2, RoundingMode.HALF_UP);
+                    if(!signReward(request,eUserDo.getRid(),rewardAmount,"old",moblie,userWxInfo,rewardUserId )){
+                        return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
+                    }
                 }
                 data = homeInfo(eUserDo.getRid(),data,push);
                 data.put("flag","success");
@@ -165,7 +170,7 @@ public class H5SignInfoOutController extends H5Controller {
             CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
             bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
             final BigDecimal rewardAmount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
-            if(!signReward(request,userId,rewardAmount,"new",moblie,userWxInfo)){
+            if(!signReward(request,userId,rewardAmount,"new",moblie,userWxInfo,rewardUserId)){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
             //首页信息
@@ -242,40 +247,40 @@ public class H5SignInfoOutController extends H5Controller {
         try {
             final String moblie = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
             String verifyCode = ObjectUtils.toString(request.getParameter("verifyCode"), "").toString();
-//            String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
-//            String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
+            String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
+            String bsqToken = ObjectUtils.toString(request.getParameter("bsqToken"), "").toString();
             String push = ObjectUtils.toString(request.getParameter("push"), "").toString();
             Integer time = NumberUtil.objToIntDefault(request.getParameter("time"),1);
             String wxCode = ObjectUtils.toString(request.getParameter("wxCode"), "").toString();
             String userName = ObjectUtils.toString(request.getParameter("rewardUserId"),null);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
             final Long rewardUserId = afUserDo.getRid();//分享者的userId
-//            AfResourceDo afResource = afResourceService.getWechatConfig();
-//            String appid = afResource.getValue();
-//            String secret = afResource.getValue1();
-//            final JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
-            final JSONObject userWxInfo = new JSONObject();
+            AfResourceDo afResource = afResourceService.getWechatConfig();
+            String appid = afResource.getValue();
+            String secret = afResource.getValue1();
+            final JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
+//            final JSONObject userWxInfo = new JSONObject();
             Map<String, Object> data = new HashMap<String, Object>();
-//            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.MOBILE_BIND.getCode());
-//            if (smsDo == null) {
-//                logger.error("sms record is empty");
-//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
-//            }
-//            String realCode = smsDo.getVerifyCode();
-//            if (!StringUtils.equals(verifyCode, realCode)) {
-//                logger.error("verifyCode is invalid");
-//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
-//            }
-//            if (smsDo.getIsCheck() == 1) {
-//                logger.error("verifyCode is already invalid");
-//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc()).toString();
-//            }
-//            // 判断验证码是否过期
-//            if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
-//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc()).toString();
-//            }
+            AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.MOBILE_BIND.getCode());
+            if (smsDo == null) {
+                logger.error("sms record is empty");
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
+            }
+            String realCode = smsDo.getVerifyCode();
+            if (!StringUtils.equals(verifyCode, realCode)) {
+                logger.error("verifyCode is invalid");
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ERROR.getDesc()).toString();
+            }
+            if (smsDo.getIsCheck() == 1) {
+                logger.error("verifyCode is already invalid");
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_ALREADY_ERROR.getDesc()).toString();
+            }
+            // 判断验证码是否过期
+            if (DateUtil.afterDay(new Date(), DateUtil.addMins(smsDo.getGmtCreate(), Constants.MINITS_OF_HALF_HOUR))) {
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_REGIST_SMS_OVERDUE.getDesc()).toString();
+            }
 //            // 更新为已经验证
-//            afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
+            afSmsRecordService.updateSmsIsCheck(smsDo.getRid());
             final AfUserDo eUserDo = afUserService.getUserByUserName(moblie);
             if (eUserDo != null) {
                 String status = transactionTemplate.execute(new TransactionCallback<String>() {
@@ -317,16 +322,16 @@ public class H5SignInfoOutController extends H5Controller {
                 }
                 return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUPPLEMENT_SIGN_FAIL.getDesc(),"",data).toString();
             }
-//            try {
-//                tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), moblie, moblie, "");
-//            } catch (Exception e) {
-//                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc()).toString();
-//            }
-//            try {
-//                baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),moblie,"","","","");
-//            }catch (Exception e){
-//                logger.error("h5Common commitRegisterLogin baiQiShiUtils getRegistResult error => {}",e.getMessage());
-//            }
+            try {
+                tongdunUtil.getPromotionResult(token, null, null, CommonUtil.getIpAddr(request), moblie, moblie, "");
+            } catch (Exception e) {
+                return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.TONGTUN_FENGKONG_REGIST_ERROR.getDesc()).toString();
+            }
+            try {
+                baiQiShiUtils.getRegistResult("h5",bsqToken,CommonUtil.getIpAddr(request),moblie,"","","","");
+            }catch (Exception e){
+                logger.error("h5Common commitRegisterLogin baiQiShiUtils getRegistResult error => {}",e.getMessage());
+            }
             String salt = UserUtil.getSalt();
             AfUserDo userDo = new AfUserDo();
             userDo.setSalt(salt);
@@ -344,7 +349,7 @@ public class H5SignInfoOutController extends H5Controller {
             String  newtoken = UserUtil.generateToken(moblie);
             String tokenKey = Constants.H5_CACHE_USER_TOKEN_COOKIES_KEY + moblie;
             CookieUtil.writeCookie(response, Constants.H5_USER_NAME_COOKIES_KEY, moblie, Constants.SECOND_OF_HALF_HOUR_INT);
-//            CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
+            CookieUtil.writeCookie(response, Constants.H5_USER_TOKEN_COOKIES_KEY, token, Constants.SECOND_OF_HALF_HOUR_INT);
             bizCacheUtil.saveObject(tokenKey, newtoken, Constants.SECOND_OF_HALF_HOUR);
             final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
             final BigDecimal amount = randomNum(afResourceDo.getValue1(),afResourceDo.getValue2());
@@ -378,16 +383,16 @@ public class H5SignInfoOutController extends H5Controller {
             public String doInTransaction(TransactionStatus status) {
                 try{
                     //绑定openId
-//                    String openId = userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID);
-//                    AfUserThirdInfoDo userThirdInfoDo = new AfUserThirdInfoDo();
-//                    userThirdInfoDo.setUserId(userId);
-//                    userThirdInfoDo.setThirdId(openId);
-//                    userThirdInfoDo.setThirdType(UserThirdType.WX.getCode());
-//                    userThirdInfoDo.setCreator(moblie);
-//                    userThirdInfoDo.setModifier(moblie);
-//                    userThirdInfoDo.setThirdInfo(userWxInfo.toJSONString());
-//                    userThirdInfoDo.setUserName(moblie);
-//                    afUserThirdInfoService.saveRecord(userThirdInfoDo);
+                    String openId = userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID);
+                    AfUserThirdInfoDo userThirdInfoDo = new AfUserThirdInfoDo();
+                    userThirdInfoDo.setUserId(userId);
+                    userThirdInfoDo.setThirdId(openId);
+                    userThirdInfoDo.setThirdType(UserThirdType.WX.getCode());
+                    userThirdInfoDo.setCreator(moblie);
+                    userThirdInfoDo.setModifier(moblie);
+                    userThirdInfoDo.setThirdInfo(userWxInfo.toJSONString());
+                    userThirdInfoDo.setUserName(moblie);
+                    afUserThirdInfoService.saveRecord(userThirdInfoDo);
 
                     //补签成功 打开者获取相应的奖励
                     AfSignRewardDo rewardDo = buildSignReward(userId, SignRewardType.FIVE.getCode(),null,amount,null);
@@ -641,14 +646,10 @@ public class H5SignInfoOutController extends H5Controller {
     }
 
 
-    private boolean signReward(HttpServletRequest request,final Long frienduserId,final BigDecimal rewardAmount,final String user,final String moblie,final JSONObject userWxInfo){
+    private boolean signReward(HttpServletRequest request,final Long frienduserId,final BigDecimal rewardAmount,final String user,final String moblie,final JSONObject userWxInfo,final Long userId){
         boolean result ;
-        String userName = ObjectUtils.toString(request.getParameter("rewardUserId"),null);
-        AfUserDo afUserDo = afUserService.getUserByUserName(userName);
-        final Long userId = afUserDo.getRid();//分享者的userId
         final boolean flag = afSignRewardService.checkUserSign(frienduserId);//好友是否有签到次数
         final AfResourceDo afResource = afResourceService.getSingleResourceBytype("SIGN_COEFFICIENT");
-        logger.info("userName cfp friendSign = " + userName);
         String status = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus status) {

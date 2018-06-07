@@ -337,7 +337,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		AfUserCouponDo userCouponDo;
 		for(AfTaskUserDo taskUserDo: taskUserDoList){
 			if(Constants.REWARD_TYPE_CASH == taskUserDo.getRewardType().intValue()){
-				cashAmount.add(taskUserDo.getCashAmount());
+				cashAmount = cashAmount.add(taskUserDo.getCashAmount());
 			}
 			else if(Constants.REWARD_TYPE_COUPON == taskUserDo.getRewardType().intValue()){
 				couponDo = afCouponService.getCouponById(taskUserDo.getCouponId());
