@@ -17,17 +17,11 @@ import java.util.Map;
  */
 public interface AfTaskUserDao  {
 
-    List<AfTaskUserDo> isDailyTaskList(@Param("userId") Long userId);
-
-    List<AfTaskUserDo> isNotDailyTaskList(@Param("userId")Long userId);
 
     List<AfTaskUserDo> isDailyFinishTaskList(@Param("userId")Long userId);
 
     List<AfTaskUserDo> isNotDailyFinishTaskList(@Param("userId")Long userId);
 
-    int updateNotDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
-
-    int updateDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
 
     int insertTaskUserDo(AfTaskUserDo afTaskUserDo);
 
@@ -39,7 +33,6 @@ public interface AfTaskUserDao  {
 
     List<Map<String, Object>> getIncomeOfNearlySevenDays(@Param("userId") Long userId);
 
-    List<Map<String, Object>> getIncomeCoinOfNearlySevenDays(@Param("userId")Long userId);
 
     List<AfTaskUserDo> getDetailsByUserId(@Param("userId") Long userId, @Param("rewardType") Integer rewardType);
 
