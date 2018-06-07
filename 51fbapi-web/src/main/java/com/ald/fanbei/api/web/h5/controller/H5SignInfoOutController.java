@@ -52,6 +52,7 @@ import java.util.*;
  *签到领金币朋友帮签
  */
 @RestController
+@RequestMapping(value = "/SignRewardInfo/",produces = "application/json;charset=UTF-8")
 public class H5SignInfoOutController extends H5Controller {
 
     @Resource
@@ -90,7 +91,7 @@ public class H5SignInfoOutController extends H5Controller {
      * @param response
      * @return
      */
-    @RequestMapping(value = "/SignRewardInfo/**", method = RequestMethod.POST)
+    @RequestMapping(value = "/friendSign", method = RequestMethod.POST)
     public String getFriendSign(HttpServletRequest request, HttpServletResponse response) {
         try {
             Context context = buildContext(request);
