@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.h5.api.reward;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
@@ -24,6 +25,7 @@ import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -54,6 +56,8 @@ public class GetExtractMoneyApi implements H5Handle {
     AfCouponService afCouponService;
     @Resource
     AfSignRewardWithdrawService afSignRewardWithdrawService;
+    @Resource
+    SmsUtil smsUtil;
 
     @Override
     public H5HandleResponse process(final Context context) {
@@ -71,6 +75,24 @@ public class GetExtractMoneyApi implements H5Handle {
                         BigDecimal todayWithdrawAmount = afSignRewardWithdrawService.getTodayWithdrawAmount();
                         todayWithdrawAmount = (todayWithdrawAmount == null ? new BigDecimal(0) : todayWithdrawAmount);
                         if(todayWithdrawAmount.compareTo(new BigDecimal(resourceDo.getValue())) >= 0){
+                            // 发送预警短信
+                            try{
+                                int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+                                String smsKey = currentHour + "sendSignRewardWithdrawWarn";
+                                Integer warnHour = (Integer) bizCacheUtil.getObject(smsKey);
+                                if(null == warnHour){
+                                    String[] arg = {"18917116090","15868156133","15505719987","17376569906","13157183226"};
+                                    for(String mobile: arg){
+                                        smsUtil.sendSignRewardWithdrawWarn(mobile, todayWithdrawAmount);
+                                    }
+                                    warnHour = currentHour;
+                                    bizCacheUtil.saveObject(smsKey, warnHour, Constants.SECOND_OF_AN_HOUR_INT);
+                                }
+
+                            }catch(Exception e){
+                                logger.error("sendSignRewardWithdrawWarn error, ", e);
+                            }
+
                             return new H5HandleResponse(context.getId(), FanbeiExceptionCode.WITHDRAW_OVER);
                         }
                     }
