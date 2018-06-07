@@ -14,6 +14,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.AfActivityReservationGoodsUserDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfCouponDto;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
@@ -105,6 +106,9 @@ public class AppActivityGoodListUtil {
     AfActivityUserSmsService afActivityUserSmsService;
     @Resource
     AfBorrowBillService afBorrowBillService;
+
+    @Resource
+    private AfActivityReservationGoodsUserDao afActivityReservationGoodsUserDao;
 
     /**
      * 活动管理-新增活动 商品列表
@@ -368,6 +372,92 @@ public class AppActivityGoodListUtil {
         }
 
         jsonObj.put("activityPartList", activityList);
+        return jsonObj;
+    }
+
+    /**
+     * 活动预售商品列表
+     * @return
+     */
+    public JSONObject reservationGoodsList(Map<String, Object> map) {
+
+        // 查询会场下所有商品信息
+        List<AfGoodsDo> subjectGoodsList = afActivityReservationGoodsUserDao.getReservationGoodsList( map);
+
+        H5CommonResponse resp = H5CommonResponse.getNewInstance();
+        JSONObject jsonObj = new JSONObject();
+
+        //获取借款分期配置信息
+        final AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
+        final JSONArray array = JSON.parseArray(resource.getValue());
+        //删除2分期
+        if (array == null) {
+            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
+        }
+        List<Map> activityGoodsList  = new ArrayList<Map>();
+        BigDecimal saleAmount = null;
+        for(AfGoodsDo goodsDo : subjectGoodsList) {
+            Map activityGoodsInfo = new HashMap();
+            activityGoodsInfo.put("goodName",goodsDo.getName());
+            activityGoodsInfo.put("rebateAmount", goodsDo.getRebateAmount());
+
+            if(null != goodsDo.getActivityPrice()){
+                saleAmount = goodsDo.getActivityPrice();
+            }
+            else{
+                saleAmount = goodsDo.getSaleAmount();
+            }
+
+            //返利金额
+            BigDecimal secKillRebAmount = BigDecimalUtil.multiply(saleAmount, goodsDo.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
+            if(goodsDo.getRebateAmount().compareTo(secKillRebAmount)>0){
+                activityGoodsInfo.put("rebateAmount", secKillRebAmount);
+            }
+
+            activityGoodsInfo.put("saleAmount", saleAmount);
+            activityGoodsInfo.put("goodsIcon", goodsDo.getGoodsIcon());
+            activityGoodsInfo.put("goodsId", goodsDo.getRid());
+            activityGoodsInfo.put("goodsUrl", goodsDo.getGoodsUrl());
+            activityGoodsInfo.put("source", goodsDo.getSource());
+            activityGoodsInfo.put("priceAmount", goodsDo.getPriceAmount());
+            activityGoodsInfo.put("thumbnailIcon", goodsDo.getThumbnailIcon());
+            activityGoodsInfo.put("remark", goodsDo.getRemark());
+            // 如果是分期免息商品，则计算分期
+            AfSchemeGoodsDo afSchemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsDo.getRid());
+            JSONArray interestFreeArray = null;
+            if(null != afSchemeGoodsDo){
+                Long goodsId = goodsDo.getRid();
+                AfSchemeDo  afSchemeDo = null;
+                try {
+                    afSchemeDo = afSchemeService.getSchemeById(afSchemeGoodsDo.getSchemeId());
+                } catch(Exception e){
+                    logger.error(e.toString());
+                }
+
+                if(afSchemeDo != null){
+                    if (freeflag(afSchemeDo.getGmtStart(),afSchemeDo.getGmtEnd(),afSchemeDo.getIsOpen()) ){
+                        AfInterestFreeRulesDo  interestFreeRulesDo = afInterestFreeRulesService.getById(afSchemeGoodsDo.getInterestFreeId());
+                        String interestFreeJson = interestFreeRulesDo.getRuleJson();
+                        if (org.apache.commons.lang.StringUtils.isNotBlank(interestFreeJson) && !"0".equals(interestFreeJson)) {
+                            interestFreeArray = JSON.parseArray(interestFreeJson);
+                        }
+                    }
+                }
+            }
+
+
+            List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
+                    saleAmount, resource.getValue1(), resource.getValue2(),goodsDo.getRid(),"0");
+
+            if(nperList!= null){
+                activityGoodsInfo.put("goodsType", "1");
+                Map nperMap = nperList.get(nperList.size() - 1);
+                activityGoodsInfo.put("nperMap", nperMap);
+            }
+            activityGoodsList.add(activityGoodsInfo);
+        }
+        jsonObj.put("reservationGoodsList", activityGoodsList);
+
         return jsonObj;
     }
 

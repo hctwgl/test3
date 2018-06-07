@@ -635,7 +635,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                         sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"));
                     //}
                 } else {
-                    if ("majiaborrowSupermanapp".equals(afBorrowCashDo.getMajiabaoName())){
+                    if (afBorrowCashDo.getMajiabaoName().contains("borrowSuperman")){
                         sendJKCRRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"), tempSmsDataMap.get("notRepayMoneyStr"));
                     }else {
                         sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"), tempSmsDataMap.get("notRepayMoneyStr"));
@@ -976,7 +976,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     sendRepaymentBorrowCashWithHold(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"));
                     //}
                 } else {
-                    if ("majiaborrowSupermanapp".equals(majiabaoName)){
+                    if (majiabaoName.contains("borrowSuperman")){
                         sendJKCRRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"), tempSmsDataMap.get("notRepayMoneyStr"));
                     }else {
                         sendRepaymentBorrowCashWarnMsg(afUserDo.getMobile(), tempSmsDataMap.get("nowRepayAmountStr"), tempSmsDataMap.get("notRepayMoneyStr"));
@@ -1214,7 +1214,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                 }
             } else {
                 errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repayment.getUserId());
-                if ("majiaborrowSupermanapp".equals(majiabaoName)){
+                if (majiabaoName.contains("borrowSuperman")){
                     smsUtil.sendYsSmsConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_JKCR_REPAYMENT_BORROWCASH_FAIL.getCode());
                 }else {
                     smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
@@ -1269,7 +1269,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                 }
             } else {
                 errorTimes = afRepaymentBorrowCashDao.getCurrDayRepayErrorTimesByUser(repayment.getUserId());
-                if ("majiaborrowSupermanapp".equals(afBorrowCashDo.getMajiabaoName())){
+                if (afBorrowCashDo.getMajiabaoName().contains("borrowSuperman")){
                     smsUtil.sendYsSmsConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_JKCR_REPAYMENT_BORROWCASH_FAIL.getCode());
                 }else {
                     smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());

@@ -42,7 +42,7 @@ public class GetPayPwdVerifyCodeApi implements ApiHandle {
 			throw new FanbeiException("userInfo id   is invalid", FanbeiExceptionCode.PARAM_ERROR);
 		}
 		boolean resultReg;
-		if ("majiaborrowSupermanapp".equals(majiabaoName)){
+		if (majiabaoName.contains("borrowSuperman")){
 			resultReg = smsUtil.sendSetJKCRPayPwdVerifyCode(userInfo.getMobile(), userId);
 		}else {
 			resultReg = smsUtil.sendSetPayPwdVerifyCode(userInfo.getMobile(), userId);

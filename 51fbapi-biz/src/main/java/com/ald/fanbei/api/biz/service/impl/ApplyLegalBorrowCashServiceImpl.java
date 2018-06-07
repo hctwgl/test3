@@ -363,8 +363,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 				|| !StringUtils.equals(authDo.getMobileStatus(), YesNoStatus.YES.getCode())
 				|| !StringUtils.equals(authDo.getYdStatus(), YesNoStatus.YES.getCode())
 				|| !StringUtils.equals(authDo.getTeldirStatus(), YesNoStatus.YES.getCode())
-				|| !StringUtils.equals(authDo.getRiskStatus(), YesNoStatus.YES.getCode())
-				|| !StringUtils.equals(authDo.getBasicStatus(), YesNoStatus.YES.getCode())) {
+				|| !StringUtils.equals(authDo.getRiskStatus(), YesNoStatus.YES.getCode())) {
 			throw new FanbeiException(FanbeiExceptionCode.AUTH_ALL_AUTH_ERROR);
 		}
 
@@ -489,7 +488,7 @@ public class ApplyLegalBorrowCashServiceImpl implements ApplyLegalBorrowCashServ
 			jpushService.dealBorrowCashApplySuccss(afUserDo.getUserName(), currDate);
 			String bankNumber = mainCard.getCardNumber();
 			String lastBank = bankNumber.substring(bankNumber.length() - 4);
-			if ("majiaborrowSupermanapp".equals(afBorrowCashDo.getMajiabaoName())){
+			if (afBorrowCashDo.getMajiabaoName().contains("borrowSuperman")){
 				smsUtil.sendJKCRBorrowCashCode(afUserDo.getUserName(), lastBank);
 			}else {
 				smsUtil.sendBorrowCashCode(afUserDo.getUserName(), lastBank);

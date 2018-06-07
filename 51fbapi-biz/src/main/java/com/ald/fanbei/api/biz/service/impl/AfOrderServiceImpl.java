@@ -1251,23 +1251,23 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						 }
 				    	// ******* end *******
 						if (verybo.isSuccess()) {
-							logger.info("pay result is true");
-							// #region add by honghzengpei
-							// afRecommendUserService.updateRecommendByBorrow(userId,borrow.getGmtCreate());
-							// #endregion
+						    logger.info("pay result is true");
+						    // #region add by honghzengpei
+						    // afRecommendUserService.updateRecommendByBorrow(userId,borrow.getGmtCreate());
+						    // #endregion
 							Map<String, Object> riskReturnMap = riskUtil.payOrder(resultMap, borrow, verybo.getOrderNo(), verybo, virtualMap, orderInfo);
-							if (null != riskReturnMap && (boolean) riskReturnMap.get("success")) {
+						    if(null != riskReturnMap && (boolean)riskReturnMap.get("success")){
 								// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
 								if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
-									logger.info("周年庆时间自营商品订单支付成功，送优惠券");
+									logger.info("周年庆时间自营商品订单支付成功，送优惠券1");
 									// 预售商品回调 处理
 									afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
-
-									}
+								}
 								// end by luoxiao
 							}
 							return riskReturnMap;
 						}
+
 
 						// verybo.getResult()=10,则成功，活动返利
 					} else if (payType.equals(PayType.COMBINATION_PAY.getCode())) {// 组合支付
