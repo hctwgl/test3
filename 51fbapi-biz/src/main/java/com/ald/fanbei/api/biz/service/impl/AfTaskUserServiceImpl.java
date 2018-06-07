@@ -327,7 +327,8 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 			message = cashAmount.toString()+"金币已入账，继续逛逛能得到更多哦";
 		}
 		if(2 == rewardType){
-			cashAmount = cashAmount.add(new BigDecimal(getCouponAmountByIds(couponIdList)==0?1:getCouponAmountByIds(couponIdList)));
+			BigDecimal couponAmount = getCouponAmountByIds(couponIdList);
+			cashAmount = cashAmount.add(couponAmount == null ? new BigDecimal(0): couponAmount);
 			message = cashAmount.toString()+"元优惠券已入账，继续逛逛能得到更多哦";
 		}
 		if(1 == rewardType){
@@ -338,7 +339,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 	}
 
 	@Override
-	public int getCouponAmountByIds(List<Long> couponIdList) {
+	public BigDecimal getCouponAmountByIds(List<Long> couponIdList) {
 		return afTaskUserDao.getCouponAmountByIds(couponIdList);
 	}
 
