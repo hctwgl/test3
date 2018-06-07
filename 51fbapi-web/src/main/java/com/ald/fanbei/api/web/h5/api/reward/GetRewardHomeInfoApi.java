@@ -51,15 +51,10 @@ public class GetRewardHomeInfoApi implements H5Handle {
 	AfUserAuthService afUserAuthService;
 	@Resource
 	AfTaskService afTaskService;
-	@Resource
-	AfUserAuthStatusService afUserAuthStatusService;
-	@Resource
-	BizCacheUtil bizCacheUtil;
+
 
 	@Override
 	public H5HandleResponse process(Context context) {
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
 		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
 		String push = ObjectUtils.toString(context.getData("push"),"Y");
 		Long userId = context.getUserId();
@@ -86,8 +81,6 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		HashMap<String,Object> hashMap = afUserAuthService.getUserAuthInfo(userId);
 		List<Integer> level = afUserAuthService.signRewardUserLevel(userId,hashMap);
 		resp.addResponseData("taskList",afTaskService.getTaskInfo(level,userId,push,hashMap));
-		stopWatch.stop();
-		logger.info("cfp stopWatch home = "+stopWatch.getTotalTimeSeconds());
 		return resp;
 	}
 

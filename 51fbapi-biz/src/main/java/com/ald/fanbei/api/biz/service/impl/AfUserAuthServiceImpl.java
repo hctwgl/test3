@@ -1114,7 +1114,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
     private String riskOnline(HashMap<String,Object> hashMap){
         String flag ;
         if(hashMap != null){
-            if(hashMap.get("status").equals("Y")){
+            if(StringUtil.equals(hashMap.get("status")+"","Y")){
                 flag = "Y";
             }else{
                 flag = "N";
