@@ -1749,21 +1749,22 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
 
 						logger.info("dealBrandOrder cp begin , payOrderNo = {} and tradeNo = {} and type = {}",
-								new Object[] { payOrderNo, tradeNo, payType });
+								new Object[]{payOrderNo, tradeNo, payType});
 
 						AfBorrowDo afBorrowDo = afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
 
 						logger.info("dealBrandOrder cp = " + afBorrowDo.getRid());
 
-			afBorrowDao.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.TRANSED.getCode());
-			afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(), BorrowBillStatus.NO.getCode());
+						afBorrowDao.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.TRANSED.getCode());
+						afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(), BorrowBillStatus.NO.getCode());
 					}
 					// 租赁逻辑 回掉成功生成租赁借款（确认收货后生成账单）
-                    if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
-                        AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderInfo.getRid());
+					if (orderInfo.getOrderType().equals(OrderType.LEASE.getCode())) {
+						AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderInfo.getRid());
 						orderInfo.setActualAmount(afOrderLeaseDo.getRichieAmount().add(afOrderLeaseDo.getMonthlyRent()).add(afOrderLeaseDo.getCashDeposit()));
-                    }logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}",
-							new Object[] { payOrderNo, tradeNo, payType });
+					}
+					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}",
+							new Object[]{payOrderNo, tradeNo, payType});
 					orderInfo.setPayTradeNo(payOrderNo);
 					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 					orderInfo.setStatus(OrderStatus.PAID.getCode());
@@ -1773,24 +1774,24 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					orderDao.updateOrder(orderInfo);
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
 //TODO 回调方法
-		    return 1;
-		} catch (Exception e) {
-		    status.setRollbackOnly();
-		    logger.error("dealBrandOrder error:", e);
-		    return 0;
-		}
-	    }
-	});
-	if (result == 1) {
-		// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
-		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
-			logger.info("周年庆时间自营商品订单支付成功，送优惠券3");
+					return 1;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("dealBrandOrder error:", e);
+					return 0;
+				}
+			}
+		});
+		if (result == 1) {
+			// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
+			if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
+				logger.info("周年庆时间自营商品订单支付成功，送优惠券3");
 
-			// 预售商品回调 处理
-			afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
+				// 预售商品回调 处理
+				afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
 
-		}
-		// end by luoxiao
+			}
+			// end by luoxiao
 
 			// ----------------------------begin map:add one time for tiger
 			// machine in the certain date---------------------------------

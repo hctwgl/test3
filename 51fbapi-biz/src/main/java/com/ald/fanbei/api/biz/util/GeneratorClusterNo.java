@@ -1,25 +1,17 @@
 package com.ald.fanbei.api.biz.util;
 
-import java.util.Date;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Component;
-
-import com.ald.fanbei.api.biz.service.AfAftersaleApplyService;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfOrderRefundService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfRepaymentService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @类描述：生成集群部署对应的编号，如订单编号中自增部分
@@ -168,20 +160,6 @@ public class GeneratorClusterNo {
 		String orderNoPre = orderPre + datePre;
 		long inData= bizCacheUtil.incr(orderNoPre,1000);//10秒后过期
 		return new Long(inData).intValue();
-	}
-	/**
-	 * 获取现金还款编号
-	 * 
-	 * @param currDate
-	 * @return
-	 */
-	public String getRepaymentBorrowCashNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
-		synchronized (this){
-			String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
-			StringBuffer orderSb = new StringBuffer("hq");
-			orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentBorrowCacheSequenceNum(currDate, "hq")));
-			return orderSb.toString();
-		}
 	}
 	/**
 	 * 获取现金还款编号

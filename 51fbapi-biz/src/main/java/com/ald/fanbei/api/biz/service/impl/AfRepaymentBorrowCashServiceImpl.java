@@ -1,52 +1,14 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Resource;
-
+import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
 import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
-import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
-import com.ald.fanbei.api.dal.domain.*;
-import com.alibaba.fastjson.JSON;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-
-import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
-import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
-import com.ald.fanbei.api.biz.service.AfUserService;
-import com.ald.fanbei.api.biz.service.BaseService;
-import com.ald.fanbei.api.biz.service.JpushService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
-import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
-import com.ald.fanbei.api.biz.bo.thirdpay.ThirdPayTypeEnum;
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
-import com.ald.fanbei.api.biz.third.util.RiskUtil;
-import com.ald.fanbei.api.biz.third.util.SmsUtil;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.third.util.*;
 import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.biz.third.util.pay.ThirdPayUtility;
 import com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility;
@@ -230,7 +192,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
     public Map<String, Object> createRepayment(final BigDecimal jfbAmount, final BigDecimal repaymentAmount, final BigDecimal actualAmount, final AfUserCouponDto coupon, final BigDecimal rebateAmount,
                                                final Long borrow, final Long cardId, final Long userId, final String clientIp, final AfUserAccountDo afUserAccountDo,String bankPayType,String majiabaoName) {
         Date now = new Date();
-        String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
+        String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now,bankPayType);
         final String payTradeNo = repayNo;
         String typeName = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
         ;
@@ -313,7 +275,7 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                                                     final Long borrow, final Long cardId, final Long userId, final String clientIp, final AfUserAccountDo afUserAccountDo,final String bankPayType) {
 
         Date now = new Date();
-        String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now);
+        String repayNo = generatorClusterNo.getRepaymentBorrowCashNo(now,bankPayType);
 
         final String payTradeNo = repayNo;
         // 新增还款记录
