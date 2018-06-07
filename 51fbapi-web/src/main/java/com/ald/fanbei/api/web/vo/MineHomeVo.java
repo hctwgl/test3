@@ -103,6 +103,9 @@ public class MineHomeVo extends AbstractSerial {
     // 待返利订单数
     private Integer finishedOrderNum = 0;
 
+    // 售后处理订单数
+    private Integer afterSaleOrderNum = 0;
+
     // 爱花跳转url
     private String loveShopSkipUrl = "";
 
