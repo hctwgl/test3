@@ -31,7 +31,7 @@ public class signTest extends BaseTest{
 //	String userName = "13370127054";	//王卿 	支付密码123456
 //	String userName = "13656648524";	//朱玲玲 支付密码123456
 //	String userName = "13510301615";	//王绪武 支付密码123456
-	String userName = "18237147009";	//新账号 支付密码123456
+	String userName = "18258023758";	//新账号 支付密码123456
 
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -155,7 +155,7 @@ public class signTest extends BaseTest{
 	public void getLoanInfo() {
 		String url = urlBase + "/mySignInfo/mySign";
 		Map<String,String> params = new HashMap<>();
-		params.put("userId", "18258023758");
+		params.put("userId", "17098711611");
 		params.put("push","N");
 		testH5(url, params, userName, true);
 	}
@@ -183,10 +183,10 @@ public class signTest extends BaseTest{
 	
 	@Test
 	public void  collect() {
-		String url = urlBase + "/taskUser/receiveBrowseTaskRewards";
+		String url = urlBase + "/user/addRecommendShared";
 		Map<String,String> params = new HashMap<>();
-		params.put("userName","18237147019");
-		params.put("taskUserIds","135806");
+		params.put("shareUrl","https://testh5.51fanbei.com/h5/activity/201805/openRed.html?refreshUrl=false");
+		params.put("userName","18258023758");
 		testApi(url, params, userName, true);
 	}
 	

@@ -61,6 +61,8 @@ public class H5WalletController extends BaseController{
     AfIdNumberService afIdNumberService;
     @Resource
     private BizCacheUtil bizCacheUtil;
+    @Resource
+    AfUserAuthService afUserAuthService;
 
     @ResponseBody
     @RequestMapping(value = "valletPage", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -190,7 +192,26 @@ public class H5WalletController extends BaseController{
             Long userId = afUserDo.getRid();
             int count = afUserBankcardService.getUserBankcardCountByUserId(userId);
             data.put("count",count);
+            AfUserAuthDo afUserAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
             AfIdNumberDo afIdNumberDo = afIdNumberService.getIdNumberInfoByUserId(userId);
+            if(StringUtil.equals(afUserAuthDo.getRealnameStatus(),"Y")){
+                data.put("realnameStatus","Y");
+
+                if(null == afIdNumberDo){
+                    data.put("realName","");
+                }else {
+                    data.put("realName",afIdNumberDo.getName());
+                }
+            }else {
+                data.put("realnameStatus","N");
+                data.put("realName","");
+            }
+            if(StringUtil.equals(afUserAuthDo.getBankcardStatus(),"Y")){
+                data.put("bankcardStatus","Y");
+            }else {
+                data.put("bankcardStatus","N");
+            }
+
             if(null == afIdNumberDo){
                 data.put("idNumber","");
                 data.put("realName","");
