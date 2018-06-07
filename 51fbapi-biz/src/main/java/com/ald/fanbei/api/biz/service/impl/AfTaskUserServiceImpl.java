@@ -7,6 +7,8 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfTaskSecType;
 import com.ald.fanbei.api.common.enums.AfTaskType;
+import com.ald.fanbei.api.common.enums.AfUserCouponStatus;
+import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
@@ -36,6 +38,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
    
     @Resource
     private AfTaskUserDao afTaskUserDao;
+
     @Resource
 	AfCouponService afCouponService;
 
@@ -51,8 +54,11 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
     @Resource
     private AfOrderService afOrderService;
 
+    @Resource
+    private AfUserCouponService afUserCouponService;
 
-
+    @Resource
+    private AfUserAccountService afUserAccountService;
 
 
 	@Override
@@ -319,6 +325,46 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		}
 
 		return message;
+	}
+
+	@Override
+	public void saveCouponRewardAndUpdateAccount(List<AfTaskUserDo> taskUserDoList){
+		// 余额
+		BigDecimal cashAmount = BigDecimal.ZERO;
+
+		// 优惠券
+		AfCouponDo couponDo;
+		AfUserCouponDo userCouponDo;
+		for(AfTaskUserDo taskUserDo: taskUserDoList){
+			if(Constants.REWARD_TYPE_CASH == taskUserDo.getRewardType().intValue()){
+				cashAmount.add(taskUserDo.getCashAmount());
+			}
+			else if(Constants.REWARD_TYPE_COUPON == taskUserDo.getRewardType().intValue()){
+				couponDo = afCouponService.getCouponById(taskUserDo.getCouponId());
+				if(null != couponDo){
+					userCouponDo = new AfUserCouponDo();
+					userCouponDo.setCouponId(taskUserDo.getCouponId());
+					userCouponDo.setUserId(taskUserDo.getUserId());
+					userCouponDo.setGmtCreate(new Date());
+					userCouponDo.setGmtStart(couponDo.getGmtStart());
+					userCouponDo.setGmtEnd(couponDo.getGmtEnd());
+					userCouponDo.setStatus(AfUserCouponStatus.NOUSE.getCode());
+					userCouponDo.setSourceType(CouponSenceRuleType.TASK_REWARD.getCode());
+					afUserCouponService.addUserCoupon(userCouponDo);
+
+					couponDo.setRid(taskUserDo.getCouponId());
+					couponDo.setQuotaAlready(1);
+					afCouponService.updateCouponquotaAlreadyById(couponDo);
+				}
+			}
+		}
+
+		// 更新余额
+		Long userId = taskUserDoList.get(0).getUserId();
+		AfUserAccountDo userAccountDo = new AfUserAccountDo();
+		userAccountDo.setUserId(userId);
+		userAccountDo.setRebateAmount(cashAmount);
+		afUserAccountService.updateRebateAmount(userAccountDo);
 	}
 
 	@Override

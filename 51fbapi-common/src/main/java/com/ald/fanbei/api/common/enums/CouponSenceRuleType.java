@@ -21,6 +21,7 @@ public enum CouponSenceRuleType {
     CREDITAUTH("CREDITAUTH", "信用认证"),
     DOUBLE_EXCHANGE("DOUBLE_EXCHANGE", "翻倍兑换优惠券"),
     SHARE_ACTIVITY("SHARE_ACTIVITY", "活动分享"),
+    TASK_REWARD("TASK_REWARD", "任务完成奖励"),
     SELFSUPPORT_PAID("SELFSUPPORT_PAID", "自营成功购物")
     ;
   

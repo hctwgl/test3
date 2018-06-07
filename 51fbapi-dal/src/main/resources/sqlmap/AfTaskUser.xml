@@ -389,6 +389,8 @@
         <include refid="queryFields" />
         FROM af_task_user
         WHERE is_delete = 0
+        AND task_begin_time <![CDATA[   <=  ]]> now()
+        AND task_end_time <![CDATA[   >=  ]]> now()
         AND id IN
         <foreach collection="taskUserIdList" item="item" index="index" separator="," open="(" close=")">
             #{item}
