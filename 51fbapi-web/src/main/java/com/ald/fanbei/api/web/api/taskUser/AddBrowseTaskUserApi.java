@@ -79,6 +79,8 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 						data.put("message","太棒了!"+"\r\n"+"您已完成每日任务");
 					}
 				}
+				data.put("taskUserIds", "1");
+				data.put("message","太棒了!"+"\r\n"+"您已完成每日任务");
 				resp.setResponseData(data);
 				logger.info("cfp addBrowseTaskUserApi cfp " + data);
 			}
