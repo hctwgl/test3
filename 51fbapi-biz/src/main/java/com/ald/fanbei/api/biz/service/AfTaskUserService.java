@@ -137,6 +137,8 @@ public interface AfTaskUserService {
 
     int updateDailyByTaskNameAndUserId(AfTaskUserDo afTaskUserDo);
 
+    int updateNotDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
+
     // 累计收益
     BigDecimal getAccumulatedIncome(Long userId);
 

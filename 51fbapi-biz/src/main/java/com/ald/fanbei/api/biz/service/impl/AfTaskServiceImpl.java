@@ -156,7 +156,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
             //用户已完成的任务
             isDailyFinishTaskList.addAll(isDailyTaskList);
             for(AfTaskUserDo afTaskUserDo : isDailyFinishTaskList){
-                if(afTaskUserDo.getTaskId() == afTaskDo.getRid()){
+                if(StringUtil.equals(afTaskUserDo.getTaskId()+"" ,afTaskDo.getRid()+"")){
                     flag = false;
                     break;
                 }

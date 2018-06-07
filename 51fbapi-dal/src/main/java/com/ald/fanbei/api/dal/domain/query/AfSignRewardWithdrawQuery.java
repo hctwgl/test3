@@ -2,6 +2,8 @@ package com.ald.fanbei.api.dal.domain.query;
 
 import com.ald.fanbei.api.common.page.Page;
 import com.ald.fanbei.api.dal.domain.AfSignRewardDo;
+import com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo;
+import com.ald.fanbei.api.dal.domain.dto.AfSignRewardWithdrawDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +15,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class AfSignRewardWithdrawQuery extends Page<AfSignRewardDo>{
+public class AfSignRewardWithdrawQuery extends Page<AfSignRewardWithdrawDo>{
 
 	private static final long serialVersionUID = -722303985401230132L;
 

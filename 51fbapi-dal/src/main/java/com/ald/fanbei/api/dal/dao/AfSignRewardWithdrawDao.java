@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 import com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo;
 import com.ald.fanbei.api.dal.domain.dto.AfSignRewardWithdrawDto;
 import com.ald.fanbei.api.dal.domain.query.AfSignRewardWithdrawQuery;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 

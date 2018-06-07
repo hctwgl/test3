@@ -46,6 +46,8 @@ public interface AfTaskUserDao  {
 
     int updateDailyByTaskNameAndUserId(AfTaskUserDo afTaskUserDo);
 
+    int updateNotDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
+
     BigDecimal getAccumulatedIncome(Long userId);
 
     AfTaskUserDo getTaskUserByTaskIdAndUserId(@Param("taskId")Long taskId,@Param("userId")Long userId);

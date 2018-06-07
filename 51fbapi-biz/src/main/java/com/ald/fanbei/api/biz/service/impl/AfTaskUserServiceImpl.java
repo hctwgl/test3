@@ -336,6 +336,11 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 	}
 
 	@Override
+	public int updateNotDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo){
+		return afTaskUserDao.updateNotDailyByTaskIdAndUserId(afTaskUserDo);
+	}
+
+	@Override
 	public BigDecimal getAccumulatedIncome(Long userId) {
 		return afTaskUserDao.getAccumulatedIncome(userId);
 	}
