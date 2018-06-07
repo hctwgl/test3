@@ -8,6 +8,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.CookieUtil;
+import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SignRewardType;
 import com.ald.fanbei.api.common.enums.SmsType;
@@ -77,7 +78,8 @@ public class H5MySignInfoOutController extends H5Controller {
      * @return
      */
     @RequestMapping(value = "/mySign", method = RequestMethod.POST)
-    public String homePage(HttpServletRequest request, HttpServletResponse response) {
+    public String homePage(HttpServletRequest request, HttpServletResponse response,FanbeiContext context) {
+        Integer appVersion = context.getAppVersion();
         String userName = ObjectUtils.toString(request.getParameter("userId"),null);
         String push = ObjectUtils.toString(request.getParameter("push"),"N");
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
@@ -103,7 +105,7 @@ public class H5MySignInfoOutController extends H5Controller {
             if(!userSign(afSignRewardDo,afResourceDo,map)){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SIGN_FAIL.getDesc()).toString();
             }
-            map = homeInfo(afUserDo.getRid(),map,push);
+            map = homeInfo(afUserDo.getRid(),map,push,appVersion);
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",map ).toString();
         } catch (FanbeiException e) {
             logger.error("commitRegister fanbei exception" + e.getMessage());
@@ -407,7 +409,7 @@ public class H5MySignInfoOutController extends H5Controller {
     }
 
 
-    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push ){
+    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push,Integer appVersion ){
         //今天是否签到
         String status = afSignRewardService.isExist(userId)==false?"N":"Y";
         resp.put("rewardStatus",status);
@@ -419,7 +421,7 @@ public class H5MySignInfoOutController extends H5Controller {
         //任务列表
         HashMap<String,Object> hashMap = afUserAuthService.getUserAuthInfo(userId);
         List<Integer> level = afUserAuthService.signRewardUserLevel(userId,hashMap);
-        resp.put("taskList",afTaskService.getTaskInfo(level,userId,push,hashMap));
+        resp.put("taskList",afTaskService.getTaskInfo(level,userId,push,hashMap,appVersion));
         return resp;
     }
 

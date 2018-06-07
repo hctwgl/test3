@@ -68,7 +68,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
     }
 
     @Override
-    public List<AfTaskDto> getTaskInfo(List<Integer> level, Long userId,String push,HashMap<String,Object> hashMap){
+    public List<AfTaskDto> getTaskInfo(List<Integer> level, Long userId,String push,HashMap<String,Object> hashMap,Integer appVersion){
         List<Long> notFinishedList = new ArrayList<Long>();
         List<AfTaskDto> finalTaskList = new ArrayList<AfTaskDto>();
         List<AfTaskDto> taskList = afTaskDao.getTaskListByUserIdAndUserLevel(level);
@@ -201,9 +201,18 @@ public class AfTaskServiceImpl  implements AfTaskService {
                 finalTaskList.add(afTaskDo);
             }
         }
+        List<AfTaskDto> finalTaskLists = new ArrayList<AfTaskDto>();
+        if(appVersion < 416){
+            for(AfTaskDto afTaskDto :finalTaskList){
+                if(!StringUtil.equals(afTaskDto.getTaskType(),TaskType.share.getCode())){
+                    finalTaskLists.add(afTaskDto);
+                }
+            }
+        }else {
+            finalTaskLists.addAll(finalTaskList);
+        }
 
-
-        return finalTaskList;
+        return finalTaskLists;
     }
 
     @Override

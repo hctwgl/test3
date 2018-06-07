@@ -9,6 +9,7 @@ import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.biz.util.WxUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.CookieUtil;
+import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SignRewardType;
 import com.ald.fanbei.api.common.enums.SmsType;
@@ -75,8 +76,6 @@ public class H5SignInfoOutController extends H5Controller {
     @Resource
     AfUserThirdInfoService afUserThirdInfoService;
     @Resource
-    AfUserAuthStatusService afUserAuthStatusService;
-    @Resource
     AfUserCouponService afUserCouponService;
     @Resource
     AfCouponService afCouponService;
@@ -87,8 +86,9 @@ public class H5SignInfoOutController extends H5Controller {
      * @return
      */
     @RequestMapping(value = "/friendSign", method = RequestMethod.POST)
-    public String getFriendSign(HttpServletRequest request, HttpServletResponse response) {
+    public String getFriendSign(HttpServletRequest request, HttpServletResponse response,FanbeiContext context) {
         try {
+            Integer appVersion = context.getAppVersion();
             String moblie = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
             String verifyCode = ObjectUtils.toString(request.getParameter("verifyCode"), "").toString();
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
@@ -135,7 +135,7 @@ public class H5SignInfoOutController extends H5Controller {
                 }else {
                     data.put("openType",4);
                 }
-                data = homeInfo(eUserDo.getRid(),data,push);
+                data = homeInfo(eUserDo.getRid(),data,push,appVersion);
                 data.put("flag","success");
                 return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
             }
@@ -176,7 +176,7 @@ public class H5SignInfoOutController extends H5Controller {
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
             //首页信息
-            data = homeInfo(userId,data,push);
+            data = homeInfo(userId,data,push,appVersion);
             data.put("flag","success");
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
         } catch (FanbeiException e) {
@@ -191,11 +191,11 @@ public class H5SignInfoOutController extends H5Controller {
 
 
     @RequestMapping(value = "/friendSignIn", method = RequestMethod.POST)
-    public String getFriendSignIn(HttpServletRequest request, HttpServletResponse response) {
+    public String getFriendSignIn(HttpServletRequest request, HttpServletResponse response,FanbeiContext context) {
         String resultStr = "";
         try {
+            Integer appVersion = context.getAppVersion();
             String userName = ObjectUtils.toString(request.getParameter("userName"),null);
-            logger.info("userName cfp = "+userName);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
             if(null == afUserDo){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_NOT_EXIST_ERROR.getDesc()).toString();
@@ -212,10 +212,10 @@ public class H5SignInfoOutController extends H5Controller {
             }
             Long friendUserId = thirdInfo.getUserId();
             if(StringUtil.equals(friendUserId+"",userId+"")){//已经绑定并且是自己打开
-                data = homeInfo(userId,data,push);
+                data = homeInfo(userId,data,push,appVersion);
                 data.put("openType","0");
             } else {//已绑定
-                data = homeInfo(friendUserId,data,push);
+                data = homeInfo(friendUserId,data,push,appVersion);
                 AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
                 afSignRewardDo.setIsDelete(0);
                 afSignRewardDo.setUserId(userId);
@@ -246,8 +246,9 @@ public class H5SignInfoOutController extends H5Controller {
 
 
     @RequestMapping(value = "/supplementSign", method = RequestMethod.POST)
-    public String getSupplementSign(HttpServletRequest request, HttpServletResponse response) {
+    public String getSupplementSign(HttpServletRequest request, HttpServletResponse response,FanbeiContext context) {
         try {
+            Integer appVersion = context.getAppVersion();
             final String moblie = ObjectUtils.toString(request.getParameter("mobile"), "").toString();
             String verifyCode = ObjectUtils.toString(request.getParameter("verifyCode"), "").toString();
             String token = ObjectUtils.toString(request.getParameter("token"), "").toString();
@@ -318,7 +319,7 @@ public class H5SignInfoOutController extends H5Controller {
                         }
                     }
                 });
-                data = homeInfo(eUserDo.getRid(),data,push);
+                data = homeInfo(eUserDo.getRid(),data,push,appVersion);
                 data.put("flag","fail");
                 if(StringUtil.equals(status,"fail")){
                     return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.WX_BIND_FAIL.getDesc(),"",data).toString();
@@ -359,7 +360,7 @@ public class H5SignInfoOutController extends H5Controller {
             if(!signRewardSupplement(request,userId,moblie,time,userWxInfo,amount,Long.parseLong(afResourceDo.getValue5()==null?"0":afResourceDo.getValue5()),Long.parseLong(afResourceDo.getPic1()==null?"0":afResourceDo.getPic1()))){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
             }
-            data = homeInfo(userId,data,push);
+            data = homeInfo(userId,data,push,appVersion);
             data.put("flag","success");
             return H5CommonResponse.getNewInstance(true, FanbeiExceptionCode.SUCCESS.getDesc(),"",data).toString();
         } catch (FanbeiException e) {
@@ -599,8 +600,9 @@ public class H5SignInfoOutController extends H5Controller {
     }
 
     @RequestMapping(value = "/supplementSignIn", method = RequestMethod.POST)
-    public String getSupplementSignIn(HttpServletRequest request, HttpServletResponse response) {
+    public String getSupplementSignIn(HttpServletRequest request, HttpServletResponse response,FanbeiContext context) {
         try {
+            Integer appVersion = context.getAppVersion();
             Map<String,Object> data = new HashMap<String,Object>();
             String userName = ObjectUtils.toString(request.getParameter("userName"),null);
             logger.info("userName =  supplementSignIn =" + userName);
@@ -621,10 +623,10 @@ public class H5SignInfoOutController extends H5Controller {
             }
             Long firendUserId = thirdInfo.getUserId();
             if(StringUtil.equals(firendUserId+"",userId+"")){//已经绑定并且是自己打开
-                data = homeInfo(userId,data,push);
+                data = homeInfo(userId,data,push,appVersion);
                 data.put("openType","0");
             } else if(!StringUtil.equals(firendUserId+"",userId+"") ){//已绑定
-                data = homeInfo(firendUserId,data,push);
+                data = homeInfo(firendUserId,data,push,appVersion);
                 AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
                 afSignRewardDo.setIsDelete(0);
                 afSignRewardDo.setUserId(userId);
@@ -727,7 +729,7 @@ public class H5SignInfoOutController extends H5Controller {
 
     }
 
-    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push ){
+    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push,Integer appVersion ){
         //今天是否签到
         String status = afSignRewardService.isExist(userId)==false?"N":"Y";
         resp.put("rewardStatus",status);
@@ -739,7 +741,7 @@ public class H5SignInfoOutController extends H5Controller {
         //任务列表
         HashMap<String,Object> hashMap = afUserAuthService.getUserAuthInfo(userId);
         List<Integer> level = afUserAuthService.signRewardUserLevel(userId,hashMap);
-        resp.put("taskList",afTaskService.getTaskInfo(level,userId,push,hashMap));
+        resp.put("taskList",afTaskService.getTaskInfo(level,userId,push,hashMap,appVersion));
         return resp;
     }
 
