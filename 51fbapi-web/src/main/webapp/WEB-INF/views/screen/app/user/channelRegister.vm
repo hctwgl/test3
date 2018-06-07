@@ -5,30 +5,33 @@
     #set($commonUrl="https://f.51fanbei.com/h5/app/images/user/channel")
     <link rel="stylesheet" type="text/css" href="/dist/css/user/channelRegister.css?version=$version">
     #if( $!{style}==9)
-        <title>注册</title>
+    <title>注册</title>
     #elseif($!{style}==20 || $!{style}==21 || $!{style}==22)
-        <title>下载</title>
+    <title>下载</title>
     #else
-        <title>注册</title>
+    <title>注册</title>
     #end
     <!--转化代码-->
     <script type="text/javascript">
-    #if( $!{style}==14)
-        (function(root) {
+        #if( $!{style} == 14 )
+        (function (root) {
             root._tt_config = true;
-            var ta = document.createElement('script'); ta.type = 'text/javascript'; ta.async = true;
+            var ta = document.createElement('script');
+            ta.type = 'text/javascript';
+            ta.async = true;
             ta.src = document.location.protocol + '//' + 's1.pstatp.com/bytecom/resource/track_log/src/toutiao-track-log.js';
             ta.onerror = function () {
                 var request = new XMLHttpRequest();
                 var web_url = window.encodeURIComponent(window.location.href);
-                var js_url  = ta.src;
+                var js_url = ta.src;
                 var url = '//ad.toutiao.com/link_monitor/cdn_failed?web_url=' + web_url + '&js_url=' + js_url + '&convert_id=92097724391';
                 request.open('GET', url, true);
                 request.send(null);
             }
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ta, s);
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ta, s);
         })(window);
-    #end
+        #end
     </script>
 </head>
 <body>
@@ -37,134 +40,156 @@
 <input type="hidden" id="style" value="$!{style}">
 <div class="wrap" id="theme$!{style}">
     #if( $!{style}>=2 && $!{style}<=7||$!{style}==10)
-        <marquee behavior="scroll" direction="up" scrollamount="1" class="mar">
-            <p>用户131****8880 成功借款 15000元</p>
-            <p>用户137****9767 成功借款 12000元</p>
-            <p>用户186****2099 成功借款 9000元</p>
-            <p>用户178****3863 成功借款 16000元</p>
-            <p>用户187****9793 成功借款 14000元</p>
-            <p>用户176****0389 成功借款 16000元</p>
-            <p>用户157****3696 成功借款 7000元</p>
-            <p>用户183****7197 成功借款 14000元</p>
-            <p>用户137****0925 成功借款 17000元</p>
-            <p>用户135****5276 成功借款 13000元</p>
-            <p>用户187****0576 成功借款 19000元</p>
-        </marquee>
+    <marquee behavior="scroll" direction="up" scrollamount="1" class="mar">
+        <p>用户131****8880 成功借款 15000元</p>
+        <p>用户137****9767 成功借款 12000元</p>
+        <p>用户186****2099 成功借款 9000元</p>
+        <p>用户178****3863 成功借款 16000元</p>
+        <p>用户187****9793 成功借款 14000元</p>
+        <p>用户176****0389 成功借款 16000元</p>
+        <p>用户157****3696 成功借款 7000元</p>
+        <p>用户183****7197 成功借款 14000元</p>
+        <p>用户137****0925 成功借款 17000元</p>
+        <p>用户135****5276 成功借款 13000元</p>
+        <p>用户187****0576 成功借款 19000元</p>
+    </marquee>
     #end
     #if($!{style}==8 || $!{style}==17)
-        <img src="$commonUrl/channel17txt.jpg">
+    <img src="$commonUrl/channel17txt.jpg">
     #end
     <img class="background" src="$commonUrl/channel$!{style}_01.jpg">
-    #if( $!{style}==8 ||$!{style}==9 || $!{style}==16 || $!{style}==17 || $!{style}==12 || $!{style}==13|| $!{style}==14 || $!{style}==15 || $!{style}==25)
-        <marquee behavior="scroll" direction="up" scrollamount="1" bgcolor="transparent" class="mar17">
-            <p>用户131****8880 成功借款 20000元</p>
-            <p>用户137****9767 成功借款 16000元</p>
-            <p>用户186****2099 成功借款 17000元</p>
-            <p>用户178****3863 成功借款 16000元</p>
-            <p>用户187****9793 成功借款 7000元</p>
-            <p>用户176****0389 成功借款 16000元</p>
-            <p>用户157****3696 成功借款 15000元</p>
-            <p>用户183****7197 成功借款 6000元</p>
-            <p>用户137****0925 成功借款 17000元</p>
-            <p>用户135****5276 成功借款 13000元</p>
-            <p>用户187****0576 成功借款 16000元</p>
-        </marquee>
+    #if( $!{style}==8 ||$!{style}==9 || $!{style}==16 || $!{style}==17 || $!{style}==12 || $!{style}==13|| $!{style}==14
+    || $!{style}==15 || $!{style}==25 || $!{style}==24)
+    <marquee behavior="scroll" direction="up" scrollamount="1" bgcolor="transparent" class="mar17">
+        <p>用户131****8880 成功借款 20000元</p>
+        <p>用户137****9767 成功借款 16000元</p>
+        <p>用户186****2099 成功借款 17000元</p>
+        <p>用户178****3863 成功借款 16000元</p>
+        <p>用户187****9793 成功借款 7000元</p>
+        <p>用户176****0389 成功借款 16000元</p>
+        <p>用户157****3696 成功借款 15000元</p>
+        <p>用户183****7197 成功借款 6000元</p>
+        <p>用户137****0925 成功借款 17000元</p>
+        <p>用户135****5276 成功借款 13000元</p>
+        <p>用户187****0576 成功借款 16000元</p>
+    </marquee>
     #end
 
     #if( $!{style}==6 )
-        <div class="progress" id="progress">
-            <div class="text">￥20000</div>
-            <div class="progress_bg">
-                <div class="progress_bar"></div>
-            </div>
-            <div class="progress_btn" id="progress_btn"></div>
-            <div class="moneyFlag">
-                <span class="lf" id="leftMoney">￥500</span>
-                <span class="fr" id="rightMoney">￥0.5</span>
-            </div>
+    <div class="progress" id="progress">
+        <div class="text">￥20000</div>
+        <div class="progress_bg">
+            <div class="progress_bar"></div>
         </div>
+        <div class="progress_btn" id="progress_btn"></div>
+        <div class="moneyFlag">
+            <span class="lf" id="leftMoney">￥500</span>
+            <span class="fr" id="rightMoney">￥0.5</span>
+        </div>
+    </div>
     #end
 
     #if($!{style}==20 || $!{style}==21 )
-        <div class="form">
-            <div id="register_codeBtn" style="display: none;"></div>
-            <img class="background" src="$commonUrl/channel$!{style}_02.jpg">
-            <div class="to_loadapp_btn"></div>
-        </div>
+    <div class="form">
+        <div id="register_codeBtn" style="display: none;"></div>
+        <img class="background" src="$commonUrl/channel$!{style}_02.jpg">
+        <div class="to_loadapp_btn"></div>
+    </div>
     #elseif($!{style}==22)
-        <div class="form">
-            <div id="register_codeBtn" style="display: none;"></div>
-            <img class="background" src="$commonUrl/channel$!{style}_02.jpg">
-            <div class="to_loadapp_btn" style="left: .62rem;bottom: 0.8rem;width: 6.25rem;"></div>
-        </div>
+    <div class="form">
+        <div id="register_codeBtn" style="display: none;"></div>
+        <img class="background" src="$commonUrl/channel$!{style}_02.jpg">
+        <div class="to_loadapp_btn" style="left: .62rem;bottom: 0.8rem;width: 6.25rem;"></div>
+    </div>
     #else
     <div class="form">
         <img class="background" src="$commonUrl/channel$!{style}_02.jpg">
         <ul class="iform clearfix">
-            <li><input type="text" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号" onfocus="toMaidian('phone')"></li>
+            <li><input type="text" id="register_mobile" pattern="[0-9]*" maxlength="11" placeholder="请输入注册手机号"
+                       onfocus="toMaidian('phone')"></li>
 
-            #if($!{style}==1||$!{style}==8||$!{style}==9||$!{style}==17||$!{style}==12||$!{style}==13||$!{style}==14 ||$!{style}==15 || $!{style}==19)
-                #if($!{style}!=8&&$!{style}!=9&&$!{style}!=12&&$!{style}!=13&&$!{style}!=14&&$!{style}!=15&&$!{style}!=19)
-                    <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="toMaidian('pwd')"></li>
+            #if($!{style}==1||$!{style}==8||$!{style}==9||$!{style}==17||$!{style}==12||$!{style}==13||$!{style}==14
+            ||$!{style}==15 || $!{style}==19)
+            #if($!{style}!=8&&$!{style}!=9&&$!{style}!=12&&$!{style}!=13&&$!{style}!=14&&$!{style}!=15&&$!{style}!=19)
+            <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18"
+                       onfocus="toMaidian('pwd')"></li>
+            #end
+            <li class="clearfix">
+                <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码"
+                       onfocus="toMaidian('code')">
+                <button id="register_codeBtn" onclick="toMaidian('codeBtn')">点击获取</button>
+            </li>
+            <li>
+                <button id="register_submitBtn"></button>
+            </li>
+            <div class="clearfix register_checkbox">
+                <input type="checkbox" class="input_check" id="input_check" checked="checked">
+                <label for="input_check"></label>
+                #if($!{style}==19)
+                <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister"
+                                                                   class="fontColor">《爱上街用户注册协议》</a></p>
+                #else
+                <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister"
+                                                                   class="fontColor">《爱上街用户注册协议》</a></p>
                 #end
-                <li class="clearfix">
-                    <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="toMaidian('code')">
-                    <button id="register_codeBtn" onclick="toMaidian('codeBtn')">点击获取</button>
-                </li>
-                <li><button id="register_submitBtn"></button></li>
-                <div class="clearfix register_checkbox">
-                    <input type="checkbox" class="input_check" id="input_check" checked="checked">
-                    <label for="input_check"></label>
-                    #if($!{style}==19)
-                    <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister" class="fontColor">《爱上街用户注册协议》</a></p>
-                    #else
-                    <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister" class="fontColor">《爱上街用户注册协议》</a></p>
-                    #end
-                </div>
-                #if($!{style}!=12&&$!{style}!=13&&$!{style}!=14&&$!{style}!=15)
-                <p class="logintxt clearfix" style=" margin: 0 auto;font-size: 0.28rem;">
-                    <span class="fontColor" style="float:left;margin-right:0.1rem;">已注册用户</span>
-                    <a class="fontColor" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" style="float:left;text-decoration:underline;" onclick="toMaidian('toLogin')">直接登录</a>
-                </p>
-                 #else
-                    <a class="tologin" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www" onclick="toMaidian('toLogin')"></a>
-                #end
-            #elseif( $!{style}==16 ||$!{style}==7)
-                <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="toMaidian('pwd')"></li>
-                <li class="clearfix">
-                    <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="toMaidian('code')">
-                    <button id="register_codeBtn" onclick="toMaidian('codeBtn')">点击获取</button>
-                </li>
-                <li><button id="register_submitBtn"></button></li>
-                <div class="clearfix register_checkbox">
-                    <input type="checkbox" class="input_check" id="input_check" checked="checked">
-                    <label for="input_check"></label>
-                    <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister" class="fontColor">《爱上街用户注册协议》</a></p>
-                </div>
+            </div>
+            #if($!{style}!=12&&$!{style}!=13&&$!{style}!=14&&$!{style}!=15)
+            <p class="logintxt clearfix" style=" margin: 0 auto;font-size: 0.28rem;">
+                <span class="fontColor" style="float:left;margin-right:0.1rem;">已注册用户</span>
+                <a class="fontColor" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www"
+                   style="float:left;text-decoration:underline;" onclick="toMaidian('toLogin')">直接登录</a>
+            </p>
             #else
-                <li class="clearfix">
-                    <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码" onfocus="toMaidian('code')">
-                    <button id="register_codeBtn" onclick="toMaidian('codeBtn')">点击获取</button>
-                </li>
-                #if($!{style}!=10&&$!{style}!=11)
-                    <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18" onfocus="toMaidian('pwd')"></li>
+            <a class="tologin" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.alfl.www"
+               onclick="toMaidian('toLogin')"></a>
+            #end
+            #elseif( $!{style}==16 ||$!{style}==7)
+            <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18"
+                       onfocus="toMaidian('pwd')"></li>
+            <li class="clearfix">
+                <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码"
+                       onfocus="toMaidian('code')">
+                <button id="register_codeBtn" onclick="toMaidian('codeBtn')">点击获取</button>
+            </li>
+            <li>
+                <button id="register_submitBtn"></button>
+            </li>
+            <div class="clearfix register_checkbox">
+                <input type="checkbox" class="input_check" id="input_check" checked="checked">
+                <label for="input_check"></label>
+                <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister"
+                                                                   class="fontColor">《爱上街用户注册协议》</a></p>
+            </div>
+            #else
+            <li class="clearfix">
+                <input type="text" id="register_verification" maxlength="6" pattern="[0-9]*" placeholder="请输入验证码"
+                       onfocus="toMaidian('code')">
+                <button id="register_codeBtn" onclick="toMaidian('codeBtn')">点击获取</button>
+            </li>
+            #if($!{style}!=10&&$!{style}!=11)
+            <li><input type="password" id="register_password" placeholder="密码长度为6-18位数字和字母" name="words" maxlength="18"
+                       onfocus="toMaidian('pwd')"></li>
+            #end
+            <li>
+                <button id="register_submitBtn"></button>
+            </li>
+            <div class="clearfix register_checkbox">
+                <input type="checkbox" class="input_check" id="input_check" checked="checked">
+                <label for="input_check"></label>
+
+                #if( $!{style}==25 || $!{style}==24)
+                <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegisterSuper"
+                                                                   class="fontColor">《用户协议》</a></p>
+                #else
+                <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister"
+                                                                   class="fontColor">《用户协议》</a></p>
                 #end
-                <li><button id="register_submitBtn"></button></li>
-                <div class="clearfix register_checkbox">
-                    <input type="checkbox" class="input_check" id="input_check" checked="checked">
-                    <label for="input_check"></label>
 
-                    #if( $!{style}==25 )
-                    <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegisterSuper" class="fontColor">《用户协议》</a></p>
-                    #else
-                    <p class="clearfix fontColor"><span>阅读并同意</span><a href="/fanbei-web/app/protocolRegister" class="fontColor">《用户协议》</a></p>
-                    #end
-
-                </div>
-                <p class="logintxt clearfix" style="">
-                    <span class="fontColor" style="float:left;margin-right:0.1rem;">已注册?</span>
-                    <a class="fontColor" href="javascript:;" style="float:left;color:#ff5b56" onclick="login()">点我马上登录</a>
-                </p>
+            </div>
+            <p class="logintxt clearfix" style="">
+                <span class="fontColor" style="float:left;margin-right:0.1rem;">已注册?</span>
+                <a class="fontColor" href="javascript:;" style="float:left;color:#ff5b56" onclick="login()">点我马上登录</a>
+            </p>
             #end
 
         </ul>
@@ -172,57 +197,61 @@
     #end
 
     #if( $!{style}==1 )
-        <div class="copyright">
-            版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-86802133
-            <br>
-        </div>
+    <div class="copyright">
+        版权所有：$!{copyright} 如有疑问，请联系在线客服或拨打0571-86802133
+        <br>
+    </div>
     #elseif($!{style}==20)
-        <img src="$commonUrl/channel$!{style}_03.jpg">
-        <div class="copyright_20">
-            <p>浙江阿拉丁电子商务有限公司版权所有</p>
-            <p>All Right Reserved. 浙ICP备16001312-4号</p>
-        </div>
+    <img src="$commonUrl/channel$!{style}_03.jpg">
+    <div class="copyright_20">
+        <p>浙江阿拉丁电子商务有限公司版权所有</p>
+        <p>All Right Reserved. 浙ICP备16001312-4号</p>
+    </div>
+    #elseif( $!{style}==24 || $!{style}==25)
+    <img src="$commonUrl/channel$!{style}_03.jpg">
     #else
-        <img src="$commonUrl/channel$!{style}_03.jpg">
-        <a href="tel:4000025151" style="position: absolute;bottom:0;height:1rem;width:7.5rem"></a>
+    <img src="$commonUrl/channel$!{style}_03.jpg">
+    <a href="tel:4000025151" style="position: absolute;bottom:0;height:1rem;width:7.5rem"></a>
     #end
     #if( $!{style}==12 || $!{style}==13|| $!{style}==14 || $!{style}==15)
-        <img class="goTop" src="$commonUrl/addRegister06.png">
+    <img class="goTop" src="$commonUrl/addRegister06.png">
     #end
     #if($!{style}==15)
-        <div class="goodList">
-            <div class="goodCont"></div><div class="goodCont"></div><div class="goodCont"></div>
-        </div>
+    <div class="goodList">
+        <div class="goodCont"></div>
+        <div class="goodCont"></div>
+        <div class="goodCont"></div>
+    </div>
     #end
     <!--样式18--start-->
     #if($!{style}==18)
-        <div class="theme18">
-            <div class="title">
-                <img src="$commonUrl/theme18_01.png">
-            </div>
-            <img class="banner" src="$commonUrl/theme18_02.jpg">
-            <p class="word01">贷款人资料</p>
-            <div class="word02"><i>联系人:</i><input type="text" placeholder="请输入真实姓名" /></div>
-            <div class="word03"><i>手 机:</i><input type="text" placeholder="请输入手机号" /></div>
-            <p class="applyBtn">贷款申请</p>
-            <div class="des">
-                <i>本平台郑重承诺：</i>
-                <p>所有贷款申请在未成功放款前不收取任何费用，且不承诺一定可放贷成功，谨防电信诈骗，请警惕需要您付款的来电。</p>
-            </div>
-            <div class="steps">
-                <p>放贷流程</p>
-                <img src="$commonUrl/theme18_03.png">
-                <img src="$commonUrl/theme18_04.png">
-                <img src="$commonUrl/theme18_05.png">
-                <img src="$commonUrl/theme18_06.png">
-            </div>
-            <p class="footerWord">重庆市猪八戒宜创小额贷款有限公司<br/>浙ICP备16001312-4</p>
+    <div class="theme18">
+        <div class="title">
+            <img src="$commonUrl/theme18_01.png">
         </div>
+        <img class="banner" src="$commonUrl/theme18_02.jpg">
+        <p class="word01">贷款人资料</p>
+        <div class="word02"><i>联系人:</i><input type="text" placeholder="请输入真实姓名"/></div>
+        <div class="word03"><i>手 机:</i><input type="text" placeholder="请输入手机号"/></div>
+        <p class="applyBtn">贷款申请</p>
+        <div class="des">
+            <i>本平台郑重承诺：</i>
+            <p>所有贷款申请在未成功放款前不收取任何费用，且不承诺一定可放贷成功，谨防电信诈骗，请警惕需要您付款的来电。</p>
+        </div>
+        <div class="steps">
+            <p>放贷流程</p>
+            <img src="$commonUrl/theme18_03.png">
+            <img src="$commonUrl/theme18_04.png">
+            <img src="$commonUrl/theme18_05.png">
+            <img src="$commonUrl/theme18_06.png">
+        </div>
+        <p class="footerWord">重庆市猪八戒宜创小额贷款有限公司<br/>浙ICP备16001312-4</p>
+    </div>
     #end
     <!--样式18--end-->
 </div>
 <script type="text/javascript">
-    var _saber={};
+    var _saber = {};
 </script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/core.js"></script>
 <script type="text/javascript" src="https://img.51fanbei.com/h5/static/md5.js"></script>
