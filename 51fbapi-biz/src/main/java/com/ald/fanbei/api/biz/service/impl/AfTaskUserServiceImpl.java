@@ -51,20 +51,9 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
     @Resource
     private AfOrderService afOrderService;
 
-    @Override
-	public List<AfTaskUserDo> isDailyTaskList(Long userId){
-    	return afTaskUserDao.isDailyTaskList(userId);
-	}
 
-	@Override
-	public List<AfTaskUserDo> isNotDailyTaskList(Long userId){
-		return afTaskUserDao.isNotDailyTaskList(userId);
-	}
 
-	@Override
-	public int updateNotDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo){
-		return afTaskUserDao.updateNotDailyByTaskIdAndUserId(afTaskUserDo);
-	}
+
 
 	@Override
 	public List<AfTaskUserDo> isNotDailyFinishTaskList(Long userId){
@@ -76,10 +65,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		return afTaskUserDao.isDailyFinishTaskList(userId);
 	}
 
-	@Override
-	public int updateDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo){
-		return afTaskUserDao.updateDailyByTaskIdAndUserId(afTaskUserDo);
-	}
+
 
 	@Override
 	public int insertTaskUserDo(AfTaskUserDo afTaskUserDo){
@@ -253,10 +239,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
     	return afTaskUserDao.getIncomeOfNearlySevenDays(userId);
 	}
 
-	@Override
-	public List<Map<String, Object>> getIncomeCoinOfNearlySevenDays(Long userId){
-		return afTaskUserDao.getIncomeCoinOfNearlySevenDays(userId);
-	}
+
 
 	public List<AfTaskUserDo> getDetailsByUserId(Long userId, Integer rewardType){
 		return afTaskUserDao.getDetailsByUserId(userId,rewardType);
@@ -410,6 +393,15 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
 
 		return taskUserDo;
+	}
+
+	//获取此用户每日完成的任务(未领奖和已领奖)
+	public List<AfTaskUserDo> getIsDailyTaskListByUserId(Long userId){
+		return afTaskUserDao.getIsDailyTaskListByUserId(userId);
+	}
+	//获取此用户非每日完成的任务(未领奖和已领奖)
+	public List<AfTaskUserDo> getIsNotDailyTaskListByUserId(Long userId){
+		return afTaskUserDao.getIsNotDailyTaskListByUserId(userId);
 	}
 
 

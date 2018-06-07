@@ -11,6 +11,7 @@ import com.ald.fanbei.api.biz.bo.risk.RespSecAuthInfoToRiskBo;
 import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.alibaba.fastjson.JSONObject;
@@ -117,5 +118,5 @@ public interface AfUserAuthService {
 	 * @param userId
 	 * @return
 	 */
-	List<Integer>  signRewardUserLevel(Long userId,AfUserAuthDo userAuthDo);
+	List<Integer>  signRewardUserLevel(Long userId,AfUserAuthDo userAuthDo,AfUserAuthStatusDo uthStatusDo);
 }

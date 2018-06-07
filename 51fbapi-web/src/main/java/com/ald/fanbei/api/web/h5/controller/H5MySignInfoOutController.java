@@ -359,7 +359,7 @@ public class H5MySignInfoOutController extends H5Controller {
     }
 
     /**
-     * 签到7天 10天 或者 普通签到的奖励
+     * 签到7天  或者 普通签到的奖励
      * @param rewardDo
      * @param signRewardExtDo
      * @return
@@ -396,7 +396,6 @@ public class H5MySignInfoOutController extends H5Controller {
                     addCoupon(couponId,rewardDo.getUserId());
                     afSignRewardService.saveRecord(rewardDo);
                     afSignRewardExtService.increaseMoney(signRewardExtDo);
-                    logger.info("couponId mysign cfp = " + couponId);
                     return "success";
                 }catch (Exception e){
                     status.setRollbackOnly();
@@ -420,7 +419,7 @@ public class H5MySignInfoOutController extends H5Controller {
         //任务列表
         AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
         AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
-        List<Integer> level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
+        List<Integer> level = afUserAuthService.signRewardUserLevel(userId,userAuthDo,authStatusDo);
         resp.put("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
         return resp;
     }

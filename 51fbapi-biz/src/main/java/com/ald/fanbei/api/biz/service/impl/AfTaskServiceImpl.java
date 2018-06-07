@@ -72,19 +72,38 @@ public class AfTaskServiceImpl  implements AfTaskService {
         List<AfTaskDto> finalTaskList = new ArrayList<AfTaskDto>();
         List<AfTaskDto> taskList = afTaskDao.getTaskListByUserIdAndUserLevel(level);
         //每日任务完成但是未领奖的任务
-        List<AfTaskUserDo> isDailyTaskList = afTaskUserService.isDailyTaskList(userId);
+        List<AfTaskUserDo> isDailyTaskList = new ArrayList<>();
         //非每日任务完成但是未领奖的任务
-        List<AfTaskUserDo> isNotDailyTaskList = afTaskUserService.isNotDailyTaskList(userId);
-        //完成但是为领奖的任务
+        List<AfTaskUserDo> isNotDailyTaskList = new ArrayList<>();
+        //每日任务完成但是已领奖的任务
+        List<AfTaskUserDo> isDailyFinishTaskList = new ArrayList<>();
+        //非每日任务完成但是已领奖的任务
+        List<AfTaskUserDo> isNotDailyFinishTaskList = new ArrayList<>();
+        //每日任务(包括已完成和未领奖)
+        List<AfTaskUserDo> dailyTaskLists = afTaskUserService.getIsDailyTaskListByUserId(userId);
+        for(AfTaskUserDo task : dailyTaskLists){
+            if(StringUtil.equals(task.getStatus().toString(),"0")){
+                isDailyTaskList.add(task);
+            }else{
+                isDailyFinishTaskList.add(task);
+            }
+        }
+        //非每日任务(包括已完成和未领奖)
+        List<AfTaskUserDo> nDailyTaskLists = afTaskUserService.getIsNotDailyTaskListByUserId(userId);
+        for(AfTaskUserDo task : nDailyTaskLists){
+            if(StringUtil.equals(task.getStatus().toString(),"0")){
+                isNotDailyTaskList.add(task);
+            }else{
+                isNotDailyFinishTaskList.add(task);
+            }
+        }
+
+        //完成但是未领奖的任务
         isDailyTaskList.addAll(isNotDailyTaskList);
         for(AfTaskUserDo taskUserDo : isDailyTaskList){
             notFinishedList.add(taskUserDo.getTaskId());
         }
-
-        //每日任务完成但是已领奖的任务
-        List<AfTaskUserDo> isDailyFinishTaskList = afTaskUserService.isDailyFinishTaskList(userId);
-        //非每日任务完成但是已领奖的任务
-        List<AfTaskUserDo> isNotDailyFinishTaskList = afTaskUserService.isNotDailyFinishTaskList(userId);
+        //完成但是已领奖的任务
         isDailyFinishTaskList.addAll(isNotDailyFinishTaskList);
         //每日浏览任务(特色处理)
         //若每日浏览任务已完成但是未领奖,则排序到未领奖第一个
