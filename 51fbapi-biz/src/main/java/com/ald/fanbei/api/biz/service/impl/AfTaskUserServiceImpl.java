@@ -146,10 +146,9 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 								toAddTaskUserList.add(taskUserDo);
 							}
 						} else if (StringUtils.equals(AfTaskType.SHOPPING.getCode(), taskDo.getTaskType()) && StringUtils.equals(AfTaskSecType.QUANTITY.getCode(), taskDo.getTaskSecType())) {
-							// 用户购物数量,调用此接口时，已完成一次购物（已收货），所以购物次数需减去1
+							// 用户购物数量
 							logger.info("browerAndShoppingHandler quantity:" + JSON.toJSONString(taskDo));
 							int orderCount = afOrderService.getSignFinishOrderCount(userId,taskDo.getTaskBeginTime());
-                            orderCount = orderCount - 1;
 							logger.info("browerAndShoppingHandler getTaskCondition:" + taskDo.getTaskCondition());
 							logger.info("browerAndShoppingHandler orderCount:" + orderCount);
 							if (orderCount == Integer.parseInt(taskDo.getTaskCondition())) {
