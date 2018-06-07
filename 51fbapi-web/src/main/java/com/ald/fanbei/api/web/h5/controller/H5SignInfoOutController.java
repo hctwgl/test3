@@ -132,6 +132,8 @@ public class H5SignInfoOutController extends H5Controller {
                     if(!signReward(request,eUserDo.getRid(),rewardAmount,"old",moblie,userWxInfo,rewardUserId )){
                         return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.FAILED.getDesc()).toString();
                     }
+                }else {
+                    data.put("openType",4);
                 }
                 data = homeInfo(eUserDo.getRid(),data,push);
                 data.put("flag","success");
@@ -223,6 +225,7 @@ public class H5SignInfoOutController extends H5Controller {
                 afSignRewardDo.setStatus(0);
                 afSignRewardDo.setFriendUserId(friendUserId);
                 if(afSignRewardService.frienddUserSignCountToDay(userId,friendUserId)){
+                    data.put("openType",5);
                     return H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.FRIEND_USER_SIGN_EXIST.getDesc(),"",data ).toString();
                 }
                 if(!friendSign(afSignRewardDo,userId,friendUserId,data)){
