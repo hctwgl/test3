@@ -71,26 +71,32 @@ public class GetReceiveRewardApi implements H5Handle {
                     key = userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+Constants.BROWSE_TASK_NAME;
                     //幂等性(防止领取奖励多次领取)
                     if(null == bizCacheUtil.getObject(key)){
+                        logger.info("getReceiveRewardApi cfp2 key = "+key);
                         bizCacheUtil.saveObject(key,new Date(),Constants.SECOND_OF_ONE_DAY);
                         status = getStatus(taskId,userId,taskName,isDailyUpdate);
                     }else {
+                        logger.info("getReceiveRewardApi cfp2 success key = "+key);
                         status = "success";
                     }
                 }else{
                     key = userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+taskId;
                     if(null == bizCacheUtil.getObject(key)){
+                        logger.info("getReceiveRewardApi cfp1 key = "+key);
                         bizCacheUtil.saveObject(key,new Date(),Constants.SECOND_OF_ONE_DAY);
                         status = getStatus(taskId,userId,taskName,isDailyUpdate);
                     }else {
+                        logger.info("getReceiveRewardApi cfp1 success key  = "+key);
                         status = "success";
                     }
                 }
             }else if(StringUtil.equals(isDailyUpdate,"0")){//非每日任务
                 key = userId+":"+now.get(Calendar.DAY_OF_MONTH)+":"+taskId;
                 if(null == bizCacheUtil.getObject(key)){
+                    logger.info("getReceiveRewardApi cfp0 key = "+key);
                     bizCacheUtil.saveObjectForever(key,new Date());
                     status = getStatus(taskId,userId,taskName,isDailyUpdate);
                 }else {
+                    logger.info("getReceiveRewardApi cfp0 success key = "+key);
                     status = "success";
                 }
             }
