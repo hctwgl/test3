@@ -207,6 +207,8 @@
         <p>浙江阿拉丁电子商务有限公司版权所有</p>
         <p>All Right Reserved. 浙ICP备16001312-4号</p>
     </div>
+    #elseif( $!{style}==24 || $!{style}==25)
+    <img src="$commonUrl/channel$!{style}_03.jpg">
     #else
     <img src="$commonUrl/channel$!{style}_03.jpg">
     <a href="tel:4000025151" style="position: absolute;bottom:0;height:1rem;width:7.5rem"></a>
