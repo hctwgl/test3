@@ -108,22 +108,25 @@ public class AfTaskServiceImpl  implements AfTaskService {
         isDailyFinishTaskList.addAll(isNotDailyFinishTaskList);
         //每日浏览任务(特色处理)
         //若每日浏览任务已完成但是未领奖,则排序到未领奖第一个
-        AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId, null);
         boolean taskBrowseFlag = true;
-        if(null != taskUserDo){
-            if(StringUtil.equals(taskUserDo.getStatus().toString(),"0")){
-                AfTaskDto afTaskDto = new AfTaskDto();
-                afTaskDto.setFinishTaskCondition(3);
-                afTaskDto.setSumTaskCondition(3);
-                afTaskDto.setReceiveReward("N");
-                afTaskDto.setIsDailyUpdate(1);
-                afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
-                afTaskDto.setIsDailyUpdate(1);
-                finalTaskList.add(afTaskDto);
+        if(appVersion < 416){
+            AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId, null);
+            if(null != taskUserDo){
+                if(StringUtil.equals(taskUserDo.getStatus().toString(),"0")){
+                    AfTaskDto afTaskDto = new AfTaskDto();
+                    afTaskDto.setFinishTaskCondition(3);
+                    afTaskDto.setSumTaskCondition(3);
+                    afTaskDto.setReceiveReward("N");
+                    afTaskDto.setIsDailyUpdate(1);
+                    afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
+                    afTaskDto.setIsDailyUpdate(1);
+                    finalTaskList.add(afTaskDto);
+                }
+            }else{
+                taskBrowseFlag = false;
             }
-        }else{
-            taskBrowseFlag = false;
         }
+
         //给完成但是为领奖的任务进行标识处理
         if(notFinishedList.size()>0){
             List<AfTaskDto> afTaskDtos = afTaskDao.getTaskByTaskIds(notFinishedList);
@@ -140,15 +143,17 @@ public class AfTaskServiceImpl  implements AfTaskService {
             }
         }
         //若每日浏览任务未完成,则排序到未完成第一个
-        if(!taskBrowseFlag){
-            int countToday = afTaskBrowseGoodsService.countBrowseGoodsToday(userId);
-            AfTaskDto afTaskDto = new AfTaskDto();
-            afTaskDto.setFinishTaskCondition(countToday);
-            afTaskDto.setSumTaskCondition(3);
-            afTaskDto.setIsDailyUpdate(1);
-            afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
-            afTaskDto.setIsDailyUpdate(1);
-            finalTaskList.add(afTaskDto);
+        if(appVersion < 416){
+            if(!taskBrowseFlag){
+                int countToday = afTaskBrowseGoodsService.countBrowseGoodsToday(userId);
+                AfTaskDto afTaskDto = new AfTaskDto();
+                afTaskDto.setFinishTaskCondition(countToday);
+                afTaskDto.setSumTaskCondition(3);
+                afTaskDto.setIsDailyUpdate(1);
+                afTaskDto.setTaskName(Constants.BROWSE_TASK_NAME);
+                afTaskDto.setIsDailyUpdate(1);
+                finalTaskList.add(afTaskDto);
+            }
         }
         //将已完成的任务去重
         for(AfTaskDto afTaskDo : taskList){
