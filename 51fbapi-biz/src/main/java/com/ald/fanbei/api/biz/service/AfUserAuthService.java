@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -118,5 +119,8 @@ public interface AfUserAuthService {
 	 * @param userId
 	 * @return
 	 */
-	List<Integer>  signRewardUserLevel(Long userId,AfUserAuthDo userAuthDo,AfUserAuthStatusDo uthStatusDo);
+	List<Integer>  signRewardUserLevel(Long userId,HashMap<String,Object> hashMap);
+
+
+	HashMap<String,Object> getUserAuthInfo(Long userId);
 }

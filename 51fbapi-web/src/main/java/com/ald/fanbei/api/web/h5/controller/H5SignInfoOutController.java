@@ -733,10 +733,9 @@ public class H5SignInfoOutController extends H5Controller {
         String homeBanner = AfResourceType.RewardHomeBanner.getCode();
         resp.put("rewardBannerList",afResourceService.rewardBannerList(type,homeBanner));
         //任务列表
-        AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-        AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
-        List<Integer> level = afUserAuthService.signRewardUserLevel(userId,userAuthDo,authStatusDo);
-        resp.put("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
+        HashMap<String,Object> hashMap = afUserAuthService.getUserAuthInfo(userId);
+        List<Integer> level = afUserAuthService.signRewardUserLevel(userId,hashMap);
+        resp.put("taskList",afTaskService.getTaskInfo(level,userId,push,hashMap));
         return resp;
     }
 

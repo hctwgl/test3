@@ -22,6 +22,7 @@ import com.ald.fanbei.api.dal.domain.AfTaskDo;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -67,7 +68,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
     }
 
     @Override
-    public List<AfTaskDto> getTaskInfo(List<Integer> level, Long userId,String push,AfUserAuthDo userAuthDo,AfUserAuthStatusDo authStatusDo){
+    public List<AfTaskDto> getTaskInfo(List<Integer> level, Long userId,String push,HashMap<String,Object> hashMap){
         List<Long> notFinishedList = new ArrayList<Long>();
         List<AfTaskDto> finalTaskList = new ArrayList<AfTaskDto>();
         List<AfTaskDto> taskList = afTaskDao.getTaskListByUserIdAndUserLevel(level);
@@ -162,7 +163,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
             }
             if(flag){
                 if(StringUtil.equals(afTaskDo.getTaskType(), TaskType.verified.getCode())){
-                    if(StringUtil.equals(userAuthDo.getRealnameStatus(),"Y")){
+                    if(StringUtil.equals(hashMap.get("realnameStatus")+"","Y")){
                         if(StringUtil.equals(afTaskDo.getReceiveReward(),"N")){
                             finalTaskList.add(afTaskDo);
                         }
@@ -171,8 +172,8 @@ public class AfTaskServiceImpl  implements AfTaskService {
                     afTaskDo.setFinishTaskCondition(0);
                     afTaskDo.setSumTaskCondition(1);
                 }else if(StringUtil.equals(afTaskDo.getTaskType(), TaskType.strong_risk.getCode())){
-                    if (authStatusDo != null) {
-                        if (StringUtils.equals("Y", authStatusDo.getStatus())) {
+                    if (hashMap != null) {
+                        if (StringUtils.equals("Y", hashMap.get("status")+"")) {
                             if(StringUtil.equals(afTaskDo.getReceiveReward(),"N")){
                                 finalTaskList.add(afTaskDo);
                             }

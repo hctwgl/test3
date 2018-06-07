@@ -15,12 +15,12 @@ import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -58,11 +58,14 @@ public class GetExtractMoneyApi implements H5Handle {
     @Override
     public H5HandleResponse process(final Context context) {
         H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
+
         final Long userId = context.getUserId();
         String lock = "GetExtractMoneyApi_lock" + userId;
         boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,200, Constants.SECOND_OF_TEN);
         if (isLock) {
             try{
+                StopWatch stopWatch = new StopWatch();
+                stopWatch.start();
                 final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_PRIZE");
                 final String withdrawType = ObjectUtils.toString(context.getData("withdrawType").toString(),null);
                 logger.info("GetExtractMoneyApi_lock cfp =" + withdrawType);
@@ -136,6 +139,8 @@ public class GetExtractMoneyApi implements H5Handle {
                 }else {
                     resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.CHOOSE_WITHDRAW_TYPE);
                 }
+                stopWatch.stop();
+                logger.info("cfp getExtractMoneyApi abc = "+stopWatch.getTotalTimeSeconds());
                 return resp;
             }finally {
                 bizCacheUtil.delCache(lock);

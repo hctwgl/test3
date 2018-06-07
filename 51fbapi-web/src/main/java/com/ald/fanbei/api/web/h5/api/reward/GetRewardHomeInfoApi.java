@@ -22,8 +22,8 @@ import com.ald.fanbei.api.web.validator.bean.ApplyLoanParam;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.StopWatch;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -83,12 +83,11 @@ public class GetRewardHomeInfoApi implements H5Handle {
 
 
 		//任务列表
-		AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
-		AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
-		List<Integer> level = afUserAuthService.signRewardUserLevel(userId,userAuthDo,authStatusDo);
-		resp.addResponseData("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
+		HashMap<String,Object> hashMap = afUserAuthService.getUserAuthInfo(userId);
+		List<Integer> level = afUserAuthService.signRewardUserLevel(userId,hashMap);
+		resp.addResponseData("taskList",afTaskService.getTaskInfo(level,userId,push,hashMap));
 		stopWatch.stop();
-		logger.info("cfp stopWatch home = "+stopWatch.getTime());
+		logger.info("cfp stopWatch home = "+stopWatch.getTotalTimeSeconds());
 		return resp;
 	}
 
