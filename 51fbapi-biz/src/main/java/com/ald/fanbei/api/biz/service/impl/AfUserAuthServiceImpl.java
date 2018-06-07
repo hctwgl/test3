@@ -1047,7 +1047,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
      * @param userId
      * @return
      */
-    public List<Integer> signRewardUserLevel(Long userId,AfUserAuthDo userAuthDo) {
+    public List<Integer> signRewardUserLevel(Long userId,AfUserAuthDo userAuthDo,AfUserAuthStatusDo uthStatusDo) {
         String loyalUsers;
         String ordinaryUser;
         String specialUser;
@@ -1067,7 +1067,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
             ordinaryUser = "N";
         }
         //消费分期强风控是否通过用户
-        String onLicneStatus = riskOnline(userId);
+        String onLicneStatus = riskOnline(uthStatusDo);
         //消费分期强风控是否通过用户而且未购物
         if (StringUtil.equals("Y", onLicneStatus) && count == 0) {
             specialUser = "Y";
@@ -1111,9 +1111,8 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 
 
 
-    private String riskOnline(Long userId){
+    private String riskOnline(AfUserAuthStatusDo authStatusDo){
         String flag ;
-        AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
         if(authStatusDo != null){
             if(authStatusDo.getStatus().equals("Y")){
                 flag = "Y";

@@ -58,7 +58,7 @@ public class GetRewardHomeInfoApi implements H5Handle {
 	@Override
 	public H5HandleResponse process(Context context) {
 		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
-		String push = ObjectUtils.toString(context.getData("push"),"N");
+		String push = ObjectUtils.toString(context.getData("push"),"Y");
 		Long userId = context.getUserId();
 
 		//今天是否签到
@@ -82,7 +82,7 @@ public class GetRewardHomeInfoApi implements H5Handle {
 		//任务列表
 		AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
 		AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
-		List<Integer>  level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
+		List<Integer> level = afUserAuthService.signRewardUserLevel(userId,userAuthDo,authStatusDo);
 		resp.addResponseData("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
 
 		return resp;

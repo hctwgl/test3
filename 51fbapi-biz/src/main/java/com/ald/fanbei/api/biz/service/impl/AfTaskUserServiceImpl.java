@@ -411,5 +411,14 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		return taskUserDo;
 	}
 
+	//获取此用户每日完成的任务(未领奖和已领奖)
+	public List<AfTaskUserDo> getIsDailyTaskListByUserId(Long userId){
+		return afTaskUserDao.getIsDailyTaskListByUserId(userId);
+	}
+	//获取此用户非每日完成的任务(未领奖和已领奖)
+	public List<AfTaskUserDo> getIsNotDailyTaskListByUserId(Long userId){
+		return afTaskUserDao.getIsNotDailyTaskListByUserId(userId);
+	}
+
 
 }

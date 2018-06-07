@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 分类运营位配置Service
+ * 签到领金币 任务
  * 
  * @author chefeipeng
  * @version 1.0.0 初始化
@@ -15,17 +15,11 @@ import java.util.Map;
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface AfTaskUserService {
-    List<AfTaskUserDo> isDailyTaskList(Long userId);
-
-    List<AfTaskUserDo> isNotDailyTaskList(Long userId);
 
     List<AfTaskUserDo> isDailyFinishTaskList(Long userId);
 
     List<AfTaskUserDo> isNotDailyFinishTaskList(Long userId);
 
-    int updateNotDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
-
-    int updateDailyByTaskIdAndUserId(AfTaskUserDo afTaskUserDo);
 
     /**
      * 新增
@@ -80,12 +74,7 @@ public interface AfTaskUserService {
      */
     List<Map<String, Object>> getIncomeOfNearlySevenDays(Long userId);
 
-    /**
-     * 获取最近7天收益(coinAmount)
-     * @param userId
-     * @return
-     */
-    List<Map<String, Object>> getIncomeCoinOfNearlySevenDays(Long userId);
+
 
     /**
      * 查询零钱/金币明细
@@ -155,5 +144,9 @@ public interface AfTaskUserService {
     AfTaskUserDo getTaskUserByTaskIdAndUserId(Long taskId,Long userId);
     //获取此任务用户是否完成(每日任务)
     AfTaskUserDo getTodayTaskUserByTaskIdAndUserId(Long taskId,Long userId);
+    //获取此用户每日完成的任务(未领奖和已领奖)
+    List<AfTaskUserDo> getIsDailyTaskListByUserId(Long userId);
+    //获取此用户非每日完成的任务(未领奖和已领奖)
+    List<AfTaskUserDo> getIsNotDailyTaskListByUserId(Long userId);
 
 }

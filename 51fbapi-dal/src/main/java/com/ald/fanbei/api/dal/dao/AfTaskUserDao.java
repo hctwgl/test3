@@ -59,4 +59,9 @@ public interface AfTaskUserDao  {
 
     AfTaskUserDo getTodayTaskUserByTaskIdAndUserId(@Param("taskId")Long taskId,@Param("userId")Long userId);
 
+
+    //获取此用户每日完成的任务(未领奖和已领奖)
+    List<AfTaskUserDo> getIsDailyTaskListByUserId(@Param("userId")Long userId);
+    //获取此用户非每日完成的任务(未领奖和已领奖)
+    List<AfTaskUserDo> getIsNotDailyTaskListByUserId(@Param("userId")Long userId);
 }

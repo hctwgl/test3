@@ -419,7 +419,7 @@ public class H5MySignInfoOutController extends H5Controller {
         //任务列表
         AfUserAuthDo userAuthDo = afUserAuthService.getUserAuthInfoByUserId(userId);
         AfUserAuthStatusDo authStatusDo = afUserAuthStatusService.getAfUserAuthStatusByUserIdAndScene(userId,"ONLINE");
-        List<Integer> level = afUserAuthService.signRewardUserLevel(userId,userAuthDo);
+        List<Integer> level = afUserAuthService.signRewardUserLevel(userId,userAuthDo,authStatusDo);
         resp.put("taskList",afTaskService.getTaskInfo(level,userId,push,userAuthDo,authStatusDo));
         return resp;
     }
