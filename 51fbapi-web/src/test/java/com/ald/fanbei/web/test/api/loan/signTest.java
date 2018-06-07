@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class signTest extends BaseTest{
 //	String userName = "13370127054";	//王卿 	支付密码123456
 //	String userName = "13656648524";	//朱玲玲 支付密码123456
 //	String userName = "13510301615";	//王绪武 支付密码123456
-	String userName = "18258023758";	//新账号 支付密码123456
+	String userName = "18237147009";	//新账号 支付密码123456
 
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -46,10 +47,9 @@ public class signTest extends BaseTest{
 	@Test
 	public void getHomeInfo() {
 		Map<String,String> params = new HashMap<>();
-		params.put("push", "Y");
-		params.put("wxCode", "001gvzE82OtpkS0ZNJF82SNaE82gvzEg");
-		params.put("userId", "18637962969");
-		String url = urlBase + "/h5/reward/friendSignInfo";
+		String url = urlBase + "/h5/reward/getRewardHomeInfo";
+		params.put("userName","18237147019");
+		params.put("push","Y");
 		testH5(url, params, userName, true);
 	}
 	
@@ -58,10 +58,14 @@ public class signTest extends BaseTest{
 	 */
 	@Test
 	public void getSignReward() {
-		String url = urlBase + "/taskUser/addBrowseTaskUser";
+		String url = urlBase + "/SignRewardInfo/supplementSign";
 		Map<String,String> params = new HashMap<>();
-		params.put("activityUrl", "https://atesth5.51fanbei.com/h5/activity/201804/visualization.html?addRightUiName=SEARCH&id=103&spread=app");
-		testApi(url, params, userName, true);
+		params.put("mobile", "18659115681");
+		params.put("verifyCode", "888888");
+		params.put("push", "Y");
+		params.put("rewardUserId","18258023758");
+		params.put("time","9");
+		testH5(url, params, userName, true);
 	}
 	
 	/**
@@ -69,10 +73,9 @@ public class signTest extends BaseTest{
 	 */
 	@Test
 	public void confirmLoan() {
-		String url = urlBase + "/taskUser/receiveBrowseTaskRewards";
+		String url = urlBase + "/taskUser/addBrowseTaskUser";
 		Map<String,String> params = new HashMap<>();
-		params.put("userId", "18637962969");
-		params.put("taskUserIds", "100");
+		params.put("activityUrl", "http://testapp.51fanbei.com/app/goods/goodsListModel?modelId=194");
 		testApi(url, params, userName, true);
 	}
 	
@@ -81,11 +84,14 @@ public class signTest extends BaseTest{
 	 */
 	@Test
 	public void applyLoan() {
-		String url = urlBase + "/h5/reward/getRewardDetail";
+		String url = urlBase + "/h5/reward/doFinishTask";
 		Map<String,String> params = new HashMap<>();
-		params.put("userId", "18637962969");
-		params.put("pageNo", "1");
-		params.put("pageSize", "1");
+		params.put("taskType", "browse");
+		params.put("taskSecType", "category");
+		params.put("taskCondition", "279");
+		params.put("pageSize","10");
+		params.put("pageNo","1");
+		params.put("userName","18258023758");
 		testH5(url, params, userName, true);
 	}
 
@@ -94,16 +100,11 @@ public class signTest extends BaseTest{
 	 */
 	@Test
 	public void delegatePay() {
-		String url = urlBase + "/third/ups/delegatePay?";
-		String orderNo = "01dpay23425234dfssdfs";
-		String merPriv = UserAccountLogType.LOAN.getCode();
-		String tradeState = "00";
-		String reqExt = "154";
-		
-		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeState=" + tradeState +"&reqExt="+reqExt;
-		url += reqStr;
-		
-		testH5(url, null, userName ,true);
+		String url = urlBase + "/h5/reward/doShareTask";
+		Map<String,String> params = new HashMap<>();
+		params.put("taskCondition","https://testh5.51fanbei.com/h5/activity/201805/openRed.html?refreshUrl=false");
+		params.put("userName","18258023758");
+		testH5(url, params, userName ,true);
 	}
 
 	/**
@@ -111,17 +112,10 @@ public class signTest extends BaseTest{
 	 */
 	@Test
 	public void getWhiteLoanProtocol() {
-		String url = urlBase + "/h5/loan/getWhiteLoanProtocol";
+		String url = urlBase + "/h5/reward/getExtractMoney";
 		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 53+"");//1038.66
-		params.put("totalServiceFee", "30.27");
-		params.put("loanRemark", "0");
-		params.put("repayRemark", "0");
-		params.put("interestRate", "0");
-		params.put("serviceRate", "0");
-		params.put("overdueRate", "0");
-		params.put("amount", "1000");
-		params.put("nper", "3");
+		params.put("withdrawType", "0");//1038.66
+		params.put("userName", "18258023758");
 		testH5(url, params, userName, true);
 	}
 
@@ -130,19 +124,14 @@ public class signTest extends BaseTest{
 	 */
 	@Test
 	public void repayDo() {
-		String url = urlBase + "/loan/loanRepayDo";
+		String url = urlBase + "/SignRewardInfo/friendSign";
 		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 500+"");//351.27
-		params.put("couponId", "0");
-		params.put("rebateAmount", "0");
-		
-		params.put("payPwd", DigestUtils.md5Hex("123456"));
-		params.put("cardId", "3111464853");
-		params.put("actualAmount",1000+"");
-		params.put("loanId", 586+"");
-		params.put("loanPeriodsIds", "1007,1008");
-		
-		testApi(url, params, userName, true);
+		params.put("mobile", "18237147025");
+		params.put("verifyCode", "888888");
+		params.put("push", "Y");
+		params.put("rewardUserId","15293971826");
+		params.put("wxCode","2");
+		testH5(url, params, userName, true);
 	}
 	
 	/**
@@ -150,18 +139,13 @@ public class signTest extends BaseTest{
 	 */
 	@Test
 	public void allRepayDo() {
-		String url = urlBase + "/loan/loanAllRepayDo";
+		String url = urlBase + "/h5/reward/getReceiveReward";
 		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 675.41+"");
-		params.put("couponId", "0");
-		params.put("rebateAmount", "0");
-		
-		params.put("payPwd", DigestUtils.md5Hex("123456"));
-		params.put("cardId", "3111464125");
-		params.put("actualAmount", 675.41+"");
-		params.put("loanId", 207+"");
-		
-		testApi(url, params, userName, true);
+		params.put("userName", "18258023758");
+		params.put("taskId", "93");
+		params.put("isDailyUpdate", "0");
+		params.put("taskName","所有用户-分享");
+		testH5(url, params, userName, true);
 	}
 	
 	/**
@@ -169,10 +153,10 @@ public class signTest extends BaseTest{
 	 */
 	@Test
 	public void getLoanInfo() {
-		String url = urlBase + "/h5/loan/getLoanInfo";
+		String url = urlBase + "/mySignInfo/mySign";
 		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 583+"");
-		
+		params.put("userId", "18258023758");
+		params.put("push","N");
 		testH5(url, params, userName, true);
 	}
 	
@@ -181,33 +165,28 @@ public class signTest extends BaseTest{
 	 */
 	@Test
 	public void loanRepayPlan() {
-		String url = urlBase + "/h5/loan/loanRepayPlan";
+		String url = urlBase + "/h5/reward/doPushTask";
 		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 189+"");
-		
+		params.put("userName", "18258023758");
 		testH5(url, params, userName, true);
 	}
 	
 	@Test
 	public void getLoanRepayments() {
-		String url = urlBase + "/h5/loan/getLoanRepayments";
+		String url = urlBase + "/h5/reward/getWithdrawDetail";
 		Map<String,String> params = new HashMap<>();
-		params.put("loanId", 9+"");
-		
+		params.put("userName", "18258023758");
+		params.put("pageSize", "54");
+		params.put("pageNo", "1");
 		testH5(url, params, userName, true);
 	}
 	
 	@Test
 	public void  collect() {
-		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2018051510143800802";
-		String merPriv = PayOrderSource.REPAY_LOAN.getCode();
-		String tradeNo = "xianFenghq2018051510143800802";
-		String tradeState = "00";
-		
-		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
-		url += reqStr;
+		String url = urlBase + "/taskUser/receiveBrowseTaskRewards";
 		Map<String,String> params = new HashMap<>();
+		params.put("userName","18237147019");
+		params.put("taskUserIds","135806");
 		testApi(url, params, userName, true);
 	}
 	

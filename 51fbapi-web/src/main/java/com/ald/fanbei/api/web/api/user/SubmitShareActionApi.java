@@ -69,37 +69,7 @@ public class SubmitShareActionApi extends BaseController implements ApiHandle {
 			if ("shareEveryone".equals(sharePage)){
 				faceScoreShareCountService.dealWithShareCount(context.getUserId());
 			}
-			if((!StringUtil.equals("shareEveryone",sharePage)) && (!StringUtil.equals("gameShare",sharePage))){
-				List<AfTaskUserDo> toAddTaskUserList = Lists.newArrayList();
-				Long userId = context.getUserId();
-				List<Integer> userLevelList = afTaskService.getUserLevelByUserId(userId);
-				List<AfTaskDo> taskList = afTaskService.getTaskListByTaskTypeAndUserLevel(TaskType.share.getCode(), userLevelList, sharePage);
-				if (null != taskList && !taskList.isEmpty()) {
-					List<AfTaskDo> notDailyTaskUserList = afTaskService.getNotDailyTaskListByUserId(userId, TaskType.share.getCode());
-					List<AfTaskDo> taskUserCompleteList = Lists.newArrayList();
-					if (null != notDailyTaskUserList && !notDailyTaskUserList.isEmpty()) {
-						taskUserCompleteList.addAll(notDailyTaskUserList);
-					}
-					if (!taskUserCompleteList.isEmpty()) {
-						Iterator<AfTaskDo> iter = taskList.iterator();
-						while(iter.hasNext()){
-							if(taskUserCompleteList.contains(iter.next())){
-								iter.remove();
-							}
-						}
-					}
-					if (!taskList.isEmpty()) {
-						AfTaskUserDo taskUserDo;
-						for (AfTaskDo taskDo : taskList) {
-							taskUserDo = buildTaskUserDo(taskDo, userId);
-							toAddTaskUserList.add(taskUserDo);
-						}
-						for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
-							afTaskUserService.insertTaskUserDo(afTaskUserDo);
-						}
-					}
-				}
-			}
+
 			doMaidianLog(request, H5CommonResponse.getNewInstance(true, "分享"),"sharePage="+sharePage, context.getMobile());
 			//maidianLog.info("sharePage="+sharePage, context.getMobile(),requestDataVo.getParams().get("shareAppUrl"));
 //		if("ggIndexShare".equals(sharePage)){
@@ -139,30 +109,7 @@ public class SubmitShareActionApi extends BaseController implements ApiHandle {
 
 
 
-	/**
-	 * 构造taskUserDo 对象
-	 * @param taskDo
-	 * @param userId
-	 * @return
-	 */
-	public AfTaskUserDo buildTaskUserDo(AfTaskDo taskDo, Long userId){
-		AfTaskUserDo taskUserDo = new AfTaskUserDo();
-		int rewardType = taskDo.getRewardType();
-		taskUserDo.setRewardType(rewardType);
-		if(0 == rewardType){
-			taskUserDo.setCoinAmount(taskDo.getCoinAmount());
-		} else if(1 == rewardType){
-			taskUserDo.setCashAmount(taskDo.getCashAmount());
-		} else{
-			taskUserDo.setCouponId(taskDo.getCouponId());
-		}
-		taskUserDo.setTaskId(taskDo.getRid());
-		taskUserDo.setTaskName(taskDo.getTaskName());
-		taskUserDo.setUserId(userId);
-		taskUserDo.setGmtCreate(new Date());
-		taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
-		return taskUserDo;
-	}
+
 
 
 
