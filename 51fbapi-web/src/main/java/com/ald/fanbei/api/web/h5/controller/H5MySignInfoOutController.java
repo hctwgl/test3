@@ -198,7 +198,7 @@ public class H5MySignInfoOutController extends H5Controller {
                         afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(4)).setScale(2,RoundingMode.HALF_EVEN));
                         status = signDays(rewardDo,afSignRewardExtDo,afResourceDo);
                     }else{
-                        afSignRewardExtDo.setAmount(rewardAmount);
+                        afSignRewardExtDo.setAmount(rewardAmount.multiply(new BigDecimal(3)).setScale(2,RoundingMode.HALF_EVEN));
                         status = signDays(rewardDo,afSignRewardExtDo,afResourceDo);
                     }
 
@@ -396,6 +396,7 @@ public class H5MySignInfoOutController extends H5Controller {
                     addCoupon(couponId,rewardDo.getUserId());
                     afSignRewardService.saveRecord(rewardDo);
                     afSignRewardExtService.increaseMoney(signRewardExtDo);
+                    logger.info("couponId mysign cfp = " + couponId);
                     return "success";
                 }catch (Exception e){
                     status.setRollbackOnly();
