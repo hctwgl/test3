@@ -17,7 +17,6 @@ if (style == 19) {
 function toMaidian(data, data2) {
     maidianFnNew(data, channelCode, pointCode, data2);
 }
-alert(1)
 function login() {
     toMaidian('toLogin')
     if (style == '25') {

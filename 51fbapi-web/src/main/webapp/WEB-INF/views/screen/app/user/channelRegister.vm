@@ -9,7 +9,7 @@
     #elseif($!{style}==20 || $!{style}==21 || $!{style}==22)
     <title>下载</title>
     #else
-    <title>注册1</title>
+    <title>注册</title>
     #end
     <!--转化代码-->
     <script type="text/javascript">
