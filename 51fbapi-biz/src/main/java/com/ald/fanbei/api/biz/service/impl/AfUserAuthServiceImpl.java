@@ -1047,7 +1047,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
      * @param userId
      * @return
      */
-    public List<Integer> signRewardUserLevel(Long userId,AfUserAuthDo userAuthDo,AfUserAuthStatusDo uthStatusDo) {
+    public List<Integer> signRewardUserLevel(Long userId,HashMap<String,Object> hashMap) {
         String loyalUsers;
         String ordinaryUser;
         String specialUser;
@@ -1067,7 +1067,7 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
             ordinaryUser = "N";
         }
         //消费分期强风控是否通过用户
-        String onLicneStatus = riskOnline(uthStatusDo);
+        String onLicneStatus = riskOnline(hashMap);
         //消费分期强风控是否通过用户而且未购物
         if (StringUtil.equals("Y", onLicneStatus) && count == 0) {
             specialUser = "Y";
@@ -1078,8 +1078,8 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
         if (count > 0 || StringUtil.equals("Y", onLicneStatus)) {
             newUser = "N";
         } else {
-            if (userAuthDo != null) {
-                if (userAuthDo.getGmtFaces() == null && StringUtil.equals("N", userAuthDo.getBankcardStatus()) && userAuthDo.getGmtRealname() == null && StringUtil.equals("N", userAuthDo.getRealnameStatus()) && StringUtil.equals("N", userAuthDo.getFacesStatus())) {
+            if (hashMap != null) {
+                if (hashMap.get("gmtFaces") == null && StringUtil.equals("N", hashMap.get("bankcardStatus")+"") && hashMap.get("gmtRealname") == null && StringUtil.equals("N", hashMap.get("realnameStatus")+"") && StringUtil.equals("N", hashMap.get("facesStatus")+"")) {
                     newUser = "Y";
                 } else {
                     newUser = "N";
@@ -1111,10 +1111,10 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
 
 
 
-    private String riskOnline(AfUserAuthStatusDo authStatusDo){
+    private String riskOnline(HashMap<String,Object> hashMap){
         String flag ;
-        if(authStatusDo != null){
-            if(authStatusDo.getStatus().equals("Y")){
+        if(hashMap != null){
+            if(StringUtil.equals(hashMap.get("status")+"","Y")){
                 flag = "Y";
             }else{
                 flag = "N";
@@ -1124,5 +1124,10 @@ public class AfUserAuthServiceImpl implements AfUserAuthService {
         }
         return flag;
     }
+
+    @Override
+	public HashMap<String,Object> getUserAuthInfo(Long userId){
+    	return afUserAuthDao.getUserAuthInfo(userId);
+	}
 
 }

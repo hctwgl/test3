@@ -7,6 +7,7 @@ import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 import com.ald.fanbei.api.dal.domain.dto.AfTaskDto;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public interface AfTaskService {
      * @return
      */
     List<AfTaskDo> getTaskListByTaskTypeAndUserLevel(String taskType, List<Integer> userLevelList, String taskContition);
-    List<AfTaskDto> getTaskInfo(List<Integer> level, Long userId,String push,AfUserAuthDo userAuthDo,AfUserAuthStatusDo authStatusDo);
+    List<AfTaskDto> getTaskInfo(List<Integer> level, Long userId,String push,HashMap<String,Object> hashMap);
 
     /**
      * 获取用户已完成的非每日任务
