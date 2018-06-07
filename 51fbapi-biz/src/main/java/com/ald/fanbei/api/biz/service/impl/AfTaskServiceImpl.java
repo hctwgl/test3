@@ -109,7 +109,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
         //每日浏览任务(特色处理)
         //若每日浏览任务已完成但是未领奖,则排序到未领奖第一个
         boolean taskBrowseFlag = true;
-        if(appVersion < 416){
+        if(appVersion > 415){
             AfTaskUserDo taskUserDo = afTaskUserService.getTodayTaskUserDoByTaskName(Constants.BROWSE_TASK_NAME,userId, null);
             if(null != taskUserDo){
                 if(StringUtil.equals(taskUserDo.getStatus().toString(),"0")){
@@ -143,7 +143,7 @@ public class AfTaskServiceImpl  implements AfTaskService {
             }
         }
         //若每日浏览任务未完成,则排序到未完成第一个
-        if(appVersion < 416){
+        if(appVersion > 415){
             if(!taskBrowseFlag){
                 int countToday = afTaskBrowseGoodsService.countBrowseGoodsToday(userId);
                 AfTaskDto afTaskDto = new AfTaskDto();

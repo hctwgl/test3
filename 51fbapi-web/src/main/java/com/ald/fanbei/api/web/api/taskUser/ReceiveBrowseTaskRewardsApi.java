@@ -72,11 +72,11 @@ public class ReceiveBrowseTaskRewardsApi  implements ApiHandle {
 					List<AfTaskUserDo> taskUserList = afTaskUserService.getTaskUserListByIds(taskUserIdList);
 					int rewardType = afTaskUserService.isSameRewardType(taskUserList);
 					if (-1 == rewardType) {
-						resultMessage = "任务已经过期啦，快去完成新任务吧";
+						resultMessage = "任务已经过期啦" + "\r\n" +"快去完成新任务吧";
 					} else if (-2 == rewardType) {
 						afTaskUserService.batchUpdateTaskUserStatus(taskUserIdList);
 						afTaskUserService.saveCouponRewardAndUpdateAccount(taskUserList);
-						resultMessage = "奖励已放入您的账户，继续逛逛能得到更多哦!";
+						resultMessage = "奖励已放入您的账户" + "\r\n" +"继续逛逛能得到更多哦!";
 					} else {
 						afTaskUserService.batchUpdateTaskUserStatus(taskUserIdList);
 						afTaskUserService.saveCouponRewardAndUpdateAccount(taskUserList);

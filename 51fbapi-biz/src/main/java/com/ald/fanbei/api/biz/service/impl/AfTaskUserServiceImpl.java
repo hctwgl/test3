@@ -310,15 +310,15 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 
 		if(0 == rewardType){
 			cashAmount = cashAmount.add(new BigDecimal(coinAmount));
-			message = cashAmount.toString()+"金币已入账，继续逛逛能得到更多哦";
+			message = cashAmount.toString()+"金币已入账" + "\r\n" +"继续逛逛能得到更多哦";
 		}
 		if(2 == rewardType){
 			BigDecimal couponAmount = getCouponAmountByIds(couponIdList);
 			cashAmount = cashAmount.add(couponAmount == null ? new BigDecimal(0): couponAmount);
-			message = cashAmount.toString()+"元优惠券已入账，继续逛逛能得到更多哦";
+			message = cashAmount.toString()+"元优惠券已入账" + "\r\n" +"继续逛逛能得到更多哦";
 		}
 		if(1 == rewardType){
-			message = cashAmount.toString()+"元现金已入账，继续逛逛能得到更多哦";
+			message = cashAmount.toString()+"元现金已入账" + "\r\n" +"继续逛逛能得到更多哦";
 		}
 
 		return message;
