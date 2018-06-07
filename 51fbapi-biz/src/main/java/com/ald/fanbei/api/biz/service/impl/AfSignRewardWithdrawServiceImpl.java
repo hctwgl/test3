@@ -12,6 +12,7 @@ import com.ald.fanbei.api.dal.dao.AfSignRewardWithdrawDao;
 import com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo;
 import com.ald.fanbei.api.biz.service.AfSignRewardWithdrawService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -40,5 +41,10 @@ public class AfSignRewardWithdrawServiceImpl  implements AfSignRewardWithdrawSer
     @Override
     public int saveRecord(AfSignRewardWithdrawDo afSignRewardWithdrawDo){
         return afSignRewardWithdrawDao.saveRecord(afSignRewardWithdrawDo);
+    }
+
+    @Override
+    public BigDecimal getTodayWithdrawAmount() {
+        return afSignRewardWithdrawDao.getTodayWithdrawAmount();
     }
 }

@@ -4,6 +4,7 @@ import com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo;
 import com.ald.fanbei.api.dal.domain.dto.AfSignRewardWithdrawDto;
 import com.ald.fanbei.api.dal.domain.query.AfSignRewardWithdrawQuery;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -19,5 +20,11 @@ public interface AfSignRewardWithdrawService {
     List<AfSignRewardWithdrawDto> getWithdrawList(AfSignRewardWithdrawQuery query);
 
     int saveRecord(AfSignRewardWithdrawDo afSignRewardWithdrawDo);
+
+    /**
+     * 获取今天提交提现申请的总金额
+     * @return
+     */
+    BigDecimal getTodayWithdrawAmount();
 
 }

@@ -631,4 +631,9 @@ public class Constants {
 	public static final int REWARD_TYPE_COUPON = 2;
 
 	public static final String SIGN_DATE = "SIGN_DATE";
+
+	/**
+	 * 签到奖励每日最大提现配置
+	 */
+	public static final String SIGN_REWARD_MAX_WITHDRAW = "SIGN_REWARD_MAX_WITHDRAW";
 }

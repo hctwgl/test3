@@ -5,6 +5,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfSignRewardWithdrawDto;
 import com.ald.fanbei.api.dal.domain.query.AfSignRewardWithdrawQuery;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -21,6 +22,7 @@ public interface AfSignRewardWithdrawDao  {
 
     int saveRecord(AfSignRewardWithdrawDo afSignRewardWithdrawDo);
 
+    BigDecimal getTodayWithdrawAmount();
 
 
 }

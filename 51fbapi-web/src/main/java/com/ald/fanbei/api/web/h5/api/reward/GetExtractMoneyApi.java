@@ -66,6 +66,15 @@ public class GetExtractMoneyApi implements H5Handle {
                 final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_PRIZE");
                 final String withdrawType = ObjectUtils.toString(context.getData("withdrawType").toString(), null);
                 if (withdrawType != null) {
+                    AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.SIGN_REWARD_MAX_WITHDRAW);
+                    if(null != resourceDo){
+                        BigDecimal todayWithdrawAmount = afSignRewardWithdrawService.getTodayWithdrawAmount();
+                        todayWithdrawAmount = (todayWithdrawAmount == null ? new BigDecimal(0) : todayWithdrawAmount);
+                        if(todayWithdrawAmount.compareTo(new BigDecimal(resourceDo.getValue())) >= 0){
+                            return new H5HandleResponse(context.getId(), FanbeiExceptionCode.WITHDRAW_OVER);
+                        }
+                    }
+
                     String status = transactionTemplate.execute(new TransactionCallback<String>() {
                         @Override
                         public String doInTransaction(TransactionStatus status) {

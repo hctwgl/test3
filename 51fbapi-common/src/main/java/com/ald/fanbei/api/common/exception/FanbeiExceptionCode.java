@@ -459,6 +459,7 @@ public enum FanbeiExceptionCode {
     SIGN_REMIND_FAIL("SIGN_REMIND_FAIL",9011,"sign remind fail","提醒失败"),
     WITHDRAW_FAIL("WITHDRAW_FAIL",9010,"withdraw fail","提现失败"),
     CHOOSE_WITHDRAW_TYPE("CHOOSE_WITHDRAW_TYPE",9009,"choose withdraw type","请选择提现方式"),
+    WITHDRAW_OVER("WITHDRAW_OVER",9008,"the maximum amount has been exceeded today, please come tomorrow","已经超过今天提现最大金额，明天再来吧"),
 
 
     WX_CODE_INVALID("WX_CODE_INVALID", 2900, "wx code is invalid", "微信code码失效"),

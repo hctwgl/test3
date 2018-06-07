@@ -128,5 +128,14 @@
         AND user_id = #{userId}
         ORDER BY gmt_create desc
     </select>
+
+    <select id="getTodayWithdrawAmount" resultType="java.math.BigDecimal">
+        SELECT
+        sum(withdraw_amount)
+        FROM af_sign_reward_withdraw
+        WHERE is_delete = 0
+        AND date(gmt_create) = date(NOW())
+    </select>
+
     
 </mapper>
