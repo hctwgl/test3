@@ -39,8 +39,6 @@ public class addRecommendShared implements ApiHandle {
     AfTaskUserService afTaskUserService;
 
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-        logger.info("activity true = "+ context.getUserId());
-        String notifyHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
 
 
         long userId = context.getUserId();
@@ -51,6 +49,7 @@ public class addRecommendShared implements ApiHandle {
 //        String source = ObjectUtils.toString(params.get("source"), "").toString();
 //        String sourceType= ObjectUtils.toString(params.get("sourceType"), "").toString();
         String shareUrl = ObjectUtils.toString(params.get("shareUrl"), "").toString();
+        logger.info("activity shareUrl ="+shareUrl);
 
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 
