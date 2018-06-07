@@ -13,9 +13,7 @@
     #end
     <!--转化代码-->
     <script type="text/javascript">
-        #if($
-        !{style} == 14
-        )
+        #if( $!{style} == 14 )
         (function (root) {
             root._tt_config = true;
             var ta = document.createElement('script');
