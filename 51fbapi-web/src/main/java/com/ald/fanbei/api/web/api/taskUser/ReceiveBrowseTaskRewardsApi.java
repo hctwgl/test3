@@ -53,7 +53,7 @@ public class ReceiveBrowseTaskRewardsApi  implements ApiHandle {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
 		Map<String, Object> data = Maps.newHashMap();
 		final String taskUserIds = ObjectUtils.toString(requestDataVo.getParams().get("taskUserIds"));
-		if(StringUtils.isNotEmpty(taskUserIds)){
+		if(StringUtils.isEmpty(taskUserIds)){
 			data.put("message", "没有奖励信息");
 			resp.setResponseData(data);
 			return resp;

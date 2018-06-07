@@ -38,7 +38,7 @@ public interface AfTaskService {
      * @return
      */
     List<AfTaskDo> getTaskListByTaskTypeAndUserLevel(String taskType, List<Integer> userLevelList, String taskContition);
-    List<AfTaskDto> getTaskInfo(List<Integer> level, Long userId,String push,HashMap<String,Object> hashMap);
+    List<AfTaskDto> getTaskInfo(List<Integer> level, Long userId,String push,HashMap<String,Object> hashMap,Integer appVersion);
 
     /**
      * 获取用户已完成的非每日任务

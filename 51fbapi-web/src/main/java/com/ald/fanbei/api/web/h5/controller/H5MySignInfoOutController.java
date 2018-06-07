@@ -8,15 +8,21 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.CookieUtil;
+import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.SignRewardType;
 import com.ald.fanbei.api.common.enums.SmsType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.context.ContextImpl;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.TransactionStatus;
@@ -29,8 +35,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -78,6 +86,8 @@ public class H5MySignInfoOutController extends H5Controller {
      */
     @RequestMapping(value = "/mySign", method = RequestMethod.POST)
     public String homePage(HttpServletRequest request, HttpServletResponse response) {
+        Context context = buildContext(request);
+        Integer appVersion = context.getAppVersion();
         String userName = ObjectUtils.toString(request.getParameter("userId"),null);
         String push = ObjectUtils.toString(request.getParameter("push"),"N");
         AfUserDo afUserDo = afUserService.getUserByUserName(userName);
@@ -103,7 +113,7 @@ public class H5MySignInfoOutController extends H5Controller {
             if(!userSign(afSignRewardDo,afResourceDo,map)){
                 return H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.USER_SIGN_FAIL.getDesc()).toString();
             }
-            map = homeInfo(afUserDo.getRid(),map,push);
+            map = homeInfo(afUserDo.getRid(),map,push,appVersion);
             return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",map ).toString();
         } catch (FanbeiException e) {
             logger.error("commitRegister fanbei exception" + e.getMessage());
@@ -407,7 +417,7 @@ public class H5MySignInfoOutController extends H5Controller {
     }
 
 
-    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push ){
+    private Map<String,Object> homeInfo (Long userId, Map<String,Object> resp,String push,Integer appVersion ){
         //今天是否签到
         String status = afSignRewardService.isExist(userId)==false?"N":"Y";
         resp.put("rewardStatus",status);
@@ -419,11 +429,97 @@ public class H5MySignInfoOutController extends H5Controller {
         //任务列表
         HashMap<String,Object> hashMap = afUserAuthService.getUserAuthInfo(userId);
         List<Integer> level = afUserAuthService.signRewardUserLevel(userId,hashMap);
-        resp.put("taskList",afTaskService.getTaskInfo(level,userId,push,hashMap));
+        resp.put("taskList",afTaskService.getTaskInfo(level,userId,push,hashMap,appVersion));
         return resp;
     }
 
 
+    public Context buildContext(HttpServletRequest request) {
+        ContextImpl.Builder builder = new ContextImpl.Builder();
+        String method = request.getRequestURI();
+        String appInfo =  request.getParameter("_appInfo");
+        if(org.apache.commons.lang3.StringUtils.isEmpty(appInfo)) {
+            // 从请求头获取_appInfo
+            String referer = request.getHeader("Referer");
+            if(org.apache.commons.lang3.StringUtils.isNotBlank(referer)) {
+                appInfo = getAppInfo(referer);
+            }
+        }
+        if(org.apache.commons.lang3.StringUtils.isNotEmpty(appInfo)) {
+            JSONObject _appInfo = JSONObject.parseObject(appInfo);
+            String userName = _appInfo.getString("userName");
+            String id = _appInfo.getString("id");
+            Integer appVersion = _appInfo.getInteger("appVersion");
+
+            Map<String,Object> systemsMap = (Map) JSON.parse(appInfo);
+            AfUserDo userInfo = afUserService.getUserByUserName(userName);
+            Long userId = userInfo == null ? null : userInfo.getRid();
+            builder.method(method)
+                    .userId(userId)
+                    .userName(userName)
+                    .appVersion(appVersion)
+                    .systemsMap(systemsMap)
+                    .id(id);
+        }
+
+        Map<String,Object> dataMaps = Maps.newHashMap();
+
+        wrapRequest(request,dataMaps);
+        builder.dataMap(dataMaps);
+
+        logger.info("request method=>{},params=>{}",method,JSON.toJSONString(dataMaps));
+
+        String clientIp = CommonUtil.getIpAddr(request);
+        builder.clientIp(clientIp);
+        Context context = builder.build();
+        return context;
+    }
+
+    private String getAppInfo(String referer) {
+
+        String appInfo = org.apache.commons.lang3.StringUtils.EMPTY;
+        try {
+            Map<String, List<String>> params = Maps.newHashMap();
+            String[] urlParts = referer.split("\\?");
+            if (urlParts.length > 1) {
+                String query = urlParts[1];
+                for (String param : query.split("&")) {
+                    String[] pair = param.split("=");
+                    String key = URLDecoder.decode(pair[0], "UTF-8");
+                    String value = "";
+                    if (pair.length > 1) {
+                        value = URLDecoder.decode(pair[1], "UTF-8");
+                    }
+
+                    List<String> values = params.get(key);
+                    if (values == null) {
+                        values = new ArrayList<String>();
+                        params.put(key, values);
+                    }
+                    values.add(value);
+                }
+            }
+            List<String> _appInfo = params.get("_appInfo");
+            if (_appInfo != null && _appInfo.size() > 0) {
+                appInfo = _appInfo.get(0);
+            }
+            return appInfo;
+        } catch (UnsupportedEncodingException ex) {
+            throw new AssertionError(ex);
+        }
+    }
+
+    private void wrapRequest(HttpServletRequest request, Map<String, Object> dataMaps) {
+
+        Enumeration<String> paramNames =  request.getParameterNames();
+        while(paramNames.hasMoreElements()) {
+            String paramName = paramNames.nextElement();
+            if(!org.apache.commons.lang3.StringUtils.equals("_appInfo", paramName)) {
+                String objVal = request.getParameter(paramName);
+                dataMaps.put(paramName, objVal);
+            }
+        }
+    }
 
 
 }
