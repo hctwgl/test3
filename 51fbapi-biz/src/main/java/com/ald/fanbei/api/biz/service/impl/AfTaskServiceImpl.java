@@ -204,7 +204,9 @@ public class AfTaskServiceImpl  implements AfTaskService {
         List<AfTaskDto> finalTaskLists = new ArrayList<AfTaskDto>();
         if(appVersion < 416){
             for(AfTaskDto afTaskDto :finalTaskList){
-                if(!StringUtil.equals(afTaskDto.getTaskType(),TaskType.share.getCode())){
+                if(StringUtil.equals(afTaskDto.getTaskType(),TaskType.shopping.getCode()) ||
+                        StringUtil.equals(afTaskDto.getTaskType(),TaskType.verified.getCode())
+                        || StringUtil.equals(afTaskDto.getTaskType(),TaskType.strong_risk.getCode()) ){
                     finalTaskLists.add(afTaskDto);
                 }
             }
