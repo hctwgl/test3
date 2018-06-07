@@ -40,7 +40,7 @@ public interface AfTaskUserDao  {
 
     List<AfTaskUserDo> getTaskUserListByIds(@Param("taskUserIdList") List<Long> taskUserIdList);
 
-    int getCouponAmountByIds(@Param("couponIdList") List<Long> couponIdList);
+    BigDecimal getCouponAmountByIds(@Param("couponIdList") List<Long> couponIdList);
 
     int batchUpdateTaskUserStatus(@Param("taskUserIdList") List<Long> taskUserIdList);
 

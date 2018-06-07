@@ -123,11 +123,17 @@ public interface AfTaskUserService {
     String getRewardAmount(List<AfTaskUserDo> taskUserDoList, int rewardType);
 
     /**
+     * 保存优惠券奖励并且更新账户余额
+     * @param taskUserDoList
+     */
+    void saveCouponRewardAndUpdateAccount(List<AfTaskUserDo> taskUserDoList);
+
+    /**
      * 获取优惠券金额
      * @param couponIdList
      * @return
      */
-    int getCouponAmountByIds(List<Long> couponIdList);
+    BigDecimal getCouponAmountByIds(List<Long> couponIdList);
 
     /**
      * 批量更新用户状态

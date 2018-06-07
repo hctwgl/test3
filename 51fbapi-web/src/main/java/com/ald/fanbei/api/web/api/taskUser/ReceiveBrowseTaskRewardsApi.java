@@ -22,6 +22,9 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -41,33 +44,63 @@ public class ReceiveBrowseTaskRewardsApi  implements ApiHandle {
 	@Resource
 	AfTaskUserService afTaskUserService;
 
+	@Resource
+	TransactionTemplate transactionTemplate;
+
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
-		try{
-			Map<String, Object> data = Maps.newHashMap();
-			String taskUserIds = ObjectUtils.toString(requestDataVo.getParams().get("taskUserIds"));
-			if (StringUtils.isNotEmpty(taskUserIds)) {
-				List<Long> taskUserIdList = Lists.newArrayList();
-				String[] taskUserIdAray = taskUserIds.split(",");
-				for (String id : taskUserIdAray) {
-					taskUserIdList.add(Long.parseLong(id));
-				}
-				List<AfTaskUserDo> taskUserList = afTaskUserService.getTaskUserListByIds(taskUserIdList);
-				int rewardType = afTaskUserService.isSameRewardType(taskUserList);
-				if (-1 == rewardType) {
-				} else if (-2 == rewardType) {
-					data.put("message", "奖励已放入您的账户，继续逛逛能得到更多哦!");
-					afTaskUserService.batchUpdateTaskUserStatus(taskUserIdList);
-				} else {
-					data.put("message", afTaskUserService.getRewardAmount(taskUserList, rewardType));
-					afTaskUserService.batchUpdateTaskUserStatus(taskUserIdList);
-				}
-			}
+		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.FAILED);
+		Map<String, Object> data = Maps.newHashMap();
+		final String taskUserIds = ObjectUtils.toString(requestDataVo.getParams().get("taskUserIds"));
+		if(StringUtils.isNotEmpty(taskUserIds)){
+			data.put("message", "没有奖励信息");
 			resp.setResponseData(data);
-		}catch(Exception e){
-			logger.error("receiveBrowseTaskRewards error, ", e);
+			return resp;
+		}
+
+		String resultMessage = transactionTemplate.execute(new TransactionCallback<String>() {
+			@Override
+			public String doInTransaction(TransactionStatus status) {
+				String resultMessage;
+				try {
+					List<Long> taskUserIdList = Lists.newArrayList();
+					String[] taskUserIdAray = taskUserIds.split(",");
+					for (String id : taskUserIdAray) {
+						taskUserIdList.add(Long.parseLong(id));
+					}
+					List<AfTaskUserDo> taskUserList = afTaskUserService.getTaskUserListByIds(taskUserIdList);
+					int rewardType = afTaskUserService.isSameRewardType(taskUserList);
+					if (-1 == rewardType) {
+						resultMessage = "任务已经过期啦，快去完成新任务吧";
+					} else if (-2 == rewardType) {
+						afTaskUserService.batchUpdateTaskUserStatus(taskUserIdList);
+						afTaskUserService.saveCouponRewardAndUpdateAccount(taskUserList);
+						resultMessage = "奖励已放入您的账户，继续逛逛能得到更多哦!";
+					} else {
+						afTaskUserService.batchUpdateTaskUserStatus(taskUserIdList);
+						afTaskUserService.saveCouponRewardAndUpdateAccount(taskUserList);
+						resultMessage = afTaskUserService.getRewardAmount(taskUserList, rewardType);
+					}
+
+				}catch(Exception e){
+					resultMessage = "系统异常";
+					logger.error("receiveBrowseTaskRewards error, ", e);
+					status.setRollbackOnly();
+				}
+
+				return resultMessage;
+			}
+		});
+
+		if(StringUtils.isEmpty(resultMessage) || StringUtils.equals("系统异常", resultMessage) || StringUtils.equals("任务已经过期啦，快去完成新任务吧", resultMessage)){
+			data.put("message", resultMessage);
+			resp.setResponseData(data);
+		}
+		else{
+			resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+			data.put("message", resultMessage);
+			resp.setResponseData(data);
 		}
 		return resp;
 	}
