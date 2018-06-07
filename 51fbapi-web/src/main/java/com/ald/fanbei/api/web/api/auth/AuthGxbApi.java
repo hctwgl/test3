@@ -74,7 +74,7 @@ public class AuthGxbApi implements ApiHandle {
 				return new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.AUTH_GXB_GETTOKEN_ERROR );
 			}else{
 				AuthGxbRespBo respInfo = JSONObject.parseObject(respResult, AuthGxbRespBo.class);
-				if ("1".equals(respInfo.getRetCode())) {
+					if ("1".equals(respInfo.getRetCode())) {
 					JSONObject data = JSON.parseObject(respInfo.getData());
 					String token=data.getString("token");
 					logger.info("getAuthToken resp success, token="+token+",respInfo"+respInfo.getRetMsg());

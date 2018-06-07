@@ -32,5 +32,4 @@ public class Login extends BaseTest {
         testApi(url, params, userName, false);
 
     }
-
 }
