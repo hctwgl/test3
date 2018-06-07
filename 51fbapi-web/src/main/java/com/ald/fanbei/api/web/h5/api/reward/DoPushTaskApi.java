@@ -51,7 +51,7 @@ public class DoPushTaskApi implements H5Handle {
                     if(afTaskUserService.getTaskUserByTaskIdAndUserId(taskDo.getRid(),userId) == null){
                         AfTaskUserDo taskUserDo = new AfTaskUserDo();
                         taskUserDo.setGmtCreate(new Date());
-                        taskUserDo.setRewardType(afTaskDo.getRewardType());
+                        taskUserDo.setRewardType(taskDo.getRewardType());
                         taskUserDo.setCoinAmount(taskDo.getCoinAmount());
                         taskUserDo.setCashAmount(taskDo.getCashAmount());
                         taskUserDo.setCouponId(taskDo.getCouponId());
