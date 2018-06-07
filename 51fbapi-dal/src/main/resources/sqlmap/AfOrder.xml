@@ -1500,4 +1500,13 @@
 		FROM af_order
 		WHERE user_id=#{userId} and actual_amount >= #{amount}
 	</select>
+
+	<select id="getFinishOrderCount" resultType="java.lang.Integer" parameterType="java.lang.Long">
+		SELECT count(id) FROM af_order where is_delete = 0 AND order_type = 'SELFSUPPORT' AND status in ('FINISHED','REBATED') AND user_id = #{userId}
+	</select>
+
+	<select id="getSignFinishOrderCount" resultType="java.lang.Integer">
+		SELECT count(id) FROM af_order where is_delete = 0 AND order_type = 'SELFSUPPORT' AND status in ('FINISHED','REBATED') AND user_id = #{userId} AND gmt_create > #{date}
+	</select>
+
 </mapper>

@@ -786,6 +786,17 @@ public class GetHomeInfoV3Api implements ApiHandle {
 
 		//新人运营位查库
 		logger.info("getHomeInfoV3data = " + data);
+		//浏览任务多少时间算完成任务
+		AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("TASK_BROWSE_TIME");
+		if(afResourceDo == null){
+			data.put("taskBrowseTime",10);
+		}else{
+			if(afResourceDo.getValue() == null){
+				data.put("taskBrowseTime",10);
+			}else {
+				data.put("taskBrowseTime",afResourceDo.getValue());
+			}
+		}
 		resp.setResponseData(data);
 		return resp;
 	}

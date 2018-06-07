@@ -596,6 +596,11 @@
 				<entry key="/coupon/getDetailCouponList" value-ref="getDetailCouponListApi" />
 				<entry key="/coupon/getPickCoupon" value-ref="getPickCouponApi" />
 				<entry key="/coupon/getSaleServiceInfo" value-ref="getSaleServiceInfoApi" />
+
+				<!-- 签到领金币记录分享 -->
+				<entry key="/taskUser/addBrowseTaskUser" value-ref="addBrowseTaskUserApi" />
+				<entry key="/taskUser/receiveBrowseTaskRewards" value-ref="receiveBrowseTaskRewardsApi" />
+
 			</map>
 		</constructor-arg>
 	</bean>
@@ -631,7 +636,20 @@
 				<entry key="/h5/recycle/getRecycleProtocol" value-ref="getRecycleProtocolApi" />
 				<!-- 回收业务接口 -->
 				<entry key="/h5/recycle/applyBorrowRecycleCash" value-ref="applyBorrowRecycleCashApi" />
-				
+
+				<!-- 边逛边赚 -->
+				<entry key="/h5/reward/getRewardHomeInfo" value-ref="getRewardHomeInfoApi" />
+				<entry key="/h5/reward/getFinishedTask" value-ref="getFinishedTaskApi" />
+				<entry key="/h5/reward/getRewardDetail" value-ref="getRewardDetailApi" />
+				<entry key="/h5/reward/getWithdrawDetail" value-ref="getWithdrawDetailApi" />
+				<entry key="/h5/reward/getExtractMoney" value-ref="getExtractMoneyApi" />
+				<entry key="/h5/reward/getReceiveReward" value-ref="getReceiveRewardApi" />
+				<entry key="/h5/reward/getSignRemind" value-ref="getSignRemindApi" />
+				<entry key="/h5/reward/doFinishTask" value-ref="doFinishTaskApi" />
+				<entry key="/h5/reward/doShareTask" value-ref="doShareTaskApi" />
+				<entry key="/h5/reward/doPushTask" value-ref="doPushTaskApi" />
+
+
 				<!-- 支付相关接口 -->
 				<entry key="/h5/pay/recycleQuickPaymentResendCode" value-ref="recycleQuickPaymentResendCodeApi" />
 				<entry key="/h5/pay/recycleConfirmPayment" value-ref="recycleConfirmPaymentApi" />

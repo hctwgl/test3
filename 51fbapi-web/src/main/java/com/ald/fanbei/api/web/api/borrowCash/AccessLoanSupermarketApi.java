@@ -9,15 +9,12 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.AfTaskType;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.AfBusinessAccessRecordsService;
-import com.ald.fanbei.api.biz.service.AfGameAwardService;
-import com.ald.fanbei.api.biz.service.AfGameService;
-import com.ald.fanbei.api.biz.service.AfLoanSupermarketService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -52,6 +49,8 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 	AfGameService afGameService;
 	@Resource
 	AfGameAwardService afGameAwardService;
+	@Resource
+	AfTaskUserService afTaskUserService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -74,6 +73,10 @@ public class AccessLoanSupermarketApi implements ApiHandle  {
 				afBusinessAccessRecordsService.saveRecord(afBusinessAccessRecordsDo);
 				
 				this.sign(userId);
+
+				// add by luoxiao 边逛边赚，点击借贷超市链接送奖励，此需求删除
+				// afTaskUserService.taskHandler(context.getUserId(), AfTaskType.VERIFIED.getCode(), null);
+				// end by luoxiao
 			} catch (Exception e) {
 				logger.error("贷款超市访问入库异常-id:"+afLoanSupermarket.getId()+"-名称:"+afLoanSupermarket.getLsmName()+"-userId:"+userId);
 			}

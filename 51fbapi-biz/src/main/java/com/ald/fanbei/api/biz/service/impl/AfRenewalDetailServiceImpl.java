@@ -89,6 +89,8 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
     SmsUtil smsUtil;
     @Resource
     private AfTradeCodeInfoService afTradeCodeInfoService;
+    @Resource
+    AfTaskUserService afTaskUserService;
     
 	@Override
 	public Map<String, Object> createRenewalYiBao(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion,String bankPayType) {
@@ -347,6 +349,11 @@ public class AfRenewalDetailServiceImpl extends BaseService implements AfRenewal
 					afUserAccountDao.updateUserAccount(account);
 
 					afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.RENEWAL_PAY, afRenewalDetailDo.getRebateAmount(), afRenewalDetailDo.getUserId(), afRenewalDetailDo.getRid()));
+
+					// add by luoxiao for 边逛边赚，增加零钱明细
+					afTaskUserService.addTaskUser(afRenewalDetailDo.getUserId(),UserAccountLogType.RENEWAL_PAY.getName(), afRenewalDetailDo.getRebateAmount().multiply(new BigDecimal(-1)));
+					// end by luoxiao
+
 					return 1l;
 				} catch (Exception e) {
 					status.setRollbackOnly();

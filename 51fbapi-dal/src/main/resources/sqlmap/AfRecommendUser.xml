@@ -117,14 +117,20 @@
 			gmt_create,
 			user_id,
 			recommend_code,
-			type
+			type,
+			source,
+			sourceType,
+			shareUrl
 		)
 		VALUES (
 			#{id},
 			NOW(),
 			#{user_id},
 			#{recommend_code},
-			#{type}
+			#{type},
+			#{source},
+			#{sourceType},
+			#{shareUrl}
 		)
 	</insert>
 

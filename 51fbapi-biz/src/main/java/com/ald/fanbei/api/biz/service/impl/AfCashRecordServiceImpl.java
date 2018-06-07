@@ -7,7 +7,9 @@ import java.math.BigDecimal;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.AfTaskUserService;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -48,6 +50,8 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 	AfUserAccountService afUserAccountService;
 	@Resource
 	AfUserAccountLogDao afUserAccountLogDao;
+	@Resource
+	AfTaskUserService afTaskUserService;
 	
 	@Resource
 	AfCashLogDao afCashLogDao;
@@ -83,6 +87,11 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 					afUserAccountLogDo.setUserId(afCashRecordDo.getUserId());
 					afUserAccountLogDo.setAmount(amount);
 					afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
+
+					// add by luoxiao for 边逛边赚，增加零钱明细
+					afTaskUserService.addTaskUser(afCashRecordDo.getUserId(),UserAccountLogType.CASH.getName(), amount.multiply(new BigDecimal(-1)));
+					// end by luoxiao
+
 					if(null == card){//集分宝提现
 						AfCashLogDo cashLog = new AfCashLogDo();
 						cashLog.setCashRecordId(afCashRecordDo.getRid());
@@ -112,6 +121,11 @@ public class AfCashRecordServiceImpl extends BaseService implements AfCashRecord
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public AfCashRecordDo getCashRecordById(Long id){
+		return afCashRecordDao.getCashRecordById(id);
 	}
 
 }

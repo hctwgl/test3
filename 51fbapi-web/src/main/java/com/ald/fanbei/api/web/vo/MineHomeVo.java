@@ -58,6 +58,9 @@ public class MineHomeVo extends AbstractSerial {
     // 优惠券数量
     private Integer couponCount = 0;
 
+    //金币数量
+    private Long availableCoinAmount = 0l;
+
     // 第三方优惠券数量
     private Integer brandCouponCount = 0;
 

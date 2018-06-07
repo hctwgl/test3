@@ -472,4 +472,13 @@ public interface AfOrderService {
 	String getUserFirstBigOrderDate(Long userId, Integer amount);
 
 	String getRefundMsg(AfOrderDo order);
+	/**
+	 * 查询用户完成订单数
+	 */
+	int getFinishOrderCount(Long userId);
+
+
+	int getSignFinishOrderCount(Long userId,Date date);
+
+
 }

@@ -3,15 +3,13 @@ package com.ald.fanbei.api.web.api.auth;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.AfTaskType;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.YituFaceLivingRespBo;
-import com.ald.fanbei.api.biz.service.AfIdNumberService;
 
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserApiCallLimitService;
-import com.ald.fanbei.api.biz.service.AfUserAuthService;
 import com.ald.fanbei.api.biz.third.util.yitu.YituUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -41,6 +39,8 @@ public class CheckFaceApi implements ApiHandle {
 	AfResourceService afResourceService;
 	@Resource
 	AfUserAuthService afUserAuthService;
+	@Resource
+	AfTaskUserService afTaskUserService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -75,6 +75,10 @@ public class CheckFaceApi implements ApiHandle {
 				auth.setFacesStatus(YesNoStatus.YES.getCode());
 				auth.setYdStatus(YesNoStatus.YES.getCode());
 				afUserAuthService.updateUserAuth(auth);
+
+				// add by luoxiao 边逛边赚，实名认证通过送奖励
+				afTaskUserService.taskHandler(context.getUserId(), AfTaskType.VERIFIED.getCode(), null);
+				// end by luoxiao
 				return resp;
 			} else {
 				throw new FanbeiException(FanbeiExceptionCode.USER_FACE_AUTH_ERROR);

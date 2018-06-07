@@ -708,4 +708,52 @@
 		AND
 		is_delete = 0
 	</select>
+	<select id="getAfGoodsListByBrandId" resultType="AfGoodsDo">
+		select
+		<include refid="queryAllFields"></include>
+		from af_goods a where brand_id = #{brandId} and is_delete = 0 AND status = 'PUBLISH' and source = 'SELFSUPPORT' ORDER BY gmt_create desc
+	</select>
+
+	<select id="getTaskGoodsList" resultType="HashMap">
+		select
+			   g.source,
+			   g.rebate_amount,
+			   g.rebate_rate,
+			   g.id Rid,
+			   g.name,
+			   g.goods_icon,
+			   g.goods_url,
+			   g.num_id,
+			   g.price_amount,
+			   g.sale_amount,
+			   g.sale_count,
+			   v.gmt_create,
+			   g.goods_pic1,
+			   c.special_price,
+			   d.interest_free_id
+		from af_goods_verify v,
+			   af_goods g
+		  LEFT JOIN
+			(SELECT goods_id,special_price FROM
+				af_seckill_activity_goods as a , af_seckill_activity as b
+				WHERE a.id = b.id and
+				a.is_delete = 0 AND b.is_delete = 0 AND b.`status` = 1 AND b.`is_disable` =0
+				AND now() > b.gmt_start
+				AND b.gmt_end > now()
+				ORDER BY a.`special_price`) c on c.goods_id = g.`id`
+		LEFT JOIN af_scheme_goods d on d.`goods_id` = g.`id` and d.is_delete =0
+		where g.is_delete= 0
+		   and v.is_delete= 0
+		   and g.id= v.goods_id
+		   and g.source= 'SELFSUPPORT'
+		   and g.status= 'PUBLISH'
+		<if test="categoryId != null and categoryId != ''">
+			AND g.category_id = #{categoryId}
+		</if>
+		<if test="brandId != null and brandId != ''">
+			AND g.brand_id = #{brandId}
+		</if>
+		 order by v.gmt_create DESC
+	</select>
+
 </mapper>

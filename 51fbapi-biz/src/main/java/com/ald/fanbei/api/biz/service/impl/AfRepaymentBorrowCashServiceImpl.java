@@ -114,6 +114,8 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
     AssetSideEdspayUtil assetSideEdspayUtil;
     @Autowired
     KafkaSync kafkaSync;
+    @Resource
+    AfTaskUserService afTaskUserService;
     @Override
     public int addRepaymentBorrowCash(AfRepaymentBorrowCashDo afRepaymentBorrowCashDo) {
         return afRepaymentBorrowCashDao.addRepaymentBorrowCash(afRepaymentBorrowCashDo);
@@ -518,6 +520,10 @@ public class AfRepaymentBorrowCashServiceImpl extends BaseService implements AfR
                     }
 
                     afUserAccountLogDao.addUserAccountLog(addUserAccountLogDo(UserAccountLogType.REPAYMENTCASH, repayment.getRebateAmount(), repayment.getUserId(), repayment.getRid()));
+
+                    // add by luoxiao for 边逛边赚，增加零钱明细
+                    afTaskUserService.addTaskUser(repayment.getUserId(),UserAccountLogType.REPAYMENTCASH.getName(), repayment.getRebateAmount().multiply(new BigDecimal(-1)));
+                    // end by luoxiao
 
                     AfRepaymentBorrowCashDo temRepayMent = new AfRepaymentBorrowCashDo();
                     temRepayMent.setStatus(AfBorrowCashRepmentStatus.YES.getCode());

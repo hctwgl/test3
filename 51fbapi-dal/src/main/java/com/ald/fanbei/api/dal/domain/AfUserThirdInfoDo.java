@@ -8,7 +8,7 @@ import java.util.Date;
 
 /**
  * 实体
- * 
+ *
  * @author wangli
  * @version 1.0.0 初始化
  * @date 2018-05-04 09:20:23
@@ -41,7 +41,7 @@ import java.util.Date;
     private String thirdType;
 
     /**
-     * 第三方信息
+     * 第三方信息，json字符串
      */
     private String thirdInfo;
 
@@ -66,9 +66,6 @@ import java.util.Date;
      */
     private String modifier;
 
-    /**
-     * 用户名
-     */
     private String userName;
 
 }
