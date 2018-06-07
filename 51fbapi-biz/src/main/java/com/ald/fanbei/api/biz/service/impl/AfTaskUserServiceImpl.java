@@ -93,7 +93,6 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 			List<Integer> userLevelList = afTaskService.getUserLevelByUserId(userId);
 			logger.info("browerAndShoppingHandler userLevelList:" + JSON.toJSONString(userLevelList));
 			List<AfTaskDo> taskList = afTaskService.getTaskListByTaskTypeAndUserLevel(afTaskType, userLevelList, null);
-			logger.info("browerAndShoppingHandler taskList0:" + JSON.toJSONString(taskList));
 
 			if(null != taskList && !taskList.isEmpty()) {
 				// 获取商品ID、商品品牌ID、商品分类ID
@@ -159,7 +158,6 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 					}
 
 					if (!toAddTaskUserList.isEmpty()) {
-						logger.info("browerAndShoppingHandler completeTask:" + JSON.toJSONString(toAddTaskUserList));
 						for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
 							insertTaskUserDo(afTaskUserDo);
 						}
