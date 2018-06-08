@@ -134,16 +134,20 @@ public class AppH5LifeController extends BaseController {
             //doWebCheck(request, false);
             FanbeiWebContext context = doWebCheck(request, false);
             boolean isNeedRecycle = false;
+            logger.info("h5ResourceList context"+context+",isNeedRecycle="+isNeedRecycle);
             if(context.isLogin()){
                 AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
                 AfBorrowCashDo borrowCashDo = borrowCashService.getDealingCashByUserId(afUser.getRid());
+                logger.info("h5ResourceList borrowCashDo"+JSON.toJSONString(borrowCashDo)+",isNeedRecycle="+isNeedRecycle);
                 if (borrowCashDo!= null){
                     AfBorrowRecycleOrderDo afBorrowRecycleOrderDo = borrowRecycleOrderService.getBorrowRecycleOrderByBorrowId(borrowCashDo.getRid());
                     if (afBorrowRecycleOrderDo != null){
                         isNeedRecycle = true;
                     }
+                    logger.info("h5ResourceList afBorrowRecycleOrderDo"+JSON.toJSONString(afBorrowRecycleOrderDo)+",isNeedRecycle="+isNeedRecycle);
                 }
             }
+            logger.info("h5ResourceList isNeedRecycle end"+isNeedRecycle);
             String cacheKey = "life:h5ResourceList";
             Object cacheResult = bizCacheUtil.getObject(cacheKey);
             String result = "";
