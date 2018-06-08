@@ -76,21 +76,14 @@ public class GetExtractMoneyApi implements H5Handle {
                 AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.SIGN_REWARD_MAX_WITHDRAW);
                 final String withdrawType = ObjectUtils.toString(context.getData("withdrawType").toString(), null);
 
-                if (withdrawType != null && null != resourceDo) {
+                if (withdrawType != null) {
                     BigDecimal todayWithdrawAmount = afSignRewardWithdrawService.getTodayWithdrawAmount();
                     todayWithdrawAmount = (todayWithdrawAmount == null ? new BigDecimal(0) : todayWithdrawAmount);
-                    if(StringUtils.isEmpty(resourceDo.getValue())){
-                        logger.info("getExtractMoneyApi 没有配置最大可提现金额：{}" + resourceDo.getValue());
-                        resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
-                        return resp;
-                    }
-                    else{
-                        BigDecimal configedMaxAmount = new BigDecimal(resourceDo.getValue());
-                    }
+                    BigDecimal configedMaxAmount = new BigDecimal(resourceDo.getValue());
+                    configedMaxAmount = (configedMaxAmount == null ? new BigDecimal(10000l) : configedMaxAmount);
+                    logger.info("getExtractMoneyApi todayWithdrawAmount=" + todayWithdrawAmount + ",configMaxAmount=" + resourceDo.getValue() + "defaultMaxAmount=" + configedMaxAmount);
 
-                    logger.info("getExtractMoneyApi todayWithdrawAmount={},configMaxAmount={}", todayWithdrawAmount, resourceDo.getValue());
-
-                    if (todayWithdrawAmount.compareTo(new BigDecimal(resourceDo.getValue())) >= 0) {
+                    if (todayWithdrawAmount.compareTo(configedMaxAmount) >= 0) {
                         // 发送预警短信
                         Runnable process = new AysSendSms(todayWithdrawAmount);
                         pool.execute(process);
