@@ -49,7 +49,7 @@ import java.util.*;
  * @类描述：签到领金币
  */
 @RestController
-@RequestMapping(value = "/mySignInfo/")
+@RequestMapping(value = "/mySignInfo/",produces = "application/json;charset=UTF-8")
 public class H5MySignInfoOutController extends H5Controller {
 
     @Resource
