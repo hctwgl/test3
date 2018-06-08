@@ -195,6 +195,15 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 
 			AfOrderDo orderInfo = kuaijieOrderCombinationPayBo.getOrderInfo();
 
+			//更新订单为支付中状态
+			if(!BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {
+				AfOrderDo updateOrderInfo = new AfOrderDo();
+				updateOrderInfo.setRid(orderInfo.getRid());
+				updateOrderInfo.setPayStatus(PayStatus.DEALING.getCode());
+				updateOrderInfo.setOrderStatus(OrderStatus.DEALING.getCode());
+				orderDao.updateOrder(updateOrderInfo);
+			}
+
 			AfBorrowDo borrow = kuaijieOrderCombinationPayBo.getBorrow();
 			AfUserAccountDo userAccountInfo = kuaijieOrderCombinationPayBo.getUserAccountInfo();
 			Map<String, Object> virtualMap = kuaijieOrderCombinationPayBo.getVirtualMap();
