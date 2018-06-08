@@ -177,24 +177,25 @@ public class GetExtractMoneyApi implements H5Handle {
 
         @Override
         public void run() {
-            logger.info("sendSignRewardWithdrawWarn start..");
+            logger.info("aysSendSms start..");
             try {
                 int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
                 String smsKey = currentHour + "sendSignRewardWithdrawWarn";
                 Integer warnHour = (Integer) bizCacheUtil.getObject(smsKey);
                 if (null == warnHour) {
+                    warnHour = currentHour;
+                    bizCacheUtil.saveObject(smsKey, warnHour, Constants.SECOND_OF_AN_HOUR_INT);
+                    logger.info("aysSendSms start, warnHour={}", warnHour);
                     String[] arg = {"18917116090", "15868156133", "15505719987", "17376569906", "13157183226"};
                     for (String mobile : arg) {
                         smsUtil.sendSignRewardWithdrawWarn(mobile, todayWithdrawAmount);
                     }
-                    warnHour = currentHour;
-                    bizCacheUtil.saveObject(smsKey, warnHour, Constants.SECOND_OF_AN_HOUR_INT);
                 }
 
             } catch (Exception e) {
-                logger.error("sendSignRewardWithdrawWarn error, ", e);
+                logger.error("aysSendSms error, ", e);
             }
-            logger.info("sendSignRewardWithdrawWarn end..");
+            logger.info("aysSendSms end..");
         }
     }
 
