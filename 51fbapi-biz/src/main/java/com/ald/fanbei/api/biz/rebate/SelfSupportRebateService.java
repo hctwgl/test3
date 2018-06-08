@@ -49,6 +49,11 @@ public class SelfSupportRebateService extends BaseRebateService {
         orderInfo.setGmtModified(new Date());
         orderInfo.setLogisticsInfo("已签收");
         afOrderDao.updateOrder(orderInfo);
+
+        // add by luoxiao for 边逛边赚,确认收货给与奖励
+        afTaskUserService.browerAndShoppingHandler(orderInfo.getUserId(), orderInfo.getGoodsId(), AfTaskType.SHOPPING.getCode());
+        // end by luoxiao
+
         String log = String.format("selfsupport updateOrder order and orderInfo = %s",JSONObject.toJSONString(orderInfo));
 	logger.info(log);
         return super.addRebateAmount(rebateAmount,orderInfo);

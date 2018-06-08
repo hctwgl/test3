@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_task_user表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfTaskUserDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,user_id,task_id,task_name,coin_amount,cash_amount,coupon_id,status,reward_time,reward_type
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="taskId != null and taskId != ''">
+            AND task_id = #{taskId,jdbcType=INTEGER}
+        </if>
+        <if test="coinAmount != null and coinAmount != ''">
+            AND coin_amount = #{coinAmount,jdbcType=INTEGER}
+        </if>
+        <if test="cashAmount != null and cashAmount != ''">
+            AND cash_amount = #{cashAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="couponId != null and couponId != ''">
+            AND coupon_id = #{couponId,jdbcType=INTEGER}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    <!--<insert id="insertTaskUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" keyProperty="rid">-->
+    <insert id="insertTaskUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" keyProperty="rid" useGeneratedKeys="true">
+        <!--<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>-->
+
+        INSERT INTO af_task_user
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="taskId != null">
+                task_id,
+            </if>
+            <if test="taskName != null">
+                task_name,
+            </if>
+            <if test="rewardType != null">
+                reward_type,
+            </if>
+            <if test="coinAmount != null">
+                coin_amount,
+            </if>
+            <if test="cashAmount != null">
+                cash_amount,
+            </if>
+            <if test="couponId != null">
+                coupon_id,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="rewardTime != null">
+                reward_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="gmtCreate != null" >
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null" >
+                #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null" >
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="taskId != null" >
+                #{taskId,jdbcType=INTEGER},
+            </if>
+            <if test="taskName != null">
+                #{taskName,jdbcType=VARCHAR},
+            </if>
+            <if test="rewardType != null">
+                #{rewardType,jdbcType=INTEGER},
+            </if>
+            <if test="coinAmount != null" >
+                #{coinAmount,jdbcType=INTEGER},
+            </if>
+            <if test="cashAmount != null" >
+                #{cashAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="couponId != null" >
+                #{couponId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="rewardTime != null">
+                #{rewardTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="batchInsertTaskUserDo" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="rid">
+
+        INSERT INTO af_task_user
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            gmt_create,
+            user_id,
+            task_id,
+            task_name,
+            reward_type,
+            coin_amount,
+            cash_amount,
+            coupon_id,
+            status,
+            reward_time,
+        </trim>
+        values
+        <foreach collection="list" item='item' index="index" separator=','>
+            (#{item.gmtCreate,jdbcType=TIMESTAMP},
+            #{item.userId,jdbcType=INTEGER},
+            #{item.taskId,jdbcType=INTEGER},
+            #{item.taskName,jdbcType=VARCHAR},
+            #{item.rewardType,jdbcType=INTEGER},
+            #{item.coinAmount,jdbcType=INTEGER},
+            #{item.cashAmount,jdbcType=DECIMAL},
+            #{item.couponId,jdbcType=INTEGER},
+            #{item.status,jdbcType=INTEGER},
+            #{item.rewardTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        UPDATE af_task_user
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+            <if test="taskId != null and taskId != '' ">        
+                task_id = #{taskId,jdbcType=INTEGER},                
+            </if>
+            <if test="coinAmount != null and coinAmount != '' ">        
+                coin_amount = #{coinAmount,jdbcType=INTEGER},                
+            </if>
+            <if test="cashAmount != null and cashAmount != '' ">        
+                cash_amount = #{cashAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="couponId != null and couponId != '' ">        
+                coupon_id = #{couponId,jdbcType=INTEGER},
+            </if>
+              <if test="status != null and status != '' ">
+                  status = #{status,jdbcType=INTEGER}
+              </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getTodayTaskUserDoByTaskName" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0
+        <if test="rewardType != null and rewardType != '' ">
+            AND reward_type = #{rewardType,jdbcType=INTEGER}
+        </if>
+        AND user_id = #{userId}
+        AND task_name = #{taskName}
+        AND date(gmt_create) = date(now())
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        <include refid="commonCondition"/>
+    </select>
+
+    <select id="isDailyTaskList" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        a.id rid,a.gmt_create,a.gmt_modified,a.user_id,a.task_id,a.task_name,a.coin_amount,a.cash_amount,a.coupon_id,a.status
+        FROM af_task_user a
+        , af_task b WHERE a.task_id = b.id
+        AND a.is_delete = 0
+        and b.is_daily_update = 1
+        AND a.user_id = #{userId}
+        AND date_format(a.gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+        AND a.status = 0
+        AND b.task_begin_time <![CDATA[   <=  ]]> now()
+        AND b.task_end_time <![CDATA[   >=  ]]> now()
+        ORDER BY a.gmt_create desc
+    </select>
+
+    <select id="isNotDailyTaskList" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        a.id rid,a.gmt_create,a.gmt_modified,a.user_id,a.task_id,a.task_name,a.coin_amount,a.cash_amount,a.coupon_id,a.status
+        FROM af_task_user a
+        , af_task b
+        WHERE a.task_id = b.id
+        AND a.is_delete = 0
+        and b.is_daily_update = 0
+        AND a.user_id = #{userId}
+        AND b.task_begin_time <![CDATA[   <=  ]]> now()
+        AND b.task_end_time <![CDATA[   >=  ]]> now()
+        AND a.status = 0
+        ORDER BY a.gmt_create desc
+    </select>
+
+    <select id="getIsDailyTaskUserByTaskIdAndUserId" resultType="AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0
+        AND user_id = #{userId}
+        AND task_id = #{taskId}
+        AND date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+    </select>
+
+    <update id="updateDailyByTaskIdAndUserId"  parameterType="AfTaskUserDo">
+        UPDATE af_task_user set gmt_modified = now(),reward_time = now()
+            <if test="status != null and status != '' ">
+                ,status = #{status}
+            </if>
+        WHERE is_delete = 0 AND user_id = #{userId} AND task_id = #{taskId}
+        AND date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+    </update>
+
+    <update id="updateDailyByTaskNameAndUserId"  parameterType="AfTaskUserDo">
+        UPDATE af_task_user set gmt_modified = now(),reward_time = now()
+        <if test="status != null and status != '' ">
+            ,status = #{status}
+        </if>
+        WHERE is_delete = 0 AND user_id = #{userId} AND task_name = #{taskName}
+        <if test="taskId != null and taskId != '' ">
+            AND task_id = #{taskId}
+        </if>
+        AND date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+    </update>
+
+    <update id="updateNotDailyByTaskIdAndUserId"  parameterType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        UPDATE af_task_user set  gmt_modified = now(),reward_time = now()
+            <if test="status != null and status != '' ">
+                ,status = #{status}
+            </if>
+        WHERE is_delete = 0 AND user_id = #{userId} AND task_id = #{taskId}
+    </update>
+
+    <select id="getAvailableCoinAmount" resultType="java.lang.Long">
+        SELECT
+        sum(coin_amount)
+        FROM af_task_user
+        WHERE status = 1
+        AND reward_type = 0
+        AND user_id = #{userId}
+    </select>
+
+    <select id="getYestadayChangedCoinAmount" resultType="java.lang.Long">
+        SELECT
+        sum(coin_amount)
+        FROM af_task_user
+        WHERE status = '3'
+        AND user_id = #{userId}
+        AND to_days(now()) - to_days(reward_time) = 1
+    </select>
+
+    <select id="getIncomeOfNearlySevenDays" resultType="java.util.HashMap">
+        SELECT a.rewardDate AS rewardDate, IFNULL(b.cashAmount, 0) AS cashAmount
+        FROM (
+            SELECT curdate() AS rewardDate
+            UNION ALL
+            SELECT date_sub(curdate(), INTERVAL 1 DAY) AS rewardDate
+            UNION ALL
+            SELECT date_sub(curdate(), INTERVAL 2 DAY) AS rewardDate
+            UNION ALL
+            SELECT date_sub(curdate(), INTERVAL 3 DAY) AS rewardDate
+            UNION ALL
+            SELECT date_sub(curdate(), INTERVAL 4 DAY) AS rewardDate
+            UNION ALL
+            SELECT date_sub(curdate(), INTERVAL 5 DAY) AS rewardDate
+            UNION ALL
+            SELECT date_sub(curdate(), INTERVAL 6 DAY) AS rewardDate
+        ) a
+        LEFT JOIN (
+            SELECT date(reward_time) AS rewardDate, SUM(cash_amount) AS cashAmount
+            FROM af_task_user where user_id = #{userId}
+            and status = 1
+            and reward_type = 1
+            and cash_amount > 0
+            GROUP BY rewardDate
+        ) b ON a.rewardDate = b.rewardDate
+        ORDER BY a.rewardDate DESC
+    </select>
+
+
+    <select id="getIncomeCoinOfNearlySevenDays" resultType="java.util.HashMap">
+        SELECT a.rewardDate AS rewardDate, IFNULL(b.coinAmount, 0) AS coinAmount
+        FROM (
+        SELECT curdate() AS rewardDate
+        UNION ALL
+        SELECT date_sub(curdate(), INTERVAL 1 DAY) AS rewardDate
+        UNION ALL
+        SELECT date_sub(curdate(), INTERVAL 2 DAY) AS rewardDate
+        UNION ALL
+        SELECT date_sub(curdate(), INTERVAL 3 DAY) AS rewardDate
+        UNION ALL
+        SELECT date_sub(curdate(), INTERVAL 4 DAY) AS rewardDate
+        UNION ALL
+        SELECT date_sub(curdate(), INTERVAL 5 DAY) AS rewardDate
+        UNION ALL
+        SELECT date_sub(curdate(), INTERVAL 6 DAY) AS rewardDate
+        ) a
+        LEFT JOIN (
+        SELECT date(reward_time) AS rewardDate, SUM(coin_amount) AS coinAmount
+        FROM af_task_user where user_id = #{userId} and status = 1
+        GROUP BY rewardDate
+        ) b ON a.rewardDate = b.rewardDate
+        ORDER BY a.rewardDate DESC
+    </select>
+
+    <select id="getDetailsByUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0
+        AND user_id = #{userId}
+        AND reward_type = #{rewardType}
+        AND status in ('1','3')
+        ORDER BY reward_time desc
+    </select>
+
+    <select id="isDailyFinishTaskList" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        a.id rid,a.gmt_create,a.gmt_modified,a.user_id,a.task_id,a.task_name,a.coin_amount,a.cash_amount,a.coupon_id,a.status
+        FROM af_task_user a
+        , af_task b WHERE a.task_id = b.id and b.is_daily_update = 1
+        AND a.is_delete = 0
+        AND a.user_id = #{userId}
+        AND date_format(a.gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+        AND a.status in ('1','3')
+        AND b.task_begin_time <![CDATA[   <=  ]]> now()
+        AND b.task_end_time <![CDATA[   >=  ]]> now()
+        ORDER BY a.gmt_create desc
+    </select>
+
+    <select id="isNotDailyFinishTaskList" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        a.id rid,a.gmt_create,a.gmt_modified,a.user_id,a.task_id,a.task_name,a.coin_amount,a.cash_amount,a.coupon_id,a.status
+        FROM af_task_user a
+        , af_task b WHERE a.task_id = b.id and b.is_daily_update = 0
+        AND a.is_delete = 0
+        and a.status in ('1','3')
+        AND a.user_id = #{userId}
+        AND b.task_begin_time <![CDATA[   <=  ]]> now()
+        AND b.task_end_time <![CDATA[   >=  ]]> now()
+        ORDER BY a.gmt_create desc
+    </select>
+
+    <select id="getTaskUserListByIds" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0
+        AND id IN
+        <foreach collection="taskUserIdList" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getCouponAmountByIds" resultType="java.math.BigDecimal" >
+        SELECT
+          sum(amount) amount
+        FROM af_coupon
+        WHERE is_delete = 0
+        AND id IN
+        <foreach collection="couponIdList" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <update id="batchUpdateTaskUserStatus">
+        update
+        af_task_user set status = 1,reward_time = now()
+        WHERE status = 0
+        and id IN
+        <foreach collection="taskUserIdList" item="item" index="index"
+                 separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <select id="getTodayTaskUserDoByTaskNameAndUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0 AND task_name = #{taskName}
+        AND date(reward_time) = date(now())
+        AND user_id = #{userId}
+        LIMIT 0,1
+    </select>
+
+    <select id="getAccumulatedIncome" resultType="java.math.BigDecimal">
+        SELECT
+        sum(cash_amount)
+        FROM af_task_user
+        WHERE is_delete = 0
+        AND reward_type = 1
+        AND `status` = 1
+        AND cash_amount > 0
+        AND user_id = #{userId}
+        LIMIT 0,1
+    </select>
+
+    <select id="getTaskUserByTaskIdAndUserId" resultType="AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0
+        AND user_id = #{userId}
+        AND task_id = #{taskId}
+    </select>
+
+    <select id="getTodayTaskUserByTaskIdAndUserId" resultType="AfTaskUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task_user
+        WHERE is_delete = 0
+        AND user_id = #{userId}
+        AND task_id = #{taskId}
+        AND date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+    </select>
+
+    <select id="getIsNotDailyTaskListByUserId" resultType="AfTaskUserDo">
+        SELECT
+        a.id rid,a.gmt_create,a.gmt_modified,a.user_id,a.task_id,a.task_name,a.coin_amount,a.cash_amount,a.coupon_id,a.status
+        FROM af_task_user a
+        , af_task b WHERE a.task_id = b.id
+        AND a.is_delete = 0
+        and b.is_daily_update = 0
+        AND a.user_id = #{userId}
+        AND b.task_begin_time <![CDATA[   <=  ]]> now()
+        AND b.task_end_time <![CDATA[   >=  ]]> now()
+        ORDER BY a.gmt_create desc
+    </select>
+
+    <select id="getIsDailyTaskListByUserId" resultType="AfTaskUserDo">
+        SELECT
+        a.id rid,a.gmt_create,a.gmt_modified,a.user_id,a.task_id,a.task_name,a.coin_amount,a.cash_amount,a.coupon_id,a.status
+        FROM af_task_user a
+        , af_task b WHERE a.task_id = b.id
+        AND a.is_delete = 0
+        and b.is_daily_update = 1
+        AND a.user_id = #{userId}
+        AND date_format(a.gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+        AND b.task_begin_time <![CDATA[   <=  ]]> now()
+        AND b.task_end_time <![CDATA[   >=  ]]> now()
+        ORDER BY a.gmt_create desc
+    </select>
+
+
+
+</mapper>

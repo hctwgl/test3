@@ -1137,4 +1137,29 @@ public class AfResourceServiceImpl implements AfResourceService {
         rateInfo.put("totalRate", totalRate);
         return rateInfo;
     }
+
+
+    public List<Object> rewardBannerList(String type,String homeBanner){
+        List<Object> rewardBannerList = new ArrayList<Object>();
+        if (Constants.INVELOMENT_TYPE_ONLINE.equals(type) || Constants.INVELOMENT_TYPE_TEST.equals(type)) {
+            rewardBannerList = getObjectWithResourceDolist(getResourceHomeListByTypeOrderBy(homeBanner));
+        } else if (Constants.INVELOMENT_TYPE_PRE_ENV.equals(type)) {
+            rewardBannerList = getObjectWithResourceDolist(getResourceHomeListByTypeOrderByOnPreEnv(homeBanner));
+        }
+        return rewardBannerList;
+    }
+
+    public List<Object> getObjectWithResourceDolist(List<AfResourceDo> bannerResclist) {
+        List<Object> bannerList = new ArrayList<Object>();
+        for (AfResourceDo afResourceDo : bannerResclist) {
+            Map<String, Object> data = new HashMap<String, Object>();
+            data.put("imageUrl", afResourceDo.getValue());
+            data.put("titleName", afResourceDo.getName());
+            data.put("type", afResourceDo.getSecType());
+            data.put("content", afResourceDo.getValue2());
+            data.put("sort", afResourceDo.getSort());
+            bannerList.add(data);
+        }
+        return bannerList;
+    }
 }
