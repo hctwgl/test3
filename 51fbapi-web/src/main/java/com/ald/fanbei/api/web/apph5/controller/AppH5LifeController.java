@@ -291,7 +291,7 @@ public class AppH5LifeController extends BaseController {
     }
 
     // 构建结果数据
-    private List<Map<String, Object>> buildResourceList(List<AfResourceH5Dto> resourceH5Dtos,Boolean isNeedRecycle) {
+    private List<Map<String, Object>> buildResourceList(List<AfResourceH5Dto> resourceH5Dtos,boolean isNeedRecycle) {
         List<Map<String, Object>> result = new ArrayList<>();
 
         for (AfResourceH5Dto resource : resourceH5Dtos) {
@@ -306,6 +306,8 @@ public class AppH5LifeController extends BaseController {
             AfResourceH5ItemDto floorImageResource = itemList.remove(0);
             e.put("floorImage", floorImageResource.getValue3());
             e.put("type", resource.getSort());
+            e.put("isNeedRecycle",isNeedRecycle);
+            logger.info("buildResourceList e="+JSON.toJSONString(e)+",isNeedRecycle="+isNeedRecycle);
             List<Map<String, Object>> itemMapList = CollectionConverterUtil.convertToListFromList(itemList,
                     new Converter<AfResourceH5ItemDto, Map<String, Object>>() {
                         @Override
@@ -318,7 +320,6 @@ public class AppH5LifeController extends BaseController {
                         }
                     });
             e.put("list", itemMapList);
-            e.put("isNeedRecycle",isNeedRecycle);
             result.add(e);
         }
 
