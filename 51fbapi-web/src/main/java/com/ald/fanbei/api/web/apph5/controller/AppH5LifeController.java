@@ -4,15 +4,13 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.BottomGoodsPageFlag;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CollectionConverterUtil;
-import com.ald.fanbei.api.common.util.CollectionUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.Converter;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfBottomGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfResourceH5Dto;
@@ -20,6 +18,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfResourceH5ItemDto;
 import com.ald.fanbei.api.dal.domain.query.AfBottomGoodsQuery;
 import com.ald.fanbei.api.dal.domain.query.AfShopQuery;
 import com.ald.fanbei.api.web.common.*;
+import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.vo.AfShopVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -34,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -89,6 +89,15 @@ public class AppH5LifeController extends BaseController {
     @Autowired
     private BizCacheUtil bizCacheUtil;
 
+    @Resource
+    private AfUserService afUserService;
+
+    @Resource
+    private AfBorrowRecycleOrderService borrowRecycleOrderService;
+
+    @Resource
+    private AfBorrowCashService borrowCashService;
+
     @RequestMapping(value = "/categoryAndBanner", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String getCategoryAndBanner(HttpServletRequest request) {
@@ -123,6 +132,18 @@ public class AppH5LifeController extends BaseController {
     public String findH5ResourceList(HttpServletRequest request) {
         try {
             //doWebCheck(request, false);
+            FanbeiWebContext context = doWebCheck(request, false);
+            boolean isNeedRecycle = false;
+            if(context.isLogin()){
+                AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+                AfBorrowCashDo borrowCashDo = borrowCashService.getBorrowCashByUserId(afUser.getRid());
+                if (borrowCashDo!= null){
+                    AfBorrowRecycleOrderDo afBorrowRecycleOrderDo = borrowRecycleOrderService.getBorrowRecycleOrderByBorrowId(borrowCashDo.getRid());
+                    if (afBorrowRecycleOrderDo != null){
+                        isNeedRecycle = true;
+                    }
+                }
+            }
             String cacheKey = "life:h5ResourceList";
             Object cacheResult = bizCacheUtil.getObject(cacheKey);
             String result = "";
@@ -137,7 +158,7 @@ public class AppH5LifeController extends BaseController {
                     return H5CommonResponse.getNewInstance(false, "页面走丢了").toString();
                 }
 
-                List<Map<String, Object>> data = buildResourceList(resourceH5Dtos);
+                List<Map<String, Object>> data = buildResourceList(resourceH5Dtos,isNeedRecycle);
                 result = H5CommonResponse
                         .getNewInstance(true, "成功", "", data).toString();
 
@@ -266,7 +287,7 @@ public class AppH5LifeController extends BaseController {
     }
 
     // 构建结果数据
-    private List<Map<String, Object>> buildResourceList(List<AfResourceH5Dto> resourceH5Dtos) {
+    private List<Map<String, Object>> buildResourceList(List<AfResourceH5Dto> resourceH5Dtos,Boolean isNeedRecycle) {
         List<Map<String, Object>> result = new ArrayList<>();
 
         for (AfResourceH5Dto resource : resourceH5Dtos) {
@@ -293,7 +314,7 @@ public class AppH5LifeController extends BaseController {
                         }
                     });
             e.put("list", itemMapList);
-
+            e.put("isNeedRecycle",isNeedRecycle);
             result.add(e);
         }
 
