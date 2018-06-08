@@ -134,20 +134,20 @@ public class AppH5LifeController extends BaseController {
             //doWebCheck(request, false);
             FanbeiWebContext context = doWebCheck(request, false);
             boolean isNeedRecycle = false;
-            logger.info("h5ResourceList context"+context+",isNeedRecycle="+isNeedRecycle);
+//            logger.info("h5ResourceList context"+context+",isNeedRecycle="+isNeedRecycle);
             if(context.isLogin()){
                 AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
                 AfBorrowCashDo borrowCashDo = borrowCashService.getDealingCashByUserId(afUser.getRid());
-                logger.info("h5ResourceList borrowCashDo"+JSON.toJSONString(borrowCashDo)+",isNeedRecycle="+isNeedRecycle);
+//                logger.info("h5ResourceList borrowCashDo"+JSON.toJSONString(borrowCashDo)+",isNeedRecycle="+isNeedRecycle);
                 if (borrowCashDo!= null){
                     AfBorrowRecycleOrderDo afBorrowRecycleOrderDo = borrowRecycleOrderService.getBorrowRecycleOrderByBorrowId(borrowCashDo.getRid());
                     if (afBorrowRecycleOrderDo != null){
                         isNeedRecycle = true;
                     }
-                    logger.info("h5ResourceList afBorrowRecycleOrderDo"+JSON.toJSONString(afBorrowRecycleOrderDo)+",isNeedRecycle="+isNeedRecycle);
+//                    logger.info("h5ResourceList afBorrowRecycleOrderDo"+JSON.toJSONString(afBorrowRecycleOrderDo)+",isNeedRecycle="+isNeedRecycle);
                 }
             }
-            logger.info("h5ResourceList isNeedRecycle end"+isNeedRecycle);
+//            logger.info("h5ResourceList isNeedRecycle end"+isNeedRecycle);
             //保留回收中的展示入口，非回收隐藏回收接口
 //            String cacheKey = "life:h5ResourceList";
 //            Object cacheResult = bizCacheUtil.getObject(cacheKey);
@@ -171,7 +171,7 @@ public class AppH5LifeController extends BaseController {
 //                    bizCacheUtil.saveObject(cacheKey, result, 180);
 //                }
             }
-            logger.info("h5ResourceList result ="+result);
+//            logger.info("h5ResourceList result ="+result);
             return result;
         } catch (Exception e) {
             logger.error("/fanbei-web/life/h5ResourceList error：", e);
@@ -308,7 +308,6 @@ public class AppH5LifeController extends BaseController {
             e.put("floorImage", floorImageResource.getValue3());
             e.put("type", resource.getSort());
             e.put("isNeedRecycle",isNeedRecycle);
-            logger.info("buildResourceList e="+JSON.toJSONString(e)+",isNeedRecycle="+isNeedRecycle);
             List<Map<String, Object>> itemMapList = CollectionConverterUtil.convertToListFromList(itemList,
                     new Converter<AfResourceH5ItemDto, Map<String, Object>>() {
                         @Override
