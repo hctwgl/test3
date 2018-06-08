@@ -16,6 +16,7 @@ import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -77,7 +78,18 @@ public class GetExtractMoneyApi implements H5Handle {
 
                 if (withdrawType != null && null != resourceDo) {
                     BigDecimal todayWithdrawAmount = afSignRewardWithdrawService.getTodayWithdrawAmount();
+                    todayWithdrawAmount = (todayWithdrawAmount == null ? new BigDecimal(0) : todayWithdrawAmount);
+                    if(StringUtils.isEmpty(resourceDo.getValue())){
+                        logger.info("getExtractMoneyApi 没有配置最大可提现金额：{}" + resourceDo.getValue());
+                        resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
+                        return resp;
+                    }
+                    else{
+                        BigDecimal configedMaxAmount = new BigDecimal(resourceDo.getValue());
+                    }
+
                     logger.info("getExtractMoneyApi todayWithdrawAmount={},configMaxAmount={}", todayWithdrawAmount, resourceDo.getValue());
+
                     if (todayWithdrawAmount.compareTo(new BigDecimal(resourceDo.getValue())) >= 0) {
                         // 发送预警短信
                         Runnable process = new AysSendSms(todayWithdrawAmount);
@@ -158,6 +170,7 @@ public class GetExtractMoneyApi implements H5Handle {
                 return resp;
             } finally {
                 bizCacheUtil.delCache(key);
+                resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
             }
         }
         return resp;
