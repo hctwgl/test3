@@ -263,6 +263,11 @@ id as rid,gmt_create,gmt_modified,creator,modifier,goods_id,property_value_ids,p
         FROM af_goods_price
         WHERE goods_id=#{goodsId} AND lease_sale='Y'
     </select>
-
+	
+	<select id="getCheapByGoodsId" resultType="AfGoodsPriceDto" parameterType="java.lang.Long">
+		 SELECT
+        <include refid="queryFields" />
+		from af_goods_price where goods_id= #{goodsId} and is_delete= 0 ORDER BY actual_amount asc limit 1
+	</select>
 
 </mapper>
