@@ -635,13 +635,12 @@ public class H5SignInfoOutController extends H5Controller {
                 data.put("openType","2");
                 return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
             }
+            data.put("userName",thirdInfo.getUserName());
             Long firendUserId = thirdInfo.getUserId();
             if(StringUtil.equals(firendUserId+"",userId+"")){//已经绑定并且是自己打开
-                data.put("userName",thirdInfo.getUserName());
                 data = homeInfo(userId,data,push,appVersion);
                 data.put("openType","0");
             } else if(!StringUtil.equals(firendUserId+"",userId+"") ){//已绑定
-                data.put("userName",thirdInfo.getUserName());
                 data = homeInfo(firendUserId,data,push,appVersion);
                 AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
                 afSignRewardDo.setIsDelete(0);
