@@ -219,6 +219,7 @@ public class H5SignInfoOutController extends H5Controller {
                 data.put("openType","2");
                 return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
             }
+            data.put("userName",thirdInfo.getUserName());
             Long friendUserId = thirdInfo.getUserId();
             if(StringUtil.equals(friendUserId+"",userId+"")){//已经绑定并且是自己打开
                 data = homeInfo(userId,data,push,appVersion);
@@ -241,7 +242,6 @@ public class H5SignInfoOutController extends H5Controller {
                 if(!friendSign(afSignRewardDo,userId,friendUserId,data)){
                     return H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_SIGN_FAIL.getDesc(),"",data ).toString();
                 }
-                data.put("userName",thirdInfo.getUserName());
                 data.put("openType","1");
                 data.put("flag","success");
             }
