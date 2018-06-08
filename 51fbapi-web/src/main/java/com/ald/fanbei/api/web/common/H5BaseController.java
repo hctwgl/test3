@@ -87,7 +87,7 @@ public abstract class H5BaseController {
 			retMsg = JSON.toJSONString(baseResponse);
 		}
 		doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"));
-		maidianLog.info("req method=>"+context.getMethod()+",userId=>"+context.getUserId()+",response msg=>" + retMsg);
+		logger.info("req method=>"+context.getMethod()+",userId=>"+context.getUserId()+",response msg=>" + retMsg);
 		return retMsg;
 	}
 
