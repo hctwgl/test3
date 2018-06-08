@@ -24,11 +24,13 @@ public interface AfRenewalDetailService {
 	 * 
 	 * @return
 	 */
-	Map<String, Object> createRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion,String bankPayType);
+	Map<String, Object> createRenewal(AfBorrowCashDo afBorrowCashDo, BigDecimal jfbAmount, BigDecimal repaymentAmount, BigDecimal actualAmount, BigDecimal rebateAmount, BigDecimal capital, Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo, Integer appVersion,String bankPayType,String majiabaoName);
 
 	public long dealRenewalSucess(String outTradeNo, String tradeNo);
 
 	public long dealRenewalFail(final String outTradeNo, final String tradeNo,String errorMsg);
+
+	public long dealRenewalFail(final String outTradeNo, final String tradeNo,String errorMsg,String majiabaoName);
 
 	/**
 	 * 续借信息

@@ -1437,6 +1437,8 @@ public class AppH5InvitationActivityController extends BaseController {
             type=1;
         }else if("sharewithQZONE".equals(shareWith)){
             type=2;
+        }else if("sharewithQRCODE".equals(shareWith)){
+            type=3;
         }else{
             resp = H5CommonResponse.getNewInstance(false, FanbeiExceptionCode.PARAM_ERROR.getDesc(), "", null);
             return resp.toString();

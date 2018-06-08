@@ -13,9 +13,11 @@ import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfUserCouponStatus;
 import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.druid.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -346,10 +348,26 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
                             //送优惠券
                             if (couponDo != null) {
                                 AfUserCouponDo userCoupon = new AfUserCouponDo();
+
+								if (StringUtils.equals(couponDo.getExpiryType(), "R")) {
+									userCoupon.setGmtStart(couponDo.getGmtStart());
+									userCoupon.setGmtEnd(couponDo.getGmtEnd());
+									if (DateUtil.afterDay(new Date(), couponDo.getGmtEnd())) {
+										userCoupon.setStatus(CouponStatus.EXPIRE.getCode());
+									}
+								} else {
+									userCoupon.setGmtStart(new Date());
+									if (couponDo.getValidDays() == -1) {
+										userCoupon.setGmtEnd(DateUtil.getFinalDate());
+									} else {
+										userCoupon.setGmtEnd(DateUtil.addDays(new Date(), couponDo.getValidDays()));
+									}
+								}
+
                                 userCoupon.setCouponId(couponDo.getRid());
                                 userCoupon.setGmtCreate(new Date());
-                                userCoupon.setGmtStart(couponDo.getGmtStart());
-                                userCoupon.setGmtEnd(couponDo.getGmtEnd());
+                              //  userCoupon.setGmtStart(couponDo.getGmtStart());
+                               // userCoupon.setGmtEnd(couponDo.getGmtEnd());
                                 userCoupon.setUserId(userId);
                                 userCoupon.setStatus(AfUserCouponStatus.NOUSE.getCode());
                                 userCoupon.setSourceType(CouponSenceRuleType.SHARE_ACTIVITY.getCode());
@@ -361,9 +379,10 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
                             }
                         }
 						//修改订单状态为已完成
-						logger.info("updateUserActivityGoodsInfo updateOrderStatus rid: " + orderInfo.getRid() );
-						orderDao.updateOrderStatus(orderInfo.getRid());
-						//获取资源信息
+						/*logger.info("updateUserActivityGoodsInfo updateOrderStatus rid: " + orderInfo.getRid() );
+						orderDao.updateOrderStatus(orderInfo.getRid());*/
+						/*//获取资源信息
+
 						AfResourceDo resourceInfo1 = afResourceService.getConfigByTypesAndSecType(Constants.SMS_TEMPLATE, Constants.SMS_ACTIVITY_RESERVATION_GOODS);
 						if(resourceInfo1 != null){
 							String content = resourceInfo1.getValue();
@@ -371,14 +390,18 @@ public class AfSeckillActivityServiceImpl extends ParentServiceImpl<AfSeckillAct
 							String mobile = orderInfo.getConsigneeMobile();
 							logger.info("sendSMS mobile:" + mobile + "  content: " + content);
 							smsUtil.sendSmsToDhstAishangjie(mobile, content);
-						}
+						}*/
 					}
 					//付售价
 				}else {
 					logger.info("updateUserActivityGoodsInfo payEndAmount userId: " + orderInfo.getUserId() );
 
-					AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
-					afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo);
+					//添加指定商品券
+//					AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
+//					afUserCouponService.sendActivityCouponByGoods(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo, orderInfo.getGoodsId());
+
+					AfResourceDo resourceDo1 = afResourceService.getSingleResourceBytype(Constants.TAC_ACTIVITY);
+					afUserCouponService.sendActivityCouponByCouponGroupRandom(orderInfo.getUserId(),CouponSenceRuleType.SELFSUPPORT_PAID.getCode(), resourceDo1);
 
 					//查询预售活动商品
 					List<AfActivityReservationGoodsUserDo>  AfActivityReservationGoodsUserDoList = afActivityReservationGoodsUserDao.getActivityReservationGoodsList(map);

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -250,7 +251,15 @@ public class AfUserAccountServiceImpl implements AfUserAccountService {
 
 	@Override
 	public Integer getCountByIdNumer(String citizenId, Long userId) {
-		return afUserAccountDao.getCountByIdNumer(citizenId, userId);
+		Integer result = 0;
+		Integer c = afUserAccountDao.getCountByIdNumer(citizenId, userId);//身份证是否被认证
+		if(c > 0){
+			c = afUserAccountDao.getCountByIdNumerByUserId(citizenId,userId);//身份证是否被当前用户认证
+			if(c == 0){//没有被当前用户认证
+				result = c;
+			}
+		}
+		return result;
 	}
 
 	@Override

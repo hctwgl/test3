@@ -252,7 +252,69 @@ public class AfAssetPackageDetailServiceImpl extends ParentServiceImpl<AfAssetPa
 			return 1;
 		}
 	}
-	
+
+	@Override
+	public int addPackageDetailLoanTime(List<String> orderNos, Date loanTime, Integer debtType) {
+		
+		for (String tempBorrowNo : orderNos) {
+			final String borrowNo = tempBorrowNo;
+			final AfAssetPackageDetailDo afAssetPackageDetail = afAssetPackageDetailDao.getByBorrowNo(borrowNo);
+			if (afAssetPackageDetail == null) {
+				logger.error("batchGiveBackCreditInfo error ,orderNo not exists,borrowNo=" + borrowNo);
+				continue;
+			}
+			final AfAssetPackageDo packageDo = afAssetPackageDao.getById(afAssetPackageDetail.getAssetPackageId());
+			if (packageDo == null) {
+				logger.error("batchGiveBackCreditInfo error ,packageDo not exists,id=" + afAssetPackageDetail.getAssetPackageId());
+				continue;
+			}
+
+			try {
+				if (!AfAssetPackageDetailStatus.VALID.getCode().equals(afAssetPackageDetail.getStatus())) {
+					logger.error("batchGiveBackCreditInfo error ,afAssetPackageDetail is invalid,borrowNo=" + borrowNo);
+					return 0;
+				}
+
+				if (debtType == 1) {
+					//消费分期
+					AfBorrowDo BorrowDo = afBorrowDao.getBorrowById(afAssetPackageDetail.getBorrowCashId());
+					if (BorrowDo == null) {
+						logger.error("batchGiveBackCreditInfo error ,borrow not exists,id=" + afAssetPackageDetail.getBorrowCashId());
+						return 0;
+					}
+					
+				} else if (debtType == 0) {
+					//现金贷
+					AfBorrowCashDo borrowCashDo = afBorrowCashDao.getBorrowCashByrid(afAssetPackageDetail.getBorrowCashId());
+					if (borrowCashDo == null) {
+						logger.error("batchGiveBackCreditInfo error ,borrowCash not exists,id=" + afAssetPackageDetail.getBorrowCashId());
+						return 0;
+					}
+
+				} else {
+					//白领贷
+					AfLoanDo loanDo = afLoanDao.getLoanById(afAssetPackageDetail.getBorrowCashId());
+					if (loanDo == null) {
+						logger.error("batchGiveBackCreditInfo error ,loan not exists,id=" + afAssetPackageDetail.getBorrowCashId());
+						return 0;
+					}
+
+				}
+				
+				//记录放款时间
+				AfAssetPackageDetailDo afAssetPackageDetailTemp = new AfAssetPackageDetailDo();
+				afAssetPackageDetailTemp.setRid(afAssetPackageDetail.getRid());
+				afAssetPackageDetailTemp.setLoanTime(loanTime);
+				afAssetPackageDetailDao.updateById(afAssetPackageDetailTemp);
+			} catch (Exception e) {
+				logger.error("batchGiveBackCreditInfo exe exception ,borrowNo=" + borrowNo, e);
+				return 0;
+			}
+		}
+
+		return 1;
+	}
+
 	/**
 	 * 单个债权包明细撤回操作
 	 * @param orderNo

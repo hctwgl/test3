@@ -1,7 +1,9 @@
 package com.ald.fanbei.api.biz.bo.assetside.edspay;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
-import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 钱包回传打款结果的请求实体
@@ -19,6 +21,18 @@ public class EdspayGiveBackPayResultReqBo implements Serializable {
 	private Integer type ;//回传类型 1审核结果，2放款结果
 	private Integer code ;//回传结果:0成功1失败
 	private String message ;
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+	private Date loanTime;
+
+	public Date getLoanTime() {
+		return loanTime;
+	}
+
+	public void setLoanTime(Date loanTime) {
+		this.loanTime = loanTime;
+	}
+
 	public Integer getDebtType() {
 		return debtType;
 	}

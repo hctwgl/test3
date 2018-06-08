@@ -151,7 +151,7 @@
         aag.id rid,aag.goods_id,aag.gmt_create,aag.gmt_modified,sag.limit_count,aag.coupon_id,aag.sort
         , sa.gmt_start, sa.gmt_end, ag.name goodsName, sag.special_price activityAmount
         , if(MIN(b.actual_amount) > 0, MIN(b.actual_amount), 0)  saleAmount
-        , if((MIN(b.actual_amount) - ac.amount ) > 0, MIN(b.actual_amount) - ac.amount , 0) end_amount
+        , if((MIN(b.actual_amount) - ac.amount + sag.special_price ) > 0, MIN(b.actual_amount) - ac.amount + sag.special_price , 0) end_amount
         , ac.amount couponPrice, agu.id userReservationId, ifnull(agu.goods_count, 0)  goodsCount
         , ag.goods_icon, ag.thumbnail_icon, ag.goods_url
         FROM af_activity_reservation_goods  aag
@@ -180,7 +180,7 @@
         aag.id rid,aag.goods_id,aag.gmt_create,aag.gmt_modified,sag.limit_count,aag.coupon_id,aag.sort
         , sa.gmt_start, sa.gmt_end, ag.name goodsName, sag.special_price activityAmount
         , if(MIN(b.actual_amount) > 0, MIN(b.actual_amount), 0)  saleAmount
-        , if((MIN(b.actual_amount) - ac.amount ) > 0, MIN(b.actual_amount) - ac.amount , 0) end_amount
+        , if((MIN(b.actual_amount) - ac.amount + sag.special_price) > 0, MIN(b.actual_amount) - ac.amount  + sag.special_price, 0) end_amount
         , ac.amount couponPrice, ifnull(agu.goods_count, 0) goods_count
         , ag.goods_icon, ag.thumbnail_icon, ag.goods_url
         FROM af_activity_reservation_goods  aag
@@ -199,6 +199,26 @@
         )
         GROUP BY aag.goods_id
         order by aag.sort asc
+    </select>
+
+    <select id="getReservationGoodsList" resultType="com.ald.fanbei.api.dal.domain.AfGoodsDo" >
+        SELECT g.id rid,ifnull(t.activity_price,g.`sale_amount` ) activity_price,g.*
+        FROM af_activity_reservation_goods s
+        INNER JOIN af_goods g ON s.goods_id = g.id and g.status = 'PUBLISH'
+        LEFT JOIN (SELECT min(a.special_price) 'activity_price',a.goods_id
+        FROM`af_seckill_activity_goods` a
+        INNER JOIN af_seckill_activity b ON a.activity_id = b.id
+         WHERE a.is_delete = 0
+         and b.status = 1
+         AND b.is_disable = 0
+          AND b.is_delete = 0
+         	and b.id = #{activityId,jdbcType=INTEGER}
+        GROUP BY a.goods_id
+        ORDER BY b.gmt_create DESC) t on s.goods_id = t.goods_id
+        WHERE
+        s.is_delete=0
+        and s.gmt_create >= '2018-06-05 15:00:00'
+        order by s.sort asc
     </select>
     
 </mapper>

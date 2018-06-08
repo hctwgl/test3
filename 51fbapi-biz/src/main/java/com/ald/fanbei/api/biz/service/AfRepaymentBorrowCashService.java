@@ -21,10 +21,14 @@ public interface AfRepaymentBorrowCashService {
 											 Long borrow, Long cardId, Long userId, String clientIp, AfUserAccountDo afUserAccountDo,String bankPayType);
 
 	Map<String,Object> createRepayment(BigDecimal jfbAmount,BigDecimal repaymentAmount,BigDecimal actualAmount,AfUserCouponDto coupon,
-			BigDecimal rebateAmount,Long borrow,Long cardId,Long userId,String clientIp,AfUserAccountDo afUserAccountDo,String bankPayType);
+			BigDecimal rebateAmount,Long borrow,Long cardId,Long userId,String clientIp,AfUserAccountDo afUserAccountDo,String bankPayType,String majiabaoName);
 	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo);
-	
+
+	public long dealRepaymentSucess(final String outTradeNo, final String tradeNo,String majiabaoName);
+
 	public long dealRepaymentFail(final String outTradeNo, final String tradeNo,boolean isNeedMsgNotice,String errorMsg,AfRepaymentBorrowCashDo repayment);
+
+	public long dealRepaymentFail(final String outTradeNo, final String tradeNo,boolean isNeedMsgNotice,String errorMsg,AfRepaymentBorrowCashDo repayment,String majiabaoName);
 	/**
 	 * 增加记录
 	 * 

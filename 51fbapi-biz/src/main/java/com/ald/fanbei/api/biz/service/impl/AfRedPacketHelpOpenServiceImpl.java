@@ -3,7 +3,9 @@ package com.ald.fanbei.api.biz.service.impl;
 import com.ald.fanbei.api.biz.service.AfRedPacketHelpOpenService;
 import com.ald.fanbei.api.biz.service.AfRedPacketTotalService;
 import com.ald.fanbei.api.biz.service.AfResourceService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.WxUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.dal.dao.AfRedPacketHelpOpenDao;
@@ -50,6 +52,9 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
     @Autowired
     private TransactionTemplate transactionTemplate;
 
+    @Autowired
+    private BizCacheUtil bizCacheUtil;
+
 	@Override
 	public List<AfRedPacketHelpOpenDo> findOpenRecordList(Long redPacketTotalId, Integer queryNum) {
 		return afRedPacketHelpOpenDao.findOpenRecordList(redPacketTotalId, queryNum);
@@ -80,29 +85,39 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
         String secret = afResourceDo.getValue1();
         final JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
 
-        return transactionTemplate.execute(new TransactionCallback<AfRedPacketHelpOpenDo>() {
-            @Override
-            public AfRedPacketHelpOpenDo doInTransaction(TransactionStatus transactionStatus) {
-                AfRedPacketTotalDo shareRedPacket = afRedPacketTotalService.getById(shareId);
+        String lock = "AfRedPacketHelpOpenServiceImpl_open_lock_" + wxCode;
+		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,500, Constants.SECOND_OF_TEN_MINITS);
+		if (isLock) {
+			try {
+				return transactionTemplate.execute(new TransactionCallback<AfRedPacketHelpOpenDo>() {
+					@Override
+					public AfRedPacketHelpOpenDo doInTransaction(TransactionStatus transactionStatus) {
+						AfRedPacketTotalDo shareRedPacket = afRedPacketTotalService.getById(shareId);
 
-                checkIsCanOpen(shareRedPacket, userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
+						checkIsCanOpen(shareRedPacket, userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
 
-                AfRedPacketHelpOpenDo helpOpenDo = new AfRedPacketHelpOpenDo();
-                helpOpenDo.setOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
-                helpOpenDo.setFriendNick(userWxInfo.getString(UserWxInfoDto.KEY_NICK));
-                helpOpenDo.setFriendAvatar(userWxInfo.getString(UserWxInfoDto.KEY_AVATAR));
-                helpOpenDo.setRedPacketTotalId(shareId);
-                helpOpenDo.setUserId(shareRedPacket.getUserId());
+						AfRedPacketHelpOpenDo helpOpenDo = new AfRedPacketHelpOpenDo();
+						helpOpenDo.setOpenId(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID));
+						helpOpenDo.setFriendNick(userWxInfo.getString(UserWxInfoDto.KEY_NICK));
+						helpOpenDo.setFriendAvatar(userWxInfo.getString(UserWxInfoDto.KEY_AVATAR));
+						helpOpenDo.setRedPacketTotalId(shareId);
+						helpOpenDo.setUserId(shareRedPacket.getUserId());
 
-                AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
-                fillAmountAndDiscountInfo(config, helpOpenDo, shareRedPacket);
-                saveRecord(helpOpenDo);
+						AfResourceDo config = afResourceService.getSingleResourceBytype(ResourceType.OPEN_REDPACKET.getCode());
+						fillAmountAndDiscountInfo(config, helpOpenDo, shareRedPacket);
+						saveRecord(helpOpenDo);
 
-                afRedPacketTotalService.updateAmount(shareRedPacket.getRid(), helpOpenDo.getAmount(), "");
+						afRedPacketTotalService.updateAmount(shareRedPacket.getRid(), helpOpenDo.getAmount(), "");
 
-                return helpOpenDo;
-            }
-        });
+						return helpOpenDo;
+					}
+				});
+			} finally {
+				bizCacheUtil.delCache(lock);
+			}
+		} else {
+			throw new RuntimeException(lock + "锁没有获取到");
+		}
 	}
 
 	@Override
@@ -165,6 +180,14 @@ public class AfRedPacketHelpOpenServiceImpl extends ParentServiceImpl<AfRedPacke
 
 		BigDecimal thresholdAmount = redPacketConfig.getBigDecimal("thresholdAmount");
 		BigDecimal withdrawRestAmount = afRedPacketTotalService.calcWithdrawRestAmount(shareRedPacket, thresholdAmount);
-		helpOpenDo.setAmount(withdrawRestAmount.multiply(helpOpenDo.getDiscountRate()));
+		BigDecimal amount = withdrawRestAmount.multiply(helpOpenDo.getDiscountRate());
+		// 如果算得的金额是0，则随机选择0或是0.01
+		if (amount.compareTo(BigDecimal.ZERO) == 0) {
+			long currTime = System.currentTimeMillis();
+			if (currTime % 2 == 1) {
+				amount = new BigDecimal(0.01);
+			}
+		}
+		helpOpenDo.setAmount(amount);
 	}
 }

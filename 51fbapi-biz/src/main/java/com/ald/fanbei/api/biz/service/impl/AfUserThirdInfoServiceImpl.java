@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.AfUserThirdInfoService;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.UserThirdType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -13,8 +15,6 @@ import com.ald.fanbei.api.dal.domain.dto.UserWxInfoDto;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
@@ -44,6 +44,9 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 
     @Autowired
     private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private BizCacheUtil bizCacheUtil;
 
 	@Override
 	public UserWxInfoDto getUserWxInfo(Long userId) {
@@ -81,19 +84,20 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 
 	@Override
 	public AfUserThirdInfoDo bindUserWxInfo(final JSONObject userWxInfo, final Long userId, final String modifier) {
-		AfUserThirdInfoDo thirdInfo = getUserThirdInfoByUserId(userId, UserThirdType.WX.getCode());
-		if (thirdInfo != null) {
-			if (!thirdInfo.getThirdId().equals(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID))) {
-				throw new FanbeiException("您已经有微信号绑定过此手机号了，不能再绑定了");
-			} else {
-				return thirdInfo;
-			}
-		}
+		String lock = "AfUserThirdInfoServiceImpl_bindUserWxInfo_lock_" + userId;
+		boolean isLock = bizCacheUtil.getLockTryTimesSpecExpire(lock, lock,500, Constants.SECOND_OF_TEN_MINITS);
+		if (isLock) {
+			try {
+				AfUserThirdInfoDo thirdInfo = getUserThirdInfoByUserId(userId, UserThirdType.WX.getCode());
+				if (thirdInfo != null) {
+					if (!thirdInfo.getThirdId().equals(userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID))) {
+						throw new FanbeiException("您已经有微信号绑定过此手机号了，不能再绑定了");
+					} else {
+						return thirdInfo;
+					}
+				}
 
-		final AfUserDo userDo = afUserService.getUserById(userId);
-		return transactionTemplate.execute(new TransactionCallback<AfUserThirdInfoDo>() {
-			@Override
-			public AfUserThirdInfoDo doInTransaction(TransactionStatus transactionStatus) {
+				AfUserDo userDo = afUserService.getUserById(userId);
 				String openId = userWxInfo.getString(UserWxInfoDto.KEY_OPEN_ID);
 				AfUserThirdInfoDo userThirdInfoDo = new AfUserThirdInfoDo();
 				userThirdInfoDo.setUserId(userId);
@@ -105,8 +109,12 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 				userThirdInfoDo.setUserName(userDo.getUserName());
 				saveRecord(userThirdInfoDo);
 				return userThirdInfoDo;
+			} finally {
+				bizCacheUtil.delCache(lock);
 			}
-		});
+		} else {
+			throw new RuntimeException(lock + "锁没有获取到");
+		}
 	}
 
 	// 获取用户第三方信息

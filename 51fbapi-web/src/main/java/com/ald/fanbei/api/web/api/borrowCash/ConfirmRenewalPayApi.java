@@ -80,7 +80,8 @@ public class ConfirmRenewalPayApi implements ApiHandle {
 //		BigDecimal repaymentAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("repaymentAmount")), BigDecimal.ZERO);
 //		BigDecimal actualAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("actualAmount")), BigDecimal.ZERO);
 		BigDecimal userAmount = NumberUtil.objToBigDecimalDefault(ObjectUtils.toString(requestDataVo.getParams().get("rebateAmount")), BigDecimal.ZERO);
-
+		String requestId = requestDataVo.getId();
+		String majiabaoName = requestId.substring(requestId.lastIndexOf("_") + 1, requestId.length());
 		Long borrowId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("borrowId")), 0l);
 		String payPwd = ObjectUtils.toString(requestDataVo.getParams().get("payPwd"), "").toString();
 		Long cardId = NumberUtil.objToLongDefault(ObjectUtils.toString(requestDataVo.getParams().get("cardId")), 0l);
@@ -191,7 +192,7 @@ public class ConfirmRenewalPayApi implements ApiHandle {
 					
 			Map<String, Object> map;
 			if (cardId == -2) {// 余额支付
-				map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion(),null);
+				map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, "", userDto, context.getAppVersion(),null,majiabaoName);
 
 				resp.addResponseData("refId", map.get("refId"));
 				resp.addResponseData("type", map.get("type"));
@@ -205,7 +206,7 @@ public class ConfirmRenewalPayApi implements ApiHandle {
 				if (null == card) {
 					throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 				}
-				map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion(),bankPayType);
+				map = afRenewalDetailService.createRenewal(afBorrowCashDo, jfbAmount, repaymentAmount, actualAmount, userAmount, capital, borrowId, cardId, userId, request.getRemoteAddr(), userDto, context.getAppVersion(),bankPayType,majiabaoName);
 
 				// 代收
 				UpsCollectRespBo upsResult = (UpsCollectRespBo) map.get("resp");

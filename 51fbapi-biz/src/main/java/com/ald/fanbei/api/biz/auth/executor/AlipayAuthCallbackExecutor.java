@@ -125,7 +125,7 @@ public class AlipayAuthCallbackExecutor implements Executor {
 			    afUserAccountService.updateUserAccount(afUserAccountDo);
 			    // 更新总额度
 			    AfUserAccountSenceDo totalAccountSenceDo = afUserAccountSenceService.buildAccountScene(userId, SceneType.LOAN_TOTAL.getName(), totalAmount);
-			    afUserAccountSenceService.updateById(totalAccountSenceDo);
+			    afUserAccountSenceService.saveOrUpdateAccountSence(totalAccountSenceDo);
 			    AfAuthRaiseStatusDo raiseStatusDo = afAuthRaiseStatusService.buildAuthRaiseStatusDo(userId, AuthType.ALIPAY.getCode(), LoanType.CASH.getCode(), "Y", new BigDecimal(amount), new Date());
 			    // 提额成功，记录提额状态
 			    afAuthRaiseStatusService.saveOrUpdateRaiseStatus(raiseStatusDo);

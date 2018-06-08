@@ -53,6 +53,7 @@ let vue=new Vue({
             $.ajax({
                 url:'/borrow/loanShop',
                 type:'post',
+                data:{systemType:getBlatFrom()==1?2:1},
                 success:function (data) {
                     self.content = eval('(' + data + ')');
                     self.content = self.content.data;

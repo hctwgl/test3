@@ -1,44 +1,20 @@
 package com.ald.fanbei.web.test;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
-import com.ald.fanbei.api.web.common.InterestFreeUitl;
-import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.vo.AfGoodsDetailInfoVo;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.web.test.common.BaseTest;
 
-import javax.servlet.http.HttpServletRequest;
-
 public class DemoTest extends BaseTest{
-
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
 	String urlBase = "http://localhost:8080";
-	//String userName = "17710378476";
-	//String userName = "15258801185";
-	String userName = "13685746702";
-
+	String userName = "13656640521";
 	
 	/**
 	 * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -62,7 +38,7 @@ public class DemoTest extends BaseTest{
 	public void  activityCouponInfo() {
 		String url = urlBase + "/fanbei-web/activityCouponInfo";
 		Map<String,String> params = new HashMap<>();
-		params.put("groupId", "995");
+		params.put("groupId", "107");
 		testH5(url, params, userName, true);
 	}
 
@@ -84,22 +60,12 @@ public class DemoTest extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 
-	//新增优惠券
-	//@Test
-	public void  addShared() {
-		String url = urlBase + "/fanbei-web/addShared";
-		Map<String,String> params = new HashMap<>();
-		params.put("type", "2");
-		//testApi(url, params, userName, false);
-		testH5(url, params, userName, true);
-	}
-
 	//分享成功，随机赠送优惠券
 	//@Test
 	public void  sendCouponAfterSuccessShare() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/sendCouponAfterSuccessShare";
 		Map<String,String> params = new HashMap<>();
-		params.put("groupId", "994");
+		params.put("groupId", "107");
 		testH5(url, params, userName, true);
 	}
 
@@ -117,25 +83,16 @@ public class DemoTest extends BaseTest{
 	public void  mineActivityInfo() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/mineActivityInfo";
 		Map<String,String> params = new HashMap<>();
-		params.put("userName", "13656640521");
+		params.put("goodsId", "1");
 		testH5(url, params, userName, true);
 	}
 
-	//活动预售商品列表
+	//预售商品列表
 	//@Test
 	public void  getReservationGoodsList() {
 		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/getReservationGoodsList";
 		Map<String,String> params = new HashMap<>();
-		params.put("userName", "13685746702");
-		testH5(url, params, userName, false);
-	}
-
-	//测试发送短信
-	@Test
-	public void  ceshiSMS() {
-		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiSMS";
-		Map<String,String> params = new HashMap<>();
-		params.put("userName", "13656640521");
+		params.put("goodsId", "1");
 		testH5(url, params, userName, true);
 	}
 
@@ -147,69 +104,6 @@ public class DemoTest extends BaseTest{
 			params.put("activityId", "626");
 		testH5(url, params, userName, true);
 	}
-
-	//根据活动ID获取活动商品列表
-	//@Test
-	public void  partActivityInfoV2() {
-		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/partActivityInfoV2";
-		Map<String,String> params = new HashMap<>();
-		params.put("modelId", "257");
-		testH5(url, params, userName, true);
-	}
-	//根据活动ID获取活动商品列表
-	//@Test
-	public void  getPushingGoods() {
-		String url = urlBase + "/visualH5/getPushingGoods";
-		Map<String,String> params = new HashMap<>();
-		params.put("modelId", "257");
-		params.put("pageIndex", "1");
-		params.put("pageSize", "100");
-		testH5(url, params, userName, true);
-	}
-
-	//
-	//@Test
-	public void  ceshiPayGoodsInfo() {
-		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiPayGoodsInfo";
-		Map<String,String> params = new HashMap<>();
-		params.put("modelId", "257");
-		testH5(url, params, userName, true);
-	}
-	//测试支付回调
-	//@Test
-	public void  ceshiPay() {
-		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/ceshiPay";
-		Map<String,String> params = new HashMap<>();
-		params.put("modelId", "257");
-		testH5(url, params, userName, true);
-	}
-
-	//
-	//@Test
-	public void  getMineCouponInfo() {
-		String url = urlBase + "/fanbei-web/getMineCouponInfo";
-		Map<String,String> params = new HashMap<>();
-		params.put("pageNo", "1");
-		params.put("status", "NOUSE");
-		testH5(url, params, userName, true);
-	}
-	//@Test
-	public void  getMineCouponList() {
-		String url = urlBase + "/fanbei-web/getMineCouponList";
-		Map<String,String> params = new HashMap<>();
-		params.put("pageNo", "1");
-		params.put("status", "NOUSE");
-		testH5(url, params, userName, true);
-	}
-
-	//根据活动ID获取活动商品列表
-	/*@Test
-	public void  partActivityInfoV2() {
-		String url = urlBase + "/fanbei-web/thirdAnnivCelebration/partActivityInfoV2";
-		Map<String,String> params = new HashMap<>();
-		params.put("modelId", "248");
-		testH5(url, params, userName, true);
-	}*/
 	
 	/**
 	 * 测试完成业务流

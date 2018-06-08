@@ -8,6 +8,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.cache.task.CacheTask;
 import com.google.common.collect.Lists;
@@ -17,6 +19,7 @@ import com.google.common.collect.Maps;
  * @author rongbo
  *
  */
+@Component
 public class ScheduledCache implements Cache {
 
 

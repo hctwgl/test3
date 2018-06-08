@@ -78,6 +78,7 @@ public interface AfUserAccountDao {
 	 * @return 被其他人使用过的次数
 	 */
 	Integer getCountByIdNumer(@Param("citizenId")String citizenId,@Param("userId") Long userId);
+	Integer getCountByIdNumerByUserId(@Param("citizenId")String citizenId,@Param("userId") Long userId);
 
 	/**
 	 * 获取账户信息

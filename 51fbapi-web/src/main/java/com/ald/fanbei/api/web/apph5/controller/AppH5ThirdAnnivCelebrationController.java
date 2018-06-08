@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.apph5.controller;
 
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
@@ -11,13 +10,8 @@ import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.dal.dao.AfActivityReservationGoodsDao;
-import com.ald.fanbei.api.dal.dao.AfActivityReservationGoodsUserDao;
-import com.ald.fanbei.api.dal.dao.AfSeckillActivityDao;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.web.api.goods.GetGoodsDetailInfoApi;
 import com.ald.fanbei.api.web.common.*;
-import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.vo.AfGoodsDetailInfoVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -83,28 +77,6 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
     @Resource
     private AfActivityReservationGoodsUserService afActivityReservationGoodsUserService;
 
-    @Resource
-    private AfSeckillActivityDao afSeckillActivityDao;
-
-    @Resource
-    private AfActivityReservationGoodsDao afActivityReservationGoodsDao;
-
-    @Resource
-    private AfActivityReservationGoodsUserDao afActivityReservationGoodsUserDao;
-
-    @Resource
-    AfGoodsService afGoodsService;
-
-    @Resource
-    AfSchemeGoodsService afSchemeGoodsService;
-
-    @Resource
-    AfSchemeService afSchemeService;
-    @Resource
-    AfInterestFreeRulesService afInterestFreeRulesService ;
-
-    @Resource
-    private SmsUtil smsUtil ;
     /**
      * 每天首次分享成功，随机赠送优惠券（优惠券类型不限定领取数量）
      *
@@ -132,10 +104,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
                         String coupons = couponCategory.getCoupons();
                         JSONArray couponsArray = (JSONArray) JSONArray.parse(coupons);
                         int size = couponsArray.size();
-                        int index = size;
-                        if(size > 1){
-                            index = RandomUtil.getRandomInt(size - 1);
-                        }
+                        int index = RandomUtil.getRandomInt(size - 1);
                         Long couponId = Long.parseLong(couponsArray.getString(index));
 
                         AfCouponDo couponDo = afCouponService.getCouponById(couponId);
@@ -323,7 +292,6 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "getSecKillGoodListByActivityId", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     public String getSecKillGoodListByActivityId(HttpServletRequest request, HttpServletResponse response) {
-      //  System.out.println("****************************************");
         doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
         FanbeiWebContext context = doWebCheck(request, false);
         String activityId = request.getParameter("activityId");
@@ -388,6 +356,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         if (StringUtils.isNotEmpty(userName)) {
             afUserDo = afUserService.getUserByUserName(userName);
         }
+
         Map<String, Object> data = Maps.newHashMap();
         if (null == afUserDo) {
             String loginUrl = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST) + opennative
@@ -425,8 +394,7 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
     public String getReservationGoodsList(HttpServletRequest request, HttpServletResponse response) {
         doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ"));
        FanbeiWebContext context = doWebCheck(request, false);
-        Map<String, Object> data = Maps.newHashMap();
-        List<AfActivityReservationGoodsUserDo> userReservationGoodsList = null;
+        JSONObject data = null;
         // 商品展示
         Long userId = 0L;
         AfUserDo userDo = afUserService.getUserByUserName(context.getUserName());
@@ -441,11 +409,10 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("userId",userId );
             map.put("activityId",activityId );
-            userReservationGoodsList = afActivityReservationGoodsUserService.getActivityReservationGoodsList(map);
+             data = appActivityGoodListUtil.reservationGoodsList(map);
 
         }
 
-        data.put("reservationGoodsList", userReservationGoodsList);
         return H5CommonResponse.getNewInstance(true, "成功", "", data).toString();
     }
 
@@ -467,159 +434,6 @@ public class AppH5ThirdAnnivCelebrationController extends BaseController {
         orderInfo.setCount(3);
         afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
         return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
-    }
-
-    /**
-     * ceshi
-     * @param request
-     * @param response
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = "ceshiSMS", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    public String ceshiSMS(HttpServletRequest request, HttpServletResponse response) {
-        //获取资源信息
-        AfResourceDo resourceInfo1 = afResourceService.getConfigByTypesAndSecType(Constants.SMS_TEMPLATE, Constants.SMS_ACTIVITY_RESERVATION_GOODS);
-        String content = resourceInfo1.getValue();
-        //发送短信
-        String mobile = "13685746702";
-        logger.info("sendSMS mobile:" + mobile + "  content: " + content);
-        smsUtil.sendSmsToDhstAishangjie(mobile, content);
-        return H5CommonResponse.getNewInstance(true, "成功", "", null).toString();
-    }
-    /**
-     * ceshi
-     * @param request
-     * @param response
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = "ceshiPayGoodsInfo", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
-    public String ceshiPayGoodsInfo(HttpServletRequest request, HttpServletResponse response) {
-
-        Long goodsId = 136567L;
-        AfGoodsDo goods = afGoodsService.getGoodsById(goodsId);
-        if(null == goods){
-            throw new FanbeiException("goods not exist error", FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);
-        }
-        //获取借款分期配置信息
-        AfResourceDo resource = afResourceService.getConfigByTypesAndSecType(Constants.RES_BORROW_RATE, Constants.RES_BORROW_CONSUME);
-        JSONArray array = JSON.parseArray(resource.getValue());
-        //删除2分期
-        if (array == null) {
-            throw new FanbeiException(FanbeiExceptionCode.BORROW_CONSUME_NOT_EXIST_ERROR);
-        }
-        //removeSecondNper(array);
-
-        BigDecimal saleAmount = goods.getSaleAmount();
-        AfSchemeGoodsDo schemeGoodsDo = null;
-        try {
-            schemeGoodsDo = afSchemeGoodsService.getSchemeGoodsByGoodsId(goodsId);
-        } catch(Exception e){
-            logger.error(e.toString());
-        }
-        JSONArray interestFreeArray = null;
-        String freedesc = null;
-        String iconMark = null;
-        if(schemeGoodsDo != null){
-            AfSchemeDo afSchemeDo = afSchemeService.getSchemeById(schemeGoodsDo.getSchemeId());
-
-        }
-        AfGoodsDetailInfoVo vo = new AfGoodsDetailInfoVo();
-        //秒杀、促销活动商品信息
-        AfSeckillActivityDo afSeckillActivityDo = afSeckillActivityService.getActivityByGoodsId(goodsId);
-        if(afSeckillActivityDo!=null){
-            Long activityId = afSeckillActivityDo.getRid();
-            AfSeckillActivityGoodsDo afSeckillActivityGoodsDo = afSeckillActivityService.getActivityGoodsByGoodsIdAndActId(activityId,goodsId);
-            if(afSeckillActivityGoodsDo!=null){
-                //活动商品配置有问题，秒杀不参加活动，特惠按照原来
-                int actSaleCount = 0;
-                //获取活动已售商品数量
-                if(afSeckillActivityDo.getType()==2){
-                    actSaleCount = afSeckillActivityService.getSaleCountByActivityIdAndGoodsId(activityId,goodsId);
-                    vo.setLimitCount(afSeckillActivityGoodsDo.getLimitCount());
-                    //兼容老版本
-                    vo.setSaleCount(actSaleCount);
-                }else{
-                    Integer limitCount = afSeckillActivityService.getSumCountByGoodsId(goodsId);
-                    vo.setLimitCount(limitCount);
-                }
-                Date gmtStart = afSeckillActivityDo.getGmtStart();
-                Date gmtEnd = afSeckillActivityDo.getGmtEnd();
-                Date gmtPStart = afSeckillActivityDo.getGmtPStart();
-                //返利金额
-                BigDecimal secKillRebAmount = BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate()).setScale(2,BigDecimal.ROUND_HALF_UP);
-                if(goods.getRebateAmount().compareTo(secKillRebAmount)>0){
-                    vo.setRebateAmount(secKillRebAmount+"");
-                }
-                //vo.setRebateAmount(BigDecimalUtil.multiply(afSeckillActivityGoodsDo.getSpecialPrice(), goods.getRebateRate())+"");
-                vo.setActivityId(activityId);
-                vo.setActivityType(afSeckillActivityDo.getType());
-                vo.setActivityName(afSeckillActivityDo.getName());
-                vo.setGmtStart(gmtStart.getTime());
-                vo.setGmtEnd(gmtEnd.getTime());
-                vo.setNowDate(afSeckillActivityDo.getNowDate().getTime());
-                if(gmtPStart.getTime()>=gmtStart.getTime()){
-                    vo.setGmtPstart(0l);
-                }else{
-                    vo.setGmtPstart(gmtPStart.getTime());
-                }
-                vo.setLimitedPurchase(afSeckillActivityDo.getGoodsLimitCount());
-                vo.setPayType(afSeckillActivityDo.getPayType());
-                vo.setActSaleCount(actSaleCount);
-                vo.setSpecialPrice(afSeckillActivityGoodsDo.getSpecialPrice());
-                saleAmount = afSeckillActivityGoodsDo.getSpecialPrice();
-                //兼容老版本
-                 vo.setSaleAmount(saleAmount);
-
-            }else{
-                vo.setActivityId(0l);
-                vo.setActivityType(0);
-                vo.setActivityName("");
-                vo.setGmtStart(0l);
-                vo.setGmtEnd(0l);
-                vo.setGmtPstart(0l);
-                vo.setNowDate(0l);
-                vo.setLimitCount(0);
-                //vo.setLimitedPurchase(0);
-                vo.setPayType("");
-                vo.setActSaleCount(0);
-                vo.setSpecialPrice(BigDecimal.ZERO);
-            }
-        }else{
-            vo.setActivityId(0l);
-            vo.setActivityType(0);
-            vo.setActivityName("");
-            vo.setGmtStart(0l);
-            vo.setGmtEnd(0l);
-            vo.setGmtPstart(0l);
-            vo.setNowDate(0l);
-            vo.setLimitCount(0);
-            //vo.setLimitedPurchase(0);
-            vo.setPayType("");
-            vo.setActSaleCount(0);
-            vo.setSpecialPrice(BigDecimal.ZERO);
-        }
-        List<Map<String, Object>> nperList = InterestFreeUitl.getConsumeList(array, interestFreeArray, BigDecimal.ONE.intValue(),
-                saleAmount, resource.getValue1(), resource.getValue2(),goodsId,"0");
-
-        if(nperList!= null){
-            Map nperMap = nperList.get(nperList.size() - 1);
-            vo.setNperMap(nperMap);
-        }
-        vo.setNperList(nperList);
-
-        vo.setRemark(goods.getRemark());
-        AfResourceDo reflag = afResourceService.getSingleResourceBytype(Constants.GOODS_DETAIL_RECYCLE_FLAG);
-        if (reflag != null){
-            String value3 = reflag.getValue3();
-            if (value3 != null&&value3.contains(goods.getCategoryId()+"")){
-                vo.setIsShow(1);
-            }
-        }
-        Map<String, Object> resp = new HashMap<String, Object>();
-        resp.put("ss", vo);
-        return H5CommonResponse.getNewInstance(true, "成功", "", resp).toString();
     }
 
     /*

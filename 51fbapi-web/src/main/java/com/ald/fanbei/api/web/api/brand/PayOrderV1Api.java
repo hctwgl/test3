@@ -135,7 +135,7 @@ public class PayOrderV1Api implements ApiHandle {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
         }
 
-        if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode())|| orderInfo.getStatus().equals(OrderStatus.PAID.getCode())) {
+        if (orderInfo.getStatus().equals(OrderStatus.DEALING.getCode()) || orderInfo.getStatus().equals(OrderStatus.PAID.getCode())) {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
         }
         if (orderInfo == null) {
@@ -201,14 +201,14 @@ public class PayOrderV1Api implements ApiHandle {
             return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_HAS_CLOSED);
         }
 
-	if (!BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {
-	    String lockKey = "payOrder:" + userId + ":" + payId + ":" + orderId;
-	    if (bizCacheUtil.getObject(lockKey) == null) {
-		bizCacheUtil.saveObject(lockKey, lockKey, 60);
-	    } else {
-		return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
-	    }
-	}
+        if (!BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {
+            String lockKey = "payOrder:" + userId + ":" + payId + ":" + orderId;
+            if (bizCacheUtil.getObject(lockKey) == null) {
+                bizCacheUtil.saveObject(lockKey, lockKey, 60);
+            } else {
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.ORDER_PAY_DEALING);
+            }
+        }
 
         //region 支付方式在这里处理
         if (fromCashier && nper != null) {
@@ -313,56 +313,55 @@ public class PayOrderV1Api implements ApiHandle {
         }
 
 
-        try {
-            BigDecimal saleAmount = orderInfo.getSaleAmount();
-            if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(type, OrderType.TRADE.getCode()) || StringUtils.equals(type, OrderType.LEASE.getCode())) {
-                saleAmount = orderInfo.getActualAmount();
+        BigDecimal saleAmount = orderInfo.getSaleAmount();
+        if (StringUtils.equals(type, OrderType.AGENTBUY.getCode()) || StringUtils.equals(type, OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(type, OrderType.TRADE.getCode()) || StringUtils.equals(type, OrderType.LEASE.getCode())) {
+            saleAmount = orderInfo.getActualAmount();
+        }
+        if (payId == 0 && (StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode()) || StringUtils.equals(orderInfo.getOrderType(), OrderType.LEASE.getCode()) || nper == null)) {
+            nper = orderInfo.getNper();
+        }
+
+        String payType = PayType.AGENT_PAY.getCode();
+        //代付
+        if (payId < 0) {
+            payType = PayType.WECHAT.getCode();
+            return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+
+
+        } else if (payId > 0) {
+            payType = PayType.BANK.getCode();
+            //银行卡
+        }
+
+        if (StringUtil.equals(YesNoStatus.YES.getCode(), isCombinationPay)) {
+            payType = PayType.COMBINATION_PAY.getCode();
+            //组合
+        }
+        orderInfo.setPayType(payType);
+        afOrderService.updateOrder(orderInfo);
+
+        // ----------------
+
+        // mqp_新人专享活动增加逻辑
+        if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())
+                && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
+            AfShareUserGoodsDo shareUserGoodsDo = afShareUserGoodsService
+                    .getById(Long.parseLong(orderInfo.getThirdOrderNo()));
+            if (shareUserGoodsDo != null && !payType.equals(PayType.AGENT_PAY.getCode())) {
+                logger.error(orderInfo.getThirdOrderNo() + ":afShareUserGoodsService the payType is error.");
+                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PAYTYPE_ERROR);
             }
-            if (payId == 0 && (StringUtils.equals(orderInfo.getOrderType(), OrderType.SELFSUPPORT.getCode()) || StringUtils.equals(orderInfo.getOrderType(), OrderType.TRADE.getCode()) || StringUtils.equals(orderInfo.getOrderType(), OrderType.LEASE.getCode()) || nper == null)) {
-                nper = orderInfo.getNper();
-            }
+        }
 
-            String payType = PayType.AGENT_PAY.getCode();
-            //代付
-            if (payId < 0) {
-                payType = PayType.WECHAT.getCode();
-                return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.WEBCHAT_NOT_USERD);
+        // ----------------
 
 
-            } else if (payId > 0) {
-                payType = PayType.BANK.getCode();
-                //银行卡
-            }
+        Map<String, Object> result = afOrderService.payBrandOrder(context.getUserName(), payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress, bankChannel);
 
-            if (StringUtil.equals(YesNoStatus.YES.getCode(), isCombinationPay)) {
-                payType = PayType.COMBINATION_PAY.getCode();
-                //组合
-            }
-            orderInfo.setPayType(payType);
-            afOrderService.updateOrder(orderInfo);
-
-            // ----------------
-
-            // mqp_新人专享活动增加逻辑
-            if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())
-                    && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
-                AfShareUserGoodsDo shareUserGoodsDo = afShareUserGoodsService
-                        .getById(Long.parseLong(orderInfo.getThirdOrderNo()));
-                if (shareUserGoodsDo != null && !payType.equals(PayType.AGENT_PAY.getCode())) {
-                    logger.error(orderInfo.getThirdOrderNo() + ":afShareUserGoodsService the payType is error.");
-                    return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SHARE_PAYTYPE_ERROR);
-                }
-            }
-
-            // ----------------
-
-
-            Map<String, Object> result = afOrderService.payBrandOrder(context.getUserName(), payId, payType, orderInfo.getRid(), orderInfo.getUserId(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), orderInfo.getGoodsName(), saleAmount, nper, appName, ipAddress, bankChannel);
-
-            Object success = result.get("success");
-            Object payStatus = result.get("status");
-            if (success != null) {
-                if (Boolean.parseBoolean(success.toString())) {
+        Object success = result.get("success");
+        Object payStatus = result.get("status");
+        if (success != null) {
+            if (Boolean.parseBoolean(success.toString())) {
 /*                	//----------------------------begin map:add one time for tiger machine in the certain date---------------------------------
                 	AfResourceDo resourceDo = afResourceService.getConfigByTypesAndSecType("SPRING_FESTIVAL_ACTIVITY", "START_END_TIME");
                 	if (resourceDo != null) {
@@ -376,50 +375,44 @@ public class PayOrderV1Api implements ApiHandle {
 					}
                 	//----------------------------end map:add one time for tiger machine---------------------------------
 */
-                    //判断是否菠萝觅，如果是菠萝觅,额度支付成功，则推送成功消息，银行卡支付,则推送支付中消息
-                    if (StringUtils.equals(type, OrderType.BOLUOME.getCode())) {
-                        if (payId.intValue() == 0) {
-                            riskUtil.payOrderChangeAmount(orderInfo.getRid());
-                        } else if (payId > 0 && PayStatus.DEALING.getCode().equals(payStatus.toString())) {
-                            boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
-                        }
+                //判断是否菠萝觅，如果是菠萝觅,额度支付成功，则推送成功消息，银行卡支付,则推送支付中消息
+                if (StringUtils.equals(type, OrderType.BOLUOME.getCode())) {
+                    if (payId.intValue() == 0) {
+                        riskUtil.payOrderChangeAmount(orderInfo.getRid());
+                    } else if (payId > 0 && PayStatus.DEALING.getCode().equals(payStatus.toString())) {
+                        boluomeUtil.pushPayStatus(orderInfo.getRid(), orderInfo.getOrderType(), orderInfo.getOrderNo(), orderInfo.getThirdOrderNo(), PushStatus.PAY_DEALING, orderInfo.getUserId(), orderInfo.getActualAmount(), orderInfo.getSecType());
                     }
-
-                    // 更新砍价商品为已购买(订单为自营且第三方订单号不为空),双十一添加
-                    //mqp_新人专享活动增加逻辑  ---->update
-                    if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())
-                            && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
-                        afDeUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
-                        afShareUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
-                    }
-
-                    //首次信用购物（自营信用支付）送还款券
-                    if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
-                        if (payType.equals(PayType.AGENT_PAY.getCode()) || payType.equals(PayType.COMBINATION_PAY.getCode()))
-                            try {
-                                afUserCouponService.sentFirstAuthShoppingUserCoupon(orderInfo);
-                            } catch (Exception e) {
-                                logger.error("first selesupport shopping sentUserCoupon error:" + e + orderInfo.toString());
-                            }
-
-                    }
-
-
-                } else {
-                    FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
-                    ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);
-                    response.setResponseData(result);
-                    return response;
                 }
-            }
-            resp.setResponseData(result);
 
-        } catch (FanbeiException exception) {
-            return new ApiHandleResponse(requestDataVo.getId(), exception.getErrorCode());
-        } catch (Exception e) {
-            logger.error("pay order failed e = {}", e);
-            resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
+                // 更新砍价商品为已购买(订单为自营且第三方订单号不为空),双十一添加
+                //mqp_新人专享活动增加逻辑  ---->update
+                if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())
+                        && StringUtils.isNotBlank(orderInfo.getThirdOrderNo())) {
+                    afDeUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
+                    afShareUserGoodsService.updateIsBuyById(Long.parseLong(orderInfo.getThirdOrderNo()), 1);
+                }
+
+                //首次信用购物（自营信用支付）送还款券
+                if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
+                    if (payType.equals(PayType.AGENT_PAY.getCode()) || payType.equals(PayType.COMBINATION_PAY.getCode()))
+                        try {
+                            afUserCouponService.sentFirstAuthShoppingUserCoupon(orderInfo);
+                        } catch (Exception e) {
+                            logger.error("first selesupport shopping sentUserCoupon error:" + e + orderInfo.toString());
+                        }
+
+                }
+
+
+            } else {
+                FanbeiExceptionCode errorCode = (FanbeiExceptionCode) result.get("errorCode");
+                ApiHandleResponse response = new ApiHandleResponse(requestDataVo.getId(), errorCode);
+                response.setResponseData(result);
+                return response;
+            }
         }
+        resp.setResponseData(result);
+
         return resp;
     }
 

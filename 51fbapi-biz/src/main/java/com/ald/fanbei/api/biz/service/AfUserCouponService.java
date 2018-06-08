@@ -168,6 +168,8 @@ public interface AfUserCouponService {
     List<AfUserCouponDto> getH5UserCouponByUser(Long userId, String status);
 	AfUserCouponDo sendActivityCouponByCouponGroupRandom(Long userId, String couponSenceRuleType, AfResourceDo resourceDo);
 
+	AfUserCouponDo sendActivityCouponByGoods(Long userId, String couponSenceRuleType, AfResourceDo resourceDo, Long goodsId);
+
 	AfUserCouponDto getUserCouponAfterPaidSuccess(Long userId);
 
 	List<AfUserCouponDto> getUserCouponByTypeV1(Long userId, String type, String repaymentType);

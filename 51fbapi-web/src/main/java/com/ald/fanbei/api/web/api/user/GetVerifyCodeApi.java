@@ -53,11 +53,13 @@ public class GetVerifyCodeApi implements ApiHandle {
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
+		String requestId = requestDataVo.getId();
+		String majiabaoName = requestId.substring(requestId.lastIndexOf("_") + 1, requestId.length());
 		String mobile = ObjectUtils.toString(requestDataVo.getParams().get("mobile"));
 		String typeParam = ObjectUtils.toString(requestDataVo.getParams().get("type"));
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
-
+		String smsType = "";
 		if (StringUtils.isBlank(mobile) || StringUtils.isBlank(typeParam)) {
 			logger.error("verifyCode or type is empty mobile = " + mobile + " type = " + typeParam);
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.PARAM_ERROR);
@@ -66,7 +68,10 @@ public class GetVerifyCodeApi implements ApiHandle {
 		if (!CommonUtil.isMobile(mobile)) {
 			return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_INVALID_MOBILE_NO);
 		}
-		
+
+		if (majiabaoName.contains("borrowSuperman")){
+			smsType = "YS";
+		}
 		AfUserDo afUserDo = null;
 		SmsType type = SmsType.findByCode(typeParam);
 		if(SmsType.REGIST.equals(type) || SmsType.MOBILE_BIND.equals(type)) {// 除了注册和更换手机号功能，其余须检查手机号是否存在
@@ -107,22 +112,42 @@ public class GetVerifyCodeApi implements ApiHandle {
 			if (afUserDo != null) {
 				return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_HAS_REGIST_ERROR);
 			}
-			resultSms = smsUtil.sendRegistVerifyCode(mobile);
+			if ("YS".equals(smsType)){
+				resultSms = smsUtil.sendJKCRRegistVerifyCode(mobile);
+			}else {
+				resultSms = smsUtil.sendRegistVerifyCode(mobile);
+			}
 			break;
 		case FORGET_PASS:// 忘记密码
-			resultSms = smsUtil.sendForgetPwdVerifyCode(mobile, afUserDo.getRid());
+			if ("YS".equals(smsType)){
+				resultSms = smsUtil.sendJKCRForgetPwdVerifyCode(mobile);
+			}else {
+				resultSms = smsUtil.sendForgetPwdVerifyCode(mobile, afUserDo.getRid());
+			}
 			break;
 		case QUICK_SET_PWD:// 设置快速登录密码
-			resultSms = smsUtil.sendSetQuickPwdVerifyCode(mobile, afUserDo.getRid());
+			if ("YS".equals(smsType)){
+				resultSms = smsUtil.sendJKCRSetQuickPwdVerifyCode(mobile);
+			}else {
+				resultSms = smsUtil.sendSetQuickPwdVerifyCode(mobile, afUserDo.getRid());
+			}
 			break;
 		case LOGIN:
-			resultSms = smsUtil.sendLoginVerifyCode(mobile,afUserDo.getRid());
+			if ("YS".equals(smsType)){
+				resultSms = smsUtil.sendJKCRLoginVerifyCode(mobile,afUserDo.getRid());
+			}else {
+				resultSms = smsUtil.sendLoginVerifyCode(mobile,afUserDo.getRid());
+			}
 			break;
 		case QUICK_LOGIN:
 			afUserDo = afUserService.getUserByUserName(mobile);
 			if (null != afUserDo){//快速登录
 				resp.addResponseData("code",1000);
-				resultSms = smsUtil.sendQuickLoginVerifyCode(mobile,afUserDo.getRid());
+				if ("YS".equals(smsType)){
+					resultSms = smsUtil.sendJKCRQuickLoginVerifyCode(mobile,afUserDo.getRid());
+				}else {
+					resultSms = smsUtil.sendQuickLoginVerifyCode(mobile,afUserDo.getRid());
+				}
 				break;
 			}
 			if (context.getAppVersion() >= 340) {//快速注册
@@ -139,11 +164,19 @@ public class GetVerifyCodeApi implements ApiHandle {
 						mobile, "", "", "");
 
 			}
-			resultSms = smsUtil.sendQuickRegistVerifyCode(mobile);
+			if ("YS".equals(smsType)){
+				resultSms = smsUtil.sendJKCRQuickRegistVerifyCode(mobile);
+			}else {
+				resultSms = smsUtil.sendQuickRegistVerifyCode(mobile);
+			}
 			resp.addResponseData("code",1146);
 			break;
 		case MOBILE_BIND:// 更换手机号
-			resultSms = smsUtil.sendMobileBindVerifyCode(mobile,SmsType.MOBILE_BIND,1l);
+			if ("YS".equals(smsType)){
+				resultSms = smsUtil.sendJKCRMobileBindVerifyCode(mobile,SmsType.MOBILE_BIND,1l);
+			}else {
+				resultSms = smsUtil.sendMobileBindVerifyCode(mobile,SmsType.MOBILE_BIND,1l);
+			}
 			break;
 		default:
 			logger.error("type is invalid,type = " + typeParam);

@@ -537,12 +537,12 @@ public class HuichaoUtility implements ThirdInterface {
             }
         }
         else if(resultStatus.equals(HuiCaoOrderStatus.SUCCESS.getCode())){
-            afRepaymentBorrowCashService.dealRepaymentSucess(orderNo,thirdOrderNo);
+            afRepaymentBorrowCashService.dealRepaymentSucess(orderNo,thirdOrderNo,"");
             //成功
         }
         else{
             //关闭
-            afRepaymentBorrowCashService.dealRepaymentFail(orderNo,thirdOrderNo,false,"",null);
+            afRepaymentBorrowCashService.dealRepaymentFail(orderNo,thirdOrderNo,false,"",null,"");
         }
     }
 
