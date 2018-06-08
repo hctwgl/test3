@@ -216,13 +216,13 @@ public class H5SignInfoOutController extends H5Controller {
             Long userId = afUserDo.getRid();
             //判断用户和openId是否在爱上街绑定
             AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
-            logger.info("userName cfp friendSignIn thirdInfo = ",thirdInfo);
+            logger.info("userName cfp friendSignIn thirdInfo = " + thirdInfo);
             if(thirdInfo == null){
                 data.put("openType","2");
                 return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
             }
             data.put("userName",thirdInfo.getUserName());
-            logger.info("userName cfp friendSignIn = ",thirdInfo.getUserName());
+            logger.info("userName cfp friendSignIn = " + thirdInfo.getUserName());
             Long friendUserId = thirdInfo.getUserId();
             if(StringUtil.equals(friendUserId+"",userId+"")){//已经绑定并且是自己打开
                 data = homeInfo(userId,data,push,appVersion);
