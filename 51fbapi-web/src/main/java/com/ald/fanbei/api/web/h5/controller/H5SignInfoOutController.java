@@ -103,6 +103,7 @@ public class H5SignInfoOutController extends H5Controller {
             String push = ObjectUtils.toString(request.getParameter("push"), "").toString();
             String wxCode = ObjectUtils.toString(request.getParameter("wxCode"), "").toString();
             Map<String, Object> data = new HashMap<String, Object>();
+            data.put("userName",moblie);
             String userName = ObjectUtils.toString(request.getParameter("rewardUserId"),null);
             AfUserDo afUserDo = afUserService.getUserByUserName(userName);
             final Long rewardUserId = afUserDo.getRid();//分享者的userId
@@ -221,6 +222,7 @@ public class H5SignInfoOutController extends H5Controller {
             Long friendUserId = thirdInfo.getUserId();
             if(StringUtil.equals(friendUserId+"",userId+"")){//已经绑定并且是自己打开
                 data = homeInfo(userId,data,push,appVersion);
+                data.put("userName",thirdInfo.getUserName());
                 data.put("openType","0");
             } else {//已绑定
                 data = homeInfo(friendUserId,data,push,appVersion);
@@ -239,6 +241,7 @@ public class H5SignInfoOutController extends H5Controller {
                 if(!friendSign(afSignRewardDo,userId,friendUserId,data)){
                     return H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_SIGN_FAIL.getDesc(),"",data ).toString();
                 }
+                data.put("userName",thirdInfo.getUserName());
                 data.put("openType","1");
                 data.put("flag","success");
             }
@@ -274,6 +277,7 @@ public class H5SignInfoOutController extends H5Controller {
             final JSONObject userWxInfo = WxUtil.getUserInfoWithCache(appid, secret, wxCode);
 //            final JSONObject userWxInfo = new JSONObject();
             Map<String, Object> data = new HashMap<String, Object>();
+            data.put("userName",moblie);
             AfSmsRecordDo smsDo = afSmsRecordService.getLatestByUidType(moblie, SmsType.MOBILE_BIND.getCode());
             if (smsDo == null) {
                 logger.error("sms record is empty");
@@ -633,9 +637,11 @@ public class H5SignInfoOutController extends H5Controller {
             }
             Long firendUserId = thirdInfo.getUserId();
             if(StringUtil.equals(firendUserId+"",userId+"")){//已经绑定并且是自己打开
+                data.put("userName",thirdInfo.getUserName());
                 data = homeInfo(userId,data,push,appVersion);
                 data.put("openType","0");
             } else if(!StringUtil.equals(firendUserId+"",userId+"") ){//已绑定
+                data.put("userName",thirdInfo.getUserName());
                 data = homeInfo(firendUserId,data,push,appVersion);
                 AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
                 afSignRewardDo.setIsDelete(0);
