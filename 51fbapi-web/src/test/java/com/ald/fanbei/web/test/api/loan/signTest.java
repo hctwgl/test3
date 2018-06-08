@@ -21,8 +21,8 @@ public class signTest extends BaseTest{
 	/**
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
-//	String urlBase = "https://testapi.51fanbei.com";
-	String urlBase = "http://localhost:8082";
+	String urlBase = "https://atestapi.51fanbei.com";
+//	String urlBase = "http://localhost:8082";
 //	String userName = "13638668564";	//田建成 cardId:3111464419 支付密码123456
 //	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
 //	String userName = "13958004662";	//胡朝永 支付密码123456
@@ -48,7 +48,7 @@ public class signTest extends BaseTest{
 	public void getHomeInfo() {
 		Map<String,String> params = new HashMap<>();
 		String url = urlBase + "/h5/reward/getRewardHomeInfo";
-		params.put("userName","18237147019");
+		params.put("userName","18258023758");
 		params.put("push","Y");
 		testH5(url, params, userName, true);
 	}
@@ -124,13 +124,13 @@ public class signTest extends BaseTest{
 	 */
 	@Test
 	public void repayDo() {
-		String url = urlBase + "/SignRewardInfo/friendSign";
+		String url = urlBase + "/SignRewardInfo/friendSignIn";
 		Map<String,String> params = new HashMap<>();
-		params.put("mobile", "18237147025");
-		params.put("verifyCode", "888888");
-		params.put("push", "Y");
-		params.put("rewardUserId","15293971826");
-		params.put("wxCode","2");
+		params.put("userName", "18258023758");
+		params.put("push", "N");
+//		params.put("push", "Y");
+//		params.put("rewardUserId","15293971826");
+		params.put("wxCode","11111");
 		testH5(url, params, userName, true);
 	}
 	

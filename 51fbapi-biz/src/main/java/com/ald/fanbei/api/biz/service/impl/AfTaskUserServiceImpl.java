@@ -91,7 +91,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		try {
 			// 获取用户能参加的活动
 			List<Integer> userLevelList = afTaskService.getUserLevelByUserId(userId);
-			logger.info("browerAndShoppingHandler userLevelList:" + JSON.toJSONString(userLevelList));
+			logger.info("browerAndShoppingHandler userLevelList:{}" , JSON.toJSONString(userLevelList));
 			List<AfTaskDo> taskList = afTaskService.getTaskListByTaskTypeAndUserLevel(afTaskType, userLevelList, null);
 
 			if(null != taskList && !taskList.isEmpty()) {
@@ -148,8 +148,8 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 							// 用户购物数量
 							logger.info("browerAndShoppingHandler quantity:{}" ,JSON.toJSONString(taskDo));
 							int orderCount = afOrderService.getSignFinishOrderCount(userId,taskDo.getTaskBeginTime());
-							logger.info("browerAndShoppingHandler getTaskCondition:" + taskDo.getTaskCondition());
-							logger.info("browerAndShoppingHandler orderCount:" + orderCount);
+							logger.info("browerAndShoppingHandler getTaskCondition:{}" , taskDo.getTaskCondition());
+							logger.info("browerAndShoppingHandler orderCount:{}" , orderCount);
 							if (orderCount == Integer.parseInt(taskDo.getTaskCondition())) {
 								taskUserDo = buildTaskUserDo(taskDo, userId);
 								toAddTaskUserList.add(taskUserDo);
@@ -161,7 +161,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 						for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
 							insertTaskUserDo(afTaskUserDo);
 						}
-						logger.info("browerAndShoppingHandler toAddTaskUserList :{}" , JSON.toJSONString(toAddTaskUserList));
+						logger.info("browerAndShoppingHandler toAddTaskUserList:{}" , JSON.toJSONString(toAddTaskUserList));
 						return toAddTaskUserList;
 					}
 				}
@@ -216,8 +216,8 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 						toAddTaskUserList.add(taskUserDo);
 					}
 					for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
-						logger.info("taskHandler completeTaskCount:" + toAddTaskUserList.size());
 						insertTaskUserDo(afTaskUserDo);
+						logger.info("taskHandler toAddTaskUserList:{}" ,JSON.toJSONString(toAddTaskUserList));
 					}
 				}
 			}

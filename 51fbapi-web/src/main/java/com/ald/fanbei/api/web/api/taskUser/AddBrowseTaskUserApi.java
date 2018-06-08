@@ -17,6 +17,7 @@ import com.ald.fanbei.api.web.common.ApiHandleResponse;
 import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -52,7 +53,7 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 				Map<String, Object> data = Maps.newHashMap();
 				String goodsId = ObjectUtils.toString(requestDataVo.getParams().get("goodsId"));
 				String taskContition = ObjectUtils.toString(requestDataVo.getParams().get("activityUrl"));
-				logger.info("cfp addBrowseTaskUserApi cfp taskContition = " + taskContition);
+				logger.info("addBrowseTaskUser goodsId={},taskContition={} " , goodsId, taskContition);
 				if(StringUtils.isNotEmpty(goodsId)) {
 					// 指定浏览商品、品牌、分类任务等
 					List<AfTaskUserDo> specifiedTaskUserList = afTaskUserService.browerAndShoppingHandler(userId, Long.parseLong(goodsId), AfTaskType.BROWSE.getCode());
@@ -80,7 +81,7 @@ public class AddBrowseTaskUserApi implements ApiHandle{
 					}
 				}
 				resp.setResponseData(data);
-				logger.info("cfp addBrowseTaskUserApi cfp " + data);
+				logger.info("cfp addBrowseTaskUserApi cfp " + JSON.toJSONString(data));
 			}
 
 		}catch(Exception e){
