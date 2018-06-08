@@ -211,7 +211,7 @@ public class H5SignInfoOutController extends H5Controller {
             }
             String push = ObjectUtils.toString(request.getParameter("push"),"N");
             String wxCode = ObjectUtils.toString(request.getParameter("wxCode"),null);
-            logger.info("userName cfp friendSignIn wxCode = ",wxCode);
+            logger.info("userName cfp friendSignIn wxCode = "+ wxCode);
             Map<String,Object> data = new HashMap<String,Object>();
             Long userId = afUserDo.getRid();
             //判断用户和openId是否在爱上街绑定
