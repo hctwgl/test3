@@ -136,7 +136,7 @@ public class AppH5LifeController extends BaseController {
             boolean isNeedRecycle = false;
             if(context.isLogin()){
                 AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
-                AfBorrowCashDo borrowCashDo = borrowCashService.getBorrowCashByUserId(afUser.getRid());
+                AfBorrowCashDo borrowCashDo = borrowCashService.getDealingCashByUserId(afUser.getRid());
                 if (borrowCashDo!= null){
                     AfBorrowRecycleOrderDo afBorrowRecycleOrderDo = borrowRecycleOrderService.getBorrowRecycleOrderByBorrowId(borrowCashDo.getRid());
                     if (afBorrowRecycleOrderDo != null){
