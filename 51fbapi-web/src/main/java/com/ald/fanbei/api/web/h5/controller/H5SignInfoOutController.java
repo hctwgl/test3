@@ -215,6 +215,7 @@ public class H5SignInfoOutController extends H5Controller {
             Long userId = afUserDo.getRid();
             //判断用户和openId是否在爱上街绑定
             AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
+            logger.info("userName cfp friendSignIn thirdInfo = ",thirdInfo);
             if(thirdInfo == null){
                 data.put("openType","2");
                 return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
@@ -770,7 +771,7 @@ public class H5SignInfoOutController extends H5Controller {
         AfUserThirdInfoDo thirdInfo = new AfUserThirdInfoDo();
         thirdInfo.setThirdId(userWxInfo.get("openid").toString());
         thirdInfo.setThirdType(UserThirdType.WX.getCode());
-        List<AfUserThirdInfoDo> thirdInfos = afUserThirdInfoService.getListByCommonCondition(thirdInfo);
+            List<AfUserThirdInfoDo> thirdInfos = afUserThirdInfoService.getListByCommonCondition(thirdInfo);
         return  thirdInfos.size() == 0 ? null : thirdInfos.get(0);
     }
 
