@@ -170,7 +170,7 @@ public class AppH5LifeController extends BaseController {
                     bizCacheUtil.saveObject(cacheKey, result, 180);
                 }
             }
-
+            logger.info("h5ResourceList result ="+result);
             return result;
         } catch (Exception e) {
             logger.error("/fanbei-web/life/h5ResourceList error：", e);
