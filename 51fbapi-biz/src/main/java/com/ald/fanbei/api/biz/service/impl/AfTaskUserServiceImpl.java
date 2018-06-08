@@ -146,7 +146,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 							}
 						} else if (StringUtils.equals(AfTaskType.SHOPPING.getCode(), taskDo.getTaskType()) && StringUtils.equals(AfTaskSecType.QUANTITY.getCode(), taskDo.getTaskSecType())) {
 							// 用户购物数量
-							logger.info("browerAndShoppingHandler quantity:" + JSON.toJSONString(taskDo));
+							logger.info("browerAndShoppingHandler quantity:{}" ,JSON.toJSONString(taskDo));
 							int orderCount = afOrderService.getSignFinishOrderCount(userId,taskDo.getTaskBeginTime());
 							logger.info("browerAndShoppingHandler getTaskCondition:" + taskDo.getTaskCondition());
 							logger.info("browerAndShoppingHandler orderCount:" + orderCount);
@@ -161,6 +161,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 						for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
 							insertTaskUserDo(afTaskUserDo);
 						}
+						logger.info("browerAndShoppingHandler toAddTaskUserList :{}" , JSON.toJSONString(toAddTaskUserList));
 						return toAddTaskUserList;
 					}
 				}
