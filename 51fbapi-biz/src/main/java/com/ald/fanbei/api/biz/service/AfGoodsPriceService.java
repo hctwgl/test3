@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.AfOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
@@ -26,4 +28,6 @@ public interface AfGoodsPriceService extends ParentService<AfGoodsPriceDo, Long>
 	int updateNewStockAndSaleByPriceId(Long priceId,Integer count, boolean isSold);
 
 	List<AfGoodsPriceDo> getLeaseListByGoodsId(Long goodsId);
+
+	AfGoodsPriceDo getCheapByGoodsId(Long vipGoodsId);
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import com.ald.fanbei.api.dal.domain.AfGoodsPriceDo;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsPriceDto;
+
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -29,4 +30,6 @@ public interface AfGoodsPriceDao extends BaseDao<AfGoodsPriceDo, Long> {
     int updateReturnGoods(@Param("priceId")Long priceId,@Param("count")Long count);
 
     List<AfGoodsPriceDo> getLeaseListByGoodsId(@Param("goodsId")Long goodsId);
+
+	AfGoodsPriceDo getCheapByGoodsId(@Param("goodsId")Long vipGoodsId);
 }

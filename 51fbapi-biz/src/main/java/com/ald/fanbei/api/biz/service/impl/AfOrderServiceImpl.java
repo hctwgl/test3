@@ -1523,11 +1523,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 			logger.error("resource config error:",e);
 		}
 		Date gmtPayEnd = DateUtil.addHoures(currTime, order_pay_time_limit);
-		List<AfGoodsPriceDo> goodsPriceList = afGoodsPriceService.getByGoodsId(vipGoodsId);
-		AfGoodsPriceDo priceDo = null;
-		if (CollectionUtil.isNotEmpty(goodsPriceList)){
-			priceDo = goodsPriceList.get(0);
-		}
+		AfGoodsPriceDo priceDo = afGoodsPriceService.getCheapByGoodsId(vipGoodsId);
+//		AfGoodsPriceDo priceDo = null;
+//		if (CollectionUtil.isNotEmpty(goodsPriceList)){
+//			priceDo = goodsPriceList.get(0);
+//		}
 		AfGoodsDo vipGoods = afGoodsService.getGoodsById(vipGoodsId);
 		if (vipGoods == null || priceDo == null){
 			throw new FanbeiException(FanbeiExceptionCode.GOODS_NOT_EXIST_ERROR);

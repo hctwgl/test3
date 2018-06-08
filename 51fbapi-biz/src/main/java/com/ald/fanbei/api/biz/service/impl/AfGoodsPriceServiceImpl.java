@@ -10,6 +10,7 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfEncoreGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfGoodsPriceDto;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -121,5 +122,10 @@ public class AfGoodsPriceServiceImpl extends ParentServiceImpl<AfGoodsPriceDo, L
 	@Override
 	public List<AfGoodsPriceDto> selectSumStockMap(List<AfEncoreGoodsDto> list ){
 		return afGoodsPriceDao.selectSumStockMap(list);
+	}
+
+	@Override
+	public AfGoodsPriceDo getCheapByGoodsId(Long vipGoodsId) {
+		return afGoodsPriceDao.getCheapByGoodsId(vipGoodsId);
 	}
 }
