@@ -86,7 +86,8 @@ public abstract class H5BaseController {
 			baseResponse = buildErrorResult(FanbeiExceptionCode.SYSTEM_ERROR, request);
 			retMsg = JSON.toJSONString(baseResponse);
 		}
-		logger.info("req method=>"+context.getMethod()+",userId=>"+context.getUserId()+",response msg=>" + retMsg);
+		doMaidianLog(request,H5CommonResponse.getNewInstance(true, "succ"));
+		maidianLog.info("req method=>"+context.getMethod()+",userId=>"+context.getUserId()+",response msg=>" + retMsg);
 		return retMsg;
 	}
 
