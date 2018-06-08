@@ -145,8 +145,7 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
                                 taskUserDo.setTaskName(Constants.BROWSE_TASK_NAME);
                                 taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
                                 taskUserDo.setTaskId(-3l);
-                                Long rid = afTaskUserService.insertTaskUserDo(taskUserDo);
-                                taskUserDo.setRid(rid);
+                                taskUserDo.setRid(afTaskUserService.insertTaskUserDo(taskUserDo));
                                 logger.info("addBrowseGoodsTaskUserRecord taskUserDo={}", JSON.toJSONString(taskUserDo));
                                 return taskUserDo;
                             }

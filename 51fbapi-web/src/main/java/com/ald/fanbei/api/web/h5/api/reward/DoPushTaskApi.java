@@ -61,8 +61,7 @@ public class DoPushTaskApi implements H5Handle {
                         taskUserDo.setTaskId(taskDo.getRid());
                         taskUserDo.setGmtCreate(new Date());
                         taskUserDo.setGmtModified(new Date());
-                        afTaskUserService.insertTaskUserDo(taskUserDo);
-                        taskIds.add(taskDo.getRid());
+                        taskIds.add(afTaskUserService.insertTaskUserDo(taskUserDo));
                     }
                 }
             }

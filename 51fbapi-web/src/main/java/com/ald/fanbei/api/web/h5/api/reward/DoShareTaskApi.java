@@ -63,7 +63,7 @@ public class DoShareTaskApi implements H5Handle {
                         toAddTaskUserList.add(taskUserDo);
                     }
                     for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
-                        afTaskUserService.insertTaskUserDo(afTaskUserDo);
+                        afTaskUserDo.setRid(afTaskUserService.insertTaskUserDo(afTaskUserDo));
                     }
                 }
             }

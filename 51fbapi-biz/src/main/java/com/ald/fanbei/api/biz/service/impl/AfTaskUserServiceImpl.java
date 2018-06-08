@@ -75,7 +75,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 
 	@Override
 	public Long insertTaskUserDo(AfTaskUserDo afTaskUserDo){
-		  afTaskUserDao.insertTaskUserDo(afTaskUserDo);
+		afTaskUserDao.insertTaskUserDo(afTaskUserDo);
 		return afTaskUserDo.getRid();
 	}
 
@@ -157,11 +157,9 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 							}
 						}
 					}
-					Long rid  ;
 					if (!toAddTaskUserList.isEmpty()) {
 						for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
-							rid = insertTaskUserDo(afTaskUserDo);
-							afTaskUserDo.setRid(rid);
+							afTaskUserDo.setRid(insertTaskUserDo(afTaskUserDo));
 						}
 						logger.info("browerAndShoppingHandler toAddTaskUserList:{}" , JSON.toJSONString(toAddTaskUserList));
 						return toAddTaskUserList;
@@ -218,7 +216,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 						toAddTaskUserList.add(taskUserDo);
 					}
 					for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
-						insertTaskUserDo(afTaskUserDo);
+						afTaskUserDo.setRid(insertTaskUserDo(afTaskUserDo));
 						logger.info("taskHandler toAddTaskUserList:{}" ,JSON.toJSONString(toAddTaskUserList));
 					}
 				}
@@ -263,7 +261,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 		afTaskUserDo.setGmtCreate(new Date());
 		afTaskUserDo.setRewardTime(new Date());
 
-		return afTaskUserDao.insertTaskUserDo(afTaskUserDo);
+		return Integer.parseInt(afTaskUserDao.insertTaskUserDo(afTaskUserDo)+"");
 	}
 
 	@Override
