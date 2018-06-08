@@ -170,7 +170,6 @@ public class GetExtractMoneyApi implements H5Handle {
                 return resp;
             } finally {
                 bizCacheUtil.delCache(key);
-                resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SYSTEM_ERROR);
             }
         }
         return resp;
