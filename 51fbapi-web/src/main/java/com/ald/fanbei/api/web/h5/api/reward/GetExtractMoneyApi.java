@@ -16,6 +16,7 @@ import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -75,10 +76,14 @@ public class GetExtractMoneyApi implements H5Handle {
                 AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.SIGN_REWARD_MAX_WITHDRAW);
                 final String withdrawType = ObjectUtils.toString(context.getData("withdrawType").toString(), null);
 
-                if (withdrawType != null && null != resourceDo) {
+                if (withdrawType != null) {
                     BigDecimal todayWithdrawAmount = afSignRewardWithdrawService.getTodayWithdrawAmount();
-                    logger.info("getExtractMoneyApi todayWithdrawAmount={},configMaxAmount={}", todayWithdrawAmount, resourceDo.getValue());
-                    if (todayWithdrawAmount.compareTo(new BigDecimal(resourceDo.getValue())) >= 0) {
+                    todayWithdrawAmount = (todayWithdrawAmount == null ? new BigDecimal(0) : todayWithdrawAmount);
+                    BigDecimal configedMaxAmount = new BigDecimal(resourceDo.getValue());
+                    configedMaxAmount = (configedMaxAmount == null ? new BigDecimal(10000l) : configedMaxAmount);
+                    logger.info("getExtractMoneyApi todayWithdrawAmount=" + todayWithdrawAmount + ",configMaxAmount=" + resourceDo.getValue() + "defaultMaxAmount=" + configedMaxAmount);
+
+                    if (todayWithdrawAmount.compareTo(configedMaxAmount) >= 0) {
                         // 发送预警短信
                         Runnable process = new AysSendSms(todayWithdrawAmount);
                         pool.execute(process);
