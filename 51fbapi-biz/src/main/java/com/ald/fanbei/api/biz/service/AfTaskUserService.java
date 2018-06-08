@@ -26,7 +26,7 @@ public interface AfTaskUserService {
      * @param afTaskUserDo
      * @return
      */
-    int insertTaskUserDo(AfTaskUserDo afTaskUserDo);
+    Long insertTaskUserDo(AfTaskUserDo afTaskUserDo);
 
     /**
      * 批量新增，返回带有主键ID的列表

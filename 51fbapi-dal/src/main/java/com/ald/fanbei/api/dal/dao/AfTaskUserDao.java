@@ -23,7 +23,7 @@ public interface AfTaskUserDao  {
     List<AfTaskUserDo> isNotDailyFinishTaskList(@Param("userId")Long userId);
 
 
-    int insertTaskUserDo(AfTaskUserDo afTaskUserDo);
+    Long insertTaskUserDo(AfTaskUserDo afTaskUserDo);
 
     int batchInsertTaskUserDo(List<AfTaskUserDo> taskUserDoList);
 

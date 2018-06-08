@@ -9,6 +9,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfTaskBrowseGoodsDaysDo;
 import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
+import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -144,9 +145,9 @@ public class AfTaskBrowseGoodsServiceImpl implements AfTaskBrowseGoodsService {
                                 taskUserDo.setTaskName(Constants.BROWSE_TASK_NAME);
                                 taskUserDo.setStatus(Constants.TASK_USER_REWARD_STATUS_0);
                                 taskUserDo.setTaskId(-3l);
-                                afTaskUserService.insertTaskUserDo(taskUserDo);
-
-                                logger.info("addBrowseGoodsTaskUserRecord end..");
+                                Long rid = afTaskUserService.insertTaskUserDo(taskUserDo);
+                                taskUserDo.setRid(rid);
+                                logger.info("addBrowseGoodsTaskUserRecord taskUserDo={}", JSON.toJSONString(taskUserDo));
                                 return taskUserDo;
                             }
                         }

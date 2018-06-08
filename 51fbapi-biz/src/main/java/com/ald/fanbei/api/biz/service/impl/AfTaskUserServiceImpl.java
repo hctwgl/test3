@@ -74,8 +74,9 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 
 
 	@Override
-	public int insertTaskUserDo(AfTaskUserDo afTaskUserDo){
-		return afTaskUserDao.insertTaskUserDo(afTaskUserDo);
+	public Long insertTaskUserDo(AfTaskUserDo afTaskUserDo){
+		  afTaskUserDao.insertTaskUserDo(afTaskUserDo);
+		return afTaskUserDo.getRid();
 	}
 
 	@Override
@@ -156,10 +157,11 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 							}
 						}
 					}
-
+					Long rid  ;
 					if (!toAddTaskUserList.isEmpty()) {
 						for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
-							insertTaskUserDo(afTaskUserDo);
+							rid = insertTaskUserDo(afTaskUserDo);
+							afTaskUserDo.setRid(rid);
 						}
 						logger.info("browerAndShoppingHandler toAddTaskUserList:{}" , JSON.toJSONString(toAddTaskUserList));
 						return toAddTaskUserList;
