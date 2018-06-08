@@ -220,6 +220,7 @@ public class H5SignInfoOutController extends H5Controller {
                 return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
             }
             data.put("userName",thirdInfo.getUserName());
+            logger.info("userName cfp friendSignIn = ",thirdInfo.getUserName());
             Long friendUserId = thirdInfo.getUserId();
             if(StringUtil.equals(friendUserId+"",userId+"")){//已经绑定并且是自己打开
                 data = homeInfo(userId,data,push,appVersion);
