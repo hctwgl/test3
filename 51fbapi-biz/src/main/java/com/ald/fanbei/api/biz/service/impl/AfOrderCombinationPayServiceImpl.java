@@ -200,7 +200,7 @@ public class AfOrderCombinationPayServiceImpl extends UpsPayKuaijieServiceAbstra
 			if(!BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {
 				updateOrderInfo.setRid(orderInfo.getRid());
 				updateOrderInfo.setPayStatus(PayStatus.DEALING.getCode());
-				updateOrderInfo.setOrderStatus(OrderStatus.DEALING.getCode());
+				updateOrderInfo.setStatus(OrderStatus.DEALING.getCode());
 				orderDao.updateOrder(updateOrderInfo);
 			}
 			logger.info("combinationPay upsPaySuccess bankChannel:"+bankChannel+" ,updateOrderInfo:" + updateOrderInfo);
