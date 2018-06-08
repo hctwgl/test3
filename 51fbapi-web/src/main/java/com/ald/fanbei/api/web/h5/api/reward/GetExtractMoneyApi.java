@@ -74,22 +74,17 @@ public class GetExtractMoneyApi implements H5Handle {
                 final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_PRIZE");
                 AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.SIGN_REWARD_MAX_WITHDRAW);
                 final String withdrawType = ObjectUtils.toString(context.getData("withdrawType").toString(), null);
-                logger.info("getExtractMoneyApi withdrawType={},value={}", withdrawType, resourceDo.getValue());
-                logger.info("getExtractMoneyApi value={}", resourceDo.getValue());
 
                 if (withdrawType != null && null != resourceDo) {
                     BigDecimal todayWithdrawAmount = afSignRewardWithdrawService.getTodayWithdrawAmount();
-                    logger.info("getExtractMoneyApi todayWithdrawAmount={}", todayWithdrawAmount);
+                    logger.info("getExtractMoneyApi todayWithdrawAmount={},configMaxAmount={}", todayWithdrawAmount, resourceDo.getValue());
                     if (todayWithdrawAmount.compareTo(new BigDecimal(resourceDo.getValue())) >= 0) {
                         // 发送预警短信
                         Runnable process = new AysSendSms(todayWithdrawAmount);
                         pool.execute(process);
 
-                        logger.info("getExtractMoneyApi result={}", FanbeiExceptionCode.WITHDRAW_OVER.getDesc());
                         return new H5HandleResponse(context.getId(), FanbeiExceptionCode.WITHDRAW_OVER);
                     }
-
-                    logger.info("getExtractMoneyApi after..");
 
                     String status = transactionTemplate.execute(new TransactionCallback<String>() {
                         @Override
@@ -180,7 +175,7 @@ public class GetExtractMoneyApi implements H5Handle {
             logger.info("aysSendSms start..");
             try {
                 int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-                String smsKey = currentHour + "sendSignRewardWithdrawWarn";
+                String smsKey = "sendSignRewardWithdrawWarn" + currentHour;
                 Integer warnHour = (Integer) bizCacheUtil.getObject(smsKey);
                 if (null == warnHour) {
                     warnHour = currentHour;
