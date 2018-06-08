@@ -69,11 +69,14 @@ public class GetExtractMoneyApi implements H5Handle {
             try {
                 final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_PRIZE");
                 final String withdrawType = ObjectUtils.toString(context.getData("withdrawType").toString(), null);
+                logger.info("getExtractMoneyApi withdrawType={}", withdrawType);
                 if (withdrawType != null) {
                     AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.SIGN_REWARD_MAX_WITHDRAW);
+                    logger.info("getExtractMoneyApi value={}", resourceDo.getValue());
                     if(null != resourceDo){
                         BigDecimal todayWithdrawAmount = afSignRewardWithdrawService.getTodayWithdrawAmount();
                         todayWithdrawAmount = (todayWithdrawAmount == null ? new BigDecimal(0) : todayWithdrawAmount);
+                        logger.info("getExtractMoneyApi todayWithdrawAmount={}", todayWithdrawAmount);
                         if(todayWithdrawAmount.compareTo(new BigDecimal(resourceDo.getValue())) >= 0){
                             // 发送预警短信
                             try{
@@ -93,6 +96,7 @@ public class GetExtractMoneyApi implements H5Handle {
                                 logger.error("sendSignRewardWithdrawWarn error, ", e);
                             }
 
+                            logger.info("getExtractMoneyApi result={}", FanbeiExceptionCode.WITHDRAW_OVER.getDesc());
                             return new H5HandleResponse(context.getId(), FanbeiExceptionCode.WITHDRAW_OVER);
                         }
                     }
