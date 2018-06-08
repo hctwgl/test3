@@ -159,7 +159,7 @@ public class AfTaskUserServiceImpl implements AfTaskUserService {
 					}
 					if (!toAddTaskUserList.isEmpty()) {
 						for(AfTaskUserDo afTaskUserDo : toAddTaskUserList){
-							afTaskUserDo.setRid(insertTaskUserDo(afTaskUserDo));
+							insertTaskUserDo(afTaskUserDo);
 						}
 						logger.info("browerAndShoppingHandler toAddTaskUserList:{}" , JSON.toJSONString(toAddTaskUserList));
 						return toAddTaskUserList;
