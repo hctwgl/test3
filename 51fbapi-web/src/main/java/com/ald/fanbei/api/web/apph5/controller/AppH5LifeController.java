@@ -148,12 +148,13 @@ public class AppH5LifeController extends BaseController {
                 }
             }
             logger.info("h5ResourceList isNeedRecycle end"+isNeedRecycle);
-            String cacheKey = "life:h5ResourceList";
-            Object cacheResult = bizCacheUtil.getObject(cacheKey);
+            //保留回收中的展示入口，非回收隐藏回收接口
+//            String cacheKey = "life:h5ResourceList";
+//            Object cacheResult = bizCacheUtil.getObject(cacheKey);
             String result = "";
-            if (cacheResult != null) {
-                result = cacheResult.toString();
-            }
+//            if (cacheResult != null) {
+//                result = cacheResult.toString();
+//            }
             if (StringUtils.isBlank(result)) {
                 List<AfResourceH5Dto> resourceH5Dtos = afResourceH5Service
                         .selectByStatus(BottomGoodsPageFlag.LIFE.getCode());
@@ -166,9 +167,9 @@ public class AppH5LifeController extends BaseController {
                 result = H5CommonResponse
                         .getNewInstance(true, "成功", "", data).toString();
 
-                if (data.size() > 0) {
-                    bizCacheUtil.saveObject(cacheKey, result, 180);
-                }
+//                if (data.size() > 0) {
+//                    bizCacheUtil.saveObject(cacheKey, result, 180);
+//                }
             }
             logger.info("h5ResourceList result ="+result);
             return result;
