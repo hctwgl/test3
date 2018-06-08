@@ -211,14 +211,18 @@ public class H5SignInfoOutController extends H5Controller {
             }
             String push = ObjectUtils.toString(request.getParameter("push"),"N");
             String wxCode = ObjectUtils.toString(request.getParameter("wxCode"),null);
+            logger.info("userName cfp friendSignIn wxCode = ",wxCode);
             Map<String,Object> data = new HashMap<String,Object>();
             Long userId = afUserDo.getRid();
             //判断用户和openId是否在爱上街绑定
             AfUserThirdInfoDo thirdInfo = checkBindOpen(wxCode);
+            logger.info("userName cfp friendSignIn thirdInfo = ",thirdInfo);
             if(thirdInfo == null){
                 data.put("openType","2");
                 return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
             }
+            data.put("userName",thirdInfo.getUserName());
+            logger.info("userName cfp friendSignIn = ",thirdInfo.getUserName());
             Long friendUserId = thirdInfo.getUserId();
             if(StringUtil.equals(friendUserId+"",userId+"")){//已经绑定并且是自己打开
                 data = homeInfo(userId,data,push,appVersion);
@@ -241,7 +245,6 @@ public class H5SignInfoOutController extends H5Controller {
                 if(!friendSign(afSignRewardDo,userId,friendUserId,data)){
                     return H5CommonResponse.getNewInstance(false,FanbeiExceptionCode.USER_SIGN_FAIL.getDesc(),"",data ).toString();
                 }
-                data.put("userName",thirdInfo.getUserName());
                 data.put("openType","1");
                 data.put("flag","success");
             }
@@ -635,13 +638,12 @@ public class H5SignInfoOutController extends H5Controller {
                 data.put("openType","2");
                 return H5CommonResponse.getNewInstance(true,FanbeiExceptionCode.SUCCESS.getDesc(),"",data ).toString();
             }
+            data.put("userName",thirdInfo.getUserName());
             Long firendUserId = thirdInfo.getUserId();
             if(StringUtil.equals(firendUserId+"",userId+"")){//已经绑定并且是自己打开
-                data.put("userName",thirdInfo.getUserName());
                 data = homeInfo(userId,data,push,appVersion);
                 data.put("openType","0");
             } else if(!StringUtil.equals(firendUserId+"",userId+"") ){//已绑定
-                data.put("userName",thirdInfo.getUserName());
                 data = homeInfo(firendUserId,data,push,appVersion);
                 AfSignRewardDo afSignRewardDo = new AfSignRewardDo();
                 afSignRewardDo.setIsDelete(0);
@@ -770,7 +772,7 @@ public class H5SignInfoOutController extends H5Controller {
         AfUserThirdInfoDo thirdInfo = new AfUserThirdInfoDo();
         thirdInfo.setThirdId(userWxInfo.get("openid").toString());
         thirdInfo.setThirdType(UserThirdType.WX.getCode());
-        List<AfUserThirdInfoDo> thirdInfos = afUserThirdInfoService.getListByCommonCondition(thirdInfo);
+            List<AfUserThirdInfoDo> thirdInfos = afUserThirdInfoService.getListByCommonCondition(thirdInfo);
         return  thirdInfos.size() == 0 ? null : thirdInfos.get(0);
     }
 
