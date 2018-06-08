@@ -27,6 +27,8 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -58,6 +60,8 @@ public class GetExtractMoneyApi implements H5Handle {
     AfSignRewardWithdrawService afSignRewardWithdrawService;
     @Resource
     SmsUtil smsUtil;
+    ExecutorService pool = Executors.newFixedThreadPool(1);
+
 
     @Override
     public H5HandleResponse process(final Context context) {
@@ -68,37 +72,18 @@ public class GetExtractMoneyApi implements H5Handle {
             bizCacheUtil.saveObject(key, new Date(), 5l);
             try {
                 final AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype("REWARD_PRIZE");
+                AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.SIGN_REWARD_MAX_WITHDRAW);
                 final String withdrawType = ObjectUtils.toString(context.getData("withdrawType").toString(), null);
-                logger.info("getExtractMoneyApi withdrawType={}", withdrawType);
-                if (withdrawType != null) {
-                    AfResourceDo resourceDo = afResourceService.getSingleResourceBytype(Constants.SIGN_REWARD_MAX_WITHDRAW);
-                    logger.info("getExtractMoneyApi value={}", resourceDo.getValue());
-                    if(null != resourceDo){
-                        BigDecimal todayWithdrawAmount = afSignRewardWithdrawService.getTodayWithdrawAmount();
-                        todayWithdrawAmount = (todayWithdrawAmount == null ? new BigDecimal(0) : todayWithdrawAmount);
-                        logger.info("getExtractMoneyApi todayWithdrawAmount={}", todayWithdrawAmount);
-                        if(todayWithdrawAmount.compareTo(new BigDecimal(resourceDo.getValue())) >= 0){
-                            // 发送预警短信
-                            try{
-                                int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-                                String smsKey = currentHour + "sendSignRewardWithdrawWarn";
-                                Integer warnHour = (Integer) bizCacheUtil.getObject(smsKey);
-                                if(null == warnHour){
-                                    String[] arg = {"18917116090","15868156133","15505719987","17376569906","13157183226"};
-                                    for(String mobile: arg){
-                                        smsUtil.sendSignRewardWithdrawWarn(mobile, todayWithdrawAmount);
-                                    }
-                                    warnHour = currentHour;
-                                    bizCacheUtil.saveObject(smsKey, warnHour, Constants.SECOND_OF_AN_HOUR_INT);
-                                }
 
-                            }catch(Exception e){
-                                logger.error("sendSignRewardWithdrawWarn error, ", e);
-                            }
+                if (withdrawType != null && null != resourceDo) {
+                    BigDecimal todayWithdrawAmount = afSignRewardWithdrawService.getTodayWithdrawAmount();
+                    logger.info("getExtractMoneyApi todayWithdrawAmount={},configMaxAmount={}", todayWithdrawAmount, resourceDo.getValue());
+                    if (todayWithdrawAmount.compareTo(new BigDecimal(resourceDo.getValue())) >= 0) {
+                        // 发送预警短信
+                        Runnable process = new AysSendSms(todayWithdrawAmount);
+                        pool.execute(process);
 
-                            logger.info("getExtractMoneyApi result={}", FanbeiExceptionCode.WITHDRAW_OVER.getDesc());
-                            return new H5HandleResponse(context.getId(), FanbeiExceptionCode.WITHDRAW_OVER);
-                        }
+                        return new H5HandleResponse(context.getId(), FanbeiExceptionCode.WITHDRAW_OVER);
                     }
 
                     String status = transactionTemplate.execute(new TransactionCallback<String>() {
@@ -178,7 +163,37 @@ public class GetExtractMoneyApi implements H5Handle {
         return resp;
     }
 
+    class AysSendSms implements Runnable{
+        private BigDecimal todayWithdrawAmount;
 
+        public AysSendSms(BigDecimal todayWithdrawAmount){
+            this.todayWithdrawAmount = todayWithdrawAmount;
+        }
 
+        @Override
+        public void run() {
+            logger.info("aysSendSms start..");
+            try {
+                int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+                String smsKey = "sendSignRewardWithdrawWarn" + currentHour;
+                Integer warnHour = (Integer) bizCacheUtil.getObject(smsKey);
+                if (null == warnHour) {
+                    warnHour = currentHour;
+                    bizCacheUtil.saveObject(smsKey, warnHour, Constants.SECOND_OF_AN_HOUR_INT);
+                    logger.info("aysSendSms start, warnHour={}", warnHour);
+                    String[] arg = {"18917116090", "15868156133", "15505719987", "17376569906", "13157183226"};
+                    for (String mobile : arg) {
+                        smsUtil.sendSignRewardWithdrawWarn(mobile, todayWithdrawAmount);
+                    }
+                }
+
+            } catch (Exception e) {
+                logger.error("aysSendSms error, ", e);
+            }
+            logger.info("aysSendSms end..");
+        }
+    }
 
 }
+
+
