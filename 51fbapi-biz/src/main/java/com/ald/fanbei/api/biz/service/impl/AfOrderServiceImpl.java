@@ -1228,10 +1228,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), softWeakRiskOrderNo, userName, orderInfo.getActualAmount(), BigDecimal.ZERO, borrowTime, str, _vcode, orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 								 logger.info("softWeakverybo=" + softWeakverybo);
 								 boolean isPassSoftWeakRisk = softWeakverybo.isPassWeakRisk();
-								 if( isPassSoftWeakRisk && vipGoodsId>0){
+								 if( isPassSoftWeakRisk && vipGoodsId>0 && context.getAppVersion() >= 417){
 									 //软弱风控通过，引导权限包 1 自动生成一个权限包订单 2 修改该付款失败订单的是否支持信用支付的状态
 									 AfOrderDo vipGoodsOrder = orderDao.getPayRelaOrderByGoodsIdAndUserid(userId, vipGoodsId);
-									 if (vipGoodsOrder == null && context.getAppVersion() >= 417){
+									 if (vipGoodsOrder == null ){
 										 vipGoodsOrder = generateOrder(vipGoodsId,userId,orderInfo.getOrderNo(),request);
 										 afOrderService.createOrder(vipGoodsOrder);
 										 logger.info("ap softWeakVerify pass,and create new order of authPackage success ,orderId="+vipGoodsOrder.getRid());
@@ -1340,10 +1340,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 RiskVerifyRespBo softWeakverybo = riskUtil.weakRiskForXd(ObjectUtils.toString(userId, ""), borrow.getBorrowNo(), borrow.getNper().toString(), "44", card.getCardNumber(), appName, ipAddress, orderInfo.getBlackBox(), softWeakRiskOrderNo, userName, leftAmount, BigDecimal.ZERO, borrowTime, OrderType.BOLUOME.getCode().equals(orderInfo.getOrderType()) ? OrderType.BOLUOME.getCode() : orderInfo.getGoodsName(), getVirtualCode(virtualMap), orderInfo.getOrderType(), orderInfo.getSecType(), orderInfo.getRid(), card.getBankName(), borrow, payType, riskDataMap, orderInfo.getBqsBlackBox(), orderInfo);
 								 logger.info("cp softWeakverybo=" + softWeakverybo);
 								 boolean isPassSoftWeakRisk = softWeakverybo.isPassWeakRisk();
-								 if( isPassSoftWeakRisk && vipGoodsId>0){
+								 if( isPassSoftWeakRisk && vipGoodsId>0 && context.getAppVersion() >= 417){
 									//软弱风控通过，引导权限包 1 自动生成一个权限包订单 2 修改该付款失败订单的是否支持信用支付的状态
 									 AfOrderDo vipGoodsOrder = orderDao.getPayRelaOrderByGoodsIdAndUserid(userId, vipGoodsId);
-									 if (vipGoodsOrder == null && context.getAppVersion() >= 417){
+									 if (vipGoodsOrder == null){
 										 vipGoodsOrder = generateOrder(vipGoodsId,userId,orderInfo.getOrderNo(),request);
 										 afOrderService.createOrder(vipGoodsOrder);
 										 logger.info("cp softWeakVerify pass,and create new order of authPackage success ,orderId="+vipGoodsOrder.getRid());
