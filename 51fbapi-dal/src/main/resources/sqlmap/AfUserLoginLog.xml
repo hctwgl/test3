@@ -63,6 +63,6 @@
 	    from `af_user_login_log`
 	    where user_name = #{userName}
 	    and `is_delete` = 0
-	    and result like 'true,borrowSuperman%'
+	    and result like '%borrowSuperman%'
     </select>
 </mapper>
