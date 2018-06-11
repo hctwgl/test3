@@ -12,6 +12,7 @@ import com.ald.fanbei.api.biz.util.BorrowRateBoUtil;
 import com.ald.fanbei.api.biz.util.BuildInfoUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -1029,7 +1030,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	// return orderDao.deleteOrder(id);
 	// }
     @Override
-    public Map<String, Object> payBrandOrder(final String userName, final Long payId, final String payType, final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount, final Integer nper, final String appName, final String ipAddress, final String bankChannel, final HttpServletRequest request) {
+    public Map<String, Object> payBrandOrder(final String userName, final Long payId, final String payType, final Long orderId, final Long userId, final String orderNo, final String thirdOrderNo, final String goodsName, final BigDecimal saleAmount, final Integer nper, final String appName, final String ipAddress, final String bankChannel, final HttpServletRequest request,final FanbeiContext context) {
 		final AfOrderDo orderInfo = orderDao.getOrderInfoById(orderId, userId);
 		final HashMap<String, HashMap> riskDataMap = new HashMap();
 
@@ -1230,7 +1231,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 if( isPassSoftWeakRisk && vipGoodsId>0){
 									 //软弱风控通过，引导权限包 1 自动生成一个权限包订单 2 修改该付款失败订单的是否支持信用支付的状态
 									 AfOrderDo vipGoodsOrder = orderDao.getPayRelaOrderByGoodsIdAndUserid(userId, vipGoodsId);
-									 if (vipGoodsOrder == null){
+									 if (vipGoodsOrder == null && context.getAppVersion() >= 417){
 										 vipGoodsOrder = generateOrder(vipGoodsId,userId,orderInfo.getOrderNo(),request);
 										 afOrderService.createOrder(vipGoodsOrder);
 										 logger.info("ap softWeakVerify pass,and create new order of authPackage success ,orderId="+vipGoodsOrder.getRid());
@@ -1342,7 +1343,7 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 								 if( isPassSoftWeakRisk && vipGoodsId>0){
 									//软弱风控通过，引导权限包 1 自动生成一个权限包订单 2 修改该付款失败订单的是否支持信用支付的状态
 									 AfOrderDo vipGoodsOrder = orderDao.getPayRelaOrderByGoodsIdAndUserid(userId, vipGoodsId);
-									 if (vipGoodsOrder == null){
+									 if (vipGoodsOrder == null && context.getAppVersion() >= 417){
 										 vipGoodsOrder = generateOrder(vipGoodsId,userId,orderInfo.getOrderNo(),request);
 										 afOrderService.createOrder(vipGoodsOrder);
 										 logger.info("cp softWeakVerify pass,and create new order of authPackage success ,orderId="+vipGoodsOrder.getRid());

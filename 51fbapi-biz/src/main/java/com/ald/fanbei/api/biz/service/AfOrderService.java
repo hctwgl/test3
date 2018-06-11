@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.BorrowType;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.*;
@@ -175,10 +176,11 @@ public interface AfOrderService {
 	/**
 	 * 支付菠萝觅订单
 	 * @param request 
+	 * @param context 
 	 * @param afOrder
 	 * @return
 	 */
-	Map<String,Object> payBrandOrder(String userName, Long payId, String payType, Long rid, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal actualAmount, Integer nper, String appName, String ipAddress,String bankChannel, HttpServletRequest request);
+	Map<String,Object> payBrandOrder(String userName, Long payId, String payType, Long rid, Long userId, String orderNo, String thirdOrderNo, String goodsName, BigDecimal actualAmount, Integer nper, String appName, String ipAddress,String bankChannel, HttpServletRequest request, FanbeiContext context);
 	/**
 	 * 支付菠萝觅订单
 	 * @param afOrder
