@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,user_id,third_id,third_type,third_info,gmt_create,gmt_modified,creator,modifier 
+        id rid,user_id,third_id,third_type,third_info,gmt_create,gmt_modified,creator,modifier ,user_name
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -112,11 +112,11 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfUserThirdInfoDo">
         UPDATE af_user_third_info
           <set>
-            <if test="userId != null and userId != '' ">        
-                user_id = #{userId,jdbcType=INTEGER},                
+            <if test="userId != null and userId != '' ">
+                user_id = #{userId,jdbcType=INTEGER},
             </if>
             <if test="thirdId != null and thirdId != '' ">        
-                third_id = #{thirdId,jdbcType=VARCHAR},                
+                third_id = #{thirdId,jdbcType=VARCHAR},
             </if>
             <if test="thirdType != null and thirdType != '' ">        
                 third_type = #{thirdType,jdbcType=VARCHAR},                
@@ -134,9 +134,9 @@
                 creator = #{creator,jdbcType=VARCHAR},                
             </if>
             <if test="modifier != null and modifier != '' ">        
-                modifier = #{modifier,jdbcType=VARCHAR}                
+                modifier = #{modifier,jdbcType=VARCHAR}
             </if>
-        </set>    
+        </set>
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
@@ -169,4 +169,40 @@
         WHERE ut.user_id = u.id AND ut.is_delete = 0 AND ut.third_id = #{thirdId} AND ut.third_type = #{thirdType}
         LIMIT 1
     </select>
+
+
+    <update id="updateByUserName"  parameterType="com.ald.fanbei.api.dal.domain.AfUserThirdInfoDo">
+        UPDATE af_user_third_info
+        <set>
+            <if test="thirdId != null and thirdId != '' ">
+                third_id = #{thirdId,jdbcType=VARCHAR},
+            </if>
+            <if test="thirdType != null and thirdType != '' ">
+                third_type = #{thirdType,jdbcType=VARCHAR},
+            </if>
+            <if test="thirdInfo != null and thirdInfo != '' ">
+                third_info = #{thirdInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null and gmtCreate != '' ">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creator != null and creator != '' ">
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="modifier != null and modifier != '' ">
+                modifier = #{modifier,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE is_delete = 0 AND user_name = #{userName,jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="selectUserThirdInfoByUserName" resultType="int">
+        SELECT count(1) FROM af_user_third_info WHERE is_delete = 0 AND user_name = #{userName}
+    </select>
+
+
 </mapper>

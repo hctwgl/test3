@@ -178,6 +178,8 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 	KafkaSync kafkaSync;
 	@Resource
 	AssetSideEdspayUtil assetSideEdspayUtil;
+	@Resource
+	AfTaskUserService afTaskUserService;
 
     @Override
     public Map<String, Object> repay(LoanRepayBo bo, String bankPayType) {
@@ -736,6 +738,10 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
     	if(LoanRepayDealBo.curSumRebateAmount != null && LoanRepayDealBo.curSumRebateAmount.compareTo(BigDecimal.ZERO) > 0) {// 授权账户可用金额变更
         	accountInfo.setRebateAmount(accountInfo.getRebateAmount().subtract(LoanRepayDealBo.curSumRebateAmount));
         	afUserAccountDao.updateOriginalUserAccount(accountInfo);
+
+			// add by luoxiao for 边逛边赚，增加零钱明细
+			afTaskUserService.addTaskUser(accountInfo.getUserId(), UserAccountLogType.REPAYMENT.getName(), LoanRepayDealBo.curSumRebateAmount.multiply(new BigDecimal(-1)));
+			// end by luoxiao
     	}
     	
     	if(LoanRepayDealBo.curUserCouponId != null && LoanRepayDealBo.curUserCouponId > 0) {

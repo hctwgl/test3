@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import com.ald.fanbei.api.biz.bo.risk.RespSecAuthInfoToRiskBo;
 import com.ald.fanbei.api.dal.domain.AfAuthRaiseStatusDo;
 import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
+import com.ald.fanbei.api.dal.domain.AfUserAuthStatusDo;
 import com.ald.fanbei.api.dal.domain.dto.AfUserAccountDto;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
 import com.alibaba.fastjson.JSONObject;
@@ -111,4 +113,14 @@ public interface AfUserAuthService {
 	 * @param dataObj
 	 */
 	void dealRaiseQuota(AfUserAuthDo afUserAuthDo, JSONObject dataObj);
+
+	/**
+	 * 签到领金币 获取用户层级
+	 * @param userId
+	 * @return
+	 */
+	List<Integer>  signRewardUserLevel(Long userId,HashMap<String,Object> hashMap);
+
+
+	HashMap<String,Object> getUserAuthInfo(Long userId);
 }

@@ -1,7 +1,9 @@
 package com.ald.fanbei.api.web.api.goods;
 
 import com.ald.fanbei.api.biz.service.*;
+
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.JobThreadPoolUtils;
 import com.ald.fanbei.api.common.CacheConstants;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -10,12 +12,11 @@ import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.AfInterestFreeRulesDo;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.AfResourceH5ItemDo;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.HomePageSecKillGoods;
+import com.ald.fanbei.api.dal.domain.query.AfSeckillActivityQuery;
 import com.ald.fanbei.api.dal.domain.query.HomePageSecKillByBottomGoodsQuery;
+
 import com.ald.fanbei.api.web.cache.Cache;
 import com.ald.fanbei.api.web.common.ApiHandle;
 import com.ald.fanbei.api.web.common.ApiHandleResponse;
@@ -25,6 +26,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -85,6 +88,9 @@ public class GetMoreGoodsApi implements ApiHandle {
 	AfSeckillActivityService afSeckillActivityService;
 	@Resource
 	AfResourceH5ItemService afResourceH5ItemService;
+	@Resource
+	JobThreadPoolUtils jobThreadPoolUtils;
+
 	private static final	 String ASJ_IMAGES = 		   HomePageType.ASJ_IMAGES.getCode();//爱上街顶部图组
 	private static final    String GUESS_YOU_LIKE_TOP_IMAGE =   HomePageType.GUESS_YOU_LIKE_TOP_IMAGE.getCode();//猜你喜欢顶部图
 	
@@ -112,16 +118,40 @@ public class GetMoreGoodsApi implements ApiHandle {
 	 try{
 		
 		 Map<String, Object> goodsInfo = new HashMap<String, Object>();
-		 Map<String, Object> goodsInfoTemp = new HashMap<String, Object>();
-		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_MORE_GOODS_PAGENO.getCode()+ ":"+pageFlag+":"+pageNo;
-		 goodsInfoTemp =  (Map<String, Object>) bizCacheUtil.getMap(cacheKey);
-		   if(goodsInfoTemp != null){
+		// Map<String, Object> goodsInfoTemp = new HashMap<String, Object>();
+		 String cacheKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_MORE_GOODS_PAGENO_FIRST.getCode()+ ":"+pageFlag+":"+pageNo;
+		 String cacheKey2 = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_MORE_GOODS_PAGENO_SECOND.getCode()+ ":"+pageFlag+":"+pageNo;
+		 String processKey = CacheConstants.ASJ_HOME_PAGE.ASJ_HOME_MORE_GOODS_PAGENO_SECOND_PROCESS_KEY.getCode()+ ":"+pageFlag+":"+pageNo;
+		 String source = "app";
+
+		// goodsInfoTemp =  (Map<String, Object>) bizCacheUtil.getMap(cacheKey);
+		 goodsInfo =  (Map<String, Object>) bizCacheUtil.getMap(cacheKey);
+		  logger.info("getMoreGoodsApi"+Thread.currentThread().getName() + "getMoreGoodsApi = "+JSONArray.toJSONString(goodsInfo)+"cacheKey = "+ cacheKey);
+		   /*if(goodsInfoTemp != null){
 			   goodsInfo = goodsInfoTemp;
-		   }	
-		   if(goodsInfoTemp == null || goodsInfoTemp.isEmpty()){
-			   
-		 
-		 //更换查询表
+		   }*/
+		   if(goodsInfo == null || goodsInfo.isEmpty()){
+			   boolean isGetLock = bizCacheUtil.getLock30Second(processKey, "1");
+			   goodsInfo = (Map<String, Object>) bizCacheUtil.getMap(cacheKey2);
+			   logger.info("getMoreGoodsApi"+Thread.currentThread().getName() + "getMoreGoodsApi isGetLock:"+isGetLock+"goodsInfo= "+JSONArray.toJSONString(goodsInfo)+"cacheKey2 = "+ cacheKey2);
+
+			   //调用异步请求加入缓存
+			   if(isGetLock){
+				   logger.info("getMoreGoodsApi"+Thread.currentThread().getName() + "getMoreGoodsApi is null"+"cacheKey2 = "+ cacheKey2);
+				   Runnable process = new GetMoreGoodsInfo(cacheKey,cacheKey2,null,pageNo,pageFlag,source);
+				   jobThreadPoolUtils.asynProcessBusiness(process);
+			   }
+		   }
+		 //调用异步请求加入缓存
+		if(goodsInfo==null){
+			    goodsInfo = toGetMoreGoodsInfoMap(null,pageNo,pageFlag,source);
+			if(goodsInfo != null) {
+				bizCacheUtil.saveMap(cacheKey, goodsInfo, Constants.MINITS_OF_TWO);
+				bizCacheUtil.saveMapForever(cacheKey2, goodsInfo);
+			}
+		}
+
+	/*		   //更换查询表
 		 //List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,activityTag,activityType,tabId,pageNo);
 		 Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag,"app");
 		 List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
@@ -158,7 +188,7 @@ public class GetMoreGoodsApi implements ApiHandle {
 						 bizCacheUtil.saveMap(cacheKey, goodsInfo, Constants.MINITS_OF_TWO);	 		 
 						 
 		   }
-		     
+		     */
 			 if (!goodsInfo.isEmpty()) {
 					data.put("moreGoodsInfo", goodsInfo);
 				}
@@ -170,7 +200,89 @@ public class GetMoreGoodsApi implements ApiHandle {
 		return resp;
 		
 	}
-	
+class GetMoreGoodsInfo implements Runnable {
+
+	protected  final Logger logger = LoggerFactory.getLogger(GetMoreGoodsInfo.class);
+
+	private String source;
+	private String  pageFlag;
+	private Integer pageNo;
+	private Long userId;
+	private String  firstKey;
+	private String  secondKey;
+	@Resource
+	BizCacheUtil bizCacheUtil;
+	GetMoreGoodsInfo(String firstKey,String secondKey,Long userId,Integer pageNo,String pageFlag,String source) {
+
+		this.source = source;
+		this.pageFlag = pageFlag;
+		this.pageNo = pageNo;
+		this.userId = userId;
+		this.firstKey = firstKey;
+		this.secondKey = secondKey;
+	}
+	@Override
+	public void run() {
+		logger.info("pool:GetMoreGoodsInfo"+Thread.currentThread().getName() + "GetMoreGoodsInfo");
+		try{
+			GetMoreGoodsInfoMap( firstKey,secondKey , userId, pageNo, pageFlag,source);
+
+		}catch (Exception e){
+			logger.error("pool:GetMoreGoodsInfo error for" + e);
+		}
+	}
+	}
+	private Map<String, Object> GetMoreGoodsInfoMap(String firstKey , String secondKey ,Long userId,Integer pageNo,String pageFlag,String source) {
+		//获取所有活动
+		Map<String, Object> goodsInfo =  toGetMoreGoodsInfoMap(userId, pageNo, pageFlag, source);
+		if(goodsInfo != null) {
+			bizCacheUtil.saveMap(firstKey, goodsInfo, Constants.MINITS_OF_TWO);
+			bizCacheUtil.saveMapForever(secondKey, goodsInfo);
+		}
+		return null;
+	}
+
+	Map<String, Object> toGetMoreGoodsInfoMap(Long userId,Integer pageNo,String pageFlag,String source ){
+
+		Map<String, Object> goodsInfo = new HashMap<String, Object>();
+		userId = null; // 不查，且放入缓存会有问题。
+	//更换查询表
+	//List<HomePageSecKillGoods> goodsList = afSeckillActivityService.getHomePageSecKillGoodsByActivityModel(userId,activityTag,activityType,tabId,pageNo);
+		Map<String, Object> goodsListMap = afSeckillActivityService.getMoreGoodsByBottomGoodsTable(userId,pageNo,pageFlag,source);
+		List<HomePageSecKillGoods> goodsList = (List<HomePageSecKillGoods>) goodsListMap.get("goodsList");
+		List<Map<String, Object>> moreGoodsInfoList = getGoodsInfoList(goodsList,null,null);
+		String imageUrl = "";
+		String content = "";
+		String type = "";
+		List<AfResourceH5ItemDo>  recommendList =  afResourceH5ItemService.getByTagAndValue2(ASJ_IMAGES,GUESS_YOU_LIKE_TOP_IMAGE);
+				 if(recommendList != null && recommendList.size() >0){
+			AfResourceH5ItemDo recommend = recommendList.get(0);
+			imageUrl = recommend.getValue3();
+			content = recommend.getValue1();
+			type = recommend.getValue4();
+		}
+     //						 if(StringUtil.isNotEmpty(imageUrl) && moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
+	// update by wangli 2018/5/17 楼层图没有配置时，也返回配置的商品
+			             if(moreGoodsInfoList != null && moreGoodsInfoList.size()>0){
+							 HomePageSecKillByBottomGoodsQuery homePageSecKillGoods = (HomePageSecKillByBottomGoodsQuery)goodsListMap.get("query");
+							if(homePageSecKillGoods != null){
+								int pageSize = homePageSecKillGoods.getPageSize();
+								int size = goodsList.size();
+								if(pageSize > size){
+									goodsInfo.put("nextPageNo",-1);
+								}else{
+									goodsInfo.put("nextPageNo",pageNo+1);
+								}
+								goodsInfo.put("imageUrl",imageUrl);
+								goodsInfo.put("content",content);
+								goodsInfo.put("type",type);
+								goodsInfo.put("moreGoodsList", moreGoodsInfoList);
+							}
+						}
+						return goodsInfo;
+}
+
+
 
 	private List<Map<String, Object>> getGoodsInfoList(List<HomePageSecKillGoods> list,String tag,AfResourceH5ItemDo afResourceH5ItemDo){
 		List<Map<String, Object>> goodsList = new ArrayList<Map<String, Object>>();

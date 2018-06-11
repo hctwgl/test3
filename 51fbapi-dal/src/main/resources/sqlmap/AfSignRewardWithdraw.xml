@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_sign_reward_withdraw表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfSignRewardWithdrawDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,withdraw_type,withdraw_amount,user_id
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="withdrawType != null and withdrawType != ''">
+            AND withdraw_type = #{withdrawType,jdbcType=INTEGER}
+        </if>
+        <if test="withdrawAmount != null and withdrawAmount != ''">
+            AND withdraw_amount = #{withdrawAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo" keyProperty="rid">
+    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_sign_reward_withdraw
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="withdrawType != null">        
+	            withdraw_type,
+	        </if>
+	        <if test="withdrawAmount != null">        
+	            withdraw_amount,
+	        </if>
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="withdrawType != null" >
+		       #{withdrawType,jdbcType=INTEGER},
+		    </if>
+		    <if test="withdrawAmount != null" >
+		       #{withdrawAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo">
+        UPDATE af_sign_reward_withdraw
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="withdrawType != null and withdrawType != '' ">        
+                withdraw_type = #{withdrawType,jdbcType=INTEGER},                
+            </if>
+            <if test="withdrawAmount != null and withdrawAmount != '' ">        
+                withdraw_amount = #{withdrawAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_sign_reward_withdraw
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo" parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_sign_reward_withdraw
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo" parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardWithdrawDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_sign_reward_withdraw
+        <include refid="commonCondition"/>
+    </select>
+
+    <select id="getWithdrawList" parameterType="AfSignRewardWithdrawQuery" resultType="AfSignRewardWithdrawDto">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_sign_reward_withdraw
+        WHERE is_delete = 0
+        AND user_id = #{userId}
+        ORDER BY gmt_create desc
+    </select>
+
+    <select id="getTodayWithdrawAmount" resultType="java.math.BigDecimal">
+        SELECT
+        sum(withdraw_amount)
+        FROM af_sign_reward_withdraw
+        WHERE is_delete = 0
+        AND date(gmt_create) = date(NOW())
+    </select>
+
+    
+</mapper>

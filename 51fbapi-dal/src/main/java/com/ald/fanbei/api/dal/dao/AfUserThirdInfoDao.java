@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 /**
  * 用户第三方信息Dao
- * 
+ *
  * @author wangli
  * @version 1.0.0 初始化
  * @date 2018-05-04 09:20:23
@@ -21,4 +21,11 @@ public interface AfUserThirdInfoDao extends BaseDao<AfUserThirdInfoDo, Long> {
      * @date 2018/5/6 16:01
      */
     UserWxInfoDto getLocalUserInfoByThirdId(@Param("thirdId") String thirdId, @Param("thirdType") String thirdType);
+
+    int saveRecord(AfUserThirdInfoDo afUserThirdInfoDo);
+
+    int selectUserThirdInfoByUserName(@Param("userName") String userName);
+
+    int updateByUserName(AfUserThirdInfoDo afUserThirdInfoDo);
+
 }

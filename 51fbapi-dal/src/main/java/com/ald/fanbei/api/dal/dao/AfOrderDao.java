@@ -325,4 +325,8 @@ public interface AfOrderDao {
 	String getUserFirstBigOrderDate(@Param("userId") Long userId,@Param("amount") Integer amount);
 
 	int updateOrderStatus(Long rid);
+
+	int getFinishOrderCount(@Param("userId")Long userId);
+
+	int getSignFinishOrderCount(@Param("userId")Long userId,@Param("date")Date date);
 }

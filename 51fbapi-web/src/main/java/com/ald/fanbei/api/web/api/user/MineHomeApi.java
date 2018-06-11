@@ -85,6 +85,9 @@ public class MineHomeApi implements ApiHandle {
     @Autowired
     private AfResourceH5ItemService afResourceH5ItemService;
 
+    @Autowired
+    private AfTaskUserService afTaskUserService;
+
     @Override
     public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
         ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -109,6 +112,14 @@ public class MineHomeApi implements ApiHandle {
         data.setCustomerPhone(randomPhone());
 
         if (userId != null) {
+            //金币数量
+            Long availableCoinAmount = afTaskUserService.getAvailableCoinAmount(userId);
+            if(availableCoinAmount == null){
+                data.setAvailableCoinAmount(0l);
+            }else {
+                data.setAvailableCoinAmount(availableCoinAmount);
+            }
+
             AfUserAccountDto userAccountInfo = afUserAccountService.getUserAndAccountByUserId(userId);
             if (userAccountInfo != null) {
                 data.setIsLogin(YesNoStatus.YES.getCode());
@@ -269,6 +280,7 @@ public class MineHomeApi implements ApiHandle {
         data.setPaidOrderNum(orderCountDto.getPaidOrderNum());
         data.setDeliveredOrderNum(orderCountDto.getDeliveredOrderNum());
         data.setFinishedOrderNum(orderCountDto.getFinishedOrderNum());
+        data.setAfterSaleOrderNum(orderCountDto.getAfterSaleOrderNum());
     }
 
     // 填充banner和快速导航信息

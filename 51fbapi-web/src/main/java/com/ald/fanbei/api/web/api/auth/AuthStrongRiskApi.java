@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
 
+import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -24,10 +25,6 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.CouponSceneRuleEnginerUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
-import com.ald.fanbei.api.common.enums.CouponType;
-import com.ald.fanbei.api.common.enums.RiskStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CollectionUtil;
@@ -100,6 +97,8 @@ public class AuthStrongRiskApi implements ApiHandle {
 
 	@Resource
 	AfRecommendUserService afRecommendUserService;
+	@Resource
+	AfTaskUserService afTaskUserService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -108,6 +107,10 @@ public class AuthStrongRiskApi implements ApiHandle {
 		String blackBox = ObjectUtils.toString(requestDataVo.getParams().get("blackBox"));
 		String bqsBlackBox = ObjectUtils.toString(requestDataVo.getParams().get("bqsBlackBox"));
 		Integer appVersion = context.getAppVersion();
+
+		// add by luoxiao 边逛边赚，提交强风控送奖励
+		afTaskUserService.taskHandler(userId, AfTaskType.STRONG_RISK.getCode(), null);
+		// end by luoxiao
 
 		String lockKey = Constants.CACHEKEY_APPLY_STRONG_RISK_LOCK + userId;
         	if (bizCacheUtil.getObject(lockKey) == null) {

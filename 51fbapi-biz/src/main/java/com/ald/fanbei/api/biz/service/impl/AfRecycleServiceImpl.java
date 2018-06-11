@@ -1,14 +1,12 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.service.AfRecycleService;
+import com.ald.fanbei.api.biz.service.AfTaskUserService;
 import com.ald.fanbei.api.biz.third.util.RecycleUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
-import com.ald.fanbei.api.common.enums.CouponStatus;
-import com.ald.fanbei.api.common.enums.CouponType;
-import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.enums.recycle.AfRecycleOrderType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.util.*;
@@ -25,6 +23,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,6 +57,8 @@ public class AfRecycleServiceImpl implements AfRecycleService {
     private SmsUtil smsUtil;
     @Autowired
     private BizCacheUtil bizCacheUtil;
+    @Resource
+    AfTaskUserService afTaskUserService;
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -118,6 +119,11 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                                 afUserAccountDo.setUserName(afUserDo.getUserName());
                                 afUserAccountDo.setRebateAmount(rebateAmount);
                                 afUserAccountDao.addUserAccount(afUserAccountDo);
+
+                                // add by luoxiao for 边逛边赚，增加零钱明细
+                                afTaskUserService.addTaskUser(userId, UserAccountLogType.REBATE.getName(), rebateAmount);
+                                // end by luoxiao
+
                                 //有得卖账户减钱操作
                                 remainAmount = recycleTradeSave(afRecycleQuery, afRecycleRatioDo, settlePrice, rebateAmount);
                             } else {
@@ -131,6 +137,11 @@ public class AfRecycleServiceImpl implements AfRecycleService {
                                 afUserAccountDo.setRebateAmount(rebateAmount);
                                 afUserAccountDo.setUserId(afRecycleQuery.getUserId());
                                 afUserAccountDao.updateUserAccount(afUserAccountDo);
+
+                                // add by luoxiao for 边逛边赚，增加零钱明细
+                                afTaskUserService.addTaskUser(userId, UserAccountLogType.REBATE.getName(), rebateAmount);
+                                // end by luoxiao
+
                                 //有得卖账户减钱操作
                                 remainAmount = recycleTradeSave(afRecycleQuery, afRecycleRatioDo, settlePrice, rebateAmount);
                             } else {

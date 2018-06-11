@@ -8,8 +8,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.AfIdNumberService;
-import com.ald.fanbei.api.biz.service.AfRecommendUserService;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
@@ -22,8 +22,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.ald.fanbei.api.biz.service.AfCouponCategoryService;
-import com.ald.fanbei.api.biz.service.AfCouponService;
 import com.ald.fanbei.api.biz.service.AfRecommendUserService;
 import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -99,6 +97,8 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 	
 	@Resource
 	AfIdNumberService afIdNumberService;
+	@Resource
+	AfTaskUserService afTaskUserService;
 	
 	@Resource
 	private TransactionTemplate transactionTemplate;
@@ -302,6 +302,10 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
 		afUserAccountLogDo.setRefId(String.valueOf(userId));
 		afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
 
+		// add by luoxiao for 边逛边赚，增加零钱明细
+		afTaskUserService.addTaskUser(pid, UserAccountLogType.RECOMMEND_USER.getName(), money);
+		// end by luoxiao
+
 		AfRecommendMoneyDo afRecommendMoneyDo = new AfRecommendMoneyDo();
 		afRecommendMoneyDo.setType(recommendMoneyType[len]);
 		afRecommendMoneyDo.setMoney(money);
@@ -427,6 +431,10 @@ public class AfRecommendUserServiceImpl implements AfRecommendUserService {
         				afUserAccountLogDo.setType("RECOMMEND_RISK");
         				afUserAccountLogDo.setRefId(String.valueOf(afRecommendUserDo.getId()));
         				afUserAccountLogDao.addUserAccountLog(afUserAccountLogDo);
+
+						// add by luoxiao for 边逛边赚，增加零钱明细
+						afTaskUserService.addTaskUser(pid, UserAccountLogType.RECOMMEND_USER.getName(), money);
+						// end by luoxiao
         
         
         				AfRecommendMoneyDo afRecommendMoneyDo = new AfRecommendMoneyDo();

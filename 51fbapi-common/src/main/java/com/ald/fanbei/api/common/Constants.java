@@ -32,7 +32,7 @@ public class Constants {
 	public static final int MINITS_OF_SIXTY = 1;//1分钟
 	public static final int MONTH_OF_YEAR = 12;
 	
-	public static final long MINITS_OF_TWO = 60*2l;//2分钟
+	public static final long MINITS_OF_TWO = 60*2;//5分钟
 
 	//51公积金token失效时间
 	public static final long SECOND_OF_ONE_HALF_HOUR =90 * 60l;//一个半小时
@@ -597,5 +597,54 @@ public class Constants {
 
     public static final String BORROW_FINANCE = "borrow";
 
+    public static final String BROWSE = "browse";
+    public static final String SHOPPING = "shopping";
+    public static final String SHARE = "share";
+    public static final String VERIFIED = "verified";
+    public static final String STRONG_RISK = "strong_risk";
+    public static final String LOAN_MARKET_ACCESS = "loan_market_access";
 
+	/**
+	 * 未领取
+	 */
+	public static final Integer TASK_USER_REWARD_STATUS_0 = 0;
+
+	/**
+	 * 已领取，明细中默认领取状态
+	 */
+    public static final Integer TASK_USER_REWARD_STATUS_1 = 1;
+
+	/**
+	 * 金币已经自动兑换成零钱
+	 */
+	public static final Integer TASK_USER_REWARD_STATUS_3 = 3;
+
+	/**
+	 * 浏览商品数量任务的配置
+	 */
+	public static final String BROWSE_TASK = "BROWSE_TASK";
+
+	/**
+	 * 浏览商品数量任务的名称
+	 */
+	public static final String BROWSE_TASK_NAME = "每日浏览商品赚金币";
+
+	/**
+	 * 金币兑换任务名称
+	 */
+	public static final String TASK_COIN_CHANGE_TO_CASH_NAME = "金币兑换零钱";
+
+	/**
+	 * 边逛边赚奖励类型
+	 */
+	public static final int REWARD_TYPE_COIN = 0;
+	public static final int REWARD_TYPE_CASH = 1;
+	public static final int REWARD_TYPE_COUPON = 2;
+
+	public static final String SIGN_DATE = "SIGN_DATE";
+
+	/**
+	 * 签到奖励每日最大提现配置
+	 */
+	public static final String SIGN_REWARD_MAX_WITHDRAW = "SIGN_REWARD_MAX_WITHDRAW";
 }

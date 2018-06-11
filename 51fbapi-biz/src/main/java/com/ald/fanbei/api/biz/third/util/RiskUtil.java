@@ -621,6 +621,7 @@ public class RiskUtil extends AbstractThird {
 		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
 			riskResp.setSuccess(true);
+
 			return riskResp;
 		} else {
 			riskResp.setSuccess(false);

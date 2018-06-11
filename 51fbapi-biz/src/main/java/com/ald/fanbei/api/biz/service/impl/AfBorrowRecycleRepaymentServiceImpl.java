@@ -113,6 +113,8 @@ public class AfBorrowRecycleRepaymentServiceImpl extends UpsPayKuaijieServiceAbs
 	KafkaSync kafkaSync;
     @Resource
     CuiShouUtils cuiShouUtils;
+    @Resource
+    AfTaskUserService afTaskUserService;
 
     @Resource
     RedisTemplate<String, ?> redisTemplate;
@@ -502,7 +504,11 @@ public class AfBorrowRecycleRepaymentServiceImpl extends UpsPayKuaijieServiceAbs
 		    accountInfo.setRebateAmount(accountInfo.getRebateAmount().subtract(repayDealBo.curSumRebateAmount));
 		}
 		afUserAccountDao.updateOriginalUserAccount(accountInfo);
-	
+
+		// add by luoxiao for 边逛边赚，增加零钱明细
+		afTaskUserService.addTaskUser(accountInfo.getUserId(), UserAccountLogType.REPAYMENT.getName(), repayDealBo.curSumRebateAmount.multiply(new BigDecimal(-1)));
+		// end by luoxiao
+
 		if (repayDealBo.curUserCouponId != null && repayDealBo.curUserCouponId > 0) {
 		    afUserCouponDao.updateUserCouponSatusUsedById(repayDealBo.curUserCouponId);// 优惠券设置已使用
 		}
