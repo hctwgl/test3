@@ -206,5 +206,14 @@ gmt_onlinebank,onlinebank_status,bubble_status,gmt_bubble,order_weak_risk_status
 		WHERE 
 			a.mobile_status = 'Y' and 90000 > a.user_id
 	</select>
+
+
+	<select id="getUserAuthInfo" resultType="java.util.HashMap">
+		SELECT
+		 	a.bankcard_status bankcardStatus,a.gmt_faces gmtFaces,a.gmt_realname gmtRealname,a.realname_status realnameStatus,a.faces_status facesStatus,s.status
+		from af_user_auth a LEFT JOIN af_user_auth_status s
+		ON a.user_id = s.user_id and s.scene = 'ONLINE' and a.is_delete = s.is_delete
+		where a.user_id = #{userId} and a.is_delete = 0
+	</select>
 	
 </mapper>

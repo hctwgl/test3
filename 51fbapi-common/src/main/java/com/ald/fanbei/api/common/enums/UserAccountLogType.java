@@ -51,7 +51,14 @@ public enum UserAccountLogType {
 	SELFSUPPORT("SELFSUPPORT","自营商品"),
 	BOLUOME("BOLUOME", "菠萝觅"),
     TRADE_BANK_REFUND("TRADE_BANK_REFUND","商圈商户退款"), 
-    TRADE_WITHDRAW("TRADE_WITHDRAW", "商圈商户取现");
+    TRADE_WITHDRAW("TRADE_WITHDRAW", "商圈商户取现"),
+
+	REFUND("REFUND", "退款"),
+	SEND_CASH_COUPON("SEND_CASH_COUPON", "现金优惠券"),
+	CASH_FAILD_REFUND("CASH_FAILD_REFUND", "取现失败退款"),
+	WITHDRAW_TO_REBATE("WITHDRAW_TO_REBATE", "提现到余额"),
+	RECOMMEND_USER("RECOMMEND_USER", "邀请有礼"),
+	RECOMMEND_RISK("RECOMMEND_RISK", "信用审核通过");
 
 	private String code;
 	private String name;

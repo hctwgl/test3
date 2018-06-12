@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.validator.intercept;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.context.Context;
@@ -15,4 +16,5 @@ public interface Interceptor {
 	void intercept(RequestDataVo reqData, FanbeiContext context, HttpServletRequest request);
 	
 	void intercept(Context context);
+
 }

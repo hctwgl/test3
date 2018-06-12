@@ -4,15 +4,13 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.FanbeiWebContext;
 import com.ald.fanbei.api.common.enums.AfResourceType;
 import com.ald.fanbei.api.common.enums.BottomGoodsPageFlag;
 import com.ald.fanbei.api.common.enums.InterestfreeCode;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CollectionConverterUtil;
-import com.ald.fanbei.api.common.util.CollectionUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.Converter;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfBottomGoodsDto;
 import com.ald.fanbei.api.dal.domain.dto.AfResourceH5Dto;
@@ -20,6 +18,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfResourceH5ItemDto;
 import com.ald.fanbei.api.dal.domain.query.AfBottomGoodsQuery;
 import com.ald.fanbei.api.dal.domain.query.AfShopQuery;
 import com.ald.fanbei.api.web.common.*;
+import com.ald.fanbei.api.web.common.InterestFreeUitl;
 import com.ald.fanbei.api.web.vo.AfShopVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -34,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -89,6 +89,15 @@ public class AppH5LifeController extends BaseController {
     @Autowired
     private BizCacheUtil bizCacheUtil;
 
+    @Resource
+    private AfUserService afUserService;
+
+    @Resource
+    private AfBorrowRecycleOrderService borrowRecycleOrderService;
+
+    @Resource
+    private AfBorrowCashService borrowCashService;
+
     @RequestMapping(value = "/categoryAndBanner", method = RequestMethod.POST, produces = "text/html;charset=UTF-8")
     @ResponseBody
     public String getCategoryAndBanner(HttpServletRequest request) {
@@ -123,12 +132,29 @@ public class AppH5LifeController extends BaseController {
     public String findH5ResourceList(HttpServletRequest request) {
         try {
             //doWebCheck(request, false);
-            String cacheKey = "life:h5ResourceList";
-            Object cacheResult = bizCacheUtil.getObject(cacheKey);
-            String result = "";
-            if (cacheResult != null) {
-                result = cacheResult.toString();
+            FanbeiWebContext context = doWebCheck(request, false);
+            boolean isNeedRecycle = false;
+//            logger.info("h5ResourceList context"+context+",isNeedRecycle="+isNeedRecycle);
+            if(context.isLogin()){
+                AfUserDo afUser = afUserService.getUserByUserName(context.getUserName());
+                AfBorrowCashDo borrowCashDo = borrowCashService.getDealingCashByUserId(afUser.getRid());
+//                logger.info("h5ResourceList borrowCashDo"+JSON.toJSONString(borrowCashDo)+",isNeedRecycle="+isNeedRecycle);
+                if (borrowCashDo!= null){
+                    AfBorrowRecycleOrderDo afBorrowRecycleOrderDo = borrowRecycleOrderService.getBorrowRecycleOrderByBorrowId(borrowCashDo.getRid());
+                    if (afBorrowRecycleOrderDo != null){
+                        isNeedRecycle = true;
+                    }
+//                    logger.info("h5ResourceList afBorrowRecycleOrderDo"+JSON.toJSONString(afBorrowRecycleOrderDo)+",isNeedRecycle="+isNeedRecycle);
+                }
             }
+//            logger.info("h5ResourceList isNeedRecycle end"+isNeedRecycle);
+            //保留回收中的展示入口，非回收隐藏回收接口
+//            String cacheKey = "life:h5ResourceList";
+//            Object cacheResult = bizCacheUtil.getObject(cacheKey);
+            String result = "";
+//            if (cacheResult != null) {
+//                result = cacheResult.toString();
+//            }
             if (StringUtils.isBlank(result)) {
                 List<AfResourceH5Dto> resourceH5Dtos = afResourceH5Service
                         .selectByStatus(BottomGoodsPageFlag.LIFE.getCode());
@@ -137,15 +163,15 @@ public class AppH5LifeController extends BaseController {
                     return H5CommonResponse.getNewInstance(false, "页面走丢了").toString();
                 }
 
-                List<Map<String, Object>> data = buildResourceList(resourceH5Dtos);
+                List<Map<String, Object>> data = buildResourceList(resourceH5Dtos,isNeedRecycle);
                 result = H5CommonResponse
                         .getNewInstance(true, "成功", "", data).toString();
 
-                if (data.size() > 0) {
-                    bizCacheUtil.saveObject(cacheKey, result, 180);
-                }
+//                if (data.size() > 0) {
+//                    bizCacheUtil.saveObject(cacheKey, result, 180);
+//                }
             }
-
+//            logger.info("h5ResourceList result ="+result);
             return result;
         } catch (Exception e) {
             logger.error("/fanbei-web/life/h5ResourceList error：", e);
@@ -266,7 +292,7 @@ public class AppH5LifeController extends BaseController {
     }
 
     // 构建结果数据
-    private List<Map<String, Object>> buildResourceList(List<AfResourceH5Dto> resourceH5Dtos) {
+    private List<Map<String, Object>> buildResourceList(List<AfResourceH5Dto> resourceH5Dtos,boolean isNeedRecycle) {
         List<Map<String, Object>> result = new ArrayList<>();
 
         for (AfResourceH5Dto resource : resourceH5Dtos) {
@@ -281,6 +307,7 @@ public class AppH5LifeController extends BaseController {
             AfResourceH5ItemDto floorImageResource = itemList.remove(0);
             e.put("floorImage", floorImageResource.getValue3());
             e.put("type", resource.getSort());
+            e.put("isNeedRecycle",isNeedRecycle);
             List<Map<String, Object>> itemMapList = CollectionConverterUtil.convertToListFromList(itemList,
                     new Converter<AfResourceH5ItemDto, Map<String, Object>>() {
                         @Override
@@ -293,7 +320,6 @@ public class AppH5LifeController extends BaseController {
                         }
                     });
             e.put("list", itemMapList);
-
             result.add(e);
         }
 

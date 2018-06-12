@@ -42,6 +42,8 @@ public interface AfBorrowCashService {
 	 */
 	AfBorrowCashDo getBorrowCashByUserId(Long userId);
 
+	AfBorrowCashDo getDealingCashByUserId(Long userId);
+
 	/**
 	 * 借钱信息
 	 * 

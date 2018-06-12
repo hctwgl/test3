@@ -11,6 +11,7 @@ package com.ald.fanbei.api.common.enums;
 public enum AfResourceType {
 	HomeBanner("HOME_BANNER", "轮播图"),
 	HomeBannerNew("HOME_BANNER_NEW", "轮播图（新版）"),
+	RewardHomeBanner("REWARD_HOME_BANNER", "每日签到轮播图"),
 	HomeBannerBrand("HOME_BANNER_BRAND","逛逛轮播图"),
 	HomeBannerEcommerce("HOME_BANNER_ECOMMERCE","首页电商轮播图"),
 	HomeBannerNewMost("HOME_BANNER_NEW_MOST", "轮播图（V396）"),
@@ -141,7 +142,17 @@ public enum AfResourceType {
 
 	BUBBLE_AUTH_CONFIG("BUBBLE_AUTH_CONFIG","芝麻信用认证相关配置"),
 
-	WEAK_VERIFY_VIP_CONFIG("WEAK_VERIFY_VIP_CONFIG","弱风控权限包配置");
+	WEAK_VERIFY_VIP_CONFIG("WEAK_VERIFY_VIP_CONFIG","弱风控权限包配置"),
+	APP_SEARCH_BACK_COLOR("APP_SEARCH_BACK_COLOR","app搜索栏背景色"),
+	APP_SEARCH_FONT_COLOR("APP_SEARCH_FONT_COLOR","app搜索栏文字颜色"),
+	APP_SEARCH_GLASS("APP_SEARCH_GLASS","app搜索栏放大镜"),
+	APP_MESSAGE_ICON("APP_MESSAGE_ICON","app消息图标"),
+	APP_NAVIGATION_BAR("APP_NAVIGATION_BAR","app导航栏文字及下划线选中颜色"),
+	APP_NAVIGATION_BAR_REMAIN("APP_NAVIGATION_BAR_REMAIN","app导航栏文字未选中颜色"),
+	APP_NAVIGATION_OPEN("APP_NAVIGATION_OPEN","app导航栏展开控件"),
+	APP_NAVIGATION_CLOSE("APP_NAVIGATION_CLOSE","app导航栏关闭控件"),
+	BANNER_BACKIMG("BANNER_BACKIMG","Banner背景图片"),
+	APP_STATUS_BAR_COLOR("APP_STATUS_BAR_COLOR","状态栏颜色");
 
 
 	private String code;

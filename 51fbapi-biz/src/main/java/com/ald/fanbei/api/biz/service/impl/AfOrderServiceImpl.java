@@ -209,6 +209,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	@Autowired
 	AfOrderCombinationPayService afOrderCombinationPayService;
 
+	@Resource
+	AfTaskUserService afTaskUserService;
+
     @Autowired
     AfOrderBankcardDao afOrderBankcardDao;
 
@@ -377,6 +380,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					account.setUserId(order.getUserId());
 					account.setRebateAmount(order.getRebateAmount());
 					afUserAccountDao.updateUserAccount(account);
+
+                    // add by luoxiao for 边逛边赚，增加零钱明细
+                    afTaskUserService.addTaskUser(order.getUserId(),UserAccountLogType.REBATE_CASH.getName(), order.getRebateAmount());
+                    // end by luoxiao
+
 					// 获取用户信息
 					AfUserDo userDo = afUserDao.getUserById(order.getUserId());
 					String msg = kaixinUtil.charge(order.getOrderNo(), order.getMobile(),
@@ -391,6 +399,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						// 返利金额
 						account.setRebateAmount(order.getRebateAmount().multiply(new BigDecimal(-1)));
 						afUserAccountDao.updateUserAccount(account);
+
+						// add by luoxiao for 边逛边赚，增加零钱明细
+						afTaskUserService.addTaskUser(order.getUserId(),UserAccountLogType.REFUND.getName(), order.getRebateAmount().multiply(new BigDecimal(-1)));
+						// end by luoxiao
+
 						if (order.getBankId() < 0) {// 微信退款
 							try {
 								String refundNo = generatorClusterNo.getRefundNo(new Date());
@@ -471,6 +484,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							account.setUserId(order.getUserId());
 							account.setRebateAmount(order.getRebateAmount());
 							afUserAccountDao.updateUserAccount(account);
+
+							// add by luoxiao for 边逛边赚，增加零钱明细
+							afTaskUserService.addTaskUser(order.getUserId(),UserAccountLogType.REBATE_CASH.getName(), order.getRebateAmount());
+							// end by luoxiao
+
 							pushService.chargeMobileSucc(userDo.getUserName(), order.getMobile(), order.getGmtCreate());
 						} else if (!"SUCCESS".equals(orderStatus)
 								&& OrderStatus.REBATED.getCode().equals(order.getStatus())) {
@@ -482,6 +500,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							account.setUserId(order.getUserId());
 							account.setRebateAmount(order.getRebateAmount().multiply(new BigDecimal(-1)));
 							afUserAccountDao.updateUserAccount(account);
+
+							// add by luoxiao for 边逛边赚，增加零钱明细
+							afTaskUserService.addTaskUser(order.getUserId(),UserAccountLogType.REFUND.getName(), order.getRebateAmount().multiply(new BigDecimal(-1)));
+							// end by luoxiao
+
 							String refundNo = generatorClusterNo.getRefundNo(new Date());
 							if (order.getBankId() < 0) {// 微信退款
 								try {
@@ -814,6 +837,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							afOrder.getRid(), AccountLogType.REBATE);
 					afUserAccountDao.updateOriginalUserAccount(accountInfo);
 					afUserAccountLogDao.addUserAccountLog(accountLog);
+
+					// add by luoxiao for 边逛边赚，增加零钱明细
+					afTaskUserService.addTaskUser(userId, UserAccountLogType.REBATE.getName(), afOrder.getRebateAmount());
+					// end by luoxiao
+
 					orderDao.updateOrder(afOrder);
 					try {
 						doboluomeActivityRebate(afOrder, userId, key);
@@ -917,6 +945,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 						AfUserAccountLogDo accountLog = buildUserAccount(accountInfo.getRebateAmount(), userId,
 								afOrder.getRid(), AccountLogType.REBATE);
 						afUserAccountLogDao.addUserAccountLog(accountLog);
+
+						// add by luoxiao for 边逛边赚，增加零钱明细
+						afTaskUserService.addTaskUser(userId,UserAccountLogType.REBATE.getName(), afOrder.getRebateAmount());
+						// end by luoxiao
+
 						orderDao.updateOrder(afOrder);
 
 						// ----------------------------------------------mqp add
@@ -2013,21 +2046,22 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					if (StringUtil.equals(payType, PayType.COMBINATION_PAY.getCode())) {
 
 						logger.info("dealBrandOrder cp begin , payOrderNo = {} and tradeNo = {} and type = {}",
-								new Object[] { payOrderNo, tradeNo, payType });
+								new Object[]{payOrderNo, tradeNo, payType});
 
 						AfBorrowDo afBorrowDo = afBorrowDao.getBorrowByOrderId(orderInfo.getRid());
 
 						logger.info("dealBrandOrder cp = " + afBorrowDo.getRid());
 
-			afBorrowDao.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.TRANSED.getCode());
-			afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(), BorrowBillStatus.NO.getCode());
+						afBorrowDao.updateBorrowStatus(afBorrowDo.getRid(), BorrowStatus.TRANSED.getCode());
+						afBorrowBillDao.updateBorrowBillStatusByBorrowId(afBorrowDo.getRid(), BorrowBillStatus.NO.getCode());
 					}
 					// 租赁逻辑 回掉成功生成租赁借款（确认收货后生成账单）
-                    if(orderInfo.getOrderType().equals(OrderType.LEASE.getCode())){
-                        AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderInfo.getRid());
+					if (orderInfo.getOrderType().equals(OrderType.LEASE.getCode())) {
+						AfOrderLeaseDo afOrderLeaseDo = orderDao.getOrderLeaseByOrderId(orderInfo.getRid());
 						orderInfo.setActualAmount(afOrderLeaseDo.getRichieAmount().add(afOrderLeaseDo.getMonthlyRent()).add(afOrderLeaseDo.getCashDeposit()));
-                    }logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}",
-							new Object[] { payOrderNo, tradeNo, payType });
+					}
+					logger.info("dealBrandOrder begin , payOrderNo = {} and tradeNo = {} and type = {}",
+							new Object[]{payOrderNo, tradeNo, payType});
 					orderInfo.setPayTradeNo(payOrderNo);
 					orderInfo.setPayStatus(PayStatus.PAYED.getCode());
 					orderInfo.setStatus(OrderStatus.PAID.getCode());
@@ -2040,24 +2074,25 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 					buySpecGoodsOrderProcess(orderInfo.getRid());
 					
 					logger.info("dealBrandOrder comlete , orderInfo = {} ", orderInfo);
-		    return 1;
-		} catch (Exception e) {
-		    status.setRollbackOnly();
-		    logger.error("dealBrandOrder error:", e);
-		    return 0;
-		}
-	    }
-	});
-	if (result == 1) {
-		// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
-		if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
-			logger.info("周年庆时间自营商品订单支付成功，送优惠券3");
+//TODO 回调方法
+					return 1;
+				} catch (Exception e) {
+					status.setRollbackOnly();
+					logger.error("dealBrandOrder error:", e);
+					return 0;
+				}
+			}
+		});
+		if (result == 1) {
+			// add by luoxiao 周年庆时间自营商品订单支付成功，送优惠券
+			if (OrderType.SELFSUPPORT.getCode().equals(orderInfo.getOrderType())) {
+				logger.info("周年庆时间自营商品订单支付成功，送优惠券3");
 
-			// 预售商品回调 处理
-			afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
+				// 预售商品回调 处理
+				afSeckillActivityService.updateUserActivityGoodsInfo(orderInfo);
 
-		}
-		// end by luoxiao
+			}
+			// end by luoxiao
 
 			// ----------------------------begin map:add one time for tiger
 			// machine in the certain date---------------------------------
@@ -2448,6 +2483,11 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							afUserAccountDao.updateUserAccount(account);
 							afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(
 									UserAccountLogType.CP_REFUND, backAmount.abs(), userId, orderInfo.getRid()));
+
+							// add by luoxiao for 边逛边赚，增加零钱明细
+							afTaskUserService.addTaskUser(afUserAccountDo.getUserId(),UserAccountLogType.CP_REFUND.getName(), backAmount.abs());
+							// end by luoxiao
+
 						} else if (backAmount.compareTo(BigDecimal.ZERO) < 0) {
 							afOrderRefundDao.addOrderRefund(BuildInfoUtil.buildOrderRefundDo(refundNo, refundAmount,
 									BigDecimal.ZERO, userId, orderId, orderNo, OrderRefundStatus.FINISH,
@@ -2507,6 +2547,10 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 							userAccount.setRebateAmount(userAccount.getRebateAmount().add(refundAmount).subtract(getCreditCardRefundFee(refundAmount)));
 							afUserAccountDao.updateOriginalUserAccount(userAccount);
 							afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.CREDIT_CARD_REFUND, refundAmount, userId, orderInfo.getRid()));
+
+							// add by luoxiao for 边逛边赚，增加零钱明细
+							afTaskUserService.addTaskUser(userAccount.getUserId(),UserAccountLogType.CREDIT_CARD_REFUND.getName(),refundAmount.subtract(getCreditCardRefundFee(refundAmount)));
+							// end by luoxiao
 
 							//修改订单状态
 							AfOrderDo tempOrderInfoCredit = new AfOrderDo();
@@ -3393,6 +3437,9 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 		list = orderDao.getOrderListByStatus(query);
 		result.setFinishedOrderNum(list.size());
 
+		query.setOrderStatus(AppOrderSearchStatus.WAIT_REFUND.getCode());
+		list = orderDao.getOrderListByStatus(query);
+		result.setAfterSaleOrderNum(list.size());
 		return result;
 	}
 
@@ -3580,5 +3627,14 @@ public class AfOrderServiceImpl extends UpsPayKuaijieServiceAbstract implements 
 	@Override
 	public AfOrderDo getPayRelaOrderByGoodsIdAndUserid(Long userId, Long goodsId) {
 		return orderDao.getPayRelaOrderByGoodsIdAndUserid(userId,goodsId);
+	}
+	@Override
+	public int getFinishOrderCount(Long userId){
+		return orderDao.getFinishOrderCount(userId);
+	}
+
+	@Override
+	public int getSignFinishOrderCount(Long userId,Date date){
+		return orderDao.getSignFinishOrderCount(userId,date);
 	}
 }

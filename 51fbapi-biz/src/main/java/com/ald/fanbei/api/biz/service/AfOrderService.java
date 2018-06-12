@@ -489,4 +489,13 @@ public interface AfOrderService {
 	String getRefundMsg(AfOrderDo order);
 
 	AfOrderDo getPayRelaOrderByGoodsIdAndUserid(Long userId, Long goodsId);
+	/**
+	 * 查询用户完成订单数
+	 */
+	int getFinishOrderCount(Long userId);
+
+
+	int getSignFinishOrderCount(Long userId,Date date);
+
+
 }

@@ -72,6 +72,7 @@ public class SmsUtil extends AbstractThird {
     private static String ZHI_BIND = "验证码：&param1，您正在关联支付宝账号，请勿向他人泄露；";
     private static String RECYCLE_REBATE_SUCCESS = "您的回收订单已完成，账户到账返现%s元，其中包含回收订单金额%s元，订单返现%s元，快去我的账户中查看吧~";//回收业务成功返现
     private static String RECYCLE_MIN_AMOUNT_WARN = "有得卖在爱上街回收业务中的预存款余额为%s，请尽快打款充值！";//余额最低阀值
+    private static String SIGN_REWARD_WITHDRAW_WARN = "签到领现金业务今日提现金额已超过最大值，请及时检查提现是否存在异常";
 
     // public static String sendUserName = "suweili@edspay.com";
     // public static String sendPassword = "Su272727";
@@ -109,6 +110,14 @@ public class SmsUtil extends AbstractThird {
         sendSmsToDhst(mobile, String.format(RECYCLE_MIN_AMOUNT_WARN,remainAmount));
     }
 
+    /**
+     * 发送签到领现金提现预警短信
+     * @param mobile
+     * @param remainAmount
+     */
+    public void sendSignRewardWithdrawWarn(String mobile,BigDecimal remainAmount) {
+        sendSmsToDhst(mobile, String.format(SIGN_REWARD_WITHDRAW_WARN,remainAmount));
+    }
 
 
     /**

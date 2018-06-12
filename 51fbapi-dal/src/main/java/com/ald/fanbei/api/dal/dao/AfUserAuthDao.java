@@ -1,9 +1,12 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ald.fanbei.api.dal.domain.AfUserAuthDo;
 import com.ald.fanbei.api.dal.domain.query.AfUserAuthQuery;
+import org.apache.ibatis.annotations.Param;
 
 /**
  *@类现描述：
@@ -57,4 +60,11 @@ public interface AfUserAuthDao {
 	 * @return
 	 */
 	String getOrderWeakRiskStatus(Long userId);
+
+	/**
+	 * 获取用户认证信息
+	 * @param userId
+	 * @return
+	 */
+	HashMap<String,Object> getUserAuthInfo(@Param("userId") Long userId);
 }

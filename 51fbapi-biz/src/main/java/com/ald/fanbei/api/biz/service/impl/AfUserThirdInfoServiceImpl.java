@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * ServiceImpl
- * 
+ *
  * @author wangli
  * @version 1.0.0 初始化
  * @date 2018-05-04 09:20:23
@@ -35,7 +35,7 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 
 	// 默认头像
 	private static final String DEFAULT_AVATAR = "https://f.51fanbei.com/h5/app/activity/2018/05/openred_head.png";
-	
+
     @Autowired
     private AfUserThirdInfoDao afUserThirdInfoDao;
 
@@ -118,7 +118,7 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 	}
 
 	// 获取用户第三方信息
-	private AfUserThirdInfoDo getUserThirdInfoByUserId(Long userId, String userThirdType) {
+	public AfUserThirdInfoDo getUserThirdInfoByUserId(Long userId, String userThirdType) {
 		AfUserThirdInfoDo query = new AfUserThirdInfoDo();
 		query.setUserId(userId);
 		query.setThirdType(userThirdType);
@@ -130,5 +130,27 @@ public class AfUserThirdInfoServiceImpl extends ParentServiceImpl<AfUserThirdInf
 	public BaseDao<AfUserThirdInfoDo, Long> getDao() {
 		return afUserThirdInfoDao;
 	}
+
+    @Override
+    public int saveRecord(AfUserThirdInfoDo afUserThirdInfoDo){
+        return afUserThirdInfoDao.saveRecord(afUserThirdInfoDo);
+    }
+
+    @Override
+    public int selectUserThirdInfoByUserName(String userName){
+        return afUserThirdInfoDao.selectUserThirdInfoByUserName(userName);
+    }
+
+    @Override
+    public int updateByUserName(AfUserThirdInfoDo afUserThirdInfoDo){
+        return afUserThirdInfoDao.updateByUserName(afUserThirdInfoDo);
+    }
+
+
+	@Override
+	public List<AfUserThirdInfoDo> getListByCommonCondition(AfUserThirdInfoDo afUserThirdInfoDo){
+		return afUserThirdInfoDao.getListByCommonCondition(afUserThirdInfoDo);
+	}
+
 
 }

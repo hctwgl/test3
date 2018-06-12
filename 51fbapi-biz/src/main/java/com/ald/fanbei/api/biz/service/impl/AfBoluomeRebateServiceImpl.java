@@ -9,15 +9,12 @@ import java.util.Random;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.ald.fanbei.api.biz.service.AfBoluomeRebateService;
-import com.ald.fanbei.api.biz.service.AfRecommendUserService;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.service.AfUserCouponService;
-import com.ald.fanbei.api.biz.service.JpushService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.enums.UserCouponSource;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -78,6 +75,8 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 	AfResourceService afResourceService;
 	@Resource
 	AfRecommendUserService afRecommendUserService;
+	@Resource
+	AfTaskUserService afTaskUserService;
 	
 
 	@Override
@@ -185,6 +184,10 @@ public class AfBoluomeRebateServiceImpl extends ParentServiceImpl<AfBoluomeRebat
 									logDo.setUserId(userId);
 									logDo.setRefId(orderId.toString());
 									int saveLogResult = afUserAccountLogDao.addUserAccountLog(logDo);
+
+									// add by luoxiao for 边逛边赚，增加零钱明细
+									afTaskUserService.addTaskUser(userId, UserAccountLogType.REBATE.getName(), rebateDo.getRebateAmount());
+									// end by luoxiao
 
 									log = log + String.format("saveLogResult = %s ", saveLogResult);
 									logger.info(log);

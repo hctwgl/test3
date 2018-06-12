@@ -3,13 +3,16 @@ package com.ald.fanbei.api.web.api.user;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.TaskType;
+import com.ald.fanbei.api.dal.domain.AfTaskDo;
+import com.ald.fanbei.api.dal.domain.AfTaskUserDo;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
-import com.ald.fanbei.api.biz.service.AfBoluomeActivityUserItemsService;
-import com.ald.fanbei.api.biz.service.AfFacescoreShareCountService;
-import com.ald.fanbei.api.biz.service.AfGameChanceService;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -23,6 +26,10 @@ import com.ald.fanbei.api.web.common.H5CommonResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *@类现描述：客户端提交分享行为，针对某些h5页面用户去分享时服务端需要记录是否分享、分享了之后需要做一些业务。针对需要服务端统计分享的页面客户端需把分享的行为告诉服务端
@@ -40,6 +47,10 @@ public class SubmitShareActionApi extends BaseController implements ApiHandle {
 	AfBoluomeActivityUserItemsService afBoluomeActivityUserItemsService;
 	@Resource
 	private AfFacescoreShareCountService faceScoreShareCountService;
+	@Resource
+	AfTaskService afTaskService;
+	@Resource
+	AfTaskUserService afTaskUserService;
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
@@ -94,6 +105,14 @@ public class SubmitShareActionApi extends BaseController implements ApiHandle {
 		}
 		return resp;
 	}
+
+
+
+
+
+
+
+
 	@Override
 	public String checkCommonParam(String reqData, HttpServletRequest request, boolean isForQQ) {
 	    // TODO Auto-generated method stub

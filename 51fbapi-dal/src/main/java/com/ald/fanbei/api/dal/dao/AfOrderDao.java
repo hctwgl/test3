@@ -350,4 +350,8 @@ public interface AfOrderDao {
 	 */
 	AfOrderDo getPayRelaOrderByGoodsIdAndUserid(@Param(value="userId")Long userId, @Param(value="goodsId")Long goodsId);
 	int updateOrderStatus(Long rid);
+
+	int getFinishOrderCount(@Param("userId")Long userId);
+
+	int getSignFinishOrderCount(@Param("userId")Long userId,@Param("date")Date date);
 }

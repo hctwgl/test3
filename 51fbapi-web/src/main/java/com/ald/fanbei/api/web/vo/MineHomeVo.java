@@ -58,6 +58,9 @@ public class MineHomeVo extends AbstractSerial {
     // 优惠券数量
     private Integer couponCount = 0;
 
+    //金币数量
+    private Long availableCoinAmount = 0l;
+
     // 第三方优惠券数量
     private Integer brandCouponCount = 0;
 
@@ -102,6 +105,9 @@ public class MineHomeVo extends AbstractSerial {
 
     // 待返利订单数
     private Integer finishedOrderNum = 0;
+
+    // 售后处理订单数
+    private Integer afterSaleOrderNum = 0;
 
     // 爱花跳转url
     private String loveShopSkipUrl = "";

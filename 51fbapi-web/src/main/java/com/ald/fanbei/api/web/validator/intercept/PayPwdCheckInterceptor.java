@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +65,9 @@ public class PayPwdCheckInterceptor implements Interceptor {
 				checkPayPwd(userId, payPwd, version);
 			}
 		}
+
+
+
 	/**
 	 *
 	 * @Title: checkPayPwd @author qiao @date 2018年3月1日 下午2:35:39 @Description:

@@ -90,7 +90,7 @@ public class CompletedAgencyBuyOrderApi implements ApiHandle {
 	AfBorrowPushService afBorrowPushService;
 	@Autowired
 	KafkaSync kafkaSync;
-	
+
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo,
 			FanbeiContext context, HttpServletRequest request) {

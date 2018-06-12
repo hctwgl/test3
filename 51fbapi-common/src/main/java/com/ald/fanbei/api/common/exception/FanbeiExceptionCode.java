@@ -450,13 +450,25 @@ public enum FanbeiExceptionCode {
     BRAND_GOODS_IS_EMPTY("BRAND_GOODS_IS_EMPTY",9005,"goods of this brand is empty","改品牌下的商品信息为空!"),
     BRAND_RESULT_INIT_SUCCESS("BRAND_RESULT_INIT_SUCCESS",9006,"brand result page init success","品牌结果页初始化成功!"),
     BRAND_CATEGORY_PAGE_INIT_SUCCESS("BRAND_CATEGORY_PAGE_INIT_SUCCESS",9007,"aishangjie brand category page init success","品牌分类页面初始化成功!"),
-    CHOOSE_BANK_CARD_PAY("CHOOSE_BANK_CARD_PAY",9006,"choose bank card pay","请您选择银行卡付款方式"),
+    CHOOSE_BANK_CARD_PAY("CHOOSE_BANK_CARD_PAY",9008,"choose bank card pay","请您选择银行卡付款方式"),
+
+    WX_BIND_FAIL("WX_BIND_FAIL",9017,"wx bind fail","微信绑定失败"),
+    SUPPLEMENT_SIGN_FAIL("SUPPLEMENT_SIGN_FAIL",9016,"supplement sign fail","补签失败"),
+    FRIEND_USER_SIGN_EXIST("FRIEND_USER_SIGN_EXIST",9015,"friend user sign exist","今天已经帮此好友签到，不能再次签到"),
+    USER_SIGN_FAIL("USER_SIGN_FAIL",9014,"user sign fail","签到失败"),
+    USER_SIGN_EXIST("USER_SIGN_EXIST",9014,"user sign exist","今天已经签到，不能再次签到"),
+    RECEIVE_REWARD_FAIL("RECEIVE_REWARD_FAIL",9013,"receive reward fail","奖励领取失败"),
+    TASK_NOT_EXIST("TASK_NOT_EXIST",9012,"task not exist","此任务不存在"),
+    SIGN_REMIND_FAIL("SIGN_REMIND_FAIL",9011,"sign remind fail","提醒失败"),
+    WITHDRAW_FAIL("WITHDRAW_FAIL",9010,"withdraw fail","提现失败"),
+    CHOOSE_WITHDRAW_TYPE("CHOOSE_WITHDRAW_TYPE",9009,"choose withdraw type","请选择提现方式"),
+    WITHDRAW_OVER("WITHDRAW_OVER",9008,"the maximum amount has been exceeded today, please come tomorrow","已经超过今天提现最大金额，明天再来吧"),
+
 
     WX_CODE_INVALID("WX_CODE_INVALID", 2900, "wx code is invalid", "微信code码失效"),
 
     // 天天拆红包code
-    OPEN_REDPACKET_ACTIVITY_OVER("OPEN_REDPACKET_ACTIVITY_OVER", -1, "activity is over", "活动已结束")
-    ;
+    OPEN_REDPACKET_ACTIVITY_OVER("OPEN_REDPACKET_ACTIVITY_OVER", -1, "activity is over", "活动已结束");
 
     /**
      * 错误码

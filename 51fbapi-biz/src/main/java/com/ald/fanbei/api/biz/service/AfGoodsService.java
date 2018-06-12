@@ -160,5 +160,9 @@ public interface AfGoodsService {
 	List<Long> getGoodsisGlobal3(List<Long> goodsIdList);
 
     List<Long> getGoodsisGlobal1(Long modelId);
+
+	List<AfGoodsDo> getAfGoodsListByBrandId(AfGoodsQuery goodsQuery);
+
+	List<HashMap> getTaskGoodsList(AfGoodsQuery goodsQuery);
 }
 

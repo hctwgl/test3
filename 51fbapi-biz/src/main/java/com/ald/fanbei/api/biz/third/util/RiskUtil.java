@@ -621,6 +621,7 @@ public class RiskUtil extends AbstractThird {
 		RiskRespBo riskResp = JSONObject.parseObject(reqResult, RiskRespBo.class);
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
 			riskResp.setSuccess(true);
+
 			return riskResp;
 		} else {
 			riskResp.setSuccess(false);
@@ -3117,6 +3118,9 @@ public class RiskUtil extends AbstractThird {
 		if (riskResp != null && TRADE_RESP_SUCC.equals(riskResp.getCode())) {
 			JSONObject dataObj = JSON.parseObject(riskResp.getData());
 			Integer result = dataObj.getInteger("score");
+			if(result==null)
+				return 0;
+			
 			return result;
 		} else {
 			return 0;

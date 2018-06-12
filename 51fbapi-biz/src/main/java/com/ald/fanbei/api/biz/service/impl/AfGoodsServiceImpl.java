@@ -315,4 +315,14 @@ public class AfGoodsServiceImpl extends BaseService implements AfGoodsService{
 		}
 		return query;
 	}
+	@Override
+	public List<AfGoodsDo> getAfGoodsListByBrandId(AfGoodsQuery goodsQuery){
+		return afGoodsDao.getAfGoodsListByBrandId(goodsQuery);
+	}
+
+	@Override
+	public List<HashMap> getTaskGoodsList(AfGoodsQuery goodsQuery){
+		return afGoodsDao.getTaskGoodsList(goodsQuery);
+	}
+
 }

@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_task表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfTaskDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,user_level,icon_url,task_type,task_sec_type,task_name,task_condition,is_daily_update,reward_type,coin_amount,cash_amount,coupon_id,coupon_type,is_open,creater,modifier,task_begin_time,task_end_time,is_delete,sort
+    </sql>
+
+    <sql id="taskDo">
+        t.id rid,t.gmt_create,t.gmt_modified,t.user_level,t.icon_url,t.task_type,t.task_sec_type,t.task_name,t.task_condition,t.is_daily_update,t.reward_type,t.coin_amount,t.cash_amount,t.coupon_id,t.coupon_type,t.is_open,t.creater,t.modifier,t.task_begin_time,t.task_end_time,t.is_delete,t.sort
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="userLevel != null and userLevel != ''">
+            AND user_level = #{userLevel,jdbcType=INTEGER}
+        </if>
+        <if test="iconUrl != null and iconUrl != ''">
+            AND icon_url = #{iconUrl,jdbcType=VARCHAR}
+        </if>
+        <if test="taskType != null and taskType != ''">
+            AND task_type = #{taskType,jdbcType=VARCHAR}
+        </if>
+        <if test="taskSecType != null and taskSecType != ''">
+            AND task_sec_type = #{taskSecType,jdbcType=VARCHAR}
+        </if>
+        <if test="taskName != null and taskName != ''">
+            AND task_name = #{taskName,jdbcType=VARCHAR}
+        </if>
+        <if test="taskCondition != null and taskCondition != ''">
+            AND task_condition = #{taskCondition,jdbcType=VARCHAR}
+        </if>
+        <if test="isDailyUpdate != null and isDailyUpdate != ''">
+            AND is_daily_update = #{isDailyUpdate,jdbcType=INTEGER}
+        </if>
+        <if test="rewardType != null and rewardType != ''">
+            AND reward_type = #{rewardType,jdbcType=INTEGER}
+        </if>
+        <if test="coinAmount != null and coinAmount != ''">
+            AND coin_amount = #{coinAmount,jdbcType=INTEGER}
+        </if>
+        <if test="cashAmount != null and cashAmount != ''">
+            AND cash_amount = #{cashAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="couponId != null and couponId != ''">
+            AND coupon_id = #{couponId,jdbcType=INTEGER}
+        </if>
+        <if test="isOpen != null and isOpen != ''">
+            AND is_open = #{isOpen,jdbcType=INTEGER}
+        </if>
+        <if test="creater != null and creater != ''">
+            AND creater = #{creater,jdbcType=VARCHAR}
+        </if>
+        <if test="modifier != null and modifier != ''">
+            AND modifier = #{modifier,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfTaskDo" keyProperty="rid">
+    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
+        INSERT INTO af_task
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="userLevel != null">        
+	            user_level,
+	        </if>
+	        <if test="iconUrl != null">        
+	            icon_url,
+	        </if>
+	        <if test="taskType != null">        
+	            task_type,
+	        </if>
+	        <if test="taskSecType != null">        
+	            task_sec_type,
+	        </if>
+	        <if test="taskName != null">        
+	            task_name,
+	        </if>
+	        <if test="taskCondition != null">        
+	            task_condition,
+	        </if>
+	        <if test="isDailyUpdate != null">        
+	            is_daily_update,
+	        </if>
+	        <if test="rewardType != null">        
+	            reward_type,
+	        </if>
+	        <if test="coinAmount != null">        
+	            coin_amount,
+	        </if>
+	        <if test="cashAmount != null">        
+	            cash_amount,
+	        </if>
+	        <if test="couponId != null">        
+	            coupon_id,
+	        </if>
+	        <if test="isOpen != null">        
+	            is_open,
+	        </if>
+	        <if test="creater != null">        
+	            creater,
+	        </if>
+	        <if test="modifier != null">        
+	            modifier,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="userLevel != null" >
+		       #{userLevel,jdbcType=INTEGER},
+		    </if>
+		    <if test="iconUrl != null" >
+		       #{iconUrl,jdbcType=VARCHAR},
+		    </if>
+		    <if test="taskType != null" >
+		       #{taskType,jdbcType=VARCHAR},
+		    </if>
+		    <if test="taskSecType != null" >
+		       #{taskSecType,jdbcType=VARCHAR},
+		    </if>
+		    <if test="taskName != null" >
+		       #{taskName,jdbcType=VARCHAR},
+		    </if>
+		    <if test="taskCondition != null" >
+		       #{taskCondition,jdbcType=VARCHAR},
+		    </if>
+		    <if test="isDailyUpdate != null" >
+		       #{isDailyUpdate,jdbcType=INTEGER},
+		    </if>
+		    <if test="rewardType != null" >
+		       #{rewardType,jdbcType=INTEGER},
+		    </if>
+		    <if test="coinAmount != null" >
+		       #{coinAmount,jdbcType=INTEGER},
+		    </if>
+		    <if test="cashAmount != null" >
+		       #{cashAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="couponId != null" >
+		       #{couponId,jdbcType=INTEGER},
+		    </if>
+		    <if test="isOpen != null" >
+		       #{isOpen,jdbcType=INTEGER},
+		    </if>
+		    <if test="creater != null" >
+		       #{creater,jdbcType=VARCHAR},
+		    </if>
+		    <if test="modifier != null" >
+		       #{modifier,jdbcType=VARCHAR},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfTaskDo">
+        UPDATE af_task
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="userLevel != null and userLevel != '' ">        
+                user_level = #{userLevel,jdbcType=INTEGER},                
+            </if>
+            <if test="iconUrl != null and iconUrl != '' ">        
+                icon_url = #{iconUrl,jdbcType=VARCHAR},                
+            </if>
+            <if test="taskType != null and taskType != '' ">        
+                task_type = #{taskType,jdbcType=VARCHAR},                
+            </if>
+            <if test="taskSecType != null and taskSecType != '' ">        
+                task_sec_type = #{taskSecType,jdbcType=VARCHAR},                
+            </if>
+            <if test="taskName != null and taskName != '' ">        
+                task_name = #{taskName,jdbcType=VARCHAR},                
+            </if>
+            <if test="taskCondition != null and taskCondition != '' ">        
+                task_condition = #{taskCondition,jdbcType=VARCHAR},                
+            </if>
+            <if test="isDailyUpdate != null and isDailyUpdate != '' ">        
+                is_daily_update = #{isDailyUpdate,jdbcType=INTEGER},                
+            </if>
+            <if test="rewardType != null and rewardType != '' ">        
+                reward_type = #{rewardType,jdbcType=INTEGER},                
+            </if>
+            <if test="coinAmount != null and coinAmount != '' ">        
+                coin_amount = #{coinAmount,jdbcType=INTEGER},                
+            </if>
+            <if test="cashAmount != null and cashAmount != '' ">        
+                cash_amount = #{cashAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="couponId != null and couponId != '' ">        
+                coupon_id = #{couponId,jdbcType=INTEGER},                
+            </if>
+            <if test="isOpen != null and isOpen != '' ">        
+                is_open = #{isOpen,jdbcType=INTEGER},                
+            </if>
+            <if test="creater != null and creater != '' ">        
+                creater = #{creater,jdbcType=VARCHAR},                
+            </if>
+            <if test="modifier != null and modifier != '' ">        
+                modifier = #{modifier,jdbcType=VARCHAR}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getTaskByTaskId" resultType="com.ald.fanbei.api.dal.domain.AfTaskDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task
+        WHERE is_delete = 0 AND id=#{taskId}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTaskDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfTaskDo" parameterType="com.ald.fanbei.api.dal.domain.AfTaskDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task
+        <include refid="commonCondition"/>
+    </select>
+
+
+    <select id="getTaskListByUserIdAndUserLevel" resultType="AfTaskDto">
+        select
+          <include refid="queryFields" />
+        from af_task
+        WHERE is_delete = 0
+        AND is_open = 1
+        AND task_begin_time <![CDATA[   <=  ]]> now()
+        AND task_end_time <![CDATA[   >=  ]]> now()
+        AND user_level in
+        <foreach collection="userLevel" item="item" index="index"
+                 separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        ORDER BY sort desc , gmt_create desc
+    </select>
+
+    <select id="getTaskListByTaskTypeAndUserLevel" resultType="com.ald.fanbei.api.dal.domain.AfTaskDo">
+        select
+        <include refid="queryFields" />
+        from af_task
+        WHERE is_delete = 0
+        and is_open = 1
+        and task_type = #{taskType}
+        <if test="taskContition != null and taskContition != '' ">
+        and task_condition = #{taskContition}
+        </if>
+        and task_begin_time <![CDATA[<=]]>  now()
+        and task_end_time <![CDATA[   >=  ]]> now()
+        and user_level in
+        <foreach collection="userLevelList" item="item" index="index"
+                 separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        order by gmt_create DESC
+    </select>
+
+    <select id="getNotDailyTaskListByUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskDo">
+        SELECT
+        <include refid="taskDo" />
+        FROM af_task t
+        ,(
+            SELECT u.task_id, u.user_id
+            FROM af_task_user u
+            WHERE u.is_delete = 0
+              AND u.user_id = #{userId}
+        ) a where  t.id = a.task_id
+        and t.is_delete = 0
+        AND t.is_open = 1
+        AND t.is_daily_update = 0
+        AND t.task_type = #{taskType}
+        AND t.task_begin_time <![CDATA[   <=  ]]> now()
+        And t.task_end_time <![CDATA[   >=  ]]> now()
+        ORDER BY t.gmt_create DESC
+    </select>
+
+    <select id="getDailyTaskListByUserId" resultType="com.ald.fanbei.api.dal.domain.AfTaskDo">
+        SELECT
+        <include refid="taskDo" />
+        FROM af_task t
+        , (
+            SELECT u.task_id, u.user_id
+            FROM af_task_user u
+            WHERE u.is_delete = 0
+              AND u.user_id = #{userId}
+              AND date(u.gmt_create) = CURDATE()
+        ) a WHERE t.id = a.task_id
+        AND t.is_delete = 0
+        AND t.is_open = 1
+        AND t.is_daily_update = 1
+        AND t.task_type = #{taskType}
+        AND t.task_begin_time <![CDATA[   <=  ]]> now()
+        And t.task_end_time <![CDATA[   >=  ]]> now()
+        ORDER BY t.gmt_create DESC
+    </select>
+
+    <select id="getTaskByTaskIds" resultType="AfTaskDto">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task
+        where is_delete = 0
+        and is_open = 1
+        and  id in
+        <foreach collection="taskIds" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        order by sort desc , gmt_create desc
+    </select>
+
+    <select id="getTaskByTaskDo" resultType="AfTaskDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_task
+        where is_delete = 0
+        AND is_open = #{isOpen}
+        AND task_type = #{taskType}
+        <if test="taskSecType != null and taskSecType != '' ">
+            AND task_sec_type = #{taskSecType}
+        </if>
+        <if test="taskCondition != null and taskCondition != '' ">
+            AND task_condition = #{taskCondition}
+        </if>
+        AND task_begin_time <![CDATA[   <=  ]]> now()
+        And task_end_time <![CDATA[   >=  ]]> now()
+    </select>
+
+
+</mapper>

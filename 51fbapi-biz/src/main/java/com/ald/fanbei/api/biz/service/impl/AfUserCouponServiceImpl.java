@@ -9,8 +9,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfUserCouponStatus;
-import com.ald.fanbei.api.common.enums.CouponSenceRuleType;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.RandomUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
@@ -18,8 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.ald.fanbei.api.common.enums.CouponStatus;
-import com.ald.fanbei.api.common.enums.CouponType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -59,6 +56,10 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 
 	@Resource
 	private AfResourceService afResourceService;
+
+	@Resource
+	AfTaskUserService afTaskUserService;
+
 
 	@Override
 	public List<AfUserCouponDto> getUserCouponByUser(AfUserCouponQuery query) {
@@ -139,6 +140,10 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 				accountLog.setRefId(sourceRef);
 				accountLog.setUserId(userId);
 				afUserAccountLogDao.addUserAccountLog(accountLog);
+
+				// add by luoxiao for 边逛边赚，增加零钱明细
+				afTaskUserService.addTaskUser(userId, UserAccountLogType.SEND_CASH_COUPON.getName(), couponDo.getAmount());
+				// end by luoxiao
 			}
 		}else{
 			AfUserCouponDo userCoupon = new AfUserCouponDo();
@@ -194,6 +199,10 @@ public class AfUserCouponServiceImpl implements AfUserCouponService{
 				}catch (Exception e) {
 					logger.error(e.getMessage(), e);
 				}
+
+				// add by luoxiao for 边逛边赚，增加零钱明细
+				afTaskUserService.addTaskUser(userId,UserAccountLogType.SEND_CASH_COUPON.getName(),couponDo.getAmount());
+				// end by luoxiao
 			}
 		}else{
 			AfUserCouponDo userCoupon = new AfUserCouponDo();

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- af_sign_reward表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.AfSignRewardDao">
+
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,amount,type,status,user_id,friend_user_id ,is_delete,time
+    </sql>
+
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+        WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="amount != null and amount != ''">
+            AND amount = #{amount,jdbcType=DECIMAL}
+        </if>
+        <if test="type != null and type != ''">
+            AND type = #{type,jdbcType=INTEGER}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=INTEGER}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="friendUserId != null and friendUserId != ''">
+            AND friend_user_id = #{friendUserId,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardDo" keyProperty="rid">
+        <selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+
+        INSERT INTO af_sign_reward
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified,
+            </if>
+            <if test="amount != null">
+                amount,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="friendUserId != null">
+                friend_user_id,
+            </if>
+            <if test="time != null">
+                time,
+            </if>
+        </trim>
+
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="gmtCreate != null" >
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null" >
+                #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="amount != null" >
+                #{amount,jdbcType=DECIMAL},
+            </if>
+            <if test="type != null" >
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null" >
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="friendUserId != null" >
+                #{friendUserId,jdbcType=INTEGER},
+            </if>
+            <if test="time != null" >
+                #{time,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardDo">
+        UPDATE af_sign_reward
+        <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="amount != null and amount != '' ">
+                amount = #{amount,jdbcType=DECIMAL},
+            </if>
+            <if test="type != null and type != '' ">
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="status != null and status != '' ">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null and userId != '' ">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="friendUserId != null and friendUserId != '' ">
+                friend_user_id = #{friendUserId,jdbcType=INTEGER}
+            </if>
+        </set>
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+    <select id="getById" resultType="com.ald.fanbei.api.dal.domain.AfSignRewardDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_sign_reward
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+    <select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfSignRewardDo" parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_sign_reward
+        <include refid="commonCondition"/>
+        limit 0,1
+    </select>
+
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.AfSignRewardDo" parameterType="com.ald.fanbei.api.dal.domain.AfSignRewardDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_sign_reward
+        <include refid="commonCondition"/>
+    </select>
+
+    <select id="isExist" resultType="int" parameterType="Long">
+        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and type = 0
+        AND  date_format(now(),'%Y-%m-%d') = date_format(gmt_create,'%Y-%m-%d')
+    </select>
+
+    <select id="sumSignDays" resultType="AfSignRewardDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} and type in (0,2)
+        AND gmt_create BETWEEN #{startTime} AND date_format(DATE_ADD(now(),INTERVAL 1 DAY),'%Y-%m-%d')
+    </select>
+
+    <select id="getRewardDetailList" resultType="AfSignRewardDto" parameterType="AfSignRewardQuery">
+        SELECT
+        <include refid="queryFields" />
+        FROM af_sign_reward
+        WHERE is_delete = 0
+        AND user_id = #{userId}
+        AND type != 3
+        ORDER BY gmt_create desc
+    </select>
+
+    <select id="checkUserSign" resultType="int" parameterType="Long">
+        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND user_id = #{userId} OR friend_user_id = #{userId} and type != 3
+    </select>
+
+    <select id="friendUserSign" resultType="int" parameterType="Long">
+        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND friend_user_id = #{friendUserId} and type in (1,2)
+    </select>
+
+    <select id="frienddUserSignCount" resultType="int" parameterType="Long">
+        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND friend_user_id = #{friendUserId} and type = 1 AND user_id = #{userId}
+    </select>
+
+    <select id="frienddUserSignCountToDay" resultType="int" parameterType="Long">
+        SELECT count(id) FROM af_sign_reward where is_delete = 0 AND friend_user_id = #{friendUserId} and type = 1 AND user_id = #{userId}
+        AND  date_format(gmt_create,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+    </select>
+
+
+    <insert id="saveRecordBatch" parameterType="java.util.List">
+        INSERT  INTO af_sign_reward(gmt_create,gmt_modified,amount,type,status,user_id,friend_user_id ,is_delete)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator="," >
+            (now(),now(),#{item.amount},#{item.type},#{item.status},#{item.userId},#{item.friendUserId},#{item.isDelete})
+        </foreach>
+    </insert>
+
+</mapper>
