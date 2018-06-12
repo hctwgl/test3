@@ -707,52 +707,6 @@ public class RiskUtil extends AbstractThird {
 			BigDecimal amount, BigDecimal poundage, String time, String productName, String virtualCode,
 			String SecSence, String ThirdSence, long orderid, String cardName, AfBorrowDo borrow, String payType,
 			HashMap<String, HashMap> riskDataMap, String bqsBlackBox, AfOrderDo orderDo) {
-		//TODO modify by chengkang start  待测试完成后进行删除
-		Integer weakFlag = 0 ;
-		Integer softWeakFlag = 0;
-		AfResourceDo vipGoodsResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.WEAK_VERIFY_VIP_CONFIG.getCode(), AfResourceSecType.ORDER_WEAK_VERIFY_VIP_CONFIG.getCode());
-	    if(vipGoodsResourceDo!=null && StringUtil.isNotBlank(vipGoodsResourceDo.getValue5())){
-	    	String[] controlFlag = vipGoodsResourceDo.getValue5().split(",");
-	    	//0 默认代码正常往下走  1：直接通过  2：直接拒绝
-	    	//弱风控控制
-	    	weakFlag = NumberUtil.objToIntDefault(controlFlag[0], 0);
-	    	//软弱风控控制
-	    	softWeakFlag = NumberUtil.objToIntDefault(controlFlag[1], 0);
-	    }
-	    logger.info("RiskUtil weakRiskForXd,scene="+scene+",weakFlag="+weakFlag+",softWeakFlag="+softWeakFlag);
-	    if("40".equals(scene)){
-	    	if(weakFlag == 1){
-	    		RiskVerifyRespBo verybo = new RiskVerifyRespBo();
-	    		verybo.setSuccess(true);
-	    		verybo.setPassWeakRisk(true);
-	    		verybo.setResult("10");
-	    		return verybo;
-	    	}
-	    	if(weakFlag == 2){
-	    		RiskVerifyRespBo verybo = new RiskVerifyRespBo();
-	    		verybo.setSuccess(false);
-	    		verybo.setPassWeakRisk(false);
-	    		verybo.setResult("20");
-	    		return verybo;
-	    	}
-	    }
-	    if("44".equals(scene)){
-	    	if(softWeakFlag == 1){
-	    		RiskVerifyRespBo verybo = new RiskVerifyRespBo();
-	    		verybo.setSuccess(true);
-	    		verybo.setPassWeakRisk(true);
-	    		verybo.setResult("10");
-	    		return verybo;
-	    	}
-	    	if(softWeakFlag == 2){
-	    		RiskVerifyRespBo verybo = new RiskVerifyRespBo();
-	    		verybo.setSuccess(false);
-	    		verybo.setPassWeakRisk(false);
-	    		verybo.setResult("20");
-	    		return verybo;
-	    	}
-	    }
-		//modify by chengkang end 
 		
 		AfUserAuthDo userAuth = afUserAuthService.getUserAuthInfoByUserId(Long.parseLong(consumerNo));
 		if (orderDo != null) {
@@ -760,7 +714,7 @@ public class RiskUtil extends AbstractThird {
 		    if("44".equals(scene)){
 		    	riskDataMap.get("summaryOrderData").put("orderNo", orderDo.getOrderNo()+Constants.SOFT_WEAK_VERIFY_ORDER_NO_FLAG);
 		    }
-		    //alter by chengkang start
+		    //alter by chengkang end
 		    
 			// 获取不同场景的强风控认证
 			if (StringUtils.equals(OrderType.TRADE.getCode(), orderDo.getOrderType())) {
