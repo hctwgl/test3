@@ -95,8 +95,6 @@ public class LoginApi implements ApiHandle {
 	@Resource
 	SmsUtil smsUtil;
 	@Resource
-	YSSmsUtil ysSmsUtil;
-	@Resource
 	AfUserToutiaoService afUserToutiaoService;
 	@Resource
 	private AfUserCouponService afUserCouponService;
@@ -284,7 +282,7 @@ public class LoginApi implements ApiHandle {
 							afCouponService.updateCouponquotaAlreadyById(afCouponDo);
 							try {
 								String content="恭喜您获得一张“"+afCouponDo.getName()+"”，有效期为“"+afCouponDo.getGmtEnd()+"”，请登录借款超人app，在还款时选择使用；";
-								ysSmsUtil.send(afUserDo.getMobile(),content,ysSmsUtil.NOTITION_YS);
+								YSSmsUtil.send(afUserDo.getMobile(),content,YSSmsUtil.NOTITION_YS);
 							} catch (Exception e) {
 								logger.error("sendLoginSupermanCouponMsg is Fail.",e);
 							}
