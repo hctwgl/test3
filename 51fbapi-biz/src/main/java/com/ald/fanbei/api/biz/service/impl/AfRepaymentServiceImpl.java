@@ -278,7 +278,7 @@ public class AfRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract impleme
         final String payTradeNo = repayNo;
 
         // 新增还款记录
-        String name = Constants.DEFAULT_REPAYMENT_NAME + billDo.getName();
+        String name = Constants.DEFAULT_REPAYMENT_NAME + billIds;
         if (billDo.getCount() > 1) {
             name = new StringBuffer(Constants.DEFAULT_REPAYMENT_NAME).append(billDo.getBillYear() + "").append("年").append(billDo.getBillMonth()).append("月账单").toString();
         } else if (BorrowType.CASH.getCode().equals(billDo.getType())) {
