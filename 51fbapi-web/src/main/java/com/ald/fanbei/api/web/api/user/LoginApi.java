@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
+import com.ald.fanbei.api.biz.third.util.YSSmsUtil;
 import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
@@ -93,6 +94,8 @@ public class LoginApi implements ApiHandle {
 	RiskUtil riskUtil;
 	@Resource
 	SmsUtil smsUtil;
+	@Resource
+	YSSmsUtil ysSmsUtil;
 	@Resource
 	AfUserToutiaoService afUserToutiaoService;
 	@Resource
@@ -280,7 +283,8 @@ public class LoginApi implements ApiHandle {
 							couponDo.setQuotaAlready(1);
 							afCouponService.updateCouponquotaAlreadyById(afCouponDo);
 							try {
-								smsUtil.sendSmsToDhst(afUserDo.getMobile(),afCouponDo.getName());
+								String content="恭喜您获得一张“"+afCouponDo.getName()+"”，有效期为“"+afCouponDo.getGmtEnd()+"”，请登录借款超人app，在还款时选择使用；";
+								ysSmsUtil.send(afUserDo.getMobile(),content,ysSmsUtil.NOTITION_YS);
 							} catch (Exception e) {
 								logger.error("sendLoginSupermanCouponMsg is Fail.",e);
 							}
