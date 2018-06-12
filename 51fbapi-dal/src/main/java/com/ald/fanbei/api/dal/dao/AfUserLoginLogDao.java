@@ -30,5 +30,7 @@ public interface AfUserLoginLogDao {
 	AfUserLoginLogDo getUserLastLoginInfo(@Param("userName")String userName);
 
 	long getCountByUserNameAndResultTrue(String userName);
-	
+
+	long getCountByUserNameAndResultSupermanTrue(String userName);
+
 }

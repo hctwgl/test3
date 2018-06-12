@@ -57,4 +57,12 @@
 	    and `is_delete` = 0
 	    and result like 'true%'
     </select>
+
+	<select id="getCountByUserNameAndResultSupermanTrue" resultType="java.lang.Long">
+	    select count(0)
+	    from `af_user_login_log`
+	    where user_name = #{userName}
+	    and `is_delete` = 0
+	    and result like '%borrowSuperman%'
+    </select>
 </mapper>

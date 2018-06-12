@@ -9,8 +9,11 @@ import java.util.TimerTask;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
+import com.ald.fanbei.api.common.enums.CouponStatus;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -89,13 +92,17 @@ public class LoginApi implements ApiHandle {
 	@Resource
 	RiskUtil riskUtil;
 	@Resource
+	SmsUtil smsUtil;
+	@Resource
 	AfUserToutiaoService afUserToutiaoService;
 	@Resource
-	AfAbTestDeviceService afAbTestDeviceService;
+	private AfUserCouponService afUserCouponService;
 	@Resource
 	AfUserBankcardService afUserBankcardService;
 	@Resource
 	AfAbtestDeviceNewService afAbtestDeviceNewService;
+	@Resource
+	private AfCouponService afCouponService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
@@ -104,6 +111,8 @@ public class LoginApi implements ApiHandle {
 		String SUCC = "1";
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		final String userName = context.getUserName();
+		final String requestId=requestDataVo.getId();
+		String loginChannel=requestId.substring(requestId.lastIndexOf("_")+1);
 		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
 		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
 		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
@@ -204,17 +213,19 @@ public class LoginApi implements ApiHandle {
 				isNeedRisk = false;
 			}
 		}
+
 		//首次登陆，弹窗
-		long successTime =  afUserLoginLogService.getCountByUserNameAndResultTrue(userName);
-		if(successTime < 1){
-			 new Timer().schedule(new TimerTask() {
-		         public void run() {
-				jpushService.jPushCoupon("COUPON_POPUPS", userName);
-				this.cancel();
-				 }
-		   }, 1000 * 5);// 一分钟
+		if(loginChannel.indexOf("borrowSuperman")==-1) {
+			long successTime =  afUserLoginLogService.getCountByUserNameAndResultTrue(userName);
+			if(successTime < 1){
+				new Timer().schedule(new TimerTask() {
+					public void run() {
+						jpushService.jPushCoupon("COUPON_POPUPS", userName);
+						this.cancel();
+					}
+				}, 1000 * 5);// 一分钟
+			}
 		}
-		
 		
 		// 调用风控可信接口
 		if (context.getAppVersion() >= 381 && isNeedRisk && !isInWhiteList(userName)) {
@@ -244,7 +255,43 @@ public class LoginApi implements ApiHandle {
 			}
 			loginType = "2"; // 可信登录验证通过，变可信
 		}
-		loginDo.setResult("true");
+		if(loginChannel.indexOf("borrowSuperman")!=-1){
+			long successTime=afUserLoginLogService.getCountByUserNameAndResultSupermanTrue(userName);
+			if(successTime < 1){
+				AfResourceDo afResourceDo=afResourceService.getSingleResourceBytype(AfResourceType.LOGIN_SUPERMAN_COUPON.getCode());
+				//开关打开
+				if(StringUtil.equals(afResourceDo.getValue(),"1")){
+					AfCouponDo afCouponDo=afCouponService.getCouponById(Long.valueOf(afResourceDo.getValue1()));
+					if(afCouponDo!=null){
+						Long totalCount = afCouponDo.getQuota();
+						if(totalCount <= afCouponDo.getQuotaAlready()){
+							resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR);
+						}
+						AfUserCouponDo afUserCouponDo=new AfUserCouponDo();
+						afUserCouponDo.setGmtStart(afCouponDo.getGmtStart());
+						afUserCouponDo.setGmtEnd(afCouponDo.getGmtEnd());
+						afUserCouponDo.setUserId(userId);
+						afUserCouponDo.setStatus(CouponStatus.NOUSE.getCode());
+						afUserCouponDo.setCouponId(afCouponDo.getRid());
+						afUserCouponDo.setSourceType(afResourceDo.getType());
+						if(afUserCouponService.addUserCoupon(afUserCouponDo)==1){
+							AfCouponDo couponDo=new AfCouponDo();
+							couponDo.setRid(afCouponDo.getRid());
+							couponDo.setQuotaAlready(1);
+							afCouponService.updateCouponquotaAlreadyById(afCouponDo);
+							try {
+								smsUtil.sendSmsToDhst(afUserDo.getMobile(),afCouponDo.getName());
+							} catch (Exception e) {
+								logger.error("sendLoginSupermanCouponMsg is Fail.",e);
+							}
+						}
+					}
+				}
+			}
+			loginDo.setResult("true,"+loginChannel);
+		}else {
+			loginDo.setResult("true");
+		}
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// save token to cache
 		String token = UserUtil.generateToken(userName);
@@ -456,6 +503,6 @@ public class LoginApi implements ApiHandle {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(UserUtil.getPassword(MD5.digest("123456"), "d229b3462c0b8a94"));
+		System.out.println(UserUtil.getPassword(MD5.digest("123456"), "698b6fc6fc689bed"));
 	}
 }

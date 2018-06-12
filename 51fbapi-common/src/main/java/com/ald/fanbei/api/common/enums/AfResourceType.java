@@ -152,9 +152,9 @@ public enum AfResourceType {
 	APP_NAVIGATION_OPEN("APP_NAVIGATION_OPEN","app导航栏展开控件"),
 	APP_NAVIGATION_CLOSE("APP_NAVIGATION_CLOSE","app导航栏关闭控件"),
 	BANNER_BACKIMG("BANNER_BACKIMG","Banner背景图片"),
-	APP_STATUS_BAR_COLOR("APP_STATUS_BAR_COLOR","状态栏颜色");
-
-
+	APP_STATUS_BAR_COLOR("APP_STATUS_BAR_COLOR","状态栏颜色"),
+	BUBBLE_AUTH_CONFIG("BUBBLE_AUTH_CONFIG","芝麻信用认证相关配置"),
+	LOGIN_SUPERMAN_COUPON("LOGIN_SUPERMAN_COUPON","贷款超人首次登陆优惠配置");
 	private String code;
     private String name;
     AfResourceType(String code, String name) {

@@ -141,7 +141,7 @@ public class BaseTest {
     
     private Map<String, String> createBaseHeader() {
     	Map<String, String> head = new HashMap<String,String>();
-        head.put(Constants.REQ_SYS_NODE_ID, "i_E647D820-D623-4CCC-9C14-1EA2E4E1C0A0_1508923514481_www");
+        head.put(Constants.REQ_SYS_NODE_ID, "i_E647D820-D623-4CCC-9C14-1EA2E4E1C0A0_1508923514481_borrowSuperman");
         head.put(Constants.REQ_SYS_NODE_VERSION, "407");
         head.put(Constants.REQ_SYS_NODE_NETTYPE, "4G");
         head.put(Constants.REQ_SYS_NODE_TIME, String.valueOf(System.currentTimeMillis()));

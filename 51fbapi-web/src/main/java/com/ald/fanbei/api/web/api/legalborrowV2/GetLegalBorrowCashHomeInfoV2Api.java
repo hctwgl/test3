@@ -491,6 +491,9 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 			data.put("isWorm", 0);
 		}
 
+		// 借款超人 弹窗开关
+		getBorrowSuperManPopupSwitch(data);
+		
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -564,6 +567,10 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 		} else {
 			data.put("isWorm", 0);
 		}
+		
+		// 借款超人 弹窗开关
+		getBorrowSuperManPopupSwitch(data);
+		
 		resp.setResponseData(data);
 		return resp;
 	}
@@ -628,5 +635,22 @@ public class GetLegalBorrowCashHomeInfoV2Api extends GetBorrowCashBase implement
 
 	}
 
+	/**
+	 * 借款超人 弹窗开关（0不展示弹窗,1展示弹窗）
+	 * @param data 
+	 * @return
+	 */
+	private void getBorrowSuperManPopupSwitch(Map<String, Object> data) {
+		String supermanPopupSwitch = "N"; // 默认不展示弹窗
+		
+		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(ResourceType.BORROW_SUPERMAN_POPUP_SWITCH.getCode(),AfResourceSecType.BORROW_SUPERMAN_POPUP_SWITCH.getCode());
+		if(afResourceDo != null){
+			supermanPopupSwitch = afResourceDo.getValue().equals("1") ? "Y" : "N";
+			logger.info("get supermanPopupSwitch succ, supermanPopupSwitch="+supermanPopupSwitch);
+		}else{
+			logger.info("get supermanPopupSwitch fail, default supermanPopupSwitch="+supermanPopupSwitch);
+		}
+		data.put("supermanPopupSwitch", supermanPopupSwitch);
+	}
 
 }

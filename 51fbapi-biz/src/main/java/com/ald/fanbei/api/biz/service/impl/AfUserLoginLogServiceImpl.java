@@ -48,4 +48,9 @@ public class AfUserLoginLogServiceImpl extends BaseService implements AfUserLogi
 	    // TODO Auto-generated method stub
 	        return afUserLoginLogDao.getCountByUserNameAndResultTrue(userName);
 	}
+
+	@Override
+	public long getCountByUserNameAndResultSupermanTrue(String userName) {
+		return afUserLoginLogDao.getCountByUserNameAndResultSupermanTrue( userName);
+	}
 }

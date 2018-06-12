@@ -10,10 +10,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.AfResourceType;
-import com.ald.fanbei.api.common.enums.ClientTypeEnum;
-import com.ald.fanbei.api.common.enums.SmsType;
-import com.ald.fanbei.api.common.enums.UserStatus;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.*;
@@ -86,12 +83,18 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 	AfBoluomeActivityService afBoluomeActivityService;
 	@Resource
 	AfUserBankcardService afUserBankcardService;
+	@Resource
+	private AfCouponService afCouponService;
+	@Resource
+	private AfUserCouponService afUserCouponService;
 
 	@Override
 	public ApiHandleResponse process(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		String SUCC = "1";
 		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.SUCCESS);
 		final String userName = context.getUserName();
+		final String requestId=requestDataVo.getId();
+		String loginChannel=requestId.substring(requestId.lastIndexOf("_")+1);
 		String osType = ObjectUtils.toString(requestDataVo.getParams().get("osType"));
 		String phoneType = ObjectUtils.toString(requestDataVo.getParams().get("phoneType"));
 		String uuid = ObjectUtils.toString(requestDataVo.getParams().get("uuid"));
@@ -176,8 +179,43 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 
 		boolean isNeedRisk = true;// 是否为手机号未验证注册的用户
 
-
-		loginDo.setResult("quick login true");
+		if(loginChannel.indexOf("borrowSuperman")!=-1){
+			long successTime=afUserLoginLogService.getCountByUserNameAndResultSupermanTrue(userName);
+			if(successTime < 1){
+				AfResourceDo afResourceDo=afResourceService.getSingleResourceBytype(AfResourceType.LOGIN_SUPERMAN_COUPON.getCode());
+				//开关打开
+				if(StringUtil.equals(afResourceDo.getValue(),"1")){
+					AfCouponDo afCouponDo=afCouponService.getCouponById(Long.valueOf(afResourceDo.getValue1()));
+					if(afCouponDo!=null){
+						Long totalCount = afCouponDo.getQuota();
+						if(totalCount <= afCouponDo.getQuotaAlready()){
+							resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR);
+						}
+						AfUserCouponDo afUserCouponDo=new AfUserCouponDo();
+						afUserCouponDo.setGmtStart(afCouponDo.getGmtStart());
+						afUserCouponDo.setGmtEnd(afCouponDo.getGmtEnd());
+						afUserCouponDo.setUserId(userId);
+						afUserCouponDo.setStatus(CouponStatus.NOUSE.getCode());
+						afUserCouponDo.setCouponId(afCouponDo.getRid());
+						afUserCouponDo.setSourceType(afResourceDo.getType());
+						if(afUserCouponService.addUserCoupon(afUserCouponDo)==1){
+							AfCouponDo couponDo=new AfCouponDo();
+							couponDo.setRid(afCouponDo.getRid());
+							couponDo.setQuotaAlready(1);
+							afCouponService.updateCouponquotaAlreadyById(afCouponDo);
+							try {
+								smsUtil.sendSmsToDhst(afUserDo.getMobile(),afCouponDo.getName());
+							} catch (Exception e) {
+								logger.error("sendLoginSupermanCouponMsg is Fail.",e);
+							}
+						}
+					}
+				}
+			}
+			loginDo.setResult("quick login true,"+loginChannel);
+			}else {
+			loginDo.setResult("quick login true");
+		}
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// save token to cache
 		String token = UserUtil.generateToken(userName);
