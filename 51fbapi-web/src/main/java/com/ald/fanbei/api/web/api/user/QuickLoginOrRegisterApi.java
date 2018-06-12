@@ -5,6 +5,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.RiskUtil;
 import com.ald.fanbei.api.biz.third.util.SmsUtil;
 import com.ald.fanbei.api.biz.third.util.TongdunUtil;
+import com.ald.fanbei.api.biz.third.util.YSSmsUtil;
 import com.ald.fanbei.api.biz.third.util.baiqishi.BaiQiShiUtils;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
@@ -204,7 +205,8 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 							couponDo.setQuotaAlready(1);
 							afCouponService.updateCouponquotaAlreadyById(afCouponDo);
 							try {
-								smsUtil.sendSmsToDhst(afUserDo.getMobile(),afCouponDo.getName());
+								String content="恭喜您获得一张“"+afCouponDo.getName()+"”，有效期为“"+afCouponDo.getGmtEnd()+"”，请登录借款超人app，在还款时选择使用；";
+								YSSmsUtil.send(afUserDo.getMobile(),content,YSSmsUtil.NOTITION_YS);
 							} catch (Exception e) {
 								logger.error("sendLoginSupermanCouponMsg is Fail.",e);
 							}
