@@ -179,45 +179,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		String loginTime = sdf.format(new Date(System.currentTimeMillis()));
 
 		boolean isNeedRisk = true;// 是否为手机号未验证注册的用户
-
-		if(loginChannel.indexOf("borrowSuperman")!=-1){
-			long successTime=afUserLoginLogService.getCountByUserNameAndResultSupermanTrue(userName);
-			if(successTime < 1){
-				AfResourceDo afResourceDo=afResourceService.getSingleResourceBytype(AfResourceType.LOGIN_SUPERMAN_COUPON.getCode());
-				//开关打开
-				if(StringUtil.equals(afResourceDo.getValue(),"1")){
-					AfCouponDo afCouponDo=afCouponService.getCouponById(Long.valueOf(afResourceDo.getValue1()));
-					if(afCouponDo!=null){
-						Long totalCount = afCouponDo.getQuota();
-						if(totalCount <= afCouponDo.getQuotaAlready()){
-							resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR);
-						}
-						AfUserCouponDo afUserCouponDo=new AfUserCouponDo();
-						afUserCouponDo.setGmtStart(afCouponDo.getGmtStart());
-						afUserCouponDo.setGmtEnd(afCouponDo.getGmtEnd());
-						afUserCouponDo.setUserId(userId);
-						afUserCouponDo.setStatus(CouponStatus.NOUSE.getCode());
-						afUserCouponDo.setCouponId(afCouponDo.getRid());
-						afUserCouponDo.setSourceType(afResourceDo.getType());
-						if(afUserCouponService.addUserCoupon(afUserCouponDo)==1){
-							AfCouponDo couponDo=new AfCouponDo();
-							couponDo.setRid(afCouponDo.getRid());
-							couponDo.setQuotaAlready(1);
-							afCouponService.updateCouponquotaAlreadyById(afCouponDo);
-							try {
-								String content="恭喜您获得一张“"+afCouponDo.getName()+"”，有效期为“"+afCouponDo.getGmtEnd()+"”，请登录借款超人app，在还款时选择使用；";
-								YSSmsUtil.send(afUserDo.getMobile(),content,YSSmsUtil.NOTITION_YS);
-							} catch (Exception e) {
-								logger.error("sendLoginSupermanCouponMsg is Fail.",e);
-							}
-						}
-					}
-				}
-			}
-			loginDo.setResult("quick login true,"+loginChannel);
-			}else {
-			loginDo.setResult("quick login true");
-		}
+		LoginCoupon(requestDataVo,resp,loginDo,loginChannel,userName,userId,afUserDo.getMobile());
 		afUserLoginLogService.addUserLoginLog(loginDo);
 		// save token to cache
 		String token = UserUtil.generateToken(userName);
@@ -311,7 +273,48 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 		}
 		return resp;
 	}
+	private void LoginCoupon(RequestDataVo requestDataVo,ApiHandleResponse resp,AfUserLoginLogDo loginDo,String loginChannel,String userName,Long userId,String mobile){
+		if(loginChannel.indexOf("borrowSuperman")!=-1){
+			long successTime=afUserLoginLogService.getCountByUserNameAndResultSupermanTrue(userName);
+			if(successTime < 1){
+				AfResourceDo afResourceDo=afResourceService.getSingleResourceBytype(AfResourceType.LOGIN_SUPERMAN_COUPON.getCode());
+				//开关打开
+				if(StringUtil.equals(afResourceDo.getValue(),"1")){
+					AfCouponDo afCouponDo=afCouponService.getCouponById(Long.valueOf(afResourceDo.getValue1()));
+					if(afCouponDo!=null){
+						Long totalCount = afCouponDo.getQuota();
+						if(totalCount <= afCouponDo.getQuotaAlready()){
+							resp = new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.USER_COUPON_PICK_OVER_ERROR);
+						}
+						AfUserCouponDo afUserCouponDo=new AfUserCouponDo();
+						afUserCouponDo.setGmtStart(afCouponDo.getGmtStart());
+						afUserCouponDo.setGmtEnd(afCouponDo.getGmtEnd());
+						afUserCouponDo.setUserId(userId);
+						afUserCouponDo.setStatus(CouponStatus.NOUSE.getCode());
+						afUserCouponDo.setCouponId(afCouponDo.getRid());
+						afUserCouponDo.setSourceType(afResourceDo.getType());
+						if(afUserCouponService.addUserCoupon(afUserCouponDo)==1){
+							AfCouponDo couponDo=new AfCouponDo();
+							couponDo.setRid(afCouponDo.getRid());
+							couponDo.setQuotaAlready(1);
+							afCouponService.updateCouponquotaAlreadyById(afCouponDo);
+							String content=null;
+							if(afCouponDo.getGmtEnd()!=null){
+								content="恭喜您获得一张“"+afCouponDo.getName()+"”，有效期为“"+afCouponDo.getGmtEnd()+"”，请登录借款超人app，在还款时选择使用；";
+							}else {
+								content="恭喜您获得一张“"+afCouponDo.getName()+"”，有效期为“"+afCouponDo.getValidDays()+"”，请登录借款超人app，在还款时选择使用；";
+							}
+							YSSmsUtil.send(mobile,content,YSSmsUtil.NOTITION_YS);
 
+						}
+					}
+				}
+			}
+			loginDo.setResult("quick login true,,"+loginChannel);
+		}else {
+			loginDo.setResult("quick login true,");
+		}
+	}
 	private AfUserDo quickRegister(RequestDataVo requestDataVo, FanbeiContext context, HttpServletRequest request) {
 		String requestId = requestDataVo.getId();
 		String nick = ObjectUtils.toString(requestDataVo.getParams().get("nick"), "");
