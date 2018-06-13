@@ -302,7 +302,7 @@ public class QuickLoginOrRegisterApi implements ApiHandle {
 							if(afCouponDo.getGmtEnd()!=null){
 								content="恭喜您获得一张“"+afCouponDo.getName()+"”，有效期为“"+afCouponDo.getGmtEnd()+"”，请登录借款超人app，在还款时选择使用；";
 							}else {
-								content="恭喜您获得一张“"+afCouponDo.getName()+"”，有效期为“"+afCouponDo.getValidDays()+"”，请登录借款超人app，在还款时选择使用；";
+								content="恭喜您获得一张“"+afCouponDo.getName()+"”，有效期为“"+afCouponDo.getValidDays()+"天”，请登录借款超人app，在还款时选择使用；";
 							}
 							YSSmsUtil.send(mobile,content,YSSmsUtil.NOTITION_YS);
 
