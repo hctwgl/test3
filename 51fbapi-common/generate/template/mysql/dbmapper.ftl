@@ -29,11 +29,7 @@
     </sql>
 
     
-    <insert id="saveRecord" parameterType="${packageName}.dal.domain.${ClassName}Do" keyProperty="rid">
-    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
-	      SELECT LAST_INSERT_ID()
-	    </selectKey>
-    
+    <insert id="saveRecord" parameterType="${packageName}.dal.domain.${ClassName}Do" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO ${tableName}
         <trim prefix="(" suffix=")" suffixOverrides="," >
         <#list list as column>
