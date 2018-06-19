@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- dsed_loan_product表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.DsedLoanProductDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,name,min_amount,max_amount,desz,conf,periods,prd_type,switch,remind_day 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="name != null and name != ''">
+            AND name = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="minAmount != null and minAmount != ''">
+            AND min_amount = #{minAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="maxAmount != null and maxAmount != ''">
+            AND max_amount = #{maxAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="desz != null and desz != ''">
+            AND desz = #{desz,jdbcType=VARCHAR}
+        </if>
+        <if test="conf != null and conf != ''">
+            AND conf = #{conf,jdbcType=VARCHAR}
+        </if>
+        <if test="periods != null and periods != ''">
+            AND periods = #{periods,jdbcType=INTEGER}
+        </if>
+        <if test="prdType != null and prdType != ''">
+            AND prd_type = #{prdType,jdbcType=VARCHAR}
+        </if>
+        <if test="switch != null and switch != ''">
+            AND switch = #{switch,jdbcType=VARCHAR}
+        </if>
+        <if test="remindDay != null and remindDay != ''">
+            AND remind_day = #{remindDay,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.DsedLoanProductDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO dsed_loan_product
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="name != null">        
+	            name,
+	        </if>
+	        <if test="minAmount != null">        
+	            min_amount,
+	        </if>
+	        <if test="maxAmount != null">        
+	            max_amount,
+	        </if>
+	        <if test="desz != null">        
+	            desz,
+	        </if>
+	        <if test="conf != null">        
+	            conf,
+	        </if>
+	        <if test="periods != null">        
+	            periods,
+	        </if>
+	        <if test="prdType != null">        
+	            prd_type,
+	        </if>
+	        <if test="switch != null">        
+	            switch,
+	        </if>
+	        <if test="remindDay != null">        
+	            remind_day,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="name != null" >
+		       #{name,jdbcType=VARCHAR},
+		    </if>
+		    <if test="minAmount != null" >
+		       #{minAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="maxAmount != null" >
+		       #{maxAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="desz != null" >
+		       #{desz,jdbcType=VARCHAR},
+		    </if>
+		    <if test="conf != null" >
+		       #{conf,jdbcType=VARCHAR},
+		    </if>
+		    <if test="periods != null" >
+		       #{periods,jdbcType=INTEGER},
+		    </if>
+		    <if test="prdType != null" >
+		       #{prdType,jdbcType=VARCHAR},
+		    </if>
+		    <if test="switch != null" >
+		       #{switch,jdbcType=VARCHAR},
+		    </if>
+		    <if test="remindDay != null" >
+		       #{remindDay,jdbcType=INTEGER},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.DsedLoanProductDo">
+        UPDATE dsed_loan_product
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="name != null and name != '' ">        
+                name = #{name,jdbcType=VARCHAR},                
+            </if>
+            <if test="minAmount != null and minAmount != '' ">        
+                min_amount = #{minAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="maxAmount != null and maxAmount != '' ">        
+                max_amount = #{maxAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="desz != null and desz != '' ">        
+                desz = #{desz,jdbcType=VARCHAR},                
+            </if>
+            <if test="conf != null and conf != '' ">        
+                conf = #{conf,jdbcType=VARCHAR},                
+            </if>
+            <if test="periods != null and periods != '' ">        
+                periods = #{periods,jdbcType=INTEGER},                
+            </if>
+            <if test="prdType != null and prdType != '' ">        
+                prd_type = #{prdType,jdbcType=VARCHAR},                
+            </if>
+            <if test="switch != null and switch != '' ">        
+                switch = #{switch,jdbcType=VARCHAR},                
+            </if>
+            <if test="remindDay != null and remindDay != '' ">        
+                remind_day = #{remindDay,jdbcType=INTEGER}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.DsedLoanProductDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_product
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.DsedLoanProductDo" parameterType="com.ald.fanbei.api.dal.domain.DsedLoanProductDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_product
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.DsedLoanProductDo" parameterType="com.ald.fanbei.api.dal.domain.DsedLoanProductDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_product
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>

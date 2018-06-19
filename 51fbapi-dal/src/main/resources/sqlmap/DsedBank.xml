@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- dsed_bank表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.DsedBankDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,bank_code,bank_name,bank_icon,is_valid,pay_type,color 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="bankCode != null and bankCode != ''">
+            AND bank_code = #{bankCode,jdbcType=VARCHAR}
+        </if>
+        <if test="bankName != null and bankName != ''">
+            AND bank_name = #{bankName,jdbcType=VARCHAR}
+        </if>
+        <if test="bankIcon != null and bankIcon != ''">
+            AND bank_icon = #{bankIcon,jdbcType=VARCHAR}
+        </if>
+        <if test="isValid != null and isValid != ''">
+            AND is_valid = #{isValid,jdbcType=VARCHAR}
+        </if>
+        <if test="payType != null and payType != ''">
+            AND pay_type = #{payType,jdbcType=VARCHAR}
+        </if>
+        <if test="color != null and color != ''">
+            AND color = #{color,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.DsedBankDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO dsed_bank
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="bankCode != null">        
+	            bank_code,
+	        </if>
+	        <if test="bankName != null">        
+	            bank_name,
+	        </if>
+	        <if test="bankIcon != null">        
+	            bank_icon,
+	        </if>
+	        <if test="isValid != null">        
+	            is_valid,
+	        </if>
+	        <if test="payType != null">        
+	            pay_type,
+	        </if>
+	        <if test="color != null">        
+	            color,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="bankCode != null" >
+		       #{bankCode,jdbcType=VARCHAR},
+		    </if>
+		    <if test="bankName != null" >
+		       #{bankName,jdbcType=VARCHAR},
+		    </if>
+		    <if test="bankIcon != null" >
+		       #{bankIcon,jdbcType=VARCHAR},
+		    </if>
+		    <if test="isValid != null" >
+		       #{isValid,jdbcType=VARCHAR},
+		    </if>
+		    <if test="payType != null" >
+		       #{payType,jdbcType=VARCHAR},
+		    </if>
+		    <if test="color != null" >
+		       #{color,jdbcType=INTEGER},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.DsedBankDo">
+        UPDATE dsed_bank
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="bankCode != null and bankCode != '' ">        
+                bank_code = #{bankCode,jdbcType=VARCHAR},                
+            </if>
+            <if test="bankName != null and bankName != '' ">        
+                bank_name = #{bankName,jdbcType=VARCHAR},                
+            </if>
+            <if test="bankIcon != null and bankIcon != '' ">        
+                bank_icon = #{bankIcon,jdbcType=VARCHAR},                
+            </if>
+            <if test="isValid != null and isValid != '' ">        
+                is_valid = #{isValid,jdbcType=VARCHAR},                
+            </if>
+            <if test="payType != null and payType != '' ">        
+                pay_type = #{payType,jdbcType=VARCHAR},                
+            </if>
+            <if test="color != null and color != '' ">        
+                color = #{color,jdbcType=INTEGER}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.DsedBankDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_bank
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.DsedBankDo" parameterType="com.ald.fanbei.api.dal.domain.DsedBankDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_bank
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.DsedBankDo" parameterType="com.ald.fanbei.api.dal.domain.DsedBankDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_bank
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>
