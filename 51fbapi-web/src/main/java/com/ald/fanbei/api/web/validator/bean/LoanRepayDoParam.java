@@ -10,28 +10,22 @@ import org.springframework.stereotype.Component;
 
 @Component("LoanRepayDoParam")
 public class LoanRepayDoParam {
-	@NotNull
-	@DecimalMin("0")
-	public BigDecimal repaymentAmount;
-	
-	@NotNull
-	@DecimalMin("0")
-	public BigDecimal actualAmount = BigDecimal.ZERO;
-	
-	@DecimalMin("0")
-	public BigDecimal rebateAmount = BigDecimal.ZERO;
-	
-	public String payPwd;
-	
-	@NotNull
-	public Long cardId;
-	
 	@Min(value=0)
-	public Long couponId;
-	
-	@Min(value=0)
-	public Long loanId;
-	
+	public Long userId;
+
 	@NotNull
-	public String loanPeriodsIds;
+	@DecimalMin("0")
+	public BigDecimal amount = BigDecimal.ZERO;
+
+	@NotNull
+	public String bankNo;
+
+	@NotNull
+	public String borrowNo;
+
+	@NotNull
+	@DecimalMin("0")
+	public int curPeriod;
+
+
 }

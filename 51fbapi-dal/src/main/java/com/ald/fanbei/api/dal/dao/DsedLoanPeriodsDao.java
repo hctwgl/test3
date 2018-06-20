@@ -6,6 +6,9 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.HashMap;
 
 /**
  * 都市易贷借款期数表Dao
@@ -24,4 +27,13 @@ public interface DsedLoanPeriodsDao extends BaseDao<DsedLoanPeriodsDo, Long> {
      * @return
      */
     int getLoanOverdueCount(@Param("nowTime") Date nowTime);
+    /**
+     * 通过编号查询借款信息
+     * @param loanNo
+     * @author
+     * @returnchefeipeng
+     */
+    DsedLoanPeriodsDo getLoanPeriodsByLoanNo(@Param("loanNo") String loanNo,@Param("nper")int nper);
+
+
 }

@@ -14,6 +14,7 @@ import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 
 import java.util.Date;
 import java.util.List;
+import java.util.HashMap;
 
 
 /**
@@ -48,5 +49,16 @@ public class DsedLoanPeriodsServiceImpl extends ParentServiceImpl<DsedLoanPeriod
 		Date date = new Date(System.currentTimeMillis());
 		Date bengin = DateUtil.getStartOfDate(date);
 		return dsedLoanPeriodsDao.getLoanOverdueCount(bengin);
+	}
+
+	/**
+	 * 通过编号查询借款信息
+	 * @param loanNo
+	 * @author
+	 * @returnchefeipeng
+	 */
+	@Override
+	public DsedLoanPeriodsDo getLoanPeriodsByLoanNo(String loanNo,int nper){
+		return dsedLoanPeriodsDao.getLoanPeriodsByLoanNo(loanNo,nper);
 	}
 }
