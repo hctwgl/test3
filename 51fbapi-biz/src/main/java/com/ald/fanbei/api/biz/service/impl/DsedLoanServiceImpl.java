@@ -10,6 +10,8 @@ import com.ald.fanbei.api.dal.dao.DsedLoanDao;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.biz.service.DsedLoanService;
 
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -32,5 +34,12 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 		@Override
 	public BaseDao<DsedLoanDo, Long> getDao() {
 		return dsedLoanDao;
+	}
+
+
+
+	@Override
+	public int updateByLoanId(DsedLoanDo loanDo) {
+		return dsedLoanDao.updateByLoanId(loanDo);
 	}
 }

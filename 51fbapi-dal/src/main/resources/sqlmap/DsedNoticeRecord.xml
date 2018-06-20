@@ -144,11 +144,11 @@
         <include refid="commonCondition"/>
     </select>
     <!-- 查询失败通知-->
-    <select id="getAllFailNoticeRecord" resultType="DsedNoticeRecordDo" parameterType="DsedNoticeRecordDo">
+    <select id="getAllFailNoticeRecord" resultType="com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo">
         SELECT
         <include refid="queryFields" />
         FROM dsed_notice_record
-        WHERE  status = 'FAIL',
+        WHERE is_delete = 0 and status = 'FAIL'
     </select>
     <!-- 更新通知状态-->
     <update id="updateNoticeRecordStatus"  parameterType="com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo">
@@ -157,9 +157,7 @@
             <if test="gmtModified != null and gmtModified != '' ">
                 gmt_modified = now(),
             </if>
-            <if test="status != null and status != '' ">
-                status = 'SUCCESS',
-            </if>
+            status = 'SUCCESS',
             <if test="times != null and times != '' ">
                 times = #{times,jdbcType=VARCHAR}
             </if>

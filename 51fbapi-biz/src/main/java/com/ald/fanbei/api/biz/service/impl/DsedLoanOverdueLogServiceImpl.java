@@ -33,4 +33,9 @@ public class DsedLoanOverdueLogServiceImpl extends ParentServiceImpl<DsedLoanOve
 	public BaseDao<DsedLoanOverdueLogDo, Long> getDao() {
 		return dsedLoanOverdueLogDao;
 	}
+
+	@Override
+	public int addLoanOverdueLog(DsedLoanOverdueLogDo loanOverdueLogDo) {
+		return dsedLoanOverdueLogDao.addLoanOverdueLog(loanOverdueLogDo) ;
+	}
 }

@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 都市易贷借款还款表Dao
@@ -12,6 +13,6 @@ import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
  */
 public interface DsedLoanRepaymentDao extends BaseDao<DsedLoanRepaymentDo, Long> {
 
-    
+    DsedLoanRepaymentDo  getProcessingRepayment(@Param("loanId") Long loanId, @Param("nper") Integer nper);
 
 }

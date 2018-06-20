@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.DsedLoanOverdueLogDo;
  */
 public interface DsedLoanOverdueLogService extends ParentService<DsedLoanOverdueLogDo, Long>{
 
+    int  addLoanOverdueLog(DsedLoanOverdueLogDo loanOverdueLogDo);
+
 }

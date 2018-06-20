@@ -33,4 +33,9 @@ public class DsedLoanRepaymentServiceImpl extends ParentServiceImpl<DsedLoanRepa
 	public BaseDao<DsedLoanRepaymentDo, Long> getDao() {
 		return dsedLoanRepaymentDao;
 	}
+
+	@Override
+	public DsedLoanRepaymentDo getProcessingRepayment(Long loanId, Integer nper) {
+		return dsedLoanRepaymentDao.getProcessingRepayment(loanId,nper);
+	}
 }

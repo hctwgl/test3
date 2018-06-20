@@ -115,5 +115,16 @@
         FROM dsed_loan_overdue_log
         <include refid="commonCondition"/>
     </select>
+
+    <insert id="addLoanOverdueLog" parameterType="DsedLoanOverdueLogDo" useGeneratedKeys="true" keyProperty="rid">
+        INSERT INTO dsed_loan_overdue_log(gmt_create , user_id , periods_id , interest , current_amount)
+        VALUES (
+        NOW(),
+        #{userId},
+        #{periodsId},
+        #{interest},
+        #{currentAmount}
+        )
+    </insert>
     
 </mapper>

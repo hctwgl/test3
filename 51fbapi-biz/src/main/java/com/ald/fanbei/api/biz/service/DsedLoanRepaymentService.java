@@ -12,4 +12,7 @@ import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
  */
 public interface DsedLoanRepaymentService extends ParentService<DsedLoanRepaymentDo, Long>{
 
+    DsedLoanRepaymentDo  getProcessingRepayment(Long loanId,Integer nper);
+
+
 }

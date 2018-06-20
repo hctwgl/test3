@@ -295,5 +295,15 @@
         FROM dsed_loan_repayment
         <include refid="commonCondition"/>
     </select>
-    
+
+    <select id="getProcessingRepayment" resultType="DsedLoanRepaymentDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM  dsed_loan_repayment
+        where status = 'PROCESSING'
+        and is_delete = 0
+        and loan_id = #{loanId}
+        and repay_periods = #{nper}
+    </select>
+
 </mapper>

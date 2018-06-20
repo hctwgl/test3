@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,8 @@ import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -32,5 +36,17 @@ public class DsedLoanPeriodsServiceImpl extends ParentServiceImpl<DsedLoanPeriod
 		@Override
 	public BaseDao<DsedLoanPeriodsDo, Long> getDao() {
 		return dsedLoanPeriodsDao;
+	}
+
+	@Override
+	public List<DsedLoanPeriodsDto> getLoanOverdue(int nowPage, int pageSize) {
+		return dsedLoanPeriodsDao.getLoanOverdue(new Date(), nowPage,  pageSize );
+	}
+
+	@Override
+	public int getLoanOverdueCount() {
+		Date date = new Date(System.currentTimeMillis());
+		Date bengin = DateUtil.getStartOfDate(date);
+		return dsedLoanPeriodsDao.getLoanOverdueCount(bengin);
 	}
 }
