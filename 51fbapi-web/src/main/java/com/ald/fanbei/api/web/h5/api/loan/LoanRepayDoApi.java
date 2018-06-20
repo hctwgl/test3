@@ -73,20 +73,16 @@ public class LoanRepayDoApi implements ApiHandle {
 	}
 	
 	
-	private LoanRepayBo    extractAndCheck(RequestDataVo requestDataVo, Long userId) {
+	private LoanRepayBo extractAndCheck(RequestDataVo requestDataVo, Long userId) {
 		LoanRepayBo bo = new LoanRepayBo();
 		bo.userId = userId;
-
 		LoanRepayDoParam param = (LoanRepayDoParam) requestDataVo.getParamObj();
-		
 		bo.amount = param.amount;
 		bo.borrowNo = param.borrowNo;
 		bo.bankNo = param.bankNo;
 		bo.curPeriod = param.curPeriod;
-
 		checkPwdAndCard(bo);
 		checkFrom(bo);
-
 		return bo;
 	}
 
@@ -107,14 +103,11 @@ public class LoanRepayDoApi implements ApiHandle {
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
 		}
 		bo.loanPeriodsDo = dsedLoanPeriodsDo;
-		
 		// 检查当前 借款 是否已在处理中
-
 		DsedLoanRepaymentDo dsedLoanRepaymentDo = dsedLoanRepaymentService.getProcessLoanRepaymentByLoanId(dsedLoanPeriodsDo.getLoanId());
 		if(dsedLoanRepaymentDo != null) {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
 		}
-		
 		// 检查 用户还钱金额是否准确
 		BigDecimal shouldRepayAmount = dsedLoanRepaymentService.calculateRestAmount(dsedLoanPeriodsDo);
 		if(bo.amount.compareTo(shouldRepayAmount) > 0) {

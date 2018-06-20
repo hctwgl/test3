@@ -1,10 +1,13 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.biz.service.impl.DsedLoanRepaymentServiceImpl;
+import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,4 +33,9 @@ public interface DsedLoanRepaymentService {
     BigDecimal calculateRestAmount(DsedLoanPeriodsDo dsedLoanPeriodsDo);
 
     Map<String, Object> repay(DsedLoanRepaymentServiceImpl.LoanRepayBo bo, String bankPayType);
+
+    void dealRepaymentSucess(String tradeNo, String outTradeNo);
+    void dealRepaymentSucess(String tradeNo, String outTradeNo, final DsedLoanRepaymentDo repaymentDo, String operator, Long collectionRepaymentId, List<HashMap> periodsList);
+
+    void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg);
 }
