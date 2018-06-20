@@ -10,6 +10,7 @@ import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 
+import java.util.HashMap;
 
 
 /**
@@ -32,5 +33,16 @@ public class DsedLoanPeriodsServiceImpl extends ParentServiceImpl<DsedLoanPeriod
 		@Override
 	public BaseDao<DsedLoanPeriodsDo, Long> getDao() {
 		return dsedLoanPeriodsDao;
+	}
+
+	/**
+	 * 通过编号查询借款信息
+	 * @param loanNo
+	 * @author
+	 * @returnchefeipeng
+	 */
+	@Override
+	public DsedLoanPeriodsDo getLoanPeriodsByLoanNo(String loanNo,int nper){
+		return dsedLoanPeriodsDao.getLoanPeriodsByLoanNo(loanNo,nper);
 	}
 }

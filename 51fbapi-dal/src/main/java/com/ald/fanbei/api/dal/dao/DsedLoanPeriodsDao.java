@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.HashMap;
 
 /**
  * 都市易贷借款期数表Dao
@@ -12,6 +15,13 @@ import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
  */
 public interface DsedLoanPeriodsDao extends BaseDao<DsedLoanPeriodsDo, Long> {
 
-    
+    /**
+     * 通过编号查询借款信息
+     * @param loanNo
+     * @author
+     * @returnchefeipeng
+     */
+    DsedLoanPeriodsDo getLoanPeriodsByLoanNo(@Param("loanNo") String loanNo,@Param("nper")int nper);
+
 
 }

@@ -343,5 +343,13 @@
         FROM dsed_loan_periods
         <include refid="commonCondition"/>
     </select>
+
+    <select id="getLoanPeriodsByLoanNo" resultType="com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_periods
+        WHERE is_delete = 0 AND loan_no = #{loanNo} AND nper = #{nper}
+        LIMIT 0,1
+    </select>
     
 </mapper>

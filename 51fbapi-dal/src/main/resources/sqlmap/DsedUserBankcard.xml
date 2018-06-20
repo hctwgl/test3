@@ -7,6 +7,10 @@
     <sql id="queryFields">
         id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main,bank_name,status 
     </sql>
+
+    <sql id="queryWithFields">
+        b.id rid,b.gmt_create gmtCreate,b.gmt_modified gmtModified,b.user_id userId,b.mobile,b.bank_code bankCode,b.card_number cardNumber,b.is_main isMain,b.bank_name bankName,b.status,a.pay_type bankChannel
+    </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
@@ -162,6 +166,38 @@
         <include refid="queryFields" />
         FROM dsed_user_bankcard
         <include refid="commonCondition"/>
+    </select>
+
+    <!-- chefeipeng 获取用户所选银行卡对应的支付方式(代扣WITHHOLD、快捷支付KUAIJIE(有短信)) -->
+    <select id="getPayTypeByBankNoAndUserId" resultType="java.util.HashMap" >
+        SELECT
+		    u.id rid,u.gmt_create gmtCreate,u.gmt_modified gmtModified,u.user_id userId,u.mobile,u.bank_code bankCode,u.card_number cardNumber,u.is_main isMain,b.bank_name bankName,u.status,b.bank_icon bankIcon,b.is_valid isValid,b.pay_type bankChannel
+        FROM
+            dsed_user_bankcard u,
+            dsed_bank b
+        WHERE
+            b.bank_code = u.bank_code
+        AND b.is_delete = u.is_delete
+        AND b.is_delete = 0
+        AND b.is_valid = 'Y'
+        AND u. STATUS = 'B'
+        and u.user_id = #{userId}
+        and u.card_number = #{cardNumber}
+
+    </select>
+
+    <select id="getUserBankInfo" resultType="java.util.HashMap">
+        SELECT
+        <include refid="queryWithFields"/>
+        FROM
+        dsed_user_bankcard b
+        join dsed_bank a on b.bank_code = a.bank_code
+        WHERE
+        b.is_delete=0
+        and a.is_delete = 0 and a.is_valid = 'Y'
+        AND b.card_number=#{bankNo}
+        AND
+        b.status='B'
     </select>
     
 </mapper>

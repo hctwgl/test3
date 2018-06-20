@@ -7,6 +7,8 @@
     <sql id="queryFields">
         id rid,gmt_create,gmt_modified,user_id,loan_id,name,repay_amount,actual_amount,status,trade_no,trade_no_out,user_coupon_id,coupon_amount,user_amount,pre_repay_status,prd_type,repay_periods,card_no,card_name,remark,repay_channel 
     </sql>
+
+
     
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
@@ -295,5 +297,34 @@
         FROM dsed_loan_repayment
         <include refid="commonCondition"/>
     </select>
-    
+
+    <select id="getProcessLoanRepaymentByLoanId" parameterType="java.lang.Long" resultType="DsedLoanRepaymentDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        dsed_loan_repayment
+        WHERE
+        is_delete = 0
+        AND
+        loan_id = #{loanId}
+        AND
+        status IN ('PROCESSING','APPLY')
+        ORDER BY gmt_create DESC
+        LIMIT 1
+    </select>
+
+    <select id="getRepayByTradeNo" resultType="DsedLoanRepaymentDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        dsed_loan_repayment
+        WHERE
+        is_delete = 0
+        AND
+        trade_no=#{tradeNo}
+        ORDER BY
+        gmt_create DESC
+
+    </select>
+
 </mapper>

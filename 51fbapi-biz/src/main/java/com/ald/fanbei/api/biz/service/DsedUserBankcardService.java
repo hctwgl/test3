@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
+import org.apache.ibatis.annotations.Param;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
 
 /**
  * 都市E贷用户绑定的银行卡Service
@@ -12,4 +16,15 @@ import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
  */
 public interface DsedUserBankcardService extends ParentService<DsedUserBankcardDo, Long>{
 
+    /**
+     * 获取用户所选银行卡对应的支付方式(代扣WITHHOLD、快捷支付KUAIJIE(有短信))
+     * @param userId
+     * @param cardNumber
+     * author: chefeipeng
+     * @return
+     */
+    HashMap<String,Object> getPayTypeByBankNoAndUserId(Long userId, String cardNumber);
+
+
+    void checkUpsBankLimit(String bankCode, String bankChannel, BigDecimal amount);
 }

@@ -1174,7 +1174,22 @@ public class AfLoanRepaymentServiceImpl extends UpsPayKuaijieServiceAbstract imp
 		
 		/* 错误码区域 */
 		public Exception e;
-		
+
+
+		public String bankNo;//都市e贷 银行卡卡号
+
+		public int curPeriod;//都市e贷 借款当前期数
+
+		public String borrowNo;//都市e贷 借款分期id
+
+		public BigDecimal amount ; //都市e贷 还款金额
+		/* biz 都市e贷业务处理字段 */
+		public DsedLoanPeriodsDo loanPeriodsDo;
+
+
+
+
+
 	}
 	
 	public static class LoanRepayDealBo {

@@ -69,10 +69,6 @@ public class LoanAllRepayDoApi implements ApiHandle {
 	@Resource
 	AfLoanRepaymentService afLoanRepaymentService;
 	@Resource
-	AfRepaymentBorrowCashService afRepaymentBorrowCashService;
-	@Resource
-	AfRenewalDetailService afRenewalDetailService;
-	@Resource
 	AfLoanService afLoanService;
 	@Resource
 	AfLoanPeriodsService afLoanPeriodsService;
