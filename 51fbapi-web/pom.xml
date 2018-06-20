@@ -1,22 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-		<groupId>com.ald.51fbapi</groupId>
-		<artifactId>51fbapi</artifactId>
+		<groupId>com.ly.dsed</groupId>
+		<artifactId>dsed</artifactId>
 		<version>1.0.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.ald.51fbapi</groupId>
-	<artifactId>51fbapi-web</artifactId>
+	<groupId>com.ly.dsed</groupId>
+	<artifactId>dsed-web</artifactId>
 	<packaging>war</packaging>
 	<version>2.0</version>
-	<name>51fbapi-web Maven Webapp</name>
+	<name>dsed-web Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
-			<groupId>com.ald.51fbapi</groupId>
-			<artifactId>51fbapi-biz</artifactId>
+			<groupId>com.ly.dsed</groupId>
+			<artifactId>dsed-biz</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>

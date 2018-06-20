@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.ald.51fbapi</groupId>
-	<artifactId>51fbapi</artifactId>
+	<groupId>com.ly.dsed</groupId>
+	<artifactId>dsed</artifactId>
 	<version>1.0.0</version>
 	<packaging>pom</packaging>
-	<name>51fbapi</name>
+	<name>dsed</name>
 	<url>http://maven.apache.org</url>
 	<properties>
-		<java.version>1.7</java.version>
+		<java.version>1.8</java.version>
 		<java.encoding>UTF-8</java.encoding>
 		<spring-version>4.2.1.RELEASE</spring-version>
 		<springext-plugin-version>1.0</springext-plugin-version>
