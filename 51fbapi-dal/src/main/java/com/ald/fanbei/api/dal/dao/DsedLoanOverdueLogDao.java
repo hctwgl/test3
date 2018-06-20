@@ -12,6 +12,6 @@ import com.ald.fanbei.api.dal.domain.DsedLoanOverdueLogDo;
  */
 public interface DsedLoanOverdueLogDao extends BaseDao<DsedLoanOverdueLogDo, Long> {
 
-    
+    int addLoanOverdueLog(DsedLoanOverdueLogDo loanOverdueLogDo);
 
 }

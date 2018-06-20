@@ -10,6 +10,14 @@ import java.math.BigDecimal;
  */
 public class Constants {
 
+
+
+	public static final String CONFKEY_XGXY_URL = "xgxyapi.xgxy.url";
+
+
+
+
+
 	public static final long SECOND_OF_TEN_MINITS = 10 * 60l;
 	public static final long SECOND_OF_ONE_MINITS = 60l;
 	public static final long SECOND_OF_FIVE_MINITS = 5 * 60l;

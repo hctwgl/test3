@@ -17,6 +17,9 @@ import java.util.Map;
  */
 public interface DsedLoanRepaymentService {
 
+    DsedLoanRepaymentDo  getProcessingRepayment(Long loanId,Integer nper);
+
+
     DsedLoanRepaymentDo getProcessLoanRepaymentByLoanId(Long loanId);
 
 

@@ -5,11 +5,11 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 /**
- * 通知记录实体
+ * 通知任务实体
  * 
- * @author guoshuaiqiang
+ * @author jilong
  * @version 1.0.0 初始化
- * @date 2018-06-19 10:48:52
+ * @date 2018-06-19 09:40:23
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class DsedNoticeRecordDo extends AbstractSerial {

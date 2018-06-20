@@ -38,7 +38,11 @@
     </sql>
 
     
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo" keyProperty="rid" useGeneratedKeys="true">
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo" keyProperty="rid">
+    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
+	      SELECT LAST_INSERT_ID()
+	    </selectKey>
+    
         INSERT INTO dsed_notice_record
         <trim prefix="(" suffix=")" suffixOverrides="," >
 	        <if test="gmtCreate != null">        
@@ -139,5 +143,39 @@
         FROM dsed_notice_record
         <include refid="commonCondition"/>
     </select>
-    
+    <!-- 查询失败通知-->
+    <select id="getAllFailNoticeRecord" resultType="com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_notice_record
+        WHERE is_delete = 0 and status = 'FAIL'
+    </select>
+    <!-- 更新通知状态-->
+    <update id="updateNoticeRecordStatus"  parameterType="com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo">
+        UPDATE dsed_notice_record
+        <set>
+            <if test="gmtModified != null and gmtModified != '' ">
+                gmt_modified = now(),
+            </if>
+            status = 'SUCCESS',
+            <if test="times != null and times != '' ">
+                times = #{times,jdbcType=VARCHAR}
+            </if>
+        </set>
+        WHERE id = #{rid ,jdbcType=BIGINT}
+    </update>
+    <!-- 更新通知剩余次数-->
+    <update id="updateNoticeRecordTimes"  parameterType="com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo">
+        UPDATE dsed_notice_record
+        <set>
+            <if test="gmtModified != null and gmtModified != '' ">
+                gmt_modified = now(),
+            </if>
+            <if test="times != null and times != '' ">
+                times = #{times,jdbcType=VARCHAR}
+            </if>
+        </set>
+        WHERE id = #{rid ,jdbcType=BIGINT}
+    </update>
+
 </mapper>

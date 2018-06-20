@@ -9,7 +9,7 @@
     </sql>
 
 
-    
+
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
     	WHERE is_delete = 0
@@ -297,6 +297,17 @@
         FROM dsed_loan_repayment
         <include refid="commonCondition"/>
     </select>
+
+    <select id="getProcessingRepayment" resultType="DsedLoanRepaymentDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM  dsed_loan_repayment
+        where status = 'PROCESSING'
+        and is_delete = 0
+        and loan_id = #{loanId}
+        and repay_periods = #{nper}
+    </select>
+
 
     <select id="getProcessLoanRepaymentByLoanId" parameterType="java.lang.Long" resultType="DsedLoanRepaymentDo">
         SELECT

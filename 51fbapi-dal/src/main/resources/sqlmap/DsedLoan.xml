@@ -587,5 +587,12 @@
         FROM dsed_loan
         <include refid="commonCondition"/>
     </select>
-    
+
+
+	<update id="updateByLoanId" parameterType="DsedLoanDo">
+        UPDATE dsed_loan SET overdue_amount = #{overdueAmount},overdue_days = #{overdueDays}
+        where is_delete = 0 and id = #{rid}
+    </update>
+
+
 </mapper>

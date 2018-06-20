@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
+
+import java.util.List;
 
 import java.util.HashMap;
 
@@ -20,5 +23,14 @@ public interface DsedLoanPeriodsService extends ParentService<DsedLoanPeriodsDo,
      * @return
      */
     DsedLoanPeriodsDo getLoanPeriodsByLoanNo(String loanNo,int nper);
+
+    List<DsedLoanPeriodsDto>  getLoanOverdue(int nowPage, int pageSize);
+
+    /**
+     * 获取逾期数据的数量
+     *
+     * @return
+     */
+    int getLoanOverdueCount();
 
 }

@@ -1,6 +1,11 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Date;
+import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
@@ -15,6 +20,13 @@ import java.util.HashMap;
  */
 public interface DsedLoanPeriodsDao extends BaseDao<DsedLoanPeriodsDo, Long> {
 
+    List<DsedLoanPeriodsDto> getLoanOverdue(@Param("nowTime")Date nowTime,@Param("beginIndex")int nowPage, @Param("pageSize")int pageSize);
+    /**
+     * 获取逾期数据的数量
+     *
+     * @return
+     */
+    int getLoanOverdueCount(@Param("nowTime") Date nowTime);
     /**
      * 通过编号查询借款信息
      * @param loanNo

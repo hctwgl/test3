@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedLoanRepaymentDao;
 import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
 
@@ -68,6 +69,11 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	@Override
 	public DsedLoanRepaymentDo getProcessLoanRepaymentByLoanId(Long loanId){
 		return dsedLoanRepaymentDao.getProcessLoanRepaymentByLoanId(loanId);
+	}
+
+	@Override
+	public DsedLoanRepaymentDo getProcessingRepayment(Long loanId, Integer nper) {
+		return dsedLoanRepaymentDao.getProcessingRepayment(loanId,nper);
 	}
 
 	@Override

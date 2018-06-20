@@ -2,6 +2,9 @@ package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * 借款Dao
  * 
@@ -12,6 +15,10 @@ import com.ald.fanbei.api.dal.domain.DsedLoanDo;
  */
 public interface DsedLoanDao extends BaseDao<DsedLoanDo, Long> {
 
-    
+    int getLoanOverdueCount(Date nowTime);
 
+
+    List<DsedLoanDo> getLoanOverdue(int beginIndex, int pageSize,Date nowTime);
+
+    int updateByLoanId(DsedLoanDo loanDo);
 }
