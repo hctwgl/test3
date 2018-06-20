@@ -28,6 +28,7 @@ public class DsedLoanPeriodsDto extends DsedLoanPeriodsDo {
     private long id;
     private Long rid;
     private Integer arrivalAmount;
+    private String tradeNoOut;
 
     @Override
     public Long getRid() {
@@ -191,6 +192,14 @@ public class DsedLoanPeriodsDto extends DsedLoanPeriodsDo {
 
     public void setGmtPlanRepayment(Date gmtPlanRepayment) {
         this.gmtPlanRepayment = gmtPlanRepayment;
+    }
+
+    public String getTradeNoOut() {
+        return tradeNoOut;
+    }
+
+    public void setTradeNoOut(String tradeNoOut) {
+        this.tradeNoOut = tradeNoOut;
     }
 }
 

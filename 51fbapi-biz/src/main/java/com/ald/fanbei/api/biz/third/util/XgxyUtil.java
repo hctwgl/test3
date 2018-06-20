@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.third.util;
 
 
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.bo.XgxyOverdueReqBo;
 import com.ald.fanbei.api.biz.bo.XgxyPayReqBo;
 import com.ald.fanbei.api.biz.bo.XgxyRepayReqBo;
 import com.ald.fanbei.api.common.Constants;
@@ -10,16 +11,19 @@ import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
+import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 import com.alibaba.fastjson.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component("XgxyUtil")
 public class XgxyUtil {
+
+
+    Logger logger = LoggerFactory.getLogger(XgxyUtil.class);
 
 
     private static String url = null;
@@ -42,20 +46,26 @@ public class XgxyUtil {
      * @return
      */
     public boolean  payNoticeRequest(DsedLoanDo loanDo){
-        XgxyPayReqBo  payReqBo=new XgxyPayReqBo();
-        payReqBo.setAppId(loanDo.getTradeNoOut());
-        payReqBo.setBorrowNo(loanDo.getLoanNo());
-        payReqBo.setStatus(loanDo.getStatus());
-        payReqBo.setGmtArrival(loanDo.getGmtArrival());
-        payReqBo.setSign(SignUtil.sign(createLinkString(payReqBo), PRIVATE_KEY));
-        String reqResult = HttpUtil.post(getXgxyUrl(), payReqBo);
-        if(StringUtil.isBlank(reqResult)){
-            return false;
+
+        try {
+            XgxyPayReqBo  payReqBo=new XgxyPayReqBo();
+            payReqBo.setAppId(loanDo.getTradeNoOut());
+            payReqBo.setBorrowNo(loanDo.getLoanNo());
+            payReqBo.setStatus(loanDo.getStatus());
+            payReqBo.setGmtArrival(loanDo.getGmtArrival());
+            payReqBo.setSign(SignUtil.sign(createLinkString(payReqBo), PRIVATE_KEY));
+            String reqResult = HttpUtil.post(getXgxyUrl(), payReqBo);
+            if(StringUtil.isBlank(reqResult)){
+                return false;
+            }
+            XgxyPayReqBo payRespResult = JSONObject.parseObject(reqResult,XgxyPayReqBo.class);
+            if("01".equals(payRespResult.getCode())){
+                return true;
+            }
+        }catch (Exception e){
+            logger.info("rePayNoticeRequest request fail",e);
         }
-        XgxyPayReqBo payRespResult = JSONObject.parseObject(reqResult,XgxyPayReqBo.class);
-        if("01".equals(payRespResult.getCode())){
-            return true;
-        }
+
         return false;
 
     }
@@ -65,22 +75,63 @@ public class XgxyUtil {
      * @return
      */
     public boolean  rePayNoticeRequest(DsedLoanDo loanDo){
-        XgxyRepayReqBo repayReqBo=new XgxyRepayReqBo();
-        repayReqBo.setAppId(loanDo.getTradeNoOut());
-        repayReqBo.setBorrowNo(loanDo.getLoanNo());
-        repayReqBo.setStatus(loanDo.getStatus());
-        repayReqBo.setSign(SignUtil.sign(createLinkString(repayReqBo), PRIVATE_KEY));
-        String reqResult = HttpUtil.post(getXgxyUrl(), repayReqBo);
-        if(StringUtil.isBlank(reqResult)){
-            return false;
+        try {
+            XgxyRepayReqBo repayReqBo=new XgxyRepayReqBo();
+            repayReqBo.setAppId(loanDo.getTradeNoOut());
+            repayReqBo.setBorrowNo(loanDo.getLoanNo());
+            repayReqBo.setStatus(loanDo.getStatus());
+            repayReqBo.setSign(SignUtil.sign(createLinkString(repayReqBo), PRIVATE_KEY));
+            String reqResult = HttpUtil.post(getXgxyUrl(), repayReqBo);
+            if(StringUtil.isBlank(reqResult)){
+                return false;
+            }
+            XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult,XgxyPayReqBo.class);
+            if("01".equals(rePayRespResult.getCode())){
+                return true;
+            }
+        }catch (Exception e){
+            logger.info("rePayNoticeRequest request fail",e);
         }
-        XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult,XgxyPayReqBo.class);
-        if("01".equals(rePayRespResult.getCode())){
-            return true;
-        }
+
         return false;
 
     }
+
+
+
+    /**
+     * 逾期通知请求
+     * @param loanDo
+     * @return
+     */
+    public boolean  overDueNoticeRequest(DsedLoanPeriodsDto loanDo){
+       try {
+           XgxyOverdueReqBo overdueReqBo=new XgxyOverdueReqBo();
+           overdueReqBo.setAppId(loanDo.getTradeNoOut());
+           overdueReqBo.setBorrowNo(loanDo.getLoanNo());
+           overdueReqBo.setOverdueDays(String.valueOf(loanDo.getOverdueDays()));
+           overdueReqBo.setCurPeriod(String.valueOf(loanDo.getNper()));
+           Map<String,Object> data=new HashMap<>();
+           data.put("test","test");
+           overdueReqBo.setData(data);
+           overdueReqBo.setSign(SignUtil.sign(createLinkString(overdueReqBo), PRIVATE_KEY));
+           String reqResult = HttpUtil.post(getXgxyUrl(), overdueReqBo);
+           if(StringUtil.isBlank(reqResult)){
+               return false;
+           }
+           XgxyOverdueReqBo overdueReqBo1 = JSONObject.parseObject(reqResult,XgxyOverdueReqBo.class);
+           if("01".equals(overdueReqBo1.getCode())){
+               return true;
+           }
+       }catch (Exception e){
+           logger.info("overDueNoticeRequest request fail",e);
+       }
+      return false;
+
+    }
+
+
+
 
 
     /**

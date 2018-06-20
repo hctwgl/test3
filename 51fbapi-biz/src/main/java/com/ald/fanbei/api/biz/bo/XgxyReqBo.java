@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.bo;
 
+import com.ald.fanbei.api.common.util.JsonUtil;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
@@ -57,7 +58,7 @@ public class XgxyReqBo extends HashMap<String, String> {
 
     public void setData(Object data) {
         this.data = data;
-        this.put("data", String.valueOf(data));
+        this.put("data", JsonUtil.toJSONString(data));
 
     }
     @Override

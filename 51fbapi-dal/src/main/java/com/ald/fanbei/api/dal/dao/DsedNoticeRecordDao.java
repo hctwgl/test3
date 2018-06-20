@@ -30,5 +30,12 @@ public interface DsedNoticeRecordDao extends BaseDao<DsedNoticeRecordDo, Long> {
      */
     int updateNoticeRecordTimes(DsedNoticeRecordDo noticeRecordDo);
 
+    /**
+     * 增加通知记录
+     * @param noticeRecordDo
+     * @return
+     */
+    int addNoticeRecord(DsedNoticeRecordDo noticeRecordDo);
+
 
 }

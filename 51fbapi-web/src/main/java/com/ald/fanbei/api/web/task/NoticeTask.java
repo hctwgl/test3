@@ -1,10 +1,14 @@
 package com.ald.fanbei.api.web.task;
 
+import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.DsedLoanService;
 import com.ald.fanbei.api.biz.service.DsedNoticeRecordService;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.common.enums.DsedNoticeType;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
+import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
+import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +42,12 @@ public class NoticeTask {
     private DsedLoanService dsedLoanService;
 
     @Resource
+    private DsedLoanPeriodsService dsedLoanPeriodsService;
+
+    @Resource
     private XgxyUtil xgxyUtil;
 
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "* 0/5 * * * ?")
     public void notice() {
         logger.info("start notice task， time="+new Date());
         List<DsedNoticeRecordDo> noticeRecordDos = dsedNoticeRecordService.getAllFailNoticeRecord();
@@ -53,12 +60,17 @@ public class NoticeTask {
                     continue;
                 }
                 final DsedLoanDo loanDo=dsedLoanService.getById(Long.valueOf(recordDo.getRefId()));
-                if (StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), "PAY")) {
+                if (StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.PAY.code)) {
                     updateNoticeRecord(recordDo,xgxyUtil.payNoticeRequest(loanDo));
                     continue;
                 }
-                if (StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), "REPAY")) {
+                if (StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.REPAY.code)) {
                     updateNoticeRecord(recordDo, xgxyUtil.rePayNoticeRequest(loanDo));
+                    continue;
+                }
+                if(StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUE.code)){
+                    final DsedLoanPeriodsDo periodsDo=dsedLoanPeriodsService.getById(Long.valueOf(recordDo.getRefId()));
+                    updateNoticeRecord(recordDo, true);
                     continue;
                 }
                 if(StringUtils.isBlank(all_noticedfail_moreonce.get(recordDo.getRid()))){

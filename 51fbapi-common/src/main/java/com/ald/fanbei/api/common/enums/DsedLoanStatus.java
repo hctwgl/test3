@@ -10,10 +10,10 @@ public enum  DsedLoanStatus {
     CLOSED("关闭", "CLOSED");
 
     public String desz;
-    public String referBorrowCashCode;
+    public String code;
 
-    DsedLoanStatus(String desz,String referBorrowCashCode) {
+    DsedLoanStatus(String desz,String code) {
         this.desz = desz;
-        this.referBorrowCashCode = referBorrowCashCode;
+        this.code = code;
     }
 }

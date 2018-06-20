@@ -10,7 +10,7 @@
 
     <sql id="overdueQueryField">
         b.id rid,b.user_id,b.loan_id,b.loan_no,b.prd_type,b.amount,b.periods,b.nper,b.status,b.repay_id,b.remark,b.overdue_status,b.overdue_days,b.interest_fee,b.service_fee,
-        b.overdue_amount,b.repay_amount,b.pre_repay_status,b.repaid_service_fee,b.repaid_interest_fee,b.repaid_overdue_amount,b.gmt_last_repay,b.gmt_create,b.gmt_modified,b.gmt_plan_repay,b.is_delete,a.overdue_rate,a.service_rate,a.interest_rate,a.gmt_arrival,a.arrival_amount,a.overdue_days days
+        b.overdue_amount,b.repay_amount,b.pre_repay_status,b.repaid_service_fee,b.repaid_interest_fee,b.repaid_overdue_amount,b.gmt_last_repay,b.gmt_create,b.gmt_modified,b.gmt_plan_repay,b.is_delete,a.overdue_rate,a.service_rate,a.interest_rate,a.gmt_arrival,a.arrival_amount,a.overdue_days days,a.trade_no_out
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->

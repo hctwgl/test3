@@ -49,4 +49,9 @@ public class DsedNoticeRecordServiceImpl extends ParentServiceImpl<DsedNoticeRec
 	public int updateNoticeRecordTimes(DsedNoticeRecordDo noticeRecordDo) {
 		return dsedNoticeRecordDao.updateNoticeRecordTimes(noticeRecordDo);
 	}
+
+	@Override
+	public int addNoticeRecord(DsedNoticeRecordDo noticeRecordDo) {
+		return dsedNoticeRecordDao.addNoticeRecord( noticeRecordDo);
+	}
 }

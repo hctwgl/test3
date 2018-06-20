@@ -21,4 +21,6 @@ public interface DsedNoticeRecordService extends ParentService<DsedNoticeRecordD
 
     int  updateNoticeRecordTimes(DsedNoticeRecordDo noticeRecordDo);
 
+    int addNoticeRecord(DsedNoticeRecordDo noticeRecordDo);
+
 }

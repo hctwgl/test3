@@ -1,13 +1,13 @@
 package com.ald.fanbei.api.web.task;
 
-import com.ald.fanbei.api.biz.service.DsedLoanOverdueLogService;
-import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
-import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
-import com.ald.fanbei.api.biz.service.DsedLoanService;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.common.enums.DsedNoticeType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanOverdueLogDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
+import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -44,6 +44,12 @@ public class LoanOverDueTask {
 
     @Resource
     DsedLoanOverdueLogService loanOverdueLogService;
+
+    @Resource
+    DsedNoticeRecordService noticeRecordService;
+
+    @Resource
+    XgxyUtil xgxyUtil;
 
 
     @Scheduled(cron = "0 0 0 * * ?")
@@ -99,6 +105,8 @@ public class LoanOverDueTask {
                 dsedLoanService.updateByLoanId(newloanDo);
                 //新增逾期日志
                 loanOverdueLogService.addLoanOverdueLog(buildLoanOverdueLog(dsedLoanDo.getRid(), currentAmount, newOverdueAmount, dsedLoanDo.getUserId()));
+                overDueNotice(dsedLoanDo);
+
             } catch (Exception e) {
                 logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId=",dsedLoanDo.getLoanId());
             }
@@ -108,6 +116,19 @@ public class LoanOverDueTask {
 
    }
 
+
+   void  overDueNotice(DsedLoanPeriodsDto loanOverDue){
+       DsedNoticeRecordDo noticeRecordDo=new DsedNoticeRecordDo();
+       noticeRecordDo.setUserId(loanOverDue.getUserId());
+       noticeRecordDo.setRefId(String.valueOf(loanOverDue.getRid()));
+       noticeRecordDo.setType(DsedNoticeType.OVERDUE.code);
+       noticeRecordService.addNoticeRecord(noticeRecordDo);
+       if(xgxyUtil.overDueNoticeRequest(loanOverDue)){
+           noticeRecordDo.setRid(noticeRecordDo.getRid());
+           noticeRecordDo.setGmtModified(new Date());
+           noticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
+       }
+   }
 
 
    private DsedLoanOverdueLogDo buildLoanOverdueLog(Long loanId,BigDecimal currentAmount,BigDecimal interest,Long userId){
