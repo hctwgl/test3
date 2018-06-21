@@ -30,8 +30,8 @@ import java.util.Map;
 public class LoanConfirmPaymentApi implements H5Handle {
     
     @Autowired
-    @Qualifier("dsedUpsPayKuaijieServiceAbstract")
-	DsedUpsPayKuaijieServiceAbstract dsedDoUpsPay;
+    @Qualifier("dsedLoanRepaymentService")
+	DsedUpsPayKuaijieServiceAbstract dsedLoanRepaymentService;
 
     @Autowired
     BizCacheUtil bizCacheUtil;
@@ -55,8 +55,8 @@ public class LoanConfirmPaymentApi implements H5Handle {
 	
 		Map<String, Object> map = new HashMap<String, Object>();
 		switch (beanName.toString()) {
-		case "dsedUpsPayKuaijieServiceAbstract":
-		    map = dsedDoUpsPay.doUpsPay(tradeNo, smsCode);
+		case "dsedLoanRepaymentService":
+		    map = dsedLoanRepaymentService.doUpsPay(tradeNo, smsCode);
 		    break;
 		default:
 		    throw new FanbeiException(FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
