@@ -38,4 +38,10 @@ public interface DsedLoanRepaymentService {
     void dealRepaymentSucess(String tradeNo, String outTradeNo, final DsedLoanRepaymentDo repaymentDo, String operator, Long collectionRepaymentId, List<HashMap> periodsList);
 
     void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg);
+
+    /**
+     * 计算提前还款应还的金额
+     * @return
+     */
+    BigDecimal calculateAllRestAmount(Long rid);
 }

@@ -27,7 +27,7 @@ public interface DsedLoanPeriodsService extends ParentService<DsedLoanPeriodsDo,
      * @author chefeipeng
      * @return
      */
-    DsedLoanPeriodsDo getLoanPeriodsByLoanNo(String loanNo,int nper);
+    DsedLoanPeriodsDo getLoanPeriodsByLoanNoAndNper(String loanNo,int nper);
 
     List<DsedLoanPeriodsDto>  getLoanOverdue(int nowPage, int pageSize);
 
@@ -53,6 +53,8 @@ public interface DsedLoanPeriodsService extends ParentService<DsedLoanPeriodsDo,
      */
     List<Object> resolvePeriods(BigDecimal amount, Long userId, int periods, String loanNo, String prdType);
 
+    DsedLoanPeriodsDo getLoanPeriodsByLoanNo(String loanNo);
 
+    List<DsedLoanPeriodsDo> getNoRepayListByLoanId(Long rid);
 
 }

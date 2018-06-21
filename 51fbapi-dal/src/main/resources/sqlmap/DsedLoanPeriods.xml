@@ -370,12 +370,51 @@
         dsed_loan_periods b where b.is_delete=0 and b.gmt_plan_repay <![CDATA[   <  ]]> #{nowTime}  and b.status in ('AWAIT_REPAY','PART_REPAY')
     </select>
 
-    <select id="getLoanPeriodsByLoanNo" resultType="com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo">
+    <select id="getLoanPeriodsByLoanNoAndNper" resultType="com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo">
         SELECT
         <include refid="queryFields" />
         FROM dsed_loan_periods
         WHERE is_delete = 0 AND loan_no = #{loanNo} AND nper = #{nper}
         LIMIT 0,1
+    </select>
+
+    <select id="getLoanPeriodsByLoanNo" resultType="com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_periods
+        WHERE is_delete = 0 AND loan_no = #{loanNo}
+        LIMIT 0,1
+    </select>
+
+    <select id="getNoRepayListByLoanId" resultType="AfLoanPeriodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_periods
+        WHERE is_delete = 0 AND loan_id = #{loanId}
+        AND status IN ('AWAIT_REPAY', 'PART_REPAY')
+        ORDER BY nper ASC
+    </select>
+
+
+    <select id="getLastActivePeriodByLoanId" resultType="AfLoanPeriodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_periods
+        WHERE is_delete = 0 AND loan_id = #{loanId}
+        AND status IN ('AWAIT_REPAY', 'PART_REPAY')
+        ORDER BY nper ASC
+        LIMIT 1
+    </select>
+
+    <select id="getPeriodByLoanIdAndNper" resultType="AfLoanPeriodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_periods
+        WHERE is_delete = 0
+        AND loan_id = #{loanId}
+        AND status IN ('AWAIT_REPAY', 'PART_REPAY')
+        AND nper = #{nper}
+        LIMIT 1
     </select>
 
 </mapper>

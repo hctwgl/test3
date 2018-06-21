@@ -161,10 +161,10 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 	@Override
 	protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-//		KuaijieLoanBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieLoanBo.class);
-//		if (kuaijieLoanBo.getRepayment() != null) {
-//			changLoanRepaymentStatus(null, AfLoanRepaymentStatus.PROCESSING.name(), kuaijieLoanBo.getRepayment().getRid());
-//		}
+		KuaijieDsedLoanBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieDsedLoanBo.class);
+		if (kuaijieLoanBo.getRepayment() != null) {
+			changLoanRepaymentStatus(null, AfLoanRepaymentStatus.PROCESSING.name(), kuaijieLoanBo.getRepayment().getRid());
+		}
 	}
 
 	/**
@@ -187,17 +187,32 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
 			lockRepay(bo.userId);
 		}
-		if (!canRepay(bo.loanPeriodsDo)) {
+		if (!bo.isAllRepay && !canRepay(bo.dsedLoanPeriodsDoList.get(0))) {
 			// 未出账时拦截按期还款
 			unLockRepay(bo.userId);
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
 		}
 
 		Date now = new Date();
-		String name = Constants.BORROW_REPAYMENT_NAME_AUTO;
+		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+		if (StringUtil.equals("sysJob", bo.remoteIp)) {
+			name = Constants.BORROW_REPAYMENT_NAME_AUTO;
+		}
+
 		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now, bankPayType);
 		bo.tradeNo = tradeNo;
 		bo.name = name;
+
+		// 根据 还款金额 更新期数信息
+		if (!bo.isAllRepay) { // 非提前结清
+			List<DsedLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
+			bo.dsedLoanPeriodsIds.clear();
+			bo.dsedLoanPeriodsDoList.clear();
+			for (DsedLoanPeriodsDo dsedLoanPeriodsDo : loanPeriods) {
+				bo.dsedLoanPeriodsIds.add(dsedLoanPeriodsDo.getRid());
+				bo.dsedLoanPeriodsDoList.add(dsedLoanPeriodsDo);
+			}
+		}
 
 		// 增加还款记录
 		generateRepayRecords(bo);
@@ -205,6 +220,36 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		// 还款操作
 		return doRepay(bo, bo.dsedloanRepaymentDo, bankPayType);
 
+	}
+
+
+	/**
+	 * @Description:  根据还款金额，匹配实际需还的期数信息
+	 * @return  List<AfLoanPeriodsDo>
+	 */
+	public List<DsedLoanPeriodsDo> getLoanPeriodsIds(Long loanId, BigDecimal repaymentAmount){
+		List<DsedLoanPeriodsDo> loanPeriodsIds = new ArrayList<DsedLoanPeriodsDo>();
+
+		DsedLoanPeriodsDo loanPeriodDo = dsedLoanPeriodsDao.getLastActivePeriodByLoanId(loanId);
+		logger.info("DsedLoanRepaymentServiceImpl getLoanPeriodsIds loanPeriodDo =>{}",JSONObject.toJSONString(loanPeriodDo)+",loanId="+loanId+",repaymentAmount="+repaymentAmount);
+		// 最多可还期数(还款金额/（每期需还本金+手续费+利息）+1)
+		BigDecimal restAmount = BigDecimal.ZERO;
+		Integer nper = loanPeriodDo.getNper();
+
+		for (int i = 0; i < (loanPeriodDo.getPeriods() - nper + 1); i++) {
+			if(repaymentAmount.compareTo(BigDecimal.ZERO)>0){
+				// 根据 loanId&期数  获取分期信息
+				DsedLoanPeriodsDo nextLoanPeriodDo = dsedLoanPeriodsDao.getPeriodByLoanIdAndNper(loanId, nper+i);
+				// 当前期需还金额
+				restAmount = calculateRestAmount(nextLoanPeriodDo);
+				// 更新还款金额
+				repaymentAmount = repaymentAmount.subtract(restAmount);
+
+				loanPeriodsIds.add(nextLoanPeriodDo);
+			}
+		}
+
+		return loanPeriodsIds;
 	}
 
 
@@ -850,7 +895,44 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 		public DsedUserDo dsedUserDo;
 
+		public DsedLoanDo dsedLoanDo;
+
+		public List<DsedLoanPeriodsDo> dsedLoanPeriodsDoList = new ArrayList<DsedLoanPeriodsDo>();	//借款分期
+
+		public List<Long> dsedLoanPeriodsIds = new ArrayList<Long>();
+
 	}
+
+
+	/**
+	 * 计算提前还款需还金额
+	 */
+	@Override
+	public BigDecimal calculateAllRestAmount(Long loanId) {
+
+		BigDecimal allRestAmount = BigDecimal.ZERO;
+
+		List<DsedLoanPeriodsDo> noRepayList = dsedLoanPeriodsDao.getNoRepayListByLoanId(loanId);
+
+		for (DsedLoanPeriodsDo loanPeriodsDo : noRepayList) {
+
+			if(canRepay(loanPeriodsDo)) { // 已出账
+				allRestAmount = BigDecimalUtil.add(allRestAmount,loanPeriodsDo.getAmount(),
+						loanPeriodsDo.getRepaidInterestFee(),loanPeriodsDo.getInterestFee(),
+						loanPeriodsDo.getServiceFee(),loanPeriodsDo.getRepaidServiceFee(),
+						loanPeriodsDo.getOverdueAmount(),loanPeriodsDo.getRepaidOverdueAmount())
+						.subtract(loanPeriodsDo.getRepayAmount());
+
+			}else { // 未出账， 提前还款时不用还手续费和利息
+				allRestAmount = BigDecimalUtil.add(allRestAmount,loanPeriodsDo.getAmount());
+			}
+
+		}
+
+		return allRestAmount;
+	}
+
+
 
 
 	public static class LoanRepayDealBo {

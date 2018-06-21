@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 import com.ald.fanbei.api.biz.service.DsedLoanProductService;
@@ -16,12 +17,9 @@ import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 
-import java.util.Date;
-import java.util.List;
-import java.util.HashMap;
+import java.util.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -76,8 +74,8 @@ public class DsedLoanPeriodsServiceImpl extends ParentServiceImpl<DsedLoanPeriod
 	 * @returnchefeipeng
 	 */
 	@Override
-	public DsedLoanPeriodsDo getLoanPeriodsByLoanNo(String loanNo,int nper){
-		return dsedLoanPeriodsDao.getLoanPeriodsByLoanNo(loanNo,nper);
+	public DsedLoanPeriodsDo getLoanPeriodsByLoanNoAndNper(String loanNo,int nper){
+		return dsedLoanPeriodsDao.getLoanPeriodsByLoanNoAndNper(loanNo,nper);
 	}
 
 	@Override
@@ -143,4 +141,18 @@ public class DsedLoanPeriodsServiceImpl extends ParentServiceImpl<DsedLoanPeriod
 
 		return result;
 	}
+
+	@Override
+	public DsedLoanPeriodsDo getLoanPeriodsByLoanNo(String loanNo){
+		return dsedLoanPeriodsDao.getLoanPeriodsByLoanNo(loanNo);
+	}
+
+	@Override
+	public List<DsedLoanPeriodsDo> getNoRepayListByLoanId(Long rid){
+		return dsedLoanPeriodsDao.getNoRepayListByLoanId(rid);
+	}
+
+
+
+
 }

@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 import org.apache.ibatis.annotations.Param;
@@ -33,8 +34,17 @@ public interface DsedLoanPeriodsDao extends BaseDao<DsedLoanPeriodsDo, Long> {
      * @author
      * @returnchefeipeng
      */
-    DsedLoanPeriodsDo getLoanPeriodsByLoanNo(@Param("loanNo") String loanNo,@Param("nper")int nper);
+    DsedLoanPeriodsDo getLoanPeriodsByLoanNoAndNper(@Param("loanNo") String loanNo,@Param("nper")int nper);
 
     List<DsedLoanPeriodsDo> listByLoanId(Long loanId);
+
+    DsedLoanPeriodsDo getLoanPeriodsByLoanNo(@Param("loanNo") String loanNo);
+
+
+    List<DsedLoanPeriodsDo> getNoRepayListByLoanId(@Param("rid") Long rid);
+
+    DsedLoanPeriodsDo getLastActivePeriodByLoanId(Long loanId);
+
+    DsedLoanPeriodsDo getPeriodByLoanIdAndNper(@Param("loanId")Long loanId, @Param("nper")Integer nper);
 
 }

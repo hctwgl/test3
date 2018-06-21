@@ -45,6 +45,8 @@ public class LoanRepayDoApi implements ApiHandle {
 	DsedLoanPeriodsService dsedLoanPeriodsService;
 	@Resource
 	DsedLoanRepaymentService dsedLoanRepaymentService;
+	@Resource
+	DsedLoanService dsedLoanService;
 
 
 
@@ -58,17 +60,13 @@ public class LoanRepayDoApi implements ApiHandle {
 		HashMap<String,Object> map = dsedUserBankcardService.getPayTypeByBankNoAndUserId(userId,bankNo);
 		String payType = map.get("bankChannel").toString();
 		DsedUserDo dsedUserDo = dsedUserService.getById(userId);
-//		if(StringUtil.equals(RepayType.WITHHOLD.getCode(),payType)){
-			LoanRepayBo bo = this.extractAndCheck(requestDataVo, userId);
-			bo.dsedUserDo = dsedUserDo;
-			bo.remoteIp = CommonUtil.getIpAddr(request);
-			bo.bankNo = bankNo;
-			bo.cardName = map.get("bankName").toString();
-			data = this.dsedLoanRepaymentService.repay(bo,payType);
-			resp.setResponseData(data);
-//		}else if(StringUtil.equals(RepayType.KUAIJIE.getCode(),payType)){
-//			resp.setResponseData(data);
-//		}
+		LoanRepayBo bo = this.extractAndCheck(requestDataVo, userId);
+		bo.dsedUserDo = dsedUserDo;
+		bo.remoteIp = CommonUtil.getIpAddr(request);
+		bo.bankNo = bankNo;
+		bo.cardName = map.get("bankName").toString();
+		data = this.dsedLoanRepaymentService.repay(bo,payType);
+		resp.setResponseData(data);
 		return resp;
 	}
 
@@ -98,22 +96,24 @@ public class LoanRepayDoApi implements ApiHandle {
 	}
 	
 	private void checkFrom(LoanRepayBo bo) {
-		DsedLoanPeriodsDo dsedLoanPeriodsDo = null;
-		if((dsedLoanPeriodsDo = dsedLoanPeriodsService.getLoanPeriodsByLoanNo(bo.borrowNo,bo.curPeriod)) == null ){
+		DsedLoanDo dsedLoanDo = null;
+		if((dsedLoanDo = dsedLoanService.getByLoanNo(bo.borrowNo)) == null ){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
 		}
-		bo.loanPeriodsDo = dsedLoanPeriodsDo;
+		bo.dsedLoanDo = dsedLoanDo;
+		bo.loanId = dsedLoanDo.getRid();
 		// 检查当前 借款 是否已在处理中
-		DsedLoanRepaymentDo dsedLoanRepaymentDo = dsedLoanRepaymentService.getProcessLoanRepaymentByLoanId(dsedLoanPeriodsDo.getLoanId());
+		DsedLoanRepaymentDo dsedLoanRepaymentDo = dsedLoanRepaymentService.getProcessLoanRepaymentByLoanId(dsedLoanDo.getRid());
 		if(dsedLoanRepaymentDo != null) {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
 		}
 		// 检查 用户还钱金额是否准确
+		DsedLoanPeriodsDo dsedLoanPeriodsDo = dsedLoanPeriodsService.getLoanPeriodsByLoanNoAndNper(bo.borrowNo,bo.curPeriod);
 		BigDecimal shouldRepayAmount = dsedLoanRepaymentService.calculateRestAmount(dsedLoanPeriodsDo);
 		if(bo.amount.compareTo(shouldRepayAmount) > 0) {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}
-		
+
 	}
 	
 
