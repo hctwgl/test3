@@ -47,6 +47,22 @@
         </if>
     </sql>
 
+    <sql id="queryWithBankFields">
+		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.status,
+		c.bank_icon,c.bank_name,c.is_valid,c.pay_type bankChannel
+	</sql>
+
+    <select id="getUserMainBankcardByUserId" resultType="DsedUserBankcardDo">
+        SELECT
+        <include refid="queryWithBankFields"/>,IFNULL(t.type,1) cardType,t.valid_date,t.safe_code
+        FROM
+        dsed_user_bankcard b
+        LEFT JOIN af_bank c
+        ON c.is_delete = 0 and c.bank_code = b.bank_code
+        LEFT JOIN af_user_bankcard_type t on b.id = t.user_bankcard_id
+        WHERE
+        b.is_delete=0 AND b.user_id = #{userId} AND b.is_main = 'Y' and b.status='B' limit 1
+    </select>
     
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.DsedUserBankcardDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO dsed_user_bankcard

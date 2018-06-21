@@ -93,7 +93,15 @@
         </if>
     </sql>
 
-    
+
+    <select id="listByLoanId" resultType="DsedLoanPeriodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_periods
+        WHERE is_delete = 0 AND loan_id = #{loanId}
+        ORDER BY nper ASC
+    </select>
+
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO dsed_loan_periods
         <trim prefix="(" suffix=")" suffixOverrides="," >

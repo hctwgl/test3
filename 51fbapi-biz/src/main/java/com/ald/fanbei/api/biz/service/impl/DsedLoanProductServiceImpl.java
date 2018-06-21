@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.DsedLoanRateDo;
+import com.alibaba.fastjson.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import com.ald.fanbei.api.dal.dao.DsedLoanProductDao;
 import com.ald.fanbei.api.dal.domain.DsedLoanProductDo;
 import com.ald.fanbei.api.biz.service.DsedLoanProductService;
 
+import java.util.List;
 
 
 /**
@@ -25,12 +28,25 @@ import com.ald.fanbei.api.biz.service.DsedLoanProductService;
 public class DsedLoanProductServiceImpl extends ParentServiceImpl<DsedLoanProductDo, Long> implements DsedLoanProductService {
 	
     private static final Logger logger = LoggerFactory.getLogger(DsedLoanProductServiceImpl.class);
-   
+
     @Resource
     private DsedLoanProductDao dsedLoanProductDao;
 
 		@Override
 	public BaseDao<DsedLoanProductDo, Long> getDao() {
 		return dsedLoanProductDao;
+	}
+
+	@Override
+	public DsedLoanRateDo getByPrdTypeAndNper(String prdType, String nper) {
+		DsedLoanProductDo productDo = dsedLoanProductDao.getByPrdType(prdType);
+		String conf = productDo.getConf();
+		List<DsedLoanRateDo> list = JSONArray.parseArray(conf, DsedLoanRateDo.class);
+		for (DsedLoanRateDo rate:list) {
+			if (nper.equals(rate.getBorrowTag())){
+				return rate;
+			}
+		}
+		return null;
 	}
 }

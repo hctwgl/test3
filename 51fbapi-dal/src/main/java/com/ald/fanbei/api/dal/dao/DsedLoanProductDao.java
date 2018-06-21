@@ -12,6 +12,6 @@ import com.ald.fanbei.api.dal.domain.DsedLoanProductDo;
  */
 public interface DsedLoanProductDao extends BaseDao<DsedLoanProductDo, Long> {
 
-    
+    DsedLoanProductDo getByPrdType(String prdType);
 
 }

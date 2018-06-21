@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+import com.ald.fanbei.api.common.enums.AfLoanPeriodStatus;
+
 import java.util.Date;
 import java.math.BigDecimal;
 
@@ -15,6 +17,24 @@ import java.math.BigDecimal;
  public class DsedLoanPeriodsDo extends AbstractSerial {
 
     private static final long serialVersionUID = 1L;
+
+    public static DsedLoanPeriodsDo gen(Long userId, String loanNo, String prdType
+            ,int periods, int nper, BigDecimal amount, BigDecimal serviceFee, BigDecimal interestFee, Date gmtPlanRepay) {
+        DsedLoanPeriodsDo p = new DsedLoanPeriodsDo();
+        p.userId = userId;
+        p.loanNo = loanNo;
+        p.prdType = prdType;
+        p.periods = periods;
+        p.nper = nper;
+        p.amount = amount;
+        p.serviceFee = serviceFee;
+        p.interestFee = interestFee;
+        p.gmtPlanRepay = gmtPlanRepay;
+
+        p.gmtCreate = new Date();
+        p.status = AfLoanPeriodStatus.AWAIT_REPAY.name();
+        return p;
+    }
 
     /**
      * 主键Rid

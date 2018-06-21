@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.DsedLoanProductDo;
+import com.ald.fanbei.api.dal.domain.DsedLoanRateDo;
 
 /**
  * 都市e贷借款产品表Service
@@ -12,4 +13,5 @@ import com.ald.fanbei.api.dal.domain.DsedLoanProductDo;
  */
 public interface DsedLoanProductService extends ParentService<DsedLoanProductDo, Long>{
 
+    DsedLoanRateDo getByPrdTypeAndNper(String prdType, String nper);
 }
