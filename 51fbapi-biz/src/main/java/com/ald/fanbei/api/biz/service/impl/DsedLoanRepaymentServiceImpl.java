@@ -70,8 +70,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	@Resource
 	SmsUtil smsUtil;
 	@Resource
-	private JpushService pushService;
-	@Resource
 	AfYibaoOrderDao afYibaoOrderDao;
 	@Resource
 	private TransactionTemplate transactionTemplate;
@@ -104,6 +102,15 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	@Override
 	protected void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
 
+	}
+
+	@Override
+	protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo)
+	{
+		KuaijieDsedLoanBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieDsedLoanBo.class);
+		if (kuaijieLoanBo.getRepayment() != null) {
+			changLoanRepaymentStatus(null, AfLoanRepaymentStatus.SMS.name(), kuaijieLoanBo.getRepayment().getRid());
+		}
 	}
 
 	@Override
@@ -309,14 +316,14 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HashMap<String,Object> bank = dsedUserBankcardDao.getUserBankInfo(bo.bankNo);
 		KuaijieDsedLoanBo bizObject = new KuaijieDsedLoanBo(repayment, bo);
-//		if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
-//			repayment.setStatus(RepaymentStatus.SMS.getCode());
-//			resultMap = sendKuaiJieSms(bank, bo.tradeNo, bo.amount, bo.userId, bo.dsedUserDo.getRealName(),
-//					bo.dsedUserDo.getIdNumber(), JSON.toJSONString(bizObject), "dsedLoanRepaymentService", Constants.DEFAULT_PAY_PURPOSE, bo.name, PayOrderSource.REPAY_LOAN.getCode());
-//		} else {// 代扣
+		if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
+			repayment.setStatus(RepaymentStatus.SMS.getCode());
+			resultMap = sendKuaiJieSms(bank, bo.tradeNo, bo.amount, bo.userId, bo.dsedUserDo.getRealName(),
+					bo.dsedUserDo.getIdNumber(), JSON.toJSONString(bizObject), "dsedLoanRepaymentService", Constants.DEFAULT_PAY_PURPOSE, bo.name, PayOrderSource.REPAY_LOAN.getCode());
+		} else {// 代扣
 			resultMap = doUpsPay(bankChannel, bank, bo.tradeNo, bo.amount, bo.userId, bo.dsedUserDo.getRealName(),
 					bo.dsedUserDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE, bo.name, PayOrderSource.REPAY_LOAN.getCode());
-//		}
+		}
 		return resultMap;
 	}
 

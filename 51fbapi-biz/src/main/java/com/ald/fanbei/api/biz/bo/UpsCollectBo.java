@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.bo;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
@@ -22,7 +23,7 @@ public class UpsCollectBo implements Serializable {
 
     }
 
-    public UpsCollectBo( Long cardId,String orderNo, BigDecimal amount, String userNo, String realName, String phone, String bankCode, String cardNo, String certNo, String purpose, String remark, String clientType, String merPriv, String bankPayType, String productName) {
+    public UpsCollectBo(HashMap<String,Object> bank, String orderNo, BigDecimal amount, String userNo, String realName, String phone, String bankCode, String cardNo, String certNo, String purpose, String remark, String clientType, String merPriv, String bankPayType, String productName) {
 	this.orderNo = orderNo;
 	this.amount = amount;
 	this.userNo = userNo;
@@ -38,6 +39,7 @@ public class UpsCollectBo implements Serializable {
 	this.bankPayType = bankPayType;
 	this.productName = productName;
 	this.cardId = cardId;
+	this.bank = bank;
     }
 
     String orderNo;
@@ -55,6 +57,7 @@ public class UpsCollectBo implements Serializable {
     String bankPayType;
     String productName;
     Long cardId;
+    HashMap<String,Object> bank;
 
     public String getOrderNo() {
 	return orderNo;
@@ -174,5 +177,13 @@ public class UpsCollectBo implements Serializable {
 
     public void setCardId(Long cardId) {
 	this.cardId = cardId;
-    }    
+    }
+
+    public HashMap<String,Object> getBank() {
+        return bank;
+    }
+
+    public void setBank(HashMap<String,Object> bank) {
+        this.bank = bank;
+    }
 }

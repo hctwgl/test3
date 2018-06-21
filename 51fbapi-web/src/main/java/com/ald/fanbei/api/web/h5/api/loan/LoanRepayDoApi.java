@@ -58,7 +58,7 @@ public class LoanRepayDoApi implements ApiHandle {
 		HashMap<String,Object> map = dsedUserBankcardService.getPayTypeByBankNoAndUserId(userId,bankNo);
 		String payType = map.get("bankChannel").toString();
 		DsedUserDo dsedUserDo = dsedUserService.getById(userId);
-		if(StringUtil.equals(RepayType.WITHHOLD.getCode(),payType)){
+//		if(StringUtil.equals(RepayType.WITHHOLD.getCode(),payType)){
 			LoanRepayBo bo = this.extractAndCheck(requestDataVo, userId);
 			bo.dsedUserDo = dsedUserDo;
 			bo.remoteIp = CommonUtil.getIpAddr(request);
@@ -66,13 +66,13 @@ public class LoanRepayDoApi implements ApiHandle {
 			bo.cardName = map.get("bankName").toString();
 			data = this.dsedLoanRepaymentService.repay(bo,payType);
 			resp.setResponseData(data);
-		}else if(StringUtil.equals(RepayType.KUAIJIE.getCode(),payType)){
-			resp.setResponseData(data);
-		}
+//		}else if(StringUtil.equals(RepayType.KUAIJIE.getCode(),payType)){
+//			resp.setResponseData(data);
+//		}
 		return resp;
 	}
-	
-	
+
+
 	private LoanRepayBo extractAndCheck(RequestDataVo requestDataVo, Long userId) {
 		LoanRepayBo bo = new LoanRepayBo();
 		bo.userId = userId;

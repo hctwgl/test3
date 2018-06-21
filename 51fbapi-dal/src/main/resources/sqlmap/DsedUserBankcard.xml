@@ -9,7 +9,7 @@
     </sql>
 
     <sql id="queryWithFields">
-        b.id rid,b.gmt_create gmtCreate,b.gmt_modified gmtModified,b.user_id userId,b.mobile,b.bank_code bankCode,b.card_number cardNumber,b.is_main isMain,b.bank_name bankName,b.status,a.pay_type bankChannel
+        b.id rid,b.gmt_create gmtCreate,b.gmt_modified gmtModified,b.user_id userId,b.mobile,b.bank_code bankCode,b.card_number cardNumber,b.is_main isMain,b.bank_name bankName,b.status,a.pay_type bankChannel,b.valid_date validDate,b.safe_code safeCode
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->

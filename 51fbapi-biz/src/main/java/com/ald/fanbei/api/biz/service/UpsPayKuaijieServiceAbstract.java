@@ -165,9 +165,10 @@ public abstract class UpsPayKuaijieServiceAbstract extends BaseService {
 			throw new FanbeiException(errorMsg);
 		} else {
 			// 添加数据到redis缓存
-			UpsCollectBo upsCollectBo = new UpsCollectBo(cardId, payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), bank.getBankCode(),
-					bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, remark, "02", merPriv, BankPayChannel.KUAIJIE.getCode(),
-					afResourceService.getCashProductName());
+			UpsCollectBo upsCollectBo = null;
+//			UpsCollectBo upsCollectBo = new UpsCollectBo(cardId, payTradeNo, actualAmount, userId + "", realName, bank.getMobile(), bank.getBankCode(),
+//					bank.getCardNumber(), idNumber, Constants.DEFAULT_PAY_PURPOSE, remark, "02", merPriv, BankPayChannel.KUAIJIE.getCode(),
+//					afResourceService.getCashProductName());
 			// 支付请求对应的处理bean
 			bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + payTradeNo, beanName, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
 			// 支付请求数据
