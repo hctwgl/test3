@@ -43,6 +43,8 @@ public interface DsedLoanPeriodsDao extends BaseDao<DsedLoanPeriodsDo, Long> {
 
     List<DsedLoanPeriodsDo> getNoRepayListByLoanId(@Param("rid") Long rid);
 
+    List<DsedLoanPeriodsDo> getNoRepayListByLoanNoAndUserId(@Param("loanNo") String loanNo,@Param("userId") Long userId);
+
     DsedLoanPeriodsDo getLastActivePeriodByLoanId(Long loanId);
 
     DsedLoanPeriodsDo getPeriodByLoanIdAndNper(@Param("loanId")Long loanId, @Param("nper")Integer nper);

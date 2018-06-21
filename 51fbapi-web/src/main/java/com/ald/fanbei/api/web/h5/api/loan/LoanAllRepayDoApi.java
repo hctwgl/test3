@@ -11,7 +11,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.web.common.*;
 import com.ald.fanbei.api.web.validator.bean.LoanRepayDoParam;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,9 +32,6 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.UserUtil;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
-import com.ald.fanbei.api.web.common.ApiHandle;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
-import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.LoanAllRepayDoParam;
 import com.alibaba.fastjson.JSON;
@@ -47,21 +46,14 @@ import com.google.common.collect.Maps;
  */
 @Component("loanAllRepayDoApi")
 @Validator("LoanAllRepayDoParam")
-public class LoanAllRepayDoApi implements ApiHandle {
-	
-	@Resource
-	AfUserCouponService afUserCouponService;
+public class LoanAllRepayDoApi implements H5Handle {
+
 	@Resource
 	AfUserAccountService afUserAccountService;
 	@Resource
 	DsedLoanService dsedLoanService;
-	
-	@Resource
-	AfLoanRepaymentService afLoanRepaymentService;
 	@Resource
 	DsedLoanPeriodsService dsedLoanPeriodsService;
-	@Resource
-	AfLoanPeriodsService afLoanPeriodsService;
 	@Resource
 	DsedUserBankcardService dsedUserBankcardService;
 	@Resource
@@ -71,26 +63,26 @@ public class LoanAllRepayDoApi implements ApiHandle {
 
 
 	@Override
-	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
-		LoanAllRepayDoParam param = (LoanAllRepayDoParam) requestDataVo.getParamObj();
+	public H5HandleResponse process(Context context) {
+		LoanAllRepayDoParam param = (LoanAllRepayDoParam) context.getParamEntity();
 		Map<String, Object> data = new HashMap<String, Object>();
 		String bankNo = param.bankNo;
 		Long userId = param.userId;
 		HashMap<String,Object> map = dsedUserBankcardService.getPayTypeByBankNoAndUserId(userId,bankNo);
 		String payType = map.get("bankChannel").toString();
 		DsedUserDo dsedUserDo = dsedUserService.getById(userId);
-		LoanRepayBo bo = this.extractAndCheck(requestDataVo, userId);
+		LoanRepayBo bo = this.extractAndCheck(context, userId);
 		bo.dsedUserDo = dsedUserDo;
-		bo.remoteIp = CommonUtil.getIpAddr(request);
+		bo.remoteIp = context.getClientIp();
 		bo.cardName = map.get("bankName").toString();
 		data = this.dsedLoanRepaymentService.repay(bo,payType);
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
+		H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
 		resp.setResponseData(data);
 		return resp;
 	}
 
 	
-	private LoanRepayBo extractAndCheck(RequestDataVo requestDataVo, Long userId) {
+	private LoanRepayBo extractAndCheck(Context context, Long userId) {
 		AfUserAccountDo userDo = afUserAccountService.getUserAccountByUserId(userId);
 		if (userDo == null) {
 			throw new FanbeiException("Account is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -99,8 +91,8 @@ public class LoanAllRepayDoApi implements ApiHandle {
 		LoanRepayBo bo = new LoanRepayBo();
 		bo.userId = userId;
 		bo.userDo = userDo;
-		
-		LoanAllRepayDoParam param = (LoanAllRepayDoParam) requestDataVo.getParamObj();
+
+		LoanAllRepayDoParam param = (LoanAllRepayDoParam) context.getParamEntity();
 		
 		bo.userId = param.userId;
 		bo.amount = param.amount;
@@ -126,26 +118,26 @@ public class LoanAllRepayDoApi implements ApiHandle {
 	}
 	
 	private void checkFrom(LoanRepayBo bo) {
-		DsedLoanDo dsedLoanPeriodsDo = null;
-		if((dsedLoanPeriodsDo = dsedLoanService.getByLoanNo(bo.borrowNo)) == null ){
+		DsedLoanDo dsedLoanDo = null;
+		if((dsedLoanDo = dsedLoanService.getByLoanNo(bo.borrowNo)) == null ){
 			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
 		}
-		bo.dsedLoanDo = dsedLoanPeriodsDo;
-		bo.loanId = dsedLoanPeriodsDo.getRid();
+		bo.dsedLoanDo = dsedLoanDo;
+		bo.loanId = dsedLoanDo.getRid();
 		
 		// 检查当前 借款 是否已在处理中
-		DsedLoanRepaymentDo loanRepaymentDo = dsedLoanRepaymentService.getProcessLoanRepaymentByLoanId(dsedLoanPeriodsDo.getRid());
+		DsedLoanRepaymentDo loanRepaymentDo = dsedLoanRepaymentService.getProcessLoanRepaymentByLoanId(dsedLoanDo.getRid());
 		if(loanRepaymentDo != null) {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
 		}
 		
 		// 检查 用户 是否多还钱(提前结清)
-		BigDecimal shouldRepayAmount = dsedLoanRepaymentService.calculateAllRestAmount(dsedLoanPeriodsDo.getRid());
+		BigDecimal shouldRepayAmount = dsedLoanRepaymentService.calculateAllRestAmount(dsedLoanDo.getRid());
 		if(bo.repaymentAmount.compareTo(shouldRepayAmount) != 0) {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}
 		
-		List<DsedLoanPeriodsDo> dsedLoanPeriodsDoList = dsedLoanPeriodsService.getNoRepayListByLoanId(dsedLoanPeriodsDo.getRid());
+		List<DsedLoanPeriodsDo> dsedLoanPeriodsDoList = dsedLoanPeriodsService.getNoRepayListByLoanId(dsedLoanDo.getRid());
 		bo.dsedLoanPeriodsDoList = dsedLoanPeriodsDoList;
 	}
 	

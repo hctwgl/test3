@@ -187,7 +187,7 @@
     <!-- chefeipeng 获取用户所选银行卡对应的支付方式(代扣WITHHOLD、快捷支付KUAIJIE(有短信)) -->
     <select id="getPayTypeByBankNoAndUserId" resultType="java.util.HashMap" >
         SELECT
-		    u.id rid,u.gmt_create gmtCreate,u.gmt_modified gmtModified,u.user_id userId,u.mobile,u.bank_code bankCode,u.card_number cardNumber,u.is_main isMain,b.bank_name bankName,u.status,b.bank_icon bankIcon,b.is_valid isValid,b.pay_type bankChannel
+		    u.id rid,u.gmt_create gmtCreate,u.gmt_modified gmtModified,u.user_id userId,u.mobile,u.bank_code bankCode,u.card_number cardNumber,u.is_main isMain,b.bank_name bankName,u.status,b.bank_icon bankIcon,b.is_valid isValid,b.pay_type bankChannel,u.valid_date validDate,u.safe_code safeCode
         FROM
             dsed_user_bankcard u,
             dsed_bank b

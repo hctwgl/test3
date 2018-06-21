@@ -617,6 +617,7 @@
 				<entry key="/h5/loan/confirmLoan" value-ref="confirmLoanApi" />
 				<entry key="/h5/loan/getLoanHomeInfo" value-ref="getLoanHomeInfoApi" />
 				<entry key="/h5/loan/loanConfirmPayment" value-ref="loanConfirmPaymentApi" />
+				<entry key="/h5/loan/getLoanDecreasedAmount" value-ref="getLoanDecreasedAmountApi" />
 
 				<entry key="/h5/loan/getLoanInfo" value-ref="getLoanInfoApi" />
 				<entry key="/h5/loan/loanRepayPlan" value-ref="loanRepayPlanApi" />

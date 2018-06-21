@@ -905,6 +905,22 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 
 	/**
+	 * 计算提前还款可以减免的金额
+	 */
+	@Override
+	public BigDecimal getDecreasedAmount(String loanNo,Long userId) {
+		BigDecimal allRestAmount = BigDecimal.ZERO;
+		List<DsedLoanPeriodsDo> noRepayList = dsedLoanPeriodsDao.getNoRepayListByLoanNoAndUserId(loanNo,userId);
+		for (DsedLoanPeriodsDo loanPeriodsDo : noRepayList) {
+			if(!canRepay(loanPeriodsDo)) { // 未出账
+				allRestAmount = BigDecimalUtil.add(allRestAmount,loanPeriodsDo.getInterestFee(), loanPeriodsDo.getServiceFee());
+			}
+		}
+		return allRestAmount;
+	}
+
+
+	/**
 	 * 计算提前还款需还金额
 	 */
 	@Override
@@ -931,7 +947,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 		return allRestAmount;
 	}
-
 
 
 

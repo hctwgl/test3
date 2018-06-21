@@ -44,4 +44,10 @@ public interface DsedLoanRepaymentService {
      * @return
      */
     BigDecimal calculateAllRestAmount(Long rid);
+
+    /**
+     * 计算提前还款可以减免的金额
+     * @return
+     */
+    BigDecimal getDecreasedAmount(String loanNo,Long userId);
 }

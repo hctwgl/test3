@@ -10,7 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.enums.RepayType;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.web.common.*;
 import org.springframework.stereotype.Component;
 
 
@@ -19,9 +21,6 @@ import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.web.common.ApiHandle;
-import com.ald.fanbei.api.web.common.ApiHandleResponse;
-import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.LoanRepayDoParam;
 
@@ -34,7 +33,7 @@ import com.ald.fanbei.api.web.validator.bean.LoanRepayDoParam;
  */
 @Component("loanRepayDoApi")
 @Validator("LoanRepayDoParam")
-public class LoanRepayDoApi implements ApiHandle {
+public class LoanRepayDoApi implements H5Handle {
 	
 
 	@Resource
@@ -51,18 +50,18 @@ public class LoanRepayDoApi implements ApiHandle {
 
 
 	@Override
-	public ApiHandleResponse process(RequestDataVo requestDataVo,FanbeiContext context, HttpServletRequest request) {
-		ApiHandleResponse resp = new ApiHandleResponse(requestDataVo.getId(),FanbeiExceptionCode.SUCCESS);
-		LoanRepayDoParam param = (LoanRepayDoParam) requestDataVo.getParamObj();
+	public H5HandleResponse process(Context context) {
+		H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
+		LoanRepayDoParam param = (LoanRepayDoParam) context.getParamEntity();
 		Map<String, Object> data = new HashMap<String, Object>();
 		String bankNo = param.bankNo;
 		Long userId = param.userId;
 		HashMap<String,Object> map = dsedUserBankcardService.getPayTypeByBankNoAndUserId(userId,bankNo);
 		String payType = map.get("bankChannel").toString();
 		DsedUserDo dsedUserDo = dsedUserService.getById(userId);
-		LoanRepayBo bo = this.extractAndCheck(requestDataVo, userId);
+		LoanRepayBo bo = this.extractAndCheck(context, userId);
 		bo.dsedUserDo = dsedUserDo;
-		bo.remoteIp = CommonUtil.getIpAddr(request);
+		bo.remoteIp = context.getClientIp();
 		bo.bankNo = bankNo;
 		bo.cardName = map.get("bankName").toString();
 		data = this.dsedLoanRepaymentService.repay(bo,payType);
@@ -71,10 +70,10 @@ public class LoanRepayDoApi implements ApiHandle {
 	}
 
 
-	private LoanRepayBo extractAndCheck(RequestDataVo requestDataVo, Long userId) {
+	private LoanRepayBo extractAndCheck(Context context, Long userId) {
 		LoanRepayBo bo = new LoanRepayBo();
 		bo.userId = userId;
-		LoanRepayDoParam param = (LoanRepayDoParam) requestDataVo.getParamObj();
+		LoanRepayDoParam param = (LoanRepayDoParam) context.getParamEntity();
 		bo.amount = param.amount;
 		bo.borrowNo = param.borrowNo;
 		bo.bankNo = param.bankNo;

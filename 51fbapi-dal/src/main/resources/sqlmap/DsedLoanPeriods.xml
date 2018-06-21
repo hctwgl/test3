@@ -386,7 +386,7 @@
         LIMIT 0,1
     </select>
 
-    <select id="getNoRepayListByLoanId" resultType="AfLoanPeriodsDo">
+    <select id="getNoRepayListByLoanId" resultType="DsedLoanPeriodsDo">
         SELECT
         <include refid="queryFields" />
         FROM dsed_loan_periods
@@ -395,8 +395,16 @@
         ORDER BY nper ASC
     </select>
 
+    <select id="getNoRepayListByLoanNo" resultType="DsedLoanPeriodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_periods
+        WHERE is_delete = 0 AND loan_no = #{loanNo}
+        AND status IN ('AWAIT_REPAY', 'PART_REPAY')
+        ORDER BY nper ASC
+    </select>
 
-    <select id="getLastActivePeriodByLoanId" resultType="AfLoanPeriodsDo">
+    <select id="getLastActivePeriodByLoanId" resultType="DsedLoanPeriodsDo">
         SELECT
         <include refid="queryFields" />
         FROM dsed_loan_periods
@@ -406,7 +414,7 @@
         LIMIT 1
     </select>
 
-    <select id="getPeriodByLoanIdAndNper" resultType="AfLoanPeriodsDo">
+    <select id="getPeriodByLoanIdAndNper" resultType="DsedLoanPeriodsDo">
         SELECT
         <include refid="queryFields" />
         FROM dsed_loan_periods
