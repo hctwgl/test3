@@ -101,8 +101,6 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 
             final DsedUserBankcardDo bankCard = dsedUserBankcardDao.getUserMainBankcardByUserId(userId);
 
-            // 数据入库
-            loanDo.setAuAmount(bo.auAmount);
             this.saveLoanRecords(bo, loanDo, periodDos, bankCard);
 
             try {

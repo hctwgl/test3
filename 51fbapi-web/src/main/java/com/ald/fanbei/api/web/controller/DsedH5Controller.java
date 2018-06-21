@@ -74,12 +74,13 @@ public class DsedH5Controller extends DsedBaseController {
 		ContextImpl.Builder builder = new ContextImpl.Builder();
 		String method = request.getRequestURI();
         String data =  request.getParameter("data");
+		Map<String,Object> systemsMap = new HashMap<>();
         if(StringUtils.isNotEmpty(data)) {
 			String decryptData = AesUtil.decryptFromBase64(data,"testC1b6x@6aH$2dlw");
         	JSONObject dataInfo = JSONObject.parseObject(decryptData);
 			Long userId = Long.parseLong(dataInfo.get("userId").toString()) ;
 //            Map<String,Object> systemsMap = (Map)JSON.parse(decryptData);
-			Map<String,Object> systemsMap =JSON.parseObject(decryptData);
+			systemsMap =JSON.parseObject(decryptData);
             builder.method(method)
 	     	   .userId(userId)
 	     	   .systemsMap(systemsMap);
@@ -88,7 +89,7 @@ public class DsedH5Controller extends DsedBaseController {
         Map<String,Object> dataMaps = Maps.newHashMap();
         
         wrapRequest(request,dataMaps);
-        builder.dataMap(dataMaps);
+        builder.dataMap(systemsMap);
         
         logger.info("request method=>{},params=>{}",method,JSON.toJSONString(dataMaps));
        

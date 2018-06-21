@@ -36,10 +36,6 @@ public class DsedApplyLoanApi implements H5Handle {
         map((DsedApplyLoanParam) context.getParamEntity(), bo);
 
         bo.reqParam.ip = context.getClientIp();
-        String reqId = context.getId();
-        bo.reqParam.appType = reqId.startsWith("i") ? "alading_ios" : "alading_and";
-        bo.reqParam.appName = reqId.substring(reqId.lastIndexOf("_") + 1, reqId.length());
-
         bo.userId = context.getUserId();
         bo.userName = context.getUserName();
         bo.realName = String.valueOf(context.getDataMap().get("realName"));

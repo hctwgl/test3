@@ -706,9 +706,6 @@
 		<property name="interceptors">
 			<list>
 				<ref bean="validationInterceptor"/>
-				<ref bean="payPwdConvertorInterceptor"/>
-				<ref bean="payPwdCheckInterceptor"/>
-				<ref bean="forceUpdateInterceptor"/>
 			</list>
 		</property>
 	</bean>
