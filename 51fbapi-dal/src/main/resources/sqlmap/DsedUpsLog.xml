@@ -50,9 +50,7 @@
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.DsedUpsLogDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO dsed_ups_log
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">        
-	            gmt_create,
-	        </if>
+            gmt_create,
 	        <if test="userId != null">        
 	            user_id,
 	        </if>
@@ -83,9 +81,7 @@
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
+		    now(),
 		    <if test="userId != null" >
 		       #{userId,jdbcType=INTEGER},
 		    </if>

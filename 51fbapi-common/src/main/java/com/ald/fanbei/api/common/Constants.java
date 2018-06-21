@@ -389,6 +389,7 @@ public class Constants {
 
 	// 商品AES解密的password
 	public static final String TRADE_AES_DECRYPT_PASSWORD = "trade";
+	public static final String DSED_AES_PASSWORD = "dsed.aes.password";
 
 	// 人脸识别类型
 	public static final String FACE_TYPE = "FACE_TYPE";

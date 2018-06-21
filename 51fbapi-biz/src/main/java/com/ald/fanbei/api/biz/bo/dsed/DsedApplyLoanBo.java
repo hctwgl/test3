@@ -15,7 +15,8 @@ public class DsedApplyLoanBo {
 	public String userName;
 	public BigDecimal auAmount;
 	public String realName;
-	
+	public String idNumber;
+
 	public static class ReqParam{
 		public String prdType;
 		public BigDecimal amount;

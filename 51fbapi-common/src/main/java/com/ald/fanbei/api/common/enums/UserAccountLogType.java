@@ -18,7 +18,8 @@ public enum UserAccountLogType {
 	BorrowCash_Fail("BORROWCASH_FAIL", "借钱,打款失败退款"), 
 
 	LOAN("LOAN", "贷款"),
-	
+	DSED_LOAN("DSED_LOAN", "贷款"),
+
 	AU_SCORE("AU_SCORE", "授权分数"),
 	AU_AMOUNT("AU_AMOUNT", "授权金额"),
 	FREEZE("FREEZE", "冻结金额"),

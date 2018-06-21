@@ -107,10 +107,10 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 
             try {
                 // 调用UPS打款
-                UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(bo.reqParam.amount,
+                UpsDelegatePayRespBo upsResult = upsUtil.dsedDelegatePay(bo.reqParam.amount,
                         bo.realName, bankCard.getCardNumber(), userId.toString(), bankCard.getMobile(),
                         bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
-                        UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
+                        UserAccountLogType.DSED_LOAN.getCode(), loanDo.getRid().toString(),bo.idNumber);
                 loanDo.setTradeNoOut(upsResult.getOrderNo());
                 if (!upsResult.isSuccess()) {
                     //审核通过，ups打款失败

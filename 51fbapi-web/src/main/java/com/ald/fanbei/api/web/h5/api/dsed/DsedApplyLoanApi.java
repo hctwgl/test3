@@ -9,7 +9,6 @@ import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.DsedApplyLoanParam;
-import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -43,7 +42,8 @@ public class DsedApplyLoanApi implements H5Handle {
 
         bo.userId = context.getUserId();
         bo.userName = context.getUserName();
-
+        bo.realName = String.valueOf(context.getDataMap().get("realName"));
+        bo.idNumber = String.valueOf(context.getDataMap().get("idNumber"));
         dsedLoanService.doLoan(bo);
 
         return resp;
