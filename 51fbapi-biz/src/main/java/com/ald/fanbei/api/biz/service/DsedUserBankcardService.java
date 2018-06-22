@@ -53,7 +53,6 @@ public interface DsedUserBankcardService extends ParentService<DsedUserBankcardD
 
     int addUserBankcard(DsedUserBankcardDo userBankcardDo);
 
-    DsedUserBankcardDo getUserBankCardByCardId(String bankCardId);
 
    int  updateUserBankcard(DsedUserBankcardDo userBankcardDo);
 

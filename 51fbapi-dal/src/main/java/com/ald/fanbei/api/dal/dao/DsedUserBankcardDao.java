@@ -59,12 +59,7 @@ public interface DsedUserBankcardDao extends BaseDao<DsedUserBankcardDo, Long> {
      * @return
      */
     int addUserBankcard(DsedUserBankcardDo userBankcardDo);
-    /**
-     * 查询银行卡信息
-     * @param cardNumber
-     * @return
-     */
-    DsedUserBankcardDo getUserBankCardByCardNo(@Param("cardNumber")String cardNumber);
+
 
     /**
      * 更新卡状态为绑定

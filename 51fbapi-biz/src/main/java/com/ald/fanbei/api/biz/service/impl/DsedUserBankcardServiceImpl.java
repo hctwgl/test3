@@ -93,10 +93,7 @@ public class DsedUserBankcardServiceImpl extends ParentServiceImpl<DsedUserBankc
 		return dsedUserBankcardDao.addUserBankcard(userBankcardDo);
 	}
 
-	@Override
-	public DsedUserBankcardDo getUserBankCardByCardId(String bankCardId) {
-		return dsedUserBankcardDao.getUserBankCardByCardNo(bankCardId);
-	}
+
 
 	@Override
 	public int updateUserBankcard(DsedUserBankcardDo userBankcardDo) {

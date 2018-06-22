@@ -79,7 +79,7 @@ public class ApplyBindBankCardMsgApi implements ApiHandle {
           return new ApiHandleResponse(requestDataVo.getId(), FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR);
       }
      //是否是设主卡
-     String isMain = YesNoStatus.NO.getCode();
+      String isMain = YesNoStatus.NO.getCode();
       if(dsedUserBankcardService.getUserBankCardInfoByUserId(userId).size()==0){
           isMain=YesNoStatus.YES.getCode();
       }

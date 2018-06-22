@@ -56,7 +56,7 @@ public class NoticeTask {
     @Resource
     private XgxyUtil xgxyUtil;
 
-    @Scheduled(cron = "* 0/5 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void notice() {
         logger.info("start notice task， time="+new Date());
         List<DsedNoticeRecordDo> noticeRecordDos = dsedNoticeRecordService.getAllFailNoticeRecord();

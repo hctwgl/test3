@@ -242,21 +242,10 @@
 			status = 'B'
 	</select>
 
-    <select id="getUserBankCardByCardNo" resultType="DsedUserBankcardDo">
-        SELECT
-        <include refid="queryWithFields"/>
-        FROM
-        dsed_user_bankcard
-        WHERE
-        is_delete=0
-        AND
-        card_number = #{cardNumber}
-        AND
-        status = 'A'
-    </select>
+
 
     <insert id="addUserBankcard" parameterType="DsedUserBankcardDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO af_user_bankcard(gmt_create , gmt_modified , user_id , mobile , bank_code , card_number , is_main , bank_name , status)
+		INSERT INTO dsed_user_bankcard(gmt_create , gmt_modified , user_id , mobile , bank_code , card_number , is_main , bank_name , status)
 		VALUES (
     		NOW(),
     		NOW(),
@@ -272,7 +261,7 @@
 
     <update id="updateUserBankcard"  parameterType="DsedUserBankcardDo">
         UPDATE
-        af_user_bankcard
+        dsed_user_bankcard
         SET
         gmt_modified = NOW()
 
