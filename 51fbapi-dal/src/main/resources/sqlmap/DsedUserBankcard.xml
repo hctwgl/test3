@@ -229,7 +229,7 @@
 			status = 'B'
 	</select>
 
-    <select id="getUserBankByCardNo" resultType="DsedUserBankcardDo">
+    <select id="getUserBankCardInfoByUserId" resultType="DsedUserBankcardDo">
 		SELECT
            <include refid="queryWithFields"/>
         FROM
