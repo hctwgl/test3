@@ -59,6 +59,16 @@ public class DsedUserBankcardServiceImpl extends ParentServiceImpl<DsedUserBankc
 	}
 
 	@Override
+	public DsedUserBankcardDo getUserMainBankcardByUserId(Long userId) {
+		return dsedUserBankcardDao.getUserMainBankcardByUserId(userId);
+	}
+
+	@Override
+	public String hideCardNumber(String bankcard) {
+		return bankcard.substring(bankcard.length() - 4);
+	}
+
+	@Override
 	public void checkUpsBankLimit(String bankCode, String bankChannel,BigDecimal amount) {
 		UpsBankStatusDto upsBankStatusDto = getUpsBankStatus(bankCode, bankChannel);
 		if (upsBankStatusDto.getLimitUp().compareTo(amount.doubleValue()) < 0) {
