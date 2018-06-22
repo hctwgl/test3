@@ -58,7 +58,7 @@ public abstract class DsedBaseController {
             // 解析参数（包括请求头中的参数和报文体中的参数）
             context = parseRequestData(request);
             // 校验请求数据
-            doCheck(context);
+//            doCheck(context);
             compareSign(request, context);
             baseResponse = doProcess(context);
             retMsg = JSON.toJSONString(baseResponse);

@@ -573,6 +573,15 @@
         LIMIT 0,1
     </select>
 
+	<select id="getByUserId" resultType="com.ald.fanbei.api.dal.domain.DsedLoanDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM dsed_loan
+		WHERE is_delete = 0 AND user_id=#{useId}
+		order by id desc
+		LIMIT 0,1
+	</select>
+
 	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.DsedLoanDo" parameterType="com.ald.fanbei.api.dal.domain.DsedLoanDo">
         SELECT
         <include refid="queryFields" />

@@ -21,4 +21,6 @@ public interface DsedLoanDao extends BaseDao<DsedLoanDo, Long> {
     List<DsedLoanDo> getLoanOverdue(int beginIndex, int pageSize,Date nowTime);
 
     int updateByLoanId(DsedLoanDo loanDo);
+
+    DsedLoanDo getByUserId(Long userId);
 }

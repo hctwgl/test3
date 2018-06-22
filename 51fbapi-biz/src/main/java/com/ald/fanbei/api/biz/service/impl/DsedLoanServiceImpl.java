@@ -30,8 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.Date;
-import java.util.List;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -258,6 +256,11 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
     @Override
     public DsedLoanDo getByLoanNo(String loanNo) {
         return null;
+    }
+
+    @Override
+    public DsedLoanDo getByUserId(Long userId) {
+        return dsedLoanDao.getByUserId(userId);
     }
 
     @Override

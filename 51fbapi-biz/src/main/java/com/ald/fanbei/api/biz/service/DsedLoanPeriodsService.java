@@ -31,6 +31,8 @@ public interface DsedLoanPeriodsService extends ParentService<DsedLoanPeriodsDo,
 
     List<DsedLoanPeriodsDto>  getLoanOverdue(int nowPage, int pageSize);
 
+    List<DsedLoanPeriodsDo> getLoanPeriodsByLoanId(Long loanId);
+
     /**
      * 获取逾期数据的数量
      *

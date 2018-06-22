@@ -653,6 +653,7 @@
 				<entry key="/h5/reward/doPushTask" value-ref="doPushTaskApi" />
 
 				<entry key="/dsed/dsedApplyLoan" value-ref="dsedApplyLoanApi" />
+				<entry key="/dsed/dsedGetLoanInfo" value-ref="dsedGetLoanInfoApi" />
 				<!-- 支付相关接口 -->
 				<entry key="/h5/pay/recycleQuickPaymentResendCode" value-ref="recycleQuickPaymentResendCodeApi" />
 				<entry key="/h5/pay/recycleConfirmPayment" value-ref="recycleConfirmPaymentApi" />

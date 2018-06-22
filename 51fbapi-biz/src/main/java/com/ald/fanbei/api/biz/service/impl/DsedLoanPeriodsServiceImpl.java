@@ -61,6 +61,11 @@ public class DsedLoanPeriodsServiceImpl extends ParentServiceImpl<DsedLoanPeriod
 	}
 
 	@Override
+	public List<DsedLoanPeriodsDo> getLoanPeriodsByLoanId(Long loanId) {
+		return dsedLoanPeriodsDao.listByLoanId(loanId);
+	}
+
+	@Override
 	public int getLoanOverdueCount() {
 		Date date = new Date(System.currentTimeMillis());
 		Date bengin = DateUtil.getStartOfDate(date);

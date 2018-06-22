@@ -94,6 +94,14 @@
     </sql>
 
 
+    <select id="listByUserId" resultType="DsedLoanPeriodsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_periods
+        WHERE is_delete = 0 AND user_id = #{userId}
+        ORDER BY nper ASC
+    </select>
+
     <select id="listByLoanId" resultType="DsedLoanPeriodsDo">
         SELECT
         <include refid="queryFields" />

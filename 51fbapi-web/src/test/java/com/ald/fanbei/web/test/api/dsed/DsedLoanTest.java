@@ -58,46 +58,18 @@ public class DsedLoanTest extends BaseTest{
 	}
 	
 	/**
-	 * 贷款前确认
+	 * 贷款查询接口
 	 */
 	@Test
-	public void confirmLoan() {
-		String url = urlBase + "/h5/loan/confirmLoan";
+	public void dsedGetLoanInfo() {
+		String url = urlBase + "/dsed/dsedGetLoanInfo";
 		Map<String,String> params = new HashMap<>();
-		params.put("prdType", "BLD_LOAN");
-		params.put("amount", 1000+"");
-		params.put("periods", 1+"");
-		testH5(url, params, userName, true);
-	}
-	
-	/**
-	 * 发起贷款申请
-	 */
-	@Test
-	public void applyLoan() {
-		String url = urlBase + "/dsed/dsedApplyLoan";
-		Map<String,String> params = new HashMap<>();
-		params.put("prdType", "DSED_LOAN");
-		params.put("amount", 6000+"");
-		params.put("periods", 3+"");
-		params.put("realName", "过帅强");
-		params.put("idNumber", "330724199211254817");
-		params.put("remark", "白领贷借款");
-		params.put("loanRemark", "装修");
-		params.put("repayRemark", "工资");
-		params.put("payPwd", DigestUtils.md5Hex("123456")); // 支付密码，根据测试账号需要替换！
-		params.put("latitude", "20.35654");
-		params.put("longitude", "21.65645");
-		params.put("province", "浙江省");
-		params.put("userId","18637962615");
-		params.put("city", "杭州市");
-		params.put("county", "中国");
-		params.put("address", "滨江区星耀城1期");
-		params.put("blackBox", "sadasd");
-		params.put("bqsBlackBox", "asdasdasd");
-		params.put("couponId", "");
-		
-		testH5(url, params, userName, true);
+		params.put("userId","18637962344");
+		String data = paramsEncrypt(params,"testC1b6x@6aH$2dlw");
+		Map<String,String> p = new HashMap<>();
+		p.put("data",data);
+		p.put("sign",generateSign(params,"testC1b6x@6aH$2dlw"));
+		testH5(url, p, userName, true);
 	}
 
 	/**
@@ -132,16 +104,7 @@ public class DsedLoanTest extends BaseTest{
 		p.put("sign",generateSign(params,"testC1b6x@6aH$2dlw"));
 		testH5(url, p, userName, true);
 	}
-	@Test
-	public void md5Test(){
-		String md51 = "address=滨江区星耀城1期&amount=6000&blackBox=sadasd&bqsBlackBox=asdasdasd&city=杭州市&county=中国&couponId=&idNumber=330724199211254817&latitude=20.35654&loanRemark=装修&longitude=21.65645&payPwd=e10adc3949ba59abbe56e057f20f883e&periods=3&prdType=DSED_LOAN&province=浙江省&realName=过帅强&remark=白领贷借款&repayRemark=工资&userId=18637962615&appSecret=testC1b6x@6aH$2dlw";
-		StringBuffer md52 = new StringBuffer();
-		md52.append("address=滨江区星耀城1期&amount=6000&blackBox=sadasd&bqsBlackBox=asdasdasd&city=杭州市&county=中国&couponId=&idNumber=330724199211254817&latitude=20.35654&loanRemark=装修&longitude=21.65645&payPwd=e10adc3949ba59abbe56e057f20f883e&periods=3&prdType=DSED_LOAN&province=浙江省&realName=过帅强&remark=白领贷借款&repayRemark=工资&userId=18637962615&appSecret=testC1b6x@6aH$2dlw");
-		String n1 = MD5.md5(md51);
-		String n2 = MD5.md5(md52.toString());
-		System.out.println(n1);
-		System.out.println(n2);
-	}
+
 
 	/**
 	 * 生成本地签名
@@ -218,26 +181,6 @@ public class DsedLoanTest extends BaseTest{
 		testH5(url, params, userName, true);
 	}
 
-	/**
-	 * 按期还款
-	 */
-	@Test
-	public void repayDo() {
-		String url = urlBase + "/loan/loanRepayDo";
-		Map<String,String> params = new HashMap<>();
-		params.put("repaymentAmount", 500+"");//351.27
-		params.put("couponId", "0");
-		params.put("rebateAmount", "0");
-		
-		params.put("payPwd", DigestUtils.md5Hex("123456"));
-		params.put("cardId", "3111464853");
-		params.put("actualAmount",1000+"");
-		params.put("loanId", 586+"");
-		params.put("loanPeriodsIds", "1007,1008");
-		
-		testApi(url, params, userName, true);
-	}
-	
 	/**
 	 * 提前结清还款
 	 */

@@ -59,6 +59,8 @@ public interface DsedLoanService extends ParentService<DsedLoanDo, Long> {
 
     DsedLoanDo getByLoanNo(String loanNo);
 
+    DsedLoanDo getByUserId(Long userId);
+
     /**
      * 根据用户id和产品类型获取最新一条
      *
