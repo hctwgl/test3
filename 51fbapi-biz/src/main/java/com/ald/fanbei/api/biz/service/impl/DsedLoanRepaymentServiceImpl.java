@@ -93,6 +93,8 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	XgxyUtil xgxyUtil;
 	@Resource
 	DsedLoanPeriodsService dsedLoanPeriodsService;
+	@Resource
+	DsedSmsUtil dsedSmsUtil;
 
 
 	@Override
@@ -411,12 +413,9 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				public Long doInTransaction(TransactionStatus status) {
 					try {
 						dealLoanRepay(LoanRepayDealBo, repaymentDo,periodsList);
-
 						// 最后一期还完后， 修改loan状态FINSH
 						dealLoanStatus(LoanRepayDealBo);
-
 						dealSum(LoanRepayDealBo);
-
 						return 1L;
 					} catch (Exception e) {
 						status.setRollbackOnly();
@@ -426,13 +425,9 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				}
 
 			});
-
 			if (resultValue == 1L) {
-
 				nofityRisk(LoanRepayDealBo);
-
 				notifyUserBySms(LoanRepayDealBo);
-
 				if (collectionRepaymentId != null){
 					repaymentDo.setRemark(String.valueOf(collectionRepaymentId));
 				}
@@ -443,7 +438,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 //				}catch (Exception e){
 //					logger.info("消息同步失败:",e);
 //				}
-
 				//还款成功，调用西瓜信用通知接口
 				DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
 				noticeRecordDo.setUserId(repaymentDo.getUserId());
@@ -451,7 +445,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				noticeRecordDo.setType(DsedNoticeType.REPAY.code);
 				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 				dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
-
 				HashMap<String,Object> data = new HashMap<String,Object>();
 				if(xgxyUtil.dsedRePayNoticeRequest(data)){
 					noticeRecordDo.setRid(noticeRecordDo.getRid());
@@ -462,7 +455,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 		}finally {
 			unLock(tradeNo);
-
 			// 解锁还款
 			unLockRepay(repaymentDo.getUserId());
 		}
@@ -522,11 +514,11 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				if (isCashOverdue) {
 					logger.info("loanCash overdue withhold false orverdue,mobile=" + afUserDo.getMobile() + "errorMsg:" + errorMsg);
 				} else {
-					smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
+					dsedSmsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
 				}
 			} else {
 				errorTimes = dsedLoanRepaymentDao.getCurrDayRepayErrorTimesByUser(loanRepaymentDo.getUserId());
-				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
+				dsedSmsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
 			}
 
 			//还款失败，调用西瓜信用通知接口
@@ -597,24 +589,15 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		if(repayDealBo.isAllRepay){
 			notRepayMoney = repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount.add(repayDealBo.sumPoundage).add(repayDealBo.sumInterest));
 			replaceMapData.put("remainAmount", notRepayMoney+"");
-			return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
+			return dsedSmsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
 		} else if (notRepayMoney==null || notRepayMoney.compareTo(BigDecimal.ZERO)<=0) {
 			notRepayMoney = repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount);
 			replaceMapData.put("remainAmount", notRepayMoney+"");
-			String title = "恭喜您，借款已还清！";
-			String content = "您的还款已经处理完成，成功还款&repayMoney元。信用分再度升级，给您点个大大的赞！";
-			content = content.replace("&repayMoney",repayMoney.toString());
-			pushService.pushUtil(title,content,mobile);
-			return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
+			return dsedSmsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
 		} else {
 			notRepayMoney = repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount);
 			replaceMapData.put("remainAmount", notRepayMoney+"");
-			String title = "部分还款成功！";
-			String content = "本次成功还款&repayMoney元，剩余待还金额&remainAmount元，请继续保持良好的信用习惯哦。";
-			content = content.replace("&repayMoney",repayMoney.toString());
-			content = content.replace("&remainAmount",notRepayMoney.toString());
-			pushService.pushUtil(title,content,mobile);
-			return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS_REMAIN.getCode());
+			return dsedSmsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS_REMAIN.getCode());
 		}
 	}
 
