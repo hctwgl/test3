@@ -658,4 +658,7 @@ public class Constants {
 	 * 签到奖励每日最大提现配置
 	 */
 	public static final String SIGN_REWARD_MAX_WITHDRAW = "SIGN_REWARD_MAX_WITHDRAW";
+
+	//通知失败次数
+	public static final String NOTICE_FAIL_COUNT = "5";
 }

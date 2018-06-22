@@ -57,4 +57,6 @@ public interface DsedLoanPeriodsService extends ParentService<DsedLoanPeriodsDo,
 
     List<DsedLoanPeriodsDo> getNoRepayListByLoanId(Long rid);
 
+    DsedLoanPeriodsDo getOneByLoanId(Long loanId);
+
 }

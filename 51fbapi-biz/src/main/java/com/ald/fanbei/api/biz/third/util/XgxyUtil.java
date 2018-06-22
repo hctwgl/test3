@@ -6,10 +6,7 @@ import com.ald.fanbei.api.biz.bo.XgxyOverdueReqBo;
 import com.ald.fanbei.api.biz.bo.XgxyPayReqBo;
 import com.ald.fanbei.api.biz.bo.XgxyRepayReqBo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.SignUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 import com.alibaba.fastjson.JSONObject;
@@ -71,16 +68,14 @@ public class XgxyUtil {
     }
     /**
      * 还款通知请求
-     * @param loanDo
+     * @param data
      * @return
      */
-    public boolean  rePayNoticeRequest(DsedLoanDo loanDo){
+    public boolean  rePayNoticeRequest(HashMap<String,Object> data){
         try {
             XgxyRepayReqBo repayReqBo=new XgxyRepayReqBo();
-            repayReqBo.setAppId(loanDo.getTradeNoOut());
-            repayReqBo.setBorrowNo(loanDo.getLoanNo());
-            repayReqBo.setStatus(loanDo.getStatus());
-            repayReqBo.setSign(SignUtil.sign(createLinkString(repayReqBo), PRIVATE_KEY));
+            JSONObject jsStr = JSONObject.parseObject(createLinkString(repayReqBo));
+            repayReqBo.setSign(DsedSignUtil.paramsEncrypt(jsStr, PRIVATE_KEY));
             String reqResult = HttpUtil.post(getXgxyUrl(), repayReqBo);
             if(StringUtil.isBlank(reqResult)){
                 return false;

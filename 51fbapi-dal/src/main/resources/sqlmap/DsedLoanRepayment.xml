@@ -338,4 +338,17 @@
 
     </select>
 
+    <select id="getCurrDayRepayErrorTimesByUser" resultType="java.lang.Integer">
+        SELECT
+        count(*)
+        FROM
+        dsed_loan_repayment
+        WHERE
+        is_delete = 0
+        AND
+        user_id = #{userId}
+        and `status` = 'FAIL' and repay_channel != 'AUTO_REPAY'
+        and  gmt_create  >= CURDATE()
+    </select>
+
 </mapper>
