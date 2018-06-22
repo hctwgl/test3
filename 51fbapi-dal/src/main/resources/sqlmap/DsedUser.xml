@@ -92,12 +92,11 @@
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.DsedUserDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO dsed_user
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">        
-	            gmt_create,
-	        </if>
-	        <if test="gmtModified != null">        
-	            gmt_modified,
-	        </if>
+            <if test="rid != null">
+                id,
+            </if>
+            gmt_create,
+            gmt_modified,
 	        <if test="userName != null">        
 	            user_name,
 	        </if>
@@ -164,15 +163,17 @@
 	        <if test="openId != null">        
 	            open_id,
 	        </if>
+            <if test="idNumber != null">
+                id_number,
+            </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
-		    </if>
+            <if test="rid != null">
+                #{rid},
+            </if>
+		    now(),
+            now(),
 		    <if test="userName != null" >
 		       #{userName,jdbcType=VARCHAR},
 		    </if>
@@ -239,6 +240,9 @@
 		    <if test="openId != null" >
 		       #{openId,jdbcType=VARCHAR},
 		    </if>
+            <if test="idNumber != null" >
+                #{idNumber,jdbcType=VARCHAR},
+            </if>
         </trim>
     </insert>
     
