@@ -85,8 +85,6 @@ public class DsedSmsUtil extends AbstractThird {
     @Resource
     AfResourceService afResourceService;
     @Resource
-    AfUserOutDayDao afUserOutDayDao;
-    @Resource
     private  BizCacheUtil bizCacheUtil;
     @Resource
     DsedResourceService dsedResourceService;

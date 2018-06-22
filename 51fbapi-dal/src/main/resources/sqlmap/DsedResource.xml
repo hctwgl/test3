@@ -8,6 +8,8 @@
         id rid,gmt_create,gmt_modified,creator,modifier,data_type,type,type_desc,name,value,description,sec_type,value_1,value_2,value_3,value_4,value_5,pic1,pic2,sort,effective_start_time,effective_end_time 
     </sql>
 
+
+
     <sql id="queryAllFields">
 		id rid,gmt_create,gmt_modified,creator,modifier,data_type,`type`,type_desc,`name`,`value`,description,
 		sec_type,value_1,value_2,value_3,value_4,value_5,sort,pic1,pic2
@@ -312,7 +314,7 @@
         <include refid="commonCondition"/>
     </select>
 
-    <select id="getConfigByTypesAndSecType" resultType="AfResourceDo">
+    <select id="getConfigByTypesAndSecType" resultType="DsedResourceDo">
         SELECT
         <include refid="queryAllFields" />
         FROM

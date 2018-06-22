@@ -603,5 +603,13 @@
         where is_delete = 0 and id = #{rid}
     </update>
 
+	<select id="getByLoanNo" resultType="DsedLoanDo">
+		SELECT
+		<include refid="queryFields" />
+		FROM dsed_loan
+		WHERE is_delete = 0 AND loan_no=#{loanNo}
+		LIMIT 1
+	</select>
+
 
 </mapper>

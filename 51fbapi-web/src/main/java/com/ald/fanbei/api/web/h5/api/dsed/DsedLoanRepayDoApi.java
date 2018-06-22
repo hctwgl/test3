@@ -4,11 +4,9 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.impl.DsedLoanRepaymentServiceImpl.LoanRepayBo;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.domain.DsedLoanDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
-import com.ald.fanbei.api.dal.domain.DsedUserDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
@@ -74,6 +72,7 @@ public class DsedLoanRepayDoApi implements H5Handle {
 		bo.borrowNo = param.borrowNo;
 		bo.bankNo = param.bankNo;
 		bo.curPeriod = param.curPeriod;
+		bo.isAllRepay = false;	// 标识提前还款
 		checkPwdAndCard(bo);
 		checkFrom(bo);
 		return bo;
@@ -102,9 +101,13 @@ public class DsedLoanRepayDoApi implements H5Handle {
 		if(dsedLoanRepaymentDo != null) {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
 		}
+
+
 		// 检查 用户还钱金额是否准确
 		DsedLoanPeriodsDo dsedLoanPeriodsDo = dsedLoanPeriodsService.getLoanPeriodsByLoanNoAndNper(bo.borrowNo,bo.curPeriod);
 		BigDecimal shouldRepayAmount = dsedLoanRepaymentService.calculateRestAmount(dsedLoanPeriodsDo);
+		bo.dsedLoanPeriodsDoList.add(dsedLoanPeriodsDo);
+		bo.repaymentAmount = dsedLoanPeriodsDo.getAmount();
 		if(bo.amount.compareTo(shouldRepayAmount) > 0) {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}

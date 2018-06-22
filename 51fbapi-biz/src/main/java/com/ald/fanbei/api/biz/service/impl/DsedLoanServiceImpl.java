@@ -277,7 +277,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 
     @Override
     public DsedLoanDo getByLoanNo(String loanNo) {
-        return null;
+        return dsedLoanDao.getByLoanNo(loanNo);
     }
 
     @Override
