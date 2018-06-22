@@ -18,7 +18,7 @@ public class DsedLoanTest extends BaseTest{
 	 * 自测根据自己的业务修改下列属性 TODO
 	 */
 //	String urlBase = "https://testapi.51fanbei.com";
-	String urlBase = "http://localhost:8080";
+	String urlBase = "http://localhost:8089";
 //	String userName = "13638668564";	//田建成 cardId:3111464419 支付密码123456
 	String userName = "15669066271";	//田建成 cardId:3111464125 支付密码123456
 //	String userName = "13958004662";	//胡朝永 支付密码123456
@@ -98,6 +98,23 @@ public class DsedLoanTest extends BaseTest{
 		params.put("blackBox", "sadasd");
 		params.put("bqsBlackBox", "asdasdasd");
 		params.put("couponId", "");
+		String data = paramsEncrypt(params,"testC1b6x@6aH$2dlw");
+		Map<String,String> p = new HashMap<>();
+		p.put("data",data);
+		p.put("sign",generateSign(params,"testC1b6x@6aH$2dlw"));
+		testH5(url, p, userName, true);
+	}
+
+
+	@Test
+	public void dsedrepayLoan() {
+		String url = urlBase + "/dsed/dsedLoanRepayDo";
+		Map<String,String> params = new HashMap<>();
+		params.put("amount", 500+"");
+		params.put("curPeriod", 1+"");
+		params.put("bankNo", "621558320200730");
+		params.put("borrowNo", "dk2018062114010403242");
+		params.put("userId","18637962344");
 		String data = paramsEncrypt(params,"testC1b6x@6aH$2dlw");
 		Map<String,String> p = new HashMap<>();
 		p.put("data",data);

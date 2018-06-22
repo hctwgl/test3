@@ -23,4 +23,6 @@ public interface DsedLoanDao extends BaseDao<DsedLoanDo, Long> {
     int updateByLoanId(DsedLoanDo loanDo);
 
     DsedLoanDo getByUserId(Long userId);
+
+    DsedLoanDo getByLoanNo(String loanNo);
 }

@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.ContractPdfThreadPool;
 import com.ald.fanbei.api.common.util.*;
 
@@ -29,28 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.service.AfBorrowBillService;
-import com.ald.fanbei.api.biz.service.AfBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentService;
-import com.ald.fanbei.api.biz.service.AfBorrowLegalRepaymentV2Service;
-import com.ald.fanbei.api.biz.service.AfBorrowRecycleRepaymentService;
-import com.ald.fanbei.api.biz.service.AfBorrowService;
-import com.ald.fanbei.api.biz.service.AfLoanRepaymentService;
-import com.ald.fanbei.api.biz.service.AfLoanService;
-import com.ald.fanbei.api.biz.service.AfOrderRefundService;
-import com.ald.fanbei.api.biz.service.AfOrderService;
-import com.ald.fanbei.api.biz.service.AfRenewalDetailService;
-import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailService;
-import com.ald.fanbei.api.biz.service.AfRenewalLegalDetailV2Service;
-import com.ald.fanbei.api.biz.service.AfRepaymentBorrowCashService;
-import com.ald.fanbei.api.biz.service.AfRepaymentService;
-import com.ald.fanbei.api.biz.service.AfSupplierOrderSettlementService;
-import com.ald.fanbei.api.biz.service.AfTradeCodeInfoService;
-import com.ald.fanbei.api.biz.service.AfTradeWithdrawRecordService;
-import com.ald.fanbei.api.biz.service.AfUserAccountService;
-import com.ald.fanbei.api.biz.service.AfUserAmountService;
 import com.ald.fanbei.api.biz.service.wxpay.WxSignBase;
 import com.ald.fanbei.api.biz.service.wxpay.WxXMLParser;
 import com.ald.fanbei.api.biz.third.util.fenqicuishou.FenqiCuishouUtil;
@@ -167,6 +146,9 @@ public class PayRoutController {
 	KafkaSync kafkaSync;
 	@Resource
 	private AfSupplierOrderSettlementService afSupplierOrderSettlementService;
+
+	@Resource
+	DsedLoanRepaymentService dsedLoanRepaymentService;
 
 
 
@@ -488,7 +470,7 @@ public class PayRoutController {
 				} else if (PayOrderSource.RENEW_CASH_LEGAL_V2.getCode().equals(merPriv)) { // 合规续期V2
 					afRenewalLegalDetailV2Service.dealLegalRenewalSucess(outTradeNo, tradeNo);
 				} else if (PayOrderSource.REPAY_LOAN.getCode().equals(merPriv)) { // 贷款还款
-					afLoanRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
+					dsedLoanRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
 				} else if (PayOrderSource.BORROW_RECYCLE_REPAY.getCode().equals(merPriv)) { // 回收 取消订单
 					afBorrowRecycleRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
 				}
@@ -533,7 +515,7 @@ public class PayRoutController {
 				} else if (PayOrderSource.RENEW_CASH_LEGAL_V2.getCode().equals(merPriv)) { // 合规续期V2失败
 					afRenewalLegalDetailV2Service.dealLegalRenewalFail(outTradeNo, tradeNo, errorWarnMsg);
 				} else if (PayOrderSource.REPAY_LOAN.getCode().equals(merPriv)) { // 贷款还款
-					afLoanRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
+					dsedLoanRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
 				} else if (PayOrderSource.BORROW_RECYCLE_REPAY.getCode().equals(merPriv)) { // 回收 取消订单 失败
 					afBorrowRecycleRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, errorWarnMsg);
 				}
