@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.UpsBankStatusDto;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
@@ -19,6 +20,7 @@ import com.ald.fanbei.api.biz.service.DsedUserBankcardService;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -74,6 +76,31 @@ public class DsedUserBankcardServiceImpl extends ParentServiceImpl<DsedUserBankc
 		if (upsBankStatusDto.getLimitUp().compareTo(amount.doubleValue()) < 0) {
 			throw new FanbeiException(String.format("该银行单笔限额%.2f元，请分批还款或使用其他银行卡还款，谢谢！", upsBankStatusDto.getLimitUp()));
 		}
+	}
+
+	@Override
+	public int getUserBankByCardNo(String cardNumber) {
+		return dsedUserBankcardDao.getUserBankByCardNo(cardNumber);
+	}
+
+	@Override
+	public List<DsedUserBankcardDo> getUserBankCardInfoByUserId(Long userId) {
+		return dsedUserBankcardDao.getUserBankCardInfoByUserId(userId);
+	}
+
+	@Override
+	public int addUserBankcard(DsedUserBankcardDo userBankcardDo) {
+		return dsedUserBankcardDao.addUserBankcard(userBankcardDo);
+	}
+
+	@Override
+	public DsedUserBankcardDo getUserBankCardByCardId(String bankCardId) {
+		return dsedUserBankcardDao.getUserBankCardByCardNo(bankCardId);
+	}
+
+	@Override
+	public int updateUserBankcard(DsedUserBankcardDo userBankcardDo) {
+		return dsedUserBankcardDao.updateUserBankcard(userBankcardDo);
 	}
 
 

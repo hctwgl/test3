@@ -1,9 +1,11 @@
 package com.ald.fanbei.api.biz.service;
 
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * 都市E贷用户绑定的银行卡Service
@@ -43,4 +45,19 @@ public interface DsedUserBankcardService extends ParentService<DsedUserBankcardD
 
 
     void checkUpsBankLimit(String bankCode, String bankChannel, BigDecimal amount);
+
+    int getUserBankByCardNo(String cardNumber);
+
+    List<DsedUserBankcardDo> getUserBankCardInfoByUserId(Long userId);
+
+
+    int addUserBankcard(DsedUserBankcardDo userBankcardDo);
+
+    DsedUserBankcardDo getUserBankCardByCardId(String bankCardId);
+
+   int  updateUserBankcard(DsedUserBankcardDo userBankcardDo);
+
+
+
+
 }

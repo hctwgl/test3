@@ -33,4 +33,9 @@ public class DsedBankServiceImpl extends ParentServiceImpl<DsedBankDo, Long> imp
 	public BaseDao<DsedBankDo, Long> getDao() {
 		return dsedBankDao;
 	}
+
+	@Override
+	public DsedBankDo getBankByName(String name) {
+		return dsedBankDao.getBankByName(name);
+	}
 }

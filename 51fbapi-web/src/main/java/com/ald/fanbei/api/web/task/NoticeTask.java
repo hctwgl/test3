@@ -1,12 +1,18 @@
 package com.ald.fanbei.api.web.task;
 
+import com.ald.fanbei.api.biz.bo.XgxyOverdueBo;
+import com.ald.fanbei.api.biz.bo.XgxyPayBo;
+import com.ald.fanbei.api.biz.bo.XgxyRepayBo;
+import com.ald.fanbei.api.biz.bo.XgxyRepayReqBo;
 import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
+import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.DsedLoanService;
 import com.ald.fanbei.api.biz.service.DsedNoticeRecordService;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.common.enums.DsedNoticeType;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 import org.apache.commons.lang.StringUtils;
@@ -45,6 +51,9 @@ public class NoticeTask {
     private DsedLoanPeriodsService dsedLoanPeriodsService;
 
     @Resource
+    private DsedLoanRepaymentService dsedLoanRepaymentService;
+
+    @Resource
     private XgxyUtil xgxyUtil;
 
     @Scheduled(cron = "* 0/5 * * * ?")
@@ -59,24 +68,32 @@ public class NoticeTask {
                     logger.info("dsed notice record more max count"+recordDo);
                     continue;
                 }
-                final DsedLoanDo loanDo=dsedLoanService.getById(Long.valueOf(recordDo.getRefId()));
+                DsedLoanDo loanDo=null;
+                DsedLoanRepaymentDo loanRepaymentDo=null;
+                DsedLoanPeriodsDo periodsDo=null;
                 if (StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.PAY.code)) {
-                    updateNoticeRecord(recordDo,xgxyUtil.payNoticeRequest(loanDo));
+                    loanDo=dsedLoanService.getById(Long.valueOf(recordDo.getRefId()));
+                    updateNoticeRecord(recordDo,xgxyUtil.payNoticeRequest(buildePayBo(loanDo)));
                     continue;
                 }
                 if (StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.REPAY.code)) {
-                    updateNoticeRecord(recordDo, xgxyUtil.rePayNoticeRequest(loanDo));
+                    loanRepaymentDo= dsedLoanRepaymentService.getProcessLoanRepaymentByLoanId(Long.valueOf(recordDo.getRefId()));
+                    HashMap<String,Object> loanRepay=new HashMap<>();
+                    updateNoticeRecord(recordDo, xgxyUtil.rePayNoticeRequest(buildRepauBo(loanRepaymentDo)));
                     continue;
                 }
                 if(StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUE.code)){
-                    final DsedLoanPeriodsDo periodsDo=dsedLoanPeriodsService.getById(Long.valueOf(recordDo.getRefId()));
-                    updateNoticeRecord(recordDo, true);
+                    periodsDo=dsedLoanPeriodsService.getById(Long.valueOf(recordDo.getRefId()));
+                    updateNoticeRecord(recordDo, xgxyUtil.overDueNoticeRequest(buildOverdue(periodsDo)));
                     continue;
                 }
                 if(StringUtils.isBlank(all_noticedfail_moreonce.get(recordDo.getRid()))){
+                    DsedLoanDo finalLoanDo = loanDo;
+                    DsedLoanRepaymentDo finalLoanRepaymentDo = loanRepaymentDo;
+                    DsedLoanPeriodsDo finalPeriodsDo = periodsDo;
                     Thread thread = new Thread(){
                         public void run(){
-                            nextNotice(recordDo,loanDo);
+                            nextNotice(recordDo, finalLoanDo, finalLoanRepaymentDo, finalPeriodsDo);
                         }
                     };
                     thread.start();
@@ -87,14 +104,16 @@ public class NoticeTask {
 
     }
 
-     void nextNotice(DsedNoticeRecordDo recordDo,DsedLoanDo loanDo){
+     void nextNotice(DsedNoticeRecordDo recordDo,DsedLoanDo loanDo,DsedLoanRepaymentDo loanRepaymentDo,DsedLoanPeriodsDo periodsDo){
          try {
              all_noticedfail_moreonce.put(recordDo.getRid(),"true");
              Thread.sleep(1000*60*request_times[Integer.parseInt(recordDo.getTimes())-1]);
              if(StringUtils.equals(recordDo.getType(), "PAY")){
-                 updateNoticeRecord(recordDo, xgxyUtil.payNoticeRequest(loanDo));
+                 updateNoticeRecord(recordDo, xgxyUtil.payNoticeRequest(buildePayBo(loanDo)));
              }else if(StringUtils.equals(recordDo.getType(), "REPAY")) {
-                 updateNoticeRecord(recordDo, xgxyUtil.rePayNoticeRequest(loanDo));
+                 updateNoticeRecord(recordDo, xgxyUtil.rePayNoticeRequest(buildRepauBo(loanRepaymentDo)));
+             }else {
+                 updateNoticeRecord(recordDo, xgxyUtil.overDueNoticeRequest(buildOverdue(periodsDo)));
              }
              all_noticedfail_moreonce.remove(recordDo.getRid());
          } catch (InterruptedException e) {
@@ -121,17 +140,30 @@ public class NoticeTask {
         return buildRecord;
     }
 
-
-
-
-    boolean payNotice(DsedLoanDo loanDo){
-        xgxyUtil.payNoticeRequest(loanDo);
-        return true;
+   XgxyRepayBo buildRepauBo(DsedLoanRepaymentDo loanRepaymentDo){
+       XgxyRepayBo repayBo=new XgxyRepayBo();
+       repayBo.setTradeNo(loanRepaymentDo.getTradeNoOut());
+       repayBo.setStatus(loanRepaymentDo.getStatus());
+       repayBo.setBorrowNo(String.valueOf(loanRepaymentDo.getLoanId()));
+       return repayBo;
+    }
+   XgxyPayBo buildePayBo(DsedLoanDo loanDo){
+       XgxyPayBo payBo=new XgxyPayBo();
+       payBo.setTrade(loanDo.getTradeNoOut());
+       payBo.setBorrowNo(String.valueOf(loanDo.getRid()));
+       payBo.setGmtArrival(loanDo.getGmtArrival());
+       payBo.setReason(loanDo.getRemark());
+       payBo.setStatus(loanDo.getStatus());
+       return payBo;
+   }
+    XgxyOverdueBo buildOverdue(DsedLoanPeriodsDo periodsDo){
+        XgxyOverdueBo overdueBo=new XgxyOverdueBo();
+        overdueBo.setBorrowNo(periodsDo.getLoanNo());
+        overdueBo.setCurPeriod(String.valueOf(periodsDo.getNper()));
+        overdueBo.setOverdueDays(periodsDo.getOverdueDays());
+        overdueBo.setTradeNo(overdueBo.getTradeNo());
+        return overdueBo;
     }
 
-    boolean rePayNotice(DsedLoanDo loanDo){
-        xgxyUtil.rePayNoticeRequest(loanDo);
-        return true;
-    }
 
 }

@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.DsedBankDo;
  */
 public interface DsedBankService extends ParentService<DsedBankDo, Long>{
 
+    DsedBankDo getBankByName(String name);
+
 }

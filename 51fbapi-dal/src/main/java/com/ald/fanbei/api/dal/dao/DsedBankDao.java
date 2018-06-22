@@ -12,6 +12,7 @@ import com.ald.fanbei.api.dal.domain.DsedBankDo;
  */
 public interface DsedBankDao extends BaseDao<DsedBankDo, Long> {
 
+    DsedBankDo getBankByName(String name);
     
 
 }

@@ -448,7 +448,6 @@ public class UpsUtil extends AbstractThird {
 	 */
 	public UpsAuthSignRespBo authSign(String userNo,String realName,String mobile,String idNumber,String cardNumber,String clientType,String bankCode,String cardType,
 									  String validDate,String safeCode){
-//		String orderNo = "as"+idNumber.substring(idNumber.length()-15,idNumber.length()) + System.currentTimeMillis();
 		String orderNo = getOrderNo("sign", mobile.substring(mobile.length()-4,mobile.length()));
 		UpsAuthSignReqBo reqBo = new UpsAuthSignReqBo();
 		setPubParam(reqBo,"authSign",orderNo,clientType);

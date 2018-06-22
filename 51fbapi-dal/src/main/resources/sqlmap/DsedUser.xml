@@ -325,7 +325,71 @@
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
-	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.DsedUserDo">
+    <update id="updateUser" parameterType="DsedUserDo">
+        UPDATE
+        af_user
+        SET
+        gmt_modified = NOW()
+        <if test="userName != null">
+            ,user_name = #{userName}
+        </if>
+        <if test="password != null">
+            ,password = #{password}
+        </if>
+        <if test="salt != null">
+            ,salt = #{salt}
+        </if>
+        <if test="gender != null">
+            ,gender = #{gender}
+        </if>
+        <if test="nick != null">
+            ,nick = #{nick}
+        </if>
+        <if test="avatar != null">
+            ,avatar = #{avatar}
+        </if>
+        <if test="realName != null">
+            ,real_name = #{realName}
+        </if>
+        <if test="mobile != null">
+            ,mobile = #{mobile}
+        </if>
+        <if test="email != null">
+            ,email = #{email}
+        </if>
+        <if test="birthday != null">
+            ,birthday = #{birthday}
+        </if>
+        <if test="province != null">
+            ,province = #{province}
+        </if>
+        <if test="city != null">
+            ,city = #{city}
+        </if>
+        <if test="county != null">
+            ,county = #{county}
+        </if>
+        <if test="address != null">
+            ,address = #{address}
+        </if>
+        <if test="recommendId != null">
+            ,recommend_id = #{recommendId}
+        </if>
+        <if test="failCount != null">
+            ,fail_count = #{failCount}
+        </if>
+        <if test="recommendCode != null">
+            ,recommend_code = #{recommendCode}
+        </if>
+        <if test="majiabaoName != null">
+            ,majiabao_name = #{majiabaoName}
+        </if>
+        WHERE
+        id = #{rid}
+    </update>
+
+
+    <select id="getById" resultType="com.ald.fanbei.api.dal.domain.DsedUserDo">
         SELECT
         <include refid="queryFields" />
         FROM dsed_user

@@ -1,9 +1,11 @@
 package com.ald.fanbei.api.dal.dao;
 
+import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * 都市E贷用户绑定的银行卡Dao
@@ -35,4 +37,40 @@ public interface DsedUserBankcardDao extends BaseDao<DsedUserBankcardDo, Long> {
      * 获取银行身份信息
      */
     HashMap<String,Object> getUserBankInfo(@Param("bankNo")String bankNo);
+
+
+    /**
+     * 查询银行卡是否已被人绑定
+     * @return
+     */
+    int getUserBankByCardNo(@Param("cardNumber")String cardNumber);
+
+
+    /**
+     * 查询银行卡信息
+     * @param userId
+     * @return
+     */
+    List<DsedUserBankcardDo> getUserBankCardInfoByUserId(Long userId);
+
+    /**
+     * 增加记录
+     * @param userBankcardDo
+     * @return
+     */
+    int addUserBankcard(DsedUserBankcardDo userBankcardDo);
+    /**
+     * 查询银行卡信息
+     * @param cardNumber
+     * @return
+     */
+    DsedUserBankcardDo getUserBankCardByCardNo(@Param("cardNumber")String cardNumber);
+
+    /**
+     * 更新卡状态为绑定
+     * @param userBankcardDo
+     * @return
+     */
+    int updateUserBankcard(DsedUserBankcardDo userBankcardDo);
+
 }

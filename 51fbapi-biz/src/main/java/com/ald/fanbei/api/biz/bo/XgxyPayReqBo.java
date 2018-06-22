@@ -7,6 +7,7 @@ public class XgxyPayReqBo extends XgxyReqBo{
     private String borrowNo;  //借款编号
     private String status;  //放款结果
     private Date gmtArrival;  //放款到账时间
+    private String reason;  //失败原因
 
     public String getBorrowNo() {
         return borrowNo;
@@ -25,6 +26,16 @@ public class XgxyPayReqBo extends XgxyReqBo{
     public void setStatus(String status) {
         this.status = status;
         this.put("status", status);
+
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+        this.put("reason", reason);
 
     }
 
