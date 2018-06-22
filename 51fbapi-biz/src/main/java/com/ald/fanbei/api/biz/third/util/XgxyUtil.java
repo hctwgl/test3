@@ -53,7 +53,7 @@ public class XgxyUtil {
             }else {
                 payReqBo.setGmtArrival(payBo.getGmtArrival());
             }
-            payReqBo.setSign(SignUtil.sign(createLinkString(payReqBo), PRIVATE_KEY));
+            payReqBo.setSign(DsedSignUtil.paramsEncrypt(JSONObject.parseObject(createLinkString(payReqBo)), PRIVATE_KEY));
             String reqResult = HttpUtil.post(getXgxyUrl(), payReqBo);
             if(StringUtil.isBlank(reqResult)){
                 return false;
@@ -81,7 +81,6 @@ public class XgxyUtil {
             repayReqBo.setBorrowNo(repayBo.getBorrowNo());
             repayReqBo.setStatus(repayBo.getStatus());
             repayReqBo.setSign(DsedSignUtil.paramsEncrypt(JSONObject.parseObject(createLinkString(repayReqBo)), PRIVATE_KEY));
-            repayReqBo.setSign(SignUtil.sign(createLinkString(repayReqBo), PRIVATE_KEY));
             String reqResult = HttpUtil.post(getXgxyUrl(), repayReqBo);
             if(StringUtil.isBlank(reqResult)){
                 return false;
@@ -115,7 +114,7 @@ public class XgxyUtil {
             Map<String,Object> data=new HashMap<>();
             data.put("test","test");
             overdueReqBo.setData(data);
-            overdueReqBo.setSign(SignUtil.sign(createLinkString(overdueReqBo), PRIVATE_KEY));
+            overdueReqBo.setSign(DsedSignUtil.paramsEncrypt(JSONObject.parseObject(createLinkString(overdueReqBo)), PRIVATE_KEY));
             String reqResult = HttpUtil.post(getXgxyUrl(), overdueReqBo);
             if(StringUtil.isBlank(reqResult)){
                 return false;
