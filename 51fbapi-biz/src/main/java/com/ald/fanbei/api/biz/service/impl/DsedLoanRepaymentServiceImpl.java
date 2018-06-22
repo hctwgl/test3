@@ -453,7 +453,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
 
 				HashMap<String,Object> data = new HashMap<String,Object>();
-				if(xgxyUtil.rePayNoticeRequest(data)){
+				if(xgxyUtil.dsedRePayNoticeRequest(data)){
 					noticeRecordDo.setRid(noticeRecordDo.getRid());
 					noticeRecordDo.setGmtModified(new Date());
 					dsedNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
@@ -537,7 +537,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 			dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
 			HashMap<String, Object> data = new HashMap<String, Object>();
-			if (xgxyUtil.rePayNoticeRequest(data)) {
+			if (xgxyUtil.dsedRePayNoticeRequest(data)) {
 				noticeRecordDo.setRid(noticeRecordDo.getRid());
 				noticeRecordDo.setGmtModified(new Date());
 				dsedNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);

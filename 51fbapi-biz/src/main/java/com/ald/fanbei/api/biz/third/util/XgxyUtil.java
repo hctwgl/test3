@@ -67,15 +67,17 @@ public class XgxyUtil {
 
     }
     /**
-     * 还款通知请求
-     * @param data
+     * 还款通知请求(补偿机制)
+     * @param loanDo
      * @return
      */
-    public boolean  rePayNoticeRequest(HashMap<String,Object> data){
+    public boolean  rePayNoticeRequest(DsedLoanDo loanDo){
         try {
             XgxyRepayReqBo repayReqBo=new XgxyRepayReqBo();
-            JSONObject jsStr = JSONObject.parseObject(createLinkString(repayReqBo));
-            repayReqBo.setSign(DsedSignUtil.paramsEncrypt(jsStr, PRIVATE_KEY));
+            repayReqBo.setAppId(loanDo.getTradeNoOut());
+            repayReqBo.setBorrowNo(loanDo.getLoanNo());
+            repayReqBo.setStatus(loanDo.getStatus());
+            repayReqBo.setSign(SignUtil.sign(createLinkString(repayReqBo), PRIVATE_KEY));
             String reqResult = HttpUtil.post(getXgxyUrl(), repayReqBo);
             if(StringUtil.isBlank(reqResult)){
                 return false;
@@ -100,33 +102,57 @@ public class XgxyUtil {
      * @return
      */
     public boolean  overDueNoticeRequest(DsedLoanPeriodsDto loanDo){
-       try {
-           XgxyOverdueReqBo overdueReqBo=new XgxyOverdueReqBo();
-           overdueReqBo.setAppId(loanDo.getTradeNoOut());
-           overdueReqBo.setBorrowNo(loanDo.getLoanNo());
-           overdueReqBo.setOverdueDays(String.valueOf(loanDo.getOverdueDays()));
-           overdueReqBo.setCurPeriod(String.valueOf(loanDo.getNper()));
-           Map<String,Object> data=new HashMap<>();
-           data.put("test","test");
-           overdueReqBo.setData(data);
-           overdueReqBo.setSign(SignUtil.sign(createLinkString(overdueReqBo), PRIVATE_KEY));
-           String reqResult = HttpUtil.post(getXgxyUrl(), overdueReqBo);
-           if(StringUtil.isBlank(reqResult)){
-               return false;
-           }
-           XgxyOverdueReqBo overdueReqBo1 = JSONObject.parseObject(reqResult,XgxyOverdueReqBo.class);
-           if("01".equals(overdueReqBo1.getCode())){
-               return true;
-           }
-       }catch (Exception e){
-           logger.info("overDueNoticeRequest request fail",e);
-       }
-      return false;
+        try {
+            XgxyOverdueReqBo overdueReqBo=new XgxyOverdueReqBo();
+            overdueReqBo.setAppId(loanDo.getTradeNoOut());
+            overdueReqBo.setBorrowNo(loanDo.getLoanNo());
+            overdueReqBo.setOverdueDays(String.valueOf(loanDo.getOverdueDays()));
+            overdueReqBo.setCurPeriod(String.valueOf(loanDo.getNper()));
+            Map<String,Object> data=new HashMap<>();
+            data.put("test","test");
+            overdueReqBo.setData(data);
+            overdueReqBo.setSign(SignUtil.sign(createLinkString(overdueReqBo), PRIVATE_KEY));
+            String reqResult = HttpUtil.post(getXgxyUrl(), overdueReqBo);
+            if(StringUtil.isBlank(reqResult)){
+                return false;
+            }
+            XgxyOverdueReqBo overdueReqBo1 = JSONObject.parseObject(reqResult,XgxyOverdueReqBo.class);
+            if("01".equals(overdueReqBo1.getCode())){
+                return true;
+            }
+        }catch (Exception e){
+            logger.info("overDueNoticeRequest request fail",e);
+        }
+        return false;
 
     }
 
 
+    /**
+     * 还款通知请求
+     * @param data
+     * @return
+     */
+    public boolean  dsedRePayNoticeRequest(HashMap<String, Object> data ){
+        try {
+            XgxyRepayReqBo repayReqBo=new XgxyRepayReqBo();
+            JSONObject jsStr = JSONObject.parseObject(createLinkString(repayReqBo));
+            repayReqBo.setSign(DsedSignUtil.paramsEncrypt(jsStr, PRIVATE_KEY));
+            String reqResult = HttpUtil.post(getXgxyUrl(), repayReqBo);
+            if(StringUtil.isBlank(reqResult)){
+                return false;
+            }
+            XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult,XgxyPayReqBo.class);
+            if("01".equals(rePayRespResult.getCode())){
+                return true;
+            }
+        }catch (Exception e){
+            logger.info("rePayNoticeRequest request fail",e);
+        }
 
+        return false;
+
+    }
 
 
     /**
