@@ -14,4 +14,6 @@ import com.ald.fanbei.api.dal.domain.DsedLoanRateDo;
 public interface DsedLoanProductService extends ParentService<DsedLoanProductDo, Long>{
 
     DsedLoanRateDo getByPrdTypeAndNper(String prdType, String nper);
+
+    Integer getMaxPeriodsByPrdType(String prdType);
 }

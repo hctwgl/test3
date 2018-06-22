@@ -49,4 +49,9 @@ public class DsedLoanProductServiceImpl extends ParentServiceImpl<DsedLoanProduc
 		}
 		return null;
 	}
+
+	@Override
+	public Integer getMaxPeriodsByPrdType(String prdType) {
+		return dsedLoanProductDao.getMaxPeriodsByPrdType(prdType);
+	}
 }

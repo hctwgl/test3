@@ -14,4 +14,6 @@ public interface DsedLoanProductDao extends BaseDao<DsedLoanProductDo, Long> {
 
     DsedLoanProductDo getByPrdType(String prdType);
 
+    Integer getMaxPeriodsByPrdType(String prdType);
+
 }

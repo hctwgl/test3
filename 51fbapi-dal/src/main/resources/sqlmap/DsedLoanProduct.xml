@@ -133,6 +133,14 @@
         limit 1
     </select>
 
+    <select id="getMaxPeriodsByPrdType" resultType="java.lang.Integer">
+        SELECT
+        max (periods)
+        FROM dsed_loan_product
+        WHERE prd_type = #{prdType}
+        limit 1
+    </select>
+
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.DsedLoanProductDo">
         UPDATE dsed_loan_product
           <set>
