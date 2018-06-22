@@ -4,11 +4,14 @@ import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.dsed.DsedApplyLoanBo;
 import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.DsedLoanService;
+import com.ald.fanbei.api.biz.service.DsedNoticeRecordService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfLoanPeriodStatus;
 import com.ald.fanbei.api.common.enums.AfLoanStatus;
+import com.ald.fanbei.api.common.enums.DsedNoticeType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -18,6 +21,7 @@ import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
 import com.ald.fanbei.api.dal.dao.DsedUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +38,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -75,6 +80,12 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 
     @Resource
     private UpsUtil upsUtil;
+
+    @Resource
+    private DsedNoticeRecordService dsedNoticeRecordService;
+
+    @Resource
+    private XgxyUtil xgxyUtil;
 
     @Override
     public BaseDao<DsedLoanDo, Long> getDao() {
@@ -129,8 +140,19 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 
             //贷款成功 通知用户
             try {
-                String bankNumber = bankCard.getCardNumber();
-                String lastBankCode = bankNumber.substring(bankNumber.length() - 4);
+                //借款成功，调用西瓜信用通知接口
+                DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
+                noticeRecordDo.setUserId(loanDo.getUserId());
+                noticeRecordDo.setRefId(String.valueOf(loanDo.getRid()));
+                noticeRecordDo.setType(DsedNoticeType.PAY.code);
+                noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+                dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
+                HashMap<String,Object> data = new HashMap<String,Object>();
+                if(xgxyUtil.dsedRePayNoticeRequest(data)){
+                    noticeRecordDo.setRid(noticeRecordDo.getRid());
+                    noticeRecordDo.setGmtModified(new Date());
+                    dsedNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
+                }
 //				smsUtil.sendloanCashCode(userAccount.getUserName(), lastBankCode);
 //				jpushService.pushUtil(Documents.LOAN_SUCC_TITLE, String.format(Documents.LOAN_SUCC_MSG, lastBankCode), userAccount.getUserName());
             } catch (Exception e) {

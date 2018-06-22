@@ -197,7 +197,7 @@ public abstract class DsedBaseController {
     private void compareSign(HttpServletRequest request, Context context) {
         String sign = request.getParameter("sign");
         Map<String, Object> systemsMap = context.getSystemsMap();
-        String md5Value = generateSign(systemsMap,"testC1b6x@6aH$2dlw");
+        String md5Value = generateSign(systemsMap,ConfigProperties.get(Constants.DSED_AES_PASSWORD));
         if (logger.isDebugEnabled())
             logger.info("signStrBefore=" + systemsMap + ",md5Value=" + md5Value + ",sign=" + sign);
         if (!StringUtils.equals(sign, md5Value)) {
