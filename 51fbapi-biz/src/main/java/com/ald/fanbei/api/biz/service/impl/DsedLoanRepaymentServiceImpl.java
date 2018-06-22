@@ -9,8 +9,7 @@ import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
-import com.ald.fanbei.api.biz.service.DsedUpsPayKuaijieServiceAbstract;
-import com.ald.fanbei.api.biz.service.JpushService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.*;
 import com.ald.fanbei.api.biz.third.util.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -18,9 +17,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
@@ -32,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -87,6 +83,16 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	private RiskUtil riskUtil;
 	@Resource
 	private CollectionSystemUtil collectionSystemUtil;
+	@Resource
+	DsedUserService dsedUserService;
+	@Resource
+	JpushService pushService;
+	@Resource
+	DsedNoticeRecordService dsedNoticeRecordService;
+	@Resource
+	XgxyUtil xgxyUtil;
+	@Resource
+	DsedLoanPeriodsService dsedLoanPeriodsService;
 
 
 	@Override
@@ -425,15 +431,32 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 				nofityRisk(LoanRepayDealBo);
 
+				notifyUserBySms(LoanRepayDealBo);
+
 				if (collectionRepaymentId != null){
 					repaymentDo.setRemark(String.valueOf(collectionRepaymentId));
 				}
-				cuiShouUtils.syncDsedCuiShou(repaymentDo);
-				try{
-					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
-					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
-				}catch (Exception e){
-					logger.info("消息同步失败:",e);
+//				cuiShouUtils.syncDsedCuiShou(repaymentDo);
+//				try{
+//					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_USER_BASIC_DATA,true);
+//					kafkaSync.syncEvent(repaymentDo.getUserId(), KafkaConstants.SYNC_SCENE_ONE,true);
+//				}catch (Exception e){
+//					logger.info("消息同步失败:",e);
+//				}
+
+				//还款成功，调用西瓜信用通知接口
+				DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
+				noticeRecordDo.setUserId(repaymentDo.getUserId());
+				noticeRecordDo.setRefId(String.valueOf(repaymentDo.getRid()));
+				noticeRecordDo.setType(DsedNoticeType.REPAY.code);
+				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+				dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
+
+				HashMap<String,Object> data = new HashMap<String,Object>();
+				if(xgxyUtil.dsedRePayNoticeRequest(data)){
+					noticeRecordDo.setRid(noticeRecordDo.getRid());
+					noticeRecordDo.setGmtModified(new Date());
+					dsedNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
 				}
 			}
 
@@ -445,6 +468,16 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		}
 	}
 
+	private void notifyUserBySms(LoanRepayDealBo repayDealBo) {
+		logger.info("notifyUserBySms info begin,sumAmount="+repayDealBo.sumAmount+",curSumRepayAmount="+repayDealBo.curSumRepayAmount+",sumRepaidAmount="+repayDealBo.sumRepaidAmount);
+		try {
+			DsedUserDo UserDo = dsedUserService.getById(repayDealBo.userId);
+			sendRepaymentBorrowCashWarnMsg(UserDo.getMobile(),repayDealBo );
+		} catch (Exception e) {
+			logger.error("Sms notify user error, userId:" + repayDealBo.userId + ",nowRepayAmount:" + repayDealBo.curSumRepayAmount + ",notRepayMoney" + repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount), e);
+		}
+	}
+
 
 	/**
 	 * 还款失败后调用
@@ -452,29 +485,65 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	@Override
 	public void dealRepaymentFail(String tradeNo, String outTradeNo,boolean isNeedMsgNotice,String errorMsg) {
 		final DsedLoanRepaymentDo loanRepaymentDo = dsedLoanRepaymentDao.getRepayByTradeNo(tradeNo);
-		logger.info("dealRepaymentFail process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo
-				+ ",isNeedMsgNotice=" + isNeedMsgNotice + ",errorMsg=" + errorMsg
-				+ ",borrowRepayment=" + JSON.toJSONString(loanRepaymentDo));
+		logger.info("dealRepaymentFail process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo + ",isNeedMsgNotice=" + isNeedMsgNotice + ",errorMsg=" + errorMsg + ",borrowRepayment=" + JSON.toJSONString(loanRepaymentDo));
 
-		if ((loanRepaymentDo != null && AfLoanRepaymentStatus.SUCC.name().equals(loanRepaymentDo.getStatus()) )) { // 检查交易流水 对应记录数据库中是否已经处理
+		if ((loanRepaymentDo != null && AfLoanRepaymentStatus.SUCC.name().equals(loanRepaymentDo.getStatus()))) { // 检查交易流水 对应记录数据库中是否已经处理
 			return;
 		}
 
-		if(loanRepaymentDo != null) {
+		if (loanRepaymentDo != null) {
 			changLoanRepaymentStatus(outTradeNo, AfLoanRepaymentStatus.FAIL.name(), loanRepaymentDo.getRid());
 		}
 
 		// 解锁还款
 		unLockRepay(loanRepaymentDo.getUserId());
 
-		if(isNeedMsgNotice){
-		//通知还款成功
+		if (isNeedMsgNotice) {
+			//用户信息及当日还款失败次数校验
+			int errorTimes = 0;
+			DsedUserDo afUserDo = dsedUserService.getById(loanRepaymentDo.getUserId());
+			//如果是代扣，不校验次数
+			String payType = loanRepaymentDo.getName();
+			//模版数据map处理
+			Map<String, String> replaceMapData = new HashMap<String, String>();
+			replaceMapData.put("errorMsg", errorMsg);
+			//还款失败短信通知
+			boolean isCashOverdue = false;
+			if (StringUtil.isNotBlank(payType) && payType.indexOf("代扣") > -1) {
+				DsedLoanPeriodsDo afLoanPeriodsDo = dsedLoanPeriodsService.getOneByLoanId(loanRepaymentDo.getLoanId());
+				//判断是否逾期，逾期不发短信
+				try {
+					if (StringUtils.equals("Y", afLoanPeriodsDo.getOverdueStatus())) {
+						isCashOverdue = true;
+					}
+				} catch (Exception ex) {
+					logger.info("dealRepaymentFalse isCashOverdue error", ex);
+				}
+				if (isCashOverdue) {
+					logger.info("loanCash overdue withhold false orverdue,mobile=" + afUserDo.getMobile() + "errorMsg:" + errorMsg);
+				} else {
+					smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
+				}
+			} else {
+				errorTimes = dsedLoanRepaymentDao.getCurrDayRepayErrorTimesByUser(loanRepaymentDo.getUserId());
+				smsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
+			}
 
-		}else{
-		//通知还款失败
+			//还款失败，调用西瓜信用通知接口
+			DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
+			noticeRecordDo.setUserId(loanRepaymentDo.getUserId());
+			noticeRecordDo.setRefId(String.valueOf(loanRepaymentDo.getRid()));
+			noticeRecordDo.setType(DsedNoticeType.REPAY.code);
+			noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+			dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
+			HashMap<String, Object> data = new HashMap<String, Object>();
+			if (xgxyUtil.dsedRePayNoticeRequest(data)) {
+				noticeRecordDo.setRid(noticeRecordDo.getRid());
+				noticeRecordDo.setGmtModified(new Date());
+				dsedNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
+			}
 
 		}
-
 	}
 
 	/**
@@ -511,6 +580,42 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			}
 		}
         /* end 易宝支付侵入逻辑 */
+	}
+
+
+	/**
+	 * 用户手动现金贷还款成功短信发送
+	 * @param mobile
+	 * @param
+	 */
+	private boolean sendRepaymentBorrowCashWarnMsg(String mobile,LoanRepayDealBo repayDealBo){
+		//模版数据map处理
+		Map<String,String> replaceMapData = new HashMap<String, String>();
+		BigDecimal repayMoney = repayDealBo.curSumRepayAmount;
+		BigDecimal notRepayMoney = BigDecimal.ZERO;
+		replaceMapData.put("repayMoney", repayMoney+"");
+		if(repayDealBo.isAllRepay){
+			notRepayMoney = repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount.add(repayDealBo.sumPoundage).add(repayDealBo.sumInterest));
+			replaceMapData.put("remainAmount", notRepayMoney+"");
+			return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
+		} else if (notRepayMoney==null || notRepayMoney.compareTo(BigDecimal.ZERO)<=0) {
+			notRepayMoney = repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount);
+			replaceMapData.put("remainAmount", notRepayMoney+"");
+			String title = "恭喜您，借款已还清！";
+			String content = "您的还款已经处理完成，成功还款&repayMoney元。信用分再度升级，给您点个大大的赞！";
+			content = content.replace("&repayMoney",repayMoney.toString());
+			pushService.pushUtil(title,content,mobile);
+			return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS.getCode());
+		} else {
+			notRepayMoney = repayDealBo.sumAmount.subtract(repayDealBo.sumRepaidAmount);
+			replaceMapData.put("remainAmount", notRepayMoney+"");
+			String title = "部分还款成功！";
+			String content = "本次成功还款&repayMoney元，剩余待还金额&remainAmount元，请继续保持良好的信用习惯哦。";
+			content = content.replace("&repayMoney",repayMoney.toString());
+			content = content.replace("&remainAmount",notRepayMoney.toString());
+			pushService.pushUtil(title,content,mobile);
+			return smsUtil.sendConfigMessageToMobile(mobile, replaceMapData, 0, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_SUCCESS_REMAIN.getCode());
+		}
 	}
 
 

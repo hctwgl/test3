@@ -15,8 +15,11 @@ import org.apache.ibatis.annotations.Param;
 public interface DsedLoanRepaymentDao extends BaseDao<DsedLoanRepaymentDo, Long> {
 
     DsedLoanRepaymentDo  getProcessingRepayment(@Param("loanId") Long loanId, @Param("nper") Integer nper);
+
     DsedLoanRepaymentDo getProcessLoanRepaymentByLoanId(@Param("loanId") Long loanId);
 
     DsedLoanRepaymentDo getRepayByTradeNo(@Param("tradeNo") String tradeNo);
+
+    int getCurrDayRepayErrorTimesByUser(@Param("userId") Long userId);
 
 }

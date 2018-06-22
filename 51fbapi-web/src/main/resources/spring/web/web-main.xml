@@ -653,6 +653,10 @@
 				<entry key="/h5/reward/doPushTask" value-ref="doPushTaskApi" />
 
 				<entry key="/dsed/dsedApplyLoan" value-ref="dsedApplyLoanApi" />
+				<entry key="/dsed/dsedLoanAllRepayDo" value-ref="dsedLoanAllRepayDoApi" />
+				<entry key="/dsed/dsedLoanConfirmPayment" value-ref="dsedLoanConfirmPaymentApi" />
+				<entry key="/dsed/dsedLoanRepayDo" value-ref="dsedLoanRepayDoApi" />
+				<entry key="/dsed/getDsedLoanDecreasedAmount" value-ref="getDsedLoanDecreasedAmountApi" />
 				<entry key="/dsed/dsedGetLoanInfo" value-ref="dsedGetLoanInfoApi" />
 				<!-- 支付相关接口 -->
 				<entry key="/h5/pay/recycleQuickPaymentResendCode" value-ref="recycleQuickPaymentResendCodeApi" />

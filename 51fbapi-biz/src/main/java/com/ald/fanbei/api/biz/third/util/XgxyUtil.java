@@ -6,10 +6,7 @@ import com.ald.fanbei.api.biz.bo.XgxyOverdueReqBo;
 import com.ald.fanbei.api.biz.bo.XgxyPayReqBo;
 import com.ald.fanbei.api.biz.bo.XgxyRepayReqBo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.SignUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 import com.alibaba.fastjson.JSONObject;
@@ -70,7 +67,7 @@ public class XgxyUtil {
 
     }
     /**
-     * 还款通知请求
+     * 还款通知请求(补偿机制)
      * @param loanDo
      * @return
      */
@@ -105,33 +102,57 @@ public class XgxyUtil {
      * @return
      */
     public boolean  overDueNoticeRequest(DsedLoanPeriodsDto loanDo){
-       try {
-           XgxyOverdueReqBo overdueReqBo=new XgxyOverdueReqBo();
-           overdueReqBo.setAppId(loanDo.getTradeNoOut());
-           overdueReqBo.setBorrowNo(loanDo.getLoanNo());
-           overdueReqBo.setOverdueDays(String.valueOf(loanDo.getOverdueDays()));
-           overdueReqBo.setCurPeriod(String.valueOf(loanDo.getNper()));
-           Map<String,Object> data=new HashMap<>();
-           data.put("test","test");
-           overdueReqBo.setData(data);
-           overdueReqBo.setSign(SignUtil.sign(createLinkString(overdueReqBo), PRIVATE_KEY));
-           String reqResult = HttpUtil.post(getXgxyUrl(), overdueReqBo);
-           if(StringUtil.isBlank(reqResult)){
-               return false;
-           }
-           XgxyOverdueReqBo overdueReqBo1 = JSONObject.parseObject(reqResult,XgxyOverdueReqBo.class);
-           if("01".equals(overdueReqBo1.getCode())){
-               return true;
-           }
-       }catch (Exception e){
-           logger.info("overDueNoticeRequest request fail",e);
-       }
-      return false;
+        try {
+            XgxyOverdueReqBo overdueReqBo=new XgxyOverdueReqBo();
+            overdueReqBo.setAppId(loanDo.getTradeNoOut());
+            overdueReqBo.setBorrowNo(loanDo.getLoanNo());
+            overdueReqBo.setOverdueDays(String.valueOf(loanDo.getOverdueDays()));
+            overdueReqBo.setCurPeriod(String.valueOf(loanDo.getNper()));
+            Map<String,Object> data=new HashMap<>();
+            data.put("test","test");
+            overdueReqBo.setData(data);
+            overdueReqBo.setSign(SignUtil.sign(createLinkString(overdueReqBo), PRIVATE_KEY));
+            String reqResult = HttpUtil.post(getXgxyUrl(), overdueReqBo);
+            if(StringUtil.isBlank(reqResult)){
+                return false;
+            }
+            XgxyOverdueReqBo overdueReqBo1 = JSONObject.parseObject(reqResult,XgxyOverdueReqBo.class);
+            if("01".equals(overdueReqBo1.getCode())){
+                return true;
+            }
+        }catch (Exception e){
+            logger.info("overDueNoticeRequest request fail",e);
+        }
+        return false;
 
     }
 
 
+    /**
+     * 还款通知请求
+     * @param data
+     * @return
+     */
+    public boolean  dsedRePayNoticeRequest(HashMap<String, Object> data ){
+        try {
+            XgxyRepayReqBo repayReqBo=new XgxyRepayReqBo();
+            JSONObject jsStr = JSONObject.parseObject(createLinkString(repayReqBo));
+            repayReqBo.setSign(DsedSignUtil.paramsEncrypt(jsStr, PRIVATE_KEY));
+            String reqResult = HttpUtil.post(getXgxyUrl(), repayReqBo);
+            if(StringUtil.isBlank(reqResult)){
+                return false;
+            }
+            XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult,XgxyPayReqBo.class);
+            if("01".equals(rePayRespResult.getCode())){
+                return true;
+            }
+        }catch (Exception e){
+            logger.info("rePayNoticeRequest request fail",e);
+        }
 
+        return false;
+
+    }
 
 
     /**
