@@ -76,7 +76,7 @@ public class DsedH5Controller extends DsedBaseController {
         String data =  request.getParameter("data");
 		Map<String,Object> systemsMap = new HashMap<>();
         if(StringUtils.isNotEmpty(data)) {
-			String decryptData = AesUtil.decryptFromBase64(data,"testC1b6x@6aH$2dlw");
+			String decryptData = AesUtil.decryptFromBase64(data,ConfigProperties.get(Constants.DSED_AES_PASSWORD));
         	JSONObject dataInfo = JSONObject.parseObject(decryptData);
 			Long userId = Long.parseLong(dataInfo.get("userId").toString()) ;
 //            Map<String,Object> systemsMap = (Map)JSON.parse(decryptData);
