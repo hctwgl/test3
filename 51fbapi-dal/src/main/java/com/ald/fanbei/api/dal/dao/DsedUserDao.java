@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.DsedUserDo;
 
 /**
@@ -12,6 +13,6 @@ import com.ald.fanbei.api.dal.domain.DsedUserDo;
  */
 public interface DsedUserDao extends BaseDao<DsedUserDo, Long> {
 
-    
+    int updateUser(DsedUserDo userDo);
 
 }

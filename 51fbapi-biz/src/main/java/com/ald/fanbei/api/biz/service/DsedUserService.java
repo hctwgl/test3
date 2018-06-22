@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.DsedUserDo;
 
 /**
@@ -12,4 +13,10 @@ import com.ald.fanbei.api.dal.domain.DsedUserDo;
  */
 public interface DsedUserService extends ParentService<DsedUserDo, Long>{
 
+    /**
+     * 更新用户消息
+     * @param afUserDo
+     * @return
+     */
+    int updateUser(DsedUserDo userDo);
 }

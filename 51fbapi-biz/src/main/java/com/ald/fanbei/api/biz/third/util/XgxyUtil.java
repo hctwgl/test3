@@ -1,15 +1,14 @@
 package com.ald.fanbei.api.biz.third.util;
 
 
-import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.bo.XgxyOverdueReqBo;
-import com.ald.fanbei.api.biz.bo.XgxyPayReqBo;
-import com.ald.fanbei.api.biz.bo.XgxyRepayReqBo;
+import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
+import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -39,17 +38,21 @@ public class XgxyUtil {
     }
     /**
      * 打款通知请求
-     * @param loanDo
+     * @param
      * @return
      */
-    public boolean  payNoticeRequest(DsedLoanDo loanDo){
+    public boolean  payNoticeRequest(XgxyPayBo payBo){
 
         try {
             XgxyPayReqBo  payReqBo=new XgxyPayReqBo();
-            payReqBo.setAppId(loanDo.getTradeNoOut());
-            payReqBo.setBorrowNo(loanDo.getLoanNo());
-            payReqBo.setStatus(loanDo.getStatus());
-            payReqBo.setGmtArrival(loanDo.getGmtArrival());
+            payReqBo.setAppId(payBo.getTrade());
+            payReqBo.setBorrowNo(payBo.getBorrowNo());
+            payReqBo.setStatus(payBo.getStatus());
+            if(StringUtils.equals(payBo.getStatus(),"N")){
+                payReqBo.setReason(payBo.getReason());
+            }else {
+                payReqBo.setGmtArrival(payBo.getGmtArrival());
+            }
             payReqBo.setSign(SignUtil.sign(createLinkString(payReqBo), PRIVATE_KEY));
             String reqResult = HttpUtil.post(getXgxyUrl(), payReqBo);
             if(StringUtil.isBlank(reqResult)){
@@ -68,15 +71,16 @@ public class XgxyUtil {
     }
     /**
      * 还款通知请求(补偿机制)
-     * @param loanDo
+     * @param repayBo
      * @return
      */
-    public boolean  rePayNoticeRequest(DsedLoanDo loanDo){
+    public boolean  rePayNoticeRequest(XgxyRepayBo repayBo){
         try {
             XgxyRepayReqBo repayReqBo=new XgxyRepayReqBo();
-            repayReqBo.setAppId(loanDo.getTradeNoOut());
-            repayReqBo.setBorrowNo(loanDo.getLoanNo());
-            repayReqBo.setStatus(loanDo.getStatus());
+            repayReqBo.setAppId(repayBo.getTradeNo());
+            repayReqBo.setBorrowNo(repayBo.getBorrowNo());
+            repayReqBo.setStatus(repayBo.getStatus());
+            repayReqBo.setSign(DsedSignUtil.paramsEncrypt(JSONObject.parseObject(createLinkString(repayReqBo)), PRIVATE_KEY));
             repayReqBo.setSign(SignUtil.sign(createLinkString(repayReqBo), PRIVATE_KEY));
             String reqResult = HttpUtil.post(getXgxyUrl(), repayReqBo);
             if(StringUtil.isBlank(reqResult)){
@@ -98,16 +102,16 @@ public class XgxyUtil {
 
     /**
      * 逾期通知请求
-     * @param loanDo
+     * @param overdueBo
      * @return
      */
-    public boolean  overDueNoticeRequest(DsedLoanPeriodsDto loanDo){
+    public boolean  overDueNoticeRequest(XgxyOverdueBo overdueBo){
         try {
             XgxyOverdueReqBo overdueReqBo=new XgxyOverdueReqBo();
-            overdueReqBo.setAppId(loanDo.getTradeNoOut());
-            overdueReqBo.setBorrowNo(loanDo.getLoanNo());
-            overdueReqBo.setOverdueDays(String.valueOf(loanDo.getOverdueDays()));
-            overdueReqBo.setCurPeriod(String.valueOf(loanDo.getNper()));
+            overdueReqBo.setAppId(overdueBo.getTradeNo());
+            overdueReqBo.setBorrowNo(overdueBo.getBorrowNo());
+            overdueReqBo.setOverdueDays(String.valueOf(overdueBo.getOverdueDays()));
+            overdueReqBo.setCurPeriod(String.valueOf(overdueBo.getCurPeriod()));
             Map<String,Object> data=new HashMap<>();
             data.put("test","test");
             overdueReqBo.setData(data);

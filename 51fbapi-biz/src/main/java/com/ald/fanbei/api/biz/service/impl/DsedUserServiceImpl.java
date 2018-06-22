@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.AfUserDo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,5 +33,10 @@ public class DsedUserServiceImpl extends ParentServiceImpl<DsedUserDo, Long> imp
 		@Override
 	public BaseDao<DsedUserDo, Long> getDao() {
 		return dsedUserDao;
+	}
+
+	@Override
+	public int updateUser(DsedUserDo userDo) {
+		return dsedUserDao.updateUser(userDo);
 	}
 }
