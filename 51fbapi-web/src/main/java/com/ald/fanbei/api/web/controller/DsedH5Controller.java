@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.controller;
 
 import com.ald.fanbei.api.biz.bo.dsed.DsedParam;
-import com.ald.fanbei.api.biz.service.AfUserService;
 import com.ald.fanbei.api.biz.service.DsedUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -12,8 +11,11 @@ import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.context.ContextImpl;
 import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.ald.fanbei.api.web.chain.impl.InterceptorChain;
-import com.ald.fanbei.api.web.common.*;
-import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
+import com.ald.fanbei.api.web.common.BaseResponse;
+import com.ald.fanbei.api.web.common.DsedBaseController;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
+import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
+import com.ald.fanbei.api.web.common.impl.DsedH5HandleFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
@@ -28,117 +30,115 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
- *
- *@类描述：FanbeiH5Controller
- *@author 郭帅强 2018年1月17日 下午6:15:06
- *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ * @author 郭帅强 2018年1月17日 下午6:15:06
+ * @类描述：FanbeiH5Controller
+ * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
 public class DsedH5Controller extends DsedBaseController {
 
-	@Resource
-	H5HandleFactory h5HandleFactory;
+    @Resource
+    DsedH5HandleFactory dsedH5HandleFactory;
 
-	@Resource
-	DsedUserService dsedUserService;
-	
-	@Resource
-	InterceptorChain interceptorChain;
-	
-    @RequestMapping(value ="/ third/xgxy/v1/**",method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    @Resource
+    DsedUserService dsedUserService;
+
+    @Resource
+    InterceptorChain interceptorChain;
+
+    @RequestMapping(value = "/ third/xgxy/v1/**", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     @ResponseBody
-    public String h5Request(@RequestBody DsedParam param, HttpServletRequest request, HttpServletResponse response) throws IOException{
+    public String h5Request(@RequestBody DsedParam param, HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
         response.setContentType("application/json;charset=utf-8");
-        return this.processRequest(request,param.getData(),param.getSign());
+        return this.processRequest(request, param.getData(), param.getSign());
     }
 
 
-	@Override
-	public Context parseRequestData(HttpServletRequest request, String data) {
+    @Override
+    public Context parseRequestData(HttpServletRequest request, String data) {
         try {
-        	return buildContext(request,data);
+            return buildContext(request, data);
         } catch (Exception e) {
-            throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+            throw new FanbeiException("参数格式错误" + e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
         }
-	}
+    }
 
-	private Context buildContext(HttpServletRequest request, String data) {
+    private Context buildContext(HttpServletRequest request, String data) {
 
-		ContextImpl.Builder builder = new ContextImpl.Builder();
-		String method = request.getRequestURI();
+        ContextImpl.Builder builder = new ContextImpl.Builder();
+        String method = request.getRequestURI();
 //        String data =  request.getParameter("data");
 //		Enumeration<String> enumeration = request.getParameterNames();
 //		logger.info(JSON.toJSONString(enumeration));
-		Map<String,Object> systemsMap = new HashMap<>();
-        if(StringUtils.isNotEmpty(data)) {
-			String decryptData = AesUtil.decryptFromBase64Third(data,"aef5c8c6114b8d6a");
-        	JSONObject dataInfo = JSONObject.parseObject(decryptData);
-			String openId = (String.valueOf(dataInfo.get("userId"))) ;
-			DsedUserDo userDo = dsedUserService.getByOpenId(openId);
+        Map<String, Object> systemsMap = new HashMap<>();
+        if (StringUtils.isNotEmpty(data)) {
+            String decryptData = AesUtil.decryptFromBase64Third(data, "aef5c8c6114b8d6a");
+            JSONObject dataInfo = JSONObject.parseObject(decryptData);
+            String openId = (String.valueOf(dataInfo.get("userId")));
+            DsedUserDo userDo = dsedUserService.getByOpenId(openId);
 //            Map<String,Object> systemsMap = (Map)JSON.parse(decryptData);
-			systemsMap =JSON.parseObject(decryptData);
+            systemsMap = JSON.parseObject(decryptData);
             builder.method(method)
-	     	   .systemsMap(systemsMap);
-			if (userDo != null){
-				builder.userId(userDo.getRid());
-			}
+                    .systemsMap(systemsMap);
+            if (userDo != null) {
+                builder.userId(userDo.getRid());
+            }
         }
-        
-        Map<String,Object> dataMaps = Maps.newHashMap();
-        
-        wrapRequest(request,dataMaps);
+
+        Map<String, Object> dataMaps = Maps.newHashMap();
+
+        wrapRequest(request, dataMaps);
         builder.dataMap(systemsMap);
-        
-        logger.info("request method=>{},params=>{}",method,JSON.toJSONString(dataMaps));
-       
+
+        logger.info("request method=>{},params=>{}", method, JSON.toJSONString(dataMaps));
+
         String clientIp = CommonUtil.getIpAddr(request);
         builder.clientIp(clientIp);
         Context context = builder.build();
-		return context;
-	}
+        return context;
+    }
 
-	private void wrapRequest(HttpServletRequest request, Map<String, Object> dataMaps) {
-		
-		Enumeration<String> paramNames =  request.getParameterNames();
-		while(paramNames.hasMoreElements()) {
-			String paramName = paramNames.nextElement();
-			if(!StringUtils.equals("_appInfo", paramName)) {
-				String objVal = request.getParameter(paramName);
-				dataMaps.put(paramName, objVal);
-			}
-		}
-	}
+    private void wrapRequest(HttpServletRequest request, Map<String, Object> dataMaps) {
+
+        Enumeration<String> paramNames = request.getParameterNames();
+        while (paramNames.hasMoreElements()) {
+            String paramName = paramNames.nextElement();
+            if (!StringUtils.equals("_appInfo", paramName)) {
+                String objVal = request.getParameter(paramName);
+                dataMaps.put(paramName, objVal);
+            }
+        }
+    }
 
 
-	@Override
-	public BaseResponse doProcess(Context context) {
-		interceptorChain.execute(context);
-        H5Handle methodHandle = h5HandleFactory.getHandle(context.getMethod());
-        
-        H5HandleResponse handelResult;
+    @Override
+    public BaseResponse doProcess(Context context) {
+        interceptorChain.execute(context);
+        DsedH5Handle methodHandle = dsedH5HandleFactory.getHandle(context.getMethod());
+
+        DsedH5HandleResponse handelResult;
         try {
             handelResult = methodHandle.process(context);
-            int resultCode = handelResult.getResult().getCode();
-            if(resultCode != 1000){
+            int resultCode = handelResult.getCode();
+            if (resultCode != 200) {
                 logger.info(context.getId() + " err,Code=" + resultCode);
             }
             return handelResult;
-        }catch(FanbeiException e){
-        	logger.error("app exception",e);
-        	throw e;
-		} catch (Exception e) {
-            logger.error("sys exception",e);
-            throw new FanbeiException("sys exception",FanbeiExceptionCode.SYSTEM_ERROR);
+        } catch (FanbeiException e) {
+            logger.error("app exception", e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("sys exception", e);
+            throw new FanbeiException("sys exception", FanbeiExceptionCode.SYSTEM_ERROR);
         }
-	}
-
-
-	
+    }
 
 
 }
