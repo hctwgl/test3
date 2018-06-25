@@ -653,10 +653,10 @@
 				<entry key="/h5/reward/doPushTask" value-ref="doPushTaskApi" />
 
 				<entry key="/third/xgxy/v1/comfirmBorrow" value-ref="dsedApplyLoanApi" />
-				<entry key="/third/xgxy/v1/dsedLoanAllRepayDo" value-ref="dsedLoanAllRepayDoApi" />
+				<entry key="/third/xgxy/v1/preFinish" value-ref="dsedLoanAllRepayDoApi" />
 				<entry key="/third/xgxy/v1/dsedLoanConfirmPayment" value-ref="dsedLoanConfirmPaymentApi" />
-				<entry key="/third/xgxy/v1/dsedLoanRepayDo" value-ref="dsedLoanRepayDoApi" />
-				<entry key="/third/xgxy/v1/getDsedLoanDecreasedAmount" value-ref="getDsedLoanDecreasedAmountApi" />
+				<entry key="/third/xgxy/v1/repayComfirm" value-ref="dsedLoanRepayDoApi" />
+				<entry key="/third/xgxy/v1/getDecreasedAmount" value-ref="getDsedLoanDecreasedAmountApi" />
 				<entry key="/third/xgxy/v1/dsedGetLoanInfo" value-ref="dsedGetLoanInfoApi" />
 				<entry key="/third/xgxy/v1/getRealPeriod" value-ref="dsedLoanTotalPeriodsApi" />
 				<entry key="/third/xgxy/v1/getBorrowFeeDetail" value-ref="dsedLoanDetailApi" />
