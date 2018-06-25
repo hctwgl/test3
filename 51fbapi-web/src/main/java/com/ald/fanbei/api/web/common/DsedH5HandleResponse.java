@@ -11,7 +11,7 @@ public class DsedH5HandleResponse implements BaseResponse {
 
     private int code;                                // 是否成功
 
-    private String msg;                                    // 返回提示
+    private String message;                                    // 返回提示
 
     private Object data;                                   // 返回数据
 
@@ -21,6 +21,11 @@ public class DsedH5HandleResponse implements BaseResponse {
     public DsedH5HandleResponse(int code, String msg, Object data) {
         getNewInstance(code, msg, data);
     }
+
+    public DsedH5HandleResponse(int code, String msg) {
+        getNewInstance(code, msg);
+    }
+
 
     public static DsedH5HandleResponse getNewInstance() {
         return new DsedH5HandleResponse();
@@ -50,11 +55,11 @@ public class DsedH5HandleResponse implements BaseResponse {
     }
 
     public String getMsg() {
-        return msg;
+        return message;
     }
 
     public void setMsg(String msg) {
-        this.msg = msg;
+        this.message = msg;
     }
 
     public Object getData() {

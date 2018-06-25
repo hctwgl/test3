@@ -1,25 +1,22 @@
 package com.ald.fanbei.api.web.h5.api.dsed;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.RiskUtil;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
+import com.ald.fanbei.api.biz.service.DsedLoanService;
+import com.ald.fanbei.api.biz.service.DsedUserService;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.DsedUserDo;
-import com.ald.fanbei.api.web.common.H5Handle;
-import com.ald.fanbei.api.web.common.H5HandleResponse;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
+import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import com.ald.fanbei.api.web.vo.DsedLoanPeriodsVo;
 import com.ald.fanbei.api.web.vo.DsedLoanVo;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +27,7 @@ import java.util.List;
  * @date 2018年1月22日
  */
 @Component("dsedGetLoanInfoApi")
-public class GetLoanInfoApi implements H5Handle {
+public class GetLoanInfoApi implements DsedH5Handle {
 
     @Resource
     DsedLoanService dsedLoanService;
@@ -41,9 +38,9 @@ public class GetLoanInfoApi implements H5Handle {
 
 
     @Override
-    public H5HandleResponse process(Context context) {
+    public DsedH5HandleResponse process(Context context) {
 
-        H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
+        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "");
         try {
             Long userId = context.getUserId();
             if (userId == null || userId <= 0) {
@@ -73,11 +70,11 @@ public class GetLoanInfoApi implements H5Handle {
                 dsedLoanPeriodList.forEach(dsedLoanPeriodsDo -> dsedLoanPeriodsVos.add(buildLoanPeriodsVo(dsedLoanPeriodsDo)));
                 loanVo.setDsedLoanPeriodsVoList(dsedLoanPeriodsVos);
             }
-            resp.setResponseData(loanVo);
+            resp.setData(loanVo);
 
         } catch (Exception e) {
             logger.error("/loanInfoApi error = {}", e.getStackTrace());
-            resp.setResponseData("获取借款信息失败");
+            resp.setMsg("获取借款信息失败");
         }
 
         return resp;

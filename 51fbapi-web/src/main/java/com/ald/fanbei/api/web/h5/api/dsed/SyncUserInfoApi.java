@@ -1,11 +1,10 @@
 package com.ald.fanbei.api.web.h5.api.dsed;
 
 import com.ald.fanbei.api.biz.service.DsedUserService;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.DsedUserDo;
-import com.ald.fanbei.api.web.common.H5Handle;
-import com.ald.fanbei.api.web.common.H5HandleResponse;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
+import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -18,14 +17,14 @@ import java.util.Date;
  * @类描述：申请贷款 参考{@link com.ald.fanbei.api.web.api.legalborrowV2.GetLegalBorrowCashHomeInfoV2Api}
  */
 @Component("dsedSyncUserInfoApi")
-public class SyncUserInfoApi implements H5Handle {
+public class SyncUserInfoApi implements DsedH5Handle {
 
     @Resource
     private DsedUserService dsedUserService;
 
     @Override
-    public H5HandleResponse process(Context context) {
-        H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
+    public DsedH5HandleResponse process(Context context) {
+        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "");
         Long userId = context.getUserId();
         String realName = String.valueOf(context.getDataMap().get("realName"));
         String openId = String.valueOf(context.getDataMap().get("userId"));
