@@ -58,6 +58,7 @@ public class DsedLoanRepayDoApi implements DsedH5Handle {
 		bo.bankNo = bankNo;
 		bo.cardName = map.get("bankName").toString();
 		data = this.dsedLoanRepaymentService.repay(bo,payType);
+		data.put("payMethod",payType);
 		resp.setData(data);
 		return resp;
 	}
