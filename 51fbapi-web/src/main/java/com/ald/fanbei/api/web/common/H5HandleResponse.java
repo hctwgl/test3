@@ -13,7 +13,7 @@ public class H5HandleResponse implements BaseResponse{
 
 	private String id;
 	private H5Response result;
-	
+
 	public String getId() {
 		return id;
 	}
@@ -26,7 +26,7 @@ public class H5HandleResponse implements BaseResponse{
 	public void setResult(H5Response result) {
 		this.result = result;
 	}
-	
+
 	public H5HandleResponse(String id, FanbeiExceptionCode excCode) {
 		this.id = id;
 		result = new H5Response();
@@ -42,7 +42,7 @@ public class H5HandleResponse implements BaseResponse{
 	public H5HandleResponse() {
 
 	}
-	
+
 	/**
 	 * 设置相应数据
 	 *

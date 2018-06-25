@@ -16,6 +16,6 @@ import com.ald.fanbei.api.context.Context;
 public interface H5Handle {
 	
 	Logger logger = LoggerFactory.getLogger(H5Handle.class);
-	
+
 	H5HandleResponse process(Context context);
 }

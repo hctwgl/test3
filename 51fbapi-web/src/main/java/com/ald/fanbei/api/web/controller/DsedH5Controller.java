@@ -49,7 +49,7 @@ public class DsedH5Controller extends DsedBaseController {
 	@Resource
 	InterceptorChain interceptorChain;
 	
-    @RequestMapping(value ="/third/xgxy/v1/**",method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    @RequestMapping(value ="/ third/xgxy/v1/**",method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
     public String h5Request(@RequestBody DsedParam param, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -72,8 +72,8 @@ public class DsedH5Controller extends DsedBaseController {
 		ContextImpl.Builder builder = new ContextImpl.Builder();
 		String method = request.getRequestURI();
 //        String data =  request.getParameter("data");
-		Enumeration<String> enumeration = request.getParameterNames();
-		logger.info(JSON.toJSONString(enumeration));
+//		Enumeration<String> enumeration = request.getParameterNames();
+//		logger.info(JSON.toJSONString(enumeration));
 		Map<String,Object> systemsMap = new HashMap<>();
         if(StringUtils.isNotEmpty(data)) {
 			String decryptData = AesUtil.decryptFromBase64Third(data,"aef5c8c6114b8d6a");
