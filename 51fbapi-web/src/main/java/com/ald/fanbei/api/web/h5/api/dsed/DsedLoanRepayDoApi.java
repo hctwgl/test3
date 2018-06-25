@@ -49,7 +49,7 @@ public class DsedLoanRepayDoApi implements H5Handle {
 		LoanRepayDoParam param = (LoanRepayDoParam) context.getParamEntity();
 		Map<String, Object> data = new HashMap<String, Object>();
 		String bankNo = param.bankNo;
-		Long userId = param.userId;
+		Long userId = context.getUserId();
 		HashMap<String,Object> map = dsedUserBankcardService.getPayTypeByBankNoAndUserId(userId,bankNo);
 		String payType = map.get("bankChannel").toString();
 		DsedUserDo dsedUserDo = dsedUserService.getById(userId);
