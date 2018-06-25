@@ -68,7 +68,6 @@ public abstract class DsedBaseController {
             baseResponse = buildErrorResult(FanbeiExceptionCode.SYSTEM_ERROR, request);
             retMsg = JSON.toJSONString(baseResponse);
         }
-        doMaidianLog(request, H5CommonResponse.getNewInstance(true, "succ", request.getRequestURI(), baseResponse), context.getUserId().toString());
         logger.info("req method=>" + context.getMethod() + ",userId=>" + context.getUserId() + ",response msg=>" + retMsg);
         return retMsg;
     }

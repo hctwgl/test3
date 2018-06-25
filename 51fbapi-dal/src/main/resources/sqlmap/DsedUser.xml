@@ -95,8 +95,12 @@
             <if test="rid != null">
                 id,
             </if>
-            gmt_create,
-            gmt_modified,
+            <if test="gmtCreate != null and gmtCreate != '' ">
+                gmt_create,
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">
+                gmt_modified,
+            </if>
 	        <if test="userName != null">        
 	            user_name,
 	        </if>
@@ -172,8 +176,12 @@
             <if test="rid != null">
                 #{rid},
             </if>
-		    now(),
-            now(),
+            <if test="gmtCreate != null and gmtCreate != '' ">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">
+                #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
 		    <if test="userName != null" >
 		       #{userName,jdbcType=VARCHAR},
 		    </if>
