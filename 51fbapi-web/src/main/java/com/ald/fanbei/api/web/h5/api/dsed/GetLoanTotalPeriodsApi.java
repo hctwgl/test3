@@ -28,7 +28,11 @@ public class GetLoanTotalPeriodsApi implements DsedH5Handle {
 //		String prdType = context.getData("prdType").toString();
         String prdType = "DSED_LOAN";
         Integer periods = dsedLoanProductService.getMaxPeriodsByPrdType(prdType);
-        data.put("realPeriods", periods);
+        int [] periodArray = new int [36];
+        for (int i = 1; i <= periods; i++) {
+            periodArray[i-1] = i;
+        }
+        data.put("realPeriods", periodArray);
         resp.setData(data);
         return resp;
     }

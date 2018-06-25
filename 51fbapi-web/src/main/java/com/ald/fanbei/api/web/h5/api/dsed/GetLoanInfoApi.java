@@ -68,7 +68,7 @@ public class GetLoanInfoApi implements DsedH5Handle {
             loanVo.setStatus(loanDo.getStatus());
             if (dsedLoanPeriodList.size() != 0) {
                 dsedLoanPeriodList.forEach(dsedLoanPeriodsDo -> dsedLoanPeriodsVos.add(buildLoanPeriodsVo(dsedLoanPeriodsDo)));
-                loanVo.setDsedLoanPeriodsVoList(dsedLoanPeriodsVos);
+                loanVo.setBorrowBillDetails(dsedLoanPeriodsVos);
             }
             resp.setData(loanVo);
 

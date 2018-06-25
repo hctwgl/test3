@@ -27,6 +27,8 @@ public interface DsedLoanService extends ParentService<DsedLoanDo, Long> {
      */
     void doLoan(DsedApplyLoanBo bo);
 
+    DsedLoanDo resolveLoan(BigDecimal amount, Long userId, int periods, String loanNo, String prdType);
+
     /**
      * 借贷成功回调
      *

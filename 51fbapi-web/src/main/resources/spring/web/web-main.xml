@@ -657,7 +657,7 @@
 				<entry key="/third/xgxy/v1/dsedLoanConfirmPayment" value-ref="dsedLoanConfirmPaymentApi" />
 				<entry key="/third/xgxy/v1/repayComfirm" value-ref="dsedLoanRepayDoApi" />
 				<entry key="/third/xgxy/v1/getDecreasedAmount" value-ref="getDsedLoanDecreasedAmountApi" />
-				<entry key="/third/xgxy/v1/dsedGetLoanInfo" value-ref="dsedGetLoanInfoApi" />
+				<entry key="/third/xgxy/v1/getBorrowInfo" value-ref="dsedGetLoanInfoApi" />
 				<entry key="/third/xgxy/v1/getRealPeriod" value-ref="dsedLoanTotalPeriodsApi" />
 				<entry key="/third/xgxy/v1/getBorrowFeeDetail" value-ref="dsedLoanDetailApi" />
 				<entry key="/third/xgxy/v1/syncUserInfo" value-ref="dsedSyncUserInfoApi" />

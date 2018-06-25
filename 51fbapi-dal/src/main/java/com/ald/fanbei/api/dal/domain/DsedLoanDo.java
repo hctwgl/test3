@@ -18,26 +18,41 @@ import java.math.BigDecimal;
 
     private static final long serialVersionUID = 1L;
 
-   public static DsedLoanDo gen(Long userId, String loanNo, String prdType, int periods,
-                              BigDecimal serviceRate, BigDecimal interestRate, BigDecimal overdueRate, BigDecimal userLayDailyRate,
-                              BigDecimal amount, BigDecimal totalServiceFee, BigDecimal totalInterestFee) {
+   public static DsedLoanDo gen(int periods,
+                              BigDecimal serviceRate, BigDecimal interestRate,BigDecimal overdueRate, BigDecimal arrivalAmount,
+                              BigDecimal totalServiceFee, BigDecimal totalInterestFee) {
       DsedLoanDo l = new DsedLoanDo();
-      l.userId = userId;
-      l.loanNo = loanNo;
-      l.prdType = prdType;
-      l.periods = periods;
-      l.riskDailyRate = userLayDailyRate;
-      l.serviceRate = serviceRate;
-      l.interestRate = interestRate;
-      l.overdueRate = overdueRate;
-      l.amount = amount;
+      l.serviceRate = serviceRate;//服务费率
+      l.interestRate = interestRate;//借款利率
+      l.totalFee = totalServiceFee.add(totalInterestFee);
       l.totalServiceFee = totalServiceFee;
+      l.overdueRate = overdueRate;
       l.totalInterestFee = totalInterestFee;
-
-      l.gmtCreate = new Date();
-      l.status = AfLoanStatus.APPLY.name();
+      l.billTotalAmount = totalServiceFee.add(totalInterestFee).add(arrivalAmount).divide(BigDecimal.valueOf(periods));
+      l.arrivalAmount = arrivalAmount;
       return l;
    }
+
+ public static DsedLoanDo gen(Long userId, String loanNo, String prdType, int periods,
+                              BigDecimal serviceRate, BigDecimal interestRate, BigDecimal overdueRate, BigDecimal userLayDailyRate,
+                              BigDecimal amount, BigDecimal totalServiceFee, BigDecimal totalInterestFee) {
+  DsedLoanDo l = new DsedLoanDo();
+  l.userId = userId;
+  l.loanNo = loanNo;
+  l.prdType = prdType;
+  l.periods = periods;
+  l.riskDailyRate = userLayDailyRate;
+  l.serviceRate = serviceRate;
+  l.interestRate = interestRate;
+  l.overdueRate = overdueRate;
+  l.amount = amount;
+  l.totalServiceFee = totalServiceFee;
+  l.totalInterestFee = totalInterestFee;
+
+  l.gmtCreate = new Date();
+  l.status = AfLoanStatus.APPLY.name();
+  return l;
+ }
 
     /**
      * 主键Rid
@@ -79,6 +94,11 @@ import java.math.BigDecimal;
      * 借款金额
      */
     private BigDecimal amount;
+
+    /**
+     * 借款金额
+     */
+    private BigDecimal billTotalAmount;
 
     /**
      * 实际到账金额
@@ -164,6 +184,9 @@ import java.math.BigDecimal;
      * 手续费率
      */
     private BigDecimal serviceRate;
+
+
+    private BigDecimal totalFee;
 
     /**
      * 总利息
