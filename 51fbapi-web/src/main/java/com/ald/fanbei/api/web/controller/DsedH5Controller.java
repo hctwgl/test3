@@ -51,10 +51,12 @@ public class DsedH5Controller extends DsedBaseController {
 	@Resource
 	InterceptorChain interceptorChain;
 	
-    @RequestMapping(value ="/dsed/**",method = RequestMethod.POST,produces="application/json;charset=utf-8")
+    @RequestMapping(value ="/third/xgxy/v1/**",method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
-    public String h5Request(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) throws IOException{
+    public String h5Request(@RequestBody String data,@RequestBody String sign, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        logger.info(data);
+        logger.info(sign);
         response.setContentType("application/json;charset=utf-8");
         return this.processRequest(request);
     }
@@ -74,9 +76,11 @@ public class DsedH5Controller extends DsedBaseController {
 		ContextImpl.Builder builder = new ContextImpl.Builder();
 		String method = request.getRequestURI();
         String data =  request.getParameter("data");
+		Enumeration<String> enumeration = request.getParameterNames();
+		logger.info(JSON.toJSONString(enumeration));
 		Map<String,Object> systemsMap = new HashMap<>();
         if(StringUtils.isNotEmpty(data)) {
-			String decryptData = AesUtil.decryptFromBase64(data,ConfigProperties.get(Constants.DSED_AES_PASSWORD));
+			String decryptData = AesUtil.decryptFromBase64(data,"aef5c8c6114b8d6a");
         	JSONObject dataInfo = JSONObject.parseObject(decryptData);
 			Long userId = Long.parseLong(dataInfo.get("userId").toString()) ;
 //            Map<String,Object> systemsMap = (Map)JSON.parse(decryptData);
