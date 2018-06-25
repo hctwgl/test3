@@ -14,7 +14,6 @@ import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
 import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,16 +49,16 @@ public abstract class DsedBaseController {
     @Resource
     private H5HandleFactory h5HandleFactory;
 
-    protected String processRequest(HttpServletRequest request) {
+    protected String processRequest(HttpServletRequest request,String data,String sign) {
         String retMsg = StringUtils.EMPTY;
         BaseResponse baseResponse = null;
         Context context = null;
         try {
             // 解析参数（包括请求头中的参数和报文体中的参数）
-            context = parseRequestData(request);
+            context = parseRequestData(request,data);
             // 校验请求数据
 //            doCheck(context);
-            compareSign(request, context);
+            compareSign(request, context,sign);
             baseResponse = doProcess(context);
             retMsg = JSON.toJSONString(baseResponse);
         } catch (FanbeiException e) {
@@ -138,7 +137,7 @@ public abstract class DsedBaseController {
      * @param request
      * @return
      */
-    public abstract Context parseRequestData(HttpServletRequest request);
+    public abstract Context parseRequestData(HttpServletRequest request, String data);
 
     /**
      * 处理请求
@@ -194,10 +193,10 @@ public abstract class DsedBaseController {
 
     }
 
-    private void compareSign(HttpServletRequest request, Context context) {
-        String sign = request.getParameter("sign");
+    private void compareSign(HttpServletRequest request, Context context,String sign) {
+//        String sign = request.getParameter("sign");
         Map<String, Object> systemsMap = context.getSystemsMap();
-        String md5Value = generateSign(systemsMap,ConfigProperties.get(Constants.DSED_AES_PASSWORD));
+        String md5Value = generateSign(systemsMap,"aef5c8c6114b8d6a");
         if (logger.isDebugEnabled())
             logger.info("signStrBefore=" + systemsMap + ",md5Value=" + md5Value + ",sign=" + sign);
         if (!StringUtils.equals(sign, md5Value)) {

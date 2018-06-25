@@ -19,4 +19,6 @@ public interface DsedUserService extends ParentService<DsedUserDo, Long>{
      * @return
      */
     int updateUser(DsedUserDo userDo);
+
+    DsedUserDo getByOpenId(String openId);
 }

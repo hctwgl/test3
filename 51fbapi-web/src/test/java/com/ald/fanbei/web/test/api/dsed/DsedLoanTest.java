@@ -19,7 +19,7 @@ public class DsedLoanTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-    String urlBase = "http://localhost:8089";
+    String urlBase = "http://localhost:8080";
     //	String userName = "13638668564";	//田建成 cardId:3111464419 支付密码123456
     String userName = "15669066271";    //田建成 cardId:3111464125 支付密码123456
 //	String userName = "13958004662";	//胡朝永 支付密码123456
@@ -52,16 +52,16 @@ public class DsedLoanTest extends BaseTest {
      */
     @Test
     public void dsedSyncUserInfo() {
-        String url = urlBase + "/dsed/dsedSyncUserInfo";
+        String url = urlBase + "/third/xgxy/v1/syncUserInfo";
         Map<String, String> params = new HashMap<>();
         params.put("userId", "18637962344");
         params.put("realName", "郭帅强");
         params.put("idNumber", "330724199211254817");
         params.put("mobile", "13018933980");
-        String data = paramsEncrypt(params, "testC1b6x@6aH$2dlw");
+        String data = paramsEncrypt(params, "aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
-        p.put("sign", generateSign(params, "testC1b6x@6aH$2dlw"));
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
         HttpUtil.post(url, p);
     }
 

@@ -397,6 +397,14 @@
         LIMIT 0,1
     </select>
 
+    <select id="getByOpenId" resultType="com.ald.fanbei.api.dal.domain.DsedUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_user
+        WHERE is_delete = 0 AND open_id=#{openId}
+        LIMIT 0,1
+    </select>
+
 	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.DsedUserDo" parameterType="com.ald.fanbei.api.dal.domain.DsedUserDo">
         SELECT
         <include refid="queryFields" />

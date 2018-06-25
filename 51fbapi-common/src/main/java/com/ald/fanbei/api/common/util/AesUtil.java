@@ -106,6 +106,47 @@ public class AesUtil {
     }
 
     /**
+     * 第三方交互解密
+     *
+     * @param content 待解密内容
+     * @param password 解密密钥
+     * @return
+     */
+    public static byte[] decryptThird(byte[] content, String password) {
+        try {
+            byte[] enCodeFormat = password.getBytes("UTF-8");
+            SecretKeySpec key = new SecretKeySpec(enCodeFormat, "AES");
+            Cipher cipher = Cipher.getInstance("AES");// 创建密码器
+            cipher.init(Cipher.DECRYPT_MODE, key);// 初始化
+            byte[] result = cipher.doFinal(content);
+            return result; // 加密
+        } catch (NoSuchAlgorithmException e) {
+            logger.error("decrypt NoSuchAlgorithmException", e);
+        } catch (NoSuchPaddingException e) {
+            logger.error("decrypt NoSuchPaddingException", e);
+        } catch (InvalidKeyException e) {
+            logger.error("decrypt InvalidKeyException", e);
+        } catch (IllegalBlockSizeException e) {
+            logger.error("decrypt IllegalBlockSizeException", e);
+        } catch (BadPaddingException e) {
+            logger.error("decrypt BadPaddingException", e);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("decrypt UnsupportedEncodingException", e);
+        }
+        return null;
+    }
+
+    public static String decryptFromBase64Third(String base64Str, String password) {
+        String result = "";
+        try {
+            result = new String(decryptThird(Base64.decodeBase64(base64Str.getBytes("UTF-8")), password),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
      * 解密
      * 
      * @param content 待解密内容

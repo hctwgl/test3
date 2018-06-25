@@ -1,16 +1,16 @@
 package com.ald.fanbei.api.web.controller;
 
+import com.ald.fanbei.api.biz.bo.dsed.DsedParam;
 import com.ald.fanbei.api.biz.service.AfUserService;
+import com.ald.fanbei.api.biz.service.DsedUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.context.ContextImpl;
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import com.ald.fanbei.api.server.webapp.AutoConfig;
+import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.ald.fanbei.api.web.chain.impl.InterceptorChain;
 import com.ald.fanbei.api.web.common.*;
 import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
@@ -28,8 +28,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.*;
 
 
@@ -46,47 +44,46 @@ public class DsedH5Controller extends DsedBaseController {
 	H5HandleFactory h5HandleFactory;
 
 	@Resource
-	AfUserService afUserService;
+	DsedUserService dsedUserService;
 	
 	@Resource
 	InterceptorChain interceptorChain;
 	
     @RequestMapping(value ="/third/xgxy/v1/**",method = RequestMethod.POST,produces="application/json;charset=utf-8")
     @ResponseBody
-    public String h5Request(@RequestBody String data,@RequestBody String sign, HttpServletRequest request, HttpServletResponse response) throws IOException{
+    public String h5Request(@RequestBody DsedParam param, HttpServletRequest request, HttpServletResponse response) throws IOException{
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
-        logger.info(data);
-        logger.info(sign);
         response.setContentType("application/json;charset=utf-8");
-        return this.processRequest(request);
+        return this.processRequest(request,param.getData(),param.getSign());
     }
 
 
 	@Override
-	public Context parseRequestData(HttpServletRequest request) {
+	public Context parseRequestData(HttpServletRequest request, String data) {
         try {
-        	return buildContext(request);
+        	return buildContext(request,data);
         } catch (Exception e) {
             throw new FanbeiException("参数格式错误"+e.getMessage(), FanbeiExceptionCode.REQUEST_PARAM_ERROR);
         }
 	}
 
-	private Context buildContext(HttpServletRequest request) {
-		
+	private Context buildContext(HttpServletRequest request, String data) {
+
 		ContextImpl.Builder builder = new ContextImpl.Builder();
 		String method = request.getRequestURI();
-        String data =  request.getParameter("data");
+//        String data =  request.getParameter("data");
 		Enumeration<String> enumeration = request.getParameterNames();
 		logger.info(JSON.toJSONString(enumeration));
 		Map<String,Object> systemsMap = new HashMap<>();
         if(StringUtils.isNotEmpty(data)) {
-			String decryptData = AesUtil.decryptFromBase64(data,"aef5c8c6114b8d6a");
+			String decryptData = AesUtil.decryptFromBase64Third(data,"aef5c8c6114b8d6a");
         	JSONObject dataInfo = JSONObject.parseObject(decryptData);
-			Long userId = Long.parseLong(dataInfo.get("userId").toString()) ;
+			String openId = (String.valueOf(dataInfo.get("userId"))) ;
+			DsedUserDo userDo = dsedUserService.getByOpenId(openId);
 //            Map<String,Object> systemsMap = (Map)JSON.parse(decryptData);
 			systemsMap =JSON.parseObject(decryptData);
             builder.method(method)
-	     	   .userId(userId)
+	     	   .userId(userDo.getRid())
 	     	   .systemsMap(systemsMap);
         }
         

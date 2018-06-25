@@ -39,4 +39,9 @@ public class DsedUserServiceImpl extends ParentServiceImpl<DsedUserDo, Long> imp
 	public int updateUser(DsedUserDo userDo) {
 		return dsedUserDao.updateUser(userDo);
 	}
+
+	@Override
+	public DsedUserDo getByOpenId(String openId) {
+		return dsedUserDao.getByOpenId(openId);
+	}
 }
