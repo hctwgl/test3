@@ -4,8 +4,10 @@ import com.ald.fanbei.api.biz.arbitration.MD5;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.DsedSignUtil;
 import com.ald.fanbei.web.test.common.BaseTest;
 import com.ald.fanbei.web.test.common.HttpUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
@@ -58,11 +60,11 @@ public class DsedLoanTest extends BaseTest {
         params.put("realName", "郭帅强");
         params.put("idNumber", "330724199211254817");
         params.put("mobile", "13018933980");
-        String data = paramsEncrypt(params, "aef5c8c6114b8d6a");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
-        HttpUtil.post(url, p);
+        String respResult = com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
     }
 
     /**

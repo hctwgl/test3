@@ -83,8 +83,10 @@ public class DsedH5Controller extends DsedBaseController {
 //            Map<String,Object> systemsMap = (Map)JSON.parse(decryptData);
 			systemsMap =JSON.parseObject(decryptData);
             builder.method(method)
-	     	   .userId(userDo.getRid())
 	     	   .systemsMap(systemsMap);
+			if (userDo != null){
+				builder.userId(userDo.getRid());
+			}
         }
         
         Map<String,Object> dataMaps = Maps.newHashMap();
