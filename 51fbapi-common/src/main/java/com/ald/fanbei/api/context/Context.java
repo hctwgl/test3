@@ -46,5 +46,9 @@ public interface Context {
 	
 	public String getClientIp();
 
-	public void setClientIp(String clientIp); 
+	public void setClientIp(String clientIp);
+
+	public String getIdNumber();
+
+	public void setIdNumber(String idNumber);
 }

@@ -78,6 +78,8 @@ public class DsedH5Controller extends DsedBaseController {
 //		Enumeration<String> enumeration = request.getParameterNames();
 //		logger.info(JSON.toJSONString(enumeration));
         Map<String, Object> systemsMap = new HashMap<>();
+
+        Map<String, Object> dataMaps = Maps.newHashMap();
         if (StringUtils.isNotEmpty(data)) {
             String decryptData = AesUtil.decryptFromBase64Third(data, "aef5c8c6114b8d6a");
             JSONObject dataInfo = JSONObject.parseObject(decryptData);
@@ -89,10 +91,9 @@ public class DsedH5Controller extends DsedBaseController {
                     .systemsMap(systemsMap);
             if (userDo != null) {
                 builder.userId(userDo.getRid());
+                builder.idNumber(userDo.getIdNumber());
             }
         }
-
-        Map<String, Object> dataMaps = Maps.newHashMap();
 
         wrapRequest(request, dataMaps);
         builder.dataMap(systemsMap);

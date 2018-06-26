@@ -18,12 +18,15 @@ public class DsedH5HandleResponse implements BaseResponse {
     private DsedH5HandleResponse() {
     }
 
-    public DsedH5HandleResponse(int code, String msg, Object data) {
-        getNewInstance(code, msg, data);
+    public DsedH5HandleResponse(int importCode, String importMsg, Object importData) {
+        code = importCode;
+        message = importMsg;
+        data = importData;
     }
 
-    public DsedH5HandleResponse(int code, String msg) {
-        getNewInstance(code, msg);
+    public DsedH5HandleResponse(int importCode, String importMsg) {
+        code = importCode;
+        message = importMsg;
     }
 
 

@@ -713,7 +713,7 @@
 	<bean id="interceptorChain" class="com.ald.fanbei.api.web.chain.impl.InterceptorChain">
 		<property name="interceptors">
 			<list>
-				<ref bean="validationInterceptor"/>
+				<ref bean="dsedValidationInterceptor"/>
 			</list>
 		</property>
 	</bean>

@@ -193,8 +193,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 
         BigDecimal totalInterestFee = totalIncome.multiply(interestRatio).setScale(2, RoundingMode.HALF_UP);
         BigDecimal totalServiceFee = totalIncome.subtract(totalInterestFee).setScale(2, RoundingMode.HALF_UP);
-        DsedLoanDo loanDo = new DsedLoanDo();
-        loanDo.gen(periods, poundageRate, interestRate,overdueRate,
+        DsedLoanDo loanDo = DsedLoanDo.gen(periods, poundageRate, interestRate,overdueRate,
                 amount, totalServiceFee, totalInterestFee);
         return loanDo;
     }
@@ -208,12 +207,6 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
             loanDo.setCardNo(bankCard.getCardNumber());
             loanDo.setCardName(bankCard.getBankName());
             loanDo.setIp(reqParam.ip);
-            loanDo.setAddress(reqParam.address);
-            loanDo.setProvince(reqParam.province);
-            loanDo.setCity(reqParam.city);
-            loanDo.setCounty(reqParam.county);
-            loanDo.setLatitude(new BigDecimal(reqParam.latitude));
-            loanDo.setLongitude(new BigDecimal(reqParam.longitude));
             loanDo.setRemark(reqParam.remark);
             loanDo.setLoanRemark(reqParam.loanRemark);
             loanDo.setRepayRemark(reqParam.repayRemark);

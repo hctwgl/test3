@@ -22,9 +22,18 @@ public class ContextImpl implements Context {
 	
 	private String clientIp;
 
+	private String idNumber;
+
 	private Map<String,Object> systemsMap;
-	
-	
+	@Override
+	public String getIdNumber() {
+		return idNumber;
+	}
+	@Override
+	public void setIdNumber(String idNumber) {
+		this.idNumber = idNumber;
+	}
+
 	public String getClientIp() {
 		return clientIp;
 	}
@@ -120,6 +129,7 @@ public class ContextImpl implements Context {
 		this.id = builder.id;
 		this.systemsMap  = builder.systemsMap;
 		this.clientIp = builder.clientIp;
+		this.idNumber = builder.idNumber;
 	}
 
 	public static class Builder {
@@ -131,7 +141,9 @@ public class ContextImpl implements Context {
 		private String userName;
 
 		private Long userId;
-		
+
+		private String idNumber;
+
 		private String method;
 		
 		private String id;
@@ -179,9 +191,13 @@ public class ContextImpl implements Context {
 			this.clientIp = clientIp;
 			return this;
 		}
-		
+        public Builder idNumber(String idNumber) {
+            this.idNumber = idNumber;
+            return this;
+        }
 
-		public ContextImpl build() {
+
+        public ContextImpl build() {
 			return new ContextImpl(this);
 		}
 
