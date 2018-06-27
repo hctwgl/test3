@@ -59,7 +59,7 @@ public class DsedLoanAllRepayDoApi implements DsedH5Handle {
 		bo.remoteIp = context.getClientIp();
 		bo.cardName = map.get("bankName").toString();
 		data = this.dsedLoanRepaymentService.repay(bo,payType);
-		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "");
+		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
 		data.put("payMethod",payType);
 		resp.setData(data);
 		return resp;

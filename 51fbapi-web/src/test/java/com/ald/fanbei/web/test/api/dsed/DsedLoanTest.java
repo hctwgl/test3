@@ -72,14 +72,14 @@ public class DsedLoanTest extends BaseTest {
      */
     @Test
     public void dsedGetLoanInfo() {
-        String url = urlBase + "/dsed/dsedGetLoanInfo";
+        String url = urlBase + "/third/xgxy/v1/getBorrowInfo";
         Map<String, String> params = new HashMap<>();
         params.put("userId", "18637962344");
-        String data = paramsEncrypt(params, "testC1b6x@6aH$2dlw");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
-        p.put("sign", generateSign(params, "testC1b6x@6aH$2dlw"));
-        HttpUtil.post(url, p);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
     }
 
     /**

@@ -40,7 +40,7 @@ public class GetLoanInfoApi implements DsedH5Handle {
     @Override
     public DsedH5HandleResponse process(Context context) {
 
-        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "");
+        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
         try {
             Long userId = context.getUserId();
             if (userId == null || userId <= 0) {
@@ -73,7 +73,7 @@ public class GetLoanInfoApi implements DsedH5Handle {
 
         } catch (Exception e) {
             logger.error("/loanInfoApi error = {}", e.getStackTrace());
-            resp.setMsg("获取借款信息失败");
+            resp.setMessage("获取借款信息失败");
         }
 
         return resp;
