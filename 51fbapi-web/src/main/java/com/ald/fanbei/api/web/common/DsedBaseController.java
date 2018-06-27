@@ -97,12 +97,11 @@ public abstract class DsedBaseController {
     }
 
     protected BaseResponse buildErrorResult(FanbeiExceptionCode exceptionCode, HttpServletRequest request) {
-        H5HandleResponse resp = new H5HandleResponse();
-        resp.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
+        DsedH5HandleResponse resp;
         if (exceptionCode == null) {
             exceptionCode = FanbeiExceptionCode.SYSTEM_ERROR;
         }
-        resp = new H5HandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID), exceptionCode);
+        resp = new DsedH5HandleResponse(exceptionCode);
         return resp;
     }
 
