@@ -2,10 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
-import com.ald.fanbei.api.biz.bo.KuaijieDsedLoanBo;
-import com.ald.fanbei.api.biz.bo.KuaijieLoanBo;
-import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
 import com.ald.fanbei.api.biz.kafka.KafkaConstants;
 import com.ald.fanbei.api.biz.kafka.KafkaSync;
@@ -24,6 +21,7 @@ import com.ald.fanbei.api.dal.domain.dto.AfUserCouponDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
+import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -420,7 +418,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				@Override
 				public Long doInTransaction(TransactionStatus status) {
 					try {
-						dealLoanRepay(LoanRepayDealBo, repaymentDo,periodsList);
+ 						dealLoanRepay(LoanRepayDealBo, repaymentDo,periodsList);
 						// 最后一期还完后， 修改loan状态FINSH
 						dealLoanStatus(LoanRepayDealBo);
 						dealSum(LoanRepayDealBo);
@@ -435,7 +433,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			});
 			if (resultValue == 1L) {
 				nofityRisk(LoanRepayDealBo);
-				notifyUserBySms(LoanRepayDealBo);
+//				notifyUserBySms(LoanRepayDealBo);
 				if (collectionRepaymentId != null){
 					repaymentDo.setRemark(String.valueOf(collectionRepaymentId));
 				}
@@ -481,40 +479,42 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	public HashMap<String,Object> buildData(DsedLoanRepaymentDo repaymentDo){
 		DsedLoanDo loanDo = dsedLoanDao.getById(repaymentDo.getLoanId());
 		HashMap<String,Object> data = new HashMap<String,Object>();
-		List<HashMap<String,String>> borrowBillDetails = new ArrayList<HashMap<String,String>>();
-		HashMap<String,String> details = new HashMap<String,String>();
+		List<XgxyRepayBo> borrowBillDetails = new ArrayList<XgxyRepayBo>();
 		data.put("amount",repaymentDo.getActualAmount());
 		data.put("borrowNo",loanDo.getLoanNo());
 		data.put("status","REPAYSUCCESS");
 		data.put("tradeNo",repaymentDo.getTradeNo());
 		String[] repayPeriodsIds = repaymentDo.getRepayPeriods().split(",");
+
 		for (int i = 0; i < repayPeriodsIds.length; i++) {
 			// 获取分期信息
+			XgxyRepayBo xgxyRepayBo = new XgxyRepayBo();
 			DsedLoanPeriodsDo loanPeriodsDo = dsedLoanPeriodsDao.getById(Long.parseLong(repayPeriodsIds[i]));
 			if(loanPeriodsDo!=null){	// 提前还款,已出账的分期借款,还款金额=分期本金+手续费+利息（+逾期费）
 				if(repaymentDo.getPreRepayStatus().equals("Y")) {	// 提前还款
-					details.put("isFinish","Y");
+					xgxyRepayBo.setIsFinish("Y");
 				}else if(repaymentDo.getPreRepayStatus().equals("N")) {		// 按期还款（部分还款）
 					if(StringUtil.equals("FINISHED",loanPeriodsDo.getStatus())){
-						details.put("isFinish","Y");
+						xgxyRepayBo.setIsFinish("Y");
 					}else {
-						details.put("isFinish","N");
+						xgxyRepayBo.setIsFinish("N");
 					}
 				}
-				details.put("curPeriod",loanPeriodsDo.getNper().toString());
+				xgxyRepayBo.setCurPeriod(loanPeriodsDo.getNper().toString());
 				BigDecimal amount = BigDecimalUtil.add(loanPeriodsDo.getAmount(),
 						loanPeriodsDo.getRepaidInterestFee(),loanPeriodsDo.getInterestFee(),
 						loanPeriodsDo.getServiceFee(),loanPeriodsDo.getRepaidServiceFee(),
 						loanPeriodsDo.getOverdueAmount(),loanPeriodsDo.getRepaidOverdueAmount())
 						.subtract(loanPeriodsDo.getRepayAmount());
-				details.put("unrepayAmount",amount.toString());
-				details.put("unrepayInterestFee",loanPeriodsDo.getInterestFee().toString());
-				details.put("unrepayOverdueFee",loanPeriodsDo.getOverdueAmount().toString());
-				details.put("unrepayServiceFee",loanPeriodsDo.getServiceFee().toString());
+				xgxyRepayBo.setUnrepayAmount(amount.toString());
+				xgxyRepayBo.setUnrepayInterestFee(loanPeriodsDo.getInterestFee().toString());
+				xgxyRepayBo.setUnrepayOverdueFee(loanPeriodsDo.getOverdueAmount().toString());
+				xgxyRepayBo.setUnrepayServiceFee(loanPeriodsDo.getServiceFee().toString());
 			}
-			borrowBillDetails.add(details);
-			details.clear();
+			borrowBillDetails.add(xgxyRepayBo);
 		}
+		JSONArray json = JSONArray.fromObject(borrowBillDetails);
+		data.put("borrowBillDetails",json);
 		return data;
 	}
 

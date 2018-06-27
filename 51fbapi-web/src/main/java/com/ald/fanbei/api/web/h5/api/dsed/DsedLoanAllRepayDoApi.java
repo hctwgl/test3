@@ -33,8 +33,6 @@ import java.util.Map;
 public class DsedLoanAllRepayDoApi implements DsedH5Handle {
 
 	@Resource
-	AfUserAccountService afUserAccountService;
-	@Resource
 	DsedLoanService dsedLoanService;
 	@Resource
 	DsedLoanPeriodsService dsedLoanPeriodsService;
@@ -56,11 +54,12 @@ public class DsedLoanAllRepayDoApi implements DsedH5Handle {
 		String payType = map.get("bankChannel").toString();
 		DsedUserDo dsedUserDo = dsedUserService.getById(userId);
 		LoanRepayBo bo = this.extractAndCheck(context, userId);
+		bo.userId = userId;
 		bo.dsedUserDo = dsedUserDo;
 		bo.remoteIp = context.getClientIp();
 		bo.cardName = map.get("bankName").toString();
 		data = this.dsedLoanRepaymentService.repay(bo,payType);
-		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "");
+		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
 		Map<String, Object> hashMap = new HashMap<String, Object>();
 		hashMap.put("payMethod",payType);
 		hashMap.put("busiFlag",bo.tradeNo);
@@ -76,7 +75,6 @@ public class DsedLoanAllRepayDoApi implements DsedH5Handle {
 
 		LoanAllRepayDoParam param = (LoanAllRepayDoParam) context.getParamEntity();
 		
-		bo.userId = param.userId;
 		bo.amount = param.amount;
 		bo.bankNo = param.bankNo;
 		bo.borrowNo = param.borrowNo;
@@ -94,7 +92,7 @@ public class DsedLoanAllRepayDoApi implements DsedH5Handle {
 			throw new FanbeiException("user bankcard not exist error", FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
 		}
 		//还款金额是否大于银行单笔限额
-		dsedUserBankcardService.checkUpsBankLimit(map.get("bankCode").toString(), map.get("bankChannel").toString(), bo.actualAmount);
+		dsedUserBankcardService.checkUpsBankLimit(map.get("bankCode").toString(), map.get("bankChannel").toString(), bo.amount);
 		bo.cardName = map.get("bankName").toString();
 		bo.cardNo = map.get("cardNumber").toString();
 	}
@@ -115,7 +113,7 @@ public class DsedLoanAllRepayDoApi implements DsedH5Handle {
 		
 		// 检查 用户 是否多还钱(提前结清)
 		BigDecimal shouldRepayAmount = dsedLoanRepaymentService.calculateAllRestAmount(dsedLoanDo.getRid());
-		if(bo.repaymentAmount.compareTo(shouldRepayAmount) != 0) {
+		if(bo.amount.compareTo(shouldRepayAmount) != 0) {
 			throw new FanbeiException("loan repay amount error",FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}
 		

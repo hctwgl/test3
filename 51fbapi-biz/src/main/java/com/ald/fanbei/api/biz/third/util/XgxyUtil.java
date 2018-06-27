@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.third.util;
 
 
+import com.ald.fanbei.api.biz.arbitration.MD5;
 import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.*;
@@ -15,6 +16,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+
+import static com.ald.fanbei.api.common.util.DsedSignUtil.generateSign;
+import static com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam;
 
 @Component("XgxyUtil")
 public class XgxyUtil {
@@ -138,10 +142,14 @@ public class XgxyUtil {
      */
     public boolean  dsedRePayNoticeRequest(HashMap<String, Object> data ){
         try {
-            XgxyRepayReqBo repayReqBo=new XgxyRepayReqBo();
-            JSONObject jsonObj = new JSONObject(data);
-            repayReqBo.setSign(DsedSignUtil.paramsEncrypt(jsonObj, PRIVATE_KEY));
-            String reqResult = HttpUtil.post(getXgxyUrl(), repayReqBo);
+            String oriParamJson = JSON.toJSONString(data);
+            JSONObject paramJsonObject = JSONObject.parseObject(oriParamJson);
+            String data1 = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)),"aef5c8c6114b8d6a");
+            Map<String, Object> p = new HashMap<>();
+            p.put("data", data1);
+            p.put("sign", generateSign(paramJsonObject, "aef5c8c6114b8d6a"));
+            p.put("appId","edspay");
+            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(p));
             if(StringUtil.isBlank(reqResult)){
                 return false;
             }
@@ -156,6 +164,7 @@ public class XgxyUtil {
         return false;
 
     }
+
 
 
     /**

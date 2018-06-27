@@ -75,7 +75,8 @@ public class DsedUserBankcardServiceImpl extends ParentServiceImpl<DsedUserBankc
 	public void checkUpsBankLimit(String bankCode, String bankChannel,BigDecimal amount) {
 		UpsBankStatusDto upsBankStatusDto = getUpsBankStatus(bankCode, bankChannel);
 		if (upsBankStatusDto.getLimitUp().compareTo(amount.doubleValue()) < 0) {
-			throw new FanbeiException(String.format("该银行单笔限额%.2f元，请分批还款或使用其他银行卡还款，谢谢！", upsBankStatusDto.getLimitUp()), FanbeiExceptionCode.BANK_LIMIT_MONEY);
+			String msg = String.format("该银行单笔限额%.2f元，请使用其他银行卡还款，谢谢！", upsBankStatusDto.getLimitUp());
+			throw new FanbeiException(msg, FanbeiExceptionCode.BANK_LIMIT_MONEY);
 		}
 	}
 

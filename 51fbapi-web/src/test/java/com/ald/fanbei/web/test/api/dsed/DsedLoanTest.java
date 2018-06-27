@@ -45,6 +45,7 @@ public class DsedLoanTest extends BaseTest {
      */
     @Test
     public void getHomeInfo() {
+        String msg = String.format("该银行单笔限额%.2f元，请使用其他银行卡还款，谢谢！", 0.1);
         String url = urlBase + "/h5/loan/getLoanHomeInfo";
         testH5(url, null, userName, true);
     }
