@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.common;
 
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -22,6 +23,18 @@ public class DsedH5HandleResponse implements BaseResponse {
         code = importCode;
         message = importMsg;
         data = importData;
+    }
+
+    public DsedH5HandleResponse(FanbeiExceptionCode excCode) {
+        code = excCode.getErrorCode();
+        message = excCode.getDesc();
+        data = "";
+    }
+
+    public DsedH5HandleResponse(FanbeiExceptionCode excCode,String importMsg) {
+        code = excCode.getErrorCode();
+        message = importMsg;
+        data = "";
     }
 
     public DsedH5HandleResponse(int importCode, String importMsg) {

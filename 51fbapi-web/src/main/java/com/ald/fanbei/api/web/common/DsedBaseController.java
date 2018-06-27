@@ -108,22 +108,21 @@ public abstract class DsedBaseController {
 
     protected BaseResponse buildErrorResult(FanbeiException e, HttpServletRequest request) {
         FanbeiExceptionCode exceptionCode = e.getErrorCode();
-        H5HandleResponse resp = new H5HandleResponse();
-        resp.setId(request.getHeader(Constants.REQ_SYS_NODE_ID));
+        DsedH5HandleResponse resp;
         if (exceptionCode == null) {
             exceptionCode = FanbeiExceptionCode.SYSTEM_ERROR;
         }
         if (e.getDynamicMsg() != null && e.getDynamicMsg()) {
-            resp = new H5HandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID), exceptionCode, e.getMessage());
+            resp = new DsedH5HandleResponse(exceptionCode, e.getMessage());
         } else if (!StringUtil.isEmpty(e.getResourceType())) {
             AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(e.getResourceType());
             String msgTemplate = afResourceDo.getValue();
             for (String paramsKey : e.paramsMap.keySet()) {
                 msgTemplate = msgTemplate.replace(paramsKey, e.paramsMap.get(paramsKey));
             }
-            resp = new H5HandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID), exceptionCode, msgTemplate);
+            resp = new DsedH5HandleResponse(exceptionCode, msgTemplate);
         } else {
-            resp = new H5HandleResponse(request.getHeader(Constants.REQ_SYS_NODE_ID), exceptionCode);
+            resp = new DsedH5HandleResponse(exceptionCode);
         }
 
         return resp;
