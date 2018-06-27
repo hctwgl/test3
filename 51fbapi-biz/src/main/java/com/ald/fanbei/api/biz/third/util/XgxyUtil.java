@@ -45,17 +45,20 @@ public class XgxyUtil {
     public boolean  payNoticeRequest(XgxyPayBo payBo){
 
         try {
-            XgxyPayReqBo  payReqBo=new XgxyPayReqBo();
-            payReqBo.setAppId(payBo.getTrade());
-            payReqBo.setBorrowNo(payBo.getBorrowNo());
-            payReqBo.setStatus(payBo.getStatus());
+            Map<String,String> params=new HashMap<>();
+            Map<String,String>  pay=new HashMap<>();
+            pay.put("borrowNo",payBo.getBorrowNo());
+            pay.put("tradeNo",payBo.getTrade());
+            pay.put("status",payBo.getStatus());
+            params.put("data",JSON.toJSONString(pay));
+            params.put("sign",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), PRIVATE_KEY));
             if(StringUtils.equals(payBo.getStatus(),"N")){
-                payReqBo.setReason(payBo.getReason());
+                pay.put("reason",payBo.getReason());
             }else {
-                payReqBo.setGmtArrival(payBo.getGmtArrival());
+                pay.put("gmtArrival", String.valueOf(payBo.getGmtArrival()));
             }
-            payReqBo.setSign(DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(payReqBo)), PRIVATE_KEY));
-            String reqResult = HttpUtil.post(getXgxyUrl(), payReqBo);
+            pay.put("sign",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), PRIVATE_KEY));
+            String reqResult = HttpUtil.post(getXgxyUrl(), params);
             if(StringUtil.isBlank(reqResult)){
                 return false;
             }
@@ -75,14 +78,19 @@ public class XgxyUtil {
      * @param repayBo
      * @return
      */
-    public boolean  rePayNoticeRequest(XgxyRepayBo repayBo){
+    public boolean  rePayNoticeRequest(List<XgxyRepayBo> repayBo){
         try {
-            XgxyRepayReqBo repayReqBo=new XgxyRepayReqBo();
-            repayReqBo.setAppId(repayBo.getTradeNo());
-            repayReqBo.setBorrowNo(repayBo.getBorrowNo());
-            repayReqBo.setStatus(repayBo.getStatus());
-            repayReqBo.setSign(DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(repayReqBo)), PRIVATE_KEY));
-            String reqResult = HttpUtil.post(getXgxyUrl(), repayReqBo);
+            Map<String,String> params=new HashMap<>();
+            params.put("appId",repayBo.get(0).getTradeNo());
+            Map<String,List> rePayList=new HashMap<>();
+            for(XgxyRepayBo rePay:repayBo){
+                Map<String,String> rePayBo=new HashMap<>();
+                rePayBo.put("borrowNo",rePay.getBorrowNo());
+                rePayBo.put("status",rePay.getStatus());
+            }
+            params.put("data",JSON.toJSONString(rePayList));
+            params.put("sign",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), PRIVATE_KEY));
+            String reqResult = HttpUtil.post(getXgxyUrl(), params);
             if(StringUtil.isBlank(reqResult)){
                 return false;
             }
@@ -107,16 +115,15 @@ public class XgxyUtil {
      */
     public boolean  overDueNoticeRequest(XgxyOverdueBo overdueBo){
         try {
-            XgxyOverdueReqBo overdueReqBo=new XgxyOverdueReqBo();
-            overdueReqBo.setAppId(overdueBo.getTradeNo());
-            overdueReqBo.setBorrowNo(overdueBo.getBorrowNo());
-            overdueReqBo.setOverdueDays(String.valueOf(overdueBo.getOverdueDays()));
-            overdueReqBo.setCurPeriod(String.valueOf(overdueBo.getCurPeriod()));
-            Map<String,Object> data=new HashMap<>();
-            data.put("test","test");
-            overdueReqBo.setData(data);
-            overdueReqBo.setSign(DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(overdueReqBo)), PRIVATE_KEY));
-            String reqResult = HttpUtil.post(getXgxyUrl(), overdueReqBo);
+            Map<String,String> params=new HashMap<>();
+            params.put("appId",overdueBo.getTradeNo());
+            Map<String,String> overdue=new HashMap<>();
+            overdue.put("borrowNo",overdueBo.getBorrowNo());
+            overdue.put("overdueDays", String.valueOf(overdueBo.getOverdueDays()));
+            overdue.put("curPeriod",overdueBo.getCurPeriod() );
+            params.put("data", JSON.toJSONString(overdue));
+            params.put("sign",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), PRIVATE_KEY));
+            String reqResult = HttpUtil.post(getXgxyUrl(), params);
             if(StringUtil.isBlank(reqResult)){
                 return false;
             }

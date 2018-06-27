@@ -10,6 +10,7 @@ public class XgxyPayBo {
     private Date gmtArrival;
     private String reason;
 
+
     public String getTrade() {
         return trade;
     }
