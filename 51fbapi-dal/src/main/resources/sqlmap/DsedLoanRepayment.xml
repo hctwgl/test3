@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,user_id,loan_id,name,repay_amount,actual_amount,status,trade_no,trade_no_out,user_coupon_id,coupon_amount,user_amount,pre_repay_status,prd_type,repay_periods,card_no,card_name,remark,repay_channel 
+        id rid,is_delete,gmt_create,gmt_modified,user_id,loan_id,name,repay_amount,actual_amount,status,trade_no,trade_no_out,user_coupon_id,coupon_amount,user_amount,pre_repay_status,prd_type,repay_periods,card_no,card_name,remark,repay_channel
     </sql>
 
 
@@ -350,5 +350,17 @@
         and `status` = 'FAIL' and repay_channel != 'AUTO_REPAY'
         and  gmt_create  >= CURDATE()
     </select>
+
+    <select id="getLoanRepaymentByLoanId" parameterType="java.lang.Long" resultType="DsedLoanRepaymentDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        dsed_loan_repayment
+        WHERE
+        loan_id = #{loanId}
+        ORDER BY gmt_create DESC
+        LIMIT 1
+    </select>
+
 
 </mapper>

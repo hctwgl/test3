@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,user_id,loan_id,loan_no,prd_type,amount,periods,nper,status,repay_id,remark,overdue_status,overdue_days,interest_fee,service_fee,overdue_amount,repay_amount,pre_repay_status,repaid_service_fee,repaid_interest_fee,repaid_overdue_amount,gmt_last_repay,gmt_plan_repay 
+        id rid,is_delete,gmt_create,gmt_modified,user_id,loan_id,loan_no,prd_type,amount,periods,nper,status,repay_id,remark,overdue_status,overdue_days,interest_fee,service_fee,overdue_amount,repay_amount,pre_repay_status,repaid_service_fee,repaid_interest_fee,repaid_overdue_amount,gmt_last_repay,gmt_plan_repay
     </sql>
 
     <sql id="overdueQueryField">

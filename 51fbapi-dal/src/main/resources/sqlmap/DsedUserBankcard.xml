@@ -231,7 +231,7 @@
 
     <select id="getUserBankCardInfoByUserId" resultType="DsedUserBankcardDo">
 		SELECT
-           <include refid="queryWithFields"/>
+           <include refid="queryFields"/>
         FROM
 			dsed_user_bankcard
 		WHERE
@@ -245,7 +245,7 @@
 
 
     <insert id="addUserBankcard" parameterType="DsedUserBankcardDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO dsed_user_bankcard(gmt_create , gmt_modified , user_id , mobile , bank_code , card_number , is_main , bank_name , status)
+		INSERT INTO dsed_user_bankcard(gmt_create , gmt_modified , user_id , mobile , bank_code , card_number , is_main , bank_name , valid_date,status,safe_code)
 		VALUES (
     		NOW(),
     		NOW(),
@@ -255,7 +255,10 @@
     		#{cardNumber},
     		#{isMain},
     		#{bankName},
-    		#{status}
+    	    #{validDate},
+    		#{status},
+    	   #{safeCode}
+
 		)
 	</insert>
 

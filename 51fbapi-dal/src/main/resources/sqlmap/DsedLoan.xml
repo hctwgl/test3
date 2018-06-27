@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,user_id,loan_no,trade_no_out,periods,amount,arrival_amount,remit_amount,prd_type,card_no,card_name,overdue_days,overdue_amount,overdue_rate,overdue_status,review_name,review_no,review_details,review_status,risk_no,status,total_service_fee,service_rate,total_interest_fee,interest_rate,risk_daily_rate,au_amount,app_name,remark,loan_remark,repay_remark,gmt_arrival,gmt_review,gmt_close,gmt_finish,ip,latitude,longitude,province,city,county,address,device_no 
+        id rid,is_delete,gmt_create,gmt_modified,user_id,loan_no,trade_no_out,periods,amount,arrival_amount,remit_amount,prd_type,card_no,card_name,overdue_days,overdue_amount,overdue_rate,overdue_status,review_name,review_no,review_details,review_status,risk_no,status,total_service_fee,service_rate,total_interest_fee,interest_rate,risk_daily_rate,au_amount,app_name,remark,loan_remark,repay_remark,gmt_arrival,gmt_review,gmt_close,gmt_finish,ip,latitude,longitude,province,city,county,address,device_no
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->

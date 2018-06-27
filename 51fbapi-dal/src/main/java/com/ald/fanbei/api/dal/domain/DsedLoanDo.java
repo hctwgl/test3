@@ -58,6 +58,9 @@ import java.math.BigDecimal;
      * 主键Rid
      */
     private Long rid;
+
+
+    private int isDelete;
     
 
     /**
@@ -298,10 +301,19 @@ import java.math.BigDecimal;
       return rid;
     }
 
+    public int getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(int isDelete) {
+        this.isDelete = isDelete;
+    }
+
     /**
      * 设置主键Id
      * 
      * @param 要设置的主键Id
+
      */
     public void setRid(Long rid){
       this.rid = rid;

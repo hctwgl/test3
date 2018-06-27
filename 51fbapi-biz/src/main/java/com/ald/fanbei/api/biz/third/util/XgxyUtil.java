@@ -75,30 +75,12 @@ public class XgxyUtil {
     }
     /**
      * 还款通知请求(补偿机制)
-     * @param repayBo
+     * @param
      * @return
      */
-    public boolean  rePayNoticeRequest(List<XgxyRepayBo> repayBo){
+    public boolean  rePayNoticeRequest(Map<String,String> params){
         try {
-            Map<String,String> params=new HashMap<>();
-            params.put("appId",repayBo.get(0).getTradeNo());
-            List<Map<String,Object>> list=new ArrayList();
-            for(XgxyRepayBo rePay:repayBo){
-                Map<String,Object> rePayBo=new HashMap<>();
-                rePayBo.put("borrowNo",rePay.getBorrowNo());
-                rePayBo.put("status",rePay.getStatus());
-                rePayBo.put("amount",rePay.getAmount());
-                Map<String,String> borrowBillDetails=new HashMap<>();
-                borrowBillDetails.put("curPeriod",rePay.getCurPeriod());
-                borrowBillDetails.put("isFinish",rePay.getIsFinish());
-                borrowBillDetails.put("unrepayAmount",rePay.getUnrepayAmount());
-                borrowBillDetails.put("unrepayInterestFee",rePay.getUnrepayInterestFee());
-                borrowBillDetails.put("unrepayOverdueFee",rePay.getUnrepayOverdueFee());
-                borrowBillDetails.put("unrepayServiceFee",rePay.getUnrepayServiceFee());
-                rePayBo.put("borrowBillDetails",borrowBillDetails);
-                list.add(rePayBo);
-            }
-            params.put("data",JSON.toJSONString(list));
+            params.put("appId","");
             params.put("sign",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), PRIVATE_KEY));
             String reqResult = HttpUtil.post(getXgxyUrl(), params);
             if(StringUtil.isBlank(reqResult)){

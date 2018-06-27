@@ -22,4 +22,6 @@ public interface DsedLoanRepaymentDao extends BaseDao<DsedLoanRepaymentDo, Long>
 
     int getCurrDayRepayErrorTimesByUser(@Param("userId") Long userId);
 
+    DsedLoanRepaymentDo getLoanRepaymentByLoanId(@Param("loanId")Long loanId);
+
 }

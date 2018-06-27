@@ -1056,6 +1056,11 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		return allRestAmount;
 	}
 
+	@Override
+	public DsedLoanRepaymentDo getById(Long id) {
+		return dsedLoanRepaymentDao.getById(id);
+	}
+
 
 	/**
 	 * 计算提前还款需还金额

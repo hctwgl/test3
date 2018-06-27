@@ -27,6 +27,9 @@ import java.math.BigDecimal;
      */
     private Date gmtCreate;
 
+
+    private int isDelete;
+
     /**
      * 最后修改时间
      */
@@ -159,6 +162,15 @@ import java.math.BigDecimal;
     public void setGmtCreate(Date gmtCreate){
       this.gmtCreate = gmtCreate;
     }
+
+    public int getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(int isDelete) {
+        this.isDelete = isDelete;
+    }
+
 
     /**
      * 获取最后修改时间

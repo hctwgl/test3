@@ -40,7 +40,9 @@ import java.math.BigDecimal;
      * 主键Rid
      */
     private Long rid;
-    
+
+
+    private int isDelete;
 
     /**
      * 
@@ -180,7 +182,17 @@ import java.math.BigDecimal;
     public void setRid(Long rid){
       this.rid = rid;
     }
-    
+
+
+    public int getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(int isDelete) {
+        this.isDelete = isDelete;
+    }
+
+
 
     /**
      * 获取

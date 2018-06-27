@@ -4,6 +4,7 @@ import com.ald.fanbei.api.biz.service.impl.DsedLoanRepaymentServiceImpl;
 import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
+import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -18,7 +19,7 @@ import java.util.Map;
  * @date 2018-06-19 10:45:15
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public interface DsedLoanRepaymentService {
+public interface DsedLoanRepaymentService{
 
     DsedLoanRepaymentDo  getProcessingRepayment(Long loanId,Integer nper);
 
@@ -50,4 +51,8 @@ public interface DsedLoanRepaymentService {
      * @return
      */
     BigDecimal getDecreasedAmount(String loanNo,Long userId);
+
+    DsedLoanRepaymentDo getById(Long id);
+
+
 }
