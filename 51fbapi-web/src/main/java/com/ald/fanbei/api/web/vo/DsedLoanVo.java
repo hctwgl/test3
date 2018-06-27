@@ -17,7 +17,52 @@ public class DsedLoanVo extends AbstractSerial {
 	private String borrowNo;		// 借款编号
 	private String isPeriod;		// 是否为分期产品,Y 分期，N 不分期
 	private String status;		// 借款状态（APPLY:申请/未审核， TRANSFERING:打款中 ， TRANSFERRED:已经打款/待还款 TRANSFAILED:打款失败，CLOSED:关闭，FINISHED:已结清）
+	private BigDecimal interestRate;
+	private BigDecimal totalInterestFee;
+	private BigDecimal serviceRate;
+	private BigDecimal totalServiceFee;
+	private BigDecimal arrivalAmount;
 	private List<DsedLoanPeriodsVo> borrowBillDetails;
+
+	public BigDecimal getInterestRate() {
+		return interestRate;
+	}
+
+	public void setInterestRate(BigDecimal interestRate) {
+		this.interestRate = interestRate;
+	}
+
+	public BigDecimal getTotalInterestFee() {
+		return totalInterestFee;
+	}
+
+	public void setTotalInterestFee(BigDecimal totalInterestFee) {
+		this.totalInterestFee = totalInterestFee;
+	}
+
+	public BigDecimal getServiceRate() {
+		return serviceRate;
+	}
+
+	public void setServiceRate(BigDecimal serviceRate) {
+		this.serviceRate = serviceRate;
+	}
+
+	public BigDecimal getTotalServiceFee() {
+		return totalServiceFee;
+	}
+
+	public void setTotalServiceFee(BigDecimal totalServiceFee) {
+		this.totalServiceFee = totalServiceFee;
+	}
+
+	public BigDecimal getArrivalAmount() {
+		return arrivalAmount;
+	}
+
+	public void setArrivalAmount(BigDecimal arrivalAmount) {
+		this.arrivalAmount = arrivalAmount;
+	}
 
 	public String getBorrowNo() {
 		return borrowNo;

@@ -106,7 +106,7 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 			String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
 			roolbackBizData(payTradeNo, payBizObject, errorMsg, respBo);
 			clearCache(payTradeNo);
-			throw new FanbeiException(errorMsg);
+			throw new FanbeiException(errorMsg,FanbeiExceptionCode.UPS_ERROR_MSG);
 		} else {
 			Map<String, Object> resultMap = upsPaySuccess(payTradeNo, bankPayType, payBizObject, respBo, bank.get("cardNumber").toString());
 			clearCache(payTradeNo);
@@ -146,7 +146,7 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 		if (!respBo.isSuccess()) {
 			// 获取短信码失败
 			String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-			throw new FanbeiException(errorMsg);
+			throw new FanbeiException(errorMsg,FanbeiExceptionCode.UPS_ERROR_MSG);
 		} else {
 			// 添加数据到redis缓存
 			UpsCollectBo upsCollectBo = new UpsCollectBo(bank, payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(),

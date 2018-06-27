@@ -64,7 +64,6 @@ public class GetLoanInfoApi implements DsedH5Handle {
             DsedLoanVo loanVo = new DsedLoanVo();
             List<DsedLoanPeriodsVo> dsedLoanPeriodsVos = new ArrayList<>();
             loanVo.setBorrowNo(loanDo.getLoanNo());
-            loanVo.setIsPeriod(loanDo.getPeriods() > 1 ? "Y" : "N");
             loanVo.setStatus(loanDo.getStatus());
             if (dsedLoanPeriodList.size() != 0) {
                 dsedLoanPeriodList.forEach(dsedLoanPeriodsDo -> dsedLoanPeriodsVos.add(buildLoanPeriodsVo(dsedLoanPeriodsDo)));
@@ -91,6 +90,9 @@ public class GetLoanInfoApi implements DsedH5Handle {
                 dsedLoanPeriodsDo.getRepaidServiceFee(), dsedLoanPeriodsDo.getRepayAmount(), dsedLoanPeriodsDo.getRepaidOverdueAmount()
         ));
         dsedLoanPeriodsVo.setTotalPeriod(dsedLoanPeriodsDo.getPeriods());
+        dsedLoanPeriodsVo.setUnrepayInterestFee(dsedLoanPeriodsDo.getInterestFee());
+        dsedLoanPeriodsVo.setUnrepayOverdueFee(dsedLoanPeriodsDo.getOverdueAmount());
+        dsedLoanPeriodsVo.setUnrepayServiceFee(dsedLoanPeriodsDo.getServiceFee());
         dsedLoanPeriodsVo.setUnrepayAmount(BigDecimalUtil.add(dsedLoanPeriodsDo.getAmount(), dsedLoanPeriodsDo.getInterestFee(),
                 dsedLoanPeriodsDo.getServiceFee(), dsedLoanPeriodsDo.getOverdueAmount()));
         return dsedLoanPeriodsVo;

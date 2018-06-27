@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.dto.UpsBankStatusDto;
 import com.alibaba.fastjson.JSON;
@@ -74,7 +75,7 @@ public class DsedUserBankcardServiceImpl extends ParentServiceImpl<DsedUserBankc
 	public void checkUpsBankLimit(String bankCode, String bankChannel,BigDecimal amount) {
 		UpsBankStatusDto upsBankStatusDto = getUpsBankStatus(bankCode, bankChannel);
 		if (upsBankStatusDto.getLimitUp().compareTo(amount.doubleValue()) < 0) {
-			throw new FanbeiException(String.format("该银行单笔限额%.2f元，请分批还款或使用其他银行卡还款，谢谢！", upsBankStatusDto.getLimitUp()));
+			throw new FanbeiException(String.format("该银行单笔限额%.2f元，请分批还款或使用其他银行卡还款，谢谢！", upsBankStatusDto.getLimitUp()), FanbeiExceptionCode.BANK_LIMIT_MONEY);
 		}
 	}
 

@@ -21,6 +21,51 @@ public class DsedLoanPeriodsVo extends AbstractSerial {
     private BigDecimal unrepayAmount;        // 剩余未还金额
     private Date gmtPlanRepay;        // 本月还款时间
     private BigDecimal amount;        // 借款金额
+    private BigDecimal unrepayInterestFee;        // 剩余未还手续费
+    private BigDecimal unrepayOverdueFee;        // 剩余未还逾期费
+    private BigDecimal unrepayServiceFee;        // 剩余未还金额服务费
+    private BigDecimal interestFee;        // 借款金额总利息
+    private BigDecimal serviceFee;        // 借款金额总服务费
+
+    public BigDecimal getInterestFee() {
+        return interestFee;
+    }
+
+    public void setInterestFee(BigDecimal interestFee) {
+        this.interestFee = interestFee;
+    }
+
+    public BigDecimal getServiceFee() {
+        return serviceFee;
+    }
+
+    public void setServiceFee(BigDecimal serviceFee) {
+        this.serviceFee = serviceFee;
+    }
+
+    public BigDecimal getUnrepayInterestFee() {
+        return unrepayInterestFee;
+    }
+
+    public void setUnrepayInterestFee(BigDecimal unrepayInterestFee) {
+        this.unrepayInterestFee = unrepayInterestFee;
+    }
+
+    public BigDecimal getUnrepayOverdueFee() {
+        return unrepayOverdueFee;
+    }
+
+    public void setUnrepayOverdueFee(BigDecimal unrepayOverdueFee) {
+        this.unrepayOverdueFee = unrepayOverdueFee;
+    }
+
+    public BigDecimal getUnrepayServiceFee() {
+        return unrepayServiceFee;
+    }
+
+    public void setUnrepayServiceFee(BigDecimal unrepayServiceFee) {
+        this.unrepayServiceFee = unrepayServiceFee;
+    }
 
     public int getCurPeriod() {
         return curPeriod;

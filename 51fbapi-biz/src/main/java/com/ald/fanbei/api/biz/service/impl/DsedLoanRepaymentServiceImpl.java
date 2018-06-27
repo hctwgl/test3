@@ -198,7 +198,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		if (!bo.isAllRepay && !canRepay(bo.dsedLoanPeriodsDoList.get(0))) {
 			// 未出账时拦截按期还款
 			unLockRepay(bo.userId);
-			throw new FanbeiException(FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
+			throw new FanbeiException("loan period can not repay error",FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
 		}
 
 		Date now = new Date();
