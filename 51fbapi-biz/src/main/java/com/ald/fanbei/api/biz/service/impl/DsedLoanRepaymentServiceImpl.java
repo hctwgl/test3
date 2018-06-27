@@ -453,7 +453,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				noticeRecordDo.setType(DsedNoticeType.REPAY.code);
 				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 				dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
-				HashMap<String,Object> data = new HashMap<String,Object>();
+				HashMap<String,Object> data = buildData(repaymentDo);
 				if(xgxyUtil.dsedRePayNoticeRequest(data)){
 					noticeRecordDo.setRid(noticeRecordDo.getRid());
 					noticeRecordDo.setGmtModified(new Date());
@@ -478,6 +478,45 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		}
 	}
 
+	public HashMap<String,Object> buildData(DsedLoanRepaymentDo repaymentDo){
+		DsedLoanDo loanDo = dsedLoanDao.getById(repaymentDo.getLoanId());
+		HashMap<String,Object> data = new HashMap<String,Object>();
+		List<HashMap<String,String>> borrowBillDetails = new ArrayList<HashMap<String,String>>();
+		HashMap<String,String> details = new HashMap<String,String>();
+		data.put("amount",repaymentDo.getActualAmount());
+		data.put("borrowNo",loanDo.getLoanNo());
+		data.put("status","REPAYSUCCESS");
+		data.put("tradeNo",repaymentDo.getTradeNo());
+		String[] repayPeriodsIds = repaymentDo.getRepayPeriods().split(",");
+		for (int i = 0; i < repayPeriodsIds.length; i++) {
+			// 获取分期信息
+			DsedLoanPeriodsDo loanPeriodsDo = dsedLoanPeriodsDao.getById(Long.parseLong(repayPeriodsIds[i]));
+			if(loanPeriodsDo!=null){	// 提前还款,已出账的分期借款,还款金额=分期本金+手续费+利息（+逾期费）
+				if(repaymentDo.getPreRepayStatus().equals("Y")) {	// 提前还款
+					details.put("isFinish","Y");
+				}else if(repaymentDo.getPreRepayStatus().equals("N")) {		// 按期还款（部分还款）
+					if(StringUtil.equals("FINISHED",loanPeriodsDo.getStatus())){
+						details.put("isFinish","Y");
+					}else {
+						details.put("isFinish","N");
+					}
+				}
+				details.put("curPeriod",loanPeriodsDo.getNper().toString());
+				BigDecimal amount = BigDecimalUtil.add(loanPeriodsDo.getAmount(),
+						loanPeriodsDo.getRepaidInterestFee(),loanPeriodsDo.getInterestFee(),
+						loanPeriodsDo.getServiceFee(),loanPeriodsDo.getRepaidServiceFee(),
+						loanPeriodsDo.getOverdueAmount(),loanPeriodsDo.getRepaidOverdueAmount())
+						.subtract(loanPeriodsDo.getRepayAmount());
+				details.put("unrepayAmount",amount.toString());
+				details.put("unrepayInterestFee",loanPeriodsDo.getInterestFee().toString());
+				details.put("unrepayOverdueFee",loanPeriodsDo.getOverdueAmount().toString());
+				details.put("unrepayServiceFee",loanPeriodsDo.getServiceFee().toString());
+			}
+			borrowBillDetails.add(details);
+			details.clear();
+		}
+		return data;
+	}
 
 	/**
 	 * 还款失败后调用
