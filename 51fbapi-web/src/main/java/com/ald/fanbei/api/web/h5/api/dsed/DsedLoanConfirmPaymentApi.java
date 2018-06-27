@@ -37,7 +37,7 @@ public class DsedLoanConfirmPaymentApi implements DsedH5Handle {
 
     @Override
 	public DsedH5HandleResponse process(Context context) {
-		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "");
+		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
 
 		String smsCode = ObjectUtils.toString(context.getData("smsCode"), null);
 		String tradeNo = ObjectUtils.toString(context.getData("tradeNo"), null);

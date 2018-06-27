@@ -50,14 +50,14 @@ public class DsedH5HandleResponse implements BaseResponse {
     public static DsedH5HandleResponse getNewInstance(int code, String msg) {
         DsedH5HandleResponse instance = new DsedH5HandleResponse();
         instance.setCode(code);
-        instance.setMsg(msg);
+        instance.setMessage(msg);
         return instance;
     }
 
     public static DsedH5HandleResponse getNewInstance(int code, String msg, Object data) {
         DsedH5HandleResponse instance = new DsedH5HandleResponse();
         instance.setCode(code);
-        instance.setMsg(msg);
+        instance.setMessage(msg);
         instance.setData(data);
         return instance;
     }
@@ -70,12 +70,12 @@ public class DsedH5HandleResponse implements BaseResponse {
         this.code = code;
     }
 
-    public String getMsg() {
+    public String getMessage() {
         return message;
     }
 
-    public void setMsg(String msg) {
-        this.message = msg;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public Object getData() {

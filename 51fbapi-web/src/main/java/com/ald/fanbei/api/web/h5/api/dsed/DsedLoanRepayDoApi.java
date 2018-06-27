@@ -44,7 +44,7 @@ public class DsedLoanRepayDoApi implements DsedH5Handle {
 
 	@Override
 	public DsedH5HandleResponse process(Context context) {
-		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "");
+		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
 		LoanRepayDoParam param = (LoanRepayDoParam) context.getParamEntity();
 		Map<String, Object> data = new HashMap<String, Object>();
 		String bankNo = param.bankNo;

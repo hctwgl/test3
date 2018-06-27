@@ -125,6 +125,8 @@ public class PayRoutController {
 	@Resource
 	AfLoanService afLoanService;//贷款
 	@Resource
+	DsedLoanService dsedLoanService;
+	@Resource
 	AfLoanRepaymentService afLoanRepaymentService;
 	@Resource
 	private HuichaoUtility huichaoUtility;
@@ -248,7 +250,9 @@ public class PayRoutController {
 
 				} else if(UserAccountLogType.LOAN.getCode().equals(merPriv)) {
 					afLoanService.dealLoanSucc(result, outTradeNo);
-				} else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {// 菠萝觅银行卡退款
+				} else if(UserAccountLogType.DSED_LOAN.getCode().equals(merPriv)) {
+					dsedLoanService.dealLoanSucc(result, outTradeNo);
+				}else if (UserAccountLogType.BANK_REFUND.getCode().equals(merPriv)) {// 菠萝觅银行卡退款
 					// 退款记录
 					AfOrderRefundDo refundInfo = afOrderRefundService.getRefundInfoById(result);
 					AfOrderDo orderInfo = afOrderService.getOrderById(refundInfo.getOrderId());
@@ -300,6 +304,7 @@ public class PayRoutController {
 			return "ERROR";
 		}
 	}
+
 
 	@RequestMapping(value = { "/signRelease" }, method = RequestMethod.POST)
 	@ResponseBody

@@ -247,7 +247,31 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 
     @Override
     public void dealLoanSucc(Long loanId, String tradeNoOut) {
+        final DsedLoanDo loanDo = dsedLoanDao.getById(loanId);
+        String status = loanDo.getStatus();
+        if(AfLoanStatus.TRANSFERRED.name().equals(status)) {//已经处理过，防重复回调
+            logger.warn("dsedLoanService DealLoanSucc, transfer has succ, repeat UPS invoke! loanId="+loanId+",tradeNoOut="+tradeNoOut);
+            return;
+        }
 
+        if(AfLoanStatus.CLOSED.name().equals(status)) { // 已失败订单，但UPS仍回调成功，日志打点记录
+            logger.warn("dsedLoanService DealLoanSucc, transfer has fail, but still callback! original status= "+status+",loanId="+loanId+",tradeNoOut="+tradeNoOut);
+        }
+
+        Date cur = new Date();
+        loanDo.setTradeNoOut(tradeNoOut);
+        loanDo.setStatus(AfLoanStatus.TRANSFERRED.name());
+        loanDo.setArrivalAmount(loanDo.getAmount());
+        loanDo.setGmtArrival(cur);
+        transactionTemplate.execute(new TransactionCallback<Long>() { public Long doInTransaction(TransactionStatus status) {
+            try {
+                dsedLoanDao.updateById(loanDo);
+                return 1L;
+            } catch (Exception e) {
+                logger.error("dsedLoanService dealLoanSucc update db error", e);
+                throw e;
+            }
+        }});
     }
 
     @Override
