@@ -78,14 +78,17 @@ public class XgxyUtil {
      * @param repayBo
      * @return
      */
-    public boolean  rePayNoticeRequest(XgxyRepayBo repayBo){
+    public boolean  rePayNoticeRequest(List<XgxyRepayBo> repayBo){
         try {
             Map<String,String> params=new HashMap<>();
-            params.put("appId",repayBo.getTradeNo());
-            Map<String,String> rePay=new HashMap<>();
-            rePay.put("borrowNo",repayBo.getBorrowNo());
-            rePay.put("status",repayBo.getStatus());
-            params.put("data",JSON.toJSONString(rePay));
+            params.put("appId",repayBo.get(0).getTradeNo());
+            Map<String,List> rePayList=new HashMap<>();
+            for(XgxyRepayBo rePay:repayBo){
+                Map<String,String> rePayBo=new HashMap<>();
+                rePayBo.put("borrowNo",rePay.getBorrowNo());
+                rePayBo.put("status",rePay.getStatus());
+            }
+            params.put("data",JSON.toJSONString(rePayList));
             params.put("sign",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), PRIVATE_KEY));
             String reqResult = HttpUtil.post(getXgxyUrl(), params);
             if(StringUtil.isBlank(reqResult)){
