@@ -144,6 +144,9 @@ public enum FanbeiExceptionCode {
     AUTH_FUND_GETORDERSN_ERROR("AUTH_FUND_GETORDERSN_ERROR",1322,"auth fund getordersn error","51公积金认证获取订单号失败！"),
     AUTH_FUND_SUBMIT_ERROR("AUTH_FUND_SUBMIT_ERROR",1323,"auth fund submit error","公积金提交认证失败，请稍后重试"),
 
+    BANK_LIMIT_MONEY("BANK_LIMIT_MONEY",1324,"bank limit money","该银行单笔限额%.2f元，请分批还款或使用其他银行卡还款，谢谢！"),
+    UPS_ERROR_MSG("UPS_ERROR_MSG",1325,"ups error msg",""),
+
 
     // third mode code 1500-1599
     JPUSH_ERROR("JPUSH_ERROR",1500,"jpush error","推送失败"),

@@ -81,7 +81,7 @@ public class DsedLoanRepayDoApi implements DsedH5Handle {
 	private void checkPwdAndCard(LoanRepayBo bo) {
 		HashMap<String,Object> map = dsedUserBankcardService.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
 		if (null == map) {
-			throw new FanbeiException(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+			throw new FanbeiException("user not exist error", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
 		//还款金额是否大于银行单笔限额
 		dsedUserBankcardService.checkUpsBankLimit(map.get("bankCode").toString(), map.get("bankChannel").toString(), bo.actualAmount);
@@ -92,14 +92,14 @@ public class DsedLoanRepayDoApi implements DsedH5Handle {
 	private void checkFrom(LoanRepayBo bo) {
 		DsedLoanDo dsedLoanDo = null;
 		if((dsedLoanDo = dsedLoanService.getByLoanNo(bo.borrowNo)) == null ){
-			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
+			throw new FanbeiException("borrow cash not exist",FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
 		}
 		bo.dsedLoanDo = dsedLoanDo;
 		bo.loanId = dsedLoanDo.getRid();
 		// 检查当前 借款 是否已在处理中
 		DsedLoanRepaymentDo dsedLoanRepaymentDo = dsedLoanRepaymentService.getProcessLoanRepaymentByLoanId(dsedLoanDo.getRid());
 		if(dsedLoanRepaymentDo != null) {
-			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
+			throw new FanbeiException("loan repay not exist",FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
 		}
 
 
@@ -109,7 +109,7 @@ public class DsedLoanRepayDoApi implements DsedH5Handle {
 		bo.dsedLoanPeriodsDoList.add(dsedLoanPeriodsDo);
 		bo.repaymentAmount = dsedLoanPeriodsDo.getAmount();
 		if(bo.amount.compareTo(shouldRepayAmount) > 0) {
-			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
+			throw new FanbeiException("loan repay amount error",FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}
 
 	}

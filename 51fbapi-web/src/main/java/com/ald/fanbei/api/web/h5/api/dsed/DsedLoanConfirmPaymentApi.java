@@ -50,7 +50,7 @@ public class DsedLoanConfirmPaymentApi implements DsedH5Handle {
 		Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + tradeNo);
 		if (beanName == null) {
 		    // 未获取到缓存数据，支付订单过期
-		    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+		    throw new FanbeiException("ups cache expire",FanbeiExceptionCode.UPS_CACHE_EXPIRE);
 		}
 	
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -59,7 +59,8 @@ public class DsedLoanConfirmPaymentApi implements DsedH5Handle {
 		    map = dsedLoanRepaymentService.doUpsPay(tradeNo, smsCode);
 		    break;
 		default:
-		    throw new FanbeiException(FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
+			throw new FanbeiException("ups kuaijie not support", FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
+
 		}
 	
 		resp.setData(map);
