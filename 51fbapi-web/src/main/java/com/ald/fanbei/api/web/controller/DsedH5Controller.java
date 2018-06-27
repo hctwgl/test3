@@ -52,7 +52,7 @@ public class DsedH5Controller extends DsedBaseController {
     @Resource
     InterceptorChain interceptorChain;
 
-    @RequestMapping(value = "/ third/xgxy/v1/**", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+    @RequestMapping(value = "/third/xgxy/v1/**", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     @ResponseBody
     public String h5Request(@RequestBody DsedParam param, HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
