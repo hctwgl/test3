@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.h5.api.dsed;
 
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.impl.DsedLoanRepaymentServiceImpl.LoanRepayBo;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -58,8 +59,10 @@ public class DsedLoanRepayDoApi implements DsedH5Handle {
 		bo.bankNo = bankNo;
 		bo.cardName = map.get("bankName").toString();
 		data = this.dsedLoanRepaymentService.repay(bo,payType);
-		data.put("payMethod",payType);
-		resp.setData(data);
+		Map<String, Object> hashMap = new HashMap<String, Object>();
+		hashMap.put("payMethod",payType);
+		hashMap.put("busiFlag",bo.tradeNo);
+		resp.setData(hashMap);
 		return resp;
 	}
 

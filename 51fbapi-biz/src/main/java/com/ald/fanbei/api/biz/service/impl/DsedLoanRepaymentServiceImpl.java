@@ -322,7 +322,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		long count = redisTemplate.opsForValue().increment(key, 1);
 		redisTemplate.expire(key, 300, TimeUnit.SECONDS);
 		if (count != 1) {
-			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
+			throw new FanbeiException("loan repay not exist",FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
 		}
 	}
 
@@ -537,6 +537,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 			dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
 			HashMap<String, Object> data = new HashMap<String, Object>();
+			data.put("reason",errorMsg);
 			if (xgxyUtil.dsedRePayNoticeRequest(data)) {
 				noticeRecordDo.setRid(noticeRecordDo.getRid());
 				noticeRecordDo.setGmtModified(new Date());
