@@ -3,6 +3,8 @@ package com.ald.fanbei.api.web.h5.api.dsed;
 import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
+import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
@@ -22,22 +24,22 @@ import java.util.Map;
  */
 @Component("getDsedLoanDecreasedAmountApi")
 @Validator("GetLoanDecreasedAmountParam")
-public class GetLoanDecreasedAmountApi implements H5Handle {
+public class GetLoanDecreasedAmountApi implements DsedH5Handle {
     
     @Resource
 	DsedLoanRepaymentService dsedLoanRepaymentService;
 
 
     @Override
-	public H5HandleResponse process(Context context) {
-    	H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
+	public DsedH5HandleResponse process(Context context) {
+		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
 		Map<String, Object> map = new HashMap<String, Object>();
 		GetLoanDecreasedAmountParam param = (GetLoanDecreasedAmountParam)context.getParamEntity();
 		String borrowNo = param.borrowNo;
-		Long userId = param.userId;
+		Long userId = context.getUserId();
 		BigDecimal shouldRepayAmount = dsedLoanRepaymentService.getDecreasedAmount(borrowNo,userId);
 		map.put("decreasedAmount",shouldRepayAmount);
-		resp.setResponseData(map);
+		resp.setData(map);
 		return resp;
     }
 }

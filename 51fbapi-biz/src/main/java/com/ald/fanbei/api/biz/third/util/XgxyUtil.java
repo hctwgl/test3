@@ -23,10 +23,10 @@ public class XgxyUtil {
     Logger logger = LoggerFactory.getLogger(XgxyUtil.class);
 
 
-    private static String url = null;
+    private static String url = "192.168.107.227:2003/open/third/edspay/v1/giveBackRepayResult";
 
 
-    private static String PRIVATE_KEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBANXSVyvH4C55YKzvTUCN0fvrpKjIC5lBzDe6QlHCeMZaMmnhJpG/O+aao0q7vwnV08nk14woZEEVHbNHCHcfP+gEIQ52kQvWg0L7DUS4JU73pXRQ6MyLREGHKT6jgo/i1SUhBaaWOGI9w5N2aBxj1DErEzI7TA1h/M3Ban6J5GZrAgMBAAECgYAHPIkquCcEK6Nz9t1cc/BJYF5AQBT0aN+qeylHbxd7Tw4puy78+8XhNhaUrun2QUBbst0Ap1VNRpOsv5ivv2UAO1wHqRS8i2kczkZQj8vcCZsRh3jX4cZru6NoBb6QTTFRS6DRh06iFm0NgBPfzl9PSc3VwGpdj9ZhMO+oTYPBwQJBAPApB74XhZG7DZVpCVD2rGmE0pAlO85+Dxr2Vle+CAgGdtw4QBq89cA/0TvqHPC0xZaYWK0N3OOlRmhO/zRZSXECQQDj7JjxrUaKTdbS7gD88qLZBbk8c07ghO0qDCpp8J2U6D9baVBOrkcz+fTh7B8LzyCo5RY8vk61v/rYqcgk1F+bAkEAvYkELUfPCGZBoCsXSSiEhXpn248nFh5yuWq0VecJ25uObtqN7Qw4PxOeg9SOJoHkdqehRGJuc9LaMDQ4QQ4+YQJAJaIaOsVWgV2K2/cKWLmjY9wLEs0jN/Uax7eMhUOCcWTLmUdRSDyEazOZWHhJRATmKpzwyATQMDhLrdySvGoIgwJBALusECkz5zT4lIujwUNO30LlO8PKPCSKiiQJk4pN60pv2AFX4s2xVdZlXsFJh6btIJ9CGrMvEmogZTIGWq1xOFs=";
+    private static String PRIVATE_KEY = "aef5c8c6114b8d6a";
 
 
 
@@ -144,8 +144,8 @@ public class XgxyUtil {
     public boolean  dsedRePayNoticeRequest(HashMap<String, Object> data ){
         try {
             XgxyRepayReqBo repayReqBo=new XgxyRepayReqBo();
-            JSONObject jsStr = JSONObject.parseObject(createLinkString(repayReqBo));
-            repayReqBo.setSign(DsedSignUtil.paramsEncrypt(jsStr, PRIVATE_KEY));
+            JSONObject jsonObj = new JSONObject(data);
+            repayReqBo.setSign(DsedSignUtil.paramsEncrypt(jsonObj, PRIVATE_KEY));
             String reqResult = HttpUtil.post(getXgxyUrl(), repayReqBo);
             if(StringUtil.isBlank(reqResult)){
                 return false;
