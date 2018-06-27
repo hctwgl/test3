@@ -7,6 +7,7 @@ public class XgxyRepayBo {
     private String tradeNo;
     private String borrowNo;
     private String status;
+    private String amount;
     private String isFinish;
     private String reason;
     private String curPeriod;
@@ -23,6 +24,13 @@ public class XgxyRepayBo {
         this.tradeNo = tradeNo;
     }
 
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
 
     public String getBorrowNo() {
         return borrowNo;
