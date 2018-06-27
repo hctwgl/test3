@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.bo.XgxyPayBo;
 import com.ald.fanbei.api.biz.bo.dsed.DsedApplyLoanBo;
 import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.DsedLoanProductService;
@@ -143,26 +144,6 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
                 throw e;
             }
 
-            //贷款成功 通知用户
-            try {
-                //借款成功，调用西瓜信用通知接口
-                DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
-                noticeRecordDo.setUserId(loanDo.getUserId());
-                noticeRecordDo.setRefId(String.valueOf(loanDo.getRid()));
-                noticeRecordDo.setType(DsedNoticeType.PAY.code);
-                noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
-                dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
-                HashMap<String,Object> data = new HashMap<String,Object>();
-                if(xgxyUtil.dsedRePayNoticeRequest(data)){
-                    noticeRecordDo.setRid(noticeRecordDo.getRid());
-                    noticeRecordDo.setGmtModified(new Date());
-                    dsedNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
-                }
-//				smsUtil.sendloanCashCode(userAccount.getUserName(), lastBankCode);
-//				jpushService.pushUtil(Documents.LOAN_SUCC_TITLE, String.format(Documents.LOAN_SUCC_MSG, lastBankCode), userAccount.getUserName());
-            } catch (Exception e) {
-                logger.error("DoLoan success, notify user occur error!", e); //通知过程抛出任何异常捕获，不影响主流程
-            }
         } finally {
             this.unlockLoan(userId);
         }
@@ -272,6 +253,8 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
                 throw e;
             }
         }});
+
+        dsedNoticeRecord(loanDo, "","PAYSUCCESS");
     }
 
     @Override
@@ -316,6 +299,43 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
                 }
             }
         });
+        //通知用户
+        dsedNoticeRecord(loanDo, msg,"PAYFAIL");
+    }
+
+    private void dsedNoticeRecord(DsedLoanDo loanDo,String msg,String status) {
+        try {
+            //调用西瓜信用通知接口
+            DsedNoticeRecordDo noticeRecordDo = buildDsedNoticeRecord(loanDo);
+            dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
+            XgxyPayBo xgxyPayBo = buildXgxyPay(loanDo, msg,status);
+            if(xgxyUtil.payNoticeRequest(xgxyPayBo)){
+                noticeRecordDo.setRid(noticeRecordDo.getRid());
+                noticeRecordDo.setGmtModified(new Date());
+                dsedNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
+            }
+        } catch (Exception e) {
+            logger.error("dsedNoticeRecord, notify user occur error!", e); //通知过程抛出任何异常捕获，不影响主流程
+        }
+    }
+
+    private XgxyPayBo buildXgxyPay(DsedLoanDo loanDo, String msg,String status) {
+        XgxyPayBo  xgxyPayBo = new XgxyPayBo();
+        xgxyPayBo.setTrade(loanDo.getTradeNoOut());
+        xgxyPayBo.setBorrowNo(loanDo.getLoanNo());
+        xgxyPayBo.setReason(msg);
+        xgxyPayBo.setStatus(status);
+        xgxyPayBo.setGmtArrival(loanDo.getGmtArrival());
+        return xgxyPayBo;
+    }
+
+    private DsedNoticeRecordDo buildDsedNoticeRecord(DsedLoanDo loanDo) {
+        DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
+        noticeRecordDo.setUserId(loanDo.getUserId());
+        noticeRecordDo.setRefId(String.valueOf(loanDo.getRid()));
+        noticeRecordDo.setType(DsedNoticeType.PAY.code);
+        noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+        return noticeRecordDo;
     }
 
     @Override

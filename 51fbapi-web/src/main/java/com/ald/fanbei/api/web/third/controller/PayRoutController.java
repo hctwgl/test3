@@ -291,6 +291,8 @@ public class PayRoutController {
 					afSupplierOrderSettlementService.dealPayCallback(afSupDo,tradeState);
 				} else if(UserAccountLogType.LOAN.getCode().equals(merPriv)) {
 					afLoanService.dealLoanFail(result, outTradeNo, "");
+				} else if(UserAccountLogType.DSED_LOAN.getCode().equals(merPriv)) {
+					dsedLoanService.dealLoanFail(result, outTradeNo, "");
 				} else if(UserAccountLogType.BorrowCash.getCode().equals(merPriv)) {
 					afBorrowCashService.borrowFail(result, outTradeNo, "");
 				}
