@@ -7,6 +7,7 @@ import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -53,7 +54,7 @@ public class XgxyUtil {
             }else {
                 payReqBo.setGmtArrival(payBo.getGmtArrival());
             }
-            payReqBo.setSign(DsedSignUtil.paramsEncrypt(JSONObject.parseObject(createLinkString(payReqBo)), PRIVATE_KEY));
+            payReqBo.setSign(DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(payReqBo)), PRIVATE_KEY));
             String reqResult = HttpUtil.post(getXgxyUrl(), payReqBo);
             if(StringUtil.isBlank(reqResult)){
                 return false;
@@ -80,7 +81,7 @@ public class XgxyUtil {
             repayReqBo.setAppId(repayBo.getTradeNo());
             repayReqBo.setBorrowNo(repayBo.getBorrowNo());
             repayReqBo.setStatus(repayBo.getStatus());
-            repayReqBo.setSign(DsedSignUtil.paramsEncrypt(JSONObject.parseObject(createLinkString(repayReqBo)), PRIVATE_KEY));
+            repayReqBo.setSign(DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(repayReqBo)), PRIVATE_KEY));
             String reqResult = HttpUtil.post(getXgxyUrl(), repayReqBo);
             if(StringUtil.isBlank(reqResult)){
                 return false;
@@ -114,7 +115,7 @@ public class XgxyUtil {
             Map<String,Object> data=new HashMap<>();
             data.put("test","test");
             overdueReqBo.setData(data);
-            overdueReqBo.setSign(DsedSignUtil.paramsEncrypt(JSONObject.parseObject(createLinkString(overdueReqBo)), PRIVATE_KEY));
+            overdueReqBo.setSign(DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(overdueReqBo)), PRIVATE_KEY));
             String reqResult = HttpUtil.post(getXgxyUrl(), overdueReqBo);
             if(StringUtil.isBlank(reqResult)){
                 return false;
