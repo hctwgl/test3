@@ -15,4 +15,6 @@ public interface DsedUserDao extends BaseDao<DsedUserDo, Long> {
 
     int updateUser(DsedUserDo userDo);
 
+    DsedUserDo getByOpenId(String openId);
+
 }

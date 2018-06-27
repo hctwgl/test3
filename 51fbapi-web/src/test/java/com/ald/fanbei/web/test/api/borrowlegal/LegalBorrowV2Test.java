@@ -129,7 +129,7 @@ public class LegalBorrowV2Test  extends BaseTest{
 	@Test
 	public void  collect() {
 		String url = urlBase + "/third/ups/collect?";
-		String orderNo = "hq2018062217234300013";
+		String orderNo = "hq2018062515515100015";
 		String merPriv = PayOrderSource.REPAY_LOAN.getCode();
 		String tradeNo = "xianfeng21231";
 		String tradeState = "00";

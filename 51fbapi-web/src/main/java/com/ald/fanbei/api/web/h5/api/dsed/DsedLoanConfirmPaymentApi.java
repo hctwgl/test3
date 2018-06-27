@@ -6,6 +6,8 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
+import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import org.apache.commons.lang.ObjectUtils;
@@ -24,7 +26,7 @@ import java.util.Map;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("dsedLoanConfirmPaymentApi")
-public class DsedLoanConfirmPaymentApi implements H5Handle {
+public class DsedLoanConfirmPaymentApi implements DsedH5Handle {
     
     @Autowired
     @Qualifier("dsedLoanRepaymentService")
@@ -34,14 +36,15 @@ public class DsedLoanConfirmPaymentApi implements H5Handle {
     BizCacheUtil bizCacheUtil;
 
     @Override
-	public H5HandleResponse process(Context context) {
-    	H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
+	public DsedH5HandleResponse process(Context context) {
+		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "");
 
 		String smsCode = ObjectUtils.toString(context.getData("smsCode"), null);
 		String tradeNo = ObjectUtils.toString(context.getData("tradeNo"), null);
 	
 		if (StringUtils.isBlank(tradeNo) || StringUtils.isBlank(smsCode)) {
-		    return new H5HandleResponse(context.getId(), FanbeiExceptionCode.PARAM_ERROR);
+
+		    return new DsedH5HandleResponse(200, "参数错误");
 		}
 	
 		Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + tradeNo);
@@ -59,7 +62,7 @@ public class DsedLoanConfirmPaymentApi implements H5Handle {
 		    throw new FanbeiException(FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
 		}
 	
-		resp.setResponseData(map);
+		resp.setData(map);
 	
 		return resp;
     }

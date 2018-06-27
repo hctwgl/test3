@@ -3,10 +3,9 @@ package com.ald.fanbei.api.web.h5.api.dsed;
 import com.ald.fanbei.api.biz.bo.dsed.DsedApplyLoanBo;
 import com.ald.fanbei.api.biz.service.DsedLoanService;
 import com.ald.fanbei.api.biz.service.DsedUserService;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.web.common.H5Handle;
-import com.ald.fanbei.api.web.common.H5HandleResponse;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
+import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.DsedApplyLoanParam;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,7 @@ import javax.annotation.Resource;
  */
 @Component("dsedApplyLoanApi")
 @Validator("dsedApplyLoanParam")
-public class DsedApplyLoanApi implements H5Handle {
+public class DsedApplyLoanApi implements DsedH5Handle {
 
     @Resource
     private DsedLoanService dsedLoanService;
@@ -29,8 +28,7 @@ public class DsedApplyLoanApi implements H5Handle {
     private DsedUserService userService;
 
     @Override
-    public H5HandleResponse process(Context context) {
-        H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
+    public DsedH5HandleResponse process(Context context) {
 
         DsedApplyLoanBo bo = new DsedApplyLoanBo();
         map((DsedApplyLoanParam) context.getParamEntity(), bo);
@@ -39,29 +37,21 @@ public class DsedApplyLoanApi implements H5Handle {
         bo.userId = context.getUserId();
         bo.userName = context.getUserName();
         bo.realName = String.valueOf(context.getDataMap().get("realName"));
-        bo.idNumber = String.valueOf(context.getDataMap().get("idNumber"));
+        bo.idNumber = String.valueOf(context.getIdNumber());
         dsedLoanService.doLoan(bo);
 
+        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功", null);
         return resp;
     }
 
     public void map(DsedApplyLoanParam p, DsedApplyLoanBo bo) {
         DsedApplyLoanBo.ReqParam rp = bo.reqParam;
         rp.amount = p.amount;
-        rp.prdType = p.prdType;
-        rp.periods = p.periods;
-        rp.payPwd = p.payPwd;
+        rp.prdType = "DSED_LOAN";
+        rp.periods = p.period;
         rp.remark = p.remark;
         rp.loanRemark = p.loanRemark;
         rp.repayRemark = p.repayRemark;
-        rp.city = p.city;
-        rp.province = p.province;
-        rp.county = p.county;
-        rp.address = p.address;
-        rp.latitude = p.latitude;
-        rp.longitude = p.longitude;
-        rp.blackBox = p.blackBox;
-        rp.bqsBlackBox = p.bqsBlackBox;
     }
 
 }

@@ -4,11 +4,10 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.impl.DsedLoanRepaymentServiceImpl.LoanRepayBo;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.web.common.H5Handle;
-import com.ald.fanbei.api.web.common.H5HandleResponse;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
+import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.LoanRepayDoParam;
 import org.springframework.stereotype.Component;
@@ -20,14 +19,14 @@ import java.util.Map;
 
 
 /**  
- * @Description: 白领贷-还款
+ * @Description: dsed 确认还款
  * @Copyright (c) 浙江阿拉丁电子商务股份有限公司 All Rights Reserved.
- * @author yanghailong
- * @date 2018年1月22日
+ * @author chefeipeng
+ * @date 2018年6月22日
  */
 @Component("dsedLoanRepayDoApi")
 @Validator("LoanRepayDoParam")
-public class DsedLoanRepayDoApi implements H5Handle {
+public class DsedLoanRepayDoApi implements DsedH5Handle {
 	
 
 	@Resource
@@ -44,12 +43,12 @@ public class DsedLoanRepayDoApi implements H5Handle {
 
 
 	@Override
-	public H5HandleResponse process(Context context) {
-		H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
+	public DsedH5HandleResponse process(Context context) {
+		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "");
 		LoanRepayDoParam param = (LoanRepayDoParam) context.getParamEntity();
 		Map<String, Object> data = new HashMap<String, Object>();
 		String bankNo = param.bankNo;
-		Long userId = param.userId;
+		Long userId = context.getUserId();
 		HashMap<String,Object> map = dsedUserBankcardService.getPayTypeByBankNoAndUserId(userId,bankNo);
 		String payType = map.get("bankChannel").toString();
 		DsedUserDo dsedUserDo = dsedUserService.getById(userId);
@@ -59,7 +58,8 @@ public class DsedLoanRepayDoApi implements H5Handle {
 		bo.bankNo = bankNo;
 		bo.cardName = map.get("bankName").toString();
 		data = this.dsedLoanRepaymentService.repay(bo,payType);
-		resp.setResponseData(data);
+		data.put("payMethod",payType);
+		resp.setData(data);
 		return resp;
 	}
 

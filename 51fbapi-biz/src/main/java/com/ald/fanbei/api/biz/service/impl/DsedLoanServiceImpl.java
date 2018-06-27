@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.dsed.DsedApplyLoanBo;
 import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
+import com.ald.fanbei.api.biz.service.DsedLoanProductService;
 import com.ald.fanbei.api.biz.service.DsedLoanService;
 import com.ald.fanbei.api.biz.service.DsedNoticeRecordService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -19,10 +20,7 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedLoanDao;
 import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
 import com.ald.fanbei.api.dal.dao.DsedUserBankcardDao;
-import com.ald.fanbei.api.dal.domain.DsedLoanDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
-import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
-import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -36,6 +34,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,6 +55,9 @@ import java.util.concurrent.TimeUnit;
 public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> implements DsedLoanService {
 
     private static final Logger logger = LoggerFactory.getLogger(DsedLoanServiceImpl.class);
+
+    public static final BigDecimal DAYS_OF_YEAR = BigDecimal.valueOf(360);
+    public static final BigDecimal DAYS_OF_MONTH = BigDecimal.valueOf(30);
 
     @Resource
     private DsedLoanDao dsedLoanDao;
@@ -86,6 +88,9 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 
     @Resource
     private XgxyUtil xgxyUtil;
+
+    @Resource
+    private DsedLoanProductService dsedLoanProductService;
 
     @Override
     public BaseDao<DsedLoanDo, Long> getDao() {
@@ -163,6 +168,36 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
         }
     }
 
+    @Override
+    public DsedLoanDo resolveLoan(BigDecimal amount, Long userId, int periods, String loanNo, String prdType) {
+        DsedLoanRateDo loanRateDo = dsedLoanProductService.getByPrdTypeAndNper(prdType, periods+"");
+
+        BigDecimal interestRate = new BigDecimal(loanRateDo.getInterestRate());
+        BigDecimal poundageRate = new BigDecimal(loanRateDo.getPoundageRate());
+        BigDecimal overdueRate = new BigDecimal(loanRateDo.getOverdueRate());
+        BigDecimal layRate = interestRate.add(poundageRate);
+        BigDecimal userLayDailyRate = layRate.divide(DAYS_OF_YEAR, 10, RoundingMode.HALF_UP);
+        BigDecimal interestRatio = interestRate.divide(layRate, 10, RoundingMode.HALF_UP);
+        // 设贷款额为a，月利率为i，年利率为I，还款月数为n，每月还款额为b，还款利息总和为Y
+        BigDecimal a = amount;
+        BigDecimal i = userLayDailyRate.multiply(DAYS_OF_MONTH);
+        int n = periods;
+        // 月均总还款:b ＝ a×i×（1＋i）^n÷〔（1＋i）^n－1〕
+        BigDecimal totalFeePerPeriod = a.multiply(i)
+                .multiply( (i.add(BigDecimal.ONE)).pow(n) )
+                .divide( (i.add(BigDecimal.ONE)).pow(n).subtract(BigDecimal.ONE) , 2, RoundingMode.HALF_UP);
+        // 还款总额:n * b
+        BigDecimal totalFee = totalFeePerPeriod.multiply( BigDecimal.valueOf(periods) );
+        // 支付总利息:n * b - a
+        BigDecimal totalIncome = totalFee.subtract(a).setScale(2, RoundingMode.HALF_UP);
+
+        BigDecimal totalInterestFee = totalIncome.multiply(interestRatio).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalServiceFee = totalIncome.subtract(totalInterestFee).setScale(2, RoundingMode.HALF_UP);
+        DsedLoanDo loanDo = DsedLoanDo.gen(periods, poundageRate, interestRate,overdueRate,
+                amount, totalServiceFee, totalInterestFee);
+        return loanDo;
+    }
+
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_UNCOMMITTED, timeout = 30, value = "appTransactionTemplate", rollbackFor = Exception.class)
     public void saveLoanRecords(final DsedApplyLoanBo bo, final DsedLoanDo loanDo,
                                 final List<DsedLoanPeriodsDo> periodDos, final DsedUserBankcardDo bankCard) {
@@ -172,12 +207,6 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
             loanDo.setCardNo(bankCard.getCardNumber());
             loanDo.setCardName(bankCard.getBankName());
             loanDo.setIp(reqParam.ip);
-            loanDo.setAddress(reqParam.address);
-            loanDo.setProvince(reqParam.province);
-            loanDo.setCity(reqParam.city);
-            loanDo.setCounty(reqParam.county);
-            loanDo.setLatitude(new BigDecimal(reqParam.latitude));
-            loanDo.setLongitude(new BigDecimal(reqParam.longitude));
             loanDo.setRemark(reqParam.remark);
             loanDo.setLoanRemark(reqParam.loanRemark);
             loanDo.setRepayRemark(reqParam.repayRemark);

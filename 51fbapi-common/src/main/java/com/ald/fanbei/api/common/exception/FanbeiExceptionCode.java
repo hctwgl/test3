@@ -8,7 +8,7 @@ package com.ald.fanbei.api.common.exception;
  */
 public enum FanbeiExceptionCode {
 
-    SUCCESS("SUCCESS", 1000, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
+    SUCCESS("SUCCESS", 200, "success", "成功"), FAILED("FAILED", 1001, "failed", "失败"),
 	
     GET_CASHER_ERROR("GET_CASHER_ERROR",11602,"GET_CASHER_ERROR","跳转收银台失败"),
     RESUBMIT_ERROR("RESUBMIT_ERROR",11615,"RESUBMIT_ERROR","请勿重复确认收货"),

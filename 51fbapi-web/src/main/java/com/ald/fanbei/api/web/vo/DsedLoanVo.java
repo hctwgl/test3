@@ -17,7 +17,7 @@ public class DsedLoanVo extends AbstractSerial {
 	private String borrowNo;		// 借款编号
 	private String isPeriod;		// 是否为分期产品,Y 分期，N 不分期
 	private String status;		// 借款状态（APPLY:申请/未审核， TRANSFERING:打款中 ， TRANSFERRED:已经打款/待还款 TRANSFAILED:打款失败，CLOSED:关闭，FINISHED:已结清）
-	private List<DsedLoanPeriodsVo> dsedLoanPeriodsVoList;
+	private List<DsedLoanPeriodsVo> borrowBillDetails;
 
 	public String getBorrowNo() {
 		return borrowNo;
@@ -43,11 +43,11 @@ public class DsedLoanVo extends AbstractSerial {
 		this.status = status;
 	}
 
-	public List<DsedLoanPeriodsVo> getDsedLoanPeriodsVoList() {
-		return dsedLoanPeriodsVoList;
+	public List<DsedLoanPeriodsVo> getBorrowBillDetails() {
+		return borrowBillDetails;
 	}
 
-	public void setDsedLoanPeriodsVoList(List<DsedLoanPeriodsVo> dsedLoanPeriodsVoList) {
-		this.dsedLoanPeriodsVoList = dsedLoanPeriodsVoList;
+	public void setBorrowBillDetails(List<DsedLoanPeriodsVo> borrowBillDetails) {
+		this.borrowBillDetails = borrowBillDetails;
 	}
 }

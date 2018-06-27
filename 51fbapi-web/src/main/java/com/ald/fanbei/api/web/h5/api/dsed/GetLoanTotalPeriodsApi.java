@@ -1,38 +1,42 @@
 package com.ald.fanbei.api.web.h5.api.dsed;
 
-import com.ald.fanbei.api.biz.service.AfLoanPeriodsService;
-import com.ald.fanbei.api.biz.service.AfUserBankcardService;
+
 import com.ald.fanbei.api.biz.service.DsedLoanProductService;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.web.common.H5Handle;
-import com.ald.fanbei.api.web.common.H5HandleResponse;
-import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
+import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * 贷款发起前确认
+ *
  * @author ZJF
  */
-@NeedLogin
 @Component("dsedLoanTotalPeriodsApi")
-public class GetLoanTotalPeriodsApi implements H5Handle {
+public class GetLoanTotalPeriodsApi implements DsedH5Handle {
 
-	@Resource
-	private DsedLoanProductService dsedLoanProductService;
+    @Resource
+    private DsedLoanProductService dsedLoanProductService;
 
-	@Override
-	public H5HandleResponse process(Context context) {
-		H5HandleResponse resp = new H5HandleResponse(context.getId(),FanbeiExceptionCode.SUCCESS);
-		String prdType = context.getData("prdType").toString();
-		Integer periods = dsedLoanProductService.getMaxPeriodsByPrdType(prdType);
-		resp.addResponseData("periods", periods);
-		return resp;
-	}
-	
+    @Override
+    public DsedH5HandleResponse process(Context context) {
+        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
+        HashMap<String, Object> data = new HashMap<String, Object>();
+//		String prdType = context.getData("prdType").toString();
+        String prdType = "DSED_LOAN";
+        Integer periods = dsedLoanProductService.getMaxPeriodsByPrdType(prdType);
+        List periodArray = new ArrayList();
+        for (int i = 1; i <= periods; i++) {
+            periodArray.add(i);
+        }
+        data.put("realPeriods", periodArray);
+        resp.setData(data);
+        return resp;
+    }
+
 }

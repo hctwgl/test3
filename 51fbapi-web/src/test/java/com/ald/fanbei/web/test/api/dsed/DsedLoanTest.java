@@ -4,8 +4,10 @@ import com.ald.fanbei.api.biz.arbitration.MD5;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.DsedSignUtil;
 import com.ald.fanbei.web.test.common.BaseTest;
 import com.ald.fanbei.web.test.common.HttpUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Before;
@@ -19,7 +21,7 @@ public class DsedLoanTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-    String urlBase = "http://localhost:8089";
+    String urlBase = "http://localhost:8080";
     //	String userName = "13638668564";	//田建成 cardId:3111464419 支付密码123456
     String userName = "15669066271";    //田建成 cardId:3111464125 支付密码123456
 //	String userName = "13958004662";	//胡朝永 支付密码123456
@@ -52,17 +54,17 @@ public class DsedLoanTest extends BaseTest {
      */
     @Test
     public void dsedSyncUserInfo() {
-        String url = urlBase + "/dsed/dsedSyncUserInfo";
+        String url = urlBase + "/third/xgxy/v1/syncUserInfo";
         Map<String, String> params = new HashMap<>();
         params.put("userId", "18637962344");
         params.put("realName", "郭帅强");
         params.put("idNumber", "330724199211254817");
         params.put("mobile", "13018933980");
-        String data = paramsEncrypt(params, "testC1b6x@6aH$2dlw");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
-        p.put("sign", generateSign(params, "testC1b6x@6aH$2dlw"));
-        HttpUtil.post(url, p);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
     }
 
     /**
@@ -85,51 +87,67 @@ public class DsedLoanTest extends BaseTest {
      */
     @Test
     public void dsedApplyLoan() {
-        String url = urlBase + "/dsed/dsedApplyLoan";
+        String url = urlBase + "/third/xgxy/v1/comfirmBorrow";
         Map<String, String> params = new HashMap<>();
         params.put("prdType", "DSED_LOAN");
         params.put("amount", 6000 + "");
+        params.put("userId", "18637962344");
         params.put("periods", 3 + "");
         params.put("realName", "过帅强");
-        params.put("idNumber", "330724199211254817");
-        params.put("remark", "白领贷借款");
         params.put("loanRemark", "装修");
         params.put("repayRemark", "工资");
-        params.put("payPwd", DigestUtils.md5Hex("123456")); // 支付密码，根据测试账号需要替换！
-        params.put("latitude", "20.35654");
-        params.put("longitude", "21.65645");
-        params.put("province", "浙江省");
-        params.put("userId", "18637962615");
-        params.put("city", "杭州市");
-        params.put("county", "中国");
-        params.put("address", "滨江区星耀城1期");
-        params.put("blackBox", "sadasd");
-        params.put("bqsBlackBox", "asdasdasd");
-        params.put("couponId", "");
-        String data = paramsEncrypt(params, "testC1b6x@6aH$2dlw");
+        params.put("bankNo", "6236681540001686992");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
-        p.put("sign", generateSign(params, "testC1b6x@6aH$2dlw"));
-        HttpUtil.post(url, p);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
     }
 
 
 	@Test
 	public void dsedrepayLoan() {
-		String url = urlBase + "/dsed/dsedLoanRepayDo";
+		String url = urlBase + "/third/xgxy/v1/repayComfirm";
 		Map<String,String> params = new HashMap<>();
-		params.put("amount", 500+"");
+		params.put("amount", 1+"");
 		params.put("curPeriod", 1+"");
-		params.put("bankNo", "621558320200730");
+		params.put("bankNo", "6215583202007303741");
 		params.put("borrowNo", "dk2018062114010403242");
-		params.put("userId","18637962344");
-		String data = paramsEncrypt(params,"testC1b6x@6aH$2dlw");
-		Map<String,String> p = new HashMap<>();
-		p.put("data",data);
-		p.put("sign",generateSign(params,"testC1b6x@6aH$2dlw"));
-		testH5(url, p, userName, true);
+		params.put("userId","tjc18637962344");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
 	}
 
+
+    @Test
+    public void getBorrowFeeDetail() {
+        String url = urlBase + "/third/xgxy/v1/getBorrowFeeDetail";
+        Map<String,String> params = new HashMap<>();
+        params.put("amount", 1+"");
+        params.put("periods", "2");
+        params.put("userId","tjc18637962344");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+    }
+
+
+    @Test
+    public void getRealPeriod() {
+        String url = urlBase + "/third/xgxy/v1/getRealPeriod";
+        Map<String,String> params = new HashMap<>();
+        params.put("userId","tjc18637962344");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+    }
 
 
 	/**

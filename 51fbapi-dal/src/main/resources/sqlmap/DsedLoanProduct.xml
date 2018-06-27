@@ -135,7 +135,7 @@
 
     <select id="getMaxPeriodsByPrdType" resultType="java.lang.Integer">
         SELECT
-        max (periods)
+        max(periods)
         FROM dsed_loan_product
         WHERE prd_type = #{prdType}
         limit 1

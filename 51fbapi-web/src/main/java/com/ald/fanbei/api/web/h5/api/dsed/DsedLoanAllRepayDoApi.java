@@ -6,6 +6,8 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
+import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import com.ald.fanbei.api.web.common.H5Handle;
 import com.ald.fanbei.api.web.common.H5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
@@ -27,7 +29,7 @@ import java.util.Map;
  */
 @Component("dsedLoanAllRepayDoApi")
 @Validator("LoanAllRepayDoParam")
-public class DsedLoanAllRepayDoApi implements H5Handle {
+public class DsedLoanAllRepayDoApi implements DsedH5Handle {
 
 	@Resource
 	AfUserAccountService afUserAccountService;
@@ -44,11 +46,11 @@ public class DsedLoanAllRepayDoApi implements H5Handle {
 
 
 	@Override
-	public H5HandleResponse process(Context context) {
+	public DsedH5HandleResponse process(Context context) {
 		LoanAllRepayDoParam param = (LoanAllRepayDoParam) context.getParamEntity();
 		Map<String, Object> data = new HashMap<String, Object>();
 		String bankNo = param.bankNo;
-		Long userId = param.userId;
+		Long userId = context.getUserId();
 		HashMap<String,Object> map = dsedUserBankcardService.getPayTypeByBankNoAndUserId(userId,bankNo);
 		String payType = map.get("bankChannel").toString();
 		DsedUserDo dsedUserDo = dsedUserService.getById(userId);
@@ -57,8 +59,9 @@ public class DsedLoanAllRepayDoApi implements H5Handle {
 		bo.remoteIp = context.getClientIp();
 		bo.cardName = map.get("bankName").toString();
 		data = this.dsedLoanRepaymentService.repay(bo,payType);
-		H5HandleResponse resp = new H5HandleResponse(context.getId(), FanbeiExceptionCode.SUCCESS);
-		resp.setResponseData(data);
+		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "");
+		data.put("payMethod",payType);
+		resp.setData(data);
 		return resp;
 	}
 

@@ -652,15 +652,15 @@
 				<entry key="/h5/reward/doShareTask" value-ref="doShareTaskApi" />
 				<entry key="/h5/reward/doPushTask" value-ref="doPushTaskApi" />
 
-				<entry key="/dsed/dsedApplyLoan" value-ref="dsedApplyLoanApi" />
-				<entry key="/dsed/dsedLoanAllRepayDo" value-ref="dsedLoanAllRepayDoApi" />
-				<entry key="/dsed/dsedLoanConfirmPayment" value-ref="dsedLoanConfirmPaymentApi" />
-				<entry key="/dsed/dsedLoanRepayDo" value-ref="dsedLoanRepayDoApi" />
-				<entry key="/dsed/getDsedLoanDecreasedAmount" value-ref="getDsedLoanDecreasedAmountApi" />
-				<entry key="/dsed/dsedGetLoanInfo" value-ref="dsedGetLoanInfoApi" />
-				<entry key="/dsed/dsedLoanTotalPeriods" value-ref="dsedLoanTotalPeriodsApi" />
-				<entry key="/dsed/dsedLoanDetail" value-ref="dsedLoanDetailApi" />
-				<entry key="/dsed/dsedSyncUserInfo" value-ref="dsedSyncUserInfoApi" />
+				<entry key="/third/xgxy/v1/comfirmBorrow" value-ref="dsedApplyLoanApi" />
+				<entry key="/third/xgxy/v1/preFinish" value-ref="dsedLoanAllRepayDoApi" />
+				<entry key="/third/xgxy/v1/dsedLoanConfirmPayment" value-ref="dsedLoanConfirmPaymentApi" />
+				<entry key="/third/xgxy/v1/repayComfirm" value-ref="dsedLoanRepayDoApi" />
+				<entry key="/third/xgxy/v1/getDecreasedAmount" value-ref="getDsedLoanDecreasedAmountApi" />
+				<entry key="/third/xgxy/v1/getBorrowInfo" value-ref="dsedGetLoanInfoApi" />
+				<entry key="/third/xgxy/v1/getRealPeriod" value-ref="dsedLoanTotalPeriodsApi" />
+				<entry key="/third/xgxy/v1/getBorrowFeeDetail" value-ref="dsedLoanDetailApi" />
+				<entry key="/third/xgxy/v1/syncUserInfo" value-ref="dsedSyncUserInfoApi" />
 				<!-- 支付相关接口 -->
 				<entry key="/h5/pay/recycleQuickPaymentResendCode" value-ref="recycleQuickPaymentResendCodeApi" />
 				<entry key="/h5/pay/recycleConfirmPayment" value-ref="recycleConfirmPaymentApi" />
@@ -713,7 +713,7 @@
 	<bean id="interceptorChain" class="com.ald.fanbei.api.web.chain.impl.InterceptorChain">
 		<property name="interceptors">
 			<list>
-				<ref bean="validationInterceptor"/>
+				<ref bean="dsedValidationInterceptor"/>
 			</list>
 		</property>
 	</bean>
