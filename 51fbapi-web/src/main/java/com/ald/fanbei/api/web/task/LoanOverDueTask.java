@@ -2,9 +2,11 @@ package com.ald.fanbei.api.web.task;
 
 import com.ald.fanbei.api.biz.bo.XgxyOverdueBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.common.enums.DsedNoticeType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.CollectionUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 import com.alibaba.fastjson.JSONArray;
@@ -18,7 +20,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -38,17 +42,22 @@ public class LoanOverDueTask {
     private DsedLoanPeriodsService dsedLoanPeriodsService;
 
     @Resource
-    DsedLoanRepaymentService dsedLoanRepaymentService;
+    private DsedLoanRepaymentService dsedLoanRepaymentService;
 
     @Resource
-    DsedLoanOverdueLogService loanOverdueLogService;
+    private DsedLoanOverdueLogService loanOverdueLogService;
 
     @Resource
-    DsedNoticeRecordService noticeRecordService;
+    private  DsedNoticeRecordService noticeRecordService;
 
     @Resource
-    XgxyUtil xgxyUtil;
+    private DsedUserService userService;
 
+    @Resource
+    private XgxyUtil xgxyUtil;
+
+    @Resource
+    private CollectionSystemUtil collectionSystemUtil;
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void laonDueJob(){
@@ -106,6 +115,7 @@ public class LoanOverDueTask {
                 //发送通知
                 overDueNotice(dsedLoanDo);
                 //通知催收
+                collectionPush(dsedLoanDo,currentAmount,dsedLoanDo.getOverdueAmount());
 
             } catch (Exception e) {
                 logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId=",dsedLoanDo.getLoanId());
@@ -116,7 +126,22 @@ public class LoanOverDueTask {
 
    }
 
-
+   void  collectionPush(DsedLoanPeriodsDto dsedLoanDo,BigDecimal principal,BigDecimal overdueamunt){
+        DsedUserDo userDo=userService.getById(dsedLoanDo.getUserId());
+        Map<String,String> data=new HashMap<>();
+        data.put("id", String.valueOf(dsedLoanDo.getUserId()));
+        data.put("caseName",dsedLoanDo.getLoanNo());
+        data.put("planRepaymenTime", String.valueOf(dsedLoanDo.getGmtPlanRepayment()));
+        data.put("residueAmount", String.valueOf(principal.add(overdueamunt)));
+        data.put("principal", String.valueOf(principal));
+        data.put("overdueAmount", String.valueOf(overdueamunt));
+        data.put("nper", String.valueOf(dsedLoanDo.getNper()));
+        data.put("userName",dsedLoanDo.getUserName());
+        data.put("idNumber",userDo.getIdNumber());
+        data.put("phoneNumber",userDo.getMobile());
+        data.put("address",userDo.getAddress());
+        collectionSystemUtil.noticeCollect(data);
+    }
 
    void  overDueNotice(DsedLoanPeriodsDto loanOverDue){
        DsedNoticeRecordDo noticeRecordDo=new DsedNoticeRecordDo();

@@ -87,7 +87,7 @@ public class NoticeTask {
                     if(loanRepaymentDo==null|| loanRepaymentDo.getIsDelete()==1){
                         dsedNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
                     }else {
-                        updateNoticeRecord(recordDo, xgxyUtil.rePayNoticeRequest(buildRepauBo(loanRepaymentDo)));
+                        updateNoticeRecord(recordDo, xgxyUtil.dsedRePayNoticeRequest(buildRepauBo(loanRepaymentDo)));
                     }
                     continue;
                 }
@@ -101,15 +101,15 @@ public class NoticeTask {
                     continue;
                 }
                 if(StringUtils.isBlank(all_noticedfail_moreonce.get(recordDo.getRid()))){
-                    DsedLoanDo finalLoanDo = loanDo;
-                    DsedLoanRepaymentDo finalLoanRepaymentDo = loanRepaymentDo;
-                    DsedLoanPeriodsDo finalPeriodsDo = periodsDo;
-                    Thread thread = new Thread(){
-                        public void run(){
-                            nextNotice(recordDo, finalLoanDo, finalLoanRepaymentDo, finalPeriodsDo);
-                        }
-                    };
-                    thread.start();
+                        DsedLoanDo finalLoanDo = loanDo;
+                        DsedLoanRepaymentDo finalLoanRepaymentDo = loanRepaymentDo;
+                        DsedLoanPeriodsDo finalPeriodsDo = periodsDo;
+                        Thread thread = new Thread(){
+                            public void run(){
+                                nextNotice(recordDo, finalLoanDo, finalLoanRepaymentDo, finalPeriodsDo);
+                            }
+                        };
+                        thread.start();
                 }
             }
         }
@@ -123,7 +123,7 @@ public class NoticeTask {
              if(StringUtils.equals(recordDo.getType(), "PAY")&&loanDo!=null){
                  updateNoticeRecord(recordDo, xgxyUtil.payNoticeRequest(buildePayBo(loanDo)));
              }else if(StringUtils.equals(recordDo.getType(), "REPAY")&&loanRepaymentDo!=null) {
-                 updateNoticeRecord(recordDo, xgxyUtil.rePayNoticeRequest(buildRepauBo(loanRepaymentDo)));
+                 updateNoticeRecord(recordDo, xgxyUtil.dsedRePayNoticeRequest(buildRepauBo(loanRepaymentDo)));
              }else if(periodsDo!=null) {
                  updateNoticeRecord(recordDo, xgxyUtil.overDueNoticeRequest(buildOverdue(periodsDo)));
              }
@@ -152,9 +152,9 @@ public class NoticeTask {
         return buildRecord;
     }
 
-    HashMap<String,String>  buildRepauBo(DsedLoanRepaymentDo loanRepaymentDo){
+    HashMap<String,Object>  buildRepauBo(DsedLoanRepaymentDo loanRepaymentDo){
        DsedLoanDo loanDo = dsedLoanService.getById(loanRepaymentDo.getLoanId());
-       HashMap<String,String> data = new HashMap<String,String>();
+       HashMap<String,Object> data = new HashMap<String,Object>();
        List<HashMap<String,String>> borrowBillDetails = new ArrayList<HashMap<String,String>>();
        HashMap<String,String> details = new HashMap<String,String>();
        data.put("amount", String.valueOf(loanRepaymentDo.getActualAmount()));
@@ -187,7 +187,7 @@ public class NoticeTask {
                details.put("unrepayServiceFee",loanPeriodsDo.getServiceFee().toString());
            }
            borrowBillDetails.add(details);
-           data.put("borrowBillDetails",JSONObject.toJSONString(borrowBillDetails));
+           data.put("borrowBillDetails",borrowBillDetails);
            details.clear();
        }
        return data;

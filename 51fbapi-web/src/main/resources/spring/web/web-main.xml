@@ -655,6 +655,8 @@
 				<entry key="/third/xgxy/v1/applyBindBankcard" value-ref="dsedApplyBindBankCardMsgApi"/>
 				<entry key="/third/xgxy/v1/submitBindBankcard" value-ref="dsedSubmitBindBankcardApi"/>
 
+				<entry key="/third/xgxy/v1/getUserContactsInfo" value-ref="getUserContactsInfoApi"/>
+
 				<entry key="/third/xgxy/v1/comfirmBorrow" value-ref="dsedApplyLoanApi" />
 				<entry key="/third/xgxy/v1/preFinish" value-ref="dsedLoanAllRepayDoApi" />
 				<entry key="/third/xgxy/v1/dsedLoanConfirmPayment" value-ref="dsedLoanConfirmPaymentApi" />

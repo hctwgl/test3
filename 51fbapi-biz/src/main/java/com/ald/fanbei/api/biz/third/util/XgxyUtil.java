@@ -49,20 +49,19 @@ public class XgxyUtil {
     public boolean  payNoticeRequest(XgxyPayBo payBo){
 
         try {
-            Map<String,String> params=new HashMap<>();
+            Map<String,Object> params=new HashMap<>();
             Map<String,String>  pay=new HashMap<>();
             pay.put("borrowNo",payBo.getBorrowNo());
             pay.put("tradeNo",payBo.getTrade());
             pay.put("status",payBo.getStatus());
-            params.put("data",JSON.toJSONString(pay));
-            params.put("sign",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), PRIVATE_KEY));
             if(StringUtils.equals(payBo.getStatus(),"N")){
                 pay.put("reason",payBo.getReason());
             }else {
                 pay.put("gmtArrival", String.valueOf(payBo.getGmtArrival()));
             }
-            pay.put("sign",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), PRIVATE_KEY));
-            String reqResult = HttpUtil.post(getXgxyUrl(), params);
+            params.put("data",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)),PRIVATE_KEY));
+            params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(params)), PRIVATE_KEY));
+            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(params));
             if(StringUtil.isBlank(reqResult)){
                 return false;
             }
@@ -77,31 +76,6 @@ public class XgxyUtil {
         return false;
 
     }
-    /**
-     * 还款通知请求(补偿机制)
-     * @param
-     * @return
-     */
-    public boolean  rePayNoticeRequest(Map<String,String> params){
-        try {
-            params.put("appId","");
-            params.put("sign",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), PRIVATE_KEY));
-            String reqResult = HttpUtil.post(getXgxyUrl(), params);
-            if(StringUtil.isBlank(reqResult)){
-                return false;
-            }
-            XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult,XgxyPayReqBo.class);
-            if("01".equals(rePayRespResult.getCode())){
-                return true;
-            }
-        }catch (Exception e){
-            logger.info("rePayNoticeRequest request fail",e);
-        }
-
-        return false;
-
-    }
-
 
 
     /**
@@ -111,15 +85,15 @@ public class XgxyUtil {
      */
     public boolean  overDueNoticeRequest(XgxyOverdueBo overdueBo){
         try {
-            Map<String,String> params=new HashMap<>();
+            Map<String,Object> params=new HashMap<>();
             params.put("appId",overdueBo.getTradeNo());
             Map<String,String> overdue=new HashMap<>();
             overdue.put("borrowNo",overdueBo.getBorrowNo());
             overdue.put("overdueDays", String.valueOf(overdueBo.getOverdueDays()));
             overdue.put("curPeriod",overdueBo.getCurPeriod() );
-            params.put("data", JSON.toJSONString(overdue));
-            params.put("sign",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), PRIVATE_KEY));
-            String reqResult = HttpUtil.post(getXgxyUrl(), params);
+            params.put("data",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(overdue)),PRIVATE_KEY));
+            params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(params)), PRIVATE_KEY));
+            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(params));
             if(StringUtil.isBlank(reqResult)){
                 return false;
             }

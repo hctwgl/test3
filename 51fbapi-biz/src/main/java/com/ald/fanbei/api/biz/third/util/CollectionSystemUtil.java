@@ -89,6 +89,59 @@ public class CollectionSystemUtil extends AbstractThird {
 		return url;
 	}
 
+
+
+
+
+
+
+
+	/**
+	 * 都市e贷主动还款通知催收平台
+	 * @return
+	 */
+	public CollectionSystemReqRespBo noticeCollect(Map<String,String> params) {
+		try {
+			logger.info("dsed overdue notice collect request :" + JSON.toJSONString(params));
+			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(
+					getUrl() + "/api/getway/repayment/repaymentAchieve", getUrlParamsByMap(params));
+			logger.info(getUrl() + "/api/getway/repayment/repaymentAchieve");
+			logger.info("repaymentAchieve response :" + reqResult);
+			if (StringUtil.isBlank(reqResult)) {
+				throw new FanbeiException("dsed overdue notice collect request fail , reqResult is null");
+			} else {
+				logger.info("dsed overdue notice collect request success,reqResult" + reqResult);
+			}
+
+			CollectionSystemReqRespBo respInfo = JSONObject.parseObject(reqResult, CollectionSystemReqRespBo.class);
+			if (respInfo != null && StringUtil.equals("200", respInfo.getCode())) {
+				return respInfo;
+			} else {
+				throw new FanbeiException(
+						"dsed overdue notice collect request fail , respInfo info is " + JSONObject.toJSONString(respInfo));
+			}
+		} catch (Exception e) {
+			logger.error("dsed overdue notice collect request error:", e);
+			throw new FanbeiException("dsed overdue notice collect request fail Exception is " + e + ",dsed overdue notice collect request send again");
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * 爱上街主动还款通知催收平台
 	 * 
@@ -171,6 +224,8 @@ public class CollectionSystemUtil extends AbstractThird {
 			throw new FanbeiException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
 		}
 	}
+
+
 
 	/**
 	 * 将map转换成url

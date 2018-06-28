@@ -10,6 +10,7 @@ import com.ald.fanbei.api.dal.dao.DsedUserContactsDao;
 import com.ald.fanbei.api.dal.domain.DsedUserContactsDo;
 import com.ald.fanbei.api.biz.service.DsedUserContactsService;
 
+import java.util.List;
 
 
 /**
@@ -32,5 +33,10 @@ public class DsedUserContactsServiceImpl extends ParentServiceImpl<DsedUserConta
 		@Override
 	public BaseDao<DsedUserContactsDo, Long> getDao() {
 		return dsedUserContactsDao;
+	}
+
+	@Override
+	public List<DsedUserContactsDo> getUserContactsByUserId(String userId) {
+		return dsedUserContactsDao.getUserContactsByUserId(userId);
 	}
 }

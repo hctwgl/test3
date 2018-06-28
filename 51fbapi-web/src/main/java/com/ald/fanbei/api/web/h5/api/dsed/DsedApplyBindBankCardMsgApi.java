@@ -53,8 +53,8 @@ public class DsedApplyBindBankCardMsgApi implements DsedH5Handle {
         String bankNo = ObjectUtils.toString(context.getData("bankNo"), null);
         String bankName = ObjectUtils.toString(context.getData("bankName"), null);
         String bankMobile = ObjectUtils.toString(context.getData("bankMobile"), null);
-        String validDate = ObjectUtils.toString(context.getData("validDate"), null);
-        String safeCode = ObjectUtils.toString(context.getData("safeCode"), null);
+        String validDate = ObjectUtils.toString(context.getData("validDate"), "");
+        String safeCode = ObjectUtils.toString(context.getData("safeCode"), "");
 //        Long userId= Long.parseLong(String.valueOf(context.getData("userId"))) ;
        //判断是否已经被绑定
         if(dsedUserBankcardService.getUserBankByCardNo(bankNo)>0){

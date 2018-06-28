@@ -103,5 +103,13 @@
         FROM dsed_user_contacts
         <include refid="commonCondition"/>
     </select>
-    
+
+    <select id="getUserContactsByUserId" resultType="com.ald.fanbei.api.dal.domain.DsedUserContactsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_user_contacts
+        where user_id=#{userId}
+    </select>
+
+
 </mapper>

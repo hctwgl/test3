@@ -71,16 +71,23 @@ public class DsedbindCardTest extends BaseTest {
         params.put("realname", "杨雨秋");
         params.put("smsCode", "888888");
         params.put("userId","13989455823");
-
-
-
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
         String respResult = com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
     }
-
+    @Test
+    public void getContacts() {
+        String url = urlBase + "/third/xgxy/v1/getUserContactsInfo";
+        Map<String, String> params = new HashMap<>();
+        params.put("userId","13989455823");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+    }
 
 
     /**
