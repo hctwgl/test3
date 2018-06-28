@@ -114,16 +114,16 @@ public class XgxyUtil {
      * @param data
      * @return
      */
-    public boolean  dsedRePayNoticeRequest(HashMap<String, Object> data ){
+    public boolean  dsedRePayNoticeRequest(HashMap<String, String> data ){
         try {
             String oriParamJson = JSON.toJSONString(data);
             JSONObject paramJsonObject = JSONObject.parseObject(oriParamJson);
             String data1 = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)),"aef5c8c6114b8d6a");
-            Map<String, Object> p = new HashMap<>();
+            Map<String, String> p = new HashMap<>();
             p.put("data", data1);
-            p.put("sign", generateSign(paramJsonObject, "aef5c8c6114b8d6a"));
+            p.put("sign", generateSign(paramJsonObject, PRIVATE_KEY));
             p.put("appId","edspay");
-            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(p));
+            String reqResult = doHttpPostJsonParam(getXgxyUrl()+"/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(p));
             if(StringUtil.isBlank(reqResult)){
                 return false;
             }

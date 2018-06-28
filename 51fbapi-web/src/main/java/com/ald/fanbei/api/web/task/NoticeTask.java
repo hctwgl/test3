@@ -18,6 +18,7 @@ import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 import com.alibaba.fastjson.JSONObject;
+import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +88,8 @@ public class NoticeTask {
                     if(loanRepaymentDo==null|| loanRepaymentDo.getIsDelete()==1){
                         dsedNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
                     }else {
-                        updateNoticeRecord(recordDo, xgxyUtil.dsedRePayNoticeRequest(buildRepauBo(loanRepaymentDo)));
+                        updateNoticeRecord(recordDo, xgxyUtil.dsedRePayNoticeRequest(dsedLoanRepaymentService.buildData(loanRepaymentDo)));
+
                     }
                     continue;
                 }
@@ -123,7 +125,7 @@ public class NoticeTask {
              if(StringUtils.equals(recordDo.getType(), "PAY")&&loanDo!=null){
                  updateNoticeRecord(recordDo, xgxyUtil.payNoticeRequest(buildePayBo(loanDo)));
              }else if(StringUtils.equals(recordDo.getType(), "REPAY")&&loanRepaymentDo!=null) {
-                 updateNoticeRecord(recordDo, xgxyUtil.dsedRePayNoticeRequest(buildRepauBo(loanRepaymentDo)));
+                 updateNoticeRecord(recordDo, xgxyUtil.dsedRePayNoticeRequest(dsedLoanRepaymentService.buildData(loanRepaymentDo)));
              }else if(periodsDo!=null) {
                  updateNoticeRecord(recordDo, xgxyUtil.overDueNoticeRequest(buildOverdue(periodsDo)));
              }
@@ -152,46 +154,6 @@ public class NoticeTask {
         return buildRecord;
     }
 
-    HashMap<String,Object>  buildRepauBo(DsedLoanRepaymentDo loanRepaymentDo){
-       DsedLoanDo loanDo = dsedLoanService.getById(loanRepaymentDo.getLoanId());
-       HashMap<String,Object> data = new HashMap<String,Object>();
-       List<HashMap<String,String>> borrowBillDetails = new ArrayList<HashMap<String,String>>();
-       HashMap<String,String> details = new HashMap<String,String>();
-       data.put("amount", String.valueOf(loanRepaymentDo.getActualAmount()));
-       data.put("borrowNo",loanDo.getLoanNo());
-       data.put("status","REPAYSUCCESS");
-       data.put("tradeNo",loanRepaymentDo.getTradeNo());
-       String[] repayPeriodsIds = loanRepaymentDo.getRepayPeriods().split(",");
-       for (int i = 0; i < repayPeriodsIds.length; i++) {
-           // 获取分期信息
-           DsedLoanPeriodsDo loanPeriodsDo = dsedLoanPeriodsService.getById(Long.parseLong(repayPeriodsIds[i]));
-           if(loanPeriodsDo!=null){	// 提前还款,已出账的分期借款,还款金额=分期本金+手续费+利息（+逾期费）
-               if(loanRepaymentDo.getPreRepayStatus().equals("Y")) {	// 提前还款
-                   details.put("isFinish","Y");
-               }else if(loanRepaymentDo.getPreRepayStatus().equals("N")) {		// 按期还款（部分还款）
-                   if(StringUtil.equals("FINISHED",loanPeriodsDo.getStatus())){
-                       details.put("isFinish","Y");
-                   }else {
-                       details.put("isFinish","N");
-                   }
-               }
-               details.put("curPeriod",loanPeriodsDo.getNper().toString());
-               BigDecimal amount = BigDecimalUtil.add(loanPeriodsDo.getAmount(),
-                       loanPeriodsDo.getRepaidInterestFee(),loanPeriodsDo.getInterestFee(),
-                       loanPeriodsDo.getServiceFee(),loanPeriodsDo.getRepaidServiceFee(),
-                       loanPeriodsDo.getOverdueAmount(),loanPeriodsDo.getRepaidOverdueAmount())
-                       .subtract(loanPeriodsDo.getRepayAmount());
-               details.put("unrepayAmount",amount.toString());
-               details.put("unrepayInterestFee",loanPeriodsDo.getInterestFee().toString());
-               details.put("unrepayOverdueFee",loanPeriodsDo.getOverdueAmount().toString());
-               details.put("unrepayServiceFee",loanPeriodsDo.getServiceFee().toString());
-           }
-           borrowBillDetails.add(details);
-           data.put("borrowBillDetails",borrowBillDetails);
-           details.clear();
-       }
-       return data;
-    }
    XgxyPayBo buildePayBo(DsedLoanDo loanDo){
        XgxyPayBo payBo=new XgxyPayBo();
        payBo.setTrade(loanDo.getTradeNoOut());

@@ -54,5 +54,7 @@ public interface DsedLoanRepaymentService{
 
     DsedLoanRepaymentDo getById(Long id);
 
+    public HashMap<String,String> buildData(DsedLoanRepaymentDo repaymentDo);
+
 
 }

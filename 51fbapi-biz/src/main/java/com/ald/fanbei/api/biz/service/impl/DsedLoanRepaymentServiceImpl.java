@@ -451,7 +451,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				noticeRecordDo.setType(DsedNoticeType.REPAY.code);
 				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 				dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
-				HashMap<String,Object> data = buildData(repaymentDo);
+				HashMap<String,String> data = buildData(repaymentDo);
 				if(xgxyUtil.dsedRePayNoticeRequest(data)){
 					noticeRecordDo.setRid(noticeRecordDo.getRid());
 					noticeRecordDo.setGmtModified(new Date());
@@ -476,11 +476,12 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		}
 	}
 
-	public HashMap<String,Object> buildData(DsedLoanRepaymentDo repaymentDo){
+	@Override
+	public HashMap<String,String> buildData(DsedLoanRepaymentDo repaymentDo){
 		DsedLoanDo loanDo = dsedLoanDao.getById(repaymentDo.getLoanId());
-		HashMap<String,Object> data = new HashMap<String,Object>();
+		HashMap<String,String> data = new HashMap<String,String>();
 		List<XgxyRepayBo> borrowBillDetails = new ArrayList<XgxyRepayBo>();
-		data.put("amount",repaymentDo.getActualAmount());
+		data.put("amount",repaymentDo.getActualAmount().toString());
 		data.put("borrowNo",loanDo.getLoanNo());
 		data.put("status","REPAYSUCCESS");
 		data.put("tradeNo",repaymentDo.getTradeNo());
@@ -514,7 +515,8 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			borrowBillDetails.add(xgxyRepayBo);
 		}
 		JSONArray json = JSONArray.fromObject(borrowBillDetails);
-		data.put("borrowBillDetails",json);
+		String jsonStr = json.toString();
+		data.put("borrowBillDetails",jsonStr);
 		return data;
 	}
 
@@ -575,7 +577,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			noticeRecordDo.setType(DsedNoticeType.REPAY.code);
 			noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 			dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
-			HashMap<String, Object> data = new HashMap<String, Object>();
+			HashMap<String, String> data = new HashMap<String, String>();
 			data.put("reason",errorMsg);
 			if (xgxyUtil.dsedRePayNoticeRequest(data)) {
 				noticeRecordDo.setRid(noticeRecordDo.getRid());
