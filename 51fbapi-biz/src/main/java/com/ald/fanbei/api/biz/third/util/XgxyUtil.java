@@ -50,18 +50,19 @@ public class XgxyUtil {
 
         try {
             Map<String,Object> params=new HashMap<>();
-            Map<String,String>  pay=new HashMap<>();
+            Map<String,Object>  pay=new HashMap<>();
             pay.put("borrowNo",payBo.getBorrowNo());
-            pay.put("tradeNo",payBo.getTrade());
             pay.put("status",payBo.getStatus());
-            if(StringUtils.equals(payBo.getStatus(),"N")){
-                pay.put("reason",payBo.getReason());
+            if ("PAYSUCCESS".equals(payBo.getStatus())){
+                pay.put("gmtArrival", payBo.getGmtArrival());
+                pay.put("tradeNo",payBo.getTrade());
             }else {
-                pay.put("gmtArrival", String.valueOf(payBo.getGmtArrival()));
+                pay.put("reason",payBo.getReason());
             }
+            params.put("appId","edspay");
             params.put("data",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)),PRIVATE_KEY));
-            params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(params)), PRIVATE_KEY));
-            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(params));
+            params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
+            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003/open/third/edspay/v1/giveBackPayResult", JSON.toJSONString(params));
             if(StringUtil.isBlank(reqResult)){
                 return false;
             }

@@ -41,40 +41,34 @@ public class GetLoanInfoApi implements DsedH5Handle {
     public DsedH5HandleResponse process(Context context) {
 
         DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
-        try {
-            Long userId = context.getUserId();
-            if (userId == null || userId <= 0) {
-                throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
-            }
-
-            // 借款信息
-            DsedLoanDo loanDo = dsedLoanService.getByUserId(userId);
-            if (loanDo == null) {
-                throw new FanbeiException(FanbeiExceptionCode.BORROW_DETAIL_NOT_EXIST_ERROR);
-            }
-
-            // 当前待还分期信息
-            List<DsedLoanPeriodsDo> dsedLoanPeriodList = dsedLoanPeriodsService.getLoanPeriodsByLoanId(loanDo.getRid());
-
-            DsedUserDo userDo = dsedUserService.getById(context.getUserId());
-            if (userDo == null) {
-                throw new FanbeiException("dsedGetLoanInfoApi userDo is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-            }
-
-            DsedLoanVo loanVo = new DsedLoanVo();
-            List<DsedLoanPeriodsVo> dsedLoanPeriodsVos = new ArrayList<>();
-            loanVo.setBorrowNo(loanDo.getLoanNo());
-            loanVo.setStatus(loanDo.getStatus());
-            if (dsedLoanPeriodList.size() != 0) {
-                dsedLoanPeriodList.forEach(dsedLoanPeriodsDo -> dsedLoanPeriodsVos.add(buildLoanPeriodsVo(dsedLoanPeriodsDo)));
-                loanVo.setBorrowBillDetails(dsedLoanPeriodsVos);
-            }
-            resp.setData(loanVo);
-
-        } catch (Exception e) {
-            logger.error("/loanInfoApi error = {}", e.getStackTrace());
-            resp.setMessage("获取借款信息失败");
+        Long userId = context.getUserId();
+        if (userId == null || userId <= 0) {
+            throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
         }
+
+        // 借款信息
+        DsedLoanDo loanDo = dsedLoanService.getByUserId(userId);
+        if (loanDo == null) {
+            throw new FanbeiException(FanbeiExceptionCode.BORROW_DETAIL_NOT_EXIST_ERROR);
+        }
+
+        // 当前待还分期信息
+        List<DsedLoanPeriodsDo> dsedLoanPeriodList = dsedLoanPeriodsService.getLoanPeriodsByLoanId(loanDo.getRid());
+
+        DsedUserDo userDo = dsedUserService.getById(context.getUserId());
+        if (userDo == null) {
+            throw new FanbeiException("dsedGetLoanInfoApi userDo is invalid", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+
+        DsedLoanVo loanVo = new DsedLoanVo();
+        List<DsedLoanPeriodsVo> dsedLoanPeriodsVos = new ArrayList<>();
+        loanVo.setBorrowNo(loanDo.getLoanNo());
+        loanVo.setStatus(loanDo.getStatus());
+        if (dsedLoanPeriodList.size() != 0) {
+            dsedLoanPeriodList.forEach(dsedLoanPeriodsDo -> dsedLoanPeriodsVos.add(buildLoanPeriodsVo(dsedLoanPeriodsDo)));
+            loanVo.setBorrowBillDetails(dsedLoanPeriodsVos);
+        }
+        resp.setData(loanVo);
 
         return resp;
     }

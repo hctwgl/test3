@@ -50,7 +50,7 @@ public class DsedApplyLoanApi implements DsedH5Handle {
         bo.userId = context.getUserId();
         bo.userName = context.getUserName();
         bo.idNumber = String.valueOf(context.getIdNumber());
-        bo.realName = String.valueOf(context.getDataMap().get("realName"));
+        bo.realName = String.valueOf(context.getRealName());
         dsedLoanService.doLoan(bo);
         DsedLoanVo dsedLoanVo = new DsedLoanVo();
         try {

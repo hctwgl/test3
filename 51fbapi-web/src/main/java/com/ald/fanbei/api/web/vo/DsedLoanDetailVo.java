@@ -24,7 +24,7 @@ public class DsedLoanDetailVo extends AbstractSerial {
 	private BigDecimal totalServiceFee;
 	private BigDecimal overdueRate;
 	private BigDecimal totalInterestFee;
-	private BigDecimal billTotalAmount;
+	private BigDecimal [] billTotalAmount;
 	private BigDecimal arrivalAmount;
 	public static DsedLoanDetailVo gen(int periods,
 								 BigDecimal serviceRate, BigDecimal interestRate, BigDecimal overdueRate, BigDecimal arrivalAmount,
@@ -36,7 +36,11 @@ public class DsedLoanDetailVo extends AbstractSerial {
 		l.totalServiceFee = totalServiceFee;
 		l.overdueRate = overdueRate;
 		l.totalInterestFee = totalInterestFee;
-		l.billTotalAmount = totalServiceFee.add(totalInterestFee).add(arrivalAmount).divide(BigDecimal.valueOf(periods));
+		BigDecimal [] billTotalAmounts =new BigDecimal[periods];
+        for (int i = 0; i < periods; i++) {
+            billTotalAmounts[i] = totalServiceFee.add(totalInterestFee).add(arrivalAmount).divide(BigDecimal.valueOf(periods));
+        }
+		l.billTotalAmount = billTotalAmounts;
 		l.arrivalAmount = arrivalAmount;
 		return l;
 	}
@@ -89,15 +93,15 @@ public class DsedLoanDetailVo extends AbstractSerial {
 		this.totalInterestFee = totalInterestFee;
 	}
 
-	public BigDecimal getBillTotalAmount() {
-		return billTotalAmount;
-	}
+    public BigDecimal[] getBillTotalAmount() {
+        return billTotalAmount;
+    }
 
-	public void setBillTotalAmount(BigDecimal billTotalAmount) {
-		this.billTotalAmount = billTotalAmount;
-	}
+    public void setBillTotalAmount(BigDecimal[] billTotalAmount) {
+        this.billTotalAmount = billTotalAmount;
+    }
 
-	public BigDecimal getArrivalAmount() {
+    public BigDecimal getArrivalAmount() {
 		return arrivalAmount;
 	}
 

@@ -24,6 +24,8 @@ public class ContextImpl implements Context {
 
 	private String idNumber;
 
+	private String realName;
+
 	private Map<String,Object> systemsMap;
 	@Override
 	public String getIdNumber() {
@@ -32,6 +34,16 @@ public class ContextImpl implements Context {
 	@Override
 	public void setIdNumber(String idNumber) {
 		this.idNumber = idNumber;
+	}
+
+	@Override
+	public String getRealName() {
+		return realName;
+	}
+
+	@Override
+	public void setRealName(String realName) {
+		this.realName = realName;
 	}
 
 	public String getClientIp() {
@@ -130,6 +142,7 @@ public class ContextImpl implements Context {
 		this.systemsMap  = builder.systemsMap;
 		this.clientIp = builder.clientIp;
 		this.idNumber = builder.idNumber;
+		this.realName = builder.realName;
 	}
 
 	public static class Builder {
@@ -149,11 +162,17 @@ public class ContextImpl implements Context {
 		private String id;
 		
 		private String clientIp;
+
+		private String realName;
 		
 		private Map<String,Object> systemsMap;
 
 		public Builder dataMap(Map<String, Object> dataMap) {
 			this.dataMap = dataMap;
+			return this;
+		}
+		public Builder realName(String realName) {
+			this.realName = realName;
 			return this;
 		}
 

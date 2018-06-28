@@ -51,4 +51,8 @@ public interface Context {
 	public String getIdNumber();
 
 	public void setIdNumber(String idNumber);
+
+	public String getRealName();
+
+	public void setRealName(String realName);
 }

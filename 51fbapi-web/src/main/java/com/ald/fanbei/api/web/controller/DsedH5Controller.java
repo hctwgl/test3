@@ -92,6 +92,7 @@ public class DsedH5Controller extends DsedBaseController {
             if (userDo != null) {
                 builder.userId(userDo.getRid());
                 builder.idNumber(userDo.getIdNumber());
+                builder.realName(userDo.getRealName());
             }
         }
 
