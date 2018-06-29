@@ -10,9 +10,11 @@ import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -67,7 +69,7 @@ public class XgxyUtil {
                 return false;
             }
             XgxyPayReqBo payRespResult = JSONObject.parseObject(reqResult,XgxyPayReqBo.class);
-            if("01".equals(payRespResult.getCode())){
+            if(200 == (Integer)payRespResult.get("code")){
                 return true;
             }
         }catch (Exception e){
@@ -86,20 +88,21 @@ public class XgxyUtil {
      */
     public boolean  overDueNoticeRequest(XgxyOverdueBo overdueBo){
         try {
+            logger.info("overDueNoticeRequest request start");
             Map<String,Object> params=new HashMap<>();
-            params.put("appId",overdueBo.getTradeNo());
+            params.put("appId","edspay");
             Map<String,String> overdue=new HashMap<>();
             overdue.put("borrowNo",overdueBo.getBorrowNo());
             overdue.put("overdueDays", String.valueOf(overdueBo.getOverdueDays()));
             overdue.put("curPeriod",overdueBo.getCurPeriod() );
             params.put("data",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(overdue)),PRIVATE_KEY));
-            params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(params)), PRIVATE_KEY));
-            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(params));
+            params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
+            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003/open/third/edspay/v1/giveBackOverdueResult", JSON.toJSONString(params));
             if(StringUtil.isBlank(reqResult)){
                 return false;
             }
             XgxyOverdueReqBo overdueReqBo1 = JSONObject.parseObject(reqResult,XgxyOverdueReqBo.class);
-            if("01".equals(overdueReqBo1.getCode())){
+            if(200 == (Integer)overdueReqBo1.get("code")){
                 return true;
             }
         }catch (Exception e){
@@ -119,7 +122,7 @@ public class XgxyUtil {
         try {
             String oriParamJson = JSON.toJSONString(data);
             JSONObject paramJsonObject = JSONObject.parseObject(oriParamJson);
-            String data1 = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)),"aef5c8c6114b8d6a");
+            String data1 = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY);
             Map<String, String> p = new HashMap<>();
             p.put("data", data1);
             p.put("sign", generateSign(paramJsonObject, PRIVATE_KEY));
@@ -129,7 +132,7 @@ public class XgxyUtil {
                 return false;
             }
             XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult,XgxyPayReqBo.class);
-            if("01".equals(rePayRespResult.getCode())){
+            if(200 == (Integer)rePayRespResult.get("code")){
                 return true;
             }
         }catch (Exception e){
@@ -140,6 +143,36 @@ public class XgxyUtil {
 
     }
 
+
+    public  String getUserContactsInfo(String openId){
+        try {
+            Map<String,Object> params=new HashMap<>();
+            params.put("appId","edspay");
+            Map<String,String> data=new HashMap<>();
+            data.put("userId",openId);
+            params.put("data",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
+            params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003/open/third/edspay/v1/getAddressList", JSON.toJSONString(params));
+            if(StringUtil.isBlank(reqResult)){
+                return "";
+            }
+            XgxyReqBo reqBo = JSONObject.parseObject(reqResult,XgxyReqBo.class);
+            if(200 == (Integer)reqBo.get("code") ){
+                return (String) reqBo.get("data");
+            }
+        }catch (Exception e){
+            logger.info("overDueNoticeRequest request fail",e);
+        }
+        return "";
+    }
+
+
+
+    public static void main(String[] ars){
+        XgxyUtil xgxyUtil=new XgxyUtil();
+        xgxyUtil.getUserContactsInfo("edspay21");
+
+    }
 
 
     /**

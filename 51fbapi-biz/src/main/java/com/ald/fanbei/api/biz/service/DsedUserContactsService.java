@@ -16,4 +16,6 @@ public interface DsedUserContactsService extends ParentService<DsedUserContactsD
 
     List<DsedUserContactsDo>  getUserContactsByUserId(String userId);
 
+
+    int updateByUserId(DsedUserContactsDo contactsDo);
 }

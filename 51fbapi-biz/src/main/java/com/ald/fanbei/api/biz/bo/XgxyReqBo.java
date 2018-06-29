@@ -6,7 +6,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 import java.util.HashMap;
 
-public class XgxyReqBo extends HashMap<String, String> {
+public class XgxyReqBo extends HashMap<String, Object> {
 
     private static final long serialVersionUID = -5197302494589757587L;
 

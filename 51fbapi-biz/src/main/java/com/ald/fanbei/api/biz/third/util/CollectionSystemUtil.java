@@ -3,10 +3,12 @@ package com.ald.fanbei.api.biz.third.util;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.CollectionDataBo;
@@ -43,6 +45,9 @@ import com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.AfRepaymentBorrowCashDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
+import static com.ald.fanbei.api.biz.third.util.KaixinUtil.post;
+import static com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam;
 
 /**
  * 
@@ -90,6 +95,13 @@ public class CollectionSystemUtil extends AbstractThird {
 	}
 
 
+	/**
+	 * 获取订单号
+	 * @param method 接口标识（固定4位）
+	 */
+	private static String getOrderNo(String method){
+		return StringUtil.appendStrs("cs",method,System.currentTimeMillis());
+	}
 
 
 
@@ -100,25 +112,24 @@ public class CollectionSystemUtil extends AbstractThird {
 	 * 都市e贷主动还款通知催收平台
 	 * @return
 	 */
-	public CollectionSystemReqRespBo noticeCollect(Map<String,String> params) {
+	public void noticeCollect(List<Map<String,String>>  data) {
 		try {
+			Map<String,String>  params=new HashMap<>();
+			params.put("orderNo",getOrderNo("XGXY"));
+			params.put("productName","XGXY");
+			params.put("info",JSON.toJSONString(data));
+			params.put("companyId","");
+			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
 			logger.info("dsed overdue notice collect request :" + JSON.toJSONString(params));
-			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(
-					getUrl() + "/api/getway/repayment/repaymentAchieve", getUrlParamsByMap(params));
-			logger.info(getUrl() + "/api/getway/repayment/repaymentAchieve");
+			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/import", params);
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new FanbeiException("dsed overdue notice collect request fail , reqResult is null");
-			} else {
-				logger.info("dsed overdue notice collect request success,reqResult" + reqResult);
 			}
-
-			CollectionSystemReqRespBo respInfo = JSONObject.parseObject(reqResult, CollectionSystemReqRespBo.class);
-			if (respInfo != null && StringUtil.equals("200", respInfo.getCode())) {
-				return respInfo;
-			} else {
-				throw new FanbeiException(
-						"dsed overdue notice collect request fail , respInfo info is " + JSONObject.toJSONString(respInfo));
+			if("success".equals(reqResult)){
+				logger.info("send overdue push user collect request success");
+			}else {
+				logger.info("send overdue push user collect request fail"+JSON.toJSONString(params));
 			}
 		} catch (Exception e) {
 			logger.error("dsed overdue notice collect request error:", e);
@@ -252,11 +263,11 @@ public class CollectionSystemUtil extends AbstractThird {
 	/**
 	 * 爱上街续期通知接口
 	 * 
-	 * @param borrow_no
+	 * @param borrowNo
 	 *            借款单号
-	 * @param renewal_no
+	 * @param renewalNo
 	 *            续期编号
-	 * @param renewal_num
+	 * @param renewalNum
 	 *            续借期数
 	 * @return
 	 * 

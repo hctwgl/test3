@@ -46,12 +46,12 @@ public class DsedbindCardTest extends BaseTest {
      */
     @Test
     public void dsedApplyBind() {
-        String url = urlBase + "/third/xgxy/v1/applyBindBankcard";
+        String url = urlBase + "/third/xgxy/v1/bankCardBind";
         Map<String, String> params = new HashMap<>();
-        params.put("bankNo", "6214835893570075");
-        params.put("bankName", "招商银行");
-        params.put("bankMobile", "18868180875");
-        params.put("userId","13989455823");
+        params.put("bankNo", "6216696300001384238");
+        params.put("bankName", "中国银行");
+        params.put("bankMobile", "13136192203");
+        params.put("userId","edspay22");
         params.put("validDate","");
         params.put("safeCode","");
 
@@ -65,12 +65,11 @@ public class DsedbindCardTest extends BaseTest {
 
     @Test
     public void dsedSubmitBind() {
-        String url = urlBase + "/third/xgxy/v1/submitBindBankcard";
+        String url = urlBase + "/third/xgxy/v1/smsCodeSubmit";
         Map<String, String> params = new HashMap<>();
-        params.put("bankCardId", "3111465095");
-        params.put("realname", "杨雨秋");
-        params.put("smsCode", "888888");
-        params.put("userId","13989455823");
+        params.put("busiFlag", "3111465113");
+        params.put("code", "247581");
+        params.put("userId","edspay22");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
@@ -79,7 +78,7 @@ public class DsedbindCardTest extends BaseTest {
     }
     @Test
     public void getContacts() {
-        String url = urlBase + "/third/xgxy/v1/getUserContactsInfo";
+        String url = urlBase + "/third/xgxy/v1/bankCardBind";
         Map<String, String> params = new HashMap<>();
         params.put("userId","13989455823");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");

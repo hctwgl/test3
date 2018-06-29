@@ -19,10 +19,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -59,6 +56,9 @@ public class LoanOverDueTask {
     @Resource
     private CollectionSystemUtil collectionSystemUtil;
 
+    @Resource
+    private DsedUserContactsService contactsService;
+
     @Scheduled(cron = "0 0 0 * * ?")
     public void laonDueJob(){
         try{
@@ -73,7 +73,10 @@ public class LoanOverDueTask {
                 for(int i = 0; i < totalPageNum; i++){
                     loanDos=dsedLoanPeriodsService.getLoanOverdue(totalPageNum*i,pageSize);
                     this.calcuOverdueRecords(loanDos);
+                    //通知催收
+                    collectionPush(loanDos);
                 }
+
             }
             logger.info("laonDueJob run end,time=" + new Date());
         }catch (Exception e){
@@ -114,8 +117,7 @@ public class LoanOverDueTask {
                 loanOverdueLogService.addLoanOverdueLog(buildLoanOverdueLog(dsedLoanDo.getRid(), currentAmount, newOverdueAmount, dsedLoanDo.getUserId()));
                 //发送通知
                 overDueNotice(dsedLoanDo);
-                //通知催收
-                collectionPush(dsedLoanDo,currentAmount,dsedLoanDo.getOverdueAmount());
+                addUserContancts(dsedLoanDo.getUserId());
 
             } catch (Exception e) {
                 logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId=",dsedLoanDo.getLoanId());
@@ -125,22 +127,44 @@ public class LoanOverDueTask {
 
 
    }
+   void addUserContancts(Long userId){
+       DsedUserDo userDo=userService.getById(userId);
+       String contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
+       if(StringUtils.isNotBlank(contacts)){
+           DsedUserContactsDo userContactsDo= contactsService.getUserContactsByUserId(String.valueOf(userId)).get(0);
+           DsedUserContactsDo contactsDo=new DsedUserContactsDo();
+            contactsDo.setUserId(String.valueOf(userId));
+            contactsDo.setContactsMobile(contacts);
+            if(userContactsDo==null){
+                 contactsService.saveRecord(contactsDo);
+            }else {
+                contactsService.updateByUserId(contactsDo);
+            }
+       }
 
-   void  collectionPush(DsedLoanPeriodsDto dsedLoanDo,BigDecimal principal,BigDecimal overdueamunt){
-        DsedUserDo userDo=userService.getById(dsedLoanDo.getUserId());
-        Map<String,String> data=new HashMap<>();
-        data.put("id", String.valueOf(dsedLoanDo.getUserId()));
-        data.put("caseName",dsedLoanDo.getLoanNo());
-        data.put("planRepaymenTime", String.valueOf(dsedLoanDo.getGmtPlanRepayment()));
-        data.put("residueAmount", String.valueOf(principal.add(overdueamunt)));
-        data.put("principal", String.valueOf(principal));
-        data.put("overdueAmount", String.valueOf(overdueamunt));
-        data.put("nper", String.valueOf(dsedLoanDo.getNper()));
-        data.put("userName",dsedLoanDo.getUserName());
-        data.put("idNumber",userDo.getIdNumber());
-        data.put("phoneNumber",userDo.getMobile());
-        data.put("address",userDo.getAddress());
-        collectionSystemUtil.noticeCollect(data);
+   }
+   void  collectionPush(List<DsedLoanPeriodsDto> dsedLoanDos){
+
+       List<Map<String,String>> datas=new ArrayList<>();
+       for(DsedLoanPeriodsDto dsedLoanDo:dsedLoanDos){
+           DsedUserDo userDo=userService.getById(dsedLoanDo.getUserId());
+           Map<String,String> data=new HashMap<>();
+           data.put("dataId", String.valueOf(dsedLoanDo.getRid()));
+           data.put("caseName",dsedLoanDo.getLoanNo());
+           data.put("planRepaymenTime", String.valueOf(dsedLoanDo.getGmtPlanRepay()));
+           BigDecimal currentAmount = BigDecimalUtil.add(dsedLoanDo.getAmount(), dsedLoanDo.getRepaidOverdueAmount(),dsedLoanDo.getRepaidInterestFee(), dsedLoanDo.getRepaidServiceFee()).subtract(dsedLoanDo.getRepayAmount());// 当前本金
+           data.put("residueAmount", String.valueOf(currentAmount.add(dsedLoanDo.getOverdueAmount())));
+           data.put("principal", String.valueOf(currentAmount));
+           data.put("overdueAmount", String.valueOf(dsedLoanDo.getOverdueAmount()));
+           data.put("nper", String.valueOf(dsedLoanDo.getNper()));
+           data.put("userId", String.valueOf(userDo.getRid()));
+           data.put("realName",userDo.getRealName());
+           data.put("idNumber",userDo.getIdNumber());
+           data.put("phoneNumber",userDo.getMobile());
+           data.put("address",userDo.getAddress());
+           datas.add(data);
+       }
+        collectionSystemUtil.noticeCollect(datas);
     }
 
    void  overDueNotice(DsedLoanPeriodsDto loanOverDue){

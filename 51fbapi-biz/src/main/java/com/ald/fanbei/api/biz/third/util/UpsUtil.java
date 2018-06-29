@@ -846,7 +846,6 @@ public class UpsUtil extends AbstractThird {
 		payRoutBo.setService(service);
 		payRoutBo.setMerNo("01151209000");//TODO what?
 		payRoutBo.setOrderNo(orderNo);
-//		payRoutBo.setPayCanal(PAY_CHANL_BF);
 		payRoutBo.setClientType(clientType);
 		payRoutBo.setMerPriv("");
 		payRoutBo.setReqExt("");

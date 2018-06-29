@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.web.h5.api.dsed.DsedSubmitBindBankCardApi;
+import com.ald.fanbei.api.web.h5.api.dsed.DsedSmsCodeSubmitApi;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +32,7 @@ import com.ald.fanbei.api.web.common.RequestDataVo;
 /**
  *@类现描述：签约银行卡时短信验证
  *@author hexin 2017年2月28日 下午4:03:21
- *@since 4.1.2以下适用，4.1.2以上替换接口见{@link DsedSubmitBindBankCardApi}
+ *@since 4.1.2以下适用，4.1.2以上替换接口见{@link DsedSmsCodeSubmitApi}
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */

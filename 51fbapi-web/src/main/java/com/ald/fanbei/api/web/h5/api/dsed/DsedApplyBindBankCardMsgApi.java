@@ -48,45 +48,45 @@ public class DsedApplyBindBankCardMsgApi implements DsedH5Handle {
 
     @Override
     public DsedH5HandleResponse process(Context context)  {
-        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "");
-        Long userId = context.getUserId();
+        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "请求成功");
         String bankNo = ObjectUtils.toString(context.getData("bankNo"), null);
         String bankName = ObjectUtils.toString(context.getData("bankName"), null);
         String bankMobile = ObjectUtils.toString(context.getData("bankMobile"), null);
         String validDate = ObjectUtils.toString(context.getData("validDate"), "");
         String safeCode = ObjectUtils.toString(context.getData("safeCode"), "");
-//        Long userId= Long.parseLong(String.valueOf(context.getData("userId"))) ;
+        String openId = ObjectUtils.toString(context.getData("userId"), null);
+        DsedUserDo user=dsedUserService.getByOpenId(openId);
        //判断是否已经被绑定
         if(dsedUserBankcardService.getUserBankByCardNo(bankNo)>0){
-            throw new FanbeiException("user bankcard exist error", FanbeiExceptionCode.USER_BANKCARD_EXIST_ERROR);
+            return new DsedH5HandleResponse(1545, FanbeiExceptionCode.DSED_BANK_BINDED.getDesc());
         }
 
 
      //默认赋值为借记卡
      String cardType = "00";
      //获取用户身份信息
-     DsedUserDo userDo=dsedUserService.getById(userId);
+     DsedUserDo userDo=dsedUserService.getById(user.getRid());
 
      DsedBankDo bank=dsedBankService.getBankByName(bankName);
      //调用ups
-     UpsAuthSignRespBo upsResult = upsUtil.authSign(userId.toString(), userDo.getRealName(), bankMobile, userDo.getIdNumber(), bankNo, "02",
+     UpsAuthSignRespBo upsResult = upsUtil.authSign(user.getRid().toString(), userDo.getRealName(), bankMobile, userDo.getIdNumber(), bankNo, "02",
              bank.getBankCode(),cardType,validDate,safeCode);
 
      if(!upsResult.isSuccess()){
-         return new DsedH5HandleResponse(200, FanbeiExceptionCode.AUTH_BINDCARD_ERROR.getErrorMsg());
+         return new DsedH5HandleResponse(1542, FanbeiExceptionCode.AUTH_BINDCARD_ERROR.getDesc());
       }else if(!"10".equals(upsResult.getNeedCode())){
-          return new DsedH5HandleResponse(200, FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
+          return new DsedH5HandleResponse(1567, FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
       }
      //是否是设主卡
       String isMain = YesNoStatus.NO.getCode();
-      if(dsedUserBankcardService.getUserBankCardInfoByUserId(userId).size()==0){
+      if(dsedUserBankcardService.getUserBankCardInfoByUserId(user.getRid()).size()==0){
           isMain=YesNoStatus.YES.getCode();
       }
       //创建用户银行卡新加状态
-      DsedUserBankcardDo userBankcard= buildUserCard( bank.getBankCode(),bankName,bankNo,bankMobile,userId,isMain,validDate,safeCode);
+      DsedUserBankcardDo userBankcard= buildUserCard( bank.getBankCode(),bankName,bankNo,bankMobile, user.getRid(),isMain,validDate,safeCode);
       dsedUserBankcardService.addUserBankcard(userBankcard);
       Map<String,Object> map = new HashMap<String,Object>();
-      map.put("userBankcardId",userBankcard.getRid());
+      map.put("busiFlag",userBankcard.getRid());
       resp.setData(map);
       return resp;
     }
@@ -102,7 +102,6 @@ public class DsedApplyBindBankCardMsgApi implements DsedH5Handle {
         bank.setUserId(userId);
         bank.setValidDate(validDate);
         bank.setSafeCode(safeCode);
-
         return bank;
     }
 }

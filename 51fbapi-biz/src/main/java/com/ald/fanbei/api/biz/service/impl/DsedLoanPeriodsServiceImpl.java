@@ -57,7 +57,9 @@ public class DsedLoanPeriodsServiceImpl extends ParentServiceImpl<DsedLoanPeriod
 
 	@Override
 	public List<DsedLoanPeriodsDto> getLoanOverdue(int nowPage, int pageSize) {
-		return dsedLoanPeriodsDao.getLoanOverdue(new Date(), nowPage,  pageSize );
+		Date date = new Date(System.currentTimeMillis());
+		Date bengin = DateUtil.getStartOfDate(date);
+		return dsedLoanPeriodsDao.getLoanOverdue(bengin, nowPage,  pageSize );
 	}
 
 	@Override

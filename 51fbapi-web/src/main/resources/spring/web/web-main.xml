@@ -652,10 +652,10 @@
 				<entry key="/h5/reward/doShareTask" value-ref="doShareTaskApi" />
 				<entry key="/h5/reward/doPushTask" value-ref="doPushTaskApi" />
 
-				<entry key="/third/xgxy/v1/applyBindBankcard" value-ref="dsedApplyBindBankCardMsgApi"/>
-				<entry key="/third/xgxy/v1/submitBindBankcard" value-ref="dsedSubmitBindBankcardApi"/>
+				<entry key="/third/xgxy/v1/bankCardBind" value-ref="dsedApplyBindBankCardMsgApi"/>
+				<entry key="/third/xgxy/v1/smsCodeSubmit" value-ref="dsedsmsCodeSubmitApi"/>
 
-				<entry key="/third/xgxy/v1/getUserContactsInfo" value-ref="getUserContactsInfoApi"/>
+				<entry key="/third/xgxy/v1/getAddressList" value-ref="getUserContactsInfoApi"/>
 
 				<entry key="/third/xgxy/v1/comfirmBorrow" value-ref="dsedApplyLoanApi" />
 				<entry key="/third/xgxy/v1/preFinish" value-ref="dsedLoanAllRepayDoApi" />

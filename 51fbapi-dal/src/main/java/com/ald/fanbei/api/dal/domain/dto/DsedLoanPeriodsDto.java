@@ -12,7 +12,6 @@ public class DsedLoanPeriodsDto extends DsedLoanPeriodsDo {
     private Integer repayNum;
     private String userName;
     private String realName;
-    private Date gmtPlanRepayment;
     private BigDecimal serviceFee;
     private BigDecimal interestFee;
     private BigDecimal repaidServiceFee;
@@ -186,13 +185,7 @@ public class DsedLoanPeriodsDto extends DsedLoanPeriodsDo {
         this.realName = realName;
     }
 
-    public Date getGmtPlanRepayment() {
-        return gmtPlanRepayment;
-    }
 
-    public void setGmtPlanRepayment(Date gmtPlanRepayment) {
-        this.gmtPlanRepayment = gmtPlanRepayment;
-    }
 
     public String getTradeNoOut() {
         return tradeNoOut;
