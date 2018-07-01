@@ -66,12 +66,13 @@ public class LoanOverDueTask {
             int totalRecord = dsedLoanPeriodsService.getLoanOverdueCount();
             int totalPageNum =totalRecord/pageSize+1;
             if (totalRecord == 0) {
-                logger.info("laonDueJob run finished,LoanList size is 0.time=" + new Date());
+                logger.info("laonDueJob run finished,Loan Due size is 0.time=" + new Date());
             }else {
                 logger.info("laonDueJob run start,time=" + new Date());
                 List<DsedLoanPeriodsDto>  loanDos;
                 for(int i = 0; i < totalPageNum; i++){
                     loanDos=dsedLoanPeriodsService.getLoanOverdue(totalPageNum*i,pageSize);
+                    //计算逾期
                     this.calcuOverdueRecords(loanDos);
                     //通知催收
                     collectionPush(loanDos);
@@ -144,7 +145,6 @@ public class LoanOverDueTask {
 
    }
    void  collectionPush(List<DsedLoanPeriodsDto> dsedLoanDos){
-
        List<Map<String,String>> datas=new ArrayList<>();
        for(DsedLoanPeriodsDto dsedLoanDo:dsedLoanDos){
            DsedUserDo userDo=userService.getById(dsedLoanDo.getUserId());
@@ -160,8 +160,11 @@ public class LoanOverDueTask {
            data.put("userId", String.valueOf(userDo.getRid()));
            data.put("realName",userDo.getRealName());
            data.put("idNumber",userDo.getIdNumber());
+           data.put("payTime", String.valueOf(dsedLoanDo.getGmtArrival()));
            data.put("phoneNumber",userDo.getMobile());
            data.put("address",userDo.getAddress());
+           data.put("userName",userDo.getUserName());
+           data.put("productName","XGXY");
            datas.add(data);
        }
         collectionSystemUtil.noticeCollect(datas);

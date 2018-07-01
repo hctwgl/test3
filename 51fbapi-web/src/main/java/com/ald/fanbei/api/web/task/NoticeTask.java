@@ -119,8 +119,8 @@ public class NoticeTask {
     }
 
      void nextNotice(DsedNoticeRecordDo recordDo,DsedLoanDo loanDo,DsedLoanRepaymentDo loanRepaymentDo,DsedLoanPeriodsDo periodsDo){
+         all_noticedfail_moreonce.put(recordDo.getRid(),"true");
          try {
-             all_noticedfail_moreonce.put(recordDo.getRid(),"true");
              Thread.sleep(1000*60*request_times[Integer.parseInt(recordDo.getTimes())-1]);
              if(StringUtils.equals(recordDo.getType(), "PAY")&&loanDo!=null){
                  updateNoticeRecord(recordDo, xgxyUtil.payNoticeRequest(buildePayBo(loanDo)));
@@ -129,11 +129,10 @@ public class NoticeTask {
              }else if(periodsDo!=null) {
                  updateNoticeRecord(recordDo, xgxyUtil.overDueNoticeRequest(buildOverdue(periodsDo)));
              }
-             all_noticedfail_moreonce.remove(recordDo.getRid());
          } catch (InterruptedException e) {
              logger.info("dsed notice is fail"+recordDo);
          }
-
+         all_noticedfail_moreonce.remove(recordDo.getRid());
      }
 
 

@@ -30,12 +30,8 @@ public class GetUserContactsInfoApi implements DsedH5Handle {
     @Override
     public DsedH5HandleResponse process(Context context) {
         DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
-        String openId = ObjectUtils.toString(context.getData("userId"), null);
-        DsedUserDo userDo= dsedUserService.getByOpenId(openId);
-        if(userDo==null){
-            return new DsedH5HandleResponse(101, "没有此用户");
-        }
-        List<DsedUserContactsDo> contacts= dsedUserContactsService.getUserContactsByUserId(String.valueOf(userDo.getRid()));
+        String userId = ObjectUtils.toString(context.getData("userId"), null);
+        List<DsedUserContactsDo> contacts= dsedUserContactsService.getUserContactsByUserId(String.valueOf(userId));
         Map<String,Object>  data=new HashMap<>();
         data.put("contacts",contacts.get(0).getContactsMobile());
         resp.setData(data);
