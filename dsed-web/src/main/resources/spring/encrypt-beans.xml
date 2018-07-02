@@ -33,8 +33,7 @@
         <property name="hostName" value="${fbapi.token.redis.hostname}" />
         <property name="port" value="${fbapi.token.redis.port}" />
         <property name="password" value="${fbapi.token.redis.password}" />
-        <property name="connectionPoolSize" value="4" />
-        <property name="database" value="8"/>
+        <property name="connectionPoolSize" value="64" />
     </bean>
     
 	<!-- 数据库JDBC的配置 -->
