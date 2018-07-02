@@ -210,7 +210,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
      * 同一时刻每个用户只允许发生一笔借款操作
      */
     private void lockLoan(Long userId) {
-        String key = "LOAN_LOCK_" + userId;
+        String key = "DSED_LOAN_LOCK_" + userId;
         long count = redisTemplate.opsForValue().increment(key, 1);
 //        redisTemplate.opsForValue().set("test", "",60*10,TimeUnit.SECONDS);//向redis里存入数据和设置缓存时间
 
@@ -222,7 +222,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
     }
 
     private void unlockLoan(Long userId) {
-        String key = "LOAN_LOCK_" + userId;
+        String key = "DSED_LOAN_LOCK_" + userId;
         redisTemplate.delete(key);
     }
 

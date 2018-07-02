@@ -52,12 +52,7 @@ public class DsedApplyLoanApi implements DsedH5Handle {
         bo.idNumber = String.valueOf(context.getIdNumber());
         bo.realName = String.valueOf(context.getRealName());
         dsedLoanService.doLoan(bo);
-        DsedLoanVo dsedLoanVo = new DsedLoanVo();
-        try {
-            dsedLoanVo = getDsedInfo(bo.userId);
-        }catch (Exception e){
-            logger.error("dsedApplyLoanApi error =>{}",e);
-        }
+        DsedLoanVo dsedLoanVo = getDsedInfo(bo.userId);
         DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功", dsedLoanVo);
         return resp;
     }
