@@ -17,6 +17,7 @@
         <property name="password" value="${fbapi.redis.password}" />
         <property name="usePool" value="true" />
         <property name="poolConfig" ref="poolConfigBiz" />
+        <property name="database" value="8"/>
     </bean>
     <bean id="cacheJedisConnFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
         <property name="hostName" value="${fbapi.token.redis.hostname}" />
@@ -24,14 +25,7 @@
         <property name="password" value="${fbapi.token.redis.password}" />
         <property name="usePool" value="true" />
         <property name="poolConfig" ref="poolConfigToken" />
-    </bean>
-    
-    <!-- redisson分布式锁解决方案 -->
-    <bean id="redissonProxy" class="com.ald.fanbei.api.common.redisson.RedissonProxy">
-        <property name="hostName" value="${fbapi.token.redis.hostname}" />
-        <property name="port" value="${fbapi.token.redis.port}" />
-        <property name="password" value="${fbapi.token.redis.password}" />
-        <property name="connectionPoolSize" value="64" />
+        <property name="database" value="8"/>
     </bean>
     
 	<!-- 数据库JDBC的配置 -->
