@@ -398,10 +398,10 @@
 		</dependency>
 	</dependencies>
 	<modules>
-		<module>51fbapi-common</module>
-		<module>51fbapi-dal</module>
-		<module>51fbapi-biz</module>
-		<module>51fbapi-web</module>
+		<module>dsed-common</module>
+		<module>dsed-dal</module>
+		<module>dsed-biz</module>
+		<module>dsed-web</module>
 	</modules>
 	<build>
 		<resources>
@@ -467,7 +467,7 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-					<finalName>51fbapi</finalName>
+					<finalName>dsed</finalName>
 					<descriptors>
 						<descriptor>assembly.xml</descriptor>
 					</descriptors>
