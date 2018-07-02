@@ -539,36 +539,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		// 解锁还款
 		unLockRepay(loanRepaymentDo.getUserId());
 
-		if (isNeedMsgNotice) {
-			//用户信息及当日还款失败次数校验
-			int errorTimes = 0;
-			DsedUserDo afUserDo = dsedUserService.getById(loanRepaymentDo.getUserId());
-			//如果是代扣，不校验次数
-			String payType = loanRepaymentDo.getName();
-			//模版数据map处理
-			Map<String, String> replaceMapData = new HashMap<String, String>();
-			replaceMapData.put("errorMsg", errorMsg);
-			//还款失败短信通知
-			boolean isCashOverdue = false;
-			if (StringUtil.isNotBlank(payType) && payType.indexOf("代扣") > -1) {
-				DsedLoanPeriodsDo afLoanPeriodsDo = dsedLoanPeriodsService.getOneByLoanId(loanRepaymentDo.getLoanId());
-				//判断是否逾期，逾期不发短信
-				try {
-					if (StringUtils.equals("Y", afLoanPeriodsDo.getOverdueStatus())) {
-						isCashOverdue = true;
-					}
-				} catch (Exception ex) {
-					logger.info("dealRepaymentFalse isCashOverdue error", ex);
-				}
-				if (isCashOverdue) {
-					logger.info("loanCash overdue withhold false orverdue,mobile=" + afUserDo.getMobile() + "errorMsg:" + errorMsg);
-				} else {
-					dsedSmsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_WITHHOLD_FAIL.getCode());
-				}
-			} else {
-				errorTimes = dsedLoanRepaymentDao.getCurrDayRepayErrorTimesByUser(loanRepaymentDo.getUserId());
-				dsedSmsUtil.sendConfigMessageToMobile(afUserDo.getMobile(), replaceMapData, errorTimes, AfResourceType.SMS_TEMPLATE.getCode(), AfResourceSecType.SMS_REPAYMENT_BORROWCASH_FAIL.getCode());
-			}
+
 
 			//还款失败，调用西瓜信用通知接口
 			DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
@@ -585,7 +556,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				dsedNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
 			}
 
-		}
+
 	}
 
 	/**
