@@ -38,7 +38,7 @@ public class DsedLoanDetailVo extends AbstractSerial {
 		l.totalInterestFee = totalInterestFee;
 		BigDecimal [] billTotalAmounts =new BigDecimal[periods];
         for (int i = 0; i < periods; i++) {
-            billTotalAmounts[i] = totalServiceFee.add(totalInterestFee).add(arrivalAmount).divide(BigDecimal.valueOf(periods));
+            billTotalAmounts[i] = totalServiceFee.add(totalInterestFee).add(arrivalAmount).divide(BigDecimal.valueOf(periods),2);
         }
 		l.billTotalAmount = billTotalAmounts;
 		l.arrivalAmount = arrivalAmount;
