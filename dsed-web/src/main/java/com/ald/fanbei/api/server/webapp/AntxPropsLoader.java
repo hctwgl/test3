@@ -31,7 +31,7 @@ public class AntxPropsLoader {
 	}
 
 	public void load() {
-		String antxPath = Bootstrap4Jetty.ROOT_PATH + "src/conf/antx_" + Bootstrap4Jetty.ENV_TYPE + ".properties";
+		String antxPath = Bootstrap4Jetty.ROOT_PATH + "src/conf/dsed_" + Bootstrap4Jetty.ENV_TYPE + ".properties";
 		load(antxPath);
 	}
 
