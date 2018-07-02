@@ -654,13 +654,12 @@
 
 				<entry key="/third/xgxy/v1/bankCardBind" value-ref="dsedApplyBindBankCardMsgApi"/>
 				<entry key="/third/xgxy/v1/smsCodeSubmit" value-ref="dsedsmsCodeSubmitApi"/>
-				<entry key="/third/xgxy/v1/getSmsCode" value-ref="getSmsCode"/>
+				<entry key="/third/xgxy/v1/getSmsCode" value-ref="dsedResendCodeApi"/>
 
 				<entry key="/third/xgxy/v1/getAddressList" value-ref="getUserContactsInfoApi"/>
 
 				<entry key="/third/xgxy/v1/comfirmBorrow" value-ref="dsedApplyLoanApi" />
 				<entry key="/third/xgxy/v1/preFinish" value-ref="dsedLoanAllRepayDoApi" />
-				<entry key="/third/xgxy/v1/dsedLoanConfirmPayment" value-ref="dsedLoanConfirmPaymentApi" />
 				<entry key="/third/xgxy/v1/repayComfirm" value-ref="dsedLoanRepayDoApi" />
 				<entry key="/third/xgxy/v1/getDecreasedAmount" value-ref="getDsedLoanDecreasedAmountApi" />
 				<entry key="/third/xgxy/v1/getBorrowInfo" value-ref="dsedGetLoanInfoApi" />
