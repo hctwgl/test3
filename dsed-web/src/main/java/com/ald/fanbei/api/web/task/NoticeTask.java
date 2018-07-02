@@ -129,10 +129,11 @@ public class NoticeTask {
              }else if(periodsDo!=null) {
                  updateNoticeRecord(recordDo, xgxyUtil.overDueNoticeRequest(buildOverdue(periodsDo)));
              }
-         } catch (InterruptedException e) {
+         } catch (Exception e) {
              logger.info("dsed notice is fail"+recordDo);
+         }finally {
+             all_noticedfail_moreonce.remove(recordDo.getRid());
          }
-         all_noticedfail_moreonce.remove(recordDo.getRid());
      }
 
 
