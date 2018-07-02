@@ -108,7 +108,7 @@
         SELECT
         <include refid="queryFields" />
         FROM dsed_user_contacts
-        where user_id=#{userId}
+        where user_id in(#{userId})
     </select>
 
 

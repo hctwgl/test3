@@ -11,6 +11,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,11 @@ public class GetUserContactsInfoApi implements DsedH5Handle {
         String userId = ObjectUtils.toString(context.getData("userId"), null);
         List<DsedUserContactsDo> contacts= dsedUserContactsService.getUserContactsByUserId(String.valueOf(userId));
         Map<String,Object>  data=new HashMap<>();
-        data.put("contacts",contacts.get(0).getContactsMobile());
+        List<String> con=new ArrayList<>();
+        for (DsedUserContactsDo contactsDo:contacts){
+            con.add(contactsDo.getContactsMobile());
+        }
+        data.put("contacts",con);
         resp.setData(data);
         return resp;
     }

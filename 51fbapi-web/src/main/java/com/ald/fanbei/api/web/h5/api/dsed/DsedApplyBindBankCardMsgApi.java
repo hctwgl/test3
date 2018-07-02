@@ -43,9 +43,6 @@ public class DsedApplyBindBankCardMsgApi implements DsedH5Handle {
     @Resource
     private DsedBankService dsedBankService;
 
-    @Resource
-    UpsUtil upsUtil;
-
     @Override
     public DsedH5HandleResponse process(Context context)  {
         DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "请求成功");
@@ -61,23 +58,8 @@ public class DsedApplyBindBankCardMsgApi implements DsedH5Handle {
             return new DsedH5HandleResponse(1545, FanbeiExceptionCode.DSED_BANK_BINDED.getDesc());
         }
 
-
-     //默认赋值为借记卡
-     String cardType = "00";
-     //获取用户身份信息
-     DsedUserDo userDo=dsedUserService.getById(user.getRid());
-
-     DsedBankDo bank=dsedBankService.getBankByName(bankName);
-     //调用ups
-     UpsAuthSignRespBo upsResult = upsUtil.authSign(user.getRid().toString(), userDo.getRealName(), bankMobile, userDo.getIdNumber(), bankNo, "02",
-             bank.getBankCode(),cardType,validDate,safeCode);
-
-     if(!upsResult.isSuccess()){
-         return new DsedH5HandleResponse(1542, FanbeiExceptionCode.AUTH_BINDCARD_ERROR.getDesc());
-      }else if(!"10".equals(upsResult.getNeedCode())){
-          return new DsedH5HandleResponse(1567, FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
-      }
-     //是否是设主卡
+      DsedBankDo bank=dsedBankService.getBankByName(bankName);
+      //是否是设主卡
       String isMain = YesNoStatus.NO.getCode();
       if(dsedUserBankcardService.getUserBankCardInfoByUserId(user.getRid()).size()==0){
           isMain=YesNoStatus.YES.getCode();
