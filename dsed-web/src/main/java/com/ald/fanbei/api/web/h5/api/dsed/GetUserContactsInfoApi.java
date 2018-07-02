@@ -11,10 +11,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 获取通讯录
@@ -32,11 +29,14 @@ public class GetUserContactsInfoApi implements DsedH5Handle {
     public DsedH5HandleResponse process(Context context) {
         DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
         String userId = ObjectUtils.toString(context.getData("userId"), null);
-        List<DsedUserContactsDo> contacts= dsedUserContactsService.getUserContactsByUserId(String.valueOf(userId));
+        List<String> userList = Arrays.asList(userId.split(","));
+        List<DsedUserContactsDo> contacts= dsedUserContactsService.getUserContactsByUserIds(userList);
         Map<String,Object>  data=new HashMap<>();
-        List<String> con=new ArrayList<>();
+        List<Map<String,String>> con=new ArrayList<>();
         for (DsedUserContactsDo contactsDo:contacts){
-            con.add(contactsDo.getContactsMobile());
+            Map<String,String> map=new HashMap<>();
+            map.put(contactsDo.getUserId(),contactsDo.getContactsMobile());
+            con.add(map);
         }
         data.put("contacts",con);
         resp.setData(data);

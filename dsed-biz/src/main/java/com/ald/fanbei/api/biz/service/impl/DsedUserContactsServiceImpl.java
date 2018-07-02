@@ -41,6 +41,11 @@ public class DsedUserContactsServiceImpl extends ParentServiceImpl<DsedUserConta
 	}
 
 	@Override
+	public List<DsedUserContactsDo> getUserContactsByUserIds(List<String> userIds) {
+		return dsedUserContactsDao.getUserContactsByUserIds(userIds);
+	}
+
+	@Override
 	public int updateByUserId(DsedUserContactsDo contactsDo) {
 		return dsedUserContactsDao.updateByUserId(contactsDo);
 	}
