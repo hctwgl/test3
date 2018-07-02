@@ -5,6 +5,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.enums.BankcardStatus;
+import com.ald.fanbei.api.common.enums.SmsCodeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -63,9 +64,9 @@ public class DsedSmsCodeSubmitApi implements DsedH5Handle {
 		String smsCode = ObjectUtils.toString(context.getData("code"), null);
 		String type = ObjectUtils.toString(context.getData("type"), null);
 		if (StringUtils.isBlank(busiFlag) || StringUtils.isBlank(smsCode) || StringUtils.isBlank(openId)) {
-			return new DsedH5HandleResponse(200, "参数错误");
+			return new DsedH5HandleResponse(9999, "参数错误");
 		}
-		if("BIND".equals(type)){
+		if(StringUtil.equals(SmsCodeType.BIND.getCode(),type)){
 			final DsedUserBankcardDo userBankcardDo=dsedUserBankcardService.getById(Long.valueOf(busiFlag));
 			final DsedUserDo userDo=dsedUserService.getByOpenId(openId);
 			int res =transactionTemplate.execute(new TransactionCallback<Integer>() {
@@ -92,7 +93,7 @@ public class DsedSmsCodeSubmitApi implements DsedH5Handle {
 				dsedUserBankcardService.updateUserBankcard(userBankcardDo);
 				return new DsedH5HandleResponse(1556, FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR.getErrorMsg());
 			}
-		}else if("REPAY".equals(type)) {
+		}else if(StringUtil.equals(SmsCodeType.REPAY.getCode(),type)) {
 			Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + busiFlag);
 			if (beanName == null) {
 				// 未获取到缓存数据，支付订单过期
