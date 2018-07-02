@@ -1,2 +1,0 @@
-"use strict";var approve=getUrl("approve");approve&&($("#unapprove").hide(),$("#approve").show()),$(function(){$.ajax({url:"/fanbei-web/applyInterimAu",type:"post",success:function(e){console.log(e);var p=JSON.parse(e),o=p.data.interimAmount;console.log(o),void 0==o?$(".approveMoney").append('<i class="approveMoney">0.00</i>'):$(".approveMoney").append('<i class="approveMoney">'+o+"</i>")}})});
-//# sourceMappingURL=../../_srcmap/activity/11/unapprove.js.map
