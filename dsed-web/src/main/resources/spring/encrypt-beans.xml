@@ -28,14 +28,6 @@
         <property name="database" value="8"/>
     </bean>
     
-    <!-- redisson分布式锁解决方案 -->
-    <bean id="redissonProxy" class="com.ald.fanbei.api.common.redisson.RedissonProxy">
-        <property name="hostName" value="${fbapi.token.redis.hostname}" />
-        <property name="port" value="${fbapi.token.redis.port}" />
-        <property name="password" value="${fbapi.token.redis.password}" />
-        <property name="connectionPoolSize" value="64" />
-    </bean>
-    
 	<!-- 数据库JDBC的配置 -->
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
 		init-method="init" destroy-method="close">
