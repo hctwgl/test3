@@ -8,8 +8,10 @@ import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.DsedLoanService;
 import com.ald.fanbei.api.biz.service.DsedNoticeRecordService;
+import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.common.enums.DsedNoticeType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
@@ -55,6 +57,8 @@ public class NoticeTask {
     @Resource
     private DsedLoanRepaymentService dsedLoanRepaymentService;
 
+    @Resource
+    private CollectionSystemUtil collectionSystemUtil;
 
     @Resource
     private XgxyUtil xgxyUtil;
@@ -89,11 +93,19 @@ public class NoticeTask {
                         dsedNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
                     }else {
                         updateNoticeRecord(recordDo, xgxyUtil.dsedRePayNoticeRequest(dsedLoanRepaymentService.buildData(loanRepaymentDo)));
-
                     }
                     continue;
                 }
-                if(StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUE.code)){
+                if (StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUEREPAY.code)) {
+                    loanRepaymentDo = dsedLoanRepaymentService.getById(Long.valueOf(recordDo.getRefId()));
+                    if(loanRepaymentDo==null|| loanRepaymentDo.getIsDelete()==1){
+                        dsedNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
+                    }else {
+                        updateNoticeRecord(recordDo, collectionSystemUtil.dsedRePayNoticeRequest(dsedLoanRepaymentService.buildData(loanRepaymentDo)));
+                    }
+                    continue;
+                }
+                if(StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUEREPAY.code)){
                     periodsDo=dsedLoanPeriodsService.getById(Long.valueOf(recordDo.getRefId()));
                     if(periodsDo==null || periodsDo.getIsDelete()==1){
                         dsedNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
@@ -122,12 +134,14 @@ public class NoticeTask {
          all_noticedfail_moreonce.put(recordDo.getRid(),"true");
          try {
              Thread.sleep(1000*60*request_times[Integer.parseInt(recordDo.getTimes())-1]);
-             if(StringUtils.equals(recordDo.getType(), "PAY")&&loanDo!=null){
+             if(StringUtils.equals(recordDo.getType(), DsedNoticeType.PAY.code)&&loanDo!=null){
                  updateNoticeRecord(recordDo, xgxyUtil.payNoticeRequest(buildePayBo(loanDo)));
-             }else if(StringUtils.equals(recordDo.getType(), "REPAY")&&loanRepaymentDo!=null) {
+             }else if(StringUtils.equals(recordDo.getType(), DsedNoticeType.REPAY.code)&&loanRepaymentDo!=null) {
                  updateNoticeRecord(recordDo, xgxyUtil.dsedRePayNoticeRequest(dsedLoanRepaymentService.buildData(loanRepaymentDo)));
-             }else if(periodsDo!=null) {
+             }else if(StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUE.code)&&periodsDo!=null) {
                  updateNoticeRecord(recordDo, xgxyUtil.overDueNoticeRequest(buildOverdue(periodsDo)));
+             }else if(StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUEREPAY.code)&&loanRepaymentDo!=null){
+                 updateNoticeRecord(recordDo, collectionSystemUtil.dsedRePayNoticeRequest(dsedLoanRepaymentService.buildData(loanRepaymentDo)));
              }
          } catch (Exception e) {
              logger.info("dsed notice is fail"+recordDo);

@@ -64,7 +64,7 @@ public class XgxyUtil {
             params.put("appId","edspay");
             params.put("data",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)),PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
-            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003/open/third/edspay/v1/giveBackPayResult", JSON.toJSONString(params));
+            String reqResult = doHttpPostJsonParam(getXgxyUrl()+"/open/third/edspay/v1/giveBackPayResult", JSON.toJSONString(params));
             if(StringUtil.isBlank(reqResult)){
                 return false;
             }
@@ -97,7 +97,7 @@ public class XgxyUtil {
             overdue.put("curPeriod",overdueBo.getCurPeriod() );
             params.put("data",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(overdue)),PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
-            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003/open/third/edspay/v1/giveBackOverdueResult", JSON.toJSONString(params));
+            String reqResult = doHttpPostJsonParam(getXgxyUrl()+"/open/third/edspay/v1/giveBackOverdueResult", JSON.toJSONString(params));
             if(StringUtil.isBlank(reqResult)){
                 return false;
             }
@@ -152,7 +152,7 @@ public class XgxyUtil {
             data.put("userId",openId);
             params.put("data",DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
-            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003/open/third/edspay/v1/getAddressList", JSON.toJSONString(params));
+            String reqResult = doHttpPostJsonParam(getXgxyUrl()+"/open/third/edspay/v1/getAddressList", JSON.toJSONString(params));
             if(StringUtil.isBlank(reqResult)){
                 return "";
             }

@@ -8,13 +8,11 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.*;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.CollectionDataBo;
-import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyReqBo;
-import com.ald.fanbei.api.biz.bo.CollectionOperatorNotifyRespBo;
-import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.service.AfBorrowCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.AfBorrowLegalOrderService;
@@ -30,14 +28,6 @@ import com.ald.fanbei.api.common.enums.AfRepayCollectionType;
 import com.ald.fanbei.api.common.enums.AfRepeatCollectionType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiThirdRespCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.JsonUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.dao.AfBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.domain.AfBorrowCashDo;
@@ -47,6 +37,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import static com.ald.fanbei.api.biz.third.util.KaixinUtil.post;
+import static com.ald.fanbei.api.common.util.DsedSignUtil.generateSign;
 import static com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam;
 
 /**
@@ -137,6 +128,34 @@ public class CollectionSystemUtil extends AbstractThird {
 	}
 
 
+	/**
+	 * 还款通知请求
+	 * @param data
+	 * @return
+	 */
+	public boolean  dsedRePayNoticeRequest(HashMap<String, String> data ){
+		try {
+			Map<String, String> params = new HashMap<>();
+			params.put("info",JSON.toJSONString(data));
+			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
+			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/import", params);
+			if (StringUtil.isBlank(reqResult)) {
+				throw new FanbeiException("dsed overdue notice collect request fail , reqResult is null");
+			}
+			if("success".equals(reqResult)){
+				logger.info("send overdue push user collect request success");
+				return true;
+			}else {
+				logger.info("send overdue push user collect request fail"+JSON.toJSONString(params));
+				return false;
+			}
+		}catch (Exception e){
+			logger.info("rePayNoticeRequest request fail",e);
+		}
+
+		return false;
+
+	}
 
 
 
