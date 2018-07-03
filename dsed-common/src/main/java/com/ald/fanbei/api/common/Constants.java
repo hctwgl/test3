@@ -12,7 +12,7 @@ public class Constants {
 
 
 
-	public static final String CONFKEY_XGXY_URL = "xgxyapi.xgxy.url";
+	public static final String CONFKEY_XGXY_URL = "http://192.168.112.40:8080";
 
 
 

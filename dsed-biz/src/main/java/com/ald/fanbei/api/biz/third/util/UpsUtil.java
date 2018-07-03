@@ -662,8 +662,8 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCertNo(certNo);
 		reqBo.setProductName(productName);
 		reqBo.setExpiredTime(String.valueOf( KUAIJIE_EXPIRE_MINITES));		
-//		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
-		reqBo.setNotifyUrl("http://192.168.117.188:8089/third/ups/collect");
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
+//		reqBo.setNotifyUrl("http://192.168.117.188:8089/third/ups/collect");
 		reqBo.setCvv2(safeCode);
 		reqBo.setValidDate(validDate);
 //		reqBo.setSmsFlag("");
