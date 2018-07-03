@@ -108,7 +108,17 @@
         SELECT
         <include refid="queryFields" />
         FROM dsed_user_contacts
-        where user_id in(#{userId})
+        where is_delete=0 and user_id in #{userId}
+    </select>
+
+
+    <select id="getUserContactsByUserIds" resultType="com.ald.fanbei.api.dal.domain.DsedUserContactsDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_user_contacts
+        where user_id in
+        <foreach item="userList" index="index" collection="list"
+                                  open="(" separator="," close=")">#{userList}</foreach>
     </select>
 
 

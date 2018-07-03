@@ -19,4 +19,5 @@ public interface DsedUserContactsDao extends BaseDao<DsedUserContactsDo, Long> {
 
     int updateByUserId(DsedUserContactsDo contactsDo);
 
+    List<DsedUserContactsDo> getUserContactsByUserIds(List<String> userIds);
 }

@@ -74,7 +74,7 @@ public class LoanOverDueTask {
                     loanDos=dsedLoanPeriodsService.getLoanOverdue(totalPageNum*i,pageSize);
                     //计算逾期
                     this.calcuOverdueRecords(loanDos);
-                    //通知催收
+                    //通知催收逾期人员通讯录
                     collectionPush(loanDos);
                 }
 
@@ -116,7 +116,7 @@ public class LoanOverDueTask {
                 dsedLoanService.updateByLoanId(newloanDo);
                 //新增逾期日志
                 loanOverdueLogService.addLoanOverdueLog(buildLoanOverdueLog(dsedLoanDo.getRid(), currentAmount, newOverdueAmount, dsedLoanDo.getUserId()));
-                //发送通知
+                //发送补偿通知到西瓜信用
                 overDueNotice(dsedLoanDo);
                 addUserContancts(dsedLoanDo.getUserId());
 

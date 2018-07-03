@@ -46,21 +46,16 @@ public class DsedbindCardTest extends BaseTest {
      */
     @Test
     public void dsedApplyBind() {
-        String url = urlBase + "/third/xgxy/v1/bankCardBind";
+        String url = urlBase + "/third/xgxy/v1/getAddressList";
         Map<String, String> params = new HashMap<>();
-        params.put("bankNo", "6216696300001384238");
-        params.put("bankName", "中国银行");
-        params.put("bankMobile", "13136192203");
-        params.put("userId","edspay22");
-        params.put("validDate","");
-        params.put("safeCode","");
-
+        params.put("userId", "10,12");
 
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
-        String respResult = com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+         String respResult = com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+
     }
 
     @Test
