@@ -7,6 +7,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.RepayType;
+import com.ald.fanbei.api.common.enums.UpsErrorType;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -88,7 +89,7 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 	protected Map<String, Object> doUpsPay(String bankPayType, HashMap<String,Object> bank, String payTradeNo, BigDecimal actualAmount, Long userId,
 										   String realName, String idNumber, String smsCode, String payBizObject, String purpose, String remark, String merPriv) {
 		// 获取用户绑定银行卡信息
-
+		String flag = "";
 		// 调用ups进行支付
 		UpsCollectRespBo respBo = null;
 		if(StringUtil.equals(RepayType.WITHHOLD.getCode(),bank.get("bankChannel").toString())){
@@ -103,10 +104,16 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 		// 处理支付结果
 		if (!respBo.isSuccess()) {
 			// 调用ups接口失败，回滚业务数据
-			String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-			roolbackBizData(payTradeNo, payBizObject, errorMsg, respBo);
+			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
+			if(null == errorMsg){
+				flag = "default";
+				errorMsg = UpsErrorType.findRoleTypeByCode("default");
+			}else {
+				flag = respBo.getRespCode();
+			}
+			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
 			clearCache(payTradeNo);
-			throw new FanbeiException(errorMsg,FanbeiExceptionCode.UPS_ERROR_MSG);
+			throw new FanbeiException("user not exist error", FanbeiExceptionCode.getByCode("UPS_ERROR_"+flag));
 		} else {
 			Map<String, Object> resultMap = upsPaySuccess(payTradeNo, bankPayType, payBizObject, respBo, bank.get("cardNumber").toString());
 			clearCache(payTradeNo);
@@ -145,8 +152,12 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 		// 处理支付结果
 		if (!respBo.isSuccess()) {
 			// 获取短信码失败
-			String errorMsg = afTradeCodeInfoService.getRecordDescByTradeCode(respBo.getRespCode());
-			throw new FanbeiException(errorMsg,FanbeiExceptionCode.UPS_ERROR_MSG);
+			String flag = respBo.getRespCode();
+			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
+			if(null == errorMsg){
+				flag = "default";
+			}
+			throw new FanbeiException("user not exist error", FanbeiExceptionCode.getByCode("UPS_ERROR_"+flag));
 		} else {
 			// 添加数据到redis缓存
 			UpsCollectBo upsCollectBo = new UpsCollectBo(bank, payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(),
