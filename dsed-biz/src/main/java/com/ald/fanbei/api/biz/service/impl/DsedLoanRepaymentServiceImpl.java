@@ -538,9 +538,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 		// 解锁还款
 		unLockRepay(loanRepaymentDo.getUserId());
-
-
-
 			//还款失败，调用西瓜信用通知接口
 			DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
 			noticeRecordDo.setUserId(loanRepaymentDo.getUserId());

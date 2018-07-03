@@ -138,7 +138,7 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 	protected Map<String, Object> sendKuaiJieSms(HashMap<String,Object> bank, String payTradeNo, BigDecimal actualAmount, Long userId, String realName,
 												 String idNumber, String payBizObject, String beanName, String purpose, String remark, String merPriv) {
 		// 申请发送支付确认短信
-		UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.quickPay(payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(),
+ 		UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.quickPay(payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(),
 				bank.get("bankCode").toString(), bank.get("cardNumber").toString(), idNumber, purpose, remark, "02", merPriv, afResourceService.getCashProductName(),
 				bank.get("safeCode").toString(), bank.get("validDate").toString());
 

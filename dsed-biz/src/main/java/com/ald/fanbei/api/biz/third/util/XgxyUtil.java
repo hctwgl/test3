@@ -127,7 +127,7 @@ public class XgxyUtil {
             p.put("data", data1);
             p.put("sign", generateSign(paramJsonObject, PRIVATE_KEY));
             p.put("appId","edspay");
-            String reqResult = doHttpPostJsonParam(getXgxyUrl(), JSON.toJSONString(p));
+            String reqResult = doHttpPostJsonParam("http://192.168.117.188:8089/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(p));
             if(StringUtil.isBlank(reqResult)){
                 return false;
             }

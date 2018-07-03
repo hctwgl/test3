@@ -87,7 +87,7 @@ public class DsedLoanRepayDoApi implements DsedH5Handle {
 			throw new FanbeiException("user not exist error", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
 		//还款金额是否大于银行单笔限额
-		dsedUserBankcardService.checkUpsBankLimit(map.get("bankCode").toString(), map.get("bankChannel").toString(), bo.amount);
+//		dsedUserBankcardService.checkUpsBankLimit(map.get("bankCode").toString(), map.get("bankChannel").toString(), bo.amount);
 		bo.cardName = map.get("bankName").toString();
 		bo.cardNo = map.get("cardNumber").toString();
 	}
