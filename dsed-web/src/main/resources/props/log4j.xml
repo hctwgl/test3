@@ -1,122 +1,231 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee" 
-         xmlns:web="http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
-         version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee">
-	<display-name>fanbei</display-name>
-	<description>fanbei api</description>
- 
- 	<!-- log4j -->
-	<context-param>
-		<param-name>log4jConfigLocation</param-name>
-		<param-value>classpath:props/log4j.xml</param-value>
-	</context-param>
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath:spring/import-beans.xml</param-value>
-	</context-param>
-	<context-param>
-		<param-name>log4jExposeWebAppRoot</param-name>
-		<param-value>true</param-value>
-	</context-param>
-	<context-param>
-		<param-name>log4jRefreshInterval</param-name>
-		<param-value>10000</param-value>
-	</context-param>
-	<context-param>
-		<param-name>webAppRootKey</param-name>
-		<param-value>51fbapi</param-value>
-	</context-param>
-	<context-param>
-		<param-name>useJndiDataSource</param-name>
-		<param-value>true</param-value>
-	</context-param>
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<!-- [公共Appender] 控制台STDOUT -->
+	<appender name="STDOUT_APPENDER" class="org.apache.log4j.ConsoleAppender">
+		<param name="encoding" value="UTF-8" />
+		<param name="target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %-5p [%t:%c{2}] - %m%n" />
+		</layout>
+	</appender>
+
+	<!-- [应用Appender] 收到app客户端的请求，非app接口入口日志请勿放这里  -->
+	<appender name="FANBEI_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/app-bi.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d; %m%n" />
+		</layout>
+	</appender>
+
+	<!-- [应用Appender] new 收到app客户端的请求，非app接口入口日志请勿放这里  -->
+	<appender name="FANBEINEW_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/app-bi-new.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				   value="%d; %m%n" />
+		</layout>
+	</appender>
+
+	<!-- [应用Appender] 风控请求日志  -->
+	<appender name="FBRISK_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/app-risk.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				   value="%d; %m%n" />
+		</layout>
+	</appender>
+
+	<!-- [应用Appender] 收到h5的请求入口日志,非h5接口日志请勿放这里 -->
+	<appender name="FANBWEBEI_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/web-bi.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d; %m%n" />
+		</layout>
+	</appender>
+	<!--新web-bi log 日志-->
+	<appender name="FANBWEBEINEW_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/web-bi-new.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				   value="%d; %m%n" />
+		</layout>
+	</appender>
+
+	<!-- [应用Appender] 埋点相关日志,飞埋点日志请勿放这里 -->
+	<appender name="FANBEIMAIDIAN_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/maidian.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d; %m%n" />
+		</layout>
+	</appender>
+
+	<!-- [应用Appender] 埋点相关日志,飞埋点日志请勿放这里 -->
+	<appender name="FANBEIMAIDIANNEW_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/maidian-new.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				   value="%d; %m%n" />
+		</layout>
+	</appender>
+
+
+	<!-- [应用Appender] 调用第三方接口日志，如推送日志、发送短信日志 -->
+	<appender name="FANBEI_THIRD_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/bi/app-third.log" />
+		<param name="append" value="true" />
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d; %m%n" />
+		</layout>
+	</appender>
 	
-
-	<listener>
-		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
-	</listener>
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener>
-	<listener>
-		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
-	</listener>
-	<listener>
-		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
-	</listener>
+	<!-- [公共Appender] 默认 -->
+	<appender name="DEFAULT_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/app.log" />
+		<param name="append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d %-5p [%t:%c{2}] - %m%n" />
+		</layout>
+	</appender>
 	
-	<!-- encoding -->
-	<filter>
-		<filter-name>encoding</filter-name>
-		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
-		<init-param>
-			<param-name>encoding</param-name>
-			<param-value>UTF-8</param-value>
-		</init-param>
-		<init-param>
-			<param-name>forceEncoding</param-name>
-			<param-value>true</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>encoding</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+	<!-- [公共Appender] dal -->
+	<appender name="FANBEI_DAL_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="${fbapi.log.path.root}/app-dal.log" />
+		<param name="append" value="true" />
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d %-5p %c{2} - %m%n" />
+		</layout>
+	</appender>
 
-	<filter>
-		<filter-name>appH5Filter</filter-name>
-		<filter-class>com.ald.fanbei.api.web.h5.filter.AppH5Filter</filter-class>
-		<init-param>
-			<param-name>appPubAccessUrl</param-name>
-			<param-value>
-				/h5/app/index
-			</param-value>
-		</init-param>
-	</filter>
+	<!-- [公共Appender] 汇总错误 -->
+	<appender name="ERROR_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file"
+			value="${fbapi.log.path.root}/app-error.log" />
+		<param name="append" value="true" />
+		<param name="encoding" value="UTF-8" />
+		<param name="threshold" value="error" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d %-5p %c{2} - %m%n" />
+		</layout>
+	</appender>
+
+
+	<!-- [公共Logger] 控制台STDOUT - jboss -->
+	<logger name="org.jboss" additivity="true">
+		<level value="${fbapi.log.level}" />
+	</logger>
+
+	<!-- [公共Logger] 控制台STDOUT - STDOUT --> 
+	<logger name="STDOUT" additivity="true">
+		<level value="${fbapi.log.level}" />
+	</logger>
+
+
+	<!-- [应用Logger] BI日志 -->
+	<logger name="FANBEI_BI" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBEI_BI_APPENDER" />
+	</logger>
+	<!-- [应用Logger] new BI日志 -->
+	<logger name="FANBEINEW_BI" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBEINEW_BI_APPENDER" />
+	</logger>
+	<!-- [应用Logger] 风控监控log日志 -->
+	<logger name="FBRISK_BI" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FBRISK_BI_APPENDER" />
+	</logger>
+	<!-- [应用Logger] BI日志 -->
+	<logger name="FBWEB_BI" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBWEBEI_BI_APPENDER" />
+	</logger>
+	<!-- [应用Logger] BI日志 -->
+	<logger name="FBWEBNEW_BI" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBWEBEINEW_BI_APPENDER" />
+	</logger>
 	
-	<filter-mapping>
-		<filter-name>appH5Filter</filter-name>
-		<url-pattern>/h5/app/*</url-pattern>
-	</filter-mapping>
+	<!-- [应用Logger] BI日志 -->
+	<logger name="FBMD_BI" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBEIMAIDIAN_BI_APPENDER" />
+	</logger>
 
-	<servlet>
-		<servlet-name>fanbei</servlet-name>
-		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-		<init-param>
-			<param-name>contextConfigLocation</param-name>
-			<param-value>classpath:spring/web/web-main.xml</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
+	<!-- [应用Logger] 新 NEW BI日志 -->
+	<logger name="FBMDNEW_BI" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBEIMAIDIANNEW_BI_APPENDER" />
+	</logger>
+
+	<!-- [应用Logger] THIRD日志 -->
+	<logger name="FANBEI_THIRD" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBEI_THIRD_APPENDER" />
+	</logger>
 	
-	<session-config>
-		<session-timeout>1440</session-timeout>
-	</session-config>
-
-	<servlet-mapping>
-		<servlet-name>fanbei</servlet-name>
-		<url-pattern>/</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>default</servlet-name>
-		<url-pattern>*.css</url-pattern>
-		<url-pattern>*.js</url-pattern>
-		<url-pattern>*.html</url-pattern>
-	</servlet-mapping>
-
-	<error-page>
-		<error-code>404</error-code>
-		 <location>/static/error404.html</location>
-	</error-page>
+	<!-- fanbei web logger -->
+	<logger name="com.ald.fanbei" additivity="true">
+		<level value="${fbapi.log.level}" />
+	</logger>
 	
-	<error-page>
-		<error-code>500</error-code>
-		 <location>/static/error404.html</location>
-	</error-page>
-		 
-	<welcome-file-list>
-		<welcome-file>index.jsp</welcome-file>
-	</welcome-file-list>
-</web-app>
+	<!-- fanbei dal logger -->
+	<logger name="com.ald.fanbei.api.dal" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBEI_DAL_APPENDER" />
+	</logger>
+
+	<!-- [框架Logger] 数据访问层 - Ibatis -->
+	<logger name="com.ibatis" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBEI_DAL_APPENDER" />
+	</logger>
+
+	<!-- [框架Logger] 数据访问层 - SQL -->
+	<logger name="java.sql" additivity="true">
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="FANBEI_DAL_APPENDER" />
+	</logger>
+
+	
+	<root>
+		<level value="${fbapi.log.level}" />
+		<appender-ref ref="DEFAULT_APPENDER" />
+		<appender-ref ref="ERROR_APPENDER" />
+		<appender-ref ref="STDOUT_APPENDER" />
+	</root>
+</log4j:configuration>
