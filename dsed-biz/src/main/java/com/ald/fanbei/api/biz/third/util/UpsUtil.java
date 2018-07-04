@@ -238,7 +238,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setBankName(bankName);
 		reqBo.setBankCode(bankCode);
 		reqBo.setPurpose(purpose);
-		reqBo.setNotifyUrl("http://192.168.117.99:8080" + "/third/ups/delegatePay");
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/delegatePay");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		try {
 //			afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
