@@ -39,6 +39,8 @@ public class GeneratorClusterNo {
 	AfAftersaleApplyService afAftersaleApplyService;
 	@Resource
 	BizCacheUtil bizCacheUtil;
+	@Resource
+	DsedLoanService dsedLoanService;
 	/**
 	 * 获取订单号
 	 * 
@@ -339,13 +341,13 @@ public class GeneratorClusterNo {
 			if (isGetLock) {// 获得同步锁
 				channelNum = (Integer) TokenCacheUtil.getObject(cacheKey);
 				if (channelNum == null) {// 缓存中无数据,从库中获取
-					String borrowNo = afBorrowService.getCurrentLastBorrowNo(orderNoPre);
+					String borrowNo = dsedLoanService.getCurrentLastBorrowNo(orderNoPre);
 					channelNum = borrowNo == null ? 1: (getOrderSeqInt(borrowNo.substring(16, 20)) + 1);
 				} else {
 					channelNum = channelNum + 1;
 				}
 			} else {// 获取锁失败，从库中取订单号
-				String borrowNo = afBorrowService.getCurrentLastBorrowNo(orderNoPre);
+				String borrowNo = dsedLoanService.getCurrentLastBorrowNo(orderNoPre);
 				if (borrowNo != null) {
 					channelNum = getOrderSeqInt(borrowNo.substring(16, 20)) + 1;
 				}

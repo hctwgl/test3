@@ -25,4 +25,12 @@ public interface DsedLoanDao extends BaseDao<DsedLoanDo, Long> {
     DsedLoanDo getByUserId(Long userId);
 
     DsedLoanDo getByLoanNo(String loanNo);
+
+    /**
+     * 获取最近借款号
+     *
+     * @param current
+     * @return
+     */
+    String getCurrentLastBorrowNo(String orderNoPre);
 }

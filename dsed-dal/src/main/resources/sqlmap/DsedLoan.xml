@@ -148,12 +148,12 @@
         </if>
     </sql>
 
+	<select id="getCurrentLastBorrowNo" resultType="java.lang.String">
+		select loan_no from dsed_loan WHERE loan_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
+	</select>
+
     
-    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.DsedLoanDo" keyProperty="rid">
-    	<selectKey resultType="java.lang.Long" keyProperty="rid" order="AFTER" >
-	      SELECT LAST_INSERT_ID()
-	    </selectKey>
-    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.DsedLoanDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO dsed_loan
         <trim prefix="(" suffix=")" suffixOverrides="," >
 	        <if test="gmtCreate != null">        

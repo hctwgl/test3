@@ -294,14 +294,14 @@ public class Constants {
 	public static final String CACHEKEY_REPAYCASHNO_LOCK = "fbapi_repay_cash_no_lock";
 	public static final String CACHEKEY_REPAYCASHNO = "fbapi_repay_cash_no";
 	public static final String CACHEKEY_RISKLOGIN = "fbapi_risk_login_no";
-	public static final String CACHEKEY_ORDERNO_LOCK = "ala_order_lock";
-	public static final String CACHEKEY_ORDERNO = "ala_order";
-	public static final String CACHEKEY_BORROWNO_LOCK = "ala_borrow_no_lock";
-	public static final String CACHEKEY_BORROWNO = "ala_borrow_no";
-	public static final String CACHEKEY_REPAYNO_LOCK = "ala_repay_no_lock";
-	public static final String CACHEKEY_REPAYNO = "ala_repay_no";
-	public static final String CACHEKEY_REFUND_NO_LOCK = "ala_refund_no_lock";
-	public static final String CACHEKEY_REFUND_NO = "ala_brefund_no";
+	public static final String CACHEKEY_ORDERNO_LOCK = "dsed_order_lock";
+	public static final String CACHEKEY_ORDERNO = "dsed_order";
+	public static final String CACHEKEY_BORROWNO_LOCK = "dsed_borrow_no_lock";
+	public static final String CACHEKEY_BORROWNO = "dsed_borrow_no";
+	public static final String CACHEKEY_REPAYNO_LOCK = "dsed_repay_no_lock";
+	public static final String CACHEKEY_REPAYNO = "dsed_repay_no";
+	public static final String CACHEKEY_REFUND_NO_LOCK = "dsed_refund_no_lock";
+	public static final String CACHEKEY_REFUND_NO = "dsed_brefund_no";
 
 	public static final String CONFIG_KEY_LOCK_TRY_TIMES = "fbapi.sync.lock.try.times";
 	public static final String CONFKEY_KXG_URL_CHARGE = "fbapi.kxg.url.charge";
@@ -311,8 +311,8 @@ public class Constants {
 	public static final String CONFKEY_BILL_CREATE_TIME = "fbapi.bill.create.time";
 	public static final String CONFKEY_BILL_REPAY_TIME = "fbapi.bill.repay.time";
 
-	public static final String CACHEKEY_ORDER_PAY_NO_LOCK = "ala_order_pay_no_lock";
-	public static final String CACHEKEY_ORDER_PAY_NO = "ala_order_pay_no";
+	public static final String CACHEKEY_ORDER_PAY_NO_LOCK = "dsed_order_pay_no_lock";
+	public static final String CACHEKEY_ORDER_PAY_NO = "dsed_order_pay_no";
 
 	// redis -- key
 	public static final String RESERVATION_IPHONEX_RESERVATION_COUNT = "reservation_count";
@@ -416,18 +416,18 @@ public class Constants {
 	/** ---------------
 	 * 缓存Key常量区域
 	 * ---------------- */
-	public static final String CACHEKEY_BORROW_DELIVER_MONEY_LOCK = "ala_bororw_deliver_money_lock";
-	public static final String CACHEKEY_BUILD_BOLUOME_ORDER_LOCK = "ala_boluome_build_order_lock";
-	public static final String CACHEKEY_APPLY_BORROW_CASH_LOCK = "ala_apply_borrow_cash_lock";
-	public static final String CACHEKEY_APPLY_STRONG_RISK_LOCK = "ala_apply_strong_risk_lock";
-	public static final String CACHEKEY_APPLY_BLD_RISK_LOCK = "ala_apply_bld_risk_lock";
+	public static final String CACHEKEY_BORROW_DELIVER_MONEY_LOCK = "dsed_bororw_deliver_money_lock";
+	public static final String CACHEKEY_BUILD_BOLUOME_ORDER_LOCK = "dsed_boluome_build_order_lock";
+	public static final String CACHEKEY_APPLY_BORROW_CASH_LOCK = "dsed_apply_borrow_cash_lock";
+	public static final String CACHEKEY_APPLY_STRONG_RISK_LOCK = "dsed_apply_strong_risk_lock";
+	public static final String CACHEKEY_APPLY_BLD_RISK_LOCK = "dsed_apply_bld_risk_lock";
 	public static final String CACHEKEY_APPLY_RENEWAL_LOCK = "cachekey_apply_renewal_lock";
 	// 催收系统
 	public static final String CONFKEY_COLLECTION_URL = "fbapi.collection.url";
 	// 借贷超市签到锁
-	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_LOCK = "ala_loan_supermarket_sign_lock$";
+	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_LOCK = "dsed_loan_supermarket_sign_lock$";
 	// 借贷超市签到领奖锁
-	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_AWARD_LOCK = "ala_loan_supermarket_sign_award_lock$";
+	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_AWARD_LOCK = "dsed_loan_supermarket_sign_award_lock$";
 	public static final String CACHEKEY_USER_LAY_DAILY_RATE="USER_LAY_DAILY_RATE_";
 
 
@@ -446,8 +446,8 @@ public class Constants {
 	public static final String THIRD_GOODS_IS_WORM_SECTYPE = "third_goods_is_worm";
 
 	// 双十一砍价活动
-	public static final String CACHKEY_CUT_PRICE_LOCK = "ala_cut_price_lock";
-	public static final String CACHKEY_WX_TOKEN_LOCK = "ala_wx_token_lock";
+	public static final String CACHKEY_CUT_PRICE_LOCK = "dsed_cut_price_lock";
+	public static final String CACHKEY_WX_TOKEN_LOCK = "dsed_wx_token_lock";
 	public static final String CONFKEY_WX_SECRET = "fbadmin.wx.pub.appid";
 	//逛逛惊喜返礼金
 	public static final String GG_SURPRISE_LOCK = "gg_suprise_lock";
@@ -456,8 +456,8 @@ public class Constants {
 	public static final String SELFSUPPORT_REBATE = "selfsupport_rebate";
 
 	// 双十二秒杀抢券活动
-	public static final String CACHKEY_BUY_GOODS_LOCK = "ala_buy_goods_lock";
-	public static final String CACHKEY_GET_COUPON_LOCK = "ala_get_coupon_lock";
+	public static final String CACHKEY_BUY_GOODS_LOCK = "dsed_buy_goods_lock";
+	public static final String CACHKEY_GET_COUPON_LOCK = "dsed_get_coupon_lock";
 	public static final String CACHKEY_DOUBLE_USER = "double_user";
 
 	// 借钱费率配置相关
@@ -489,8 +489,8 @@ public class Constants {
 	//资产方查询用户借款及逾期信息redis中的key前缀
 	public static final String ASSET_SIDE_SEARCH_USER_KEY="assetside_";
 	//资产包
-	public static final String CACHEKEY_ASSETPACKAGE_LOCK = "ala_asset_package_lock";
-	public static final String CACHEKEY_ASSETPACKAGE_LOCK_VALUE = "ala_asset_package_lock_value";
+	public static final String CACHEKEY_ASSETPACKAGE_LOCK = "dsed_asset_package_lock";
+	public static final String CACHEKEY_ASSETPACKAGE_LOCK_VALUE = "dsed_asset_package_lock_value";
 	public static final Integer AVG_BORROWCASH_AMOUNT = 1400;//现金贷平均每单金额
 	public static final Integer AVG_BORROW_AMOUNT = 200;//消费分期平均每单金额
 	public static final Integer AVG_LOAN_AMOUNT = 5000;//白领贷平均每单金额
@@ -538,7 +538,7 @@ public class Constants {
 
 	public static final String ORDER_MOBILE_VERIFY_QUESTION_SET = "ORDER_MOBILE_VERIFY_QUESTION_SET";
 
-	public static final String CACHKEY_CUT_LEASE_LOCK = "ala_cut_lease_lock";
+	public static final String CACHKEY_CUT_LEASE_LOCK = "dsed_cut_lease_lock";
 
 	/**
      * 用户租房分期利率

@@ -344,6 +344,11 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
     }
 
     @Override
+    public String getCurrentLastBorrowNo(String orderNoPre) {
+        return dsedLoanDao.getCurrentLastBorrowNo(orderNoPre);
+    }
+
+    @Override
     public DsedLoanDo selectById(Long loanId) {
         return null;
     }
