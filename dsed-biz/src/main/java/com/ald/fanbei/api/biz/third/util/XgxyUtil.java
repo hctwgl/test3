@@ -38,7 +38,7 @@ public class XgxyUtil {
 
     private static String getXgxyUrl(){
         if(url==null){
-            url = ConfigProperties.get(Constants.CONFKEY_XGXY_URL);
+            url = Constants.CONFKEY_XGXY_URL;
             return url;
         }
         return url;
