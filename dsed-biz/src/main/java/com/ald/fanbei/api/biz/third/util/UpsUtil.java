@@ -465,7 +465,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignNotify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		dsedUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNumber, "authSign", orderNo, "", "DSED_LOAN", userNo));
-		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+		String reqResult = HttpUtil.post("http://192.168.96.204:8080/ups/main.html", reqBo);
 		logThird(reqResult, "authSign", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
@@ -847,7 +847,7 @@ public class UpsUtil extends AbstractThird {
 	private static void setPubParam(UpsReqBo payRoutBo,String service,String orderNo,String clientType){
 		payRoutBo.setVersion("10");
 		payRoutBo.setService(service);
-		payRoutBo.setMerNo("01151209002");//TODO what?
+		payRoutBo.setMerNo("01151209000");//TODO what?
 		payRoutBo.setOrderNo(orderNo);
 		payRoutBo.setClientType(clientType);
 		payRoutBo.setMerPriv("");
