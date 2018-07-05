@@ -57,6 +57,14 @@ public interface DsedLoanService extends ParentService<DsedLoanDo, Long> {
      */
     BigDecimal getUserLayDailyRate(Long userId, String prdType);
 
+    /**
+     * 获取最近借款号
+     *
+     * @param current
+     * @return
+     */
+    String getCurrentLastBorrowNo(String orderNoPre);
+
     DsedLoanDo selectById(Long loanId);
 
     DsedLoanDo getByLoanNo(String loanNo);
