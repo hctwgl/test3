@@ -507,11 +507,13 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		dsedUpsLogDao.saveRecord(buildDsedUpsLog("", cardNo, "authSignValid", orderNo, verifyCode, "smsCode", userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+		logger.info("upsUtil authSignValid reqResult ="+reqResult+",reqBo="+JSON.toJSONString(reqBo));
 		logThird(reqResult, "authSignValid", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
 		}
 		UpsAuthSignValidRespBo authSignResp = JSONObject.parseObject(reqResult,UpsAuthSignValidRespBo.class);
+		logger.info("upsUtil authSignValid authSignResp ="+authSignResp);
 		logThird(authSignResp, "authSignValid", reqBo);
 		if(authSignResp != null && authSignResp.getTradeState()!=null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
 			authSignResp.setSuccess(true);
