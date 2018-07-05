@@ -464,7 +464,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setReturnUrl(getNotifyHost() + "/third/ups/authSignReturn");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignNotify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNumber, "authSign", orderNo, "", "", userNo));
+		dsedUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNumber, "authSign", orderNo, "", "", userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "authSign", reqBo);
 		if(StringUtil.isBlank(reqResult)){
