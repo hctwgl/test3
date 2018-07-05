@@ -29,7 +29,7 @@ public class XgxyUtil {
     Logger logger = LoggerFactory.getLogger(XgxyUtil.class);
 
 
-    private static String url = "192.168.107.227:2003/open/third/edspay/v1/giveBackRepayResult";
+    private static String url = null;
 
 
     private static String PRIVATE_KEY = "aef5c8c6114b8d6a";

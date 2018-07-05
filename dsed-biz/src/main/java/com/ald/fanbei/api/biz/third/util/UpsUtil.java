@@ -847,7 +847,7 @@ public class UpsUtil extends AbstractThird {
 	private static void setPubParam(UpsReqBo payRoutBo,String service,String orderNo,String clientType){
 		payRoutBo.setVersion("10");
 		payRoutBo.setService(service);
-		payRoutBo.setMerNo("01151209002");//TODO what?
+		payRoutBo.setMerNo("01151209000");//TODO what?
 		payRoutBo.setOrderNo(orderNo);
 		payRoutBo.setClientType(clientType);
 		payRoutBo.setMerPriv("");
