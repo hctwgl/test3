@@ -12,7 +12,7 @@ public class Constants {
 
 
 
-	public static final String CONFKEY_XGXY_URL = "http://192.168.112.40:8080";
+	public static final String CONFKEY_XGXY_URL = "http://testeca.91ala.com:1112/isp";
 
 
 
