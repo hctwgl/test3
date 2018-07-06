@@ -270,8 +270,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		String name = bo.name;
 
 		DsedLoanRepaymentDo loanRepaymentDo = buildRepayment( bo.amount, tradeNo, now, bo.amount, 0l,
-				null, BigDecimal.ZERO, bo.dsedLoanDo.getRid(), bo.outTradeNo, name, bo.userId,bo.dsedLoanDo.getPrdType(),bo.bankNo,bo.cardName,bo.dsedLoanPeriodsDoList		DsedLoanRepaymentDo loanRepaymentDo = buildRepayment( bo.amount, tradeNo, now, bo.amount, 0l,
-						);
+				null, BigDecimal.ZERO, bo.dsedLoanDo.getRid(), bo.outTradeNo, name, bo.userId,bo.dsedLoanDo.getPrdType(),bo.bankNo,bo.cardName,bo.dsedLoanPeriodsDoList,bo.isAllRepay);
 
 		dsedLoanRepaymentDao.saveRecord(loanRepaymentDo);
 
@@ -299,7 +298,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		}else {
 			loanRepay.setPreRepayStatus("N");
 		}
-
+		loanRepay.setPreRepayStatus("N");
 		String repayPeriods = "";
 		for (int i = 0; i < loanPeriodsDoList.size(); i++) {
 			if(i == loanPeriodsDoList.size()-1){
