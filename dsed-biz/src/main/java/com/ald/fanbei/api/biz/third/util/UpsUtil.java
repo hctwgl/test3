@@ -464,7 +464,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setReturnUrl(getNotifyHost() + "/third/ups/authSignReturn");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignNotify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNumber, "authSign", orderNo, "", "", userNo));
+		dsedUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNumber, "authSign", orderNo, "", "DSED_LOAN", userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "authSign", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -505,13 +505,15 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setSmsCode(verifyCode);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignValidNotify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		afUpsLogDao.addUpsLog(buildUpsLog("", cardNo, "authSignValid", orderNo, verifyCode, "smsCode", userNo));
+		dsedUpsLogDao.saveRecord(buildDsedUpsLog("", cardNo, "authSignValid", orderNo, verifyCode, "smsCode", userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+		logger.info("upsUtil authSignValid reqResult ="+reqResult+",reqBo="+JSON.toJSONString(reqBo));
 		logThird(reqResult, "authSignValid", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
 		}
 		UpsAuthSignValidRespBo authSignResp = JSONObject.parseObject(reqResult,UpsAuthSignValidRespBo.class);
+		logger.info("upsUtil authSignValid authSignResp ="+authSignResp);
 		logThird(authSignResp, "authSignValid", reqBo);
 		if(authSignResp != null && authSignResp.getTradeState()!=null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
 			authSignResp.setSuccess(true);
@@ -847,7 +849,7 @@ public class UpsUtil extends AbstractThird {
 	private static void setPubParam(UpsReqBo payRoutBo,String service,String orderNo,String clientType){
 		payRoutBo.setVersion("10");
 		payRoutBo.setService(service);
-		payRoutBo.setMerNo("01151209002");//TODO what?
+		payRoutBo.setMerNo("01151209000");//TODO what?
 		payRoutBo.setOrderNo(orderNo);
 		payRoutBo.setClientType(clientType);
 		payRoutBo.setMerPriv("");

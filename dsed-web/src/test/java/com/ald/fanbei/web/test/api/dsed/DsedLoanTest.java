@@ -1,12 +1,12 @@
 package com.ald.fanbei.web.test.api.dsed;
 
+
 import com.ald.fanbei.api.biz.arbitration.MD5;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.DsedSignUtil;
 import com.ald.fanbei.web.test.common.BaseTest;
-import com.ald.fanbei.web.test.common.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -21,7 +21,8 @@ public class DsedLoanTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-    String urlBase = "http://localhost:8089";
+//    String urlBase = "http://localhost:8080";
+    String urlBase = "http://192.168.112.40:8080";
     //	String userName = "13638668564";	//田建成 cardId:3111464419 支付密码123456
     String userName = "15669066271";    //田建成 cardId:3111464125 支付密码123456
 //	String userName = "13958004662";	//胡朝永 支付密码123456
@@ -75,7 +76,7 @@ public class DsedLoanTest extends BaseTest {
     public void dsedGetLoanInfo() {
         String url = urlBase + "/third/xgxy/v1/getBorrowInfo";
         Map<String, String> params = new HashMap<>();
-        params.put("userId", "18637962344");
+        params.put("userId", "1C9064925F3AAF85BC663FEB1727DD4B");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
@@ -92,8 +93,8 @@ public class DsedLoanTest extends BaseTest {
         Map<String, String> params = new HashMap<>();
         params.put("prdType", "DSED_LOAN");
         params.put("amount", 6000 + "");
-        params.put("userId", "18637962344");
-        params.put("periods", 3 + "");
+        params.put("userId", "1C9064925F3AAF85BC663FEB1727DD4B");
+        params.put("period", 3 + "");
         params.put("realName", "过帅强");
         params.put("loanRemark", "装修");
         params.put("repayRemark", "工资");
