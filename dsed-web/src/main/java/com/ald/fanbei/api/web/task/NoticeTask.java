@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * @author jilong
@@ -63,6 +64,9 @@ public class NoticeTask {
     @Resource
     private XgxyUtil xgxyUtil;
 
+    ExecutorService executor = Executors.newCachedThreadPool();
+
+    @Scheduled(cron = "0 0/5 * * * ?")
 //    @Scheduled(cron = "0/5 * * * * ?")
     public void notice() {
         logger.info("start notice task， time="+new Date());
@@ -105,7 +109,7 @@ public class NoticeTask {
                     }
                     continue;
                 }
-                if(StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUEREPAY.code)){
+                if(StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUE.code)){
                     periodsDo=dsedLoanPeriodsService.getById(Long.valueOf(recordDo.getRefId()));
                     if(periodsDo==null || periodsDo.getIsDelete()==1){
                         dsedNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
@@ -118,12 +122,12 @@ public class NoticeTask {
                         DsedLoanDo finalLoanDo = loanDo;
                         DsedLoanRepaymentDo finalLoanRepaymentDo = loanRepaymentDo;
                         DsedLoanPeriodsDo finalPeriodsDo = periodsDo;
-                        Thread thread = new Thread(){
+                        Runnable thread = new Runnable(){
                             public void run(){
                                 nextNotice(recordDo, finalLoanDo, finalLoanRepaymentDo, finalPeriodsDo);
                             }
                         };
-                        thread.start();
+                     executor.execute(thread);
                 }
             }
         }
@@ -131,7 +135,7 @@ public class NoticeTask {
     }
 
      void nextNotice(DsedNoticeRecordDo recordDo,DsedLoanDo loanDo,DsedLoanRepaymentDo loanRepaymentDo,DsedLoanPeriodsDo periodsDo){
-         all_noticedfail_moreonce.put(recordDo.getRid(),"true");
+         all_noticedfail_moreonce.put(recordDo.getRid(),recordDo.getTimes());
          try {
              Thread.sleep(1000*60*request_times[Integer.parseInt(recordDo.getTimes())-1]);
              if(StringUtils.equals(recordDo.getType(), DsedNoticeType.PAY.code)&&loanDo!=null){
