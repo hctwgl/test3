@@ -88,7 +88,8 @@ public class GetLoanInfoApi implements DsedH5Handle {
         dsedLoanPeriodsVo.setUnrepayOverdueFee(dsedLoanPeriodsDo.getOverdueAmount());
         dsedLoanPeriodsVo.setUnrepayServiceFee(dsedLoanPeriodsDo.getServiceFee());
         dsedLoanPeriodsVo.setUnrepayAmount(BigDecimalUtil.add(dsedLoanPeriodsDo.getAmount(), dsedLoanPeriodsDo.getInterestFee(),
-                dsedLoanPeriodsDo.getServiceFee(), dsedLoanPeriodsDo.getOverdueAmount()));
+                dsedLoanPeriodsDo.getServiceFee(), dsedLoanPeriodsDo.getOverdueAmount(),dsedLoanPeriodsDo.getRepaidInterestFee(),
+                dsedLoanPeriodsDo.getRepaidOverdueAmount(),dsedLoanPeriodsDo.getRepaidServiceFee()).subtract(dsedLoanPeriodsDo.getRepayAmount()));
         return dsedLoanPeriodsVo;
     }
 
