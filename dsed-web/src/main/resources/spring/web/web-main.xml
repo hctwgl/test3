@@ -173,7 +173,6 @@
 				<entry key="/third/xgxy/v1/getRealPeriod" value-ref="dsedLoanTotalPeriodsApi" />
 				<entry key="/third/xgxy/v1/getBorrowFeeDetail" value-ref="dsedLoanDetailApi" />
 				<entry key="/third/xgxy/v1/syncUserInfo" value-ref="dsedSyncUserInfoApi" />
-				<entry key="/third/xgxy/v1/getSmsCode" value-ref="dsedResendCodeApi" />
 				<!-- 支付相关接口 -->
 				<entry key="/h5/pay/recycleQuickPaymentResendCode" value-ref="recycleQuickPaymentResendCodeApi" />
 				<entry key="/h5/pay/recycleConfirmPayment" value-ref="recycleConfirmPaymentApi" />
