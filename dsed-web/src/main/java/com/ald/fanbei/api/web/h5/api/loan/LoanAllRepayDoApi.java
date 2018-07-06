@@ -133,7 +133,7 @@ public class LoanAllRepayDoApi implements H5Handle {
 		
 		// 检查 用户 是否多还钱(提前结清)
 		BigDecimal shouldRepayAmount = dsedLoanRepaymentService.calculateAllRestAmount(dsedLoanDo.getRid());
-		if(bo.repaymentAmount.compareTo(shouldRepayAmount) != 0) {
+		if(bo.amount.compareTo(shouldRepayAmount) != 0) {
 			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}
 		

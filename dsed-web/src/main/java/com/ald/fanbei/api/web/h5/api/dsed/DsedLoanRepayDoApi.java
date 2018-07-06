@@ -47,6 +47,7 @@ public class DsedLoanRepayDoApi implements DsedH5Handle {
 	public DsedH5HandleResponse process(Context context) {
 		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
 		LoanRepayDoParam param = (LoanRepayDoParam) context.getParamEntity();
+		logger.info("dsedLoanRepayDoApi param = " + param);
 		Map<String, Object> data = new HashMap<String, Object>();
 		String bankNo = param.bankNo;
 		Long userId = context.getUserId();
@@ -110,7 +111,6 @@ public class DsedLoanRepayDoApi implements DsedH5Handle {
 		DsedLoanPeriodsDo dsedLoanPeriodsDo = dsedLoanPeriodsService.getLoanPeriodsByLoanNoAndNper(bo.borrowNo,bo.curPeriod);
 		BigDecimal shouldRepayAmount = dsedLoanRepaymentService.calculateRestAmount(dsedLoanPeriodsDo);
 		bo.dsedLoanPeriodsDoList.add(dsedLoanPeriodsDo);
-		bo.repaymentAmount = dsedLoanPeriodsDo.getAmount();
 		if(bo.amount.compareTo(shouldRepayAmount) > 0) {
 			throw new FanbeiException("loan repay amount error",FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
 		}

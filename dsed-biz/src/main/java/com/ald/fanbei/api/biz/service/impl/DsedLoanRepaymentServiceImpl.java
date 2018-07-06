@@ -211,7 +211,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 		// 根据 还款金额 更新期数信息
 		if (!bo.isAllRepay) { // 非提前结清
-			List<DsedLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
+			List<DsedLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.amount);
 			bo.dsedLoanPeriodsIds.clear();
 			bo.dsedLoanPeriodsDoList.clear();
 			for (DsedLoanPeriodsDo dsedLoanPeriodsDo : loanPeriods) {
@@ -432,7 +432,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 			});
 			if (resultValue == 1L) {
-				nofityRisk(LoanRepayDealBo);
+//				nofityRisk(LoanRepayDealBo);
 //				notifyUserBySms(LoanRepayDealBo);
 				if (collectionRepaymentId != null){
 					repaymentDo.setRemark(String.valueOf(collectionRepaymentId));

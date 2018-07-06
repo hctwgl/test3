@@ -262,83 +262,83 @@
 		    </if>
         </trim>
     </insert>
-    
+
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo">
         UPDATE dsed_loan_periods
-          <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
-                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+        <set>
+            <if test="userId != null and userId != '' ">
+                user_id = #{userId,jdbcType=INTEGER},
             </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            <if test="loanId != null and loanId != '' ">
+                loan_id = #{loanId,jdbcType=INTEGER},
             </if>
-            <if test="userId != null and userId != '' ">        
-                user_id = #{userId,jdbcType=INTEGER},                
+            <if test="loanNo != null and loanNo != '' ">
+                loan_no = #{loanNo,jdbcType=VARCHAR},
             </if>
-            <if test="loanId != null and loanId != '' ">        
-                loan_id = #{loanId,jdbcType=INTEGER},                
+            <if test="prdType != null and prdType != '' ">
+                prd_type = #{prdType,jdbcType=VARCHAR},
             </if>
-            <if test="loanNo != null and loanNo != '' ">        
-                loan_no = #{loanNo,jdbcType=VARCHAR},                
+            <if test="amount != null and amount != '' ">
+                amount = #{amount,jdbcType=DECIMAL},
             </if>
-            <if test="prdType != null and prdType != '' ">        
-                prd_type = #{prdType,jdbcType=VARCHAR},                
+            <if test="periods != null and periods != '' ">
+                periods = #{periods,jdbcType=INTEGER},
             </if>
-            <if test="amount != null and amount != '' ">        
-                amount = #{amount,jdbcType=DECIMAL},                
+            <if test="nper != null and nper != '' ">
+                nper = #{nper,jdbcType=INTEGER},
             </if>
-            <if test="periods != null and periods != '' ">        
-                periods = #{periods,jdbcType=INTEGER},                
+            <if test="status != null and status != '' ">
+                status = #{status,jdbcType=VARCHAR},
             </if>
-            <if test="nper != null and nper != '' ">        
-                nper = #{nper,jdbcType=INTEGER},                
+            <if test="repayId != null and repayId != '' ">
+                repay_id = #{repayId,jdbcType=INTEGER},
             </if>
-            <if test="status != null and status != '' ">        
-                status = #{status,jdbcType=VARCHAR},                
+            <if test="remark != null and remark != '' ">
+                remark = #{remark,jdbcType=VARCHAR},
             </if>
-            <if test="repayId != null and repayId != '' ">        
-                repay_id = #{repayId,jdbcType=INTEGER},                
+            <if test="overdueStatus != null and overdueStatus != '' ">
+                overdue_status = #{overdueStatus,jdbcType=VARCHAR},
             </if>
-            <if test="remark != null and remark != '' ">        
-                remark = #{remark,jdbcType=VARCHAR},                
+            <if test="overdueDays != null and overdueDays != '' ">
+                overdue_days = #{overdueDays,jdbcType=INTEGER},
             </if>
-            <if test="overdueStatus != null and overdueStatus != '' ">        
-                overdue_status = #{overdueStatus,jdbcType=VARCHAR},                
+            <if test="interestFee != null ">
+                interest_fee = #{interestFee,jdbcType=DECIMAL},
             </if>
-            <if test="overdueDays != null and overdueDays != '' ">        
-                overdue_days = #{overdueDays,jdbcType=INTEGER},                
+            <if test="serviceFee != null ">
+                service_fee = #{serviceFee,jdbcType=DECIMAL},
             </if>
-            <if test="interestFee != null and interestFee != '' ">        
-                interest_fee = #{interestFee,jdbcType=DECIMAL},                
+            <if test="overdueAmount != null ">
+                overdue_amount = #{overdueAmount,jdbcType=DECIMAL},
             </if>
-            <if test="serviceFee != null and serviceFee != '' ">        
-                service_fee = #{serviceFee,jdbcType=DECIMAL},                
+            <if test="repayAmount != null and repayAmount != '' ">
+                repay_amount = #{repayAmount,jdbcType=DECIMAL},
             </if>
-            <if test="overdueAmount != null and overdueAmount != '' ">        
-                overdue_amount = #{overdueAmount,jdbcType=DECIMAL},                
+            <if test="preRepayStatus != null and preRepayStatus != '' ">
+                pre_repay_status = #{preRepayStatus,jdbcType=VARCHAR},
             </if>
-            <if test="repayAmount != null and repayAmount != '' ">        
-                repay_amount = #{repayAmount,jdbcType=DECIMAL},                
+            <if test="repaidServiceFee != null and repaidServiceFee != '' ">
+                repaid_service_fee = #{repaidServiceFee,jdbcType=DECIMAL},
             </if>
-            <if test="preRepayStatus != null and preRepayStatus != '' ">        
-                pre_repay_status = #{preRepayStatus,jdbcType=VARCHAR},                
+            <if test="repaidInterestFee != null and repaidInterestFee != '' ">
+                repaid_interest_fee = #{repaidInterestFee,jdbcType=DECIMAL},
             </if>
-            <if test="repaidServiceFee != null and repaidServiceFee != '' ">        
-                repaid_service_fee = #{repaidServiceFee,jdbcType=DECIMAL},                
+            <if test="repaidOverdueAmount != null and repaidOverdueAmount != '' ">
+                repaid_overdue_amount = #{repaidOverdueAmount,jdbcType=DECIMAL},
             </if>
-            <if test="repaidInterestFee != null and repaidInterestFee != '' ">        
-                repaid_interest_fee = #{repaidInterestFee,jdbcType=DECIMAL},                
+            <if test="gmtLastRepay != null and gmtLastRepay != '' ">
+                gmt_last_repay = #{gmtLastRepay,jdbcType=TIMESTAMP},
             </if>
-            <if test="repaidOverdueAmount != null and repaidOverdueAmount != '' ">        
-                repaid_overdue_amount = #{repaidOverdueAmount,jdbcType=DECIMAL},                
+            <if test="gmtCreate != null and gmtCreate != '' ">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
-            <if test="gmtLastRepay != null and gmtLastRepay != '' ">        
-                gmt_last_repay = #{gmtLastRepay,jdbcType=TIMESTAMP},                
+
+            gmt_modified = NOW(),
+
+            <if test="gmtPlanRepay != null and gmtPlanRepay != '' ">
+                gmt_plan_repay = #{gmtPlanRepay,jdbcType=TIMESTAMP},
             </if>
-            <if test="gmtPlanRepay != null and gmtPlanRepay != '' ">        
-                gmt_plan_repay = #{gmtPlanRepay,jdbcType=TIMESTAMP}                
-            </if>
-        </set>    
+        </set>
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
 
@@ -346,7 +346,7 @@
         SELECT
         <include refid="queryFields" />
         FROM dsed_loan_periods
-        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        WHERE is_delete = 0 AND id=#{rid,jdbcType=BIGINT}
         LIMIT 0,1
     </select>
 
