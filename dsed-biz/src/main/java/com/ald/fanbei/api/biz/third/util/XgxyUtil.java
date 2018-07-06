@@ -60,7 +60,7 @@ public class XgxyUtil {
             params.put("appId", "edspay");
             params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
-            logger.info("XgxyUtil payNoticeRequest params =" + JSON.toJSONString(params) + " url=" + getXgxyUrl());
+            logger.info("XgxyUtil payNoticeRequest params =" + JSON.toJSONString(params) + " url=" + getXgxyUrl()+",pay="+pay);
             String reqResult = doHttpPostJsonParam(getXgxyUrl() + "/open/third/edspay/v1/giveBackPayResult", JSON.toJSONString(params));
             logger.info("XgxyUtil payNoticeRequest reqResult = " + reqResult);
             if (StringUtil.isBlank(reqResult)) {
