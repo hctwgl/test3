@@ -111,11 +111,11 @@ public class DsedLoanTest extends BaseTest {
 	public void dsedrepayLoan() {
 		String url = urlBase + "/third/xgxy/v1/repayComfirm";
 		Map<String,String> params = new HashMap<>();
-		params.put("amount", 1+"");
-		params.put("curPeriod", 1+"");
-		params.put("bankNo", "6214835896219365");
-		params.put("borrowNo", "dk2018070114064400478");
-		params.put("userId","edspay21");
+        params.put("amount", 1+"");
+        params.put("curPeriod", 1+"");
+        params.put("bankNo", "6214835896219365");
+        params.put("borrowNo", "dk2018070516363600007");
+        params.put("userId","8A5D5014441300F8032533F3C0FED560");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);

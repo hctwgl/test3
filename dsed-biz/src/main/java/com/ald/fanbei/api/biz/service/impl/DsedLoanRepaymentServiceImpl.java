@@ -452,6 +452,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 				dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
 				HashMap<String,String> data = buildData(repaymentDo);
+				logger.info("dealRepaymentSucess data cfp "+JSON.toJSONString(data));
 				if(xgxyUtil.dsedRePayNoticeRequest(data)){
 					noticeRecordDo.setRid(noticeRecordDo.getRid());
 					noticeRecordDo.setGmtModified(new Date());

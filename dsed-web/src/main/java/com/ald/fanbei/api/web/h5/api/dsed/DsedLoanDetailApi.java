@@ -21,7 +21,6 @@ import java.util.List;
  *
  * @author ZJF
  */
-@NeedLogin
 @Component("dsedLoanDetailApi")
 public class DsedLoanDetailApi implements DsedH5Handle {
 
@@ -32,7 +31,6 @@ public class DsedLoanDetailApi implements DsedH5Handle {
     public DsedH5HandleResponse process(Context context) {
         DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
 
-//        String prdType = context.getData("prdType").toString();
         String prdType = "DSED_LOAN";
         BigDecimal amount = new BigDecimal(context.getData("amount").toString());
         int period = Integer.valueOf(context.getData("period").toString());

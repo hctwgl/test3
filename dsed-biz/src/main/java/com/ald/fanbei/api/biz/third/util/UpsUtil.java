@@ -668,7 +668,7 @@ public class UpsUtil extends AbstractThird {
 //		reqBo.setNotifyUrl("http://192.168.117.188:8089/third/ups/collect");
 		reqBo.setCvv2(safeCode);
 		reqBo.setValidDate(validDate);
-//		reqBo.setSmsFlag("");
+		reqBo.setSmsFlag("1");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "quickPay", orderNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
