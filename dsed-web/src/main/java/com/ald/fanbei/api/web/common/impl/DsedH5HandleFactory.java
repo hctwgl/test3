@@ -1,12 +1,13 @@
 package com.ald.fanbei.api.web.common.impl;
 
-import com.ald.fanbei.api.web.common.DsedH5Handle;
-import com.ald.fanbei.api.web.common.H5Handle;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.util.Map;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
 
 
 /**

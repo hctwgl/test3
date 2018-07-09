@@ -24,7 +24,7 @@ import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
+import com.ald.fanbei.api.web.common.impl.DsedH5HandleFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -32,37 +32,27 @@ import com.alibaba.fastjson.JSONObject;
  * @author 郭帅强 2018年1月16日 下午11:56:17 @类描述：
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public abstract class DsedBaseController {
+public abstract class BaseController {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-    protected final Logger biNewLog = LoggerFactory.getLogger("FANBEINEW_BI");// 新app原生接口入口日志
-
-    protected final Logger webbiLog = LoggerFactory.getLogger("FBWEB_BI");// h5接口入口日志
-    protected final Logger webbiNewLog = LoggerFactory.getLogger("FBWEBNEW_BI");// 新h5接口入口日志
-
-    protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");// 埋点日志
-    protected final Logger maidianNewLog = LoggerFactory.getLogger("FBMDNEW_BI");// 埋点日志
-
-    protected final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");// 第三方调用日志
+    protected final Logger biLog = LoggerFactory.getLogger("DSED_BI");// 新app原生接口入口日志
+    protected final Logger mdLog = LoggerFactory.getLogger("DSED_MD");// 埋点日志
+    protected final Logger thirdLog = LoggerFactory.getLogger("DSED_THIRD");// 第三方调用日志
 
     @Resource
     protected TokenCacheUtil tokenCacheUtil;
-
     @Resource
     private DsedResourceService dsedResourceService;
-
     @Resource
-    private H5HandleFactory h5HandleFactory;
+    private DsedH5HandleFactory dsedH5HandleFactory;
 
     protected String processRequest(HttpServletRequest request,String data,String sign) {
         String retMsg = StringUtils.EMPTY;
-        BaseResponse baseResponse = null;
+        DsedH5HandleResponse baseResponse = null;
         Context context = null;
+        Long stmap = System.currentTimeMillis();
         try {
-            // 解析参数（包括请求头中的参数和报文体中的参数）
             context = parseRequestData(request,data);
-            // 校验请求数据
-//            doCheck(context);
             compareSign(request, context,sign);
             baseResponse = doProcess(context);
             retMsg = JSON.toJSONString(baseResponse);
@@ -73,11 +63,12 @@ public abstract class DsedBaseController {
             baseResponse = buildErrorResult(FanbeiExceptionCode.SYSTEM_ERROR, request);
             retMsg = JSON.toJSONString(baseResponse);
         }
-        logger.info("req method=>" + context.getMethod() + ",userId=>" + context.getUserId() + ",response msg=>" + retMsg);
+        
+        doBiLog(request, baseResponse, null, System.currentTimeMillis() - stmap, context != null? context.getUserName():"");
         return retMsg;
     }
 
-    protected BaseResponse buildErrorResult(FanbeiExceptionCode exceptionCode, HttpServletRequest request) {
+    protected DsedH5HandleResponse buildErrorResult(FanbeiExceptionCode exceptionCode, HttpServletRequest request) {
         DsedH5HandleResponse resp;
         if (exceptionCode == null) {
             exceptionCode = FanbeiExceptionCode.SYSTEM_ERROR;
@@ -86,7 +77,7 @@ public abstract class DsedBaseController {
         return resp;
     }
 
-    protected BaseResponse buildErrorResult(FanbeiException e, HttpServletRequest request) {
+    protected DsedH5HandleResponse buildErrorResult(FanbeiException e, HttpServletRequest request) {
         FanbeiExceptionCode exceptionCode = e.getErrorCode();
         DsedH5HandleResponse resp;
         if (exceptionCode == null) {
@@ -118,7 +109,7 @@ public abstract class DsedBaseController {
      * @param httpServletRequest
      * @return
      */
-    public abstract BaseResponse doProcess(Context context);
+    public abstract DsedH5HandleResponse doProcess(Context context);
 
     /**
      * 验证基础参数、签名
@@ -133,12 +124,9 @@ public abstract class DsedBaseController {
             throw new FanbeiException("request method is null or empty",
                     FanbeiExceptionCode.REQUEST_PARAM_METHOD_ERROR);
         }
-//        doBaseParamCheck(context);
-//        checkWebSign(context);
     }
 
     private void compareSign(HttpServletRequest request, Context context,String sign) {
-//        String sign = request.getParameter("sign");
         Map<String, Object> systemsMap = context.getSystemsMap();
         String md5Value = generateSign(systemsMap,"aef5c8c6114b8d6a");
         if (logger.isDebugEnabled())
@@ -213,7 +201,7 @@ public abstract class DsedBaseController {
      * @param respData
      * @param exeT
      */
-    protected void doMaidianLog(HttpServletRequest request, H5CommonResponse respData, String... extInfo) {
+    protected void doMaidianLog(HttpServletRequest request, DsedH5HandleResponse respData, String... extInfo) {
         try {
             JSONObject param = new JSONObject();
             Enumeration<String> enu = request.getParameterNames();
@@ -239,19 +227,12 @@ public abstract class DsedBaseController {
             } catch (Exception e) {
                 // ignore error
             }
-            maidianNewLog.info(StringUtil.appendStrs("	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
+            mdLog.info(StringUtil.appendStrs("	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT),
                     "	", "h", "	", CommonUtil.getIpAddr(request), "	", userName, "	", 0, "	",
-                    request.getRequestURI(), "	", respData == null ? false : respData.getSuccess(), "	",
+                    request.getRequestURI(), "	", respData == null ? false : respData.getCode(), "	",
                     DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), "	", "md", "	", ext1, "	", ext2,
                     "	", ext3, "	", ext4, "	", param == null ? "{}" : param.toString(), "	",
                     respData == null ? "{}" : respData.toString()));
-
-            maidianLog.info(StringUtil.appendStrs("	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT), "	",
-                    "h", "	rmtIP=", CommonUtil.getIpAddr(request), "	userName=", userName, "	", 0, "	",
-                    request.getRequestURI(), "	result=", respData == null ? false : respData.getSuccess(), "	",
-                    DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), "	", "md", "	", ext1, "	", ext2,
-                    "	", ext3, "	", ext4, "	reqD=", param.toString(), "	resD=",
-                    respData == null ? "null" : respData.toString()));
 
         } catch (Exception e) {
             logger.error("maidian logger error", e);
@@ -266,7 +247,7 @@ public abstract class DsedBaseController {
      * @param appInfo
      * @param exeT
      */
-    protected void doLog(HttpServletRequest request, H5CommonResponse respData, String appInfo, long exeT,
+    protected void doBiLog(HttpServletRequest request, DsedH5HandleResponse respData, String appInfo, long exeT,
                          String userName) {
         try {
             JSONObject param = new JSONObject();
@@ -312,21 +293,15 @@ public abstract class DsedBaseController {
      * @param ext4        扩展参数4
      * @param ext5        扩展参数5
      */
-    protected void doLog(String reqData, H5CommonResponse respData, String httpMethod, String rmtIp, String exeT,
+    protected void doLog(String reqData, DsedH5HandleResponse respData, String httpMethod, String rmtIp, String exeT,
                          String inter, String userName, String ext1, String ext2, String ext3, String ext4, String ext5) {
 
-        webbiNewLog.info(StringUtil.appendStrs("	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT), "	",
+    	biLog.info(StringUtil.appendStrs("	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT), "	",
                 "h", "	", rmtIp, "	", userName, "	", exeT, "	", inter, "	",
-                respData == null ? "false" : respData.getSuccess() + "", "	",
+                respData == null ? "false" : respData.getCode() + "", "	",
                 DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), "	", ext1, "	", ext2, "	", ext3, "	",
                 ext4, "	", ext5, "	", StringUtil.isBlank(reqData) ? "{}" : reqData, "	",
                 respData == null ? "{}" : respData.toString()));
-
-        webbiLog.info(StringUtil.appendStrs("	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT), "	", "h",
-                "	rmtIP=", rmtIp, "	userName=", userName, "	", exeT, "	", inter, "	result=",
-                respData == null ? "false" : respData.getSuccess() + "", "	",
-                DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), "	", ext1, "	", ext2, "	", ext3, "	",
-                ext4, "	", ext5, "	reqD=", reqData, "	resD=", respData == null ? "null" : respData.toString()));
     }
 
 }

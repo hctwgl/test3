@@ -4,8 +4,8 @@ package com.ald.fanbei.api.web.h5.api.dsed;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.web.common.H5Handle;
-import com.ald.fanbei.api.web.common.H5HandleResponse;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
+import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 
 
@@ -16,10 +16,10 @@ import com.ald.fanbei.api.web.validator.Validator;
  */
 @Component("getRecycleProtocolApi")
 @Validator("getRecycleProtocolParam")
-public class GetRecycleProtocolApi implements H5Handle {
+public class GetRecycleProtocolApi implements DsedH5Handle {
 
 	@Override
-	public H5HandleResponse process(Context context) {
+	public DsedH5HandleResponse process(Context context) {
 		return null;
 	}
 	
