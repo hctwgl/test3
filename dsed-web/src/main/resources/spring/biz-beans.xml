@@ -13,6 +13,7 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd">
+	
 	<bean id="multipartResolver"
 		  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<!-- 设定默认编码 -->
@@ -20,6 +21,7 @@
 		<!-- 设定文件上传的最大值5MB，5*1024*1024 -->
 		<property name="maxUploadSize" value="5242880"></property>
 	</bean>
+	
 	<bean class="com.ald.fanbei.api.common.DecrypPropertyPlaceholderConfigurer">
 		<property name="password" value="${fbapi.aes.password}"/>
 		<property name="encryptPropNames">
@@ -58,15 +60,6 @@
 			</list>
 		</property>
 	</bean>	
-	
-	<!-- 申请退款等接口 提供给第三方的Appkey和secrete -->
-	<bean class="com.ald.fanbei.api.biz.service.boluome.ThirdCore">
-		<property name="appKeyMap">  
-            <map>  
-                <entry key="${third.offer.boluome.appKey}" value="${third.offer.boluome.appSecret}"></entry>  
-            </map>  
-        </property>
-	</bean>
 	
 	<!-- redis 192.168.11.118 foobared	 -->
     <bean id="poolConfigBiz" class="redis.clients.jedis.JedisPoolConfig">
@@ -118,64 +111,6 @@
 	<bean id="cacheRedisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
 		<property name="connectionFactory" ref="cacheJedisConnFactory" />
 	</bean>
-	<!--<bean id="yiBaoUtility" class ="com.ald.fanbei.api.biz.third.util.yibaopay.YiBaoUtility"></bean>-->
-	<!-- KAFKA -->
-	<bean id="kafkaSaslConfig" class="com.ald.fanbei.api.biz.kafka.KafkaSaslConfig"></bean>
-	<bean id="producerProperties" class="java.util.HashMap">
-		<constructor-arg>
-			<map>
-				<!--kafka-cn-hangzhou.aliyun.com:8080 比如华东1的topic，需要在华东1的ECS上面才能访问-->
-
-				<entry key="bootstrap.servers" value="${kafka.bootstrap.servers}"/>
-				<!--请修改为自己的路径，最好是绝对路径-->
-				<entry key="ssl.truststore.location" value="${kafka.ssl.truststore.location}"/>
-				<entry key="ssl.truststore.password" value="KafkaOnsClient"/>
-				<entry key="security.protocol" value="SASL_SSL"/>
-				<entry key="sasl.mechanism" value="ONS"/>
-				<entry key="retries" value="10"/>
-				<entry key="batch.size" value="16384"/>
-				<entry key="linger.ms" value="1"/>
-				<entry key="buffer.memory" value="33554432"/>
-				<entry key="key.serializer" value="org.apache.kafka.common.serialization.StringSerializer"/>
-				<entry key="value.serializer" value="org.apache.kafka.common.serialization.StringSerializer"/>
-			</map>
-		</constructor-arg>
-	</bean>
-	<bean id="producerFactory"
-		  class="org.springframework.kafka.core.DefaultKafkaProducerFactory">
-		<constructor-arg>
-			<ref bean="producerProperties" />
-		</constructor-arg>
-	</bean>
-
-	<bean id="kafkaTemplate" class="org.springframework.kafka.core.KafkaTemplate">
-		<constructor-arg ref="producerFactory" />
-		<constructor-arg name="autoFlush" value="true" />
-		<property name="defaultTopic" value="${kafka.default.topic}" />
-		<property name="producerListener" ref="producerListener" >
-
-		</property>
-	</bean>
-	<bean id="producerListener" class="com.ald.fanbei.api.biz.kafka.KafkaProductListener" />
-
-	<!-- KAFKA -->
-	<!-- MONGODB -->
-	<mongo:mongo-client id="mongoClient"  replica-set="${mongo.host}" credentials="${mongo.credentials}">
-		<mongo:client-options
-				connections-per-host="8"
-				threads-allowed-to-block-for-connection-multiplier="4"
-				connect-timeout="1000"
-				max-wait-time="1500"
-				socket-keep-alive="true"
-				socket-timeout="1500"/>
-	</mongo:mongo-client>
-
-	<mongo:db-factory dbname="${mongo.dbname}"  mongo-ref="mongoClient"/>
-
-	<bean id="mongoTemplate"  class="org.springframework.data.mongodb.core.MongoTemplate">
-		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory"/>
-	</bean>
-	<!-- MONGODB -->
 
 	<bean id="threadPoolMaidianTaskExecutor"
 		  class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
@@ -189,12 +124,4 @@
 		<property name="keepAliveSeconds" value="300" />
 	</bean>
 
-    <!-- solrServer -->
-	<bean id="httpSolrServer" class="org.apache.solr.client.solrj.impl.HttpSolrServer">
-		<constructor-arg name="baseURL" value="${solrServer.address}"/>
-	</bean>
-
-
-	<!--<task:annotation-driven scheduler="qbScheduler" mode="proxy"/>-->
-	<!--<task:scheduler id="qbScheduler" pool-size="10"/>-->
 </beans>

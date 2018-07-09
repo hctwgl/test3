@@ -5,13 +5,10 @@
 
 	<settings>
 		<setting name="mapUnderscoreToCamelCase" value="true" />
-		<!-- <setting name="logImpl" value="STDOUT_LOGGING" /> -->
 	</settings>
 
 	<typeAliases>
-	
 		<package name="com.ald.fanbei.api.dal.domain"/>
-
 	</typeAliases>
 
 	<plugins>

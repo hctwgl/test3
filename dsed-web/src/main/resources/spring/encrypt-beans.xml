@@ -56,33 +56,6 @@
 			</list>
 		</property>
 	</bean>
-	<bean id="loanDataSource" class="com.alibaba.druid.pool.DruidDataSource"
-		  init-method="init" destroy-method="close">
-		<property name="url">
-			<value>
-				<![CDATA[${loan.fbapi.db.url}?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&zeroDateTimeBehavior=convertToNull]]>
-			</value>
-		</property>
-		<property name="username" value="${loan.fbapi.db.username}" />
-		<property name="password" value="${loan.fbapi.db.password}" />
-		<property name="maxActive" value="100" />
-		<property name="initialSize" value="1" />
-		<property name="maxWait" value="6000" />
-		<property name="minIdle" value="1" />
-		<property name="testWhileIdle" value="true" />
-		<property name="testOnBorrow" value="false" />
-		<property name="testOnReturn" value="false" />
-		<property name="validationQuery" value="select 1 from dual" />
-		<property name="timeBetweenEvictionRunsMillis" value="60000" />
-		<property name="minEvictableIdleTimeMillis" value="300000" />
-		<property name="poolPreparedStatements" value="true" />
-		<property name="maxOpenPreparedStatements" value="20" />
-		<property name="proxyFilters">
-			<list>
-				<ref bean="stat-filter" />
-			</list>
-		</property>
-	</bean>
 	<bean id="ossClient" class="com.aliyun.oss.OSSClient">
 		<constructor-arg name="endpoint" type="java.lang.String">
 			<value>oss-cn-hangzhou.aliyuncs.com</value>
@@ -95,17 +68,4 @@
 		</constructor-arg>
 	</bean>
 
-	<bean class="com.ald.fanbei.api.common.EsignPublicInit">
-		<property name="projectId" value="${fbapi.esign.project.id}"/>
-		<property name="projectSecret" value="${fbapi.esign.project.secret}"/>
-		<property name="apisUrl" value="${fbapi.esign.apis.url}"/>
-		<property name="proxyIp" value=""/>
-		<property name="proxyPort" value=""/>
-		<property name="httpType" value="${fbapi.esign.http.type}"/>
-		<property name="retry" value="${fbapi.esign.retry}"/>
-		<property name="esignPublicKey" value=""/>
-		<property name="privateKey" value=""/>
-		<property name="algorithm" value="${fbapi.esign.algorithm}"/>
-		<property name="eviUrl" value="${fbapi.esign.eviUrl}"/>
-	</bean>
 </beans>

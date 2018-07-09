@@ -3,7 +3,6 @@ package com.ald.fanbei.api.web.chain.impl;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.context.Context;
