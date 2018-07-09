@@ -76,7 +76,7 @@ public class DsedLoanTest extends BaseTest {
     public void dsedGetLoanInfo() {
         String url = urlBase + "/third/xgxy/v1/getBorrowInfo";
         Map<String, String> params = new HashMap<>();
-        params.put("userId", "1C9064925F3AAF85BC663FEB1727DD4B");
+        params.put("userId", "4B697C46BC0A3D2F32915F5CBDBE8567");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
