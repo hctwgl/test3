@@ -1,20 +1,10 @@
 package com.ald.fanbei.api.web.h5.api.dsed;
 
-import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.common.enums.BankcardStatus;
-import com.ald.fanbei.api.common.enums.SmsCodeType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.web.common.*;
-import com.ald.fanbei.api.web.validator.Validator;
-import com.ald.fanbei.api.web.validator.bean.LoanRepayDoParam;
-import com.ald.fanbei.api.web.validator.bean.SmsCodeSubmitParam;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +14,22 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
+import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
+import com.ald.fanbei.api.biz.service.DsedUpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.service.DsedUserBankcardService;
+import com.ald.fanbei.api.biz.service.DsedUserService;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.enums.BankcardStatus;
+import com.ald.fanbei.api.common.enums.SmsCodeType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.DsedUserDo;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
+import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 
 /**
  *@类现描述：提交绑卡

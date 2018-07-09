@@ -1,16 +1,10 @@
 package com.ald.fanbei.api.biz.service;
 
-import com.ald.fanbei.api.dal.domain.AfLoanDo;
-import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
-import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
-
-import java.util.List;
-
-import java.util.HashMap;
-
 import java.math.BigDecimal;
 import java.util.List;
+
+import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 
 /**
  * 都市易贷借款期数表Service

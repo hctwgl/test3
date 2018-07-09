@@ -2,13 +2,12 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.DsedLoanOverdueLogService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedLoanOverdueLogDao;
 import com.ald.fanbei.api.dal.domain.DsedLoanOverdueLogDo;
-import com.ald.fanbei.api.biz.service.DsedLoanOverdueLogService;
 
 
 
@@ -24,8 +23,6 @@ import com.ald.fanbei.api.biz.service.DsedLoanOverdueLogService;
 @Service("dsedLoanOverdueLogService")
 public class DsedLoanOverdueLogServiceImpl extends ParentServiceImpl<DsedLoanOverdueLogDo, Long> implements DsedLoanOverdueLogService {
 	
-    private static final Logger logger = LoggerFactory.getLogger(DsedLoanOverdueLogServiceImpl.class);
-   
     @Resource
     private DsedLoanOverdueLogDao dsedLoanOverdueLogDao;
 

@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.dal.dao;
 
-import com.ald.fanbei.api.dal.domain.AfUserDo;
 import com.ald.fanbei.api.dal.domain.DsedUserDo;
 
 /**

@@ -1,20 +1,22 @@
 package com.ald.fanbei.web.test.api.dsed;
 
-import com.ald.fanbei.api.biz.arbitration.MD5;
-import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.enums.UserAccountLogType;
-import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.DsedSignUtil;
-import com.ald.fanbei.web.test.common.BaseTest;
-import com.ald.fanbei.web.test.common.HttpUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.codec.digest.DigestUtils;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.UnsupportedEncodingException;
-import java.util.*;
+import com.ald.fanbei.api.biz.arbitration.MD5;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.DsedSignUtil;
+import com.ald.fanbei.web.test.common.BaseTest;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 public class DsedbindCardTest extends BaseTest {
     /**
@@ -135,28 +137,6 @@ public class DsedbindCardTest extends BaseTest {
         result = AesUtil.encryptToBase64(result, appSecret);
         return result;
     }
-
-
-    /**
-     * 贷款申请成功后，模拟 UPS 回调 返呗API
-     */
-    @Test
-    public void delegatePay() {
-        String url = urlBase + "/third/ups/delegatePay?";
-        String orderNo = "01dpay23425234dfssdfs";
-        String merPriv = UserAccountLogType.LOAN.getCode();
-        String tradeState = "00";
-        String reqExt = "154";
-
-        String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeState=" + tradeState + "&reqExt=" + reqExt;
-        url += reqStr;
-
-        testH5(url, null, userName, true);
-    }
-
-
-
-
 
     @Test
     public void collect() {

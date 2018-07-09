@@ -1,8 +1,8 @@
 package com.ald.fanbei.api.dal.dao;
 
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.DsedResourceDo;
 import org.apache.ibatis.annotations.Param;
+
+import com.ald.fanbei.api.dal.domain.DsedResourceDo;
 
 /**
  * 资源配置表Dao

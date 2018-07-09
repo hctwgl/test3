@@ -3,8 +3,6 @@
  */
 package com.ald.fanbei.api.common.util;
 
-import com.ald.fanbei.api.common.enums.InterestfreeCode;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -225,29 +223,6 @@ public class BigDecimalUtil {
     	 return finalNper.equals(0) ? BigDecimal.ZERO : finalAmount.divide(new BigDecimal(finalNper), 2, RoundingMode.CEILING);
     }
     
-    /**
-     * 减去免息手续费,计算每一期手续费
-     *
-     * @param amount       --借款本金
-     * @param num          --分期期数
-     * @param poundageRate --手续费率
-     * @param min          --手续费下限
-     * @param max          --手续费上限
-     * @return
-     */
-    public static BigDecimal getTotalPoundage(BigDecimal amount, int num, BigDecimal poundageRate, BigDecimal min, BigDecimal max,String isFree) {
-        amount = amount == null ? new BigDecimal(0) : amount;
-        poundageRate = poundageRate == null ? new BigDecimal(0) : poundageRate;
-        BigDecimal v1 = amount.multiply(poundageRate);
-        if(InterestfreeCode.NO_FREE.getCode().equals(isFree)){
-            if (min.compareTo(v1) > 0) {
-                v1 = min;
-            } else if (v1.compareTo(max) > 0) {
-                v1 = max;
-            }
-        }
-        return v1;
-    }
     /* Old
 	 * @param num --分期期数
 	 * @param poundageRate --手续费率

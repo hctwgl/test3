@@ -1,8 +1,8 @@
 package com.ald.fanbei.api.dal.dao;
 
-import com.ald.fanbei.api.dal.domain.AfLoanRepaymentDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
 import org.apache.ibatis.annotations.Param;
+
+import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
 
 /**
  * 都市易贷借款还款表Dao

@@ -1,15 +1,12 @@
 package com.ald.fanbei.api.dal.dao;
 
-import com.ald.fanbei.api.dal.domain.AfLoanPeriodsDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
-import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.Date;
 import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
-import java.util.HashMap;
+import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 
 /**
  * 都市易贷借款期数表Dao

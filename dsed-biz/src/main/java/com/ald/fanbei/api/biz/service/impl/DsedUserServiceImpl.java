@@ -2,14 +2,12 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.dal.domain.AfUserDo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.DsedUserService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedUserDao;
 import com.ald.fanbei.api.dal.domain.DsedUserDo;
-import com.ald.fanbei.api.biz.service.DsedUserService;
 
 
 
@@ -24,9 +22,6 @@ import com.ald.fanbei.api.biz.service.DsedUserService;
  
 @Service("dsedUserService")
 public class DsedUserServiceImpl extends ParentServiceImpl<DsedUserDo, Long> implements DsedUserService {
-	
-    private static final Logger logger = LoggerFactory.getLogger(DsedUserServiceImpl.class);
-   
     @Resource
     private DsedUserDao dsedUserDao;
 

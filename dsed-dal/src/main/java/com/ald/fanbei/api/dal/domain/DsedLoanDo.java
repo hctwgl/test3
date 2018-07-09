@@ -1,10 +1,10 @@
 package com.ald.fanbei.api.dal.domain;
 
-import com.ald.fanbei.api.common.AbstractSerial;
-import com.ald.fanbei.api.common.enums.AfLoanStatus;
-
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
+
+import com.ald.fanbei.api.common.AbstractSerial;
+import com.ald.fanbei.api.common.enums.DsedLoanStatus;
 
 /**
  * 借款实体
@@ -50,7 +50,7 @@ import java.math.BigDecimal;
   l.totalInterestFee = totalInterestFee;
 
   l.gmtCreate = new Date();
-  l.status = AfLoanStatus.APPLY.name();
+  l.status = DsedLoanStatus.APPLY.name();
   return l;
  }
 

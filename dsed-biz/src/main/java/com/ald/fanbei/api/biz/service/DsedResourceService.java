@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.biz.service;
 
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
 import com.ald.fanbei.api.dal.domain.DsedResourceDo;
 
 /**

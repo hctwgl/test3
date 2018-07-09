@@ -1,27 +1,32 @@
 package com.ald.fanbei.api.web.common;
 
-import com.ald.fanbei.api.biz.arbitration.MD5;
-import com.ald.fanbei.api.biz.bo.TokenBo;
-import com.ald.fanbei.api.biz.service.AfResourceService;
-import com.ald.fanbei.api.biz.util.TokenCacheUtil;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
-import com.ald.fanbei.api.web.validator.constraints.NeedLogin;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.lang.annotation.Annotation;
-import java.util.*;
+import com.ald.fanbei.api.biz.arbitration.MD5;
+import com.ald.fanbei.api.biz.service.DsedResourceService;
+import com.ald.fanbei.api.biz.util.TokenCacheUtil;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @author 郭帅强 2018年1月16日 下午11:56:17 @类描述：
@@ -44,7 +49,7 @@ public abstract class DsedBaseController {
     protected TokenCacheUtil tokenCacheUtil;
 
     @Resource
-    private AfResourceService afResourceService;
+    private DsedResourceService dsedResourceService;
 
     @Resource
     private H5HandleFactory h5HandleFactory;
@@ -72,30 +77,6 @@ public abstract class DsedBaseController {
         return retMsg;
     }
 
-    private void checkLogin(Context context) {
-        H5Handle methodHandle = h5HandleFactory.getHandle(context.getMethod());
-
-        // 接口是否需要登录
-        boolean needLogin = isNeedLogin(methodHandle.getClass());
-        context.setData("_needLogin", needLogin);
-
-        if (needLogin && context.getUserId() == null) {
-            throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_TOKEN_ERROR);
-        }
-
-    }
-
-
-    private boolean isNeedLogin(Class<? extends H5Handle> clazz) {
-        Annotation[] annotations = clazz.getDeclaredAnnotations();
-        for (Annotation annotation : annotations) {
-            if (annotation instanceof NeedLogin) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     protected BaseResponse buildErrorResult(FanbeiExceptionCode exceptionCode, HttpServletRequest request) {
         DsedH5HandleResponse resp;
         if (exceptionCode == null) {
@@ -113,13 +94,6 @@ public abstract class DsedBaseController {
         }
         if (e.getDynamicMsg() != null && e.getDynamicMsg()) {
             resp = new DsedH5HandleResponse(exceptionCode, e.getMessage());
-        } else if (!StringUtil.isEmpty(e.getResourceType())) {
-            AfResourceDo afResourceDo = afResourceService.getSingleResourceBytype(e.getResourceType());
-            String msgTemplate = afResourceDo.getValue();
-            for (String paramsKey : e.paramsMap.keySet()) {
-                msgTemplate = msgTemplate.replace(paramsKey, e.paramsMap.get(paramsKey));
-            }
-            resp = new DsedH5HandleResponse(exceptionCode, msgTemplate);
         } else {
             resp = new DsedH5HandleResponse(exceptionCode);
         }
@@ -161,33 +135,6 @@ public abstract class DsedBaseController {
         }
 //        doBaseParamCheck(context);
 //        checkWebSign(context);
-    }
-
-    private void checkWebSign(Context context) {
-        String userName = context.getUserName();
-        Integer appVersion = context.getAppVersion();
-        String sign = (String) context.getSystemsMap().get("sign");
-        String netType = (String) context.getSystemsMap().get("netType");
-        String time = (String) context.getSystemsMap().get("time");
-        String signStrBefore = "appVersion=" + appVersion + "&netType=" + netType + "&time=" + time + "&userName="
-                + userName;
-
-        TokenBo token = (TokenBo) tokenCacheUtil.getToken(userName);
-        boolean needLogin = (boolean) context.getData("_needLogin");
-
-        if (needLogin) {// 需要登录的接口必须加token
-            if (token == null) {
-                throw new FanbeiException("token is expire", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
-            }
-            signStrBefore = signStrBefore + token.getToken();
-        } else {// 否则服务端判断是否有token,如果有说明登入过并且未过期则需要+token否则签名不加token
-            if (token != null) {
-                signStrBefore = signStrBefore + token.getToken();
-            }
-        }
-        logger.info("signStrBefore = {}", signStrBefore);
-        //this.compareSign(signStrBefore, sign);
-
     }
 
     private void compareSign(HttpServletRequest request, Context context,String sign) {

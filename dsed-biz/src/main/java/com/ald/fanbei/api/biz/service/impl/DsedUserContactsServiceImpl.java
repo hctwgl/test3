@@ -1,16 +1,15 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.DsedUserContactsService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedUserContactsDao;
 import com.ald.fanbei.api.dal.domain.DsedUserContactsDo;
-import com.ald.fanbei.api.biz.service.DsedUserContactsService;
-
-import java.util.List;
 
 
 /**
@@ -24,9 +23,6 @@ import java.util.List;
  
 @Service("dsedUserContactsService")
 public class DsedUserContactsServiceImpl extends ParentServiceImpl<DsedUserContactsDo, Long> implements DsedUserContactsService {
-	
-    private static final Logger logger = LoggerFactory.getLogger(DsedUserContactsServiceImpl.class);
-   
     @Resource
     private DsedUserContactsDao dsedUserContactsDao;
 

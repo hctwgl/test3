@@ -1,18 +1,21 @@
 package com.ald.fanbei.api.web.validator.intercept;
 
-import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.web.common.ApiHandle;
-import com.ald.fanbei.api.web.common.DsedH5Handle;
-import com.ald.fanbei.api.web.common.H5Handle;
-import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.common.impl.ApiHandleFactory;
-import com.ald.fanbei.api.web.common.impl.DsedH5HandleFactory;
-import com.ald.fanbei.api.web.common.impl.H5HandleFactory;
-import com.ald.fanbei.api.web.validator.Validator;
-import com.ald.fanbei.api.web.validator.constraints.Default;
-import com.google.common.collect.Lists;
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.Path;
+import javax.validation.Validation;
+import javax.validation.metadata.ConstraintDescriptor;
+
 import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.Converter;
 import org.apache.commons.lang.StringUtils;
@@ -25,20 +28,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
-import javax.validation.Validation;
-import javax.validation.metadata.ConstraintDescriptor;
-import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.Set;
+import com.ald.fanbei.api.common.FanbeiContext;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
+import com.ald.fanbei.api.web.common.RequestDataVo;
+import com.ald.fanbei.api.web.common.impl.DsedH5HandleFactory;
+import com.ald.fanbei.api.web.validator.Validator;
+import com.ald.fanbei.api.web.validator.constraints.Default;
+import com.google.common.collect.Lists;
 
 /**
  * 
@@ -49,9 +47,6 @@ import java.util.Set;
 @Component("dsedValidationInterceptor")
 public class DsedValidationInterceptor implements Interceptor, ApplicationContextAware {
 
-	@Resource
-	private ApiHandleFactory apiHandleFactory;
-	
 	@Resource
 	private DsedH5HandleFactory dsedH5HandleFactory;
 
@@ -80,8 +75,8 @@ public class DsedValidationInterceptor implements Interceptor, ApplicationContex
 	
 	@Override
 	public void intercept(RequestDataVo reqData, FanbeiContext context, HttpServletRequest request) {
-		ApiHandle methodHandle = apiHandleFactory.getApiHandle(reqData.getMethod());
-		Class<? extends ApiHandle> clazz = methodHandle.getClass();
+		DsedH5Handle methodHandle = dsedH5HandleFactory.getHandle(reqData.getMethod());
+		Class<? extends DsedH5Handle> clazz = methodHandle.getClass();
 
 		Validator[] validators = getValidatorAnnotation(clazz);
 		if (validators != null) {

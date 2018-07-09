@@ -1,18 +1,17 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.dal.domain.DsedLoanRateDo;
-import com.alibaba.fastjson.JSONArray;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.DsedLoanProductService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedLoanProductDao;
 import com.ald.fanbei.api.dal.domain.DsedLoanProductDo;
-import com.ald.fanbei.api.biz.service.DsedLoanProductService;
-
-import java.util.List;
+import com.ald.fanbei.api.dal.domain.DsedLoanRateDo;
+import com.alibaba.fastjson.JSONArray;
 
 
 /**
@@ -27,8 +26,6 @@ import java.util.List;
 @Service("dsedLoanProductService")
 public class DsedLoanProductServiceImpl extends ParentServiceImpl<DsedLoanProductDo, Long> implements DsedLoanProductService {
 	
-    private static final Logger logger = LoggerFactory.getLogger(DsedLoanProductServiceImpl.class);
-
     @Resource
     private DsedLoanProductDao dsedLoanProductDao;
 

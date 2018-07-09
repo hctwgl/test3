@@ -3,9 +3,6 @@ package com.ald.fanbei.api.biz.bo;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.List;
-
-import com.ald.fanbei.api.dal.domain.AfRepaymentDo;
 
 /**
  * 
@@ -38,7 +35,6 @@ public class UpsCollectBo implements Serializable {
 	this.merPriv = merPriv;
 	this.bankPayType = bankPayType;
 	this.productName = productName;
-	this.cardId = cardId;
 	this.bank = bank;
     }
 
