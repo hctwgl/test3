@@ -13,10 +13,9 @@ import com.alibaba.fastjson.JSON;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public abstract class AbstractThird {
-	protected static final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
-
-	protected static final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");
-	protected static Logger logger = LoggerFactory.getLogger(AbstractThird.class);
+	protected static final Logger thirdLog = LoggerFactory.getLogger("DSED_THIRD");
+	protected static final Logger maidianLog = LoggerFactory.getLogger("DSED_MD");
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * 打印第三方日志

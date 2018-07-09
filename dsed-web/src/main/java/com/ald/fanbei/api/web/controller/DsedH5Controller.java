@@ -125,11 +125,11 @@ public class DsedH5Controller extends BaseController {
             handelResult = methodHandle.process(context);
             int resultCode = handelResult.getCode();
             if (resultCode != 200) {
-                logger.info(context.getId() + " err,Code=" + resultCode);
+            	// TODO logger.info(context.getId() + " err,Code=" + resultCode);
             }
             return handelResult;
         } catch (FanbeiException e) {
-            logger.error("internal exception", e);
+            logger.error("internal exception, msg=" + e.getMessage());
             throw e;
         } catch (Exception e) {
             logger.error("sys exception", e);
