@@ -277,8 +277,7 @@ public class HttpUtil {
                 result += line;
             }
         } catch (Exception e) {
-            logger.error("发送失败" + e);
-            e.printStackTrace();
+            logger.error("发送失败", e);
         } finally {
             try {
                 if (out != null) {
@@ -324,8 +323,7 @@ public class HttpUtil {
                 result += line;
             }
         } catch (Exception e) {
-            logger.error("发送失败" + e);
-            e.printStackTrace();
+            logger.error("Http post error!", e);
         } finally {
             try {
                 if (out != null) {
@@ -370,8 +368,7 @@ public class HttpUtil {
                 result += line;
             }
         } catch (Exception e) {
-            logger.error("发送失败" + e);
-            e.printStackTrace();
+            logger.error("发送失败", e);
         } finally {
             try {
                 if (out != null) {

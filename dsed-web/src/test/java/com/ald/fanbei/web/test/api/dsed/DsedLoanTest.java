@@ -64,7 +64,7 @@ public class DsedLoanTest extends BaseTest {
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         
-        System.out.println("request="+ JSON.toJSONString(p) + ", response=" + respResult);
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
     /**
@@ -81,7 +81,7 @@ public class DsedLoanTest extends BaseTest {
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         
-        System.out.println("request="+ JSON.toJSONString(p) + ", response=" + respResult);
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
     /**
@@ -98,14 +98,14 @@ public class DsedLoanTest extends BaseTest {
         params.put("realName", "过帅强");
         params.put("loanRemark", "装修");
         params.put("repayRemark", "工资");
-        params.put("bankNo", "6236681540001686992");
+        params.put("bankNo", "6214835896219365");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         
-        System.out.println("request="+ JSON.toJSONString(p) + ", response=" + respResult);
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
 
@@ -116,15 +116,15 @@ public class DsedLoanTest extends BaseTest {
         params.put("amount", 1+"");
         params.put("curPeriod", 1+"");
         params.put("bankNo", "6214835896219365");
-        params.put("borrowNo", "dk2018070516363600007");
-        params.put("userId","8A5D5014441300F8032533F3C0FED560");
+        params.put("borrowNo", "dk2018070922000100078");
+        params.put("userId","1C9064925F3AAF85BC663FEB1727DD4B");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         
-        System.out.println("request="+ JSON.toJSONString(p) + ", response=" + respResult);
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
 	}
 
 
@@ -141,7 +141,7 @@ public class DsedLoanTest extends BaseTest {
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         
-        System.out.println("request="+ JSON.toJSONString(p) + ", response=" + respResult);
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
 
@@ -156,7 +156,7 @@ public class DsedLoanTest extends BaseTest {
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         
-        System.out.println("request="+ JSON.toJSONString(p) + ", response=" + respResult);
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
 

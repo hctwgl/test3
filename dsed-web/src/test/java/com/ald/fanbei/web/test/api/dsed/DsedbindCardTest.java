@@ -50,7 +50,7 @@ public class DsedbindCardTest extends BaseTest {
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         
-        System.out.println("request="+ JSON.toJSONString(p) + ", response=" + respResult);
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
     @Test
@@ -66,7 +66,7 @@ public class DsedbindCardTest extends BaseTest {
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         
-        System.out.println("request="+ JSON.toJSONString(p) + ", response=" + respResult);
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
     
     @Test
@@ -82,7 +82,7 @@ public class DsedbindCardTest extends BaseTest {
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         
-        System.out.println("request="+ JSON.toJSONString(p) + ", response=" + respResult);
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
     @Test
     public void getContacts() {
@@ -95,7 +95,7 @@ public class DsedbindCardTest extends BaseTest {
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         
-        System.out.println("request="+ JSON.toJSONString(p) + ", response=" + respResult);
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
 

@@ -90,7 +90,7 @@ public class PayRoutController {
 		String tradeState = request.getParameter("tradeState");
 		long result = NumberUtil.objToLongDefault(request.getParameter("reqExt"), 0);
 		String upsResponse = " merPriv=" + merPriv + ",tradeState=" + tradeState + ",reqExt=" + result + ",outTradeNo=" + outTradeNo;
-		logger.info("delegatePay begin " + upsResponse);
+		thirdLog.info("delegatePay callback, params: " + upsResponse);
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代付成功
 				dsedLoanService.dealLoanSucc(result, outTradeNo);
@@ -125,7 +125,7 @@ public class PayRoutController {
 		String respDesc = StringUtil.null2Str(request.getParameter("respDesc"));
 		String tradeDesc = StringUtil.null2Str(request.getParameter("tradeDesc"));
 
-		logger.info("collect begin merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc
+		thirdLog.info("collect callback, params: merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc
 				+ ",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo + ",respCode=" + respCode + ",respDesc="
 				+ respDesc);
 		try {
