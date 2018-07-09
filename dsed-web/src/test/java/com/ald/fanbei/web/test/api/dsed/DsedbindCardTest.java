@@ -58,6 +58,20 @@ public class DsedbindCardTest extends BaseTest {
 
     }
 
+
+    @Test
+    public void getSms() {
+        String url = urlBase+ "/third/xgxy/v1/getSmsCode";
+        Map<String, String> params = new HashMap<>();
+        params.put("busiFlag", "3111465143");
+        params.put("type", "BIND");
+        params.put("userId","19428E8AA37E288F9A4166C93A75E403");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+    }
     @Test
     public void dsedSubmitBind() {
         String url = urlBase + "/third/xgxy/v1/smsCodeSubmit";

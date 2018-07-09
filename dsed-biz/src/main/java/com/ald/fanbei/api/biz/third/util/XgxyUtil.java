@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.third.util;
 
 
 import com.ald.fanbei.api.biz.bo.*;
+import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.DsedSignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -17,7 +18,7 @@ import static com.ald.fanbei.api.common.util.DsedSignUtil.generateSign;
 import static com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam;
 
 @Component("XgxyUtil")
-public class XgxyUtil {
+public class XgxyUtil  extends AbstractThird {
 
 
     Logger logger = LoggerFactory.getLogger(XgxyUtil.class);
@@ -31,7 +32,6 @@ public class XgxyUtil {
 
     private static String getXgxyUrl() {
         if (url == null) {
-
             url = Constants.CONFKEY_XGXY_URL;
             return url;
         }
@@ -62,12 +62,13 @@ public class XgxyUtil {
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
             logger.info("XgxyUtil payNoticeRequest params =" + JSON.toJSONString(params) + " url=" + getXgxyUrl()+",pay="+pay);
             String reqResult = doHttpPostJsonParam(getXgxyUrl() + "/open/third/edspay/v1/giveBackPayResult", JSON.toJSONString(params));
+            logThird(reqResult, "NoticeXgxyPay", reqResult);
             logger.info("XgxyUtil payNoticeRequest reqResult = " + reqResult);
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
             XgxyPayReqBo payRespResult = JSONObject.parseObject(reqResult, XgxyPayReqBo.class);
-            if (200 == Integer.parseInt(String.valueOf(payRespResult.get("code")))) {
+            if (Constants.XGXY_REQ_CODE .equals(payRespResult.get("code"))) {
                 return true;
             }
         } catch (Exception e) {
@@ -97,11 +98,12 @@ public class XgxyUtil {
             params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
             String reqResult = doHttpPostJsonParam(getXgxyUrl() + "/open/third/edspay/v1/giveBackOverdueResult", JSON.toJSONString(params));
+            logThird(reqResult, "NoticeXgxyOverdue", reqResult);
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
             XgxyOverdueReqBo overdueReqBo1 = JSONObject.parseObject(reqResult, XgxyOverdueReqBo.class);
-            if (200 == (Integer) overdueReqBo1.get("code")) {
+            if (Constants.XGXY_REQ_CODE .equals(overdueReqBo1.get("code"))) {
                 return true;
             }
         } catch (Exception e) {
@@ -129,11 +131,12 @@ public class XgxyUtil {
             p.put("appId", "edspay");
 //            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(p));
             String reqResult = doHttpPostJsonParam(getXgxyUrl() + "/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(p));
+            logThird(reqResult, "NoticeXgxyRePay", reqResult);
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
             XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult, XgxyPayReqBo.class);
-            if (200 == (Integer) rePayRespResult.get("code")) {
+            if (Constants.XGXY_REQ_CODE .equals(rePayRespResult.get("code")) ) {
                 return true;
             }
         } catch (Exception e) {
@@ -154,11 +157,12 @@ public class XgxyUtil {
             params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             String reqResult = doHttpPostJsonParam(getXgxyUrl() + "/open/third/edspay/v1/getAddressList", JSON.toJSONString(params));
+            logThird(reqResult, "GetUserContacts", reqResult);
             if (StringUtil.isBlank(reqResult)) {
                 return "";
             }
             XgxyReqBo reqBo = JSONObject.parseObject(reqResult, XgxyReqBo.class);
-            if (200 == (Integer) reqBo.get("code")) {
+            if (Constants.XGXY_REQ_CODE .equals(reqBo.get("code"))) {
                 return (String) reqBo.get("data");
             }
         } catch (Exception e) {

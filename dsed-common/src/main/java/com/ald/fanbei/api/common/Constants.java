@@ -14,8 +14,7 @@ public class Constants {
 
 	public static final String CONFKEY_XGXY_URL = "http://testeca.91ala.com:1112/isp";
 
-
-
+	public static final String XGXY_REQ_CODE = "200";
 
 
 	public static final long SECOND_OF_TEN_MINITS = 10 * 60l;
