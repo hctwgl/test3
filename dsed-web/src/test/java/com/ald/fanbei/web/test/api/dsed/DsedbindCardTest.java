@@ -74,7 +74,7 @@ public class DsedbindCardTest extends BaseTest {
     public void dsedSubmitBind() {
         String url = urlBase + "/third/xgxy/v1/smsCodeSubmit";
         Map<String, String> params = new HashMap<>();
-        params.put("busiFlag", "dk2018071011552300106");
+        params.put("busiFlag", "dk2018071105050500165");
         params.put("code", "122761");
         params.put("type", SmsCodeType.REPAY.getCode());
         params.put("userId","1C9064925F3AAF85BC663FEB1727DD4B");
@@ -100,7 +100,23 @@ public class DsedbindCardTest extends BaseTest {
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
+    @Test
+    public void testpreFinish() {
+        String url = urlBase + "/third/xgxy/v1/preFinish";
+        Map<String, String> params = new HashMap<>();
+        params.put("userId","E272FA8BFB4071C42DB0C2921339F8C2");
+        params.put("amount","5.0");
+        params.put("borrowNo","dk2018071100274300110");
+        params.put("bankNo","6214835897082325");
 
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
     /**
      * 生成本地签名
      *

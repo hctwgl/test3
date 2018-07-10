@@ -108,7 +108,7 @@
         SELECT
         <include refid="queryFields" />
         FROM dsed_user_contacts
-        where is_delete=0 and user_id in #{userId}
+        where is_delete=0 and user_id = #{userId}
     </select>
 
 

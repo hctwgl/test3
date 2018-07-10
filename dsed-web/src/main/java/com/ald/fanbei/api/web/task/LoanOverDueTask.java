@@ -60,6 +60,7 @@ public class LoanOverDueTask {
     private DsedUserContactsService contactsService;
 
     @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0/5 * * * * ?")
     public void laonDueJob(){
         try{
             int pageSize = 200;
@@ -75,7 +76,7 @@ public class LoanOverDueTask {
                     //计算逾期
                     this.calcuOverdueRecords(loanDos);
                     //通知催收逾期人员通讯录
-                    collectionPush(loanDos);
+//                    collectionPush(loanDos);
                 }
 
             }
@@ -121,7 +122,7 @@ public class LoanOverDueTask {
                 addUserContancts(dsedLoanDo.getUserId());
 
             } catch (Exception e) {
-                logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId=",dsedLoanDo.getLoanId());
+                logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId="+dsedLoanDo.getLoanId());
             }
 
         }
@@ -132,7 +133,7 @@ public class LoanOverDueTask {
        DsedUserDo userDo=userService.getById(userId);
        String contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
        if(StringUtils.isNotBlank(contacts)){
-           DsedUserContactsDo userContactsDo= contactsService.getUserContactsByUserId(String.valueOf(userId)).get(0);
+           List<DsedUserContactsDo> userContactsDo= contactsService.getUserContactsByUserId(String.valueOf(userId));
            DsedUserContactsDo contactsDo=new DsedUserContactsDo();
             contactsDo.setUserId(String.valueOf(userId));
             contactsDo.setContactsMobile(contacts);
