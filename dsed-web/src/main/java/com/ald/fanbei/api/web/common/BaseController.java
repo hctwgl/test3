@@ -1,11 +1,6 @@
 package com.ald.fanbei.api.web.common;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -68,7 +63,7 @@ public abstract class BaseController {
             retMsg = JSON.toJSONString(baseResponse);
         }
         
-        doBiLog(request, baseResponse, null, System.currentTimeMillis() - stmap, context != null? context.getUserName():"");
+        doBiLog(context,request, baseResponse, null, System.currentTimeMillis() - stmap, context != null? context.getUserName():"");
         return retMsg;
     }
 
@@ -251,7 +246,7 @@ public abstract class BaseController {
      * @param appInfo
      * @param exeT
      */
-    protected void doBiLog(HttpServletRequest request, DsedH5HandleResponse respData, String appInfo, long exeT,
+    protected void doBiLog(Context context,HttpServletRequest request, DsedH5HandleResponse respData, String appInfo, long exeT,
                          String userName) {
         try {
             JSONObject param = new JSONObject();
@@ -264,12 +259,12 @@ public abstract class BaseController {
                 userName = JSONObject.parseObject(appInfo).getString("userName");
             }
             param.put("_appInfo", temp);
-            Enumeration<String> enu = request.getParameterNames();
-            while (enu.hasMoreElements()) {
-                String paraName = (String) enu.nextElement();
-                param.put(paraName, request.getParameter(paraName));
+            HashMap map = (HashMap) context.getSystemsMap();
+            Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, String> entry = it.next();
+                param.put(entry.getKey(), entry.getValue());
             }
-
             String ext1 = "";
             String ext2 = "";
             String ext3 = "";

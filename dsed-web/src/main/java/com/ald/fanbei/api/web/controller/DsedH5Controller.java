@@ -89,7 +89,7 @@ public class DsedH5Controller extends BaseController {
             systemsMap = JSON.parseObject(decryptData);
             builder.method(method).systemsMap(systemsMap);
             if (userDo != null) {
-            	builder.userName(userDo.getUserName());
+            	builder.userName(userDo.getMobile());
                 builder.userId(userDo.getRid());
                 builder.idNumber(userDo.getIdNumber());
                 builder.realName(userDo.getRealName());
