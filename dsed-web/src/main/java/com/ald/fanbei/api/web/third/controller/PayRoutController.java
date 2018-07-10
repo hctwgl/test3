@@ -23,9 +23,8 @@ import com.ald.fanbei.api.common.util.StringUtil;
 @Controller
 @RequestMapping("/third/ups")
 public class PayRoutController {
-	protected static final Logger thirdLog = LoggerFactory.getLogger("FANBEI_THIRD");
-
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
 
@@ -40,7 +39,7 @@ public class PayRoutController {
 	@ResponseBody
 	public String authSignReturn(HttpServletRequest request, HttpServletResponse response) {
 		for (String paramKey : request.getParameterMap().keySet()) {
-			thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+			logger.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
 		return "succ";
 	}
@@ -50,7 +49,7 @@ public class PayRoutController {
 	@ResponseBody
 	public String authSignNotify(HttpServletRequest request, HttpServletResponse response) {
 		for (String paramKey : request.getParameterMap().keySet()) {
-			thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+			logger.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
 		return "succ";
 	}
@@ -59,7 +58,7 @@ public class PayRoutController {
 	@ResponseBody
 	public String authSignValidNotify(HttpServletRequest request, HttpServletResponse response) {
 		for (String paramKey : request.getParameterMap().keySet()) {
-			thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+			logger.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
 		return "succ";
 	}
@@ -68,7 +67,7 @@ public class PayRoutController {
 	@ResponseBody
 	public String authPay(HttpServletRequest request, HttpServletResponse response) {
 		for (String paramKey : request.getParameterMap().keySet()) {
-			thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+			logger.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
 		return "succ";
 	}
@@ -77,7 +76,7 @@ public class PayRoutController {
 	@ResponseBody
 	public String authPayConfirm(HttpServletRequest request, HttpServletResponse response) {
 		for (String paramKey : request.getParameterMap().keySet()) {
-			thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+			logger.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
 		return "succ";
 	}
@@ -90,7 +89,7 @@ public class PayRoutController {
 		String tradeState = request.getParameter("tradeState");
 		long result = NumberUtil.objToLongDefault(request.getParameter("reqExt"), 0);
 		String upsResponse = " merPriv=" + merPriv + ",tradeState=" + tradeState + ",reqExt=" + result + ",outTradeNo=" + outTradeNo;
-		thirdLog.info("delegatePay callback, params: " + upsResponse);
+		logger.info("delegatePay callback, params: " + upsResponse);
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代付成功
 				dsedLoanService.dealLoanSucc(result, outTradeNo);
@@ -109,7 +108,7 @@ public class PayRoutController {
 	@ResponseBody
 	public String signRelease(HttpServletRequest request, HttpServletResponse response) {
 		for (String paramKey : request.getParameterMap().keySet()) {
-			thirdLog.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+			logger.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
 		return "succ";
 	}
@@ -125,7 +124,7 @@ public class PayRoutController {
 		String respDesc = StringUtil.null2Str(request.getParameter("respDesc"));
 		String tradeDesc = StringUtil.null2Str(request.getParameter("tradeDesc"));
 
-		thirdLog.info("collect callback, params: merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc
+		logger.info("collect callback, params: merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc
 				+ ",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo + ",respCode=" + respCode + ",respDesc="
 				+ respDesc);
 		try {

@@ -27,11 +27,11 @@ public abstract class AbstractThird {
 	 * @param param
 	 *            参数数组
 	 */
-	protected static void logThird(Object resp, String methodName, Object... param) {
+	protected void logThird(Object resp, String methodName, Object... param) {
 		StringBuffer sb = new StringBuffer();
 		for (Object item : param) {
 			sb = sb.append("|").append(JSON.toJSONString(item));
 		}
-		thirdLog.info(StringUtil.appendStrs("methodName=", methodName, ";params=", sb.toString().replaceAll("\n", ""), ";resp=", resp == null ? "" : resp));
+		logger.info(StringUtil.appendStrs("methodName=", methodName, ";params=", sb.toString().replaceAll("\n", ""), ";resp=", resp == null ? "" : resp));
 	}
 }

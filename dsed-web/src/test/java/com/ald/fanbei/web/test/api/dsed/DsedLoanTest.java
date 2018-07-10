@@ -116,7 +116,7 @@ public class DsedLoanTest extends BaseTest {
         params.put("amount", 1+"");
         params.put("curPeriod", 1+"");
         params.put("bankNo", "6214835896219365");
-        params.put("borrowNo", "dk2018070922000100078");
+        params.put("borrowNo", "dk2018071009541700092");
         params.put("userId","1C9064925F3AAF85BC663FEB1727DD4B");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
