@@ -24,8 +24,8 @@ public class DsedLoanTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-  String urlBase = "http://localhost:8080";
-//    String urlBase = "http://192.168.112.40:8080";
+//  String urlBase = "http://localhost:8080";
+    String urlBase = "http://192.168.112.40:8080";
     
     String userName = AccountOfTester.夏枫.mobile;
 
