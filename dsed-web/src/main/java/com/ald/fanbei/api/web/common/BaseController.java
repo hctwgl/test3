@@ -77,6 +77,7 @@ public abstract class BaseController {
     }
 
     protected DsedH5HandleResponse buildErrorResult(FanbeiException e, HttpServletRequest request) {
+        logger.info("buildErrorResult e =>{}",e);
         FanbeiExceptionCode exceptionCode = e.getErrorCode();
         DsedH5HandleResponse resp;
         if (exceptionCode == null) {
