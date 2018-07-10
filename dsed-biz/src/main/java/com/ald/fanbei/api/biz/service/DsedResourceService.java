@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.DsedResourceDo;
 
+import java.util.List;
+
 /**
  * 资源配置表Service
  * 
@@ -19,5 +21,13 @@ public interface DsedResourceService extends ParentService<DsedResourceDo, Long>
      * @return
      */
     DsedResourceDo getConfigByTypesAndSecType(String type, String secType);
+
+    /**
+     * 获取type类型的配置信息
+     *
+     * @param type
+     * @return
+     */
+    List<DsedResourceDo> getConfigByTypes(String type);
 
 }

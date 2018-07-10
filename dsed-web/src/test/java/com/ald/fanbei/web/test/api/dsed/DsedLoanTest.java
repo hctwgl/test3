@@ -144,6 +144,23 @@ public class DsedLoanTest extends BaseTest {
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
+    @Test
+    public void getProtocol() {
+        String url = urlBase + "/third/xgxy/v1/getProtocolInfo";
+        Map<String,String> params = new HashMap<>();
+        params.put("amount", 1+"");
+        params.put("nper", "2");
+        params.put("userId","3F8FB2688A4E8FD568FC3DDBCAB46020");
+        params.put("loanRemark","测试");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+
 
     @Test
     public void getRealPeriod() {
