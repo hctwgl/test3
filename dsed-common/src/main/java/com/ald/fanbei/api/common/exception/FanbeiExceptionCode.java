@@ -33,12 +33,11 @@ public enum FanbeiExceptionCode {
     SYSTEM_REPAIRING_ERROR("SYSTEM_REPAIRING_ERROR",1010,"system repairing","系统维护中"),
     REQUEST_PARAM_ILLEGAL ("REQUEST_PARAM_ILLEGAL", 1011, "request param illegal", "请求参数不合法"),
     REQUEST_PARAM_TOKEN_TIMEOUT("REQUEST_PARAM_TOKEN_ERROR", 1012, "token is invalid", "您的登录已超时, 请重新登录"),
-    USER_NOT_EXIST_ERROR("USER_NOT_EXIST_ERROR",1015,"user not exist error","用户不存在"),
     USER_LOGIN_SMS_NOTEXIST("USER_LOGIN_SMS_NOTEXIST",1016,"user login sms not exist","请获取短信验证码"),
     USER_LOGIN_SMS_WRONG_ERROR("USER_LOGIN_SMS_WRONG_ERROR",1017,"user login sms wrong error","验证码不正确"),
 
     // user mode code from 1100 - 1199
-    USER_BORROW_NOT_EXIST_ERROR("USER_BORROW_NOT_EXIST_ERROR",1100,"user not exist error","用户未登录"),
+    USER_BORROW_NOT_EXIST_ERROR("USER_BORROW_NOT_EXIST_ERROR",1100,"user non login","用户未登录"),
     USER_INVALID_MOBILE_NO("USER_INVALID_MOBILE_NO",1101,"invalid mobile number","无效手机号"),
     USER_HAS_REGIST_ERROR("USER_HAS_REGIST_ERROR",1102,"user has been regist","该号码已经注册"),
     USER_PASSWORD_ERROR("USER_PASSWORD_ERROR",1103,"user or password error","用户名或密码不正确"),
