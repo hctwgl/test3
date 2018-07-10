@@ -47,7 +47,6 @@ public class DsedLoanRepayDoApi implements DsedH5Handle {
 	public DsedH5HandleResponse process(Context context) {
 		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
 		LoanRepayDoParam param = (LoanRepayDoParam) context.getParamEntity();
-		logger.info("dsedLoanRepayDoApi param = " + param);
 		Map<String, Object> data = new HashMap<String, Object>();
 		String bankNo = param.bankNo;
 		Long userId = context.getUserId();
@@ -85,7 +84,7 @@ public class DsedLoanRepayDoApi implements DsedH5Handle {
 	private void checkPwdAndCard(LoanRepayBo bo) {
 		HashMap<String,Object> map = dsedUserBankcardService.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
 		if (null == map) {
-			throw new FanbeiException("user not exist error", FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+			throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 		}
 		//还款金额是否大于银行单笔限额
 //		dsedUserBankcardService.checkUpsBankLimit(map.get("bankCode").toString(), map.get("bankChannel").toString(), bo.amount);

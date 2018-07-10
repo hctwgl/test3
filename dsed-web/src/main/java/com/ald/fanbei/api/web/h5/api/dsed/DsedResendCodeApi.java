@@ -3,15 +3,21 @@
  */
 package com.ald.fanbei.api.web.h5.api.dsed;
 
+import java.util.Date;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
 import com.ald.fanbei.api.biz.bo.UpsResendSmsRespBo;
-import com.ald.fanbei.api.biz.service.DsedBankService;
 import com.ald.fanbei.api.biz.service.DsedUserBankcardService;
 import com.ald.fanbei.api.biz.service.DsedUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
-import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.SmsCodeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -19,15 +25,8 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.DsedUserDo;
-import com.ald.fanbei.api.web.common.*;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
+import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 
 /**
  * 
@@ -59,7 +58,7 @@ public class DsedResendCodeApi implements DsedH5Handle {
 			if (StringUtils.isBlank(busiFlag)) {
 				return new DsedH5HandleResponse(9999, "参数错误");
 			}
-			String orderNo = generatorClusterNo.getRepaymentNo(new Date(), BankPayChannel.KUAIJIE.getCode());
+			String orderNo = generatorClusterNo.getLoanNo(new Date());
 			UpsResendSmsRespBo respBo = upsUtil.quickPayResendSms(busiFlag,orderNo);
 
 			if (!respBo.isSuccess()) {

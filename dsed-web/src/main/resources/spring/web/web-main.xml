@@ -74,7 +74,6 @@
 		</property>
 	</bean>
 
-
 	<bean
 		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
 		<property name="messageConverters">
@@ -95,73 +94,14 @@
 		</property>
 	</bean>
 
-	<bean id="beforeLoginApiList" class="java.util.ArrayList">
-		<constructor-arg>
-			<list>
-				<value>/user/login</value>
-			</list>
-		</constructor-arg>
-	</bean>
-
-	<bean id="apiHandleMap" class="java.util.HashMap">
-		<constructor-arg>
-			<map key-type="java.lang.String">
-
-				<!-- user -->
-				<entry key="/user/login" value-ref="loginApi" />
-			</map>
-		</constructor-arg>
-	</bean>
-	
-
-
 	<!-- App内部H5接口 ,接口需要满足h5/**格式 -->
 	<bean id="h5HandleMap" class="java.util.HashMap">
 		<constructor-arg>
 			<map key-type="java.lang.String">
-				<!-- 贷款相关接口 -->
-				<entry key="/h5/loan/applyLoan" value-ref="applyLoanApi" />
-				<entry key="/h5/loan/confirmLoan" value-ref="confirmLoanApi" />
-				<entry key="/h5/loan/getLoanHomeInfo" value-ref="getLoanHomeInfoApi" />
-				<entry key="/h5/loan/loanConfirmPayment" value-ref="loanConfirmPaymentApi" />
-				<entry key="/h5/loan/getLoanDecreasedAmount" value-ref="getLoanDecreasedAmountApi" />
-
-				<entry key="/h5/loan/getLoanInfo" value-ref="getLoanInfoApi" />
-				<entry key="/h5/loan/loanRepayPlan" value-ref="loanRepayPlanApi" />
-				<entry key="/h5/loan/getLoanRepayments" value-ref="getLoanRepaymentsApi" />
-				<entry key="/h5/loan/getWhiteLoanProtocol" value-ref="getWhiteLoanProtocolApi" />
-				<!-- 白领贷业务接口 -->
-				<entry key="/h5/whitecollar/dredgeWhiteCollarLoan" value-ref="dredgeWhiteCollarLoanApi" />
-				<entry key="/h5/whitecollar/getUserAuthStatus" value-ref="getUserAuthStatusApi" />
-
-				<!--回收业务接口-->
-				<entry key="/h5/recycle/borrowRecycleRecord" value-ref="borrowRecycleRecordApi" />
-				<entry key="/h5/recycle/borrowRecycleDetail" value-ref="borrowRecycleDetailApi" />
-				<entry key="/h5/recycle/borrowRecycleHome" value-ref="borrowRecycleHomeInfoApi" />
-				<entry key="/h5/recycle/borrowRecycleStatus" value-ref="borrowRecycleStatusApi" />
-				<entry key="/h5/recycle/recycleRepayDo" value-ref="recycleRepayDoApi" />
-				<entry key="/h5/recycle/getUserBankList" value-ref="getUserBankListApi" />
-				<entry key="/h5/recycle/borrowFinanceHome" value-ref="borrowFinanceHomeApi" />
-				<entry key="/h5/recycle/borrowRecycleExplain" value-ref="borrowRecycleExplainApi" />
-				<entry key="/h5/recycle/getRecycleProtocol" value-ref="getRecycleProtocolApi" />
-				<!-- 回收业务接口 -->
-				<entry key="/h5/recycle/applyBorrowRecycleCash" value-ref="applyBorrowRecycleCashApi" />
-
-				<!-- 边逛边赚 -->
-				<entry key="/h5/reward/getRewardHomeInfo" value-ref="getRewardHomeInfoApi" />
-				<entry key="/h5/reward/getFinishedTask" value-ref="getFinishedTaskApi" />
-				<entry key="/h5/reward/getRewardDetail" value-ref="getRewardDetailApi" />
-				<entry key="/h5/reward/getWithdrawDetail" value-ref="getWithdrawDetailApi" />
-				<entry key="/h5/reward/getExtractMoney" value-ref="getExtractMoneyApi" />
-				<entry key="/h5/reward/getReceiveReward" value-ref="getReceiveRewardApi" />
-				<entry key="/h5/reward/getSignRemind" value-ref="getSignRemindApi" />
-				<entry key="/h5/reward/doFinishTask" value-ref="doFinishTaskApi" />
-				<entry key="/h5/reward/doShareTask" value-ref="doShareTaskApi" />
-				<entry key="/h5/reward/doPushTask" value-ref="doPushTaskApi" />
-
 				<entry key="/third/xgxy/v1/bankCardBind" value-ref="dsedApplyBindBankCardMsgApi"/>
 				<entry key="/third/xgxy/v1/smsCodeSubmit" value-ref="dsedsmsCodeSubmitApi"/>
 				<entry key="/third/xgxy/v1/getSmsCode" value-ref="dsedResendCodeApi"/>
+				<entry key="/third/xgxy/v1/getProtocolInfo" value-ref="dsedGetLoanProtocolApi"/>
 
 				<entry key="/third/xgxy/v1/getAddressList" value-ref="getUserContactsInfoApi"/>
 
@@ -173,34 +113,12 @@
 				<entry key="/third/xgxy/v1/getRealPeriod" value-ref="dsedLoanTotalPeriodsApi" />
 				<entry key="/third/xgxy/v1/getBorrowFeeDetail" value-ref="dsedLoanDetailApi" />
 				<entry key="/third/xgxy/v1/syncUserInfo" value-ref="dsedSyncUserInfoApi" />
-				<!-- 支付相关接口 -->
-				<entry key="/h5/pay/recycleQuickPaymentResendCode" value-ref="recycleQuickPaymentResendCodeApi" />
-				<entry key="/h5/pay/recycleConfirmPayment" value-ref="recycleConfirmPaymentApi" />
 			</map>
 		</constructor-arg>
 	</bean>
 	
-
-	<!-- 灰度测试 URL-->
-	<bean id="abTestHandleList" class="java.util.ArrayList">
-		<constructor-arg>
-			<list>
-				<value>/goods/getHomeInfoFront</value>
-				<value>/user/loginFront</value>
-			</list>
-		</constructor-arg>
-	</bean>
-
 	<bean id="springBeanContextUtil" class="com.ald.fanbei.api.common.util.SpringBeanContextUtil" />
-	<bean  class="com.ald.fanbei.api.web.application.SpringInit" />
 
-	<bean id="healthCheck" class="com.ald.fanbei.api.biz.bo.common.HealthCheck" />
-	<!-- task job -->
-	<task:scheduled-tasks>
-		<task:scheduled ref="healthCheck" method="checkBizCache"
-			cron="0 1/2 * * * *" />
-	</task:scheduled-tasks>
-	
 	<!-- 拦截器链 -->
 	<bean id="interceptorChain" class="com.ald.fanbei.api.web.chain.impl.InterceptorChain">
 		<property name="interceptors">

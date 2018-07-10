@@ -2,13 +2,12 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.DsedBankService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedBankDao;
 import com.ald.fanbei.api.dal.domain.DsedBankDo;
-import com.ald.fanbei.api.biz.service.DsedBankService;
 
 
 
@@ -23,9 +22,6 @@ import com.ald.fanbei.api.biz.service.DsedBankService;
  
 @Service("dsedBankService")
 public class DsedBankServiceImpl extends ParentServiceImpl<DsedBankDo, Long> implements DsedBankService {
-	
-    private static final Logger logger = LoggerFactory.getLogger(DsedBankServiceImpl.class);
-   
     @Resource
     private DsedBankDao dsedBankDao;
 

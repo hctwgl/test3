@@ -50,7 +50,7 @@ public enum UpsErrorType {
                 return roleType;
             }
         }
-        return null;
+        return UPS_ERROR_default;
     }
     public static UpsErrorType findRoleTypeByName(String name) {
         for (UpsErrorType roleType : UpsErrorType.values()) {
@@ -58,7 +58,7 @@ public enum UpsErrorType {
                 return roleType;
             }
         }
-        return null;
+        return UPS_ERROR_default;
     }
 	public String getCode() {
 		return code;
@@ -74,6 +74,10 @@ public enum UpsErrorType {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String toString() {
+		return "Ups error," + code + "," + name;
 	}
 
 	/**

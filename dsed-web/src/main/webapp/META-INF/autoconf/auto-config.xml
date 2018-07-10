@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
 	<group>
+		<property name="fbapi.aes.password" defaultValue="testC1b6x@6aH$2dlw" description="aes passwd" />
+		<property name="fbapi.check.sign.switch" defaultValue="0" description="检查签名开关，1：打开 （检查签名） 0：关闭（不检查签名）" />
+		<property name="fbapi.inveloment.type" defaultValue="test" description="当前环境" />
+		<property name="fbapi.sync.lock.try.times" defaultValue="1" description="同步锁重试次数" /> 
+		<!-- db -->
+		<property name="fbapi.db.url" defaultValue="OZAtwQcAyH5+BVcIbdZW6euzZCntyUxwH743Udhr9+LU+d0IhGa6JAh4bXHXkgeqEAD/gApVuKDhPmIPoVSEBQ==" description="dburl" />
+		<property name="fbapi.db.username" defaultValue="BGxKtjbfzgi+lr5EB+LU6Q==" description="db username" />
+		<property name="fbapi.db.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="db password" />
+		
+		<!-- 邮箱验证码 -->
+		<property name="fbapi.email.username" defaultValue="mGviJyFnmdEcOb6VlJ6zl/H9G6dyjgAb1cb/tUCNgZM=" description="邮箱验证码用户名" />
+		<property name="fbapi.email.pwd" defaultValue="BeSHxmaAFBhNCE2gIdPVRg==" description="邮箱用户名密码" />
+		
 		<!-- log4j -->
 		<property name="fbapi.log.level" defaultValue="info" description="log4j level" />
 		<property name="fbapi.log.path.root" defaultValue="/home/ald/logs/fanbei" description="log dir" />
-		
-		<!-- config -->
-		<property name="fbapi.check.sign.switch" defaultValue="0" description="检查签名开关，1：打开 （检查签名） 0：关闭（不检查签名）" />
-		<property name="fbapi.inveloment.type" defaultValue="test" description="当前环境" />
-		<property name="fbfile.oss.access.key" defaultValue="hwfdVlH1a1bp/Lc9hSUqBtCuhgu0QhqoULwmZ+3gTgE=" description="oss access key" />
-		<property name="fbfile.oss.access.secret" defaultValue="k7QDjE5/1emiZgIjksPg/ULP8DfMCCekqoH9+ZOZGuE=" description="oss access secret" />
 		
 		<!-- redis -->
 		<property name="fbapi.redis.hostname" defaultValue="IJgdKMamAcP5btliO3edNq7Dc1rJrWG6qZ7zI9RsgCA=" description="redis host" />
@@ -20,155 +27,18 @@
 		<property name="fbapi.token.redis.port" defaultValue="EjxHo0U8fOjuwprOOe5jjg==" description="redis port" />
 		<property name="fbapi.token.redis.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="cache redis password" />
 		 
-		 <!-- 极光推送 -->
-  		<property name="fbapi.jpush.appkey" defaultValue="+NiuaeJqIbMOgsO/KrWgfEODa/LLdz98Xnf0QaRNNDY=" description="极光推送key" />
-		<property name="fbapi.jpush.secret" defaultValue="Uiu3g6sVZHdz+SYV0KtqFfCJDZQfI/kJUOOwQ+sA9L0=" description="极光推送secret" />
-		 
-		 <!-- zhima config -->
-  		<property name="fbapi.zhima.appid" defaultValue="Ypdtogm1CgTlPKHc/KQSAw==" description="zhima appid" />
-		<property name="fbapi.zhima.private.key" defaultValue="l8PASW6egRY/YMsrbRXFxdfcCf3yQ1LddkLpDTVIKopCbqPjWJrD/8ujPVnP5/fhoYrIcb4yXcbLmAK+pYB6Tmc+9HuFt8CuizdK/rS3vbDlECSATTKb3zg2nrMcNdcLIyKgOEmecs/ufU7NUeL4TTaDLRNMprwbPAyekbk4CTsfpU2X+FS3cTKbAW0+LEEvaYwq0Phuqmhk8MjX1iUCe4LYpz57JHuBcaiFNpnPo3W5bz61XAkNuhzNQYZDtdLxYVsmpLjWiB/vkIXJhy8WIDDQfZ0Jxhu1oAgWIcU1g5GxSTOzrGYCnpIDckNWVyOI3E/xlGPkUlv6W6CMzJwyFRE4RpfccNaM7gzx1R3aMgE+ILllOF1YdZUkQznHqE9BWRBD9BV3P5qN6ArOkKAERUZYPggEU2xm8Z3S7Vz8KTpcABgPSzFHeMG5ZoNCvOz7S6Rbc5J23YWM7Mmw3HVcU9919Yf9aTZJm6w3fi2AsAD9WddLM4e1DrOWM9WOBkZhCFZrSrKXY4KId+b6xWSmqeGioV+cyrevARDgwZikP4IAkv+911F81yXbQeZmH0qCjhkbtUDB0lj/Fzi+MnTTYEDorRfaJ1tLhDI0nl/tpTtHlAfOcr8T1DjPB1gM2n1kO95sapuV+lCOHVbWjZYwq8b1q1d0Qr/+SzGjnnF9kOcWq5B3AI4xKGhT2fGgVH6PfoXwDkHGN0dRlMavoux5qDKqVx2+oibJ4UG6J5yVhZdjUrmZDnK2CgKhRCX78nTkEgn0FCeBYswsvSOeRFrTXdXloXMo4MLvtc2x/HF5cXzrpukLEQ5r5qIdKL+u3LI8dl4nkbKcNHrR5bCSkZ651LDeptMuXlTt4Y544qLoMliDSfgZu6gWWiHqbvYtWEPU/1wKjJAothSGPlA1tsUyeCVYG8v7K0n+/1OoHTifUhzh8Rg4JMXmcolFPJz01lsu3q1soc68kUggGYcpSXcCR8Nf9ocqDZ8z3v73Y4oHYRCuhlzHxzhdUTkbR5t9E07z3lKP2GopeCEQsiYBLiVXA1tJs8jj1826/uRR+1PbcSCrln4EW9Aq4OW6aFOgjyrovk08W1kT3EhxCJeoTRaR37mv1WXQlE8CQsNgoMqKkaXQroYLtEIaqFC8Jmft4E4B" description="zhima 私钥" />
-		<property name="fbapi.zhima.public.key" defaultValue="xApjX+tDbdHJF2EwP+PkLu7YQzJy6wpPxG6vACfgrQaOSotXQx/KeRUFJ4Pe1OJsiRNwZDY1mzT77wDLjPNzhLtRh6AeXMZk5PvHOLLvsgJvy924tGegBQFkbaLezbXCicMMtKUFyJ5NJf9NfM38GGlV99m0qqc7DJSDPL4XsvQJ479boaKclnATtX0uFPigTzo9y/6RLYq1X9EMFnZw5BbIFdA0/zDhr+9lB9g2Il2TvKIZiEPHro2/RFZkXzTA8LWqZ8KsQl812E3HC2hTsCKs4MBSCko1pP+h5J9/RD8=" description="zhima 公钥" />
-		
-		<!-- tongdun -->
-		<property name="fbapi.tongdun.partner.host" defaultValue="https://api.tongdun.cn" description="铜盾商户接口host" />
-		<property name="fbapi.tongdun.partner.code" defaultValue="ktRtt1OM1sQ8bvM5E0Q6Gw==" description="铜盾商户code" />
-		<property name="fbapi.tongdun.partner.key" defaultValue="30ohw4+pyRhim1YJthNzzvLKAsRkWviuLyI/5ZjKs3TQroYLtEIaqFC8Jmft4E4B" description="铜盾商户key" />
-		<property name="fbapi.tongdun.app.name" defaultValue="alading_web" description="铜盾appname" />
-		<property name="fbapi.tongdun.partner.webhost" defaultValue="https://fp.fraudmetrix.cn" description="铜盾商户接口webhost" />
-
-		<!-- youdun -->
-		<property name="fbapi.youdun.host" defaultValue="https://api4.udcredit.com" description="有盾接口host" />
-		<property name="fbapi.youdun.pubkey" defaultValue="sYJMMVhOQLa3KeM69BcNDALpS7Fo+barJ3IFIwuG/pg=" description="有盾pubkey" />
-		<property name="fbapi.youdun.securitykey" defaultValue="sYJMMVhOQLa3KeM69BcNDALpS7Fo+barJ3IFIwuG/pg=" description="有盾secretykey" />
-		<property name="fbapi.youdun.notify" defaultValue="http://apptest.51fanbei.com/third/youdun/faceRecognitionNotify" description="有盾回调地址" />
-		
-		<!-- 阿里百川 -->
-		<property name="fbapi.taobao.bcds.url" defaultValue="fmWxZsP7A1fishuunHGrhkUgikLQNVFoclPF+UHiju7NRtiU+RzKs5iec6JwzkhZ" description="阿里百川电商url" />
-		<property name="fbapi.taobao.bcds.appid" defaultValue="9doExCXdQPLPbA/yivYWxw==" description="阿里百川电商appid" />
-		<property name="fbapi.taobao.bcds.secret" defaultValue="QZlwqz0jGN0MiQC4PpZX7tCYyNhIVhqAwLUOzfDO+TrQroYLtEIaqFC8Jmft4E4B" description="阿里百川电商secret" />
-		<!-- 淘宝联盟 -->
-		<property name="fbapi.taobao.lianmeng.url" defaultValue="eMnXBCBLwND2vnk/bHAQy/rePvJwTEfpv9PBG7Ae/Mm0NBOpe8XnC/K/0cUbihCY" description="淘宝联盟url" />
-		
-		<property name="fbapi.taobao.lianmeng.appid" defaultValue="05SJa618Q/vJFe7R5XdOgg==" description="淘宝联盟appid" />
-		<property name="fbapi.taobao.lianmeng.secret" defaultValue="j4d++OewAbbwIXyPr13ZDmdzOzvBdlXN7I5mRASSQfzQroYLtEIaqFC8Jmft4E4B" description="淘宝联盟secret" />
-		
-		
-		<!-- 短信配置 -->
-		<property name="fbapi.sms.dhst.password" defaultValue="sFY+DhjxkNpQMNltXNgPlQ==" description="大汉三通短信密码" />
-		<!-- 邮箱验证码 -->
-		<property name="fbapi.email.username" defaultValue="mGviJyFnmdEcOb6VlJ6zl/H9G6dyjgAb1cb/tUCNgZM=" description="邮箱验证码用户名" />
-		<property name="fbapi.email.pwd" defaultValue="BeSHxmaAFBhNCE2gIdPVRg==" description="邮箱用户名密码" />
-		
-		<!-- db -->
-		<property name="fbapi.db.url" defaultValue="OZAtwQcAyH5+BVcIbdZW6euzZCntyUxwH743Udhr9+LU+d0IhGa6JAh4bXHXkgeqEAD/gApVuKDhPmIPoVSEBQ==" description="dburl" />
-		<property name="fbapi.db.username" defaultValue="BGxKtjbfzgi+lr5EB+LU6Q==" description="db username" />
-		<property name="fbapi.db.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="db password" />
-		<property name="loan.fbapi.db.url" defaultValue="PvzY3h3bN62tdXiZuoyeiwDN/oawHeuXr1tqgO3eu7XRm7CXgslV3VhAqelsOW65" description="dburl" />
-		<property name="loan.fbapi.db.username" defaultValue="BGxKtjbfzgi+lr5EB+LU6Q==" description="db username" />
-		<property name="loan.fbapi.db.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="db password" />
-
-		<property name="fbapi.bkl.url" defaultValue="http://221.133.225.245:18080/worksheetAPI/requestJob" description="bkl url" />
-		<property name="fbapi.admin.url" defaultValue="http://ctestadmin.51fanbei.com" description="admin url"/>
-		<property name="fbapi.bkl.access.token" defaultValue="xCGQF6wNeA1z6Cmz2UMW8F1as" description="bkl token"/>
-
-		<property name="fbapi.aes.password" defaultValue="testC1b6x@6aH$2dlw" description="aes passwd" />
-		
-		<property name="fbapi.sync.lock.try.times" defaultValue="1" description="同步锁重试次数" /> 
-		
-		<!-- kxg -->
-		<property name="fbapi.kxg.url.charge" defaultValue="http://122.224.88.51:18080/mobile/charge.json" description="开心果下单地址" />
-		<property name="fbapi.kxg.password" defaultValue="lj8y4iAjs+zAZzDptjYVzg==" description="开心果登录密码" />
-		<property name="fbapi.kxg.pay.password" defaultValue="lj8y4iAjs+zAZzDptjYVzg==" description="开心果支付密码" />
-		<property name="fbapi.kxg.key" defaultValue="Y7SB2e5Toy6pAoZzKBgi6dCuhgu0QhqoULwmZ+3gTgE=" description="开心果key" />
-		
-		<!-- wx -->
-		<property name="fbapi.wx.appid" defaultValue="4r1JFuNNEHg2RU3jUAOr0IYC9KMPZSbw1S7bhCBACSw=" description="微信appid" />
-		<property name="fbapi.wx.mchid" defaultValue="JX/XgnEq68Xjj63r+MmzIw==" description="weixin mchid" />
-		<property name="fbapi.wx.key" defaultValue="ERz7b1fycFebv+EV0bVbSVOmT9sOHL2QxO/p8da/4uPQroYLtEIaqFC8Jmft4E4B" description="weixin key" />
-		<property name="fbapi.wx.certpath" defaultValue="D:/cert/apiclient_cert.p12" description="weixin certpath" />
-		
 		<property name="fbapi.notify.host" defaultValue="http://192.168.112.40:8080" description="异步回调地址" />
-
-<!-- 		<property name="fbapi.ups.url" defaultValue="http://testpayrout.51fanbei.com/ups/main.html" description="ups请求地址" />
-  		<property name="fbapi.risk.url" defaultValue="http://arc.edushi.erongyun.net" description="risk请求地址" />
- 
- 
- -->	
-	    <!--测试打款地址  -->
+	    <!--内部其他系统地址  -->
+		<property name="fbapi.admin.url" defaultValue="http://ctestadmin.51fanbei.com" description="admin url"/>
 	    <property name="fbapi.ups.url" defaultValue="http://tpayrout.51fanbei.com/ups/main.html" description="ups请求地址" />
- 	
- 		<property name="fbapi.risk.url" defaultValue="http://192.168.117.57" description="risk请求地址" />
 		<property name="fbapi.collection.url" defaultValue="http://192.168.101.92:8081" description="催收平台请求地址" />
-		
-		<!-- 宜信致诚阿福RC4秘钥 -->
-		<property name="fbapi.yixinafu.password" defaultValue="e4588f6b0a65fab9" description="宜信致诚阿福RC4秘钥"/>
 
-		<!-- 菠萝觅 -->
-		<property name="fbapi.boluome.appkey" defaultValue="6aSsbSMMhKBe8+bH5wmhBw==" description="菠萝觅 key" />
-		<property name="fbapi.boluome.secret" defaultValue="OjGQ+SJfDqChsV4l3XgfAXgwxh35sz2KgeMq/WAQvZPQroYLtEIaqFC8Jmft4E4B" description="菠萝觅 certpath" />
-		<property name="fbapi.boluome.api.url" defaultValue="https://dev-api.otosaas.com" description="菠萝觅 前端交互" />
-		<property name="fbapi.boluome.server.api.url" defaultValue="https://dev-api.otosaas.com/91ala" description="菠萝觅服务端" />
-		<property name="fbapi.boluome.order.cancel.url" defaultValue="https://dev-api.otosaas.com/91ala/orders/v1/cancel" description="菠萝觅 订单取消订单" />
-		<property name="fbapi.boluome.order.search.url" defaultValue="https://dev-api.otosaas.com/91ala/orders/v1/info" description="菠萝觅 订单补偿查询" />
-		<property name="fbapi.boluome.coupon.url" defaultValue="https://dev-api.otosaas.com/bss/v1/apps/campaigns/coupons" description="菠萝觅 用户优惠券获取"/>
-		<property name="fbapi.boluome.api.order.url" defaultValue="https://dev-api.otosaas.com/91ala" description="菠萝觅订单相关地址"/>
-
-		<property name="fbapi.boluome.push.pay.url" defaultValue="http://91ala.test.otosaas.com/api/validation/v1" description="菠萝觅 支付推送消息" />
-		<property name="fbapi.boluome.push.refund.url" defaultValue="http://91ala.test.otosaas.com/api/refundment/v1" description="菠萝觅 certpath" />
-
-		<property name="third.offer.boluome.appKey" defaultValue="1d397480-dbce-4d87-b48c-a34b55ee310d" description="平台提供菠萝觅第三方appkey" />
-		<property name="third.offer.boluome.appSecret" defaultValue="coMMRJDVF/Nmy+U0TCHXbAPPD1LEftSOb248JtzvaXOdGnCapk8yRekWqTFXGtLh" description="平台提供菠萝觅第三方appSecret" />
-		<property name="fbapi.boluome.api.order.url" defaultValue="https://dev-api.otosaas.com/91ala/orders/v1/detail" description="菠萝觅订单详情地址" />
-
-		<!-- 依图 -->
-		<property name="fbapi.yitu.url" defaultValue="http://staging.yitutech.com" description="服务地址"/>
-		<property name="fbapi.yitu.id" defaultValue="13079" description="客户标识"/>
-		<property name="fbapi.yitu.key" defaultValue="0bab2c4fbbfb66d0694b16b6d86dc25b" description="秘钥"/>
-		<property name="fbapi.yitu.definedContent" defaultValue="abc" description="用户自定义字符串"/>
-		<property name="fbapi.yitu.pemPath" defaultValue="staging.public.pem" description="公钥位置"/>
-		<!-- face++ -->
-		<property name="fbapi.face.plus.id.card.url" defaultValue="https://api.faceid.com/faceid/v1/ocridcard" description="face++身份证验证地址"/>
-		<property name="fbapi.face.plus.face.living.url" defaultValue="https://api.megvii.com/faceid/v2/verify" description="face++活体验证地址"/>
-		<property name="fbapi.face.plus.appkey" defaultValue="FV5T+YXsSPiuLUmM/lIzdePOCaCnnK5GndzBqV1jT37QroYLtEIaqFC8Jmft4E4B" description="face++appKey"/>
-		<property name="fbapi.face.plus.secret" defaultValue="n0mySgkpAdgZStufuC6eLwCZsHQZxD37jOPbXEew3sLQroYLtEIaqFC8Jmft4E4B" description="face++ app_secret"/>
-		<!-- esign -->
-		<property name="fbapi.esign.project.id" defaultValue="1111563517"/>
-		<property name="fbapi.esign.project.secret" defaultValue="95439b0863c241c63a861b87d1e647b7"/>
-		<property name="fbapi.esign.apis.url" defaultValue="http://121.40.164.61:8080/tgmonitor/rest/app!getAPIInfo2"/>
-		<property name="fbapi.esign.http.type" defaultValue="https"/>
-		<property name="fbapi.esign.retry" defaultValue="5"/>
-		<property name="fbapi.esign.algorithm" defaultValue="HMAC-SHA256"/>
-		<property name="fbapi.esign.eviUrl" defaultValue="http://smlcunzheng.tsign.cn:8083/evi-service/evidence/v1/preservation/original/url"/>
-
-		<property name="fbadmin.kdniao.businessid" defaultValue="1297397" description="快递鸟商户id" />
-		<property name="fbadmin.kdniao.apikey" defaultValue="07e68986-9c4e-431c-9bfd-26462a9238e5" description="快递鸟APIKey" />
-
-		<!-- sup 游戏充值 -->
-		<property name="fbapi.sup.business.id" defaultValue="dyJWJi0P+WVLTsslHUgVlw=="  description="sup 游戏充值配置ID"/>
-		<property name="fbapi.sup.business.key" defaultValue="/C9w1LBJUPi3u26ULHnu+EtRQUOeJywL1jRGe/PuasXQroYLtEIaqFC8Jmft4E4B" description="sup 游戏充值配置KEY"/>
-
-		<property name="fbapi.orderfinish.key" defaultValue="51fanbeiOrderV" />
-		
-		<!-- 公信宝认证密钥 -->
-		<property name="auth.gxb.appid" defaultValue="gxb099547a1a9ea2e48"  description="公信宝认证配置的appid"/>
-		<property name="auth.gxb.appsecurity" defaultValue="a8b2a9708cb4487cacdb568fadef19cd" description="公信宝认证配置的appsecurity"/>
-		<!-- 51公积金认证 -->
-		<property name="fbapi.newfund.appkey" defaultValue="1DE714C387E641E987078EC625666D92"  description="51公积金的公钥"/>
-		<property name="fbapi.newfund.secret" defaultValue="6658179F17D844E093635571F41A337AC99CD26B"  description="51公积金的私钥"/>
-
-		<property name="kafka.bootstrap.servers" defaultValue="kafka-ons-internet.aliyun.com:8080"  description="kafka服务器"/>
-		<property name="kafka.ssl.truststore.location" defaultValue="/home/ald/kafka_ssl_cert/kafka.client.truststore.jks"  description="阿里证书地址"/>
-		<property name="kafka.default.topic" defaultValue="PUBLIC_KAFKA_TEST1"  description="主题"/>
-
-		<property name="fbapi.cuishou.sycnurl" defaultValue="http://192.168.106.92:8280/report/repayment" description="新催收通知"></property>
-
-		<property name="mongo.host" defaultValue="192.168.106.26"  description="mongo服务器"/>
-		<property name="mongo.port" defaultValue="27017"  description="端口"/>
-		<property name="mongo.credentials" defaultValue="root:123456@test"  description="认证"/>
-		<property name="mongo.dbname" defaultValue="test"  description="认证"/>
-
-		<property name="solrServer.address" defaultValue="http://testfind.51fanbei.com"  description="solr服务器地址"/>
-		<!-- <property name="solrServer.address" defaultValue="http://192.168.106.191:8080/solr"  description="solr服务器地址"/> -->
+		<property name="fbfile.oss.access.key" defaultValue="hwfdVlH1a1bp/Lc9hSUqBtCuhgu0QhqoULwmZ+3gTgE=" description="oss access key" />
+		<property name="fbfile.oss.access.secret" defaultValue="k7QDjE5/1emiZgIjksPg/ULP8DfMCCekqoH9+ZOZGuE=" description="oss access secret" />
+		<property name="fbfile.oss.url.pref" defaultValue="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/" description="oss url" />
+	   
+	    <property name="dsed.xgxy.host" defaultValue="http://testeca.91ala.com:1112/isp" description="西瓜信用地址" />
+        <property name="dsed.aes.password" defaultValue="aef5c8c6114b8d6a" description="西瓜信用密钥" />
 	</group>
 
 	<script>

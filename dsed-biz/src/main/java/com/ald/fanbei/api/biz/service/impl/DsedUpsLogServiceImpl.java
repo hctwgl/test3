@@ -2,13 +2,12 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.DsedUpsLogService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedUpsLogDao;
 import com.ald.fanbei.api.dal.domain.DsedUpsLogDo;
-import com.ald.fanbei.api.biz.service.DsedUpsLogService;
 
 
 
@@ -24,8 +23,6 @@ import com.ald.fanbei.api.biz.service.DsedUpsLogService;
 @Service("dsedUpsLogService")
 public class DsedUpsLogServiceImpl extends ParentServiceImpl<DsedUpsLogDo, Long> implements DsedUpsLogService {
 	
-    private static final Logger logger = LoggerFactory.getLogger(DsedUpsLogServiceImpl.class);
-   
     @Resource
     private DsedUpsLogDao dsedUpsLogDao;
 

@@ -1,8 +1,10 @@
 package com.ald.fanbei.api.dal.dao;
 
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import com.ald.fanbei.api.dal.domain.DsedResourceDo;
 import org.apache.ibatis.annotations.Param;
+
+import com.ald.fanbei.api.dal.domain.DsedResourceDo;
+
+import java.util.List;
 
 /**
  * 资源配置表Dao
@@ -23,4 +25,11 @@ public interface DsedResourceDao extends BaseDao<DsedResourceDo, Long> {
 
     DsedResourceDo getConfigByTypesAndSecType(@Param("type") String type, @Param("secType") String secType);
 
+    /**
+     * 获取type类型的配置信息
+     *
+     * @param type
+     * @return
+     */
+    List<DsedResourceDo> getConfigByTypes(String type);
 }

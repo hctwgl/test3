@@ -1,11 +1,11 @@
 package com.ald.fanbei.api.dal.dao;
 
-import com.ald.fanbei.api.dal.domain.AfUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.HashMap;
 import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
 
 /**
  * 都市E贷用户绑定的银行卡Dao

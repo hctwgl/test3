@@ -1,5 +1,23 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Resource;
+
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.XgxyPayBo;
 import com.ald.fanbei.api.biz.bo.dsed.DsedApplyLoanBo;
@@ -11,36 +29,20 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfLoanPeriodStatus;
-import com.ald.fanbei.api.common.enums.AfLoanStatus;
+import com.ald.fanbei.api.common.enums.DsedLoanPeriodStatus;
+import com.ald.fanbei.api.common.enums.DsedLoanStatus;
 import com.ald.fanbei.api.common.enums.DsedNoticeType;
-import com.ald.fanbei.api.common.enums.UserAccountLogType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedLoanDao;
 import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
 import com.ald.fanbei.api.dal.dao.DsedUserBankcardDao;
-import com.ald.fanbei.api.dal.domain.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import com.ald.fanbei.api.dal.domain.DsedLoanDo;
+import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.DsedLoanRateDo;
+import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
+import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
 
 
 /**
@@ -54,9 +56,6 @@ import java.util.concurrent.TimeUnit;
 
 @Service("dsedLoanService")
 public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> implements DsedLoanService {
-
-    private static final Logger logger = LoggerFactory.getLogger(DsedLoanServiceImpl.class);
-
     public static final BigDecimal DAYS_OF_YEAR = BigDecimal.valueOf(360);
     public static final BigDecimal DAYS_OF_MONTH = BigDecimal.valueOf(30);
 
@@ -123,19 +122,19 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
                 UpsDelegatePayRespBo upsResult = upsUtil.dsedDelegatePay(bo.reqParam.amount,
                         bo.realName, bankCard.getCardNumber(), userId.toString(), bankCard.getMobile(),
                         bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
-                        UserAccountLogType.DSED_LOAN.getCode(), loanDo.getRid().toString(),bo.idNumber);
+                        "DSED_LOAN", loanDo.getRid().toString(),bo.idNumber);
                 loanDo.setTradeNoOut(upsResult.getOrderNo());
                 if (!upsResult.isSuccess()) {
                     //审核通过，ups打款失败
                     dealLoanFail(loanDo, periodDos, upsResult.getRespCode());
                     throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL);
                 }
-                loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
+                loanDo.setStatus(DsedLoanStatus.TRANSFERING.name());
                 dsedLoanDao.updateById(loanDo);
                 // 增加日志
 //				afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.LOAN, loanDo.getAmount(), userId, loanDo.getRid()));
             } catch (Exception e) {
-                loanDo.setStatus(AfLoanStatus.CLOSED.name());
+                loanDo.setStatus(DsedLoanStatus.CLOSED.name());
                 dsedLoanDao.updateById(loanDo);
 
                 // 关闭分期记录
@@ -230,18 +229,18 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
     public void dealLoanSucc(Long loanId, String tradeNoOut) {
         final DsedLoanDo loanDo = dsedLoanDao.getById(loanId);
         String status = loanDo.getStatus();
-        if(AfLoanStatus.TRANSFERRED.name().equals(status)) {//已经处理过，防重复回调
+        if(DsedLoanStatus.TRANSFERRED.name().equals(status)) {//已经处理过，防重复回调
             logger.warn("dsedLoanService DealLoanSucc, transfer has succ, repeat UPS invoke! loanId="+loanId+",tradeNoOut="+tradeNoOut);
             return;
         }
 
-        if(AfLoanStatus.CLOSED.name().equals(status)) { // 已失败订单，但UPS仍回调成功，日志打点记录
+        if(DsedLoanStatus.CLOSED.name().equals(status)) { // 已失败订单，但UPS仍回调成功，日志打点记录
             logger.warn("dsedLoanService DealLoanSucc, transfer has fail, but still callback! original status= "+status+",loanId="+loanId+",tradeNoOut="+tradeNoOut);
         }
 
         Date cur = new Date();
         loanDo.setTradeNoOut(tradeNoOut);
-        loanDo.setStatus(AfLoanStatus.TRANSFERRED.name());
+        loanDo.setStatus(DsedLoanStatus.TRANSFERRED.name());
         loanDo.setArrivalAmount(loanDo.getAmount());
         loanDo.setGmtArrival(cur);
         transactionTemplate.execute(new TransactionCallback<Long>() { public Long doInTransaction(TransactionStatus status) {
@@ -271,7 +270,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
      */
     private void closePeriods(List<DsedLoanPeriodsDo> periodDos) {
         for (DsedLoanPeriodsDo afLoanPeriodsDo : periodDos) {
-            afLoanPeriodsDo.setStatus(AfLoanPeriodStatus.CLOSED.name());
+            afLoanPeriodsDo.setStatus(DsedLoanPeriodStatus.CLOSED.name());
             afLoanPeriodsDo.setGmtModified(new Date());
             dsedLoanPeriodsDao.updateById(afLoanPeriodsDo);
         }
@@ -280,7 +279,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 
     private void dealLoanFail(final DsedLoanDo loanDo, List<DsedLoanPeriodsDo> periodDos, String msg) {
         Date cur = new Date();
-        loanDo.setStatus(AfLoanStatus.CLOSED.name());
+        loanDo.setStatus(DsedLoanStatus.CLOSED.name());
         loanDo.setRemark("UPS打款失败，" + msg);
         loanDo.setGmtClose(cur);
         loanDo.setGmtModified(cur);

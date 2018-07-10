@@ -2,14 +2,12 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.dal.domain.AfResourceDo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.DsedResourceService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedResourceDao;
 import com.ald.fanbei.api.dal.domain.DsedResourceDo;
-import com.ald.fanbei.api.biz.service.DsedResourceService;
 
 import java.util.List;
 
@@ -26,20 +24,22 @@ import java.util.List;
 @Service("dsedResourceService")
 public class DsedResourceServiceImpl extends ParentServiceImpl<DsedResourceDo, Long> implements DsedResourceService {
 	
-    private static final Logger logger = LoggerFactory.getLogger(DsedResourceServiceImpl.class);
-   
     @Resource
     private DsedResourceDao dsedResourceDao;
 
-		@Override
+	@Override
 	public BaseDao<DsedResourceDo, Long> getDao() {
 		return dsedResourceDao;
 	}
-
-	@SuppressWarnings("unchecked")
+		
 	@Override
 	public DsedResourceDo getConfigByTypesAndSecType(String type, String secType) {
 		DsedResourceDo afResourceDo = dsedResourceDao.getConfigByTypesAndSecType(type, secType);
 		return afResourceDo;
+	}
+
+	@Override
+	public List<DsedResourceDo> getConfigByTypes(String type) {
+		return dsedResourceDao.getConfigByTypes(type);
 	}
 }

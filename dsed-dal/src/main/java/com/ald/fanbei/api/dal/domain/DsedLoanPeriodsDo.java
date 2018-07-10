@@ -1,10 +1,10 @@
 package com.ald.fanbei.api.dal.domain;
 
-import com.ald.fanbei.api.common.AbstractSerial;
-import com.ald.fanbei.api.common.enums.AfLoanPeriodStatus;
-
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Date;
+
+import com.ald.fanbei.api.common.AbstractSerial;
+import com.ald.fanbei.api.common.enums.DsedLoanPeriodStatus;
 
 /**
  * 都市易贷借款期数表实体
@@ -32,7 +32,7 @@ import java.math.BigDecimal;
         p.gmtPlanRepay = gmtPlanRepay;
 
         p.gmtCreate = new Date();
-        p.status = AfLoanPeriodStatus.AWAIT_REPAY.name();
+        p.status = DsedLoanPeriodStatus.AWAIT_REPAY.name();
         return p;
     }
 

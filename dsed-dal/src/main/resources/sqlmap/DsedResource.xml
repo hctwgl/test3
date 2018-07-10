@@ -325,5 +325,12 @@
         LIMIT 1
 
     </select>
-    
+    <select id="getConfigByTypes" resultType="DsedResourceDo">
+        SELECT
+        <include refid="queryAllFields" />
+        FROM
+        dsed_resource
+        WHERE is_delete = 0
+        AND `type` = #{type} ORDER BY sort DESC
+    </select>
 </mapper>

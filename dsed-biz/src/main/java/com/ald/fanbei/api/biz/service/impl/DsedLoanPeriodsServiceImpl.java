@@ -1,29 +1,24 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import javax.annotation.Resource;
-
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
-import com.ald.fanbei.api.biz.service.DsedLoanProductService;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.dal.dao.DsedLoanProductDao;
-import com.ald.fanbei.api.dal.domain.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
-import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
-import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
-
-import java.util.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.ald.fanbei.api.biz.service.impl.AfLoanPeriodsServiceImpl.MAX_DAY_NO;
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
+import com.ald.fanbei.api.biz.service.DsedLoanProductService;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
+import com.ald.fanbei.api.dal.domain.DsedLoanDo;
+import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.DsedLoanRateDo;
+import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 
 
 /**
@@ -37,9 +32,6 @@ import static com.ald.fanbei.api.biz.service.impl.AfLoanPeriodsServiceImpl.MAX_D
  
 @Service("dsedLoanPeriodsService")
 public class DsedLoanPeriodsServiceImpl extends ParentServiceImpl<DsedLoanPeriodsDo, Long> implements DsedLoanPeriodsService {
-	
-    private static final Logger logger = LoggerFactory.getLogger(DsedLoanPeriodsServiceImpl.class);
-
 	public static final BigDecimal DAYS_OF_YEAR = BigDecimal.valueOf(360);
 	public static final BigDecimal DAYS_OF_MONTH = BigDecimal.valueOf(30);
 	public static final int MAX_DAY_NO = 28;
