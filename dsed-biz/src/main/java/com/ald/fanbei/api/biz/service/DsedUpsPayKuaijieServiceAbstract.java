@@ -103,7 +103,7 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 			}
 			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
 			clearCache(payTradeNo);
-			throw new FanbeiException(UpsErrorType.findRoleTypeByCode(flag).toString());
+			throw new FanbeiException("Ups direct error!", FanbeiExceptionCode.getByCode("UPS_ERROR_"+flag));
 		} else {
 			Map<String, Object> resultMap = upsPaySuccess(payTradeNo, bankPayType, payBizObject, respBo, bank.get("cardNumber").toString());
 			clearCache(payTradeNo);
