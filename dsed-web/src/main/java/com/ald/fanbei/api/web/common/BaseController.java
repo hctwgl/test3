@@ -259,10 +259,10 @@ public abstract class BaseController {
                 userName = JSONObject.parseObject(appInfo).getString("userName");
             }
             param.put("_appInfo", temp);
-            HashMap map = (HashMap) context.getSystemsMap();
-            Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
+            Map<String, Object> map =  context.getSystemsMap();
+            Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator();
             while (it.hasNext()) {
-                Map.Entry<String, String> entry = it.next();
+                Map.Entry<String, Object> entry = it.next();
                 param.put(entry.getKey(), entry.getValue());
             }
             String ext1 = "";
