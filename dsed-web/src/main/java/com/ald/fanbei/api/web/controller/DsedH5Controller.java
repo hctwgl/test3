@@ -23,6 +23,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.context.ContextImpl;
 import com.ald.fanbei.api.dal.domain.DsedUserDo;
@@ -43,7 +44,9 @@ import com.google.common.collect.Maps;
  */
 @Controller
 public class DsedH5Controller extends BaseController {
-
+	
+	private static String PRIVATE_KEY = ConfigProperties.get(Constants.CONFKEY_XGXY_AES_PASSWORD);
+	
     @Resource
     DsedH5HandleFactory dsedH5HandleFactory;
 
@@ -79,7 +82,7 @@ public class DsedH5Controller extends BaseController {
 
         Map<String, Object> dataMaps = Maps.newHashMap();
         if (StringUtils.isNotEmpty(data)) {
-            String decryptData = AesUtil.decryptFromBase64Third(data, "aef5c8c6114b8d6a");
+            String decryptData = AesUtil.decryptFromBase64Third(data, PRIVATE_KEY);
             JSONObject dataInfo = JSONObject.parseObject(decryptData);
             String openId = (String.valueOf(dataInfo.get("userId")));
             DsedUserDo userDo = dsedUserService.getByOpenId(openId);

@@ -1,39 +1,40 @@
 package com.ald.fanbei.api.biz.third.util;
 
 
-import com.ald.fanbei.api.biz.bo.*;
+import static com.ald.fanbei.api.common.util.DsedSignUtil.generateSign;
+import static com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
+import com.ald.fanbei.api.biz.bo.XgxyOverdueBo;
+import com.ald.fanbei.api.biz.bo.XgxyOverdueReqBo;
+import com.ald.fanbei.api.biz.bo.XgxyPayBo;
+import com.ald.fanbei.api.biz.bo.XgxyPayReqBo;
+import com.ald.fanbei.api.biz.bo.XgxyReqBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DsedSignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import java.util.*;
-
-import static com.ald.fanbei.api.common.util.DsedSignUtil.generateSign;
-import static com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam;
 
 @Component("XgxyUtil")
 public class XgxyUtil  extends AbstractThird {
-
-
-    Logger logger = LoggerFactory.getLogger(XgxyUtil.class);
-
-
+    private static String PRIVATE_KEY = ConfigProperties.get(Constants.CONFKEY_XGXY_AES_PASSWORD);
+    
     private static String url = null;
-
-
-    private static String PRIVATE_KEY = "aef5c8c6114b8d6a";
-
-
+    
     private static String getXgxyUrl() {
         if (url == null) {
-            url = Constants.CONFKEY_XGXY_URL;
-            return url;
+        	url = ConfigProperties.get(Constants.CONFKEY_XGXY_URL);
+			return url;
         }
         return url;
     }
@@ -127,7 +128,6 @@ public class XgxyUtil  extends AbstractThird {
             p.put("data", data1);
             p.put("sign", generateSign(paramJsonObject, PRIVATE_KEY));
             p.put("appId", "edspay");
-//            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(p));
             String reqResult = doHttpPostJsonParam(getXgxyUrl() + "/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(p));
             logThird(reqResult, "giveBackRepayResult", JSON.toJSONString(data));
             if (StringUtil.isBlank(reqResult)) {

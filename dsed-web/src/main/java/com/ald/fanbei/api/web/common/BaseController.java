@@ -17,10 +17,12 @@ import org.slf4j.LoggerFactory;
 import com.ald.fanbei.api.biz.arbitration.MD5;
 import com.ald.fanbei.api.biz.service.DsedResourceService;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
@@ -39,6 +41,8 @@ public abstract class BaseController {
     protected final Logger mdLog = LoggerFactory.getLogger("DSED_MD");// 埋点日志
     protected final Logger thirdLog = LoggerFactory.getLogger("DSED_THIRD");// 第三方调用日志
 
+    private static String PRIVATE_KEY = ConfigProperties.get(Constants.CONFKEY_XGXY_AES_PASSWORD);
+    
     @Resource
     protected TokenCacheUtil tokenCacheUtil;
     @Resource
@@ -128,7 +132,7 @@ public abstract class BaseController {
 
     private void compareSign(HttpServletRequest request, Context context,String sign) {
         Map<String, Object> systemsMap = context.getSystemsMap();
-        String md5Value = generateSign(systemsMap,"aef5c8c6114b8d6a");
+        String md5Value = generateSign(systemsMap, PRIVATE_KEY);
         if (logger.isDebugEnabled())
             logger.info("signStrBefore=" + systemsMap + ",md5Value=" + md5Value + ",sign=" + sign);
         if (!StringUtils.equals(sign, md5Value)) {

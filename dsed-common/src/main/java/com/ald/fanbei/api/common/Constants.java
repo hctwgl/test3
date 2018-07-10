@@ -9,13 +9,7 @@ import java.math.BigDecimal;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public class Constants {
-
-
-
-	public static final String CONFKEY_XGXY_URL = "http://testeca.91ala.com:1112/isp";
-
 	public static final String XGXY_REQ_CODE = "200";
-
 
 	public static final long SECOND_OF_TEN_MINITS = 10 * 60l;
 	public static final long SECOND_OF_ONE_MINITS = 60l;
@@ -337,6 +331,8 @@ public class Constants {
 	public static final String CONFKEY_NOTIFY_HOST = "fbapi.notify.host";
 	public static final String CONFKEY_RISK_URL = "fbapi.risk.url";
 	public static final String CONFKEY_UPS_URL = "fbapi.ups.url";
+	public static final String CONFKEY_XGXY_URL = "desd.xgxy.url";
+	public static final String CONFKEY_XGXY_AES_PASSWORD = "dsed.aes.password";
 
 	public static final String CONFKEY_BKL_URL = "fbapi.bkl.url";
 	public static final String CONFKEY_ADMIN_URL = "fbapi.admin.url";
