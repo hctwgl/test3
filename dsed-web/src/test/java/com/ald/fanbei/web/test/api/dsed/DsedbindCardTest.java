@@ -74,8 +74,8 @@ public class DsedbindCardTest extends BaseTest {
     public void dsedSubmitBind() {
         String url = urlBase + "/third/xgxy/v1/smsCodeSubmit";
         Map<String, String> params = new HashMap<>();
-        params.put("busiFlag", "dk2018071011204900104");
-        params.put("code", "588882");
+        params.put("busiFlag", "dk2018071011552300106");
+        params.put("code", "122761");
         params.put("type", SmsCodeType.REPAY.getCode());
         params.put("userId","1C9064925F3AAF85BC663FEB1727DD4B");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
