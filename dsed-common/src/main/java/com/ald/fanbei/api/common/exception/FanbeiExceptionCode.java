@@ -167,6 +167,7 @@ public enum FanbeiExceptionCode {
     UPS_ERROR_4014("UPS_ERROR_4014",4014,"","交易失败，您可联系发卡行"),
     UPS_ERROR_5001("UPS_ERROR_5001",5001,"","卡未开通银联无卡支付，您可换卡重试"),
     UPS_ERROR_5002("UPS_ERROR_5002",5002,"","银行卡交易失败，您可换卡或稍后重试"),
+    UPS_ERROR_default("UPS_ERROR_default",5003,"","银行卡交易失败，您可换卡或稍后重试"),
 
 
     // third mode code 1500-1599
