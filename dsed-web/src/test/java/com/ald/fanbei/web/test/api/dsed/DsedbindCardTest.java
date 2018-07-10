@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.api.biz.arbitration.MD5;
+import com.ald.fanbei.api.common.enums.SmsCodeType;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.DsedSignUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
@@ -57,9 +58,9 @@ public class DsedbindCardTest extends BaseTest {
     public void getSms() {
         String url = urlBase+ "/third/xgxy/v1/getSmsCode";
         Map<String, String> params = new HashMap<>();
-        params.put("busiFlag", "3111465143");
-        params.put("type", "BIND");
-        params.put("userId","19428E8AA37E288F9A4166C93A75E403");
+        params.put("busiFlag", "dk2018071009541700092");
+        params.put("type", SmsCodeType.REPAY.getCode());
+        params.put("userId","1C9064925F3AAF85BC663FEB1727DD4B");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
@@ -73,9 +74,9 @@ public class DsedbindCardTest extends BaseTest {
     public void dsedSubmitBind() {
         String url = urlBase + "/third/xgxy/v1/smsCodeSubmit";
         Map<String, String> params = new HashMap<>();
-        params.put("busiFlag", "3111465113");
-        params.put("code", "247581");
-        params.put("userId","edspay22");
+        params.put("busiFlag", "dk2018071009541700092");
+        params.put("code", "588882");
+        params.put("userId","1C9064925F3AAF85BC663FEB1727DD4B");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);

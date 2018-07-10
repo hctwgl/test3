@@ -129,7 +129,7 @@ public class DsedH5Controller extends BaseController {
             }
             return handelResult;
         } catch (FanbeiException e) {
-            logger.error("internal exception, msg=" + e.getMessage());
+            logger.error("biz exception, msg=" + e.getMessage() + ", code=" + e.getErrorCode());
             throw e;
         } catch (Exception e) {
             logger.error("sys exception", e);
