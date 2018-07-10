@@ -331,7 +331,7 @@ public class Constants {
 	public static final String CONFKEY_NOTIFY_HOST = "fbapi.notify.host";
 	public static final String CONFKEY_RISK_URL = "fbapi.risk.url";
 	public static final String CONFKEY_UPS_URL = "fbapi.ups.url";
-	public static final String CONFKEY_XGXY_URL = "desd.xgxy.url";
+	public static final String CONFKEY_XGXY_HOST = "dsed.xgxy.host";
 	public static final String CONFKEY_XGXY_AES_PASSWORD = "dsed.aes.password";
 
 	public static final String CONFKEY_BKL_URL = "fbapi.bkl.url";

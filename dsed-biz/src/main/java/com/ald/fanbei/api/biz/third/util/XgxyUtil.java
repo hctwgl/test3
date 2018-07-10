@@ -33,7 +33,7 @@ public class XgxyUtil  extends AbstractThird {
     
     private static String getXgxyUrl() {
         if (url == null) {
-        	url = ConfigProperties.get(Constants.CONFKEY_XGXY_URL);
+        	url = ConfigProperties.get(Constants.CONFKEY_XGXY_HOST);
 			return url;
         }
         return url;
