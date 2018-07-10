@@ -93,17 +93,11 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 
 		// 处理支付结果
 		if (!respBo.isSuccess()) {
-			// 调用ups接口失败，回滚业务数据
 			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
-			if(null == errorMsg){
-				flag = "default";
-				errorMsg = UpsErrorType.findRoleTypeByCode("default");
-			}else {
-				flag = respBo.getRespCode();
-			}
+			
 			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
 			clearCache(payTradeNo);
-			throw new FanbeiException("Ups direct error!", FanbeiExceptionCode.getByCode("UPS_ERROR_"+flag));
+			throw new FanbeiException("Ups direct error!", FanbeiExceptionCode.getByCode(errorMsg.name()));
 		} else {
 			Map<String, Object> resultMap = upsPaySuccess(payTradeNo, bankPayType, payBizObject, respBo, bank.get("cardNumber").toString());
 			clearCache(payTradeNo);
