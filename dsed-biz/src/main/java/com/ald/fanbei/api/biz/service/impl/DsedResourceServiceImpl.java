@@ -9,6 +9,8 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedResourceDao;
 import com.ald.fanbei.api.dal.domain.DsedResourceDo;
 
+import java.util.List;
+
 
 /**
  * 资源配置表ServiceImpl
@@ -34,5 +36,10 @@ public class DsedResourceServiceImpl extends ParentServiceImpl<DsedResourceDo, L
 	public DsedResourceDo getConfigByTypesAndSecType(String type, String secType) {
 		DsedResourceDo afResourceDo = dsedResourceDao.getConfigByTypesAndSecType(type, secType);
 		return afResourceDo;
+	}
+
+	@Override
+	public List<DsedResourceDo> getConfigByTypes(String type) {
+		return dsedResourceDao.getConfigByTypes(type);
 	}
 }
