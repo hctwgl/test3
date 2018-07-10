@@ -8,9 +8,11 @@ import com.ald.fanbei.api.web.common.DsedH5Handle;
 import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.GetLoanProtocolParam;
+import com.ald.fanbei.api.web.vo.DsedPrococolVo;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,21 +38,28 @@ public class GetLoanProtocolApi implements DsedH5Handle {
         Long userId = context.getUserId();
         Map<String, Object> data = new HashMap<>();
         List<DsedResourceDo> dsedResourceDoList = dsedResourceService.getConfigByTypes("DSED_AGREEMENT");
+        List<DsedPrococolVo> dsedPrococolVoList = new ArrayList<>();
         for (DsedResourceDo afResourceDo : dsedResourceDoList) {
-            if ("DSED_PLATFORM_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())) {//白领贷平台服务协议
-                afResourceDo.setValue("/dsed-web/h5/whiteLoanPlatformServiceProtocol?userId=" + userId +
+            DsedPrococolVo dsedPrococolVo = new DsedPrococolVo();
+            if ("DSED_PLATFORM_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())) {//平台服务协议
+                dsedPrococolVo.setProtocolName("平台服务协议");
+                dsedPrococolVo.setProtocolUrl("/dsed-web/h5/whiteLoanPlatformServiceProtocol?userId=" + userId +
                         "&nper=" + param.nper + "&loanId=" + param.loanId + "&amount=" + param.amount + "&totalServiceFee=" + param.totalServiceFee);
-            } else if ("DSED_LOAN_CONTRACT".equals(afResourceDo.getSecType())) {//白领贷借钱协议
-                afResourceDo.setValue("/dsed-web/h5/loanProtocol?userId=" + userId +
+            } else if ("DSED_LOAN_CONTRACT".equals(afResourceDo.getSecType())) {//借钱协议
+                dsedPrococolVo.setProtocolName("借钱协议");
+                dsedPrococolVo.setProtocolUrl("/dsed-web/h5/loanProtocol?userId=" + userId +
                         "&amount=" + param.amount + "&nper=" + param.nper + "&loanId=" + param.loanId + "&loanRemark=" + param.loanRemark +
                         "&repayRemark=" + param.repayRemark);
             } else if ("DIGITAL_CERTIFICATE_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())) {//数字证书
-                afResourceDo.setValue("/dsed-web/app/numProtocol?userId=" + userId);
+                dsedPrococolVo.setProtocolName("数字证书");
+                dsedPrococolVo.setProtocolUrl("/dsed-web/app/numProtocol?userId=" + userId);
             } else if ("LETTER_OF_RISK".equals(afResourceDo.getSecType())) {//风险提示协议
-                afResourceDo.setValue("/app/sys/riskWarning");
+                dsedPrococolVo.setProtocolName("风险提示协议");
+                dsedPrococolVo.setProtocolUrl("/app/sys/riskWarning");
             }
+            dsedPrococolVoList.add(dsedPrococolVo);
         }
-        data.put("loanList", dsedResourceDoList);
+        data.put("protocolList", dsedPrococolVoList);
         resp.setData(data);
         return resp;
     }
