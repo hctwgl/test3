@@ -197,7 +197,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 	@Override
 	public Map<String, Object> repay(LoanRepayBo bo, String bankPayType) {
-
+		logger.info("dsedLoanRepaymentService repay LoanRepayBo ="+JSON.toJSONString(bo));
 		if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
 			lockRepay(bo.userId);
 		}
@@ -306,7 +306,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		}else {
 			loanRepay.setPreRepayStatus("N");
 		}
-		loanRepay.setPreRepayStatus("N");
 		String repayPeriods = "";
 		for (int i = 0; i < loanPeriodsDoList.size(); i++) {
 			if(i == loanPeriodsDoList.size()-1){
