@@ -14,4 +14,6 @@ public interface DsedLoanOverdueLogService extends ParentService<DsedLoanOverdue
 
     int  addLoanOverdueLog(DsedLoanOverdueLogDo loanOverdueLogDo);
 
+    DsedLoanOverdueLogDo getLoanOverDueLogByNow(String  periodsId);
+
 }

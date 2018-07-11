@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -58,6 +60,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 
 import net.sf.json.JSONArray;
+
+import static com.yeepay.g3.utils.common.DateUtils.daysBetween;
 
 
 /**
@@ -187,13 +191,22 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	@Override
 	public BigDecimal calculateRestAmount(DsedLoanPeriodsDo dsedLoanPeriodsDo) {
 		BigDecimal restAmount = BigDecimal.ZERO;
-		restAmount = BigDecimalUtil.add(restAmount,dsedLoanPeriodsDo.getAmount(),
-				dsedLoanPeriodsDo.getRepaidInterestFee(),dsedLoanPeriodsDo.getInterestFee(),
-				dsedLoanPeriodsDo.getServiceFee(),dsedLoanPeriodsDo.getRepaidServiceFee(),
-				dsedLoanPeriodsDo.getOverdueAmount(),dsedLoanPeriodsDo.getRepaidOverdueAmount())
-				.subtract(dsedLoanPeriodsDo.getRepayAmount());
+		Date now=new Date();
+		if((dsedLoanPeriodsDo.getGmtPlanRepay().getTime()-now.getTime())/(1000*3600*24)<=30){
+			restAmount = BigDecimalUtil.add(restAmount,dsedLoanPeriodsDo.getAmount(),
+					dsedLoanPeriodsDo.getRepaidInterestFee(),dsedLoanPeriodsDo.getInterestFee(),
+					dsedLoanPeriodsDo.getServiceFee(),dsedLoanPeriodsDo.getRepaidServiceFee(),
+					dsedLoanPeriodsDo.getOverdueAmount(),dsedLoanPeriodsDo.getRepaidOverdueAmount())
+					.subtract(dsedLoanPeriodsDo.getRepayAmount());
+		}else {
+			restAmount = BigDecimalUtil.add(restAmount,dsedLoanPeriodsDo.getAmount())
+					.subtract(dsedLoanPeriodsDo.getRepayAmount());
+		}
+
 		return restAmount;
 	}
+
+
 
 	@Override
 	public Map<String, Object> repay(LoanRepayBo bo, String bankPayType) {

@@ -126,5 +126,12 @@
         #{currentAmount}
         )
     </insert>
-    
+    <select id="getLoanOverDueLogByNow" resultType="com.ald.fanbei.api.dal.domain.DsedLoanOverdueLogDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_overdue_log
+        WHERE is_delete=0 AND periods_id=#{periodsId} AND  to_days(gmt_create)=to_days(now())
+        limit 0,1
+    </select>
+
 </mapper>

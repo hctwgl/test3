@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.util.DateUtil;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.DsedLoanOverdueLogService;
@@ -9,6 +10,7 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedLoanOverdueLogDao;
 import com.ald.fanbei.api.dal.domain.DsedLoanOverdueLogDo;
 
+import java.util.Date;
 
 
 /**
@@ -34,5 +36,10 @@ public class DsedLoanOverdueLogServiceImpl extends ParentServiceImpl<DsedLoanOve
 	@Override
 	public int addLoanOverdueLog(DsedLoanOverdueLogDo loanOverdueLogDo) {
 		return dsedLoanOverdueLogDao.addLoanOverdueLog(loanOverdueLogDo) ;
+	}
+
+	@Override
+	public DsedLoanOverdueLogDo getLoanOverDueLogByNow(String  periodsId ) {
+		return dsedLoanOverdueLogDao.getLoanOverDueLogByNow(periodsId);
 	}
 }
