@@ -102,6 +102,7 @@ public class DsedH5Controller extends BaseController {
         String clientIp = CommonUtil.getIpAddr(request);
         builder.clientIp(clientIp);
         Context context = builder.build();
+        logger.info("BaseController buildContext data = "+data+",context=",JSON.toJSONString(context));
         return context;
     }
 
@@ -132,7 +133,7 @@ public class DsedH5Controller extends BaseController {
             }
             return handelResult;
         } catch (FanbeiException e) {
-            logger.error("biz exception, msg=" + e.getMessage() + ", code=" + e.getErrorCode());
+            logger.error("biz exception, msg=" + e.getMessage() + ", code=" + e.getErrorCode(),e);
             throw e;
         } catch (Exception e) {
             logger.error("sys exception", e);

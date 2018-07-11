@@ -142,31 +142,6 @@ public class WxUtil {
 	return userInfo;
     }
 
-	/**
-	 * 获取用户信息，并进行缓存
-	 *
-	 * @author wangli
-	 * @date 2018/5/10 10:44
-	 */
-	public static JSONObject getUserInfoWithCache(String appid, String secret, String code) {
-        String key = "WxUtil:userInfo:" + code;
-        JSONObject userWxInfo = (JSONObject) bizCacheUtil2.getObject(key);
-		logger.info("userWxInfo cfp 123 = "+ userWxInfo);
-        if (userWxInfo == null) {
-            userWxInfo = getUserInfo(appid, secret, code);
-            logger.info("userWxInfo cfp = "+ userWxInfo);
-            if (userWxInfo != null && userWxInfo.getInteger("errcode") == null) {
-				bizCacheUtil2.saveObject(key, userWxInfo, Constants.SECOND_OF_TEN_MINITS);
-            } else {
-                throw new FanbeiException(userWxInfo.getString("errmsg"), FanbeiExceptionCode.WX_CODE_INVALID);
-            }
-        }
-        return userWxInfo;
-		/*// TODO:待注释
-		String jsonStr = "{\"openid\": \"CS\",\"nickname\": \"测试\",\"sex\": \"1\",\"province\": \"PROVINCE\",\"city\": \"CITY\",\"country\": \"COUNTRY\",\"headimgurl\": \"http://thirdwx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/46\",\"privilege\": [\"PRIVILEGE1\",\"PRIVILEGE2\"]}";
-		return JSONObject.parseObject(jsonStr);*/
-	}
-
     /**
      * 发送https请求
      * 
