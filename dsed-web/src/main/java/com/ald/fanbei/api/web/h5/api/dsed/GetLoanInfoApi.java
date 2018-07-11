@@ -43,7 +43,7 @@ public class GetLoanInfoApi implements DsedH5Handle {
         DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
         Long userId = context.getUserId();
         if (userId == null || userId <= 0) {
-            throw new FanbeiException(FanbeiExceptionCode.PARAM_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_ERROR);
         }
 
         // 借款信息

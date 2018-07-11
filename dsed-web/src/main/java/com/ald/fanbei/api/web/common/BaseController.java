@@ -77,7 +77,6 @@ public abstract class BaseController {
     }
 
     protected DsedH5HandleResponse buildErrorResult(FanbeiException e, HttpServletRequest request) {
-        logger.info("buildErrorResult e =>{}",e);
         FanbeiExceptionCode exceptionCode = e.getErrorCode();
         DsedH5HandleResponse resp;
         if (exceptionCode == null) {
@@ -111,20 +110,6 @@ public abstract class BaseController {
      */
     public abstract DsedH5HandleResponse doProcess(Context context);
 
-    /**
-     * 验证基础参数、签名
-     *
-     * @param requestDataVo
-     * @return
-     */
-    protected void doCheck(Context context) {
-
-        String interfaceName = context.getMethod();
-        if (StringUtils.isBlank(interfaceName)) {
-            throw new FanbeiException("request method is null or empty",
-                    FanbeiExceptionCode.REQUEST_PARAM_METHOD_ERROR);
-        }
-    }
 
     private void compareSign(HttpServletRequest request, Context context,String sign) {
         Map<String, Object> systemsMap = context.getSystemsMap();

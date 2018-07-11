@@ -331,42 +331,7 @@ public class UpsUtil extends AbstractThird {
 		}
 		
 	}
-	
-	/**
-	 * 协议延期
-	 * @param startDate
-	 * @param endDate
-	 * @param contractNo
-	 * @param returnUrl
-	 * @param notifyUrl
-	 * @param remark
-	 * @param clientType
-	 */
-	public UpsSignDelayRespBo signDelay(String startDate,String endDate,String contractNo,String returnUrl,String notifyUrl,String remark,String clientType){
-		String orderNo = getOrderNo("sdel", contractNo.substring(contractNo.length()-4,contractNo.length()));
-		UpsSignDelayReqBo reqBo = new UpsSignDelayReqBo();
-		setPubParam(reqBo,"signDelay",orderNo,clientType);
-		reqBo.setStartDate(startDate);
-		reqBo.setEndDate(endDate);
-		reqBo.setContractNo(contractNo);
-		reqBo.setReturnUrl(returnUrl);
-		reqBo.setNotifyUrl(notifyUrl);
-		reqBo.setRemark(remark);
-		
-		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
-		logThird(reqResult, "signDelay", reqBo);
-		if(StringUtil.isBlank(reqResult)){
-			throw new FanbeiException(FanbeiExceptionCode.UPS_SIGN_DELAY_ERROR);
-		}
-		UpsSignDelayRespBo authSignResp = JSONObject.parseObject(reqResult,UpsSignDelayRespBo.class);
-		if(authSignResp != null && authSignResp.getTradeState()!=null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
-			authSignResp.setSuccess(true);
-			return authSignResp;
-		}else{
-			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-		}
-	}
-	
+
 	/**
 	 * 单笔代收
 	 * 
