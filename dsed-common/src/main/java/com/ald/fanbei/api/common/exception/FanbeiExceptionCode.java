@@ -28,6 +28,7 @@ public enum FanbeiExceptionCode {
     UPS_KUAIJIE_NOT_SUPPORT("UPS_KUAIJIE_NOT_SUPPORT",1581,"ups kuaijie not support","当前业务，未支持快捷支付"),
     BORROW_DETAIL_NOT_EXIST_ERROR("BORROW_DETAIL_NOT_EXIST_ERROR",1705,"borrow detail not exist error","借款详情不存在"),
     USER_ACCOUNT_NOT_EXIST_ERROR("USER_ACCOUNT_NOT_EXIST_ERROR",1118,"user not exist error","账户不存在"),
+    DSED_BANK_NOT_EXIST_ERROR("DSED_BANK_NOT_EXIST_ERROR",1120,"dsed bank not exist error","绑定银行卡不存在"),
     DSED_BANK_BINDED("DSED_BANK_BINDED",1545,"bind card error","绑定银行卡已占用"),
     AUTH_BINDCARD_ERROR("AUTH_BINDCARD_ERROR",1542,"bind card error","绑定银行卡失败"),
     AUTH_BINDCARD_SMS_ERROR("AUTH_BINDCARD_SMS_ERROR",1567,"auth bindcard sms error","绑卡信息与银行预留不一致，请核实信息后重新尝试"),

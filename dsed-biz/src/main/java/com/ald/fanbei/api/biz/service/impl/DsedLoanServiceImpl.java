@@ -115,6 +115,10 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 
             final DsedUserBankcardDo bankCard = dsedUserBankcardDao.getUserMainBankcardByUserId(userId);
 
+            if (bankCard == null){
+                throw new FanbeiException(FanbeiExceptionCode.DSED_BANK_NOT_EXIST_ERROR);
+            }
+
             this.saveLoanRecords(bo, loanDo, periodDos, bankCard);
 
             try {
