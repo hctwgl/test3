@@ -93,6 +93,9 @@ public class LoanOverDueTask {
    void calcuOverdueRecords(List<DsedLoanPeriodsDto> loanDos){
         for(DsedLoanPeriodsDto dsedLoanDo:loanDos){
             try {
+                if(loanOverdueLogService.getLoanOverDueLogByNow(String.valueOf(dsedLoanDo.getRid()))!=null){
+                   continue;
+                }
                 BigDecimal currentAmount = BigDecimalUtil.add(dsedLoanDo.getAmount(), dsedLoanDo.getRepaidOverdueAmount(),dsedLoanDo.getRepaidInterestFee(), dsedLoanDo.getRepaidServiceFee()).subtract(dsedLoanDo.getRepayAmount());// 当前本金
                 DsedLoanRepaymentDo loanRepaymentDo=dsedLoanRepaymentService.getProcessingRepayment(dsedLoanDo.getLoanId(),dsedLoanDo.getNper());
                 if(loanRepaymentDo!=null){
@@ -185,9 +188,9 @@ public class LoanOverDueTask {
    }
 
 
-   private DsedLoanOverdueLogDo buildLoanOverdueLog(Long loanId,BigDecimal currentAmount,BigDecimal interest,Long userId){
+   private DsedLoanOverdueLogDo buildLoanOverdueLog(Long periodsId,BigDecimal currentAmount,BigDecimal interest,Long userId){
        DsedLoanOverdueLogDo overdueLog = new DsedLoanOverdueLogDo();
-       overdueLog.setPeriodsId(loanId);
+       overdueLog.setPeriodsId(periodsId);
        overdueLog.setCurrentAmount(currentAmount);
        overdueLog.setInterest(interest);
        overdueLog.setUserId(userId);

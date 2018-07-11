@@ -2,6 +2,8 @@ package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.DsedLoanOverdueLogDo;
 
+import java.util.Date;
+
 /**
  * 都市e贷借款逾期记录表Dao
  * 
@@ -13,5 +15,8 @@ import com.ald.fanbei.api.dal.domain.DsedLoanOverdueLogDo;
 public interface DsedLoanOverdueLogDao extends BaseDao<DsedLoanOverdueLogDo, Long> {
 
     int addLoanOverdueLog(DsedLoanOverdueLogDo loanOverdueLogDo);
+
+    DsedLoanOverdueLogDo getLoanOverDueLogByNow(String  periodsId);
+
 
 }
