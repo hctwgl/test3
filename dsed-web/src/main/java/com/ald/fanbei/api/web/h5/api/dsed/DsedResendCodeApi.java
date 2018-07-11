@@ -69,10 +69,6 @@ public class DsedResendCodeApi implements DsedH5Handle {
 			DsedUserDo user=dsedUserService.getByOpenId(openId);
 			//判断是否已经被绑定
 			DsedUserBankcardDo userBankcardDo=dsedUserBankcardService.getById(Long.valueOf(busiFlag));
-			if(dsedUserBankcardService.getUserBankByCardNo(userBankcardDo.getBankCardNumber())>0){
-				return new DsedH5HandleResponse(1545, FanbeiExceptionCode.DSED_BANK_BINDED.getDesc());
-			}
-
 			//默认赋值为借记卡
 			String cardType = "00";
 

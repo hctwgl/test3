@@ -52,9 +52,9 @@ public class DsedApplyBindBankCardMsgApi implements DsedH5Handle {
         DsedUserDo user = dsedUserService.getByOpenId(openId);
         logger.info("dsedApplyBindBankCardMsgApi context=" + JSON.toJSONString(context));
         //判断是否已经被绑定
-        if (dsedUserBankcardService.getUserBankByCardNo(bankNo) > 0) {
-            return new DsedH5HandleResponse(1545, FanbeiExceptionCode.DSED_BANK_BINDED.getDesc());
-        }
+//        if (dsedUserBankcardService.getUserBankByCardNo(bankNo) > 0) {
+//            return new DsedH5HandleResponse(1545, FanbeiExceptionCode.DSED_BANK_BINDED.getDesc());
+//        }
 
         DsedBankDo bank = dsedBankService.getBankByName(bankName);
         //是否是设主卡
