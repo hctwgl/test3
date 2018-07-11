@@ -102,6 +102,7 @@ public class DsedH5Controller extends BaseController {
         String clientIp = CommonUtil.getIpAddr(request);
         builder.clientIp(clientIp);
         Context context = builder.build();
+        logger.info("BaseController buildContext data = "+data+",context=",JSON.toJSONString(context));
         return context;
     }
 

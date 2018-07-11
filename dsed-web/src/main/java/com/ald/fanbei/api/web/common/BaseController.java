@@ -117,6 +117,7 @@ public abstract class BaseController {
         if (logger.isDebugEnabled())
             logger.info("signStrBefore=" + systemsMap + ",md5Value=" + md5Value + ",sign=" + sign);
         if (!StringUtils.equals(sign, md5Value)) {
+            logger.error("signStrBefore=" + systemsMap + ",md5Value=" + md5Value + ",sign=" + sign);
             throw new FanbeiException("sign is error", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
         }
     }
