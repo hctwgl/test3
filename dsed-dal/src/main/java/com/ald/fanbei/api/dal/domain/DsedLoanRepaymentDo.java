@@ -108,12 +108,12 @@ import java.math.BigDecimal;
     /**
      * 银行卡号
      */
-    private String cardNo;
+    private String bankCardNumber;
 
     /**
      * 银行卡名称
      */
-    private String cardName;
+    private String bankCardName;
 
     /**
      * 还款备注
@@ -442,40 +442,20 @@ import java.math.BigDecimal;
       this.repayPeriods = repayPeriods;
     }
 
-    /**
-     * 获取银行卡号
-     *
-     * @return 银行卡号
-     */
-    public String getCardNo(){
-      return cardNo;
+    public String getBankCardNumber() {
+        return bankCardNumber;
     }
 
-    /**
-     * 设置银行卡号
-     * 
-     * @param cardNo 要设置的银行卡号
-     */
-    public void setCardNo(String cardNo){
-      this.cardNo = cardNo;
+    public void setBankCardNumber(String bankCardNumber) {
+        this.bankCardNumber = bankCardNumber;
     }
 
-    /**
-     * 获取银行卡名称
-     *
-     * @return 银行卡名称
-     */
-    public String getCardName(){
-      return cardName;
+    public String getBankCardName() {
+        return bankCardName;
     }
 
-    /**
-     * 设置银行卡名称
-     * 
-     * @param cardName 要设置的银行卡名称
-     */
-    public void setCardName(String cardName){
-      this.cardName = cardName;
+    public void setBankCardName(String bankCardName) {
+        this.bankCardName = bankCardName;
     }
 
     /**

@@ -120,7 +120,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
             try {
                 // 调用UPS打款
                 UpsDelegatePayRespBo upsResult = upsUtil.dsedDelegatePay(bo.reqParam.amount,
-                        bo.realName, bankCard.getCardNumber(), userId.toString(), bankCard.getMobile(),
+                        bo.realName, bankCard.getBankCardNumber(), userId.toString(), bankCard.getMobile(),
                         bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
                         "DSED_LOAN", loanDo.getRid().toString(),bo.idNumber);
                 loanDo.setTradeNoOut(upsResult.getOrderNo());
@@ -184,8 +184,8 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
         try {
             DsedApplyLoanBo.ReqParam reqParam = bo.reqParam;
 
-            loanDo.setCardNo(bankCard.getCardNumber());
-            loanDo.setCardName(bankCard.getBankName());
+            loanDo.setBankCardNumber(bankCard.getBankCardNumber());
+            loanDo.setBankCardName(bankCard.getBankName());
             loanDo.setIp(reqParam.ip);
             loanDo.setRemark(reqParam.remark);
             loanDo.setLoanRemark(reqParam.loanRemark);

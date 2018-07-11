@@ -5,11 +5,11 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,card_number,is_main,bank_name,status 
+        id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,bank_card_number,is_main,bank_name,status
     </sql>
 
     <sql id="queryWithFields">
-        b.id rid,b.gmt_create gmtCreate,b.gmt_modified gmtModified,b.user_id userId,b.mobile,b.bank_code bankCode,b.card_number cardNumber,b.is_main isMain,b.bank_name bankName,b.status,a.pay_type bankChannel,b.valid_date validDate,b.safe_code safeCode
+        b.id rid,b.gmt_create gmtCreate,b.gmt_modified gmtModified,b.user_id userId,b.mobile,b.bank_code bankCode,b.bank_card_number bankCardNumber,b.is_main isMain,b.bank_name bankName,b.status,a.pay_type bankChannel,b.valid_date validDate,b.safe_code safeCode
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -33,8 +33,8 @@
         <if test="bankCode != null and bankCode != ''">
             AND bank_code = #{bankCode,jdbcType=VARCHAR}
         </if>
-        <if test="cardNumber != null and cardNumber != ''">
-            AND card_number = #{cardNumber,jdbcType=VARCHAR}
+        <if test="bankCardNumber != null and bankCardNumber != ''">
+            AND bank_card_number = #{bankCardNumber,jdbcType=VARCHAR}
         </if>
         <if test="isMain != null and isMain != ''">
             AND is_main = #{isMain,jdbcType=VARCHAR}
@@ -48,7 +48,7 @@
     </sql>
 
     <sql id="queryWithBankFields">
-		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.card_number,b.is_main,b.status,
+		b.id rid,b.gmt_create,b.gmt_modified,b.user_id,b.mobile,b.bank_code,b.bank_card_number,b.is_main,b.status,
 		c.bank_icon,c.bank_name,c.is_valid,c.pay_type bankChannel
 	</sql>
 
@@ -82,8 +82,8 @@
 	        <if test="bankCode != null">        
 	            bank_code,
 	        </if>
-	        <if test="cardNumber != null">        
-	            card_number,
+	        <if test="bankCardNumber != null">
+	            bank_card_number,
 	        </if>
 	        <if test="isMain != null">        
 	            is_main,
@@ -112,8 +112,8 @@
 		    <if test="bankCode != null" >
 		       #{bankCode,jdbcType=VARCHAR},
 		    </if>
-		    <if test="cardNumber != null" >
-		       #{cardNumber,jdbcType=VARCHAR},
+		    <if test="bankCardNumber != null" >
+		       #{bankCardNumber,jdbcType=VARCHAR},
 		    </if>
 		    <if test="isMain != null" >
 		       #{isMain,jdbcType=VARCHAR},
@@ -145,8 +145,8 @@
             <if test="bankCode != null and bankCode != '' ">        
                 bank_code = #{bankCode,jdbcType=VARCHAR},                
             </if>
-            <if test="cardNumber != null and cardNumber != '' ">        
-                card_number = #{cardNumber,jdbcType=VARCHAR},                
+            <if test="bankCardNumber != null and bankCardNumber != '' ">
+                bank_card_number = #{bankCardNumber,jdbcType=VARCHAR},
             </if>
             <if test="isMain != null and isMain != '' ">        
                 is_main = #{isMain,jdbcType=VARCHAR},                
@@ -187,7 +187,7 @@
     <!-- chefeipeng 获取用户所选银行卡对应的支付方式(代扣WITHHOLD、快捷支付KUAIJIE(有短信)) -->
     <select id="getPayTypeByBankNoAndUserId" resultType="java.util.HashMap" >
         SELECT
-		    u.id rid,u.gmt_create gmtCreate,u.gmt_modified gmtModified,u.user_id userId,u.mobile,u.bank_code bankCode,u.card_number cardNumber,u.is_main isMain,b.bank_name bankName,u.status,b.bank_icon bankIcon,b.is_valid isValid,b.pay_type bankChannel,u.valid_date validDate,u.safe_code safeCode
+		    u.id rid,u.gmt_create gmtCreate,u.gmt_modified gmtModified,u.user_id userId,u.mobile,u.bank_code bankCode,u.bank_card_number bankCardNumber,u.is_main isMain,b.bank_name bankName,u.status,b.bank_icon bankIcon,b.is_valid isValid,b.pay_type bankChannel,u.valid_date validDate,u.safe_code safeCode
         FROM
             dsed_user_bankcard u,
             dsed_bank b
@@ -198,7 +198,7 @@
         AND b.is_valid = 'Y'
         AND u. STATUS = 'B'
         and u.user_id = #{userId}
-        and u.card_number = #{cardNumber}
+        and u.bank_card_number = #{cardNumber}
 
     </select>
 
@@ -211,7 +211,7 @@
         WHERE
         b.is_delete=0
         and a.is_delete = 0 and a.is_valid = 'Y'
-        AND b.card_number=#{bankNo}
+        AND b.bank_card_number=#{bankNo}
         AND
         b.status='B'
     </select>
@@ -224,7 +224,7 @@
 		WHERE
 			is_delete=0
 		AND
-			card_number = #{cardNumber}
+			bank_card_number = #{cardNumber}
 		AND
 			status = 'B'
 	</select>
@@ -245,14 +245,14 @@
 
 
     <insert id="addUserBankcard" parameterType="DsedUserBankcardDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO dsed_user_bankcard(gmt_create , gmt_modified , user_id , mobile , bank_code , card_number , is_main , bank_name , valid_date,status,safe_code)
+		INSERT INTO dsed_user_bankcard(gmt_create , gmt_modified , user_id , mobile , bank_code , bank_card_number , is_main , bank_name , valid_date,status,safe_code)
 		VALUES (
     		NOW(),
     		NOW(),
     		#{userId},
     		#{mobile},
     		#{bankCode},
-    		#{cardNumber},
+    		#{bankCardNumber},
     		#{isMain},
     		#{bankName},
     	    #{validDate},
@@ -271,8 +271,8 @@
         <if test="status != null">
             ,status = #{status}
         </if>
-        <if test="cardNumber != null">
-            ,card_number = #{cardNumber}
+        <if test="bankCardNumber != null">
+            ,bank_card_number = #{bankCardNumber}
         </if>
         <if test="isMain != null">
             ,is_main = #{isMain}

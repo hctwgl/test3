@@ -75,7 +75,7 @@ public class DsedApplyBindBankCardMsgApi implements DsedH5Handle {
         DsedUserBankcardDo bank = new DsedUserBankcardDo();
         bank.setBankCode(bankCode);
         bank.setBankName(bankName);
-        bank.setCardNumber(cardNumber);
+        bank.setBankCardNumber(cardNumber);
         bank.setIsMain(isMain);
         bank.setMobile(mobile);
         bank.setStatus(BankcardStatus.NEW.getCode());

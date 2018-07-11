@@ -55,7 +55,7 @@ import java.math.BigDecimal;
     /**
      * 银行卡号
      */
-    private String cardNumber;
+    private String bankCardNumber;
 
     /**
      * 是否为主卡【Y:主卡,N:非主卡】

@@ -69,7 +69,7 @@ public class DsedResendCodeApi implements DsedH5Handle {
 			DsedUserDo user=dsedUserService.getByOpenId(openId);
 			//判断是否已经被绑定
 			DsedUserBankcardDo userBankcardDo=dsedUserBankcardService.getById(Long.valueOf(busiFlag));
-			if(dsedUserBankcardService.getUserBankByCardNo(userBankcardDo.getCardNumber())>0){
+			if(dsedUserBankcardService.getUserBankByCardNo(userBankcardDo.getBankCardNumber())>0){
 				return new DsedH5HandleResponse(1545, FanbeiExceptionCode.DSED_BANK_BINDED.getDesc());
 			}
 
@@ -77,7 +77,7 @@ public class DsedResendCodeApi implements DsedH5Handle {
 			String cardType = "00";
 
 			//调用ups
-			UpsAuthSignRespBo upsResult = upsUtil.authSign(user.getRid().toString(), user.getRealName(), userBankcardDo.getMobile(), user.getIdNumber(), userBankcardDo.getCardNumber(), "02",
+			UpsAuthSignRespBo upsResult = upsUtil.authSign(user.getRid().toString(), user.getRealName(), userBankcardDo.getMobile(), user.getIdNumber(), userBankcardDo.getBankCardNumber(), "02",
 					userBankcardDo.getBankCode(),cardType,userBankcardDo.getValidDate(),userBankcardDo.getSafeCode());
 
 			if(!upsResult.isSuccess()){

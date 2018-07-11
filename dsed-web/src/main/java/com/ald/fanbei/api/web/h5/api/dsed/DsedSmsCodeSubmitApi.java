@@ -83,7 +83,7 @@ public class DsedSmsCodeSubmitApi implements DsedH5Handle {
 					}
 					userBankcardDo.setStatus(BankcardStatus.BIND.getCode());
 					dsedUserBankcardService.updateUserBankcard(userBankcardDo);
-					UpsAuthSignValidRespBo upsResult = upsUtil.authSignValid(userDo.getRid()+"", userBankcardDo.getCardNumber(), smsCode, "02");
+					UpsAuthSignValidRespBo upsResult = upsUtil.authSignValid(userDo.getRid()+"", userBankcardDo.getBankCardNumber(), smsCode, "02");
 					if(!upsResult.isSuccess()){
 						status.setRollbackOnly();
 						return 1000; //UPS绑卡失败

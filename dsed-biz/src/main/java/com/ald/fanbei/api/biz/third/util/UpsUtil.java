@@ -585,7 +585,7 @@ public class UpsUtil extends AbstractThird {
 	private static DsedUpsLogDo buildDsedUpsLog(String bankCode, String cardNumber, String name, String orderNo, String refId, String type, String userNo){
 		DsedUpsLogDo log = new DsedUpsLogDo();
 		log.setBankCode(bankCode);
-		log.setCardNumber(cardNumber);
+		log.setBankCardNumber(cardNumber);
 		log.setName(name);
 		log.setOrderNo(orderNo);
 		log.setRefId(refId);
