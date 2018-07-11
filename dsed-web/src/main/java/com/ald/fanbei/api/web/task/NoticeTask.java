@@ -66,7 +66,7 @@ public class NoticeTask {
 
     ExecutorService executor = Executors.newCachedThreadPool();
 
-//    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
 //    @Scheduled(cron = "0/5 * * * * ?")
     public void notice() {
         logger.info("start notice task， time="+new Date());
