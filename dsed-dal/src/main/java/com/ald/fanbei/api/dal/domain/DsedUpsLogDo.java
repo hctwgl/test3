@@ -35,7 +35,7 @@ import java.math.BigDecimal;
     /**
      * 银行卡号
      */
-    private String cardNumber;
+    private String bankCardNumber;
 
     /**
      * 银行编号
@@ -128,22 +128,12 @@ import java.math.BigDecimal;
       this.userId = userId;
     }
 
-    /**
-     * 获取银行卡号
-     *
-     * @return 银行卡号
-     */
-    public String getCardNumber(){
-      return cardNumber;
+    public String getBankCardNumber() {
+        return bankCardNumber;
     }
 
-    /**
-     * 设置银行卡号
-     * 
-     * @param cardNumber 要设置的银行卡号
-     */
-    public void setCardNumber(String cardNumber){
-      this.cardNumber = cardNumber;
+    public void setBankCardNumber(String bankCardNumber) {
+        this.bankCardNumber = bankCardNumber;
     }
 
     /**

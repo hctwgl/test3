@@ -210,7 +210,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 	@Override
 	public Map<String, Object> repay(LoanRepayBo bo, String bankPayType) {
-
+		logger.info("dsedLoanRepaymentService repay LoanRepayBo ="+JSON.toJSONString(bo));
 		if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
 			lockRepay(bo.userId);
 		}
@@ -319,7 +319,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		}else {
 			loanRepay.setPreRepayStatus("N");
 		}
-		loanRepay.setPreRepayStatus("N");
 		String repayPeriods = "";
 		for (int i = 0; i < loanPeriodsDoList.size(); i++) {
 			if(i == loanPeriodsDoList.size()-1){
@@ -332,8 +331,8 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		loanRepay.setRepayPeriods(repayPeriods);
 		loanRepay.setPrdType(prdType);
 		loanRepay.setGmtCreate(gmtCreate);
-		loanRepay.setCardNo(bankNo);
-		loanRepay.setCardName(cardName);
+		loanRepay.setBankCardNumber(bankNo);
+		loanRepay.setBankCardName(cardName);
 
 		return loanRepay;
 	}
@@ -604,8 +603,8 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		loanRepayDealBo.curSumRebateAmount = loanRepayDealBo.curSumRebateAmount.add(repaymentDo.getUserAmount());
 		loanRepayDealBo.curUserCouponId = repaymentDo.getUserCouponId();
 		loanRepayDealBo.curSumRepayAmount = loanRepayDealBo.curSumRepayAmount.add(repaymentDo.getRepayAmount());
-		loanRepayDealBo.curCardName = repaymentDo.getCardName();
-		loanRepayDealBo.curCardNo = repaymentDo.getCardNo();
+		loanRepayDealBo.curCardName = repaymentDo.getBankCardName();
+		loanRepayDealBo.curCardNo = repaymentDo.getBankCardNumber();
 		loanRepayDealBo.curName = repaymentDo.getName();
 
 		loanRepayDealBo.loanDo = loanDo;

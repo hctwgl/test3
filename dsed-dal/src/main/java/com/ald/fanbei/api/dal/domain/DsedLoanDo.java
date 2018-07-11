@@ -121,12 +121,12 @@ import com.ald.fanbei.api.common.enums.DsedLoanStatus;
     /**
      * 卡号
      */
-    private String cardNo;
+    private String bankCardNumber;
 
     /**
      * 卡名称
      */
-    private String cardName;
+    private String bankCardName;
 
     /**
      * 最大逾期天数
@@ -500,40 +500,20 @@ import com.ald.fanbei.api.common.enums.DsedLoanStatus;
       this.prdType = prdType;
     }
 
-    /**
-     * 获取卡号
-     *
-     * @return 卡号
-     */
-    public String getCardNo(){
-      return cardNo;
+    public String getBankCardNumber() {
+        return bankCardNumber;
     }
 
-    /**
-     * 设置卡号
-     * 
-     * @param cardNo 要设置的卡号
-     */
-    public void setCardNo(String cardNo){
-      this.cardNo = cardNo;
+    public void setBankCardNumber(String bankCardNumber) {
+        this.bankCardNumber = bankCardNumber;
     }
 
-    /**
-     * 获取卡名称
-     *
-     * @return 卡名称
-     */
-    public String getCardName(){
-      return cardName;
+    public String getBankCardName() {
+        return bankCardName;
     }
 
-    /**
-     * 设置卡名称
-     * 
-     * @param cardName 要设置的卡名称
-     */
-    public void setCardName(String cardName){
-      this.cardName = cardName;
+    public void setBankCardName(String bankCardName) {
+        this.bankCardName = bankCardName;
     }
 
     /**
