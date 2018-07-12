@@ -146,7 +146,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		data.put("status", DsedLoanRepaymentStatus.SUCC.name());
 		data.put("actualAmount", bo.amount);
 		data.put("cardName", bo.cardName);
-		data.put("cardNumber", bo.cardNo);
+		data.put("bankCardNumber", bo.cardNo);
 		data.put("repayNo", bo.tradeNo);
 		data.put("jfbAmount", BigDecimal.ZERO);
 		if(respBo!=null)

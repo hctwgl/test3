@@ -84,7 +84,7 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 		UpsCollectRespBo respBo = null;
 		if(StringUtil.equals(RepayType.WITHHOLD.getCode(), bank.get("bankChannel").toString())){
 			daikouConfirmPre(payTradeNo, bankPayType, payBizObject);
-			respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(), bank.get("cardNumber").toString(),
+			respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(), bank.get("bankCardNumber").toString(),
 					idNumber, purpose, remark, "02", merPriv);
 		}else if(StringUtil.equals(RepayType.KUAIJIE.getCode(), bank.get("bankChannel").toString())){
 			kuaijieConfirmPre(payTradeNo, bankPayType, payBizObject);
@@ -100,7 +100,7 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 
 			throw new FanbeiException("Ups direct error!", FanbeiExceptionCode.getByCode(errorMsg.name()));
 		} else {
-			Map<String, Object> resultMap = upsPaySuccess(payTradeNo, bankPayType, payBizObject, respBo, bank.get("cardNumber").toString());
+			Map<String, Object> resultMap = upsPaySuccess(payTradeNo, bankPayType, payBizObject, respBo, bank.get("bankCardNumber").toString());
 			clearCache(payTradeNo);
 			return resultMap;
 		}
