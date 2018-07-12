@@ -76,8 +76,8 @@ public class NoticeTask {
 
     private static String PRIVATE_KEY = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
 
-//     @Scheduled(cron = "0 0/5 * * * ?")
-    @Scheduled(cron = "0/5 * * * * ?")
+     @Scheduled(cron = "0 0/5 * * * ?")
+//    @Scheduled(cron = "0/5 * * * * ?")
     public void notice() {
         if(StringUtils.equals(getHostIpUtil.getIpAddress(), PRIVATE_KEY)){
             logger.info("start notice task， time="+new Date());
