@@ -38,9 +38,6 @@
 		<property name="fbfile.oss.url.pref" defaultValue="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/" description="oss url" />
 	   
 	    <property name="dsed.xgxy.host" defaultValue="http://testeca.91ala.com:1112/isp" description="西瓜信用地址" />
-
-		<property name="dsed.xgxy.notice.host" defaultValue="192.168.117.76" description="西瓜通知主机IP" />
-
 		<property name="dsed.aes.password" defaultValue="aef5c8c6114b8d6a" description="西瓜信用密钥" />
 	</group>
 

@@ -1,9 +1,22 @@
 package com.ald.fanbei.api.web.task;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.bo.XgxyOverdueBo;
 import com.ald.fanbei.api.biz.bo.XgxyPayBo;
-import com.ald.fanbei.api.biz.bo.XgxyRepayBo;
-import com.ald.fanbei.api.biz.bo.XgxyRepayReqBo;
 import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.DsedLoanService;
@@ -11,31 +24,11 @@ import com.ald.fanbei.api.biz.service.DsedNoticeRecordService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.DsedNoticeType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
-import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
-import com.alibaba.fastjson.JSONObject;
-import net.sf.json.JSONArray;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.*;
-import java.util.concurrent.*;
 
 /**
  * @author jilong
@@ -74,12 +67,12 @@ public class NoticeTask {
     @Resource
     GetHostIpUtil getHostIpUtil;
 
-    private static String PRIVATE_KEY = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
+//    private static String PRIVATE_KEY = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
 
      @Scheduled(cron = "0 0/5 * * * ?")
 //    @Scheduled(cron = "0/5 * * * * ?")
     public void notice() {
-        if(StringUtils.equals(getHostIpUtil.getIpAddress(), PRIVATE_KEY)){
+//        if(StringUtils.equals(getHostIpUtil.getIpAddress(), PRIVATE_KEY)){
             logger.info("start notice task， time="+new Date());
             List<DsedNoticeRecordDo> noticeRecordDos = dsedNoticeRecordService.getAllFailNoticeRecord();
             if(noticeRecordDos.size()==0){
@@ -137,7 +130,7 @@ public class NoticeTask {
             }
             logger.info("end notice tasktime="+new Date());
         }
-    }
+//    }
 
      void nextNotice(DsedNoticeRecordDo recordDo,DsedLoanDo loanDo,DsedLoanRepaymentDo loanRepaymentDo,DsedLoanPeriodsDo periodsDo){
          all_noticedfail_moreonce.put(recordDo.getRid(),recordDo.getTimes());
