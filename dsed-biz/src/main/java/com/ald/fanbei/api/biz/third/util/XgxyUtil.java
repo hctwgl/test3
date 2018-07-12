@@ -1,40 +1,31 @@
 package com.ald.fanbei.api.biz.third.util;
 
 
-import static com.ald.fanbei.api.common.util.DsedSignUtil.generateSign;
-import static com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.stereotype.Component;
-
-import com.ald.fanbei.api.biz.bo.XgxyOverdueBo;
-import com.ald.fanbei.api.biz.bo.XgxyOverdueReqBo;
-import com.ald.fanbei.api.biz.bo.XgxyPayBo;
-import com.ald.fanbei.api.biz.bo.XgxyPayReqBo;
-import com.ald.fanbei.api.biz.bo.XgxyReqBo;
+import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DsedSignUtil;
+import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
+
+import static com.ald.fanbei.api.common.util.DsedSignUtil.generateSign;
 
 @Component("XgxyUtil")
-public class XgxyUtil  extends AbstractThird {
+public class XgxyUtil extends AbstractThird {
     private static String PRIVATE_KEY = ConfigProperties.get(Constants.CONFKEY_XGXY_AES_PASSWORD);
-    
+
     private static String url = null;
-    
+
     private static String getXgxyUrl() {
         if (url == null) {
-        	url = ConfigProperties.get(Constants.CONFKEY_XGXY_HOST);
-			return url;
+            url = ConfigProperties.get(Constants.CONFKEY_XGXY_HOST);
+            return url;
         }
         return url;
     }
@@ -61,13 +52,13 @@ public class XgxyUtil  extends AbstractThird {
             params.put("appId", "edspay");
             params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
-            String reqResult = doHttpPostJsonParam(getXgxyUrl() + "/open/third/edspay/v1/giveBackPayResult", JSON.toJSONString(params));
+            String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(getXgxyUrl() + "/open/third/edspay/v1/giveBackPayResult", JSON.toJSONString(params));
             logThird(reqResult, "payNoticeRequest", JSON.toJSONString(pay));
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
             XgxyPayReqBo payRespResult = JSONObject.parseObject(reqResult, XgxyPayReqBo.class);
-            if (Constants.XGXY_REQ_CODE .equals(payRespResult.get("code"))) {
+            if (Constants.XGXY_REQ_CODE.equals(payRespResult.get("code"))) {
                 return true;
             }
         } catch (Exception e) {
@@ -96,13 +87,13 @@ public class XgxyUtil  extends AbstractThird {
             overdue.put("curPeriod", overdueBo.getCurPeriod());
             params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
-            String reqResult = doHttpPostJsonParam(getXgxyUrl() + "/open/third/edspay/v1/giveBackOverdueResult", JSON.toJSONString(params));
+            String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(getXgxyUrl() + "/open/third/edspay/v1/giveBackOverdueResult", JSON.toJSONString(params));
             logThird(reqResult, "overDueNoticeRequest", JSON.toJSONString(overdue));
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
             XgxyOverdueReqBo overdueReqBo1 = JSONObject.parseObject(reqResult, XgxyOverdueReqBo.class);
-            if (Constants.XGXY_REQ_CODE .equals(overdueReqBo1.get("code"))) {
+            if (Constants.XGXY_REQ_CODE.equals(overdueReqBo1.get("code"))) {
                 return true;
             }
         } catch (Exception e) {
@@ -128,13 +119,13 @@ public class XgxyUtil  extends AbstractThird {
             p.put("data", data1);
             p.put("sign", generateSign(paramJsonObject, PRIVATE_KEY));
             p.put("appId", "edspay");
-            String reqResult = doHttpPostJsonParam("http://192.168.107.227:2003" + "/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(p));
+            String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(getXgxyUrl() + "/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(p));
             logThird(reqResult, "dsedRePayNoticeRequest", JSON.toJSONString(data));
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
             XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult, XgxyPayReqBo.class);
-            if (Constants.XGXY_REQ_CODE .equals(rePayRespResult.get("code")) ) {
+            if (Constants.XGXY_REQ_CODE.equals(rePayRespResult.get("code"))) {
                 return true;
             }
         } catch (Exception e) {
@@ -154,13 +145,13 @@ public class XgxyUtil  extends AbstractThird {
             data.put("userId", openId);
             params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
-            String reqResult = doHttpPostJsonParam(getXgxyUrl() + "/open/third/edspay/v1/getAddressList", JSON.toJSONString(params));
+            String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(getXgxyUrl() + "/open/third/edspay/v1/getAddressList", JSON.toJSONString(params));
             logThird(reqResult, "getUserContactsInfo", JSON.toJSONString(data));
             if (StringUtil.isBlank(reqResult)) {
                 return "";
             }
             XgxyReqBo reqBo = JSONObject.parseObject(reqResult, XgxyReqBo.class);
-            if (Constants.XGXY_REQ_CODE .equals(reqBo.get("code"))) {
+            if (Constants.XGXY_REQ_CODE.equals(reqBo.get("code"))) {
                 return (String) reqBo.get("data");
             }
         } catch (Exception e) {
