@@ -131,7 +131,7 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 												 String idNumber, String payBizObject, String beanName, String purpose, String remark, String merPriv) {
 		// 申请发送支付确认短信
  		UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.quickPay(payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(),
-				bank.get("bankCode").toString(), bank.get("cardNumber").toString(), idNumber, purpose, remark, "02", merPriv, "desd_loan",
+				bank.get("bankCode").toString(), bank.get("bankCardNumber").toString(), idNumber, purpose, remark, "02", merPriv, "desd_loan",
 				bank.get("safeCode").toString(), bank.get("validDate").toString());
 
 		// 处理支付结果
