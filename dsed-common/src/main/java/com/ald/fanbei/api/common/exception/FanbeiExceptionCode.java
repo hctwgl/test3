@@ -37,7 +37,32 @@ public enum FanbeiExceptionCode {
     REQUEST_INVALID_SIGN_ERROR("REQUEST_INVALID_SIGN_ERROR", 1005, "sign is invalid", "非法请求"),
     USER_BANKCARD_NOT_EXIST_ERROR("USER_BANKCARD_NOT_EXIST_ERROR",1302,"user bankcard not exist error","用户银行卡不存在"),
     REQUEST_PARAM_ERROR("REQUEST_PARAM_ERROR", 1006, "request param error", "请求参数不正确"),
-    SUCCESS("SUCCESS", 200, "success", "成功"), FAILED("FAILED", 201, "failed", "失败");
+    SUCCESS("SUCCESS", 200, "success", "成功"), FAILED("FAILED", 201, "failed", "失败"),
+    BANK_LIMIT_MONEY("BANK_LIMIT_MONEY",1324,"bank limit money","该银行单笔限额，请使用其他银行卡还款，谢谢！"),
+
+
+    UPS_ERROR_0000("UPS_ERROR_0000",0000,"","请求成功" ),
+    UPS_ERROR_0001("UPS_ERROR_0001",0001,"","交易处理中，您可稍后查询"),
+    UPS_ERROR_1001("UPS_ERROR_1001",1001,"","系统正忙，您可联系客服或稍后重试"),
+    UPS_ERROR_2001("UPS_ERROR_2001",2001,"","银行维护中"),
+    UPS_ERROR_4001("UPS_ERROR_4001",4001,"","卡余额不足，您可换卡重试"),
+    UPS_ERROR_4002("UPS_ERROR_4002",4002,"","余额不足次数超限，您可换卡或次日重试"),
+    UPS_ERROR_4003("UPS_ERROR_4003",4003,"","银行卡单笔金额超限，您可换卡重试"),
+    UPS_ERROR_4004("UPS_ERROR_4004",4004,"","银行卡单日金额超限，您可换卡重试"),
+    UPS_ERROR_4005("UPS_ERROR_4005",4005,"","金额小于银行最低单笔限额，您可换卡重试"),
+    UPS_ERROR_4006("UPS_ERROR_4006",4006,"","金额超过银行月累计限额，您可换卡重试"),
+    UPS_ERROR_4007("UPS_ERROR_4007",4007,"","银行卡失败次数超限，您可换卡或次日重试"),
+    UPS_ERROR_4008("UPS_ERROR_4008",4008,"","支付次数超过发卡行限制，您可换卡重试"),
+    UPS_ERROR_4009("UPS_ERROR_4009",4009,"","当前银行卡不支持该业务，您可换卡重试"),
+    UPS_ERROR_4010("UPS_ERROR_4010",4010,"","密码输入失败次数超限，您可换卡重试"),
+    UPS_ERROR_4011("UPS_ERROR_4011",4011,"","持卡人信息有误，您可核对身份信息是否有误"),
+    UPS_ERROR_4012("UPS_ERROR_4012",4012,"","银行卡已过有效期，您可换卡重试"),
+    UPS_ERROR_4013("UPS_ERROR_4013",4013,"","银行卡状态异常，您可换卡重试"),
+    UPS_ERROR_4014("UPS_ERROR_4014",4014,"","交易失败，您可联系发卡行"),
+    UPS_ERROR_5001("UPS_ERROR_5001",5001,"","卡未开通银联无卡支付，您可换卡重试"),
+    UPS_ERROR_5002("UPS_ERROR_5002",5002,"","银行卡交易失败，您可换卡或稍后重试");
+
+
 
     /**
      * 错误码

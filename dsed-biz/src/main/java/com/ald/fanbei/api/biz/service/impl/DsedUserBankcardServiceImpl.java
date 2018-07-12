@@ -1,10 +1,17 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.BankPayChannel;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.dal.domain.dto.UpsBankStatusDto;
+import com.alibaba.fastjson.JSON;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.DsedUserBankcardService;
@@ -75,5 +82,31 @@ public class DsedUserBankcardServiceImpl extends ParentServiceImpl<DsedUserBankc
 	@Override
 	public int updateUserBankcard(DsedUserBankcardDo userBankcardDo) {
 		return dsedUserBankcardDao.updateUserBankcard(userBankcardDo);
+	}
+
+	@Override
+	public void checkUpsBankLimit(String bankCode, String bankChannel,BigDecimal amount) {
+		UpsBankStatusDto upsBankStatusDto = getUpsBankStatus(bankCode, bankChannel);
+		if (upsBankStatusDto.getLimitUp().compareTo(amount.doubleValue()) < 0) {
+			String msg = String.format("该银行单笔限额%.2f元，请使用其他银行卡还款，谢谢！", upsBankStatusDto.getLimitUp());
+			throw new FanbeiException(msg, FanbeiExceptionCode.BANK_LIMIT_MONEY);
+		}
+	}
+
+	public UpsBankStatusDto getUpsBankStatus(String bankCode, String bankChannel) {
+		String bankStatusKey = "";
+		if(BankPayChannel.KUAIJIE.getCode().equals(bankChannel))
+		{
+			bankStatusKey = "ups_quickPay_" + bankCode;
+		}else {
+			bankStatusKey ="ups_collect_" + bankCode;
+		}
+		Object bankStatusValue = bizCacheUtil.getStringObject(bankStatusKey);
+		logger.info("getUserBankcardByUserId key:" + bankStatusKey + ",value：" + bankStatusValue);
+		if (bankStatusValue != null && StringUtils.isNotBlank(bankStatusValue.toString())) {
+			return JSON.parseObject(bankStatusValue.toString(), UpsBankStatusDto.class);
+		} else {
+			return new UpsBankStatusDto();
+		}
 	}
 }

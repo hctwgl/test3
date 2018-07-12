@@ -57,7 +57,7 @@
         <include refid="queryWithBankFields"/>,IFNULL(t.type,1) cardType,t.valid_date,t.safe_code
         FROM
         dsed_user_bankcard b
-        LEFT JOIN af_bank c
+        LEFT JOIN dsed_bank c
         ON c.is_delete = 0 and c.bank_code = b.bank_code
         LEFT JOIN af_user_bankcard_type t on b.id = t.user_bankcard_id
         WHERE

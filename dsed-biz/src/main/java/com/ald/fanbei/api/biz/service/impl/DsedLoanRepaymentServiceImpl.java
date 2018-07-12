@@ -14,6 +14,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
+import com.ald.fanbei.api.common.util.DateUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -460,7 +462,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				if (collectionRepaymentId != null){
 					repaymentDo.setRemark(String.valueOf(collectionRepaymentId));
 				}
-				
+//				nofityRisk(LoanRepayDealBo);
 				//还款成功，调用西瓜信用通知接口
 				DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
 				noticeRecordDo.setUserId(repaymentDo.getUserId());
@@ -481,6 +483,32 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			unLock(tradeNo);
 			// 解锁还款
 			unLockRepay(repaymentDo.getUserId());
+		}
+	}
+
+	private void nofityRisk(LoanRepayDealBo LoanRepayDealBo) {
+		//会对逾期的借款还款，向催收平台同步还款信息
+		if (DateUtil.compareDate(new Date(), LoanRepayDealBo.loanPeriodsDoList.get(0).getGmtPlanRepay()) ){
+			try {
+				CollectionSystemReqRespBo respInfo = collectionSystemUtil.consumerRepayment(
+						LoanRepayDealBo.curTradeNo,
+						LoanRepayDealBo.loanNo,
+						LoanRepayDealBo.curCardNo,
+						LoanRepayDealBo.curCardName,
+						DateUtil.formatDateTime(new Date()),
+						LoanRepayDealBo.curOutTradeNo,
+						LoanRepayDealBo.curSumRepayAmount,
+						LoanRepayDealBo.sumAmount.subtract(LoanRepayDealBo.sumRepaidAmount).setScale(2, RoundingMode.HALF_UP), //未还的
+						LoanRepayDealBo.sumAmount.setScale(2, RoundingMode.HALF_UP),
+						LoanRepayDealBo.sumOverdueAmount,
+						LoanRepayDealBo.sumRepaidAmount,
+						LoanRepayDealBo.sumInterest,false);
+				logger.info("collection consumerRepayment req success, respinfo={}", respInfo);
+			} catch (Exception e) {
+				logger.error("向催收平台同步还款信息失败", e);
+			}
+		}else{
+			logger.info("collection consumerRepayment not push,borrowCashId="+LoanRepayDealBo.loanDo.getRid());
 		}
 	}
 

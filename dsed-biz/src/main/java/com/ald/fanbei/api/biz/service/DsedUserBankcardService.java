@@ -49,4 +49,6 @@ public interface DsedUserBankcardService extends ParentService<DsedUserBankcardD
 
     int  updateUserBankcard(DsedUserBankcardDo userBankcardDo);
 
+    void checkUpsBankLimit(String bankCode, String bankChannel, BigDecimal amount);
+
 }
