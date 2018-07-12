@@ -462,7 +462,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				if (collectionRepaymentId != null){
 					repaymentDo.setRemark(String.valueOf(collectionRepaymentId));
 				}
-				nofityRisk(LoanRepayDealBo);
+//				nofityRisk(LoanRepayDealBo);
 				//还款成功，调用西瓜信用通知接口
 				DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
 				noticeRecordDo.setUserId(repaymentDo.getUserId());
