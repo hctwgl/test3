@@ -136,26 +136,18 @@ public class CollectionSystemUtil extends AbstractThird {
 	 *            --利息
 	 * @return
 	 */
-	public CollectionSystemReqRespBo consumerRepayment(String repayNo, String borrowNo, String cardNumber,
+	public CollectionSystemReqRespBo consumerRepayment(Long userId,String repayNo, String borrowNo, String cardNumber,
 													   String cardName, String repayTime, String tradeNo, BigDecimal amount, BigDecimal restAmount,
 													   BigDecimal repayAmount, BigDecimal overdueAmount, BigDecimal repayAmountSum, BigDecimal rateAmount, Boolean isCashOverdue) {
 		CollectionDataBo data = new CollectionDataBo();
 		Map<String, String> reqBo = new HashMap<String, String>();
-		reqBo.put("repay_no", repayNo);
-		reqBo.put("borrow_no", borrowNo);
-		reqBo.put("card_number", cardNumber);
-		reqBo.put("card_name", cardName);
-		reqBo.put("repay_time", repayTime);
-		if (StringUtil.isEmpty(tradeNo)) {
-			tradeNo = repayNo;
-		}
-		reqBo.put("trade_no", tradeNo);
-		reqBo.put("amount", amount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
-		reqBo.put("rest_amount", restAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
-		reqBo.put("repay_amount", repayAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
-		reqBo.put("overdue_amount", overdueAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
-		reqBo.put("repay_amount_sum", repayAmountSum.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
-		reqBo.put("rate_amount", rateAmount.multiply(BigDecimalUtil.ONE_HUNDRED) + "");
+		reqBo.put("orderNo", borrowNo);
+		reqBo.put("totalAmount", amount+"");
+		reqBo.put("repaymentNo", repayNo);
+		reqBo.put("repayTime", repayTime);
+		reqBo.put("repaymentAcc", userId+"");//还款账户
+		reqBo.put("type", AfRepayCollectionType.APP.getCode());
+		reqBo.put("details", repayTime);
 		//判断逾期是否平账
 		if(isCashOverdue){
 			data.setIsFinish("1");
@@ -170,7 +162,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		try {
 			logger.info("repaymentAchieve request :" + JSON.toJSONString(data));
 			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(
-					getUrl() + "/api/getway/repayment/repaymentAchieve", getUrlParamsByMap(data));
+					getUrl() + "/api/ald/collect/v1/third/repayment", getUrlParamsByMap(data));
 			logger.info(getUrl() + "/api/getway/repayment/repaymentAchieve");
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
@@ -188,8 +180,8 @@ public class CollectionSystemUtil extends AbstractThird {
 			}
 		} catch (Exception e) {
 			logger.error("consumerRepayment error:", e);
-			commitRecordUtil.addRecord(AfRepeatCollectionType.APP_REPAYMENT.getCode(), borrowNo, json,
-					getUrl() + "/api/getway/repayment/repaymentAchieve");
+//			commitRecordUtil.addRecord(AfRepeatCollectionType.APP_REPAYMENT.getCode(), borrowNo, json,
+//					getUrl() + "/api/getway/repayment/repaymentAchieve");
 			throw new FanbeiException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
 		}
 	}

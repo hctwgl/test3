@@ -6,7 +6,7 @@ public enum  DsedLoanStatus {
     TRANSFERING("打款中", "TRANSEDING"),
     TRANSFERRED("已经打款/待还款", "TRANSED"),
     REPAYING("还款中", "REPAYING"),
-    FINISHED("已结清", "FINSH"),
+    FINISHED("已结清", "FINISHED"),
     CLOSED("关闭", "CLOSED");
 
     public String desz;
