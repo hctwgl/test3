@@ -49,7 +49,9 @@ public class GetLoanInfoApi implements DsedH5Handle {
         // 借款信息
         DsedLoanDo loanDo = dsedLoanService.getByUserId(userId);
         if (loanDo == null) {
-            throw new FanbeiException(FanbeiExceptionCode.BORROW_DETAIL_NOT_EXIST_ERROR);
+            resp.setCode(1705);
+            resp.setMessage("借款详情不存在");
+            return  resp;
         }
 
         // 当前待还分期信息
