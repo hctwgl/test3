@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.h5.controller;
 
 import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
+import com.ald.fanbei.api.biz.service.DsedLoanProductService;
 import com.ald.fanbei.api.biz.service.DsedLoanService;
 import com.ald.fanbei.api.biz.service.DsedUserService;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -9,6 +10,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.DsedLoanRateDo;
 import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import com.alibaba.fastjson.JSON;
@@ -44,6 +46,9 @@ public class H5ProtocolWhiteLoanController {
     @Resource
     DsedLoanPeriodsService dsedLoanPeriodsService;
 
+    @Resource
+    DsedLoanProductService dsedLoanProductService;
+
     protected final org.slf4j.Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
@@ -70,7 +75,7 @@ public class H5ProtocolWhiteLoanController {
         model.put("idNumber", dsedUserDo.getIdNumber());
         model.put("realName", dsedUserDo.getRealName());
         model.put("email", dsedUserDo.getEmail());//电子邮箱
-        model.put("mobile", dsedUserDo.getUserName());// 联系电话
+        model.put("mobile", dsedUserDo.getMobile());// 联系电话
         model.put("amountCapital", toCapital(amount.doubleValue()));//大写本金金额
         model.put("amount", amount);//借钱本金
         if (loanId > 0) {//借了钱的借钱协议
@@ -79,6 +84,60 @@ public class H5ProtocolWhiteLoanController {
             getModelNoLoanId(model, amount, nper, "个人消费", repayRemark, userId);
         }
         logger.info(JSON.toJSONString(model));
+    }
+
+    /**
+     * 平台服务协议(白领贷)
+     *
+     * @param request
+     * @param model
+     * @throws IOException
+     */
+    @RequestMapping(value = {"dsedLoanPlatformServiceProtocol"}, method = RequestMethod.GET)
+    public void dsedLoanPlatformServiceProtocol(HttpServletRequest request, ModelMap model) throws IOException {
+        Long userId = NumberUtil.objToLongDefault(request.getParameter("userId"), 0);
+        BigDecimal totalServiceFee = NumberUtil.objToBigDecimalDefault(request.getParameter("totalServiceFee"), new BigDecimal(0));
+        BigDecimal amount = NumberUtil.objToBigDecimalDefault(request.getParameter("amount"), new BigDecimal(0));
+        Long loanId = NumberUtil.objToLongDefault(request.getParameter("loanId"), 0l);
+        Integer nper = NumberUtil.objToIntDefault(request.getParameter("nper"), 0);
+        DsedUserDo dsedUserDo = dsedUserService.getById(userId);
+        if (dsedUserDo == null) {
+            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        model.put("email", dsedUserDo.getEmail());//电子邮箱
+        model.put("mobile", dsedUserDo.getMobile());// 联系电话
+        model.put("realName", dsedUserDo.getRealName());
+        DsedLoanRateDo rateDo = dsedLoanProductService.getByPrdTypeAndNper("BLD_LOAN", String.valueOf(nper));
+        if (rateDo != null){
+            model.put("overdueRate", rateDo.getOverdueRate());//逾期费率
+            model.put("serviceRate", rateDo.getPoundageRate());//手续费率
+            model.put("interestRate", rateDo.getInterestRate());//借钱利率
+        }
+        model.put("totalServiceFee", totalServiceFee);//手续费
+        List<Object> resultList = dsedLoanPeriodsService.resolvePeriods(amount, userId, nper, "", "BLD_LOAN");
+        if (resultList != null && resultList.size() > 0){
+            DsedLoanDo afLoanDo = (DsedLoanDo) resultList.get(0);
+            model.put("totalServiceFee", afLoanDo.getTotalServiceFee());//手续费
+        }
+        if (loanId > 0) {
+            DsedLoanDo afLoanDo = dsedLoanService.getById(loanId);
+            if (null != afLoanDo) {
+                model.put("loanNo", afLoanDo.getLoanNo());//原始借款协议编号
+            }
+            Calendar c = Calendar.getInstance();
+            c.setTime(afLoanDo.getGmtCreate());
+            int month = c.get(Calendar.MONTH) + 1;
+            int day = c.get(Calendar.DATE);
+            int year = c.get(Calendar.YEAR);
+            String time = year + "年" + month + "月" + day + "日";
+            model.put("time", time);// 签署日期
+            model.put("totalServiceFee", afLoanDo.getTotalServiceFee());//手续费
+            model.put("overdueRate", afLoanDo.getOverdueRate());//逾期费率
+            model.put("serviceRate", afLoanDo.getServiceRate());//手续费率
+            model.put("interestRate", afLoanDo.getInterestRate());//借钱利率
+        }
+
     }
 
     private void getModelLoanId(ModelMap model, Integer nper, long loanId, DsedUserDo afUserDo, String repayRemark, String loanRemark) {

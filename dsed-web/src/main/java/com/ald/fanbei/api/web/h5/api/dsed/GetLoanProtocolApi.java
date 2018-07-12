@@ -54,7 +54,7 @@ public class GetLoanProtocolApi implements DsedH5Handle {
             DsedPrococolVo dsedPrococolVo = new DsedPrococolVo();
             if ("DSED_PLATFORM_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())) {//平台服务协议
                 dsedPrococolVo.setProtocolName("平台服务协议");
-                dsedPrococolVo.setProtocolUrl(getNotifyHost()+"/dsed-web/h5/whiteLoanPlatformServiceProtocol?userId=" + userId +
+                dsedPrococolVo.setProtocolUrl(getNotifyHost()+"/dsed-web/h5/dsedLoanPlatformServiceProtocol?userId=" + userId +
                         "&nper=" + param.nper + "&loanId=" + param.loanId + "&amount=" + param.amount + "&totalServiceFee=" + param.totalServiceFee);
             } else if ("DSED_LOAN_CONTRACT".equals(afResourceDo.getSecType())) {//借钱协议
                 dsedPrococolVo.setProtocolName("借钱协议");
