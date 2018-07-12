@@ -140,7 +140,7 @@ public class LoanOverDueTask {
            DsedUserContactsDo contactsDo=new DsedUserContactsDo();
             contactsDo.setUserId(String.valueOf(userId));
             contactsDo.setContactsMobile(contacts);
-            if(userContactsDo==null){
+            if(userContactsDo.size()==0){
                  contactsService.saveRecord(contactsDo);
             }else {
                 contactsService.updateByUserId(contactsDo);
