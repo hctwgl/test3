@@ -146,7 +146,7 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 		} else {
 			// 添加数据到redis缓存
 			UpsCollectBo upsCollectBo = new UpsCollectBo(bank, payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(),
-					bank.get("cardNumber").toString(), idNumber, Constants.DEFAULT_PAY_PURPOSE, remark, "02", merPriv, BankPayChannel.KUAIJIE.getCode(),
+					bank.get("bankCardNumber").toString(), idNumber, Constants.DEFAULT_PAY_PURPOSE, remark, "02", merPriv, BankPayChannel.KUAIJIE.getCode(),
 					"desd_loan");
 			// 支付请求对应的处理bean
 			bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + payTradeNo, beanName, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
