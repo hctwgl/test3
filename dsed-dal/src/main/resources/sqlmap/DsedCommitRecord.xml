@@ -19,7 +19,7 @@
 		)
 	</insert>
 	
-	<select id="getRecordByTypeAndRelateId" parameterType="java.lang.String"  resultType="AfCommitRecordDo">
+	<select id="getRecordByTypeAndRelateId" parameterType="java.lang.String"  resultType="DsedCommitRecordDo">
 		SELECT 
 			<include refid="queryFields"/>
 		FROM 

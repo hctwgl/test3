@@ -487,7 +487,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	}
 
 	private void nofityRisk(LoanRepayDealBo LoanRepayDealBo) {
-		String cardNo = LoanRepayDealBo.curCardNo;
 		//会对逾期的借款还款，向催收平台同步还款信息
 		if (DateUtil.compareDate(new Date(), LoanRepayDealBo.loanPeriodsDoList.get(0).getGmtPlanRepay()) ){
 			try {
