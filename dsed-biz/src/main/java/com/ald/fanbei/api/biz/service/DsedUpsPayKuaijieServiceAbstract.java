@@ -96,6 +96,7 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
 			
 			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
+			logger.info("payBizObject="+payBizObject+",payTradeNo="+payTradeNo);
 			clearCache(payTradeNo);
 			String flags = respBo.getRespCode();
 			if(null == errorMsg){

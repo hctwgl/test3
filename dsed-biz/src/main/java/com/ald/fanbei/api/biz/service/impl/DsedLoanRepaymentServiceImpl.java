@@ -160,6 +160,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 	@Override
 	protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
+		logger.info("payBizObject="+payBizObject+",payTradeNo="+payTradeNo);
 		if (StringUtils.isNotBlank(payBizObject)) {
 			// 处理业务数据
 			dealRepaymentFail(payTradeNo, respBo.getTradeNo(), true, errorMsg);
