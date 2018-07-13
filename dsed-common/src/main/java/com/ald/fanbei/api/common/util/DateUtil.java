@@ -6,11 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import com.alibaba.fastjson.JSON;
-import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
-
 import org.apache.commons.lang.StringUtils;
-import org.dbunit.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +71,11 @@ public class DateUtil {
      * yyyyMMddHHmmss
      */
     public static final String FULL_PATTERN                = "yyyyMMddHHmmss";
+    
+    /**
+     * yyyyMMddHHmmss
+     */
+    public static final String FULL_PATTERN_INCLUDE_SSS    = "yyyyMMddHHmmssSSS";
 
     /**
      * yyyyMMdd HH:mm:ss

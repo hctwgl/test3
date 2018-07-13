@@ -2,8 +2,6 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,9 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.util.DateUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +21,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.KuaijieDsedLoanBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.XgxyRepayBo;
@@ -39,9 +35,17 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
+import com.ald.fanbei.api.common.enums.DsedLoanPeriodStatus;
+import com.ald.fanbei.api.common.enums.DsedLoanRepaymentStatus;
+import com.ald.fanbei.api.common.enums.DsedLoanStatus;
+import com.ald.fanbei.api.common.enums.DsedNoticeType;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.DsedLoanDao;
 import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
@@ -57,8 +61,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 
 import net.sf.json.JSONArray;
-
-import static com.yeepay.g3.utils.common.DateUtils.daysBetween;
 
 
 /**
@@ -220,7 +222,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			name = Constants.BORROW_REPAYMENT_NAME_AUTO;
 		}
 
-		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now, bankPayType);
+		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
 		bo.tradeNo = tradeNo;
 		bo.name = name;
 

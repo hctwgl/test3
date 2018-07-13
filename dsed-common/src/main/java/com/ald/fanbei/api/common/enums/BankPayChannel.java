@@ -1,10 +1,10 @@
 package com.ald.fanbei.api.common.enums;
 
 public enum BankPayChannel {
-    KUAIJIE("KUAIJIE", "快捷支付(有短验)"), DAISHOU("DAISHOU", "代收"),
-    KUAIJIE_NO_SMS("KUAIJIE_NO_SMS", "快捷支付(无短验)"),XIEYI("XIEYI", "协议"),
-
-    ;
+    KUAIJIE("KUAIJIE", "快捷支付(有短验)"), 
+    DAISHOU("DAISHOU", "代收"),
+    KUAIJIE_NO_SMS("KUAIJIE_NO_SMS", "快捷支付(无短验)"),
+    XIEYI("XIEYI", "协议");
 
     private String code;
     private String name;
