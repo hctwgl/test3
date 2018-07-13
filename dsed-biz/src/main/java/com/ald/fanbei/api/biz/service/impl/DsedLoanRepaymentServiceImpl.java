@@ -465,6 +465,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 				dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
 				HashMap<String,String> data = buildData(repaymentDo);
+
 				logger.info("dealRepaymentSucess data cfp "+JSON.toJSONString(data));
 				if(xgxyUtil.dsedRePayNoticeRequest(data)){
 					noticeRecordDo.setRid(noticeRecordDo.getRid());
@@ -568,7 +569,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			String jsonStr = json.toString();
 			data.put("borrowBillDetails",jsonStr);
 		}else if(StringUtil.equals(repaymentDo.getStatus(),"")){
-			data.put("reason","default error");
+			data.put("reason","银行卡交易失败，您可换卡或稍后重试");
 			data.put("borrowNo",loanDo.getLoanNo());
 			data.put("status","REPAYFAIL");
 		}
