@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ald.fanbei.api.common.enums.DsedLoanRepaymentStatus;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,7 +80,6 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 	protected Map<String, Object> doUpsPay(String bankPayType, HashMap<String,Object> bank, String payTradeNo, BigDecimal actualAmount, Long userId,
 										   String realName, String idNumber, String smsCode, String payBizObject, String purpose, String remark, String merPriv) {
 		// 获取用户绑定银行卡信息
-		String flag = "";
 		// 调用ups进行支付
 		UpsCollectRespBo respBo = null;
 		if(StringUtil.equals(RepayType.WITHHOLD.getCode(), bank.get("bankChannel").toString())){
@@ -96,12 +96,13 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
 			
 			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
+			logger.info("payBizObject="+payBizObject+",payTradeNo="+payTradeNo);
 			clearCache(payTradeNo);
 			String flags = respBo.getRespCode();
 			if(null == errorMsg){
 				flags = "default";
 			}
-			throw new FanbeiException(FanbeiExceptionCode.getByCode("UPS_ERROR_"+flag));
+			throw new FanbeiException(FanbeiExceptionCode.getByCode("UPS_ERROR_"+flags));
 		} else {
 			Map<String, Object> resultMap = upsPaySuccess(payTradeNo, bankPayType, payBizObject, respBo, bank.get("bankCardNumber").toString());
 			clearCache(payTradeNo);
