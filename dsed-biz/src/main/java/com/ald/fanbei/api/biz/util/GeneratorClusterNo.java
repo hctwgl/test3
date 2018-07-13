@@ -134,15 +134,23 @@ public class GeneratorClusterNo {
 		String cacheKey = Constants.CACHEKEY_REPAYCASHNO + orderPre;
 		boolean isGetLock = TokenCacheUtil.getLockTryTimes(lockKey, "1",Integer.parseInt(ConfigProperties.get(Constants.CONFIG_KEY_LOCK_TRY_TIMES, "5")));
 		try {
-//			if (isGetLock) {// 获得同步锁
-//				channelNum = (Integer) TokenCacheUtil.getObject(cacheKey);
-//				channelNum = channelNum + 1;
-//			} else {// 获取锁失败，从库中取订单号
+			if (isGetLock) {// 获得同步锁
+				channelNum = (Integer) TokenCacheUtil.getObject(cacheKey);
+
+				if(StringUtil.isBlank(channelNum+"")){
+					String repayNo = dsedLoanRepaymentService.getCurrentLastRepayNo(orderNoPre);
+					if (repayNo != null) {
+						channelNum = getOrderSeqInt(repayNo.substring(16, 20)) + 1;
+					}
+				}else {
+					channelNum = channelNum + 1;
+				}
+			} else {// 获取锁失败，从库中取订单号
 				String repayNo = dsedLoanRepaymentService.getCurrentLastRepayNo(orderNoPre);
 				if (repayNo != null) {
 					channelNum = getOrderSeqInt(repayNo.substring(16, 20)) + 1;
 				}
-//			}
+			}
 			TokenCacheUtil.saveObject(cacheKey, channelNum,Constants.SECOND_OF_ONE_WEEK);
 			return channelNum;
 		} finally {
