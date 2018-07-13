@@ -32,6 +32,6 @@ public abstract class AbstractThird {
 		for (Object item : param) {
 			sb = sb.append("|").append(JSON.toJSONString(item));
 		}
-		logger.info(StringUtil.appendStrs("methodName=", methodName, ";params=", sb.toString().replaceAll("\n", ""), ";resp=", resp == null ? "" : resp));
+		logger.info(StringUtil.appendStrs(" methodName=", methodName, ";	params=", sb.toString().replaceAll("\n", ""), ";	resp=", resp == null ? "" : resp));
 	}
 }

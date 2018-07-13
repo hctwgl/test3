@@ -52,8 +52,9 @@ public class XgxyUtil extends AbstractThird {
             params.put("appId", "edspay");
             params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
-            String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackPayResult", JSON.toJSONString(params));
-            logThird(reqResult, "payNoticeRequest", JSON.toJSONString(pay));
+            String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackPayResult";
+            String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(params));
+            logThird(reqResult, url, JSON.toJSONString(pay));
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
@@ -87,8 +88,10 @@ public class XgxyUtil extends AbstractThird {
             overdue.put("curPeriod", overdueBo.getCurPeriod());
             params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
-            String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackOverdueResult", JSON.toJSONString(params));
-            logThird(reqResult, "overDueNoticeRequest", JSON.toJSONString(overdue));
+            
+            String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackOverdueResult";
+            String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(params));
+            logThird(reqResult, url, JSON.toJSONString(overdue));
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
@@ -119,9 +122,10 @@ public class XgxyUtil extends AbstractThird {
             p.put("data", data1);
             p.put("sign", generateSign(paramJsonObject, PRIVATE_KEY));
             p.put("appId", "edspay");
-            String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackRepayResult", JSON.toJSONString(p));
-            logger.info("dsedRePayNoticeRequest url = "+getXgxyUrl());
-            logThird(reqResult, "dsedRePayNoticeRequest", JSON.toJSONString(data));
+            
+            String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackRepayResult";
+            String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(p));
+            logThird(reqResult, url, JSON.toJSONString(data));
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
@@ -146,8 +150,10 @@ public class XgxyUtil extends AbstractThird {
             data.put("userId", openId);
             params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
-            String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(getXgxyUrl() + "/isp/open/third/edspay/v1/getAddressList", JSON.toJSONString(params));
-            logThird(reqResult, "getUserContactsInfo", JSON.toJSONString(data));
+            
+            String url = getXgxyUrl() + "/isp/open/third/edspay/v1/getAddressList";
+            String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(params));
+            logThird(reqResult, url, JSON.toJSONString(data));
             if (StringUtil.isBlank(reqResult)) {
                 return "";
             }
