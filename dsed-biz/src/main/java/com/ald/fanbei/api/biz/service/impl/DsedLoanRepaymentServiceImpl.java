@@ -132,7 +132,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
 		KuaijieDsedLoanBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieDsedLoanBo.class);
 		if (kuaijieLoanBo.getRepayment() != null) {
-			changLoanRepaymentStatus(null, DsedLoanRepaymentStatus.PROCESSING.name(), kuaijieLoanBo.getRepayment().getRid());
+			loanRepaymentStatus(null, DsedLoanRepaymentStatus.PROCESSING.name(), kuaijieLoanBo.getRepayment().getRid());
 		}
 		return getResultMap(kuaijieLoanBo.getBo(),respBo);
 	}
@@ -595,8 +595,11 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			noticeRecordDo.setType(getStatus(loanRepaymentDo));
 			noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 			dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
+			DsedLoanDo loanDo = dsedLoanDao.getById(loanRepaymentDo.getLoanId());
 			HashMap<String, String> data = new HashMap<String, String>();
 			data.put("reason",errorMsg);
+			data.put("borrowNo",loanDo.getLoanNo());
+			data.put("status","REPAYFAIL");
 			if (xgxyUtil.dsedRePayNoticeRequest(data)) {
 				noticeRecordDo.setRid(noticeRecordDo.getRid());
 				noticeRecordDo.setGmtModified(new Date());
@@ -617,6 +620,19 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		loanRepay.setRid(rid);
 		loanRepay.setGmtModified(new Date());
 		return dsedLoanRepaymentDao.updateById(loanRepay);
+	}
+
+	/**
+	 * @Description: 还款状态修改(防止ups回调过快，导致数据覆盖)
+	 * @return  long
+	 */
+	private long loanRepaymentStatus(String outTradeNo, String status, Long rid) {
+		DsedLoanRepaymentDo loanRepay = new DsedLoanRepaymentDo();
+		loanRepay.setStatus(status);
+		loanRepay.setTradeNoOut(outTradeNo);
+		loanRepay.setRid(rid);
+		loanRepay.setGmtModified(new Date());
+		return dsedLoanRepaymentDao.updateStatusById(loanRepay);
 	}
 
 

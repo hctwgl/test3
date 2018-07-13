@@ -24,4 +24,6 @@ public interface DsedLoanRepaymentDao extends BaseDao<DsedLoanRepaymentDo, Long>
 
     DsedLoanRepaymentDo getLoanRepaymentByLoanId(@Param("loanId")Long loanId);
 
+    int updateStatusById (DsedLoanRepaymentDo dsedLoanRepaymentDo);
+
 }
