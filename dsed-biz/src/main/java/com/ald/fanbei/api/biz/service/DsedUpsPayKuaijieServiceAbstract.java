@@ -98,11 +98,7 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
 			logger.info("payBizObject="+payBizObject+",payTradeNo="+payTradeNo);
 			clearCache(payTradeNo);
-			String flags = respBo.getRespCode();
-			if(null == errorMsg){
-				flags = "default";
-			}
-			throw new FanbeiException(FanbeiExceptionCode.getByCode("UPS_ERROR_"+flags));
+			throw new FanbeiException(FanbeiExceptionCode.getByCode(errorMsg.name()));
 		} else {
 			Map<String, Object> resultMap = upsPaySuccess(payTradeNo, bankPayType, payBizObject, respBo, bank.get("bankCardNumber").toString());
 			clearCache(payTradeNo);
@@ -141,12 +137,8 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 		// 处理支付结果
 		if (!respBo.isSuccess()) {
 			// 获取短信码失败
-			String flag = respBo.getRespCode();
 			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
-			if(null == errorMsg){
-				flag = "default";
-			}
-			throw new FanbeiException(FanbeiExceptionCode.getByCode("UPS_ERROR_"+flag));
+			throw new FanbeiException(FanbeiExceptionCode.getByCode(errorMsg.name()));
 		} else {
 			// 添加数据到redis缓存
 			UpsCollectBo upsCollectBo = new UpsCollectBo(bank, payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(),
