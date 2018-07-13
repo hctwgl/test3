@@ -362,5 +362,21 @@
         LIMIT 1
     </select>
 
+    <update id="updateStatusById"  parameterType="com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo">
+        UPDATE dsed_loan_repayment
+        <set>
+            <if test="gmtModified != null and gmtModified != '' ">
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null and status != '' ">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeNoOut != null and tradeNoOut != '' ">
+                trade_no_out = #{tradeNoOut,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT} AND status in ('APPLY','SMS')
+    </update>
+
 
 </mapper>
