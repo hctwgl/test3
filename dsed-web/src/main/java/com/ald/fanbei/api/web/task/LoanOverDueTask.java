@@ -1,25 +1,43 @@
 package com.ald.fanbei.api.web.task;
 
-import com.ald.fanbei.api.biz.bo.XgxyOverdueBo;
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
-import com.ald.fanbei.api.biz.third.util.XgxyUtil;
-import com.ald.fanbei.api.common.enums.DsedNoticeType;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.CollectionUtil;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.*;
+import com.ald.fanbei.api.biz.bo.XgxyOverdueBo;
+import com.ald.fanbei.api.biz.service.DsedLoanOverdueLogService;
+import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
+import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
+import com.ald.fanbei.api.biz.service.DsedLoanService;
+import com.ald.fanbei.api.biz.service.DsedNoticeRecordService;
+import com.ald.fanbei.api.biz.service.DsedUserContactsService;
+import com.ald.fanbei.api.biz.service.DsedUserService;
+import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.biz.util.GetHostIpUtil;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.DsedNoticeType;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.dal.domain.DsedLoanDo;
+import com.ald.fanbei.api.dal.domain.DsedLoanOverdueLogDo;
+import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
+import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
+import com.ald.fanbei.api.dal.domain.DsedUserContactsDo;
+import com.ald.fanbei.api.dal.domain.DsedUserDo;
+import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 
 
 /**
@@ -29,7 +47,7 @@ import java.util.*;
  */
 @Component
 public class LoanOverDueTask {
-    Logger logger = LoggerFactory.getLogger(NoticeTask.class);
+    Logger logger = LoggerFactory.getLogger(LoanOverDueTask.class);
 
     @Resource
     private DsedLoanService dsedLoanService;
@@ -59,29 +77,37 @@ public class LoanOverDueTask {
     @Resource
     private DsedUserContactsService contactsService;
 
+    @Resource
+    GetHostIpUtil getHostIpUtil;
+
+    private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
+    
     @Scheduled(cron = "0 0 0 * * ?")
-//    @Scheduled(cron = "0/5 * * * * ?")
     public void laonDueJob(){
         try{
-            int pageSize = 200;
-            int totalRecord = dsedLoanPeriodsService.getLoanOverdueCount();
-            int totalPageNum =totalRecord/pageSize+1;
-            if (totalRecord == 0) {
-                logger.info("laonDueJob run finished,Loan Due size is 0.time=" + new Date());
-            }else {
-                logger.info("laonDueJob run start,time=" + new Date());
-                List<DsedLoanPeriodsDto>  loanDos;
-                for(int i = 0; i < totalPageNum; i++){
-                    loanDos=dsedLoanPeriodsService.getLoanOverdue(totalPageNum*i,pageSize);
-                    //计算逾期
-                    this.calcuOverdueRecords(loanDos);
-                    //通知催收逾期人员通讯录
-//                    collectionPush(loanDos);
-                }
+        	String curHostIp = getHostIpUtil.getIpAddress();
+        	logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
+        	if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)){
+        		int pageSize = 200;
+                int totalRecord = dsedLoanPeriodsService.getLoanOverdueCount();
+                int totalPageNum =totalRecord/pageSize+1;
+                if (totalRecord == 0) {
+                    logger.info("laonDueJob run finished,Loan Due size is 0.time=" + new Date());
+                }else {
+                    logger.info("laonDueJob run start,time=" + new Date());
+                    List<DsedLoanPeriodsDto>  loanDos;
+                    for(int i = 0; i < totalPageNum; i++){
+                        loanDos=dsedLoanPeriodsService.getLoanOverdue(totalPageNum*i,pageSize);
+                        //计算逾期
+                        this.calcuOverdueRecords(loanDos);
+                        //通知催收逾期人员通讯录
+//                        TODO collectionPush(loanDos);
+                    }
 
-            }
-            logger.info("laonDueJob run end,time=" + new Date());
-        }catch (Exception e){
+                }
+                logger.info("laonDueJob run end,time=" + new Date());
+        	}
+        } catch (Exception e){
             logger.error("laonDueJob  error, case=",e);
         }
     }
