@@ -30,8 +30,6 @@ import com.ald.fanbei.api.biz.bo.UpsQuickPayReqBo;
 import com.ald.fanbei.api.biz.bo.UpsReqBo;
 import com.ald.fanbei.api.biz.bo.UpsResendSmsReqBo;
 import com.ald.fanbei.api.biz.bo.UpsResendSmsRespBo;
-import com.ald.fanbei.api.biz.bo.UpsSignDelayReqBo;
-import com.ald.fanbei.api.biz.bo.UpsSignDelayRespBo;
 import com.ald.fanbei.api.biz.bo.UpsSignReleaseReqBo;
 import com.ald.fanbei.api.biz.bo.UpsSignReleaseRespBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
