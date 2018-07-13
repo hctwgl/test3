@@ -80,7 +80,6 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 	protected Map<String, Object> doUpsPay(String bankPayType, HashMap<String,Object> bank, String payTradeNo, BigDecimal actualAmount, Long userId,
 										   String realName, String idNumber, String smsCode, String payBizObject, String purpose, String remark, String merPriv) {
 		// 获取用户绑定银行卡信息
-		String flag = "";
 		// 调用ups进行支付
 		UpsCollectRespBo respBo = null;
 		if(StringUtil.equals(RepayType.WITHHOLD.getCode(), bank.get("bankChannel").toString())){
@@ -102,7 +101,7 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 			if(null == errorMsg){
 				flags = "default";
 			}
-			throw new FanbeiException(FanbeiExceptionCode.getByCode("UPS_ERROR_"+flag));
+			throw new FanbeiException(FanbeiExceptionCode.getByCode("UPS_ERROR_"+flags));
 		} else {
 			Map<String, Object> resultMap = upsPaySuccess(payTradeNo, bankPayType, payBizObject, respBo, bank.get("bankCardNumber").toString());
 			clearCache(payTradeNo);
