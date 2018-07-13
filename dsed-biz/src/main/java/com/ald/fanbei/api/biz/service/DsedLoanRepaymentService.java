@@ -54,5 +54,7 @@ public interface DsedLoanRepaymentService{
 
     public HashMap<String,String> buildData(DsedLoanRepaymentDo repaymentDo);
 
+    String getCurrentLastRepayNo(String orderNoPre);
+
 
 }

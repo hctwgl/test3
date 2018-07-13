@@ -223,7 +223,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			name = Constants.BORROW_REPAYMENT_NAME_AUTO;
 		}
 
-		String tradeNo = generatorClusterNo.getLoanNo(now);
+		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now, bankPayType);
 		bo.tradeNo = tradeNo;
 		bo.name = name;
 
@@ -1014,6 +1014,11 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		}
 
 		return allRestAmount;
+	}
+
+	@Override
+	public String getCurrentLastRepayNo(String orderNoPre) {
+		return dsedLoanRepaymentDao.getCurrentLastRepayNo(orderNoPre);
 	}
 
 

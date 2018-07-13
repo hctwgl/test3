@@ -26,4 +26,11 @@ public interface DsedLoanRepaymentDao extends BaseDao<DsedLoanRepaymentDo, Long>
 
     int updateStatusById (DsedLoanRepaymentDo dsedLoanRepaymentDo);
 
+    /**
+     * 查询某一天最后一个订单号
+     * @param orderNoPre
+     * @return
+     */
+    String getCurrentLastRepayNo(String orderNoPre);
+
 }

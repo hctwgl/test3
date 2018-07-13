@@ -379,4 +379,8 @@
     </update>
 
 
+    <select id="getCurrentLastRepayNo" resultType="java.lang.String">
+        select trade_no from dsed_loan_repayment WHERE trade_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
+    </select>
+
 </mapper>
