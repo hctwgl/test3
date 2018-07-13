@@ -116,12 +116,9 @@ public class XgxyUtil extends AbstractThird {
     public boolean dsedRePayNoticeRequest(HashMap<String, String> data) {
         try {
             logger.info("dsedRePayNoticeRequest PRIVATE_KEY = ", PRIVATE_KEY);
-            String oriParamJson = JSON.toJSONString(data);
-            JSONObject paramJsonObject = JSONObject.parseObject(oriParamJson);
-            String data1 = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY);
             Map<String, String> p = new HashMap<>();
-            p.put("data", data1);
-            p.put("sign", generateSign(paramJsonObject, PRIVATE_KEY));
+            p.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+            p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             p.put("appId", "edspay");
             
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackRepayResult";
