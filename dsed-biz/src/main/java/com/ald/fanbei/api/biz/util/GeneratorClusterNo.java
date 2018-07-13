@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
+import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +21,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("generatorClusterNo")
-public class GeneratorClusterNo {
+public class GeneratorClusterNo extends AbstractThird {
 
 	@Resource
 	TokenCacheUtil TokenCacheUtil;
@@ -136,8 +137,8 @@ public class GeneratorClusterNo {
 		try {
 			if (isGetLock) {// 获得同步锁
 				channelNum = (Integer) TokenCacheUtil.getObject(cacheKey);
-
-				if(StringUtil.isBlank(channelNum+"")){
+				logger.info("getRepaymentBorrowCacheSequenceNum channelNum = " + channelNum);
+				if(channelNum == null){
 					String repayNo = dsedLoanRepaymentService.getCurrentLastRepayNo(orderNoPre);
 					if (repayNo != null) {
 						channelNum = getOrderSeqInt(repayNo.substring(16, 20)) + 1;
