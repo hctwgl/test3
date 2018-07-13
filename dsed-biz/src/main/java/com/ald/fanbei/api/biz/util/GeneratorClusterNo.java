@@ -138,7 +138,7 @@ public class GeneratorClusterNo extends AbstractThird {
 			if (isGetLock) {// 获得同步锁
 				channelNum = (Integer) TokenCacheUtil.getObject(cacheKey);
 				logger.info("getRepaymentBorrowCacheSequenceNum channelNum = " + channelNum);
-				if(StringUtil.isBlank(channelNum+"")){
+				if(channelNum == null){
 					String repayNo = dsedLoanRepaymentService.getCurrentLastRepayNo(orderNoPre);
 					if (repayNo != null) {
 						channelNum = getOrderSeqInt(repayNo.substring(16, 20)) + 1;
