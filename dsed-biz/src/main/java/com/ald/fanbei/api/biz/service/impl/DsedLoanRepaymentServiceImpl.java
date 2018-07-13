@@ -162,11 +162,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
 		if (StringUtils.isNotBlank(payBizObject)) {
 			// 处理业务数据
-			if (StringUtil.isNotBlank(respBo.getRespCode())) {
-				dealRepaymentFail(payTradeNo, respBo.getTradeNo(), true, errorMsg);
-			} else {
-				dealRepaymentFail(payTradeNo, respBo.getTradeNo(), false, "");
-			}
+			dealRepaymentFail(payTradeNo, respBo.getTradeNo(), true, errorMsg);
 		} else {
 			// 未获取到缓存数据，支付订单过期
 			throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
