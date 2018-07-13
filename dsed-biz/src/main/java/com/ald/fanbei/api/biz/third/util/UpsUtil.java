@@ -63,7 +63,7 @@ public class UpsUtil extends AbstractThird {
 	private static String url = null;
 	private static String notifyHost = null;
 	
-	private static String SYS_KEY = "01";
+	private static String SYS_KEY = "02";
 	private static String TRADE_STATUE_SUCC = "00";
 	
 	private static String TRADE_STATUE_PART_SUCC = "01"; // 部分成功 
@@ -123,7 +123,7 @@ public class UpsUtil extends AbstractThird {
 	private static void setPubParam(UpsReqBo payRoutBo,String service,String orderNo,String clientType){
 		payRoutBo.setVersion("10");
 		payRoutBo.setService(service);
-		payRoutBo.setMerNo("01151209000");
+		payRoutBo.setMerNo("01151209002");
 		payRoutBo.setOrderNo(orderNo);
 		payRoutBo.setClientType(clientType);
 		payRoutBo.setMerPriv("");
