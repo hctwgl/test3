@@ -154,9 +154,7 @@
     <update id="updateNoticeRecordStatus"  parameterType="com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo">
         UPDATE dsed_notice_record
         <set>
-            <if test="gmtModified != null and gmtModified != '' ">
-                gmt_modified = now(),
-            </if>
+            gmt_modified = now(),
             status = 'SUCCESS',
             <if test="times != null and times != '' ">
                 times = #{times,jdbcType=VARCHAR}
@@ -168,9 +166,7 @@
     <update id="updateNoticeRecordTimes"  parameterType="com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo">
         UPDATE dsed_notice_record
         <set>
-            <if test="gmtModified != null and gmtModified != '' ">
-                gmt_modified = now(),
-            </if>
+            gmt_modified = now(),
             <if test="times != null and times != '' ">
                 times = #{times,jdbcType=VARCHAR}
             </if>
