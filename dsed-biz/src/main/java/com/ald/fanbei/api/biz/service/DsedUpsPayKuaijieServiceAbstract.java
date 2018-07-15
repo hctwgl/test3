@@ -86,12 +86,12 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 			daikouConfirmPre(payTradeNo, bankPayType, payBizObject);
 			respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(), bank.get("bankCardNumber").toString(),
 					idNumber, purpose, remark, "02", merPriv);
-			logger.info(" fail respBo = "+respBo);
 		}else if(StringUtil.equals(RepayType.KUAIJIE.getCode(), bank.get("bankChannel").toString())){
 			kuaijieConfirmPre(payTradeNo, bankPayType, payBizObject);
 			respBo = upsUtil.quickPayConfirm(payTradeNo, String.valueOf(userId), smsCode, "02", "REPAYMENT"); // TODO
 		}
 		// 处理支付结果
+		logger.info(" fail respBo = "+respBo);
 		if (!respBo.isSuccess()) {
 			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
 			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
@@ -136,6 +136,8 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 		if (!respBo.isSuccess()) {
 			// 获取短信码失败
 			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
+			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
+			clearCache(payTradeNo);
 			throw new FanbeiException(FanbeiExceptionCode.getByCode(errorMsg.name()));
 		} else {
 			// 添加数据到redis缓存

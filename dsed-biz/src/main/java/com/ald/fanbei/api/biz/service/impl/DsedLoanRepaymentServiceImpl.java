@@ -200,40 +200,45 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 	@Override
 	public Map<String, Object> repay(LoanRepayBo bo, String bankPayType) {
-		if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
-			lockRepay(bo.userId);
-		}
-		if (!bo.isAllRepay && !canRepay(bo.dsedLoanPeriodsDoList.get(0))) {
-			// 未出账时拦截按期还款
-			unLockRepay(bo.userId);
-			throw new FanbeiException("loan period can not repay error",FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
-		}
-
-		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
-		if (StringUtil.equals("sysJob", bo.remoteIp)) {
-			name = Constants.BORROW_REPAYMENT_NAME_AUTO;
-		}
-
-		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
-		bo.tradeNo = tradeNo;
-		bo.name = name;
-
-		// 根据 还款金额 更新期数信息
-		if (!bo.isAllRepay) { // 非提前结清
-			List<DsedLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.amount);
-			bo.dsedLoanPeriodsIds.clear();
-			bo.dsedLoanPeriodsDoList.clear();
-			for (DsedLoanPeriodsDo dsedLoanPeriodsDo : loanPeriods) {
-				bo.dsedLoanPeriodsIds.add(dsedLoanPeriodsDo.getRid());
-				bo.dsedLoanPeriodsDoList.add(dsedLoanPeriodsDo);
+		try {
+			if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
+				lockRepay(bo.userId);
 			}
+			if (!bo.isAllRepay && !canRepay(bo.dsedLoanPeriodsDoList.get(0))) {
+				// 未出账时拦截按期还款
+				unLockRepay(bo.userId);
+				throw new FanbeiException("loan period can not repay error",FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
+			}
+
+			String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+			if (StringUtil.equals("sysJob", bo.remoteIp)) {
+				name = Constants.BORROW_REPAYMENT_NAME_AUTO;
+			}
+
+			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
+			bo.tradeNo = tradeNo;
+			bo.name = name;
+
+			// 根据 还款金额 更新期数信息
+			if (!bo.isAllRepay) { // 非提前结清
+				List<DsedLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.amount);
+				bo.dsedLoanPeriodsIds.clear();
+				bo.dsedLoanPeriodsDoList.clear();
+				for (DsedLoanPeriodsDo dsedLoanPeriodsDo : loanPeriods) {
+					bo.dsedLoanPeriodsIds.add(dsedLoanPeriodsDo.getRid());
+					bo.dsedLoanPeriodsDoList.add(dsedLoanPeriodsDo);
+				}
+			}
+
+			// 增加还款记录
+			generateRepayRecords(bo);
+
+			// 还款操作
+			return doRepay(bo, bo.dsedloanRepaymentDo, bankPayType);
+		}finally {
+			unLockRepay(bo.userId);
 		}
 
-		// 增加还款记录
-		generateRepayRecords(bo);
-
-		// 还款操作
-		return doRepay(bo, bo.dsedloanRepaymentDo, bankPayType);
 
 	}
 
