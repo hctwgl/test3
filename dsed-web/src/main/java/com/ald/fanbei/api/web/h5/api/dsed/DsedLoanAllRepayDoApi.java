@@ -53,7 +53,6 @@ public class DsedLoanAllRepayDoApi implements DsedH5Handle {
 	@Override
 	public DsedH5HandleResponse process(Context context) {
 		LoanAllRepayDoParam param = (LoanAllRepayDoParam) context.getParamEntity();
-		Map<String, Object> data = new HashMap<String, Object>();
 		String bankNo = param.bankNo;
 		Long userId = context.getUserId();
 		HashMap<String,Object> map = dsedUserBankcardService.getPayTypeByBankNoAndUserId(userId,bankNo);
@@ -65,7 +64,9 @@ public class DsedLoanAllRepayDoApi implements DsedH5Handle {
 		bo.remoteIp = context.getClientIp();
 		bo.cardName = map.get("bankName").toString();
 		bo.isAllRepay = true;
-		data = this.dsedLoanRepaymentService.repay(bo,payType);
+		
+		this.dsedLoanRepaymentService.repay(bo,payType);
+		
 		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
 		Map<String, Object> hashMap = new HashMap<String, Object>();
 		hashMap.put("payMethod",payType);

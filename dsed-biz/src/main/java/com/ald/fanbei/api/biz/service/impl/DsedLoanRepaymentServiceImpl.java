@@ -59,6 +59,7 @@ import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
+import com.timevale.esign.sdk.tech.service.impl.b;
 
 import net.sf.json.JSONArray;
 
@@ -199,14 +200,13 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 
 	@Override
-	public Map<String, Object> repay(LoanRepayBo bo, String bankPayType) {
+	public void repay(LoanRepayBo bo, String bankPayType) {
 		try {
 			if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
 				lockRepay(bo.userId);
 			}
 			if (!bo.isAllRepay && !canRepay(bo.dsedLoanPeriodsDoList.get(0))) {
 				// 未出账时拦截按期还款
-				unLockRepay(bo.userId);
 				throw new FanbeiException("loan period can not repay error",FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
 			}
 
@@ -234,11 +234,21 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			generateRepayRecords(bo);
 
 			// 还款操作
-			return doRepay(bo, bo.dsedloanRepaymentDo, bankPayType);
-		}finally {
+			doRepay(bo, bo.dsedloanRepaymentDo, bankPayType);
+		} catch (Exception e) {
+			if(bo.dsedloanRepaymentDo != null) {
+				bo.dsedloanRepaymentDo.setStatus(DsedLoanRepaymentStatus.FAIL.name());
+				bo.dsedloanRepaymentDo.setRemark("exception occur,msg = " + e.getMessage());
+				dsedLoanRepaymentDao.updateStatusById(bo.dsedloanRepaymentDo);
+			}
+			
 			unLockRepay(bo.userId);
+			if(e instanceof FanbeiException) {
+				throw e;
+			}else {
+				throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL, e);
+			}
 		}
-
 
 	}
 
