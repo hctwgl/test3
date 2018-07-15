@@ -206,7 +206,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 	@Override
 	public Map<String, Object> repay(LoanRepayBo bo, String bankPayType) {
-		logger.info("dsedLoanRepaymentService repay LoanRepayBo ="+JSON.toJSONString(bo));
 		if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
 			lockRepay(bo.userId);
 		}
