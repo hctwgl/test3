@@ -86,17 +86,15 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 			daikouConfirmPre(payTradeNo, bankPayType, payBizObject);
 			respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(), bank.get("bankCardNumber").toString(),
 					idNumber, purpose, remark, "02", merPriv);
+			logger.info(" fail respBo = "+respBo);
 		}else if(StringUtil.equals(RepayType.KUAIJIE.getCode(), bank.get("bankChannel").toString())){
 			kuaijieConfirmPre(payTradeNo, bankPayType, payBizObject);
 			respBo = upsUtil.quickPayConfirm(payTradeNo, String.valueOf(userId), smsCode, "02", "REPAYMENT"); // TODO
 		}
-
 		// 处理支付结果
 		if (!respBo.isSuccess()) {
 			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
-			
 			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
-			logger.info("payBizObject="+payBizObject+",payTradeNo="+payTradeNo);
 			clearCache(payTradeNo);
 			throw new FanbeiException(FanbeiExceptionCode.getByCode(errorMsg.name()));
 		} else {

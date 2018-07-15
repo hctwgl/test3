@@ -209,7 +209,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			throw new FanbeiException("loan period can not repay error",FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
 		}
 
-		Date now = new Date();
 		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
 		if (StringUtil.equals("sysJob", bo.remoteIp)) {
 			name = Constants.BORROW_REPAYMENT_NAME_AUTO;
@@ -576,7 +575,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	public void dealRepaymentFail(String tradeNo, String outTradeNo,boolean isNeedMsgNotice,String errorMsg) {
 		final DsedLoanRepaymentDo loanRepaymentDo = dsedLoanRepaymentDao.getRepayByTradeNo(tradeNo);
 		logger.info("dealRepaymentFail process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo + ",isNeedMsgNotice=" + isNeedMsgNotice + ",errorMsg=" + errorMsg + ",borrowRepayment=" + JSON.toJSONString(loanRepaymentDo));
-
 		if ((loanRepaymentDo != null && DsedLoanRepaymentStatus.SUCC.name().equals(loanRepaymentDo.getStatus()))) { // 检查交易流水 对应记录数据库中是否已经处理
 			return;
 		}
@@ -587,23 +585,23 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 		// 解锁还款
 		unLockRepay(loanRepaymentDo.getUserId());
-			//还款失败，调用西瓜信用通知接口
-			DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
-			noticeRecordDo.setUserId(loanRepaymentDo.getUserId());
-			noticeRecordDo.setRefId(String.valueOf(loanRepaymentDo.getRid()));
-			noticeRecordDo.setType(getStatus(loanRepaymentDo));
-			noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
-			dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
-			DsedLoanDo loanDo = dsedLoanDao.getById(loanRepaymentDo.getLoanId());
-			HashMap<String, String> data = new HashMap<String, String>();
-			data.put("reason",errorMsg);
-			data.put("borrowNo",loanDo.getLoanNo());
-			data.put("status","REPAYFAIL");
-			if (xgxyUtil.dsedRePayNoticeRequest(data)) {
-				noticeRecordDo.setRid(noticeRecordDo.getRid());
-				noticeRecordDo.setGmtModified(new Date());
-				dsedNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
-			}
+		//还款失败，调用西瓜信用通知接口
+		DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
+		noticeRecordDo.setUserId(loanRepaymentDo.getUserId());
+		noticeRecordDo.setRefId(String.valueOf(loanRepaymentDo.getRid()));
+		noticeRecordDo.setType(getStatus(loanRepaymentDo));
+		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+		dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
+		DsedLoanDo loanDo = dsedLoanDao.getById(loanRepaymentDo.getLoanId());
+		HashMap<String, String> data = new HashMap<String, String>();
+		data.put("reason",errorMsg);
+		data.put("borrowNo",loanDo.getLoanNo());
+		data.put("status","REPAYFAIL");
+		if (xgxyUtil.dsedRePayNoticeRequest(data)) {
+			noticeRecordDo.setRid(noticeRecordDo.getRid());
+			noticeRecordDo.setGmtModified(new Date());
+			dsedNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
+		}
 
 
 	}
