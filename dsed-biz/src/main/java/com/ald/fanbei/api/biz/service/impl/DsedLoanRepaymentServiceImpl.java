@@ -188,17 +188,11 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	public BigDecimal calculateRestAmount(DsedLoanPeriodsDo dsedLoanPeriodsDo) {
 		BigDecimal restAmount = BigDecimal.ZERO;
 		Date now=new Date();
-		if((dsedLoanPeriodsDo.getGmtPlanRepay().getTime()-now.getTime())/(1000*3600*24)<=30){
 			restAmount = BigDecimalUtil.add(restAmount,dsedLoanPeriodsDo.getAmount(),
 					dsedLoanPeriodsDo.getRepaidInterestFee(),dsedLoanPeriodsDo.getInterestFee(),
 					dsedLoanPeriodsDo.getServiceFee(),dsedLoanPeriodsDo.getRepaidServiceFee(),
 					dsedLoanPeriodsDo.getOverdueAmount(),dsedLoanPeriodsDo.getRepaidOverdueAmount())
 					.subtract(dsedLoanPeriodsDo.getRepayAmount());
-		}else {
-			restAmount = BigDecimalUtil.add(restAmount,dsedLoanPeriodsDo.getAmount())
-					.subtract(dsedLoanPeriodsDo.getRepayAmount());
-		}
-
 		return restAmount;
 	}
 
