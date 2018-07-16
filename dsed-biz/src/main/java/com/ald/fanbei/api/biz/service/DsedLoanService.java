@@ -1,12 +1,16 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.biz.bo.dsed.DsedApplyLoanBo;
+import com.ald.fanbei.api.common.enums.DsedLoanStatus;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
+import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 
 import java.util.Date;
 import java.util.List;
-
 import java.math.BigDecimal;
+
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 /**
  * 借款Service
@@ -71,12 +75,8 @@ public interface DsedLoanService extends ParentService<DsedLoanDo, Long> {
 
     DsedLoanDo getByUserId(Long userId);
 
-    /**
-     * 根据用户id和产品类型获取最新一条
-     *
-     * @author wangli
-     * @date 2018/4/14 12:13
-     */
     DsedLoanDo getLastByUserIdAndPrdType(Long userId, String prdType);
+    
+    void dealLoanFail(final DsedLoanDo loanDo, List<DsedLoanPeriodsDo> periodDos, String msg);
 
 }

@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
+import com.ald.fanbei.api.dal.domain.dto.DsedLoanDto;
+import com.ald.fanbei.api.dal.domain.dto.DsedOverdueInfoDto;
 
 import java.util.Date;
 import java.util.List;
@@ -33,4 +35,10 @@ public interface DsedLoanDao extends BaseDao<DsedLoanDo, Long> {
      * @return
      */
     String getCurrentLastBorrowNo(String orderNoPre);
+
+	DsedOverdueInfoDto getOverdueInfoByUserId(Long userId);
+
+
+	DsedLoanDto getBorrowInfoById(Long loanId);
+   
 }

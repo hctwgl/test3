@@ -12,6 +12,7 @@ import com.ald.fanbei.api.dal.domain.DsedAssetSideInfoDo;
  */
 public interface DsedAssetSideInfoDao extends BaseDao<DsedAssetSideInfoDo, Long> {
 
-    
+	DsedAssetSideInfoDo getByFlag(String assetSideEdspayFlag);
+
 
 }

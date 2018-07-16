@@ -236,4 +236,14 @@
         <include refid="commonCondition"/>
     </select>
     
+     <select id="getByFlag" resultType="com.ald.fanbei.api.dal.domain.DsedAssetSideInfoDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_asset_side_info
+        WHERE 
+        	is_delete = 0 
+       	AND asset_side_flag=#{assetSideEdspayFlag}
+        LIMIT 0,1
+    </select>
+    
 </mapper>

@@ -20,20 +20,15 @@ public class Create {
 		String database = "51fanbei_app";
 
 
-		String tables = "af_user_bankcard_type";
+		String tables = "dsed_loan_push";
 
 		// 配置作者及Domain说明
-		String classAuthor = "gaojibin";
-		String functionName = "信用卡绑定及订单支付";
+		String classAuthor = "wujun";
+		String functionName = "都市e贷的实时债权推送拓展表";
 
 
 //		String tables = "af_facescore_img";
 //
-//
-//
-
-
-
 		// 公共包路径 (例如 BaseDao、 BaseService、 BaseServiceImpl)
 		String commonName = "";
 

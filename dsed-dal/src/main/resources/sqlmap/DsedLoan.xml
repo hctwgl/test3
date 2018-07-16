@@ -610,6 +610,41 @@
 		WHERE is_delete = 0 AND loan_no=#{loanNo}
 		LIMIT 1
 	</select>
-
+	
+	<select id="getOverdueInfoByUserId" resultType="DsedLoanDo">
+		SELECT
+			COUNT(1) overdueNums,ifnull(sum(overdue_amount),0) overdueAmount
+		FROM
+			dsed_loan
+		WHERE
+			`status` IN ('TRANSFERRED', 'FINISHED') 
+		AND overdue_status='Y' 
+		AND user_id = #{userId} 
+		AND is_delete = 0
+	</select>
+	
+	<select id="getBorrowInfoById" resultType="com.ald.fanbei.api.dal.domain.dto.DsedLoanDto">
+		SELECT
+			dl.loan_no orderNo,
+			dl.user_id userId,
+			du.real_name realName,
+			du.id_number cardId,
+			dub.mobile mobile,
+			dl.bank_card_number bankNo,
+			dl.bank_card_name cardName,
+			dl.arrival_amount arrivalAmount,
+			dl.loan_remark loanRemark,
+			dl.repay_remark repayRemark,
+			dl.gmt_create loanStartTime,
+			dl.periods periods
+		FROM
+			dsed_loan dl
+		LEFT JOIN dsed_user du ON du.id = dl.user_id
+  		left JOIN dsed_user_bankcard dub ON dub.bank_card_number=dl.bank_card_number
+	 	WHERE dl.id= #{loanId} 
+        LIMIT 0,1
+	</select>
+	
+	
 
 </mapper>

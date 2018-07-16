@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.DsedAssetSideInfoDo;
  */
 public interface DsedAssetSideInfoService extends ParentService<DsedAssetSideInfoDo, Long>{
 
+	DsedAssetSideInfoDo getByFlag(String assetSideEdspayFlag);
+
 }

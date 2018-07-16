@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedAssetSideInfoDao;
 import com.ald.fanbei.api.dal.domain.DsedAssetSideInfoDo;
@@ -29,8 +30,14 @@ public class DsedAssetSideInfoServiceImpl extends ParentServiceImpl<DsedAssetSid
     @Resource
     private DsedAssetSideInfoDao dsedAssetSideInfoDao;
 
-		@Override
+	@Override
 	public BaseDao<DsedAssetSideInfoDo, Long> getDao() {
 		return dsedAssetSideInfoDao;
 	}
+
+	@Override
+	public DsedAssetSideInfoDo getByFlag(String assetSideEdspayFlag) {
+		return dsedAssetSideInfoDao.getByFlag(assetSideEdspayFlag);
+	}
+		
 }
