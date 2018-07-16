@@ -26,14 +26,6 @@ public interface DsedUserBankcardService extends ParentService<DsedUserBankcardD
     HashMap<String, Object> getPayTypeByBankNoAndUserId(Long userId, String cardNumber);
 
     /**
-     * 获取用户主卡信息
-     *
-     * @param userId
-     * @return
-     */
-    DsedUserBankcardDo getUserMainBankcardByUserId(Long userId);
-
-    /**
      * 加工银行卡号,只显示尾号
      *
      * @param bankcard
