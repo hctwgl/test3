@@ -1,31 +1,33 @@
 package com.ald.fanbei.web.test.api.dsed;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
+import com.ald.fanbei.api.biz.util.TokenCacheUtil;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.UpsErrorType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.api.biz.arbitration.MD5;
-import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.DsedSignUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.web.test.common.AccountOfTester;
 import com.ald.fanbei.web.test.common.BaseTest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import javax.annotation.Resource;
+
 public class DsedLoanTest extends BaseTest {
     /**
      * 自测根据自己的业务修改下列属性 TODO
      */
-//	String urlBase = "https://testapi.51fanbei.com";
-//  String urlBase = "http://localhost:8080";
-    String urlBase = "http://192.168.112.40:8080";
+//	String urlBase = "https://dsed.51fanbei.com";
+  String urlBase = "http://localhost:8089";
+//    String urlBase = "http://192.168.117.188:8089";
     
     String userName = AccountOfTester.夏枫.mobile;
 
@@ -37,14 +39,29 @@ public class DsedLoanTest extends BaseTest {
         super.init(userName);
     }
 
+    @Resource
+    com.ald.fanbei.api.biz.util.TokenCacheUtil tokenCacheUtil;
+    @Resource
+    DsedLoanRepaymentService dsedLoanRepaymentService;
     /**
      * 获取借钱首页详情
      */
     @Test
     public void getHomeInfo() {
-        String msg = String.format("该银行单笔限额%.2f元，请使用其他银行卡还款，谢谢！", 0.1);
-        String url = urlBase + "/h5/loan/getLoanHomeInfo";
-        testH5(url, null, userName, true);
+        UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode("9998");
+
+        throw new FanbeiException(FanbeiExceptionCode.getByCode(errorMsg.name()));
+
+
+    }
+
+    private int getOrderSeqInt(String orderStrVal) {
+        orderStrVal = orderStrVal == null ? "" : orderStrVal;
+        String newStr = orderStrVal.replaceFirst("^0*", "");
+        if (StringUtil.isBlank(newStr)) {
+            return 1;
+        }
+        return Integer.parseInt(newStr);
     }
 
     /**
@@ -115,8 +132,8 @@ public class DsedLoanTest extends BaseTest {
 		Map<String,String> params = new HashMap<>();
         params.put("amount", 1+"");
         params.put("curPeriod", 1+"");
-        params.put("bankNo", "6214835896219365");
-        params.put("borrowNo", "dk2018071009541700092");
+        params.put("bankNo", "6214835890543422");
+        params.put("borrowNo", "dk2018071302455300249");
         params.put("userId","1C9064925F3AAF85BC663FEB1727DD4B");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
