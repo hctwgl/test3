@@ -65,6 +65,7 @@ public class DsedApplyLoanApi implements DsedH5Handle {
         rp.remark = p.remark;
         rp.loanRemark = p.loanRemark;
         rp.repayRemark = p.repayRemark;
+        rp.bankCardNumber = p.bankNo;
     }
 
     public DsedLoanVo getDsedInfo(Long userId){

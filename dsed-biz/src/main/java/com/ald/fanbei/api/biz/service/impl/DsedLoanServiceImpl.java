@@ -113,7 +113,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
                 periodDos.add((DsedLoanPeriodsDo) o);
             }
 
-            final DsedUserBankcardDo bankCard = dsedUserBankcardDao.getUserMainBankcardByUserId(userId);
+            final DsedUserBankcardDo bankCard = dsedUserBankcardDao.getUserMainBankcardByUserId(userId,reqParam.bankCardNumber);
 
             if (bankCard == null){
                 throw new FanbeiException(FanbeiExceptionCode.DSED_BANK_NOT_EXIST_ERROR);
