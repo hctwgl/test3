@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,13 +36,6 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.BankPayChannel;
-import com.ald.fanbei.api.common.enums.DsedLoanPeriodStatus;
-import com.ald.fanbei.api.common.enums.DsedLoanRepaymentStatus;
-import com.ald.fanbei.api.common.enums.DsedLoanStatus;
-import com.ald.fanbei.api.common.enums.DsedNoticeType;
-import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -505,20 +499,39 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		//会对逾期的借款还款，向催收平台同步还款信息
 		if (DateUtil.compareDate(new Date(), LoanRepayDealBo.loanPeriodsDoList.get(0).getGmtPlanRepay()) ){
 			try {
-				CollectionSystemReqRespBo respInfo = collectionSystemUtil.consumerRepayment(
-						LoanRepayDealBo.userId,
-						LoanRepayDealBo.curTradeNo,
-						LoanRepayDealBo.loanNo,
-						LoanRepayDealBo.curCardNo,
-						LoanRepayDealBo.curCardName,
-						DateUtil.formatDateTime(new Date()),
-						LoanRepayDealBo.curOutTradeNo,
-						LoanRepayDealBo.curSumRepayAmount,
-						LoanRepayDealBo.sumAmount.subtract(LoanRepayDealBo.sumRepaidAmount).setScale(2, RoundingMode.HALF_UP), //未还的
-						LoanRepayDealBo.sumAmount.setScale(2, RoundingMode.HALF_UP),
-						LoanRepayDealBo.sumOverdueAmount,
-						LoanRepayDealBo.sumRepaidAmount,
-						LoanRepayDealBo.sumInterest,false);
+				BigDecimal amount = BigDecimal.ZERO;
+				BigDecimal repayAmount = BigDecimal.ZERO;
+				List<HashMap<String,String>> list = new ArrayList<>();
+				Map<String, String> reqBo = new HashMap<String, String>();
+				HashMap<String, String> data = new HashMap<String, String>();
+				//("订单编号")
+				reqBo.put("orderNo", LoanRepayDealBo.loanNo);
+				//("还款流水")
+				reqBo.put("repaymentNo", LoanRepayDealBo.curTradeNo);
+				//("还款时间")
+				reqBo.put("repayTime", DateUtil.formatDateTime(new Date()));
+				reqBo.put("type", AfRepayCollectionType.APP.getCode());
+				reqBo.put("repaymentAcc", LoanRepayDealBo.userId+"");//还款账户
+				for(DsedLoanPeriodsDo dsedLoanPeriodsDo : LoanRepayDealBo.loanPeriodsDoList){
+					if(StringUtil.equals(dsedLoanPeriodsDo.getOverdueStatus(),YesNoStatus.YES.getCode())){
+						repayAmount = BigDecimalUtil.add(dsedLoanPeriodsDo.getAmount(),
+								dsedLoanPeriodsDo.getRepaidInterestFee(),dsedLoanPeriodsDo.getInterestFee(),
+								dsedLoanPeriodsDo.getServiceFee(),dsedLoanPeriodsDo.getRepaidServiceFee(),
+								dsedLoanPeriodsDo.getOverdueAmount(),dsedLoanPeriodsDo.getRepaidOverdueAmount())
+								.subtract(dsedLoanPeriodsDo.getRepayAmount());
+						amount = repayAmount.add(amount);
+						data.put("dataId",dsedLoanPeriodsDo.getRid().toString());
+						data.put("amount",repayAmount.toString());
+						list.add(data);
+						data.clear();
+
+					}
+				}
+				//还款总额(逾期)
+				reqBo.put("totalAmount", amount+"");
+				//("还款详情, 格式: [{'dataId':'数据编号', 'amount':'还款金额(元, 精确到分)'},...]")
+				reqBo.put("details", JSON.toJSONString(list));
+				CollectionSystemReqRespBo respInfo = collectionSystemUtil.consumerRepayment(reqBo);
 				logger.info("collection consumerRepayment req success, respinfo={}", respInfo);
 			} catch (Exception e) {
 				logger.error("向催收平台同步还款信息失败", e);

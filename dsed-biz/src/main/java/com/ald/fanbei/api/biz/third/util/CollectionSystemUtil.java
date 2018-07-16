@@ -113,45 +113,11 @@ public class CollectionSystemUtil extends AbstractThird {
 
 	/**
 	 * 都市e贷主动还款通知催收平台
-	 *
-	 * @param repayNo
-	 *            --还款编号
-	 * @param borrowNo
-	 *            --借款单号
-	 * @param cardNumber
-	 *            --卡号
-	 * @param cardName
-	 *            --银行卡名称（支付方式）
-	 * @param amount
-	 *            --还款金额
-	 * @param restAmount
-	 *            --剩余未还金额
-	 * @param repayAmount
-	 *            --理论应还款金额
-	 * @param overdueAmount
-	 *            --逾期手续费
-	 * @param repayAmountSum
-	 *            --已还总额
-	 * @param rateAmount
-	 *            --利息
+	 * @param reqBo
 	 * @return
 	 */
-	public CollectionSystemReqRespBo consumerRepayment(Long userId,String repayNo, String borrowNo, String cardNumber,
-													   String cardName, String repayTime, String tradeNo, BigDecimal amount, BigDecimal restAmount,
-													   BigDecimal repayAmount, BigDecimal overdueAmount, BigDecimal repayAmountSum, BigDecimal rateAmount, Boolean isCashOverdue) {
+	public CollectionSystemReqRespBo consumerRepayment(Map<String, String> reqBo) {
 		CollectionDataBo data = new CollectionDataBo();
-		Map<String, String> reqBo = new HashMap<String, String>();
-		reqBo.put("orderNo", borrowNo);
-		reqBo.put("totalAmount", amount+"");
-		reqBo.put("repaymentNo", repayNo);
-		reqBo.put("repayTime", repayTime);
-		reqBo.put("repaymentAcc", userId+"");//还款账户
-		reqBo.put("type", AfRepayCollectionType.APP.getCode());
-		reqBo.put("details", repayTime);
-		//判断逾期是否平账
-		if(isCashOverdue){
-			data.setIsFinish("1");
-		}
 		String json = JsonUtil.toJSONString(reqBo);
 		data.setData(json);// 数据集合
 		data.setSign(DigestUtil.MD5(json));
@@ -163,7 +129,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			logger.info("repaymentAchieve request :" + JSON.toJSONString(data));
 			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(
 					getUrl() + "/api/ald/collect/v1/third/repayment", getUrlParamsByMap(data));
-			logger.info(getUrl() + "/api/getway/repayment/repaymentAchieve");
+			logger.info(getUrl() + "/api/ald/collect/v1/third/repayment");
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new FanbeiException("consumerRepayment fail , reqResult is null");
@@ -180,8 +146,6 @@ public class CollectionSystemUtil extends AbstractThird {
 			}
 		} catch (Exception e) {
 			logger.error("consumerRepayment error:", e);
-//			commitRecordUtil.addRecord(AfRepeatCollectionType.APP_REPAYMENT.getCode(), borrowNo, json,
-//					getUrl() + "/api/getway/repayment/repaymentAchieve");
 			throw new FanbeiException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
 		}
 	}
