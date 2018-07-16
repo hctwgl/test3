@@ -457,7 +457,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				if (collectionRepaymentId != null){
 					repaymentDo.setRemark(String.valueOf(collectionRepaymentId));
 				}
-//				nofityRisk(loanRepayDealBo);
+				nofityRisk(loanRepayDealBo,repaymentDo);
 				//还款成功，调用西瓜信用通知接口
 				DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
 				noticeRecordDo.setUserId(repaymentDo.getUserId());
@@ -495,7 +495,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		return DsedNoticeType.REPAY.code;
 	}
 
-	private void nofityRisk(LoanRepayDealBo LoanRepayDealBo) {
+	private void nofityRisk(LoanRepayDealBo LoanRepayDealBo,DsedLoanRepaymentDo repaymentDo) {
 		//会对逾期的借款还款，向催收平台同步还款信息
 		if (DateUtil.compareDate(new Date(), LoanRepayDealBo.loanPeriodsDoList.get(0).getGmtPlanRepay()) ){
 			try {
@@ -503,7 +503,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				BigDecimal repayAmount = BigDecimal.ZERO;
 				List<HashMap<String,String>> list = new ArrayList<>();
 				Map<String, String> reqBo = new HashMap<String, String>();
-				HashMap<String, String> data = new HashMap<String, String>();
+
 				//("订单编号")
 				reqBo.put("orderNo", LoanRepayDealBo.loanNo);
 				//("还款流水")
@@ -519,12 +519,18 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 								dsedLoanPeriodsDo.getServiceFee(),dsedLoanPeriodsDo.getRepaidServiceFee(),
 								dsedLoanPeriodsDo.getOverdueAmount(),dsedLoanPeriodsDo.getRepaidOverdueAmount())
 								.subtract(dsedLoanPeriodsDo.getRepayAmount());
-						amount = repayAmount.add(amount);
+						HashMap<String, String> data = new HashMap<String, String>();
 						data.put("dataId",dsedLoanPeriodsDo.getRid().toString());
-						data.put("amount",repayAmount.toString());
+						if(StringUtil.equals(repaymentDo.getPreRepayStatus(),YesNoStatus.NO.getCode())){
+							if(repayAmount.compareTo(repaymentDo.getActualAmount())>0){
+								amount = repaymentDo.getActualAmount();
+								data.put("amount",repaymentDo.getActualAmount().toString());
+							}
+						}else {
+							amount = repayAmount.add(amount);
+							data.put("amount",repayAmount.toString());
+						}
 						list.add(data);
-						data.clear();
-
 					}
 				}
 				//还款总额(逾期)
