@@ -171,4 +171,13 @@
 		AND is_delete=0
     </update>
     
+    <select id="getCurPushDebt" parameterType="java.lang.String" resultType="com.ald.fanbei.api.dal.domain.DsedRetryTemplDo">
+    	SELECT
+		<include refid="queryFields" />
+		FROM dsed_retry_templ
+		WHERE
+			bus_id = #{busId}
+		AND event_type =#{eventType}
+    </select> 
+    
 </mapper>

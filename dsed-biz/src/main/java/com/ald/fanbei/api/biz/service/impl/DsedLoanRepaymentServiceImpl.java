@@ -25,11 +25,13 @@ import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.KuaijieDsedLoanBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.XgxyRepayBo;
+import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
 import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.DsedNoticeRecordService;
 import com.ald.fanbei.api.biz.service.DsedUpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.service.DsedUserService;
+import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
@@ -105,8 +107,9 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	XgxyUtil xgxyUtil;
 	@Resource
 	DsedLoanPeriodsService dsedLoanPeriodsService;
-
-
+	@Resource
+	AssetSideEdspayUtil assetSideEdspayUtil;
+	
 	@Override
 	public DsedLoanRepaymentDo getProcessLoanRepaymentByLoanId(Long loanId){
 		return dsedLoanRepaymentDao.getProcessLoanRepaymentByLoanId(loanId);
@@ -902,6 +905,19 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			dsedLoanDao.updateById(loanDo);
 
 			loanRepayDealBo.loanDo.setStatus(DsedLoanStatus.FINISHED.name());
+
+			boolean isBefore = DateUtil.isBefore(new Date(),DateUtil.addDays(loanPeriodsDo.getGmtPlanRepay(), -1));
+			if (isBefore) {
+				if (assetSideEdspayUtil.isPush(loanRepayDealBo.loanDo)) {
+					List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(loanRepayDealBo.loanDo,3);
+					boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+					if (result) {
+						logger.info("dsed transModifiedBorrowInfo success,loanId="+loanRepayDealBo.loanDo.getRid());
+					}else{
+						assetSideEdspayUtil.transFailRecord(loanRepayDealBo.loanDo, modifiedLoanInfo);
+					}
+				}
+			}
 
 		}
 	}

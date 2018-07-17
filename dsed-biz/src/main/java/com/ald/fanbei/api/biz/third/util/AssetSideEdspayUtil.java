@@ -24,9 +24,14 @@ import com.ald.fanbei.api.biz.bo.aassetside.edspay.RepaymentPlan;
 import com.ald.fanbei.api.biz.bo.assetpush.AssetPushStrategy;
 import com.ald.fanbei.api.biz.bo.assetpush.AssetPushSwitchConf;
 import com.ald.fanbei.api.biz.bo.assetpush.EdspayGetCreditRespBo;
+import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
+import com.ald.fanbei.api.biz.bo.assetpush.ModifiedRepaymentPlan;
 import com.ald.fanbei.api.biz.service.DsedAssetSideInfoService;
+import com.ald.fanbei.api.biz.service.DsedCommitRecordService;
+import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.DsedLoanPushService;
 import com.ald.fanbei.api.biz.service.DsedLoanService;
+import com.ald.fanbei.api.biz.service.DsedNotifyRecordService;
 import com.ald.fanbei.api.biz.service.DsedRecordMaxService;
 import com.ald.fanbei.api.biz.service.DsedResourceService;
 import com.ald.fanbei.api.biz.service.DsedRetryTemplService;
@@ -36,6 +41,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.AssetPushBusiType;
 import com.ald.fanbei.api.common.enums.DsedLoanStatus;
+import com.ald.fanbei.api.common.enums.DsedRepeatAssetSideType;
 import com.ald.fanbei.api.common.enums.OpenCloseStatus;
 import com.ald.fanbei.api.common.enums.PushEdspayResult;
 import com.ald.fanbei.api.common.enums.ResourceType;
@@ -53,9 +59,11 @@ import com.ald.fanbei.api.dal.dao.DsedLoanDao;
 import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
 import com.ald.fanbei.api.dal.dao.DsedUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.DsedAssetSideInfoDo;
+import com.ald.fanbei.api.dal.domain.DsedCommitRecordDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPushDo;
+import com.ald.fanbei.api.dal.domain.DsedNotifyRecordDo;
 import com.ald.fanbei.api.dal.domain.DsedRecordMaxDo;
 import com.ald.fanbei.api.dal.domain.DsedResourceDo;
 import com.ald.fanbei.api.dal.domain.DsedRetryTemplDo;
@@ -101,6 +109,13 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	DsedUserService dsedUserService;
 	@Resource
 	DsedRecordMaxService dsedRecordMaxService;
+	@Resource
+	DsedLoanPeriodsService dsedLoanPeriodsService;
+	@Resource
+	DsedNotifyRecordService dsedNotifyRecordService;
+	@Resource
+	DsedCommitRecordService dsedCommitRecordService;
+	
 
 	/**
 	 * 债权实时推送接口
@@ -312,7 +327,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 									dsedLoanService.dealLoanFail(dsedLoanDo, periodDos, "UPS打款失败，"+upsResult.getRespCode());
 									return notifyRespBo;
 								}
-								dsedLoanDo.setStatus(DsedLoanStatus.TRANSFERING.getDesz());
+								dsedLoanDo.setStatus(DsedLoanStatus.TRANSFERING.name());
 								dsedLoanDao.updateById(dsedLoanDo);
 							}
 						}else if(payResultReqBo.getType()==1&&payResultReqBo.getCode()==1){
@@ -512,10 +527,10 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	 * @param platFlag
 	 * @return
 	 */
-	/*public boolean transModifiedBorrowInfo(List<ModifiedBorrowInfoVo> modifiedBorrowInfoList,String assetSideFlag,String platFlag) {
+	public boolean transModifiedBorrowInfo(List<ModifiedBorrowInfoVo> modifiedBorrowInfoList,String assetSideFlag,String platFlag) {
 		try {
 			String borrowJson = "";
-			AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.ASSET_SIDE_CONFIG.getCode(), assetSideFlag);
+			DsedResourceDo afResourceDo = dsedResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_SIDE_CONFIG.getCode(), assetSideFlag);
 			if (modifiedBorrowInfoList == null || modifiedBorrowInfoList.isEmpty()) {
 				borrowJson = JSON.toJSONString("");
 			}else{
@@ -535,158 +550,95 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			String url = afResourceDo.getValue1();
 			String jsonParam = JSON.toJSONString(map);
 			//记录通知记录
-			AfNotifyRecordDo notifyRecord = new AfNotifyRecordDo(); 
+			DsedNotifyRecordDo notifyRecord = new DsedNotifyRecordDo(); 
 			Date cur = new Date();
 			notifyRecord.setGmtCreate(cur);
 			notifyRecord.setGmtModified(cur);
 			notifyRecord.setOrderNo(modifiedBorrowInfoList.get(0).getOrderNo());
 			notifyRecord.setUserId(modifiedBorrowInfoList.get(0).getUserId());
 			notifyRecord.setAssetSide(Constants.ASSET_SIDE_EDSPAY_FLAG);
-			afNotifyRecordDao.saveRecord(notifyRecord);
-			logger.info("transBorrowerInfo to wallet  url = {},originBorrowerJson = {}, request = {}",url,borrowJson,jsonParam);
+			dsedNotifyRecordService.saveRecord(notifyRecord);
+			logger.info("transModifiedBorrowInfo url = {},oriParam = {}, req = {}",url,borrowJson,jsonParam);
 			String respResult = HttpUtil.doHttpPostJsonParam(url+"/p2p/fanbei/debtOrderInfoPush", jsonParam);
-			logger.info("transBorrowerInfo to wallet response = {}", respResult);
+			logger.info("transModifiedBorrowInfo resp  = {}", respResult);
 			if (StringUtil.isBlank(respResult)) {
-				logger.error("transBorrowerInfo to wallet req success,respResult is null,");
+				logger.error("transModifiedBorrowInfo resp null,");
 				return false;
 			}else {
 				AssetResponseMessage respInfo = JSONObject.parseObject(respResult, AssetResponseMessage.class);
-				if (respInfo != null) {
-					if (FanbeiAssetSideRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
-						logger.info("transBorrowerInfo to wallet req success"+",respInfo"+respInfo.getMessage());
-						return true;
-					}else {
-						//三方处理错误
-						FanbeiAssetSideRespCode failResp = FanbeiAssetSideRespCode.findByCode(respInfo.getCode());
-						logger.error("transBorrowerInfo to wallet req success,resp fail"+",errorCode="+respInfo.getCode()+",errorInfo"+(failResp!=null?failResp.getDesc():""));
-						return false;
-					}
-				} else {
-					logger.error("transBorrowerInfo to wallet req success,respInfo is null");
+				if (FanbeiAssetSideRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
+					logger.info("transModifiedBorrowInfo  resp success"+",respInfo"+respInfo.getMessage());
+					return true;
+				}else {
+					//三方处理错误
+					FanbeiAssetSideRespCode failResp = FanbeiAssetSideRespCode.findByCode(respInfo.getCode());
+					logger.error("transBorrowerInfo resp fail"+",errorCode="+respInfo.getCode()+",errorInfo"+failResp.getDesc());
 					return false;
 				}
 			}
 		} catch (Exception e) {
-			logger.error("transBorrowerInfo to wallet exist exception",e);
+			logger.error("transBorrowerInfo error=",e);
 		}
 		return false;
 	}
 	
 	public Boolean isPush(Object obj) {
 		String borrowNo = null;
-		if (obj instanceof AfLoanDo) {
-			AfLoanDo loanDo = (AfLoanDo) obj;
-			borrowNo = loanDo.getLoanNo();
-		}else if (obj instanceof AfBorrowCashDo) {
-			AfBorrowCashDo borrowCashDo=(AfBorrowCashDo) obj;
-			borrowNo = borrowCashDo.getBorrowNo();
-		}else if (obj instanceof AfBorrowDo) {
-			AfBorrowDo borrowDo=(AfBorrowDo) obj;
-			borrowNo = borrowDo.getBorrowNo();
+		if (obj instanceof DsedLoanDo) {
+			DsedLoanDo dsedLoanDo = (DsedLoanDo) obj;
+			borrowNo=dsedLoanDo.getLoanNo();
 		}
-		List<AfAssetPackageDetailDo> AssetPackageDetailList = afAssetPackageDetailDao.getPackageDetailByBorrowNo(borrowNo);
-		AfRetryTemplDo dsedRetryTemplDo = afRetryTemplService.getCurPushDebt(borrowNo,RetryEventType.QUERY.getCode());
-		if ((AssetPackageDetailList != null&&AssetPackageDetailList.size() > 0) || dsedRetryTemplDo!=null) {
+		DsedRetryTemplDo dsedRetryTemplDo = dsedRetryTemplService.getCurPushDebt(borrowNo,RetryEventType.QUERY.getCode());
+		if (dsedRetryTemplDo!=null) {
 			return true;
 		}
 		return false;
-	}*/
+	}
 	
-	/*public List<ModifiedBorrowInfoVo> buildModifiedInfo(Object obj, Integer RepaymentStatus) {
+	public List<ModifiedBorrowInfoVo> buildModifiedInfo(Object obj, Integer RepaymentStatus) {
 		List<ModifiedBorrowInfoVo> modifiedDebtList= new ArrayList<ModifiedBorrowInfoVo>();
 		ModifiedBorrowInfoVo modifiedDebt = new ModifiedBorrowInfoVo();
 		List<ModifiedRepaymentPlan> repaymentPlanList=new ArrayList<ModifiedRepaymentPlan>();
-		if (obj instanceof AfLoanDo) {
-			AfLoanDo loanDo = (AfLoanDo) obj;
+		if (obj instanceof DsedLoanDo) {
+			DsedLoanDo loanDo = (DsedLoanDo) obj;
 			modifiedDebt.setUserId(loanDo.getUserId());
 			modifiedDebt.setOrderNo(loanDo.getLoanNo());
 			modifiedDebt.setIsPeriod(1);
-			List<AfLoanPeriodsDo> loanPeriodsList = afLoanPeriodsService.listByLoanId(loanDo.getRid());
-			for (AfLoanPeriodsDo afLoanPeriodsDo : loanPeriodsList) {
+			List<DsedLoanPeriodsDo> loanPeriodsList = dsedLoanPeriodsService.listByLoanId(loanDo.getRid());
+			for (DsedLoanPeriodsDo   dsedLoanPeriodsDo : loanPeriodsList) {
 				 ModifiedRepaymentPlan modifiedRepaymentPlan = new ModifiedRepaymentPlan();
-				 modifiedRepaymentPlan.setRepaymentNo(afLoanPeriodsDo.getRid()+"");
-				 modifiedRepaymentPlan.setRepaymentAmount(afLoanPeriodsDo.getAmount());
-				 modifiedRepaymentPlan.setRepaymentInterest(afLoanPeriodsDo.getInterestFee());
+				 modifiedRepaymentPlan.setRepaymentNo(dsedLoanPeriodsDo.getRid()+"");
+				 modifiedRepaymentPlan.setRepaymentAmount(dsedLoanPeriodsDo.getAmount());
+				 modifiedRepaymentPlan.setRepaymentInterest(dsedLoanPeriodsDo.getInterestFee());
 				 modifiedRepaymentPlan.setRepaymentStatus(RepaymentStatus);
 				 modifiedRepaymentPlan.setRepaymentYesTime((int) DateUtil.getSpecSecondTimeStamp(new Date()));
 				 modifiedRepaymentPlan.setIsOverdue(0);
 				 modifiedRepaymentPlan.setIsPrepayment(1);
-				 modifiedRepaymentPlan.setRepaymentPeriod(afLoanPeriodsDo.getNper());
-				 repaymentPlanList.add(modifiedRepaymentPlan);
-			}
-		}else if (obj instanceof AfBorrowCashDo) {
-			 AfBorrowCashDo borrowCashDo=(AfBorrowCashDo) obj;
-			 modifiedDebt.setUserId(borrowCashDo.getUserId());
-			 modifiedDebt.setOrderNo(borrowCashDo.getBorrowNo());
-			 modifiedDebt.setIsPeriod(0);
-			 ModifiedRepaymentPlan modifiedRepaymentPlan = new ModifiedRepaymentPlan();
-			 modifiedRepaymentPlan.setRepaymentNo(borrowCashDo.getRid()+"");
-			 modifiedRepaymentPlan.setRepaymentAmount(borrowCashDo.getArrivalAmount());
-			 BigDecimal borrowRate =BigDecimal.ZERO;
-			 List<AfAssetPackageDetailDo> assetPackageDetailList = afAssetPackageDetailDao.getPackageDetailByBorrowNo(borrowCashDo.getBorrowNo());
-			 if (assetPackageDetailList != null&&assetPackageDetailList.size() > 0) {
-				 borrowRate =assetPackageDetailList.get(0).getBorrowRate();
-			 }else{
-				 AfRetryTemplDo dsedRetryTemplDo = afRetryTemplService.getCurPushDebt(borrowCashDo.getBorrowNo(),RetryEventType.QUERY.getCode());
-				 if (dsedRetryTemplDo != null) {
-					AfBorrowCashPushDo afBorrowCashPushDo = afBorrowCashPushService.getByBorrowCashId(borrowCashDo.getRid());
-					borrowRate = afBorrowCashPushDo.getBorrowRate();
-				}
-			 }
-			Integer timeLimit = NumberUtil.objToIntDefault(borrowCashDo.getType(), null);
-			 modifiedRepaymentPlan.setRepaymentInterest(BigDecimalUtil.multiply(borrowCashDo.getArrivalAmount(), new BigDecimal(borrowRate.doubleValue()*timeLimit/ 36000d)));
-			 modifiedRepaymentPlan.setRepaymentStatus(RepaymentStatus);
-			 modifiedRepaymentPlan.setRepaymentYesTime((int) DateUtil.getSpecSecondTimeStamp(new Date()));
-			 modifiedRepaymentPlan.setIsOverdue(0);
-			 modifiedRepaymentPlan.setIsPrepayment(1);
-			 modifiedRepaymentPlan.setRepaymentPeriod(0);
-			 repaymentPlanList.add(modifiedRepaymentPlan);
-		}else if (obj instanceof AfBorrowDo) {
-			AfBorrowDo borrowDo=(AfBorrowDo) obj;
-			modifiedDebt.setUserId(borrowDo.getUserId());
-			modifiedDebt.setOrderNo(borrowDo.getBorrowNo());
-			modifiedDebt.setIsPeriod(1);
-			List<AfBorrowBillDo> afBorrowBillDos = afBorrowBillService.getAllBorrowBillByBorrowId(borrowDo.getRid());
-			for (AfBorrowBillDo afBorrowBillDo : afBorrowBillDos) {
-				 ModifiedRepaymentPlan modifiedRepaymentPlan = new ModifiedRepaymentPlan();
-				 modifiedRepaymentPlan.setRepaymentNo(afBorrowBillDo.getRid()+"");
-				 modifiedRepaymentPlan.setRepaymentAmount(afBorrowBillDo.getPrincipleAmount());
-				 modifiedRepaymentPlan.setRepaymentInterest(afBorrowBillDo.getInterestAmount());
-				 modifiedRepaymentPlan.setRepaymentStatus(RepaymentStatus);
-				 modifiedRepaymentPlan.setRepaymentYesTime((int) DateUtil.getSpecSecondTimeStamp(new Date()));
-				 modifiedRepaymentPlan.setIsOverdue(0);
-				 modifiedRepaymentPlan.setIsPrepayment(1);
-				 modifiedRepaymentPlan.setRepaymentPeriod(afBorrowBillDo.getBillNper()-1);
+				 modifiedRepaymentPlan.setRepaymentPeriod(dsedLoanPeriodsDo.getNper());
 				 repaymentPlanList.add(modifiedRepaymentPlan);
 			}
 		}
 		modifiedDebt.setRepaymentPlans(repaymentPlanList);
 		modifiedDebtList.add(modifiedDebt);
 		return modifiedDebtList;
-	}*/
+	}
 	
-	/*public void transFailRecord(Object obj,List<ModifiedBorrowInfoVo> modifiedInfo) {
+	public void transFailRecord(Object obj,List<ModifiedBorrowInfoVo> modifiedInfo) {
 		Long id = null;
-		if (obj instanceof AfLoanDo) {
-			AfLoanDo loanDo = (AfLoanDo) obj;
+		if (obj instanceof DsedLoanDo) {
+			DsedLoanDo loanDo = (DsedLoanDo) obj;
 			id = loanDo.getRid();
-		}else if (obj instanceof AfBorrowCashDo) {
-			AfBorrowCashDo borrowCashDo=(AfBorrowCashDo) obj;
-			id=borrowCashDo.getRid();
-		}else if (obj instanceof AfBorrowDo) {
-			AfBorrowDo borrowDo=(AfBorrowDo) obj;
-			id=borrowDo.getRid();
 		}
-		thirdLog.error("trans modified loan Info fail,borrowId ="+id);
+		thirdLog.error("trans modified dsed loan Info fail,borrowId ="+id);
 		Date cur = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
 		String commitTime = sdf.format(cur);
-		AfCommitRecordDo afCommitRecordDo = new AfCommitRecordDo();
+		DsedCommitRecordDo afCommitRecordDo = new DsedCommitRecordDo();
 		afCommitRecordDo.setGmtCreate(cur);
 		afCommitRecordDo.setGmtModified(cur);
-		afCommitRecordDo.setType(AfRepeatAssetSideType.REFUND_ASSETSIDE.getCode());
+		afCommitRecordDo.setType(DsedRepeatAssetSideType.PREFINISH_NOTICE_ASSETSIDE.getCode());
 		afCommitRecordDo.setRelate_id(id+"");
-		AfResourceDo afResourceDo = afResourceService.getConfigByTypesAndSecType(AfResourceType.ASSET_SIDE_CONFIG.getCode(), Constants.ASSET_SIDE_EDSPAY_FLAG);
+		DsedResourceDo afResourceDo = dsedResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_SIDE_CONFIG.getCode(), Constants.ASSET_SIDE_EDSPAY_FLAG);
 		String borrowJson = "";
 		if (modifiedInfo == null || modifiedInfo.isEmpty()) {
 			borrowJson = JSON.toJSONString("");
@@ -697,6 +649,6 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		afCommitRecordDo.setUrl(afResourceDo.getValue1()+"/p2p/fanbei/debtOrderInfoPush");
 		afCommitRecordDo.setCommit_time(commitTime);
 		afCommitRecordDo.setCommit_num(1);
-		afCommitRecordService.addRecord(afCommitRecordDo);
-	}*/
+		dsedCommitRecordService.addRecord(afCommitRecordDo);
+	}
 }

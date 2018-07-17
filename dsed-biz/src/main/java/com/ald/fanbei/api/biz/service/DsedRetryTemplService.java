@@ -16,4 +16,6 @@ public interface DsedRetryTemplService extends ParentService<DsedRetryTemplDo, L
 
 	int deleteByBusidAndEventType(String busId, String eventType);
 
+	DsedRetryTemplDo getCurPushDebt(String busId, String eventType);
+
 }

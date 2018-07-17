@@ -44,4 +44,9 @@ public class DsedRetryTemplServiceImpl extends ParentServiceImpl<DsedRetryTemplD
 	public int deleteByBusidAndEventType(String busId, String eventType) {
 		return dsedRetryTemplDao.deleteByBusidAndEventType(busId,eventType);
 	}
+
+	@Override
+	public DsedRetryTemplDo getCurPushDebt(String busId, String eventType) {
+		return dsedRetryTemplDao.getCurPushDebt(busId, eventType);
+	}
 }

@@ -18,4 +18,6 @@ public interface DsedRetryTemplDao extends BaseDao<DsedRetryTemplDo, Long> {
 
 	int deleteByBusidAndEventType(@Param("busId")String busId,@Param("eventType") String eventType);
 
+	DsedRetryTemplDo getCurPushDebt(@Param("busId")String busId,@Param("eventType") String eventType);
+
 }
