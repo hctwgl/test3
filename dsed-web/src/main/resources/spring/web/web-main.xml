@@ -113,10 +113,6 @@
 				<entry key="/third/xgxy/v1/getRealPeriod" value-ref="dsedLoanTotalPeriodsApi" />
 				<entry key="/third/xgxy/v1/getBorrowFeeDetail" value-ref="dsedLoanDetailApi" />
 				<entry key="/third/xgxy/v1/syncUserInfo" value-ref="dsedSyncUserInfoApi" />
-
-
-				<entry key="/third/xgxy/v1/testupdatedata" value-ref="testApi" />
-
 			</map>
 		</constructor-arg>
 	</bean>

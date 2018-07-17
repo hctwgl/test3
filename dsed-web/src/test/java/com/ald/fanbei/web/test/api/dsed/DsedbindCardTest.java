@@ -24,8 +24,9 @@ public class DsedbindCardTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-    String urlBase = "http://localhost:8080";
-    
+    String urlBase = "http://192.168.112.40:8080";
+//    String urlBase = "http://localhost:8080";
+
     String userName = AccountOfTester.夏枫.mobile;
 
     /**
@@ -57,7 +58,7 @@ public class DsedbindCardTest extends BaseTest {
     public void test() {
         String url = urlBase + "/third/xgxy/v1/testupdatedata";
         Map<String, String> params = new HashMap<>();
-        params.put("id", "1205");
+        params.put("id", "44");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
