@@ -12,4 +12,8 @@ import com.ald.fanbei.api.dal.domain.DsedRetryTemplDo;
  */
 public interface DsedRetryTemplService extends ParentService<DsedRetryTemplDo, Long>{
 
+	DsedRetryTemplDo getByBusIdAndEventType(String busId, String eventType);
+
+	int deleteByBusidAndEventType(String busId, String eventType);
+
 }

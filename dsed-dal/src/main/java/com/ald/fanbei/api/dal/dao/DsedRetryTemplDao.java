@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.DsedRetryTemplDo;
 
 /**
@@ -12,6 +14,8 @@ import com.ald.fanbei.api.dal.domain.DsedRetryTemplDo;
  */
 public interface DsedRetryTemplDao extends BaseDao<DsedRetryTemplDo, Long> {
 
-    
+	DsedRetryTemplDo getByBusIdAndEventType(@Param("busId")String busId,@Param("eventType") String eventType);
+
+	int deleteByBusidAndEventType(@Param("busId")String busId,@Param("eventType") String eventType);
 
 }

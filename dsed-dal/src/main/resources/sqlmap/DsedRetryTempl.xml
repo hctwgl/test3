@@ -152,4 +152,23 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getByBusIdAndEventType" parameterType="java.lang.String" resultType="com.ald.fanbei.api.dal.domain.DsedRetryTemplDo">
+	   	SELECT
+		<include refid="queryFields" />
+		FROM dsed_retry_templ
+		WHERE
+			bus_id = #{busId}
+		AND event_type =#{eventType}
+		AND (is_delete=0 or (is_delete=1 and state='M'))
+    </select>
+    
+    <update id="deleteByBusidAndEventType">
+        UPDATE dsed_retry_templ
+        set is_delete=1,gmt_modified =now()
+     	WHERE
+			bus_id = #{busId}
+		AND event_type =#{eventType}
+		AND is_delete=0
+    </update>
+    
 </mapper>

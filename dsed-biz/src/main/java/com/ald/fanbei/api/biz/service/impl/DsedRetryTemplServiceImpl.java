@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedRetryTemplDao;
 import com.ald.fanbei.api.dal.domain.DsedRetryTemplDo;
@@ -32,5 +33,15 @@ public class DsedRetryTemplServiceImpl extends ParentServiceImpl<DsedRetryTemplD
 		@Override
 	public BaseDao<DsedRetryTemplDo, Long> getDao() {
 		return dsedRetryTemplDao;
+	}
+
+	@Override
+	public DsedRetryTemplDo getByBusIdAndEventType(String busId,String eventType) {
+		return dsedRetryTemplDao.getByBusIdAndEventType(busId,eventType);
+	}
+
+	@Override
+	public int deleteByBusidAndEventType(String busId, String eventType) {
+		return dsedRetryTemplDao.deleteByBusidAndEventType(busId,eventType);
 	}
 }

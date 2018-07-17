@@ -20,11 +20,11 @@ public class Create {
 		String database = "51fanbei_app";
 
 
-		String tables = "dsed_loan_push";
+		String tables = "dsed_record_max";
 
 		// 配置作者及Domain说明
 		String classAuthor = "wujun";
-		String functionName = "都市e贷的实时债权推送拓展表";
+		String functionName = "债权推送查询上限记录表";
 
 
 //		String tables = "af_facescore_img";

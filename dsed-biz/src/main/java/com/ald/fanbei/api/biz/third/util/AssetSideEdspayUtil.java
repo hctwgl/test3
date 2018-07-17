@@ -18,6 +18,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.aassetside.edspay.AssetResponseMessage;
+import com.ald.fanbei.api.biz.bo.aassetside.edspay.AssetSideRespBo;
+import com.ald.fanbei.api.biz.bo.aassetside.edspay.EdspayGiveBackPayResultReqBo;
 import com.ald.fanbei.api.biz.bo.aassetside.edspay.RepaymentPlan;
 import com.ald.fanbei.api.biz.bo.assetpush.AssetPushStrategy;
 import com.ald.fanbei.api.biz.bo.assetpush.AssetPushSwitchConf;
@@ -25,6 +27,7 @@ import com.ald.fanbei.api.biz.bo.assetpush.EdspayGetCreditRespBo;
 import com.ald.fanbei.api.biz.service.DsedAssetSideInfoService;
 import com.ald.fanbei.api.biz.service.DsedLoanPushService;
 import com.ald.fanbei.api.biz.service.DsedLoanService;
+import com.ald.fanbei.api.biz.service.DsedRecordMaxService;
 import com.ald.fanbei.api.biz.service.DsedResourceService;
 import com.ald.fanbei.api.biz.service.DsedRetryTemplService;
 import com.ald.fanbei.api.biz.service.DsedUserService;
@@ -53,6 +56,7 @@ import com.ald.fanbei.api.dal.domain.DsedAssetSideInfoDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPushDo;
+import com.ald.fanbei.api.dal.domain.DsedRecordMaxDo;
 import com.ald.fanbei.api.dal.domain.DsedResourceDo;
 import com.ald.fanbei.api.dal.domain.DsedRetryTemplDo;
 import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
@@ -71,73 +75,6 @@ import com.alibaba.fastjson.JSONObject;
 @Component("assetSideEdspayUtil")
 public class AssetSideEdspayUtil extends AbstractThird {
 
-	/*@Resource
-    AfResourceService afResourceService;
-	@Resource
-	AfAssetSideInfoDao afAssetSideInfoDao;
-	@Resource
-	AfAssetPackageDao afAssetPackageDao;
-	@Resource
-	AfAssetPackageDetailService afAssetPackageDetailService;
-	@Resource
-	AfRetryTemplService afRetryTemplService;
-	@Resource
-	AfBorrowCashService afBorrowCashService;
-	@Resource
-	ApplyLegalBorrowCashService applyLegalBorrowCashService;
-	@Resource
-	AfBorrowLegalOrderService afBorrowLegalOrderService;
-	@Resource
-	AfUserBankcardService afUserBankcardService;
-	@Resource
-	AfBorrowLegalOrderCashService afBorrowLegalOrderCashService;
-	@Resource
-	AfBorrowCashPushService afBorrowCashPushService;
-	@Resource
-	AfBorrowService afBorrowService;
-	@Resource
-	AfBorrowPushService afBorrowPushService;
-	@Resource
-	RiskUtil riskUtil;
-	@Resource
-	AfAssetSideInfoService afAssetSideInfoService;
-
-	@Resource
-	AfUserAccountService afUserAccountService;
-	@Resource
-	AfUserAccountSenceService afUserAccountSenceService;
-	@Resource
-	AfUserAccountLogDao afUserAccountLogDao;
-	@Resource
-	AfBorrowCashDao afBorrowCashDao;
-	@Resource
-	AfLoanDao afLoanDao;
-	@Resource
-	AfLoanPeriodsDao afLoanPeriodsDao;
-	@Resource
-	JpushService jpushService;
-	@Resource
-	AfUserService afUserService;
-	@Resource
-	AfLoanService afLoanService;
-	@Resource
-	AfLoanPushService afLoanPushService;
-	
-	@Resource
-	SmsUtil smsUtil;
-	
-	@Resource
-	AfRecordMaxService afRecordMaxService;
-	@Resource
-	AfAssetPackageDetailDao afAssetPackageDetailDao;
-	@Resource
-	AfLoanPeriodsService afLoanPeriodsService;
-	@Resource
-	AfCommitRecordService afCommitRecordService;
-	@Resource
-	AfBorrowBillService afBorrowBillService;
-	@Resource
-	AfNotifyRecordDao afNotifyRecordDao;*/
 	@Resource
 	TransactionTemplate transactionTemplate;
 	@Resource
@@ -162,280 +99,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 	DsedUserBankcardDao dsedUserBankcardDao;
 	@Resource
 	DsedUserService dsedUserService;
-	
-	/*public AssetSideRespBo giveBackCreditInfo(String timestamp, String data, String sign, String appId) {
-		// 响应数据,默认成功
-		AssetSideRespBo notifyRespBo = new AssetSideRespBo();
-		try {
-			//获取对应资产方配置信息
-			AfResourceDo assideResourceInfo = getAssetSideConfigInfo(appId);
-			if (assideResourceInfo == null) {
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_APPID_ERROR);
-				return notifyRespBo;
-			}
-			//资产方及启用状态校验
-			AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoDao.getByAssetSideFlag(appId);
-			if (afAssetSideInfoDo == null || YesNoStatus.NO.getCode().equals(afAssetSideInfoDo.getStatus())) {
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_FROZEN);
-				return notifyRespBo;
-			}
-			//请求时间校验
-			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp, 0L);
-			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp, DateUtil.getCurrSecondTimeStamp(), 60);
-			if (result > 0) {
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
-				return notifyRespBo;
-			}
-			//签名验证相关值处理
-			String realDataJson = "";
-			EdspayBackCreditReqBo edspayBackCreditReqBo = null;
-			try {
-				realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
-				edspayBackCreditReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayBackCreditReqBo.class);
-			} catch (Exception e) {
-				logger.error("EdspayController giveBackCreditInfo parseJosn error", e);
-			} finally {
-				logger.info("EdspayController giveBackCreditInfo,appId=" + appId + ",reqJsonData=" + realDataJson + ",sendTime=" + timestamp);
-			}
-			if (edspayBackCreditReqBo == null) {
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
-				return notifyRespBo;
-			}
-			String currSign = DigestUtil.MD5(realDataJson);
-			if (!StringUtil.equals(currSign, sign)) {// 验签成功
-				//验证签名失败
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
-				return notifyRespBo;
-			}
-
-			//签名成功,业务处理
-			List<String> orderNos = edspayBackCreditReqBo.getOrderNos();
-			logger.info("giveBackCreditInfo:" + orderNos);
-			if (orderNos == null || orderNos.size() == 0 || orderNos.size() > 100) {
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
-				return notifyRespBo;
-			}
-			Integer debtType = edspayBackCreditReqBo.getDebtType();
-
-			//具体撤回操作
-			if (edspayBackCreditReqBo.getType() == 0) {
-				//审核结果
-				int resultValue = afAssetPackageDetailService.batchGiveBackCreditInfo(afAssetSideInfoDo, orderNos, debtType);
-				if (resultValue != 1) {
-					logger.error("EdspayController giveBackCreditInfo exist error records,appId=" + appId + ",sendTime=" + timestamp);
-					notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
-					return notifyRespBo;
-				}
-			} else if (edspayBackCreditReqBo.getType() == 1 && edspayBackCreditReqBo.getCode()== 0) {
-				//放款结果
-				int resultValue =afAssetPackageDetailService.addPackageDetailLoanTime(orderNos, edspayBackCreditReqBo.getLoanTime(),debtType);
-				if (resultValue != 1) {
-					logger.error("EdspayController giveBackCreditInfo exist error records,appId=" + appId + ",sendTime=" + timestamp);
-					notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
-					return notifyRespBo;
-				}
-			}
-
-			notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.SUCCESS);
-		} catch (Exception e) {
-			//系统异常
-			logger.error("EdspayController giveBackCreditInfo error,appId=" + appId + ",sendTime=" + timestamp, e);
-			notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
-		}
-		return notifyRespBo;
-	}*/
-
-	/**
-	 * 获取债权信息
-	 * @param timestamp
-	 * @param data
-	 * @param sign
-	 * @param appIds
-	 * @return
-	 */
-	/*public AssetSideRespBo getBatchCreditInfo(String timestamp, String data, String sign, String appId) {
-		// 响应数据,默认成功
-		AssetSideRespBo notifyRespBo = new AssetSideRespBo();
-		try {
-			//获取对应资产方配置信息
-			AfResourceDo assideResourceInfo = getAssetSideConfigInfo(appId);
-			if(assideResourceInfo == null){
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_APPID_ERROR);
-				return notifyRespBo;
-			}
-			//资产方及启用状态校验
-			AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoDao.getByAssetSideFlag(appId);
-			if(afAssetSideInfoDo==null || YesNoStatus.NO.getCode().equals(afAssetSideInfoDo.getStatus()) ){
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_FROZEN);
-				return notifyRespBo;
-			}
-
-			//请求时间校验
-			Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp,0L);
-			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
-			if(result>0){
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
-				return notifyRespBo;
-			}
-			//签名验证相关值处理
-			String realDataJson = "";
-			EdspayGetCreditReqBo edspayGetCreditReqBo = null;
-			try {
-				realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
-				edspayGetCreditReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayGetCreditReqBo.class);
-			} catch (Exception e) {
-				logger.error("EdspayController getBatchCreditInfo parseJosn error,appId="+appId+ ",sendTime=" + timestamp, e);
-			}finally{
-				logger.info("EdspayController getBatchCreditInfo,appId="+appId+ ",reqJsonData=" + realDataJson + ",sendTime=" + timestamp);
-			}
-			if(edspayGetCreditReqBo==null){
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
-				return notifyRespBo;
-			}
-
-			String currSign = DigestUtil.MD5(realDataJson);
-			if (!StringUtil.equals(currSign, sign)) {// 验签成功
-				//验证签名失败
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
-				return notifyRespBo;
-			}
-
-			//签名成功,业务处理
-			if(NumberUtil.isNullOrZeroOrNegative(edspayGetCreditReqBo.getMoney())){
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
-				return notifyRespBo;
-			}
-
-			//校验当日限额
-			int debtType = NumberUtil.objToIntDefault(edspayGetCreditReqBo.getDebtType(), 0);
-			BigDecimal currDayHaveGetTotalBorrowAmount = afAssetPackageDao.getCurrDayHaveGetTotalBorrowAmount(afAssetSideInfoDo.getRid());
-			BigDecimal currDayHaveGetTotalBorrowCashAmount = afAssetPackageDao.getCurrDayHaveGetTotalBorrowCashAmount(afAssetSideInfoDo.getRid());
-			EdspayGetCreditDayLimit dayLimit = JSON.toJavaObject(JSON.parseObject(assideResourceInfo.getValue3()), EdspayGetCreditDayLimit.class);
-			if (debtType == 1 && dayLimit != null && dayLimit.getBorrowDayLimit().compareTo(currDayHaveGetTotalBorrowAmount.add(edspayGetCreditReqBo.getMoney()))<=0) {
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.CREDIT_BORROW_AMOUNT_OVERRUN);
-				return notifyRespBo;
-			}
-			if (debtType == 0 && dayLimit != null && dayLimit.getBorrowCashDayLimit().compareTo(currDayHaveGetTotalBorrowCashAmount.add(edspayGetCreditReqBo.getMoney()))<=0) {
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.CREDIT_BORROWCASH_AMOUNT_OVERRUN);
-				return notifyRespBo;
-			}
-
-			Date nowDate = new Date();
-			Date startTime = DateUtil.getSpecDateBySecondDefault(edspayGetCreditReqBo.getLoanStartTime(),DateUtil.getStartOfDate(nowDate));
-			Date endTime = DateUtil.getSpecDateBySecondDefault(edspayGetCreditReqBo.getLoanEndTime(),DateUtil.getEndOfDate(nowDate));
-			BigDecimal minMoney = null;//借款期限的较小的
-			BigDecimal maxMoney = null;//借款期限的较大的
-			EdspayCreditDetailInfo detailInfo = edspayGetCreditReqBo.getCreditDetails();
-			if(detailInfo != null && !NumberUtil.isNull(detailInfo.getMinMoney()) && !NumberUtil.isNull(detailInfo.getMaxMoney())){
-				minMoney = detailInfo.getMinMoney();
-				maxMoney = detailInfo.getMaxMoney();
-			}
-			if(minMoney!=null && maxMoney!=null && minMoney.add(maxMoney).compareTo(edspayGetCreditReqBo.getMoney())!=0){
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.INVALID_PARAMETER);
-				return notifyRespBo;
-			}
-			
-			//具体获取债权明细(区分现金贷和消费分期)
-			List<EdspayGetCreditRespBo> creditInfoList=new ArrayList<EdspayGetCreditRespBo>();
-			if (debtType == 1) {
-				//消费分期
-				FanbeiBorrowBankInfoBo bankInfo = getAssetSideBankInfo(getAssetSideBankInfo(DebtType.BORROW.getCode()));
-				if(bankInfo==null){
-					notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_APPID_ERROR);
-					return notifyRespBo;
-				}
-				creditInfoList = afAssetPackageDetailService.getBorrowBatchCreditInfo(bankInfo,afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime);
-			}else if (debtType == 0) {
-				//现金贷
-				FanbeiBorrowBankInfoBo bankInfo = getAssetSideBankInfo(getAssetSideBankInfo(DebtType.BORROWCASH.getCode()));
-				if(bankInfo==null){
-					notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_APPID_ERROR);
-					return notifyRespBo;
-				}
-				creditInfoList = afAssetPackageDetailService.getBorrowCashBatchCreditInfo(bankInfo,afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime, minMoney);
-			}else {
-				//白领贷
-				FanbeiBorrowBankInfoBo bankInfo = getAssetSideBankInfo(getAssetSideBankInfo(DebtType.LOAN.getCode()));
-				if(bankInfo==null){
-					notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_APPID_ERROR);
-					return notifyRespBo;
-				}
-				creditInfoList = afAssetPackageDetailService.getLoanBatchCreditInfo(bankInfo,afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime);
-			}
-
-			if(creditInfoList!=null && creditInfoList.size()>0){
-				String sourceJsonStr = JSON.toJSONString(creditInfoList);
-				logger.info("EdspayController getBatchCreditInfo,appId="+appId+ ",returnJsonData=" + sourceJsonStr + ",sendTime=" + timestamp);
-				notifyRespBo.setData(AesUtil.encryptToBase64(sourceJsonStr, assideResourceInfo.getValue2()));;
-			}else{
-				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.ASSET_SIDE_AMOUNT_NOTENOUGH);
-				return notifyRespBo;
-			}
-		} catch (Exception e) {
-			//系统异常
-			logger.error("EdspayController getBatchCreditInfo error,appId="+appId+ ",sendTime=" + timestamp, e);
-			notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.APPLICATION_ERROR);
-		}
-		return notifyRespBo;
-	}*/
-
-	
-
-	/**
-	 * 获取资产方配置信息
-	 * 如果资产方未启用或者配置未开启，则返回null，否则返回正常配置信息
-	 * @param appId
-	 * @return
-	 */
-	private DsedResourceDo getAssetSideConfigInfo(String appId){
-		//资产方对应配置信息校验
-		DsedResourceDo assideResourceInfo = dsedResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_SIDE_CONFIG.getCode(), appId);
-		if(assideResourceInfo==null || !OpenCloseStatus.O.getCode().equals(assideResourceInfo.getValue4()) ){
-			return null;
-		}
-		return assideResourceInfo;
-	}
-
-	/**
-	 * 获取资产方开户行信息
-	 * @param assetSideFlag
-	 * @return
-	 */
-	/*public List<FanbeiBorrowBankInfoBo> getAssetSideBankInfo(String type) {
-		List<FanbeiBorrowBankInfoBo> bankInfoList = new ArrayList<FanbeiBorrowBankInfoBo>();
-		try {
-			List<AfResourceDo> bankInfoLists =new ArrayList<AfResourceDo>();
-			if (type.equals(DebtType.BORROWCASH.getCode())) {
-				 bankInfoLists = afResourceService.getConfigsByTypesAndSecType(AfResourceType.ASSET_SIDE_CONFIG.getCode(), AfResourceSecType.BORROWCASH_BANK_INFOS.getCode());
-			}else if (type.equals(DebtType.BORROW.getCode())) {
-				 bankInfoLists = afResourceService.getConfigsByTypesAndSecType(AfResourceType.ASSET_SIDE_CONFIG.getCode(), AfResourceSecType.BORROW_BANK_INFOS.getCode());
-			}else if (type.equals(DebtType.LOAN.getCode())) {
-				 bankInfoLists = afResourceService.getConfigsByTypesAndSecType(AfResourceType.ASSET_SIDE_CONFIG.getCode(), AfResourceSecType.LOAN_BANK_INFOS.getCode());
-			}
-			if(bankInfoLists==null){
-				return bankInfoList;
-			}
-
-			for (AfResourceDo afResourceDo : bankInfoLists) {
-				bankInfoList.add(JSON.toJavaObject(JSON.parseObject(afResourceDo.getValue()), FanbeiBorrowBankInfoBo.class));
-			}
-		} catch (Exception e) {
-			logger.error("getAssetSideBankInfo error,e=",e);
-		}
-		return bankInfoList;
-	}*/
-
-	/**
-	 * 获取随机开户行对象
-	 * @return
-	 */
-	/*public FanbeiBorrowBankInfoBo getAssetSideBankInfo(List<FanbeiBorrowBankInfoBo> bankInfoList) {
-		if(bankInfoList == null || bankInfoList.size() == 0){
-			return null;
-		}
-		Collections.shuffle(bankInfoList);
-		return bankInfoList.get(0);
-	}*/
+	@Resource
+	DsedRecordMaxService dsedRecordMaxService;
 
 	/**
 	 * 债权实时推送接口
@@ -467,7 +132,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			try {
 				String url = assideResourceDo.getValue1();
 				logger.info("dsedCurPush url = {},oriParam = {}, req = {}",url,borrowerJson,JSONObject.toJSONString(map));
-				String respResult = HttpUtil.doHttpPostJsonParam(url+"/p2p/fanbei/debtPush", JSONObject.toJSONString(map));
+				String respResult = HttpUtil.doHttpPostJsonParam(url+"/p2p/fanbei/dsedDebtPush", JSONObject.toJSONString(map));
 				logger.info("dsedCurPush resp = {}", respResult);
 				AssetResponseMessage respInfo = JSONObject.parseObject(respResult, AssetResponseMessage.class);
 				if (respInfo != null) {
@@ -575,12 +240,11 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		dsedRetryTemplService.saveRecord(dsedRetryTemplDo);
 	}
 
-	/*public AssetSideRespBo giveBackPayResult(String sendTime, String data,String sign, String appId){
-		// 响应数据,默认成功
+	public AssetSideRespBo giveBackPayResult(String sendTime, String data,String sign, String appId){
 		AssetSideRespBo notifyRespBo = new AssetSideRespBo();
 		try {
 			//获取对应资产方配置信息
-			AfResourceDo assideResourceInfo = getAssetSideConfigInfo(appId);
+			DsedResourceDo assideResourceInfo = getAssetSideConfigInfo(appId);
 			if(assideResourceInfo == null){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_APPID_ERROR);
 				return notifyRespBo;
@@ -594,15 +258,15 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			}
 			//签名验证相关值处理
 			String realDataJson = "";
-			EdspayGiveBackPayResultReqBo PayResultReqBo = null;
+			EdspayGiveBackPayResultReqBo payResultReqBo = null;
 			try {
 				realDataJson = AesUtil.decryptFromBase64(data, assideResourceInfo.getValue2());
-				logger.info("giveBackPayResult,request = {}",realDataJson);
-				PayResultReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayGiveBackPayResultReqBo.class);
+				logger.info("giveBackPayResult,oriParam = {}",realDataJson);
+				payResultReqBo = JSON.toJavaObject(JSON.parseObject(realDataJson), EdspayGiveBackPayResultReqBo.class);
 			} catch (Exception e) {
-				logger.error("EdspayController giveBackPayResult parseJosn error,appId="+appId+ ",sendTime=" + sendTime, e);
+				logger.error("giveBackPayResult parseJosn error,appId="+appId+ ",sendTime=" + sendTime, e);
 			}
-			if(PayResultReqBo==null){
+			if(payResultReqBo==null){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.PARSE_JSON_ERROR);
 				return notifyRespBo;
 			}
@@ -612,312 +276,119 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
 				return notifyRespBo;
 			}
-			logger.info("giveBackPayResult orderNo"+PayResultReqBo.getOrderNo());
 			//判断是否已经主动查询处理过
-			AfRetryTemplDo retryTemplDo = afRetryTemplService.getByBusIdAndEventType(PayResultReqBo.getOrderNo(), RetryEventType.QUERY.getCode());
-			if (null != retryTemplDo) {
+			DsedRetryTemplDo dsedRetryTemplDo = dsedRetryTemplService.getByBusIdAndEventType(payResultReqBo.getOrderNo(), RetryEventType.QUERY.getCode());
+			if (null != dsedRetryTemplDo) {
 				//钱包主动通知之后移除主动查询表，不再主动查询
-				afRetryTemplService.deleteByBusidAndEventType(PayResultReqBo.getOrderNo(),RetryEventType.QUERY.getCode());
+				dsedRetryTemplService.deleteByBusidAndEventType(payResultReqBo.getOrderNo(),RetryEventType.QUERY.getCode());
 				//移出record_max表
-				removeRecordMax(PayResultReqBo);
+				removeRecordMax(payResultReqBo);
 				//回传区别现金贷和分期不同处理
-				AfResourceDo assetPushResource = afResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+				DsedResourceDo assetPushResource = dsedResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 				AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
 				Date now = new Date();
-				if (PayResultReqBo.getDebtType()==0) {
-					//现金贷
-					AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(PayResultReqBo.getOrderNo());
-					AfBorrowLegalOrderDo afBorrowLegalOrderDo =	afBorrowLegalOrderService.getBorrowLegalOrderByBorrowId(borrowCashDo.getRid());
-					AfUserBankcardDo mainCard = afUserBankcardService.getUserMainBankcardByUserId(borrowCashDo.getUserId());
-					if (PayResultReqBo.getType()==0&&PayResultReqBo.getCode()==1) {
-						//审核失败
-						AfBorrowCashPushDo borrowCashPush = buildBorrowCashPush(borrowCashDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.REVIEWFAIL.getCode());
-						afBorrowCashPushService.saveOrUpdate(borrowCashPush);
-						if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getReviewFail())) {
-							//借款关闭
-							//更新借款状态
-							AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
-							delegateBorrowCashDo.setRid(borrowCashDo.getRid());
-							delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
-							delegateBorrowCashDo.setRemark("浙商审核失败关闭");
-							delegateBorrowCashDo.setGmtModified(now);
-							// 更新订单状态为关闭
-							afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
-							afBorrowLegalOrderDo.setClosedDetail("浙商审核失败关闭");
-							afBorrowLegalOrderDo.setGmtClosed(new Date());
-							afBorrowLegalOrderDo.setGmtModified(now);
-							applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
-						}else{
-							//调ups打款
-							applyLegalBorrowCashService.delegatePay(borrowCashDo.getUserId()+"", borrowCashDo.getRishOrderNo(),
-									"10", afBorrowLegalOrderDo, mainCard, borrowCashDo);
-						}
-					}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==1){
-						//打款失败
-						AfBorrowCashPushDo borrowCashPush = buildBorrowCashPush(borrowCashDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.PAYFAIL.getCode());
-						afBorrowCashPushService.saveOrUpdate(borrowCashPush);
-						if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getPayFail())) {
-							//借款关闭
-							//更新借款状态
-							AfBorrowCashDo delegateBorrowCashDo = new AfBorrowCashDo();
-							delegateBorrowCashDo.setRid(borrowCashDo.getRid());
-							delegateBorrowCashDo.setStatus(AfBorrowCashStatus.closed.getCode());
-							delegateBorrowCashDo.setRemark("浙商打款失败关闭");
-							delegateBorrowCashDo.setGmtModified(now);
-							// 更新订单状态为关闭
-							afBorrowLegalOrderDo.setStatus(OrderStatus.CLOSED.getCode());
-							afBorrowLegalOrderDo.setClosedDetail("浙商打款失败关闭");
-							afBorrowLegalOrderDo.setGmtClosed(new Date());
-							afBorrowLegalOrderDo.setGmtModified(now);
-							applyLegalBorrowCashService.updateBorrowStatus(delegateBorrowCashDo,afBorrowLegalOrderDo);
-						}else{
-							//调ups打款
-							applyLegalBorrowCashService.delegatePay(borrowCashDo.getUserId()+"", borrowCashDo.getRishOrderNo(),
-									"10", afBorrowLegalOrderDo, mainCard, borrowCashDo);
-						}
-					}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==0){
-						//打款成功
-						AfBorrowCashPushDo borrowCashPush = buildBorrowCashPush(borrowCashDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.PAYSUCCESS.getCode());
-						borrowCashPush.setLoanTime(PayResultReqBo.getLoanTime());//记录放款时间
-						afBorrowCashPushService.saveOrUpdate(borrowCashPush);
-						AfBorrowCashDo afBorrowCashDo = afBorrowCashService.getBorrowCashByrid(borrowCashDo.getRid());
-						// 打款成功，更新借款状态、可用额度等信息
-						try {
-							BigDecimal auAmount = afUserAccountService.getAuAmountByUserId(borrowCashDo.getUserId());
-							afBorrowCashService.updateAuAmountByRid(borrowCashDo.getRid(), auAmount);
-						} catch (Exception e) {
-							logger.error("updateAuAmountByRid is fail;msg=" + e);
-						}
-						// 减少额度，包括搭售商品借款
-						afUserAccountSenceService.syncLoanUsedAmount(borrowCashDo.getUserId(), SceneType.CASH, borrowCashDo.getAmount());
-						// 增加日志
-						AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash,
-								borrowCashDo.getAmount(), borrowCashDo.getUserId(), borrowCashDo.getRid());
-						afUserAccountLogDao.addUserAccountLog(accountLog);
-						afBorrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
-						// FIXME 查询是否有订单，查询订单状态
-						final AfBorrowLegalOrderDo legalOrderDo = afBorrowLegalOrderService
-								.getLastBorrowLegalOrderByBorrowId(borrowCashDo.getRid());
-
-						if (legalOrderDo != null) {
-							legalOrderDo.setStatus(BorrowLegalOrderStatus.AWAIT_DELIVER.getCode());
-							afBorrowLegalOrderService.updateById(legalOrderDo);
-						}
-						// 查询借款信息是否存在
-						AfBorrowLegalOrderCashDo legalOrderCashDo = afBorrowLegalOrderCashService
-								.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowCashDo.getRid());
-						if (legalOrderCashDo != null) {
-							legalOrderCashDo.setStatus(AfBorrowLegalOrderCashStatus.AWAIT_REPAY.getCode());
-							afBorrowLegalOrderCashService.updateById(legalOrderCashDo);
-						}
-						afBorrowCashService.borrowSuccessForNew(afBorrowCashDo);
-					}
-				}
-				if (PayResultReqBo.getDebtType()==1) {
-					//分期
-					AfBorrowDo borrowDo = afBorrowService.getBorrowInfoByBorrowNo(PayResultReqBo.getOrderNo());
-					if (null != borrowDo) {
-						AfBorrowPushDo borrowPush = buildBorrowPush(borrowDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PayResultReqBo);
-						if(PayResultReqBo.getCode()==0)
-						{//记录放款时间
-							borrowPush.setLoanTime(PayResultReqBo.getLoanTime());
-						}
-						afBorrowPushService.saveOrUpdate(borrowPush);
-					}
-				}
-				if (PayResultReqBo.getDebtType() == 2){
-					//白领贷
-					AfLoanDo loanDo = afLoanService.getByLoanNo(PayResultReqBo.getOrderNo());
-					if (null != loanDo) {
-						AfUserDo afUserDo = afUserService.getUserById(loanDo.getUserId());
-						AfUserBankcardDo bankCard = afUserBankcardService.getUserMainBankcardByUserId(loanDo.getUserId());
-						List<AfLoanPeriodsDo> periodDos = afLoanPeriodsDao.listByLoanId(loanDo.getRid());
-						if (PayResultReqBo.getType()==0&&PayResultReqBo.getCode()==1){
+				if (payResultReqBo.getDebtType() == 0){
+					//都市e贷
+					DsedLoanDo dsedLoanDo = dsedLoanService.getByLoanNo(payResultReqBo.getOrderNo());
+					if (null != dsedLoanDo) {
+						DsedUserDo afUserDo = dsedUserService.getUserById(dsedLoanDo.getUserId());
+						DsedUserBankcardDo bankCard = dsedUserBankcardDao.getUserMainBankcardByUserId(dsedLoanDo.getUserId());
+						List<DsedLoanPeriodsDo> periodDos = dsedLoanPeriodsDao.listByLoanId(dsedLoanDo.getRid());
+						if (payResultReqBo.getType()==0&&payResultReqBo.getCode()==1){
 							//审核失败
-							AfLoanPushDo loanPushDo = buildLoanPush(loanDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.REVIEWFAIL.getCode());
-							afLoanPushService.saveOrUpdate(loanPushDo);
+							DsedLoanPushDo loanPushDo = buildLoanPush(dsedLoanDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.REVIEWFAIL.getCode());
+							dsedLoanPushService.saveOrUpdate(loanPushDo);
 							if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getReviewFail())) {
 								//直接关闭
-								dealLoanFail(loanDo, periodDos,"浙商审核失败关闭");
-								jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
-								smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
+								dsedLoanService.dealLoanFail(dsedLoanDo, periodDos,"浙商审核失败关闭");
 							}else{
 								// 调用UPS打款
-								UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(loanDo.getAmount(),
-										afUserDo.getRealName(), bankCard.getCardNumber(), afUserDo.getRid().toString(), bankCard.getMobile(),
-										bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
-										UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
-								loanDo.setTradeNoOut(upsResult.getOrderNo());
+								UpsDelegatePayRespBo upsResult = upsUtil.dsedDelegatePay(dsedLoanDo.getArrivalAmount(),
+										afUserDo.getRealName(), bankCard.getBankCardNumber(), afUserDo.getRid().toString(), bankCard.getMobile(),
+				                        bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
+				                        "DSED_LOAN", dsedLoanDo.getRid().toString(),afUserDo.getIdNumber());
+								dsedLoanDo.setTradeNoOut(upsResult.getOrderNo());
 								if (!upsResult.isSuccess()) {
-									dealLoanFail(loanDo, periodDos, "UPS打款失败，"+upsResult.getRespCode());
-									jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
-									smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
+									dsedLoanService.dealLoanFail(dsedLoanDo, periodDos, "UPS打款失败，"+upsResult.getRespCode());
+									return notifyRespBo;
 								}
-								loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
-								afLoanDao.updateById(loanDo);
+								dsedLoanDo.setStatus(DsedLoanStatus.TRANSFERING.getDesz());
+								dsedLoanDao.updateById(dsedLoanDo);
 							}
-						}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==1){
+						}else if(payResultReqBo.getType()==1&&payResultReqBo.getCode()==1){
 							//打款失败
-							AfLoanPushDo loanPushDo = buildLoanPush(loanDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.PAYFAIL.getCode());
-							afLoanPushService.saveOrUpdate(loanPushDo);
+							DsedLoanPushDo loanPushDo = buildLoanPush(dsedLoanDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.PAYFAIL.getCode());
+							dsedLoanPushService.saveOrUpdate(loanPushDo);
 							if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getPayFail())) {
 								//借款关闭
-								dealLoanFail(loanDo, periodDos,"浙商打款失败关闭");
-								jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
-								smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
+								dsedLoanService.dealLoanFail(dsedLoanDo, periodDos,"浙商打款失败关闭");
 							}else{
-								//调ups打款
-								UpsDelegatePayRespBo upsResult = upsUtil.delegatePay(loanDo.getAmount(),
-										afUserDo.getRealName(), bankCard.getCardNumber(), afUserDo.getRid().toString(), bankCard.getMobile(),
-										bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
-										UserAccountLogType.LOAN.getCode(), loanDo.getRid().toString());
-								loanDo.setTradeNoOut(upsResult.getOrderNo());
+								// 调UPS打款
+								UpsDelegatePayRespBo upsResult = upsUtil.dsedDelegatePay(dsedLoanDo.getArrivalAmount(),
+										afUserDo.getRealName(), bankCard.getBankCardNumber(), afUserDo.getRid().toString(), bankCard.getMobile(),
+				                        bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
+				                        "DSED_LOAN", dsedLoanDo.getRid().toString(),afUserDo.getIdNumber());
+								dsedLoanDo.setTradeNoOut(upsResult.getOrderNo());
 								if (!upsResult.isSuccess()) {
-									dealLoanFail(loanDo, periodDos, "UPS打款失败，"+upsResult.getRespCode());
-									jpushService.dealBorrowCashApplyFail(afUserDo.getUserName(), new Date());
-									smsUtil.sendBorrowPayMoneyFail(afUserDo.getUserName());
+									dsedLoanService.dealLoanFail(dsedLoanDo, periodDos, "UPS打款失败，"+upsResult.getRespCode());
+									return notifyRespBo;
 								}
-								loanDo.setStatus(AfLoanStatus.TRANSFERING.name());
-								afLoanDao.updateById(loanDo);
+								dsedLoanDo.setStatus(DsedLoanStatus.TRANSFERING.getDesz());
+								dsedLoanDao.updateById(dsedLoanDo);
 							}
-						}else if(PayResultReqBo.getType()==1&&PayResultReqBo.getCode()==0){
+						}else if(payResultReqBo.getType()==1&&payResultReqBo.getCode()==0){
 							//打款成功
-							AfLoanPushDo loanPushDo = buildLoanPush(loanDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.PAYSUCCESS.getCode());
-							loanPushDo.setLoanTime(PayResultReqBo.getLoanTime());//记录放款时间
-							afLoanPushService.saveOrUpdate(loanPushDo);
-							afLoanService.dealLoanSucc(loanDo.getRid(),"");
+							DsedLoanPushDo loanPushDo = buildLoanPush(dsedLoanDo.getRid(),Constants.ASSET_SIDE_EDSPAY_FLAG,PushEdspayResult.PAYSUCCESS.getCode());
+							loanPushDo.setLoanTime(payResultReqBo.getLoanTime());//记录放款时间
+							dsedLoanPushService.saveOrUpdate(loanPushDo);
+							dsedLoanService.dealLoanSucc(dsedLoanDo.getRid(),"");
 						}	
 					}
 				
 				}
 			}
 		}catch(Exception e){
-			logger.error("borrowCashCurPush exception"+e);
+			logger.error("giveBackPayResult error="+e);
 		}
 		return notifyRespBo;
-	}*/
-
-	/*private AfBorrowPushDo buildBorrowPush(Long rid,String assetSideEdspayFlag,EdspayGiveBackPayResultReqBo payResultReqBo) {
-		AfBorrowPushDo borrowPushDo = new AfBorrowPushDo();
-		Date now = new Date();
-		borrowPushDo.setGmtCreate(now);
-		borrowPushDo.setGmtModified(now);
-		borrowPushDo.setBorrowId(rid);
-		borrowPushDo.setAssetSideFlag(assetSideEdspayFlag);
-		if (payResultReqBo.getType()==0&&payResultReqBo.getCode()==1){
-			//审核失败
-			borrowPushDo.setStatus(PushEdspayResult.REVIEWFAIL.getCode());
-			//记录拓展表
-		}else if(payResultReqBo.getType()==1&&payResultReqBo.getCode()==1){
-			//打款失败
-			borrowPushDo.setStatus(PushEdspayResult.PAYFAIL.getCode());
-			//记录拓展表
-		}else if(payResultReqBo.getType()==1&&payResultReqBo.getCode()==0){
-			//打款成功
-			borrowPushDo.setStatus(PushEdspayResult.PAYSUCCESS.getCode());
-			//记录拓展表
-		}
-		return borrowPushDo;
 	}
-*/
-	/*private AfBorrowCashPushDo buildBorrowCashPush(Long rid,String assetSideEdspayFlag, String status) {
-		AfBorrowCashPushDo afBorrowCashPushDo = new AfBorrowCashPushDo();
-		Date now = new Date();
-		afBorrowCashPushDo.setGmtCreate(now);
-		afBorrowCashPushDo.setGmtModified(now);
-		afBorrowCashPushDo.setBorrowCashId(rid);
-		afBorrowCashPushDo.setAssetSideFlag(assetSideEdspayFlag);
-		afBorrowCashPushDo.setStatus(status);
-		return afBorrowCashPushDo;
-	}
-
-	private void removeRecordMax(EdspayGiveBackPayResultReqBo PayResultReqBo) {
-		AfRecordMaxDo recordMaxDo = afRecordMaxService.getByBusIdAndEventype(PayResultReqBo.getOrderNo(),RetryEventType.QUERY.getCode());
-		if (null != recordMaxDo) {
-			afRecordMaxService.deleteById(recordMaxDo.getRid());
-		}
-	}*/
-
 	
-	/*public int queryEdspayApiHandle(String orderNo) {
-		try {
-			AfBorrowCashDo borrowCashDo = afBorrowCashService.getBorrowCashInfoByBorrowNo(orderNo);
-			if (borrowCashDo!=null) {
-				//现金贷
-				try {
-					BigDecimal auAmount = afUserAccountService.getAuAmountByUserId(borrowCashDo.getUserId());
-					afBorrowCashService.updateAuAmountByRid(borrowCashDo.getRid(), auAmount);
-				} catch (Exception e) {
-					logger.error("updateAuAmountByRid is fail;msg=" + e);
-				}
-				// 减少额度，包括搭售商品借款 
-				afUserAccountSenceService.syncLoanUsedAmount(borrowCashDo.getUserId(), SceneType.CASH, borrowCashDo.getAmount());
-				// 增加日志
-				AfUserAccountLogDo accountLog = BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.BorrowCash,
-						borrowCashDo.getAmount(), borrowCashDo.getUserId(), borrowCashDo.getRid());
-				afUserAccountLogDao.addUserAccountLog(accountLog);
-				//现金贷
-				borrowCashDo.setStatus(AfBorrowCashStatus.transed.getCode());
-				// FIXME 查询是否有订单，查询订单状态
-				final AfBorrowLegalOrderDo legalOrderDo = afBorrowLegalOrderService
-						.getLastBorrowLegalOrderByBorrowId(borrowCashDo.getRid());
+	/**
+	 * 获取资产方配置信息
+	 * 如果资产方未启用或者配置未开启，则返回null，否则返回正常配置信息
+	 * @param appId
+	 * @return
+	 */
+	private DsedResourceDo getAssetSideConfigInfo(String appId){
+		//资产方对应配置信息校验
+		DsedResourceDo assideResourceInfo = dsedResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_SIDE_CONFIG.getCode(), appId);
+		if(assideResourceInfo==null || !OpenCloseStatus.O.getCode().equals(assideResourceInfo.getValue4()) ){
+			return null;
+		}
+		return assideResourceInfo;
+	}
 
-				if (legalOrderDo != null) {
-					legalOrderDo.setStatus(BorrowLegalOrderStatus.AWAIT_DELIVER.getCode());
-					afBorrowLegalOrderService.updateById(legalOrderDo);
-				}
-				// 查询借款信息是否存在
-				AfBorrowLegalOrderCashDo legalOrderCashDo = afBorrowLegalOrderCashService
-						.getBorrowLegalOrderCashByBorrowIdNoStatus(borrowCashDo.getRid());
-				if (legalOrderCashDo != null) {
-					legalOrderCashDo.setStatus(AfBorrowLegalOrderCashStatus.AWAIT_REPAY.getCode());
-					afBorrowLegalOrderCashService.updateById(legalOrderCashDo);
-				}
-				afBorrowCashService.borrowSuccessForNew(borrowCashDo);
-			}else{
-				AfLoanDo loanDo = afLoanService.getByLoanNo(orderNo);
-				if (null != loanDo) {
-					//白领贷
-					afLoanService.dealLoanSucc(loanDo.getRid(),"");
-				}
-			}
+
+	private void removeRecordMax(EdspayGiveBackPayResultReqBo payResultReqBo) {
+		DsedRecordMaxDo recordMaxDo = dsedRecordMaxService.getByBusIdAndEventype(payResultReqBo.getOrderNo(),RetryEventType.QUERY.getCode());
+		if (null != recordMaxDo) {
+			dsedRecordMaxService.deleteById(recordMaxDo.getRid());
+		}
+	}
+	
+	public int queryEdspayApiHandle(String orderNo) {
+		try {
+			DsedLoanDo dsedLoanDo = dsedLoanService.getByLoanNo(orderNo);
+			if (dsedLoanDo!=null) {
+				//都市e贷
+				dsedLoanService.dealLoanSucc(dsedLoanDo.getRid(),"");
+			}	
 		} catch (Exception e) {
 			logger.error("queryEdspayApiHandle error"+e);
 			return 1;
 		}
 		return 0;
 	}
-*/
-	/*public int tenementPushEdspay(Long borrowId) {
-		try {
-			AfBorrowDo borrowDo = afBorrowService.getBorrowById(Long.valueOf(borrowId));
-			List<EdspayGetCreditRespBo> pushEdsPayBorrowInfos = riskUtil.pushEdsPayBorrowInfo(borrowDo);
-			AfAssetSideInfoDo afAssetSideInfoDo = afAssetSideInfoService.getByFlag(Constants.ASSET_SIDE_EDSPAY_FLAG);
-			//债权实时推送
-			boolean result = assetSideEdspayUtil.borrowCashCurPush(pushEdsPayBorrowInfos, afAssetSideInfoDo.getAssetSideFlag(),Constants.ASSET_SIDE_FANBEI_FLAG);
-			if (result) {
-				logger.info("borrowCashCurPush suceess,borrowId="+borrowId);
-				//记录push表
-				AfBorrowPushDo borrowPush = buildBorrowPush(borrowDo.getRid(),pushEdsPayBorrowInfos.get(0).getApr(), pushEdsPayBorrowInfos.get(0).getManageFee());
-				afBorrowPushService.saveOrUpdate(borrowPush);
-			}
-		} catch (Exception e) {
-			logger.error("tenementPushEdspay error"+e);
-			return 1;
-		}
-		return 0;
-	}
-*/
-	/*private AfBorrowPushDo buildBorrowPush(Long rid, BigDecimal apr,BigDecimal manageFee) {
-		AfBorrowPushDo borrowPush =new AfBorrowPushDo();
-		Date now = new Date();
-		borrowPush.setGmtCreate(now);
-		borrowPush.setGmtModified(now);
-		borrowPush.setBorrowId(rid);
-		borrowPush.setBorrowRate(apr);
-		borrowPush.setProfitRate(manageFee);
-		return borrowPush;
-	}*/
 
 	public int repushMaxApiHandle(String orderNo) {
 		try {
