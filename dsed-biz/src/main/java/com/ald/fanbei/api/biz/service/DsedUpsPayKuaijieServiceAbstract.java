@@ -136,7 +136,7 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 		if (!respBo.isSuccess()) {
 			// 获取短信码失败
 			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
-			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
+//			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
 			clearCache(payTradeNo);
 			throw new FanbeiException(FanbeiExceptionCode.getByCode(errorMsg.name()));
 		} else {
