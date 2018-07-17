@@ -53,6 +53,19 @@ public class DsedbindCardTest extends BaseTest {
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
+    @Test
+    public void test() {
+        String url = urlBase + "/third/xgxy/v1/testupdatedata";
+        Map<String, String> params = new HashMap<>();
+        params.put("id", "1205");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
 
     @Test
     public void getSms() {
@@ -69,7 +82,7 @@ public class DsedbindCardTest extends BaseTest {
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
-    
+
     @Test
     public void dsedSubmitBind() {
         String url = urlBase + "/third/xgxy/v1/smsCodeSubmit";
