@@ -120,6 +120,7 @@ public class LoanOverDueTask {
    void calcuOverdueRecords(List<DsedLoanPeriodsDto> loanDos){
         for(DsedLoanPeriodsDto dsedLoanDo:loanDos){
             try {
+                logger.info("calcuOverdueRecords do dsedLoanDo, loanId="+dsedLoanDo.getLoanId());
                 if(loanOverdueLogService.getLoanOverDueLogByNow(String.valueOf(dsedLoanDo.getRid()))!=null){
                    continue;
                 }
