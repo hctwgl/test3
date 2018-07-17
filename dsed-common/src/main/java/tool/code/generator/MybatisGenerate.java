@@ -106,22 +106,22 @@ public class MybatisGenerate {
 				// 模板文件路径
 				String tplPath = "";
 				if (db.equals("mysql")) {
-					tplPath = StringUtils.replace(realProjectPath + "/51fbapi-common/generate/template/mysql", "/", separator);
+					tplPath = StringUtils.replace(realProjectPath + "/dsed-common/generate/template/mysql", "/", separator);
 				} else if (db.equals("oracle")) {
-					tplPath = StringUtils.replace(realProjectPath + "/51fbapi-common/generate/template/oracle", "/", separator);
+					tplPath = StringUtils.replace(realProjectPath + "/dsed-common/generate/template/oracle", "/", separator);
 				}
 
 				// Java文件路径,使用
 //				String javaPath = StringUtils.replaceEach(
 //						projectPath + "/src/main/java/" + StringUtils.lowerCase(packageName), new String[] { "/", "." },
 //						new String[] { separator, separator });
-				String dalPath = StringUtils.replaceEach(realProjectPath + "/51fbapi-dal" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/dal", new String[] { "/", "." },new String[] { separator, separator });
-				String bizPath = StringUtils.replaceEach(realProjectPath + "/51fbapi-biz" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/biz", new String[] { "/", "." },new String[] { separator, separator });
-				String webPath = StringUtils.replaceEach(realProjectPath + "/51fbapi-web" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/web", new String[] { "/", "." },new String[] { separator, separator });
+				String dalPath = StringUtils.replaceEach(realProjectPath + "/dsed-dal" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/dal", new String[] { "/", "." },new String[] { separator, separator });
+				String bizPath = StringUtils.replaceEach(realProjectPath + "/dsed-biz" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/biz", new String[] { "/", "." },new String[] { separator, separator });
+				String webPath = StringUtils.replaceEach(realProjectPath + "/dsed-web" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/web", new String[] { "/", "." },new String[] { separator, separator });
 				
 				// mybatis文件生成地址
 				
-				String batisPath = StringUtils.replace(realProjectPath + "/51fbapi-dal/src/main/resources/sqlmap", "/", separator);
+				String batisPath = StringUtils.replace(realProjectPath + "/dsed-dal/src/main/resources/sqlmap", "/", separator);
 
 				// 代码模板配置
 				Configuration cfg = new Configuration();

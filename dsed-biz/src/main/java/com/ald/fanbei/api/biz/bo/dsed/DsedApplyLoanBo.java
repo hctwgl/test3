@@ -25,6 +25,7 @@ public class DsedApplyLoanBo {
 		public String loanRemark;
 		public String repayRemark;
 		public String payPwd;
+		public String bankCardNumber;
 		public String latitude;
 		public String longitude;
 		public String province;

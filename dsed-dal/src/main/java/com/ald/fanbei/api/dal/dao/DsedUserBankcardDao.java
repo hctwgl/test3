@@ -31,7 +31,7 @@ public interface DsedUserBankcardDao extends BaseDao<DsedUserBankcardDo, Long> {
      * @param userId
      * @return
      */
-    DsedUserBankcardDo getUserMainBankcardByUserId(@Param("userId") Long userId);
+    DsedUserBankcardDo getUserMainBankcardByUserId(@Param("userId") Long userId,@Param("bankCardNumber") String bankCardNumber);
 
     /**
      * 获取银行身份信息

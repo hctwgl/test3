@@ -24,4 +24,6 @@ public class DsedApplyLoanParam {
 	
 	@NotNull
 	public String repayRemark;
+
+	public String bankNo;
 }

@@ -47,18 +47,21 @@ public class DsedLoanRepayDoApi implements DsedH5Handle {
 	public DsedH5HandleResponse process(Context context) {
 		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
 		LoanRepayDoParam param = (LoanRepayDoParam) context.getParamEntity();
-		Map<String, Object> data = new HashMap<String, Object>();
 		String bankNo = param.bankNo;
 		Long userId = context.getUserId();
+		
 		HashMap<String,Object> map = dsedUserBankcardService.getPayTypeByBankNoAndUserId(userId,bankNo);
 		String payType = map.get("bankChannel").toString();
 		DsedUserDo dsedUserDo = dsedUserService.getById(userId);
+		
 		LoanRepayBo bo = this.extractAndCheck(context, userId);
 		bo.dsedUserDo = dsedUserDo;
 		bo.remoteIp = context.getClientIp();
 		bo.bankNo = bankNo;
 		bo.cardName = map.get("bankName").toString();
-		data = this.dsedLoanRepaymentService.repay(bo,payType);
+		
+		this.dsedLoanRepaymentService.repay(bo,payType);
+		
 		Map<String, Object> hashMap = new HashMap<String, Object>();
 		hashMap.put("payMethod",payType);
 		hashMap.put("busiFlag",bo.tradeNo);

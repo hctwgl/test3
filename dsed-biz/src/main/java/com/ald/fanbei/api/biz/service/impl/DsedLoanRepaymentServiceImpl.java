@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,13 +36,6 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.BankPayChannel;
-import com.ald.fanbei.api.common.enums.DsedLoanPeriodStatus;
-import com.ald.fanbei.api.common.enums.DsedLoanRepaymentStatus;
-import com.ald.fanbei.api.common.enums.DsedLoanStatus;
-import com.ald.fanbei.api.common.enums.DsedNoticeType;
-import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -59,6 +53,7 @@ import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
+import com.timevale.esign.sdk.tech.service.impl.b;
 
 import net.sf.json.JSONArray;
 
@@ -199,41 +194,55 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 
 	@Override
-	public Map<String, Object> repay(LoanRepayBo bo, String bankPayType) {
-		if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
-			lockRepay(bo.userId);
-		}
-		if (!bo.isAllRepay && !canRepay(bo.dsedLoanPeriodsDoList.get(0))) {
-			// 未出账时拦截按期还款
+	public void repay(LoanRepayBo bo, String bankPayType) {
+		try {
+			if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
+				lockRepay(bo.userId);
+			}
+			if (!bo.isAllRepay && !canRepay(bo.dsedLoanPeriodsDoList.get(0))) {
+				// 未出账时拦截按期还款
+				throw new FanbeiException("loan period can not repay error",FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
+			}
+
+			String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+			if (StringUtil.equals("sysJob", bo.remoteIp)) {
+				name = Constants.BORROW_REPAYMENT_NAME_AUTO;
+			}
+
+			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
+			bo.tradeNo = tradeNo;
+			bo.name = name;
+
+			// 根据 还款金额 更新期数信息
+			if (!bo.isAllRepay) { // 非提前结清
+				List<DsedLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.amount);
+				bo.dsedLoanPeriodsIds.clear();
+				bo.dsedLoanPeriodsDoList.clear();
+				for (DsedLoanPeriodsDo dsedLoanPeriodsDo : loanPeriods) {
+					bo.dsedLoanPeriodsIds.add(dsedLoanPeriodsDo.getRid());
+					bo.dsedLoanPeriodsDoList.add(dsedLoanPeriodsDo);
+				}
+			}
+
+			// 增加还款记录
+			generateRepayRecords(bo);
+
+			// 还款操作
+			doRepay(bo, bo.dsedloanRepaymentDo, bankPayType);
+		} catch (Exception e) {
+			if(bo.dsedloanRepaymentDo != null) {
+				bo.dsedloanRepaymentDo.setStatus(DsedLoanRepaymentStatus.FAIL.name());
+				bo.dsedloanRepaymentDo.setRemark("exception occur,msg = " + e.getMessage());
+				dsedLoanRepaymentDao.updateStatusById(bo.dsedloanRepaymentDo);
+			}
+			
 			unLockRepay(bo.userId);
-			throw new FanbeiException("loan period can not repay error",FanbeiExceptionCode.LOAN_PERIOD_CAN_NOT_REPAY_ERROR);
-		}
-
-		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
-		if (StringUtil.equals("sysJob", bo.remoteIp)) {
-			name = Constants.BORROW_REPAYMENT_NAME_AUTO;
-		}
-
-		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
-		bo.tradeNo = tradeNo;
-		bo.name = name;
-
-		// 根据 还款金额 更新期数信息
-		if (!bo.isAllRepay) { // 非提前结清
-			List<DsedLoanPeriodsDo> loanPeriods = getLoanPeriodsIds(bo.loanId, bo.amount);
-			bo.dsedLoanPeriodsIds.clear();
-			bo.dsedLoanPeriodsDoList.clear();
-			for (DsedLoanPeriodsDo dsedLoanPeriodsDo : loanPeriods) {
-				bo.dsedLoanPeriodsIds.add(dsedLoanPeriodsDo.getRid());
-				bo.dsedLoanPeriodsDoList.add(dsedLoanPeriodsDo);
+			if(e instanceof FanbeiException) {
+				throw e;
+			}else {
+				throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL, e);
 			}
 		}
-
-		// 增加还款记录
-		generateRepayRecords(bo);
-
-		// 还款操作
-		return doRepay(bo, bo.dsedloanRepaymentDo, bankPayType);
 
 	}
 
@@ -448,7 +457,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				if (collectionRepaymentId != null){
 					repaymentDo.setRemark(String.valueOf(collectionRepaymentId));
 				}
-//				nofityRisk(loanRepayDealBo);
+//				nofityRisk(loanRepayDealBo,repaymentDo);
 				//还款成功，调用西瓜信用通知接口
 				DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
 				noticeRecordDo.setUserId(repaymentDo.getUserId());
@@ -486,24 +495,49 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		return DsedNoticeType.REPAY.code;
 	}
 
-	private void nofityRisk(LoanRepayDealBo LoanRepayDealBo) {
+	private void nofityRisk(LoanRepayDealBo LoanRepayDealBo,DsedLoanRepaymentDo repaymentDo) {
 		//会对逾期的借款还款，向催收平台同步还款信息
 		if (DateUtil.compareDate(new Date(), LoanRepayDealBo.loanPeriodsDoList.get(0).getGmtPlanRepay()) ){
 			try {
-				CollectionSystemReqRespBo respInfo = collectionSystemUtil.consumerRepayment(
-						LoanRepayDealBo.userId,
-						LoanRepayDealBo.curTradeNo,
-						LoanRepayDealBo.loanNo,
-						LoanRepayDealBo.curCardNo,
-						LoanRepayDealBo.curCardName,
-						DateUtil.formatDateTime(new Date()),
-						LoanRepayDealBo.curOutTradeNo,
-						LoanRepayDealBo.curSumRepayAmount,
-						LoanRepayDealBo.sumAmount.subtract(LoanRepayDealBo.sumRepaidAmount).setScale(2, RoundingMode.HALF_UP), //未还的
-						LoanRepayDealBo.sumAmount.setScale(2, RoundingMode.HALF_UP),
-						LoanRepayDealBo.sumOverdueAmount,
-						LoanRepayDealBo.sumRepaidAmount,
-						LoanRepayDealBo.sumInterest,false);
+				BigDecimal amount = BigDecimal.ZERO;
+				BigDecimal repayAmount = BigDecimal.ZERO;
+				List<HashMap<String,String>> list = new ArrayList<>();
+				Map<String, String> reqBo = new HashMap<String, String>();
+
+				//("订单编号")
+				reqBo.put("orderNo", LoanRepayDealBo.loanNo);
+				//("还款流水")
+				reqBo.put("repaymentNo", LoanRepayDealBo.curTradeNo);
+				//("还款时间")
+				reqBo.put("repayTime", DateUtil.formatDateTime(new Date()));
+				reqBo.put("type", AfRepayCollectionType.APP.getCode());
+				reqBo.put("repaymentAcc", LoanRepayDealBo.userId+"");//还款账户
+				for(DsedLoanPeriodsDo dsedLoanPeriodsDo : LoanRepayDealBo.loanPeriodsDoList){
+					if(StringUtil.equals(dsedLoanPeriodsDo.getOverdueStatus(),YesNoStatus.YES.getCode())){
+						repayAmount = BigDecimalUtil.add(dsedLoanPeriodsDo.getAmount(),
+								dsedLoanPeriodsDo.getRepaidInterestFee(),dsedLoanPeriodsDo.getInterestFee(),
+								dsedLoanPeriodsDo.getServiceFee(),dsedLoanPeriodsDo.getRepaidServiceFee(),
+								dsedLoanPeriodsDo.getOverdueAmount(),dsedLoanPeriodsDo.getRepaidOverdueAmount())
+								.subtract(dsedLoanPeriodsDo.getRepayAmount());
+						HashMap<String, String> data = new HashMap<String, String>();
+						data.put("dataId",dsedLoanPeriodsDo.getRid().toString());
+						if(StringUtil.equals(repaymentDo.getPreRepayStatus(),YesNoStatus.NO.getCode())){
+							if(repayAmount.compareTo(repaymentDo.getActualAmount())>0){
+								amount = repaymentDo.getActualAmount();
+								data.put("amount",repaymentDo.getActualAmount().toString());
+							}
+						}else {
+							amount = repayAmount.add(amount);
+							data.put("amount",repayAmount.toString());
+						}
+						list.add(data);
+					}
+				}
+				//还款总额(逾期)
+				reqBo.put("totalAmount", amount+"");
+				//("还款详情, 格式: [{'dataId':'数据编号', 'amount':'还款金额(元, 精确到分)'},...]")
+				reqBo.put("details", JSON.toJSONString(list));
+				CollectionSystemReqRespBo respInfo = collectionSystemUtil.consumerRepayment(reqBo);
 				logger.info("collection consumerRepayment req success, respinfo={}", respInfo);
 			} catch (Exception e) {
 				logger.error("向催收平台同步还款信息失败", e);
