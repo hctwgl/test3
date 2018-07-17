@@ -110,7 +110,7 @@ public class NoticeTask {
                             if(loanRepaymentDo==null|| loanRepaymentDo.getIsDelete()==1){
                                 dsedNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
                             }else {
-                                updateNoticeRecord(recordDo, collectionSystemUtil.dsedRePayNoticeRequest(dsedLoanRepaymentService.buildData(loanRepaymentDo)));
+//                                updateNoticeRecord(recordDo, collectionSystemUtil.consumerRepayment(dsedLoanRepaymentService.buildData(loanRepaymentDo)));
                             }
                             continue;
                         }
