@@ -10,6 +10,8 @@ import com.ald.fanbei.api.biz.bo.CollectionDataBo;
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.common.enums.AfRepayCollectionType;
 import com.ald.fanbei.api.common.enums.AfRepeatCollectionType;
+import com.ald.fanbei.api.common.enums.DsedNoticeStatus;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.*;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Component;
@@ -116,33 +118,18 @@ public class CollectionSystemUtil extends AbstractThird {
 	 * @param reqBo
 	 * @return
 	 */
-	public CollectionSystemReqRespBo consumerRepayment(Map<String, String> reqBo) {
+	public void consumerRepayment(Map<String, String> reqBo) {
 		CollectionDataBo data = new CollectionDataBo();
-		String json = JsonUtil.toJSONString(reqBo);
-		data.setData(json);// 数据集合
-		data.setSign(DigestUtil.MD5(json));
-		String timestamp = DateUtil.getDateTimeFullAll(new Date());
-		data.setTimestamp(timestamp);
 		// APP还款类型写3 , 线下还款写4
-		data.setChannel(AfRepayCollectionType.APP.getCode());
 		try {
 			logger.info("repaymentAchieve request :" + JSON.toJSONString(data));
-			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(
-					getUrl() + "/api/ald/collect/v1/third/repayment", getUrlParamsByMap(data));
+			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/third/repayment", reqBo);
 			logger.info(getUrl() + "/api/ald/collect/v1/third/repayment");
 			logger.info("repaymentAchieve response :" + reqResult);
-			if (StringUtil.isBlank(reqResult)) {
-				throw new FanbeiException("consumerRepayment fail , reqResult is null");
-			} else {
+			if (StringUtil.equals(reqResult.toUpperCase(), DsedNoticeStatus.SUCCESS.code)) {
 				logger.info("consumerRepayment req success,reqResult" + reqResult);
-			}
-
-			CollectionSystemReqRespBo respInfo = JSONObject.parseObject(reqResult, CollectionSystemReqRespBo.class);
-			if (respInfo != null && StringUtil.equals("200", respInfo.getCode())) {
-				return respInfo;
 			} else {
-				throw new FanbeiException(
-						"consumerRepayment fail , respInfo info is " + JSONObject.toJSONString(respInfo));
+				throw new FanbeiException("consumerRepayment fail , reqResult is null");
 			}
 		} catch (Exception e) {
 			logger.error("consumerRepayment error:", e);
