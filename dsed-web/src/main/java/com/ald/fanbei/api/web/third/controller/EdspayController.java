@@ -43,7 +43,7 @@ public class EdspayController {
 	@RequestMapping(value = { "/giveBackPayResult" }, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
 	public AssetSideRespBo giveBackPayResult(@RequestBody String requestData,HttpServletRequest request, HttpServletResponse response) {
-		logger.info("giveBackPayResult,param = " + requestData);
+		logger.info("giveBackPayResult param = " + requestData);
 		JSONObject jsonObj = JSON.parseObject(requestData);
 		String sendTime = StringUtil.null2Str(jsonObj.get("sendTime"));
 		String data = StringUtil.null2Str(jsonObj.get("data"));

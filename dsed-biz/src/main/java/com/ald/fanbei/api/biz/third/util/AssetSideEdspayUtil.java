@@ -208,9 +208,9 @@ public class AssetSideEdspayUtil extends AbstractThird {
 
 	private void noRepushHandle(EdspayGetCreditRespBo borrowCashInfo,AssetPushSwitchConf switchConf) {
 		Date cur = new Date();
-		if (borrowCashInfo.getDebtType()==0) {
+		if (borrowCashInfo.getDebtType()==AssetPushBusiType.DSED.getCode()) {
 			//都市e贷
-			final DsedLoanDo dsedLoanDo = dsedLoanService.getByLoanNo(borrowCashInfo.getOrderNo());
+			DsedLoanDo dsedLoanDo = dsedLoanService.getByLoanNo(borrowCashInfo.getOrderNo());
 			if (null != dsedLoanDo) {
 				DsedLoanPushDo loanPushDo = buildLoanPush(dsedLoanDo.getRid(),Constants.ASSET_SIDE_FANBEI_FLAG,PushEdspayResult.PUSHFAIL.getCode());
 				dsedLoanPushService.saveOrUpdate(loanPushDo);
@@ -267,10 +267,10 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			//请求时间校验
 			Long reqTimeStamp = NumberUtil.objToLongDefault(sendTime,0L);
 			int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp,DateUtil.getCurrSecondTimeStamp(),60);
-			if(result>0){
+			/*if(result>0){
 				notifyRespBo.resetRespInfo(FanbeiAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
 				return notifyRespBo;
-			}
+			}*/
 			//签名验证相关值处理
 			String realDataJson = "";
 			EdspayGiveBackPayResultReqBo payResultReqBo = null;
@@ -302,7 +302,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				DsedResourceDo assetPushResource = dsedResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 				AssetPushSwitchConf switchConf =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue1()), AssetPushSwitchConf.class);
 				Date now = new Date();
-				if (payResultReqBo.getDebtType() == 0){
+				if (payResultReqBo.getDebtType() == AssetPushBusiType.DSED.getCode()){
 					//都市e贷
 					DsedLoanDo dsedLoanDo = dsedLoanService.getByLoanNo(payResultReqBo.getOrderNo());
 					if (null != dsedLoanDo) {
@@ -432,6 +432,9 @@ public class AssetSideEdspayUtil extends AbstractThird {
 						dsedLoanService.dealLoanFail(dsedLoanDo, periodDos, "UPS打款失败，"+upsResult.getRespCode());
 					}
 				}
+			}else{
+				logger.error("dsed repushMaxApiHandle loanNo not exsit");
+				return 1;
 			}
 		} catch (Exception e) {
 			logger.error("dsed repushMaxApiHandle error"+e);
@@ -451,7 +454,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		return loanPushDo;
 	}
 	
-	public List<EdspayGetCreditRespBo> buildDsedrBorrowInfo(DsedLoanDo loanDo) {
+	public List<EdspayGetCreditRespBo> buildDsedBorrowInfo(DsedLoanDo loanDo) {
 		List<EdspayGetCreditRespBo> creditRespBos = new ArrayList<EdspayGetCreditRespBo>();
 		EdspayGetCreditRespBo creditRespBo = new EdspayGetCreditRespBo();
 		//借款人平台逾期信息

@@ -164,7 +164,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 				if (StringUtil.equals(assetPushType.getDsed(), YesNoStatus.YES.getCode())
 					&&(StringUtil.equals(loanDo.getAppName(), "www")||StringUtil.equals(loanDo.getAppName(), ""))
 					&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&isWhite&&!bankIsMaintaining) {//推送eds放款
-					List<EdspayGetCreditRespBo> dsedBorrowInfo = assetSideEdspayUtil.buildDsedrBorrowInfo(loanDo);
+					List<EdspayGetCreditRespBo> dsedBorrowInfo = assetSideEdspayUtil.buildDsedBorrowInfo(loanDo);
 					//债权实时推送
 					boolean result = assetSideEdspayUtil.dsedCurPush(dsedBorrowInfo, Constants.ASSET_SIDE_EDSPAY_FLAG,Constants.ASSET_SIDE_FANBEI_FLAG);
 					if (result) {

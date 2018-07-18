@@ -18,7 +18,7 @@ public class Bootstrap4Jetty {
 	public static void main(String[] args) {
 	
 		String webPath = ROOT_PATH + "src/main/webapp";
-		new JettyServerStart(webPath, 8089, "/", 0, true).start();
+		new JettyServerStart(webPath, 8078, "/", 0, true).start();
 
 	}
 }

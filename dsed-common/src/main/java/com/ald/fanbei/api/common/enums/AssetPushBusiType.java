@@ -8,7 +8,7 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum AssetPushBusiType {
 	
-	DSED(0, "都市e贷");
+	DSED(3, "都市e贷");
 	
 	private Integer code;
 
