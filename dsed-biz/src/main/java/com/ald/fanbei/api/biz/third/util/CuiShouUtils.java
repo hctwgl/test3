@@ -1,9 +1,11 @@
-package com.ald.fanbei.api.biz.third.cuishou;
+package com.ald.fanbei.api.biz.third.util;
 
 import com.ald.fanbei.api.biz.bo.RepaymentBo;
 import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.DsedLoanService;
+import com.ald.fanbei.api.biz.third.cuishou.CuiShouBackMoney;
+import com.ald.fanbei.api.biz.third.cuishou.CuiShouType;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.*;
@@ -20,7 +22,6 @@ import com.alibaba.fastjson.JSONArray;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
