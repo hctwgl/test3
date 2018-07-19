@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ald.fanbei.api.common.enums.PayOrderSource;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,7 +28,7 @@ public class DsedLoanTest extends BaseTest {
 //  String urlBase = "http://localhost:8080";
     String urlBase = "http://192.168.112.40:8080";
     
-    String userName = AccountOfTester.夏枫.mobile;
+    String userName = "18258023758";
 
     /**
      * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -109,23 +110,57 @@ public class DsedLoanTest extends BaseTest {
     }
 
 
-	@Test
-	public void dsedrepayLoan() {
-		String url = urlBase + "/third/xgxy/v1/repayComfirm";
-		Map<String,String> params = new HashMap<>();
-        params.put("amount", 1+"");
+    @Test
+    public void dsedrepayLoan() {
+        String url = urlBase + "/third/xgxy/v1/repayComfirm";
+        Map<String,String> params = new HashMap<>();
+        params.put("amount", 0.01+"");
         params.put("curPeriod", 1+"");
-        params.put("bankNo", "6214835896219365");
-        params.put("borrowNo", "dk2018071009541700092");
+        params.put("bankNo", "6214855713637987");
+        params.put("borrowNo", "dk2018071302455300249");
+        params.put("userId","EB56E1F0A9383508DB8FD039C7D37BDF");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+
+    @Test
+    public void dsedrepayPreFinish() {
+        String url = urlBase + "/third/xgxy/v1/preFinish";
+        Map<String,String> params = new HashMap<>();
+        params.put("amount", 9.26+"");
+        params.put("curPeriod", 1+"");
+        params.put("bankNo", "6214835890543422");
+        params.put("borrowNo", "dk2018071002395100033");
         params.put("userId","1C9064925F3AAF85BC663FEB1727DD4B");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
-        
+
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
-	}
+    }
+
+    @Test
+    public void  collect() {
+        String url = urlBase + "/third/ups/collect?";
+        String orderNo = "hq2018071618000400030";
+        String merPriv = PayOrderSource.REPAY_LOAN.getCode();
+        String tradeNo = "xianfeng21231";
+        String tradeState = "00";
+
+        String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
+        url += reqStr;
+        Map<String,String> params = new HashMap<>();
+
+
+        testApi(url, params, userName ,true);
+    }
 
 
     @Test

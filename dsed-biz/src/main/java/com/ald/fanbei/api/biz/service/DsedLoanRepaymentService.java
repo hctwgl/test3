@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.ald.fanbei.api.biz.service.impl.DsedLoanRepaymentServiceImpl;
+import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
 
@@ -54,6 +55,18 @@ public interface DsedLoanRepaymentService{
     public HashMap<String,String> buildData(DsedLoanRepaymentDo repaymentDo);
 
     String getCurrentLastRepayNo(String orderNoPre);
+
+    /**
+     * 都市e贷 线下还款
+     * @param totalAmount
+     * @param repaymentNo
+     * @param userId
+     * @param type
+     * @param repayTime
+     * @param orderNo
+     * @param list
+     */
+    void offlineRepay(String loanNo,Long loanId,String totalAmount,String repaymentNo,Long userId,String type,String repayTime,String orderNo,List<DsedLoanPeriodsDo> list);
 
 
 }

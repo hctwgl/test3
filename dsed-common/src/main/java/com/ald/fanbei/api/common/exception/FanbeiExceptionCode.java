@@ -39,6 +39,7 @@ public enum FanbeiExceptionCode {
     REQUEST_PARAM_ERROR("REQUEST_PARAM_ERROR", 1006, "request param error", "请求参数不正确"),
     SUCCESS("SUCCESS", 200, "success", "成功"), FAILED("FAILED", 201, "failed", "失败"),
     BANK_LIMIT_MONEY("BANK_LIMIT_MONEY",1324,"bank limit money","该银行单笔限额，请使用其他银行卡还款，谢谢！"),
+    BORROW_CASH_REPAY_REPEAT_ERROR("BORROW_CASH_REPAY_REPEAT_ERROR",2004,"borrow cash repay repeat","重复的还款操作"),
 
 
     UPS_ERROR_0000("UPS_ERROR_0000",0000,"","请求成功" ),

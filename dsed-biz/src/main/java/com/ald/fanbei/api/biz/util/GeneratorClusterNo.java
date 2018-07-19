@@ -33,7 +33,7 @@ public class GeneratorClusterNo extends AbstractThird {
 	/**
 	 * 获取现金还款编号
 	 *
-	 * @param currDate
+	 * @param bankChannel
 	 * @return
 	 */
 	public String getRepaymentBorrowCashNo(String bankChannel) {// 订单号规则：6位日期_2位订单类型_5位订单序号
@@ -60,6 +60,19 @@ public class GeneratorClusterNo extends AbstractThird {
 		return orderSb.toString();
 	}
 
+	/**
+	 * 获取现金还款编号
+	 *
+	 * @param currDate
+	 * @return
+	 */
+	public String getOfflineRepaymentBorrowCashNo(Date currDate) {// 订单号规则：6位日期_2位订单类型_5位订单序号
+		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+		StringBuffer orderSb = new StringBuffer("offline");
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getOfflineRepaymentSequenceNum()));
+		return orderSb.toString();
+	}
+
 	private String getOrderSeqStr(int orderIntVal) {
 		return String.format("%05d", orderIntVal);
 	}
@@ -79,5 +92,14 @@ public class GeneratorClusterNo extends AbstractThird {
 	private int getRepaymentSequenceNum() {
 		return TokenCacheUtil.incr(Constants.CACHEKEY_REPAYCASHNO);
 	}
+
+	/**
+	 * 获取线下还款序列号
+	 * @return
+	 */
+	private int getOfflineRepaymentSequenceNum() {
+		return TokenCacheUtil.incr(Constants.OFFLINE_CACHEKEY_REPAYCASHNO);
+	}
+
 	
 }

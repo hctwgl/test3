@@ -12,7 +12,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.third.cuishou.CuiShouUtils;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.dal.dao.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +44,6 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.DsedLoanDao;
-import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
-import com.ald.fanbei.api.dal.dao.DsedLoanRepaymentDao;
-import com.ald.fanbei.api.dal.dao.DsedUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
@@ -93,6 +92,8 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	DsedNoticeRecordService dsedNoticeRecordService;
 	@Resource
 	XgxyUtil xgxyUtil;
+	@Resource
+	DsedUserDao dsedUserDao;
 
 
 	@Override
@@ -778,8 +779,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 		loanRepayDealBo.loanPeriodsDoList = loanPeriodsDoList;
 
-
-
 		changLoanRepaymentStatus(loanRepayDealBo.curOutTradeNo, DsedLoanRepaymentStatus.SUCC.name(), repaymentDo.getRid());
 
 	}
@@ -957,6 +956,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		public BigDecimal rebateAmount = BigDecimal.ZERO; //可选字段
 		public BigDecimal reductionAmount = BigDecimal.ZERO; //可选字段
 		public List<HashMap> periodsList;
+		public String repayType;
 		public String payPwd;
 		public Long cardId;
 		public Long couponId;			//可选字段
@@ -968,7 +968,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		/* biz 业务处理字段 */
 		public String remoteIp;
 		public String name;
-		public String repayType;
 		public boolean isAllRepay = false;	// 是否是提前还款（默认false为按期还款）
 		/* biz 业务处理字段 */
 
@@ -1055,6 +1054,102 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 		return allRestAmount;
 	}
+
+
+
+
+	/**
+	 * 催收逾期还款
+	 *
+	 * @param
+	 */
+	@Override
+	public void offlineRepay(String loanNo ,Long loanId,String totalAmount,String repaymentNo,Long userId,String type,String repayTime,String orderNo,List<DsedLoanPeriodsDo> list) {
+
+		DsedLoanDo dsedLoanDo = dsedLoanDao.getByLoanNo(loanNo);
+
+		LoanRepayBo bo = buildLoanRepayBo(userId,dsedLoanDo, loanNo, AfRepayCollectionType.COLLECT.getCode(), totalAmount, repaymentNo,list);
+
+		List<DsedLoanPeriodsDo> loanPeriodsDoList = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
+		bo.dsedLoanPeriodsDoList = loanPeriodsDoList;
+
+		checkOfflineRepayment(repaymentNo);
+
+		generateRepayRecords(bo);
+
+		dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.dsedloanRepaymentDo,AfRepayCollectionType.COLLECT.getCode(),null,null);
+
+	}
+
+
+
+
+	private LoanRepayBo buildLoanRepayBo(Long userId,DsedLoanDo loanDo, String loanNo,
+										 String repayType, String repayAmount,
+										  String outTradeNo,List<DsedLoanPeriodsDo> periodsList){
+		LoanRepayBo bo = new LoanRepayBo();
+		bo.userId = loanDo.getUserId();
+		bo.dsedUserDo = dsedUserDao.getById(bo.userId);
+		bo.amount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
+		bo.actualAmount =  bo.amount;
+		bo.loanId = loanDo.getRid();
+		bo.dsedLoanDo = loanDo;
+		bo.tradeNo = generatorClusterNo.getOfflineRepaymentBorrowCashNo(new Date());
+		bo.outTradeNo = outTradeNo;
+		bo.repayType = repayType;
+		bo.cardName = "";
+		bo.bankNo = "";
+		bo.isAllRepay = false;
+		bo.name = AfRepayCollectionType.COLLECT.getName();
+		return bo;
+	}
+
+	private void checkOfflineRepayment(String repaymentNo) {
+		if(dsedLoanRepaymentDao.getLoanRepaymentByTradeNo(repaymentNo) != null) {
+			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
+		}
+	}
+
+
+//	/**
+//	 * 计算提前还款需还金额
+//	 */
+//	public void calculateOfflineRestAmount(LoanRepayBo bo) {
+//		List<DsedLoanPeriodsDo> noRepayList = dsedLoanPeriodsDao.getNoRepayListByLoanId(bo.loanId);
+//		List<HashMap> periodsList = bo.periodsList;
+//		for (DsedLoanPeriodsDo loanPeriodsDo : noRepayList) {
+//			BigDecimal restAmount = BigDecimal.ZERO;
+//			if(canRepay(loanPeriodsDo)) { // 已出账
+//				restAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount(),
+//						loanPeriodsDo.getRepaidInterestFee(),loanPeriodsDo.getInterestFee(),
+//						loanPeriodsDo.getServiceFee(),loanPeriodsDo.getRepaidServiceFee(),
+//						loanPeriodsDo.getOverdueAmount(),loanPeriodsDo.getRepaidOverdueAmount())
+//						.subtract(loanPeriodsDo.getRepayAmount());
+//			}else { // 未出账， 提前还款时不用还手续费和利息
+//				if (!bo.isAllRepay ){//判断是否为按期还款，按期还款不能提前还未出账账单
+//					for (HashMap map:bo.periodsList) {
+//						if (Long.parseLong(String.valueOf(map.get("id"))) == loanPeriodsDo.getRid()){
+//							throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
+//						}
+//					}
+//				}
+//				restAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount());
+//			}
+//			if (Long.parseLong(String.valueOf(periodsList.get(periodsList.size()-1).get("id"))) != loanPeriodsDo.getRid()){
+//				for (HashMap map:bo.periodsList) {
+//					if (Long.parseLong(String.valueOf(map.get("id"))) == loanPeriodsDo.getRid()){
+//						BigDecimal repayAmount = BigDecimal.valueOf(Double.parseDouble(String.valueOf(map.get("repayAmount"))) ).add(BigDecimal.valueOf(Double.parseDouble(String.valueOf(map.get("reductionAmount"))) ));
+//						if (repayAmount.compareTo(restAmount.add(BigDecimal.ONE)) > 0 || repayAmount.compareTo(restAmount.subtract(BigDecimal.ONE)) < 0 ){
+//							logger.warn("calculateOfflineRestAmount error, offlineRepayAmount="+ repayAmount +", restAmount="+ restAmount);
+//							throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
+
+
 
 	@Override
 	public String getCurrentLastRepayNo(String orderNoPre) {
