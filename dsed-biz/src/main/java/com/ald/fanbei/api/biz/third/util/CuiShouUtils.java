@@ -62,27 +62,13 @@ public class CuiShouUtils {
                 @Override
                 public void run() {
                     CuiShouUtils.setIsXianXiaHuangKuang(true);
-                    CuiShouBackMoney c = loanBorrowCashMoney(jsonObject);
-                    JSONObject j = (JSONObject) c.getData();
-                    if (CuiShouUtils.getDsedLoanRepaymentDo() != null) {
-                        j.put("ref_id", CuiShouUtils.getDsedLoanRepaymentDo().getRid());
-                        c.setData(j);
-                    }
-                    sycnSuccessAndError(c, 0); //同步返回数据
+                    loanBorrowCashMoney(jsonObject);
                 }
             }).start();
             return JSONObject.toJSONString(new CuiShouBackMoney(200, "success"));//同步反回接收成功
         } catch (Exception e) {
             thirdLog.error("offlineRepaymentMoney error", e);
             CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney(500, "error");
-            JSONObject jsonObject = new JSONObject();
-            try {
-//                final JSONObject _jsonObject = JSONObject.parseObject(data);
-//                jsonObject.put("id", _jsonObject.getLongValue("id"));
-                cuiShouBackMoney.setData(jsonObject);
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
             return JSON.toJSONString(cuiShouBackMoney);
         }
     }

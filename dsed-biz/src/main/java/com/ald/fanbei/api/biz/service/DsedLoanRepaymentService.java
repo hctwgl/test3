@@ -34,7 +34,7 @@ public interface DsedLoanRepaymentService{
     void repay(DsedLoanRepaymentServiceImpl.LoanRepayBo bo, String bankPayType);
 
     void dealRepaymentSucess(String tradeNo, String outTradeNo);
-    void dealRepaymentSucess(String tradeNo, String outTradeNo, final DsedLoanRepaymentDo repaymentDo, String operator, Long collectionRepaymentId, List<HashMap> periodsList);
+    void dealRepaymentSucess(String tradeNo, String outTradeNo, final DsedLoanRepaymentDo repaymentDo, String operator, Long collectionRepaymentId, List<HashMap> periodsList,boolean flag);
 
     void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg);
 

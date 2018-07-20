@@ -1,13 +1,16 @@
 package com.ald.fanbei.web.test.api.dsed;
 
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.util.DigestUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -114,9 +117,25 @@ public class DsedLoanTest extends BaseTest {
      * 发起贷款申请
      */
     @Test
-    public void dsedCollectRepay() {
+    public void dsedCollectRepay() throws UnsupportedEncodingException {
         String url = urlBase + "/third/collection/offLineBackMoney";
+        Map<String, String> data = new HashMap<>();
+        String salt = "dsedcuishou";
+        data.put("orderNo","333");
+        data.put("totalAmount","12.54");
+        data.put("repaymentAcc","13989455831");
+        data.put("details","[{'dataId':'1251','amount':'4.27'},{'dataId':'1252','amount':'4.18'},{'dataId':'1253','amount':'4.09'}]");
+        data.put("repayTime","2018-07-18 11:02:46");
+        data.put("companyId","3");
+        data.put("type","10");
+        data.put("repaymentNo","333");
         Map<String, String> params = new HashMap<>();
+        JSON.toJSONString(data);
+        params.put("data",JSON.toJSONString(data));
+        String a = JSON.toJSONString(data);
+        byte[] pd = DigestUtil.digestString(a.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+        String sign1 = DigestUtil.encodeHex(pd);
+        params.put("sign",sign1);
         HttpUtil.post(url,params);
 
 //        params.put("prdType", "DSED_LOAN");

@@ -400,7 +400,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	@Override
 	public void dealRepaymentSucess(String tradeNo, String outTradeNo) {
 		final DsedLoanRepaymentDo repaymentDo = dsedLoanRepaymentDao.getRepayByTradeNo(tradeNo);
-		dealRepaymentSucess(tradeNo, outTradeNo, repaymentDo,null,null,null);
+		dealRepaymentSucess(tradeNo, outTradeNo, repaymentDo,null,null,null,false);
 	}
 
 
@@ -411,7 +411,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	 * @return
 	 */
 	@Override
-	public void dealRepaymentSucess(String tradeNo, String outTradeNo, final DsedLoanRepaymentDo repaymentDo, String repayChannel, Long collectionRepaymentId, final List<HashMap> periodsList) {
+	public void dealRepaymentSucess(String tradeNo, String outTradeNo, final DsedLoanRepaymentDo repaymentDo, String repayChannel, Long collectionRepaymentId, final List<HashMap> periodsList,boolean flag) {
 		try {
 			lock(tradeNo);
 
@@ -462,11 +462,17 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				noticeRecordDo.setType(getStatus(repaymentDo));
 				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 				dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
-//				try {
-//					nofityRisk(loanRepayDealBo,repaymentDo);
-//				}catch (Exception e){
-//					e.printStackTrace();
-//				}
+				try {
+					if(!flag){
+						//app逾期还款通知催收
+						nofityRisk(loanRepayDealBo,repaymentDo);
+					}else {
+						//催收逾期还款
+						collectRisk(loanRepayDealBo.loanPeriodsDoList);
+					}
+				}catch (Exception e){
+					e.printStackTrace();
+				}
 				HashMap<String,String> data = buildData(repaymentDo);
 				logger.info("dealRepaymentSucess data cfp "+JSON.toJSONString(data));
 				if(xgxyUtil.dsedRePayNoticeRequest(data)){
@@ -494,6 +500,33 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			}
 		}
 		return DsedNoticeType.REPAY.code;
+	}
+
+
+	private void collectRisk(List<DsedLoanPeriodsDo> list) {
+		List<Map<String, String>> arrayList = new ArrayList<Map<String, String>>();
+		for(DsedLoanPeriodsDo dsedLoanDo : list){
+			Map<String, String> data = new HashMap<String, String>();
+			DsedUserDo userDo=dsedUserDao.getById(dsedLoanDo.getUserId());
+			data.put("dataId", String.valueOf(dsedLoanDo.getRid()));
+			data.put("caseName",dsedLoanDo.getLoanNo());
+			data.put("planRepaymenTime", DateUtil.formatDateTime(dsedLoanDo.getGmtPlanRepay()));
+			BigDecimal currentAmount = BigDecimalUtil.add(dsedLoanDo.getAmount(), dsedLoanDo.getRepaidOverdueAmount(),dsedLoanDo.getRepaidInterestFee(), dsedLoanDo.getRepaidServiceFee()).subtract(dsedLoanDo.getRepayAmount());//应还金额
+			data.put("residueAmount", String.valueOf(BigDecimalUtil.add(currentAmount,dsedLoanDo.getOverdueAmount(),dsedLoanDo.getInterestFee(),dsedLoanDo.getOverdueAmount(),dsedLoanDo.getServiceFee())));
+			data.put("principal", String.valueOf(currentAmount));
+			data.put("overdueAmount", String.valueOf(dsedLoanDo.getOverdueAmount()));
+			data.put("nper", String.valueOf(dsedLoanDo.getNper()));
+			data.put("userId", String.valueOf(userDo.getRid()));
+			data.put("realName",userDo.getRealName());
+			data.put("idNumber",userDo.getIdNumber());
+			data.put("payTime", DateUtil.formatDateTime(dsedLoanDo.getGmtCreate()));
+			data.put("phoneNumber",userDo.getMobile());
+			data.put("address",userDo.getAddress());
+			data.put("userName",userDo.getUserName());
+			data.put("productName","XGXY");
+			arrayList.add(data);
+		}
+		collectionSystemUtil.noticeCollect(arrayList);
 	}
 
 	private void nofityRisk(LoanRepayDealBo LoanRepayDealBo,DsedLoanRepaymentDo repaymentDo) {
@@ -1064,14 +1097,14 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 		LoanRepayBo bo = buildLoanRepayBo(userId,dsedLoanDo, loanNo, AfRepayCollectionType.COLLECT.getCode(), totalAmount, repaymentNo,list);
 
-		List<DsedLoanPeriodsDo> loanPeriodsDoList = getLoanPeriodsIds(bo.loanId, bo.repaymentAmount);
+		List<DsedLoanPeriodsDo> loanPeriodsDoList = getLoanPeriodsIds(bo.loanId, bo.amount);
 		bo.dsedLoanPeriodsDoList = loanPeriodsDoList;
 
 		checkOfflineRepayment(repaymentNo);
 
 		generateRepayRecords(bo);
 
-		dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.dsedloanRepaymentDo,AfRepayCollectionType.COLLECT.getCode(),null,null);
+		dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.dsedloanRepaymentDo,AfRepayCollectionType.COLLECT.getCode(),null,null,true);
 
 	}
 
@@ -1084,7 +1117,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		LoanRepayBo bo = new LoanRepayBo();
 		bo.userId = loanDo.getUserId();
 		bo.dsedUserDo = dsedUserDao.getById(bo.userId);
-		bo.amount = NumberUtil.objToBigDecimalDivideOnehundredDefault(repayAmount, BigDecimal.ZERO);
+		bo.amount = new BigDecimal(repayAmount);
 		bo.actualAmount =  bo.amount;
 		bo.loanId = loanDo.getRid();
 		bo.dsedLoanDo = loanDo;
@@ -1104,44 +1137,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		}
 	}
 
-
-//	/**
-//	 * 计算提前还款需还金额
-//	 */
-//	public void calculateOfflineRestAmount(LoanRepayBo bo) {
-//		List<DsedLoanPeriodsDo> noRepayList = dsedLoanPeriodsDao.getNoRepayListByLoanId(bo.loanId);
-//		List<HashMap> periodsList = bo.periodsList;
-//		for (DsedLoanPeriodsDo loanPeriodsDo : noRepayList) {
-//			BigDecimal restAmount = BigDecimal.ZERO;
-//			if(canRepay(loanPeriodsDo)) { // 已出账
-//				restAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount(),
-//						loanPeriodsDo.getRepaidInterestFee(),loanPeriodsDo.getInterestFee(),
-//						loanPeriodsDo.getServiceFee(),loanPeriodsDo.getRepaidServiceFee(),
-//						loanPeriodsDo.getOverdueAmount(),loanPeriodsDo.getRepaidOverdueAmount())
-//						.subtract(loanPeriodsDo.getRepayAmount());
-//			}else { // 未出账， 提前还款时不用还手续费和利息
-//				if (!bo.isAllRepay ){//判断是否为按期还款，按期还款不能提前还未出账账单
-//					for (HashMap map:bo.periodsList) {
-//						if (Long.parseLong(String.valueOf(map.get("id"))) == loanPeriodsDo.getRid()){
-//							throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
-//						}
-//					}
-//				}
-//				restAmount = BigDecimalUtil.add(loanPeriodsDo.getAmount());
-//			}
-//			if (Long.parseLong(String.valueOf(periodsList.get(periodsList.size()-1).get("id"))) != loanPeriodsDo.getRid()){
-//				for (HashMap map:bo.periodsList) {
-//					if (Long.parseLong(String.valueOf(map.get("id"))) == loanPeriodsDo.getRid()){
-//						BigDecimal repayAmount = BigDecimal.valueOf(Double.parseDouble(String.valueOf(map.get("repayAmount"))) ).add(BigDecimal.valueOf(Double.parseDouble(String.valueOf(map.get("reductionAmount"))) ));
-//						if (repayAmount.compareTo(restAmount.add(BigDecimal.ONE)) > 0 || repayAmount.compareTo(restAmount.subtract(BigDecimal.ONE)) < 0 ){
-//							logger.warn("calculateOfflineRestAmount error, offlineRepayAmount="+ repayAmount +", restAmount="+ restAmount);
-//							throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_AMOUNT_ERROR);
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
 
 
 
