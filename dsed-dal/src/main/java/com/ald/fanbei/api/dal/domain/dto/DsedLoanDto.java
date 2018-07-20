@@ -26,7 +26,7 @@ public class DsedLoanDto extends DsedLoanDo {
 	private String mobile;//借款人手机号码
 	private String bankNo;//银行卡号
 	private String cardName;//银行卡所属行
-	private BigDecimal arrivalAmount;//用户实际到账金额
+	private BigDecimal amount;//用户实际到账金额
 	private Date loanStartTime;//借款开始时间戳（单位：秒）
     private String loanRemark;//借款用途
     private String repayRemark;//还款来源
@@ -115,18 +115,6 @@ public class DsedLoanDto extends DsedLoanDo {
 		this.cardName = cardName;
 	}
 	/**
-	 * @return the arrivalAmount
-	 */
-	public BigDecimal getArrivalAmount() {
-		return arrivalAmount;
-	}
-	/**
-	 * @param arrivalAmount the arrivalAmount to set
-	 */
-	public void setArrivalAmount(BigDecimal arrivalAmount) {
-		this.arrivalAmount = arrivalAmount;
-	}
-	/**
 	 * @return the loanStartTime
 	 */
 	public Date getLoanStartTime() {
@@ -162,5 +150,18 @@ public class DsedLoanDto extends DsedLoanDo {
 	public void setRepayRemark(String repayRemark) {
 		this.repayRemark = repayRemark;
 	}
+	/**
+	 * @return the amount
+	 */
+	public BigDecimal getAmount() {
+		return amount;
+	}
+	/**
+	 * @param amount the amount to set
+	 */
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+	
     
 }

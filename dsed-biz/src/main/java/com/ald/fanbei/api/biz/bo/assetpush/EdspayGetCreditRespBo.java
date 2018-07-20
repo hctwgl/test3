@@ -331,5 +331,31 @@ public class EdspayGetCreditRespBo implements Serializable {
 	public void setIsCur(Integer isCur) {
 		this.isCur = isCur;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "EdspayGetCreditRespBo [packageNo=" + packageNo + ", orderNo="
+				+ orderNo + ", userId=" + userId + ", name=" + name
+				+ ", cardId=" + cardId + ", mobile=" + mobile + ", bankNo="
+				+ bankNo + ", acctName=" + acctName + ", money=" + money
+				+ ", arriveMoney=" + arriveMoney + ", apr=" + apr
+				+ ", timeLimit=" + timeLimit + ", loanStartTime="
+				+ loanStartTime + ", purpose=" + purpose + ", repaymentStatus="
+				+ repaymentStatus + ", repaymentType=" + repaymentType
+				+ ", repayName=" + repayName + ", repayAcct=" + repayAcct
+				+ ", repayAcctBankNo=" + repayAcctBankNo + ", repayAcctType="
+				+ repayAcctType + ", isRepayAcctOtherBank="
+				+ isRepayAcctOtherBank + ", manageFee=" + manageFee
+				+ ", pushTime=" + pushTime + ", repaymentSource="
+				+ repaymentSource + ", debtType=" + debtType + ", isPeriod="
+				+ isPeriod + ", totalPeriod=" + totalPeriod + ", loanerType="
+				+ loanerType + ", overdueTimes=" + overdueTimes
+				+ ", overdueAmount=" + overdueAmount + ", repaymentPlans="
+				+ repaymentPlans + ", isCur=" + isCur + "]";
+	}
+	
 	
 }

@@ -611,7 +611,7 @@
 		LIMIT 1
 	</select>
 	
-	<select id="getOverdueInfoByUserId" resultType="DsedLoanDo">
+	<select id="getOverdueInfoByUserId" resultType="com.ald.fanbei.api.dal.domain.dto.DsedOverdueInfoDto">
 		SELECT
 			COUNT(1) overdueNums,ifnull(sum(overdue_amount),0) overdueAmount
 		FROM
@@ -632,7 +632,7 @@
 			dub.mobile mobile,
 			dl.bank_card_number bankNo,
 			dl.bank_card_name cardName,
-			dl.arrival_amount arrivalAmount,
+			dl.amount amount,
 			dl.loan_remark loanRemark,
 			dl.repay_remark repayRemark,
 			dl.gmt_create loanStartTime,
