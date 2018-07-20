@@ -183,6 +183,11 @@ public class NoticeTask {
        payBo.setBorrowNo(loanDo.getLoanNo());
        payBo.setReason(loanDo.getRemark());
        payBo.setStatus(loanDo.getStatus());
+       if (StringUtils.equals(loanDo.getStatus(),"TRANSFERRED")){
+            payBo.setStatus("PAYSUCCESS");
+       }else if (StringUtils.equals(loanDo.getStatus(),"CLOSED")){
+           payBo.setStatus("PAYFAIL");
+       }
        payBo.setGmtArrival(loanDo.getGmtArrival());
        return payBo;
    }
