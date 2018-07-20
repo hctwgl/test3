@@ -147,51 +147,46 @@ public class AssetSideEdspayUtil extends AbstractThird {
 			try {
 				String url = assideResourceDo.getValue1();
 				logger.info("dsedCurPush url = {},oriParam = {}, req = {}",url,borrowerJson,JSONObject.toJSONString(map));
-				String respResult = HttpUtil.doHttpPostJsonParam(url+"/p2p/fanbei/dsedDebtPush", JSONObject.toJSONString(map));
+				String respResult = HttpUtil.doHttpPostJsonParam(url+"/p2p/fanbei/debtPush", JSONObject.toJSONString(map));
 				logger.info("dsedCurPush resp = {}", respResult);
 				AssetResponseMessage respInfo = JSONObject.parseObject(respResult, AssetResponseMessage.class);
-				if (respInfo != null) {
-					if (FanbeiAssetSideRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
-						logger.info("dsedCurPush resp success,respInfo= "+respInfo.getMessage());
-						//推送成功
-						//进入查询表
-						DsedRetryTemplDo dsedRetryTemplDo =new DsedRetryTemplDo();
-						dsedRetryTemplDo.setBusId(borrowCashInfo.getOrderNo());
-						dsedRetryTemplDo.setEventType(RetryEventType.QUERY.getCode());
-						Date now =new Date();
-						dsedRetryTemplDo.setGmtCreate(now);
-						AssetPushStrategy strategy =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue2()), AssetPushStrategy.class);
-						Integer queryInterval = strategy.getTimeOut();
-						Date gmtNext = DateUtil.addMins(now, queryInterval);
-						dsedRetryTemplDo.setGmtNext(gmtNext);
-						dsedRetryTemplDo.setTimes(0);
-						dsedRetryTemplDo.setState("N");
-						dsedRetryTemplDo.setGmtModified(now);
-						dsedRetryTemplService.saveRecord(dsedRetryTemplDo);
-						if (StringUtil.equals(YesNoStatus.YES.getCode(), respInfo.getIsFull())) {
-							//钱包满额,更新配置表
-							assetPushResource.setValue3(YesNoStatus.YES.getCode());
-							assetPushResource.setGmtModified(now);
-							dsedResourceService.updateById(assetPushResource);
-						}
-						return true;
-					}else {
-						FanbeiAssetSideRespCode failResp = FanbeiAssetSideRespCode.findByCode(respInfo.getCode());
-						logger.error("dsedCurPush resp fail,errorCode="+respInfo.getCode()+",respInfo"+respInfo.getMessage());
-						if (StringUtil.equals(YesNoStatus.YES.getCode(), switchConf.getRePush())) {
-							//重推开关开启
-							recordRePush(borrowCashInfo, borrowerJson,assetPushResource);
-							return true;
-						}else{
-							//重推开关关闭
-							noRepushHandle(borrowCashInfo, switchConf);
-						}
-						return false;
+				if (FanbeiAssetSideRespCode.SUCCESS.getCode().equals(respInfo.getCode())) {
+					logger.info("dsedCurPush resp success,respInfo= "+respInfo.getMessage());
+					//推送成功
+					//进入查询表
+					DsedRetryTemplDo dsedRetryTemplDo =new DsedRetryTemplDo();
+					dsedRetryTemplDo.setBusId(borrowCashInfo.getOrderNo());
+					dsedRetryTemplDo.setEventType(RetryEventType.QUERY.getCode());
+					Date now =new Date();
+					dsedRetryTemplDo.setGmtCreate(now);
+					AssetPushStrategy strategy =JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue2()), AssetPushStrategy.class);
+					Integer queryInterval = strategy.getTimeOut();
+					Date gmtNext = DateUtil.addMins(now, queryInterval);
+					dsedRetryTemplDo.setGmtNext(gmtNext);
+					dsedRetryTemplDo.setTimes(0);
+					dsedRetryTemplDo.setState("N");
+					dsedRetryTemplDo.setGmtModified(now);
+					dsedRetryTemplService.saveRecord(dsedRetryTemplDo);
+					if (StringUtil.equals(YesNoStatus.YES.getCode(), respInfo.getIsFull())) {
+						//钱包满额,更新配置表
+						assetPushResource.setValue3(YesNoStatus.YES.getCode());
+						assetPushResource.setGmtModified(now);
+						dsedResourceService.updateById(assetPushResource);
 					}
-				}else{
-				    logger.error("dsedCurPush resp null");
+					return true;
+				}else {
+					FanbeiAssetSideRespCode failResp = FanbeiAssetSideRespCode.findByCode(respInfo.getCode());
+					logger.error("dsedCurPush resp fail,errorCode="+respInfo.getCode()+",respInfo"+respInfo.getMessage());
+					if (StringUtil.equals(YesNoStatus.YES.getCode(), switchConf.getRePush())) {
+						//重推开关开启
+						recordRePush(borrowCashInfo, borrowerJson,assetPushResource);
+						return true;
+					}else{
+						//重推开关关闭
+						noRepushHandle(borrowCashInfo, switchConf);
+					}
+					return false;
 				}
-				
 			} catch (Exception e) {
 				if (StringUtil.equals(YesNoStatus.YES.getCode(), switchConf.getRePush())) {
 					recordRePush(borrowCashInfo, borrowerJson,assetPushResource);
@@ -486,7 +481,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 		creditRespBo.setMobile(dsedLoanDto.getMobile());
 		creditRespBo.setBankNo(dsedLoanDto.getBankNo());
 		creditRespBo.setAcctName("");
-		creditRespBo.setMoney(dsedLoanDto.getArrivalAmount());
+		creditRespBo.setMoney(dsedLoanDto.getAmount());
 		creditRespBo.setApr(BigDecimalUtil.multiply(loanDo.getInterestRate(), new BigDecimal(100)));
 		creditRespBo.setTimeLimit((int) DateUtil.getNumberOfDayBetween(dsedLoanDto.getLoanStartTime(), lastBorrowBillGmtPayTime));
 		creditRespBo.setLoanStartTime(DateUtil.getSpecSecondTimeStamp(dsedLoanDto.getLoanStartTime()));

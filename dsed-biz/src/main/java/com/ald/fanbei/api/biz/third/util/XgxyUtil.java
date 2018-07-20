@@ -52,7 +52,8 @@ public class XgxyUtil extends AbstractThird {
             params.put("appId", "edspay");
             params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
-            String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackPayResult";
+           // String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackPayResult";
+            String url = "https://testeca.91ala.com:1112/isp/open/third/edspay/v1/giveBackPayResult";
             String reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(params));
             logThird(reqResult, url, JSON.toJSONString(pay));
             if (StringUtil.isBlank(reqResult)) {
