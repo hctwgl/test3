@@ -134,7 +134,7 @@ public class CuiShouUtils {
                 return cuiShouBackMoney;
             }
             if (StringUtil.isAllNotEmpty(orderNo, repaymentNo, userId)) {
-                dsedLoanRepaymentService.offlineRepay(loanNo,loanId,totalAmount, repaymentNo, Long.parseLong(userId), type, repayTime, orderNo, list);
+//                dsedLoanRepaymentService.offlineRepay(loanNo,loanId,totalAmount, repaymentNo, Long.parseLong(userId), type, repayTime, orderNo, list);
             } else {
                 cuiShouBackMoney.setCode(303);
                 thirdLog.error("offlineLoanRepaymentNotify error loanNo =" + orderNo);
