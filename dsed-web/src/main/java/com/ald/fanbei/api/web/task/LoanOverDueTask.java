@@ -84,13 +84,13 @@ public class LoanOverDueTask {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
     
-//    @Scheduled(cron = "0 0 0 * * ?")
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0/5 * * * * ?")
     public void laonDueJob(){
         try{
         	String curHostIp = getHostIpUtil.getIpAddress();
         	logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-        	if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)){
+        	if(StringUtils.equals(getHostIpUtil.getIpAddress(), "192.168.117.76")){
         		int pageSize = 200;
                 int totalRecord = dsedLoanPeriodsService.getLoanOverdueCount();
                 int totalPageNum =totalRecord/pageSize+1;
@@ -197,7 +197,7 @@ public class LoanOverDueTask {
            data.put("payTime", DateUtil.formatDateTime(dsedLoanDo.getGmtArrival()));
            data.put("phoneNumber",userDo.getMobile());
            data.put("address",userDo.getAddress());
-           data.put("userName",userDo.getUserName());
+           data.put("userName",userDo.getMobile());
            data.put("productName","XGXY");
            datas.add(data);
        }
