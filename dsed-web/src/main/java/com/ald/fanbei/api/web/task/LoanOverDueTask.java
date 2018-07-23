@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -200,7 +201,8 @@ public class LoanOverDueTask {
            data.put("productName","XGXY");
            datas.add(data);
        }
-        collectionSystemUtil.noticeCollect(datas);
+
+       collectionSystemUtil.noticeCollect(datas);
     }
 
    void  overDueNotice(DsedLoanPeriodsDto loanOverDue){
