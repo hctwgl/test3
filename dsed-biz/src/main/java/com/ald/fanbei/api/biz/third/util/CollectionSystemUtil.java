@@ -81,7 +81,7 @@ public class CollectionSystemUtil extends AbstractThird {
 
 
 	/**
-	 * 都市e贷主动还款通知催收平台
+	 * 都市e贷主动还款通知催收平台（补偿）
 	 * @return
 	 */
 	public boolean noticeRiskCollect(Map<String,String>  data) {
