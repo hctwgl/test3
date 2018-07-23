@@ -104,7 +104,7 @@ public class LoanOverDueTask {
                         //计算逾期
                         this.calcuOverdueRecords(loanDos);
                         //通知催收逾期人员通讯录
-                      collectionPush(loanDos);
+                       collectionPush(loanDos);
                     }
 
                 }
