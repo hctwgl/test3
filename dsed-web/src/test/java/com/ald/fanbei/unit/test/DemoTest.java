@@ -15,5 +15,5 @@ public class DemoTest extends JunitBaseTest {
         DsedUserDo userDo = userDao.getById(23213L);
         System.out.println(userDo.getRid());
     }
-    
+
 }
