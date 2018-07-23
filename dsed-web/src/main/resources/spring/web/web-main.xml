@@ -18,26 +18,16 @@
 	<mvc:default-servlet-handler />
 
 	<context:component-scan base-package="com.ald.fanbei.api.biz.third.util" />
-	<context:component-scan base-package="com.ald.fanbei.api.biz.rebate" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.controller" />
-	<context:component-scan base-package="com.ald.fanbei.api.abtest.controller" />
-	<context:component-scan base-package="com.ald.fanbei.api.web.listener" />
-	<context:component-scan base-package="com.ald.fanbei.api.web.api" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.h5.api" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.common.impl" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.util" />
-	<context:component-scan base-package="com.ald.fanbei.api.biz.kafka" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.service" />
-	<context:component-scan base-package="com.ald.fanbei.api.biz.service.boluome" />
-	<context:component-scan base-package="com.ald.fanbei.api.biz.rule.service.impl" />
-	<context:component-scan base-package="com.ald.fanbei.api.biz.common" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.h5.controller" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.third.controller" />
-	<context:component-scan base-package="com.ald.fanbei.api.web.apph5.controller" />
-	
+
 	<context:component-scan base-package="com.ald.fanbei.api.web.validator.bean" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.validator.intercept" />
-	<context:component-scan base-package="com.ald.fanbei.api.biz.auth.executor" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.task" />
 
 	<!-- velocity configuration -->
@@ -113,6 +103,10 @@
 				<entry key="/third/xgxy/v1/getRealPeriod" value-ref="dsedLoanTotalPeriodsApi" />
 				<entry key="/third/xgxy/v1/getBorrowFeeDetail" value-ref="dsedLoanDetailApi" />
 				<entry key="/third/xgxy/v1/syncUserInfo" value-ref="dsedSyncUserInfoApi" />
+
+
+
+
 			</map>
 		</constructor-arg>
 	</bean>

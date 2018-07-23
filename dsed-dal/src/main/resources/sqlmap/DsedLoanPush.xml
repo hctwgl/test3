@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- dsed_loan_push表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.DsedLoanPushDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,loan_id,asset_side_flag,status,borrow_rate,profit_rate,loan_time 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="loanId != null and loanId != ''">
+            AND loan_id = #{loanId,jdbcType=INTEGER}
+        </if>
+        <if test="assetSideFlag != null and assetSideFlag != ''">
+            AND asset_side_flag = #{assetSideFlag,jdbcType=VARCHAR}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="borrowRate != null and borrowRate != ''">
+            AND borrow_rate = #{borrowRate,jdbcType=DECIMAL}
+        </if>
+        <if test="profitRate != null and profitRate != ''">
+            AND profit_rate = #{profitRate,jdbcType=DECIMAL}
+        </if>
+        <if test="loanTime !=null">
+            AND loan_time = #{loanTime,jdbcType=TIMESTAMP}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.DsedLoanPushDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO dsed_loan_push
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="loanId != null">        
+	            loan_id,
+	        </if>
+	        <if test="assetSideFlag != null">        
+	            asset_side_flag,
+	        </if>
+	        <if test="status != null">        
+	            status,
+	        </if>
+	        <if test="borrowRate != null">        
+	            borrow_rate,
+	        </if>
+	        <if test="profitRate != null">        
+	            profit_rate,
+	        </if>
+	        <if test="loanTime != null">        
+	            loan_time,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="loanId != null" >
+		       #{loanId,jdbcType=INTEGER},
+		    </if>
+		    <if test="assetSideFlag != null" >
+		       #{assetSideFlag,jdbcType=VARCHAR},
+		    </if>
+		    <if test="status != null" >
+		       #{status,jdbcType=VARCHAR},
+		    </if>
+		    <if test="borrowRate != null" >
+		       #{borrowRate,jdbcType=DECIMAL},
+		    </if>
+		    <if test="profitRate != null" >
+		       #{profitRate,jdbcType=DECIMAL},
+		    </if>
+		    <if test="loanTime != null" >
+		       #{loanTime,jdbcType=TIMESTAMP},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.DsedLoanPushDo">
+        UPDATE dsed_loan_push
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="loanId != null and loanId != '' ">        
+                loan_id = #{loanId,jdbcType=INTEGER},                
+            </if>
+            <if test="assetSideFlag != null and assetSideFlag != '' ">        
+                asset_side_flag = #{assetSideFlag,jdbcType=VARCHAR},                
+            </if>
+            <if test="status != null and status != '' ">        
+                status = #{status,jdbcType=VARCHAR},                
+            </if>
+            <if test="borrowRate != null and borrowRate != '' ">        
+                borrow_rate = #{borrowRate,jdbcType=DECIMAL},                
+            </if>
+            <if test="profitRate != null and profitRate != '' ">        
+                profit_rate = #{profitRate,jdbcType=DECIMAL},                
+            </if>
+            <if test="loanTime != null and loanTime != '' ">        
+                loan_time = #{loanTime,jdbcType=TIMESTAMP}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.DsedLoanPushDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_push
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.DsedLoanPushDo" parameterType="com.ald.fanbei.api.dal.domain.DsedLoanPushDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_push
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.DsedLoanPushDo" parameterType="com.ald.fanbei.api.dal.domain.DsedLoanPushDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_push
+        <include refid="commonCondition"/>
+    </select>
+    
+    <select id="getByLoanId" resultType="com.ald.fanbei.api.dal.domain.DsedLoanPushDo" parameterType="java.lang.Long">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_loan_push
+    	where loan_id=#{loanId ,jdbcType=BIGINT} and is_delete=0
+    </select>
+</mapper>

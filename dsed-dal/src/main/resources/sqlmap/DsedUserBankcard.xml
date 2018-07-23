@@ -52,7 +52,7 @@
 		c.bank_icon,c.bank_name,c.is_valid,c.pay_type bankChannel
 	</sql>
 
-    <select id="getUserMainBankcardByUserId" resultType="DsedUserBankcardDo">
+    <select id="getUserBankcardByCardNumber" resultType="DsedUserBankcardDo">
         SELECT
         <include refid="queryWithBankFields"/>,b.valid_date,b.safe_code
         FROM
@@ -61,6 +61,17 @@
         ON c.is_delete = 0 and c.bank_code = b.bank_code
         WHERE
         b.is_delete=0 AND b.user_id = #{userId} AND b.bank_card_number= #{bankCardNumber} and b.status='B' limit 1
+    </select>
+
+    <select id="getUserMainBankcardByUserId" resultType="DsedUserBankcardDo">
+        SELECT
+        <include refid="queryWithBankFields"/>,b.valid_date,b.safe_code
+        FROM
+        dsed_user_bankcard b
+        LEFT JOIN dsed_bank c
+        ON c.is_delete = 0 and c.bank_code = b.bank_code
+        WHERE
+        b.is_delete=0 AND b.user_id = #{userId} AND b.is_main = 'Y' and b.status='B' limit 1
     </select>
     
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.DsedUserBankcardDo" keyProperty="rid" useGeneratedKeys="true">

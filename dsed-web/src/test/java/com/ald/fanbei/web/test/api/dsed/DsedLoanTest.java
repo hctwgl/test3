@@ -1,12 +1,16 @@
 package com.ald.fanbei.web.test.api.dsed;
 
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.util.DigestUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,10 +28,10 @@ public class DsedLoanTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-//  String urlBase = "http://localhost:8080";
-    String urlBase = "http://192.168.112.40:8080";
+  String urlBase = "http://localhost:8080";
+//    String urlBase = "http://192.168.112.40:8080";
     
-    String userName = AccountOfTester.夏枫.mobile;
+    String userName = "18258023758";
 
     /**
      * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -109,23 +113,100 @@ public class DsedLoanTest extends BaseTest {
     }
 
 
-	@Test
-	public void dsedrepayLoan() {
-		String url = urlBase + "/third/xgxy/v1/repayComfirm";
-		Map<String,String> params = new HashMap<>();
-        params.put("amount", 1+"");
+    /**
+     * 发起贷款申请
+     */
+    @Test
+    public void dsedCollectRepay() throws UnsupportedEncodingException {
+        String url = urlBase + "/third/collection/offLineBackMoney";
+        Map<String, String> data = new HashMap<>();
+        String salt = "dsedcuishou";
+        data.put("orderNo","333");
+        data.put("totalAmount","12.54");
+        data.put("repaymentAcc","13989455831");
+        data.put("details","[{'dataId':'1251','amount':'4.27'},{'dataId':'1252','amount':'4.18'},{'dataId':'1253','amount':'4.09'}]");
+        data.put("repayTime","2018-07-18 11:02:46");
+        data.put("companyId","3");
+        data.put("type","10");
+        data.put("repaymentNo","333");
+        Map<String, String> params = new HashMap<>();
+        JSON.toJSONString(data);
+        params.put("data",JSON.toJSONString(data));
+        String a = JSON.toJSONString(data);
+        byte[] pd = DigestUtil.digestString(a.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+        String sign1 = DigestUtil.encodeHex(pd);
+        params.put("sign",sign1);
+        HttpUtil.post(url,params);
+
+//        params.put("prdType", "DSED_LOAN");
+//        params.put("amount", 6000 + "");
+//        params.put("userId", "1C9064925F3AAF85BC663FEB1727DD4B");
+//        params.put("period", 3 + "");
+//        params.put("realName", "过帅强");
+//        params.put("loanRemark", "装修");
+//        params.put("repayRemark", "工资");
+//        params.put("bankNo", "6214835896219365");
+//        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+//        Map<String, String> p = new HashMap<>();
+//        p.put("data", data);
+//        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+//        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+
+//        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+
+
+    @Test
+    public void dsedrepayLoan() {
+        String url = urlBase + "/third/xgxy/v1/repayComfirm";
+        Map<String,String> params = new HashMap<>();
+        params.put("amount", 0.01+"");
         params.put("curPeriod", 1+"");
-        params.put("bankNo", "6214835896219365");
-        params.put("borrowNo", "dk2018071009541700092");
+        params.put("bankNo", "6214855713637987");
+        params.put("borrowNo", "dk2018071302455300249");
+        params.put("userId","EB56E1F0A9383508DB8FD039C7D37BDF");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+
+    @Test
+    public void dsedrepayPreFinish() {
+        String url = urlBase + "/third/xgxy/v1/preFinish";
+        Map<String,String> params = new HashMap<>();
+        params.put("amount", 9.26+"");
+        params.put("curPeriod", 1+"");
+        params.put("bankNo", "6214835890543422");
+        params.put("borrowNo", "dk2018071002395100033");
         params.put("userId","1C9064925F3AAF85BC663FEB1727DD4B");
         String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
-        
+
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
-	}
+    }
+
+    @Test
+    public void  collect() {
+        String url = urlBase + "/third/ups/collect?";
+        String orderNo = "hq2018071618000400030";
+        String merPriv = PayOrderSource.REPAY_LOAN.getCode();
+        String tradeNo = "xianfeng21231";
+        String tradeState = "00";
+
+        String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
+        url += reqStr;
+        Map<String,String> params = new HashMap<>();
+
+
+        testApi(url, params, userName ,true);
+    }
 
 
     @Test

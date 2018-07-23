@@ -65,7 +65,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("companyId","");
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
 			logger.info("dsed overdue notice collect request :" + JSON.toJSONString(params));
-			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/import", params);
+			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/third/import", params);
 			logThird(reqResult, "dsedNoticeCollect", JSON.toJSONString(data));
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
@@ -119,10 +119,8 @@ public class CollectionSystemUtil extends AbstractThird {
 	 * @return
 	 */
 	public void consumerRepayment(Map<String, String> reqBo) {
-		CollectionDataBo data = new CollectionDataBo();
 		// APP还款类型写3 , 线下还款写4
 		try {
-			logger.info("repaymentAchieve request :" + JSON.toJSONString(data));
 			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/third/repayment", reqBo);
 			logger.info(getUrl() + "/api/ald/collect/v1/third/repayment");
 			logger.info("repaymentAchieve response :" + reqResult);
