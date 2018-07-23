@@ -282,7 +282,8 @@ public class Constants {
 	public static final String CONFKEY_TAOBAO_TAE_ITEM_LIST_FIELDS = "taobao.tae.item.list.fields";
 	public static final String CONFKEY_TAOBAO_TAE_ITEM_DETAIL_GET_FIELDS = "taobao.tae.item.detail.get.fields";
 	public static final String CONFKEY_TAOBAO_ICON_COMMON_LOCATION = "http://img02.taobaocdn.com/bao/uploaded/";
-	
+
+	public static final String OFFLINE_CACHEKEY_REPAYCASHNO = "dsed_offline_repay_cash_no";
 	public static final String CACHEKEY_REPAYCASHNO = "dsed_repay_cash_no";
 	public static final String CACHEKEY_ORDERNO_LOCK = "dsed_order_lock";
 	public static final String CACHEKEY_ORDERNO = "dsed_order";

@@ -10,6 +10,8 @@ import com.ald.fanbei.api.biz.bo.CollectionDataBo;
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.common.enums.AfRepayCollectionType;
 import com.ald.fanbei.api.common.enums.AfRepeatCollectionType;
+import com.ald.fanbei.api.common.enums.DsedNoticeStatus;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.*;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Component;
@@ -63,7 +65,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("companyId","");
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
 			logger.info("dsed overdue notice collect request :" + JSON.toJSONString(params));
-			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/import", params);
+			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/third/import", params);
 			logThird(reqResult, "dsedNoticeCollect", JSON.toJSONString(data));
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
@@ -113,75 +115,22 @@ public class CollectionSystemUtil extends AbstractThird {
 
 	/**
 	 * 都市e贷主动还款通知催收平台
-	 *
-	 * @param repayNo
-	 *            --还款编号
-	 * @param borrowNo
-	 *            --借款单号
-	 * @param cardNumber
-	 *            --卡号
-	 * @param cardName
-	 *            --银行卡名称（支付方式）
-	 * @param amount
-	 *            --还款金额
-	 * @param restAmount
-	 *            --剩余未还金额
-	 * @param repayAmount
-	 *            --理论应还款金额
-	 * @param overdueAmount
-	 *            --逾期手续费
-	 * @param repayAmountSum
-	 *            --已还总额
-	 * @param rateAmount
-	 *            --利息
+	 * @param reqBo
 	 * @return
 	 */
-	public CollectionSystemReqRespBo consumerRepayment(Long userId,String repayNo, String borrowNo, String cardNumber,
-													   String cardName, String repayTime, String tradeNo, BigDecimal amount, BigDecimal restAmount,
-													   BigDecimal repayAmount, BigDecimal overdueAmount, BigDecimal repayAmountSum, BigDecimal rateAmount, Boolean isCashOverdue) {
-		CollectionDataBo data = new CollectionDataBo();
-		Map<String, String> reqBo = new HashMap<String, String>();
-		reqBo.put("orderNo", borrowNo);
-		reqBo.put("totalAmount", amount+"");
-		reqBo.put("repaymentNo", repayNo);
-		reqBo.put("repayTime", repayTime);
-		reqBo.put("repaymentAcc", userId+"");//还款账户
-		reqBo.put("type", AfRepayCollectionType.APP.getCode());
-		reqBo.put("details", repayTime);
-		//判断逾期是否平账
-		if(isCashOverdue){
-			data.setIsFinish("1");
-		}
-		String json = JsonUtil.toJSONString(reqBo);
-		data.setData(json);// 数据集合
-		data.setSign(DigestUtil.MD5(json));
-		String timestamp = DateUtil.getDateTimeFullAll(new Date());
-		data.setTimestamp(timestamp);
+	public void consumerRepayment(Map<String, String> reqBo) {
 		// APP还款类型写3 , 线下还款写4
-		data.setChannel(AfRepayCollectionType.APP.getCode());
 		try {
-			logger.info("repaymentAchieve request :" + JSON.toJSONString(data));
-			String reqResult = HttpUtil.doHttpsPostIgnoreCertUrlencoded(
-					getUrl() + "/api/ald/collect/v1/third/repayment", getUrlParamsByMap(data));
-			logger.info(getUrl() + "/api/getway/repayment/repaymentAchieve");
+			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/third/repayment", reqBo);
+			logger.info(getUrl() + "/api/ald/collect/v1/third/repayment");
 			logger.info("repaymentAchieve response :" + reqResult);
-			if (StringUtil.isBlank(reqResult)) {
-				throw new FanbeiException("consumerRepayment fail , reqResult is null");
-			} else {
+			if (StringUtil.equals(reqResult.toUpperCase(), DsedNoticeStatus.SUCCESS.code)) {
 				logger.info("consumerRepayment req success,reqResult" + reqResult);
-			}
-
-			CollectionSystemReqRespBo respInfo = JSONObject.parseObject(reqResult, CollectionSystemReqRespBo.class);
-			if (respInfo != null && StringUtil.equals("200", respInfo.getCode())) {
-				return respInfo;
 			} else {
-				throw new FanbeiException(
-						"consumerRepayment fail , respInfo info is " + JSONObject.toJSONString(respInfo));
+				throw new FanbeiException("consumerRepayment fail , reqResult is null");
 			}
 		} catch (Exception e) {
 			logger.error("consumerRepayment error:", e);
-//			commitRecordUtil.addRecord(AfRepeatCollectionType.APP_REPAYMENT.getCode(), borrowNo, json,
-//					getUrl() + "/api/getway/repayment/repaymentAchieve");
 			throw new FanbeiException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
 		}
 	}

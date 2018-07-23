@@ -3,7 +3,7 @@ package com.ald.fanbei.api.common.enums;
 public enum  DsedNoticeStatus {
 
     FAIL("失败", "FAIL"),
-    TRANSFERING("成功", "SUCCESS");
+    SUCCESS("成功", "SUCCESS");
 
 
     public String desz;

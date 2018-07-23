@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.util.DateUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,8 @@ public class LoanOverDueTask {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
     
-    @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void laonDueJob(){
         try{
         	String curHostIp = getHostIpUtil.getIpAddress();
@@ -119,6 +121,7 @@ public class LoanOverDueTask {
    void calcuOverdueRecords(List<DsedLoanPeriodsDto> loanDos){
         for(DsedLoanPeriodsDto dsedLoanDo:loanDos){
             try {
+                logger.info("calcuOverdueRecords do dsedLoanDo, loanId="+dsedLoanDo.getLoanId());
                 if(loanOverdueLogService.getLoanOverDueLogByNow(String.valueOf(dsedLoanDo.getRid()))!=null){
                    continue;
                 }
@@ -181,16 +184,16 @@ public class LoanOverDueTask {
            Map<String,String> data=new HashMap<>();
            data.put("dataId", String.valueOf(dsedLoanDo.getRid()));
            data.put("caseName",dsedLoanDo.getLoanNo());
-           data.put("planRepaymenTime", String.valueOf(dsedLoanDo.getGmtPlanRepay()));
-           BigDecimal currentAmount = BigDecimalUtil.add(dsedLoanDo.getAmount(), dsedLoanDo.getRepaidOverdueAmount(),dsedLoanDo.getRepaidInterestFee(), dsedLoanDo.getRepaidServiceFee()).subtract(dsedLoanDo.getRepayAmount());// 当前本金
-           data.put("residueAmount", String.valueOf(currentAmount.add(dsedLoanDo.getOverdueAmount())));
+           data.put("planRepaymenTime", DateUtil.formatDateTime(dsedLoanDo.getGmtPlanRepay()));
+           BigDecimal currentAmount = BigDecimalUtil.add(dsedLoanDo.getAmount(), dsedLoanDo.getRepaidOverdueAmount(),dsedLoanDo.getRepaidInterestFee(), dsedLoanDo.getRepaidServiceFee()).subtract(dsedLoanDo.getRepayAmount());//应还金额
+           data.put("residueAmount", String.valueOf(BigDecimalUtil.add(currentAmount,dsedLoanDo.getOverdueAmount(),dsedLoanDo.getInterestFee(),dsedLoanDo.getOverdueAmount(),dsedLoanDo.getServiceFee())));
            data.put("principal", String.valueOf(currentAmount));
            data.put("overdueAmount", String.valueOf(dsedLoanDo.getOverdueAmount()));
            data.put("nper", String.valueOf(dsedLoanDo.getNper()));
            data.put("userId", String.valueOf(userDo.getRid()));
            data.put("realName",userDo.getRealName());
            data.put("idNumber",userDo.getIdNumber());
-           data.put("payTime", String.valueOf(dsedLoanDo.getGmtArrival()));
+           data.put("payTime", DateUtil.formatDateTime(dsedLoanDo.getGmtArrival()));
            data.put("phoneNumber",userDo.getMobile());
            data.put("address",userDo.getAddress());
            data.put("userName",userDo.getUserName());
