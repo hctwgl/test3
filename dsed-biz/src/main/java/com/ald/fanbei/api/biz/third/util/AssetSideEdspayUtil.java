@@ -210,7 +210,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				DsedLoanPushDo loanPushDo = buildLoanPush(dsedLoanDo.getRid(),Constants.ASSET_SIDE_FANBEI_FLAG,PushEdspayResult.PUSHFAIL.getCode());
 				dsedLoanPushService.saveOrUpdate(loanPushDo);
 				DsedUserDo afUserDo = dsedUserService.getUserById(dsedLoanDo.getUserId());
-				DsedUserBankcardDo bankCard = dsedUserBankcardDao.getUserMainBankcardByUserId(dsedLoanDo.getUserId());
+				DsedUserBankcardDo bankCard = dsedUserBankcardDao.getUserBankcardByCardNumber(dsedLoanDo.getUserId(),dsedLoanDo.getBankCardNumber());
 				List<DsedLoanPeriodsDo> periodDos = dsedLoanPeriodsDao.listByLoanId(dsedLoanDo.getRid());
 				if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getPushFail())) {
 					//直接关闭
@@ -302,7 +302,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					DsedLoanDo dsedLoanDo = dsedLoanService.getByLoanNo(payResultReqBo.getOrderNo());
 					if (null != dsedLoanDo) {
 						DsedUserDo afUserDo = dsedUserService.getUserById(dsedLoanDo.getUserId());
-						DsedUserBankcardDo bankCard = dsedUserBankcardDao.getUserMainBankcardByUserId(dsedLoanDo.getUserId());
+						DsedUserBankcardDo bankCard = dsedUserBankcardDao.getUserBankcardByCardNumber(dsedLoanDo.getUserId(),dsedLoanDo.getBankCardNumber());
 						List<DsedLoanPeriodsDo> periodDos = dsedLoanPeriodsDao.listByLoanId(dsedLoanDo.getRid());
 						if (payResultReqBo.getType()==0&&payResultReqBo.getCode()==1){
 							//审核失败
@@ -411,7 +411,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 				DsedLoanPushDo loanPushDo = buildLoanPush(dsedLoanDo.getRid(),Constants.ASSET_SIDE_FANBEI_FLAG,PushEdspayResult.PUSHFAIL.getCode());
 				dsedLoanPushService.saveOrUpdate(loanPushDo);
 				DsedUserDo afUserDo = dsedUserService.getUserById(dsedLoanDo.getUserId());
-				DsedUserBankcardDo bankCard = dsedUserBankcardDao.getUserMainBankcardByUserId(dsedLoanDo.getUserId());
+				DsedUserBankcardDo bankCard = dsedUserBankcardDao.getUserBankcardByCardNumber(dsedLoanDo.getUserId(),dsedLoanDo.getBankCardNumber());
 				List<DsedLoanPeriodsDo> periodDos = dsedLoanPeriodsDao.listByLoanId(dsedLoanDo.getRid());
 				if (StringUtil.equals(YesNoStatus.NO.getCode(), switchConf.getPushFail())) {
 					//直接关闭
