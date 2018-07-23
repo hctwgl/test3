@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -36,9 +36,6 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
@@ -88,6 +85,11 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	XgxyUtil xgxyUtil;
 	@Resource
 	DsedUserDao dsedUserDao;
+
+	private static String collectRiskToken = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk";
+
+	private static String nofityRiskToken = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6M30.eyJhdWQiOiIzIiwiaXNzIjoiQUxEIiwiaWF0IjoxNTMxODgwNjE5fQ.hU2GhPAbTKTXdVHpLscbjxJ7pc710jNdsxoteipwdMs";
+
 
 
 	@Override
@@ -468,7 +470,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 						nofityRisk(loanRepayDealBo,repaymentDo);
 					}else {
 						//催收逾期还款
-						collectRisk(loanRepayDealBo.loanPeriodsDoList);
+						collectRisk(loanRepayDealBo.loanPeriodsDoList,repaymentDo);
 					}
 				}catch (Exception e){
 					e.printStackTrace();
@@ -503,7 +505,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	}
 
 
-	private void collectRisk(List<DsedLoanPeriodsDo> list) {
+	private void collectRisk(List<DsedLoanPeriodsDo> list,DsedLoanRepaymentDo repaymentDo) {
 		List<Map<String, String>> arrayList = new ArrayList<Map<String, String>>();
 		for(DsedLoanPeriodsDo dsedLoanDo : list){
 			Map<String, String> data = new HashMap<String, String>();
@@ -526,7 +528,32 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			data.put("productName","XGXY");
 			arrayList.add(data);
 		}
-		collectionSystemUtil.noticeCollect(arrayList);
+		DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
+		noticeRecordDo.setUserId(repaymentDo.getUserId());
+		noticeRecordDo.setRefId(String.valueOf(repaymentDo.getRid()));
+		noticeRecordDo.setType(DsedNoticeType.OVERDUEREPAY.code);
+		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+		Map<String,String>  params=new HashMap<>();
+		params.put("orderNo",getOrderNo("XGXY"));
+		params.put("info",JSON.toJSONString(arrayList));
+		params.put("companyId","");
+		params.put("token",collectRiskToken);
+		noticeRecordDo.setParams(JSON.toJSONString(params));
+		dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
+		boolean result = collectionSystemUtil.noticeRiskCollect(params);
+		if(result){
+			noticeRecordDo.setRid(noticeRecordDo.getRid());
+			noticeRecordDo.setGmtModified(new Date());
+			dsedNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
+		}
+	}
+
+	/**
+	 * 获取订单号
+	 * @param method 接口标识（固定4位）
+	 */
+	private static String getOrderNo(String method){
+		return StringUtil.appendStrs("cs",method,System.currentTimeMillis());
 	}
 
 	private void nofityRisk(LoanRepayDealBo LoanRepayDealBo,DsedLoanRepaymentDo repaymentDo) {
@@ -569,10 +596,22 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				}
 				//还款总额(逾期)
 				reqBo.put("totalAmount", amount+"");
-				reqBo.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6M30.eyJhdWQiOiIzIiwiaXNzIjoiQUxEIiwiaWF0IjoxNTMxODgwNjE5fQ.hU2GhPAbTKTXdVHpLscbjxJ7pc710jNdsxoteipwdMs");
+				reqBo.put("token",nofityRiskToken);
 				//("还款详情, 格式: [{'dataId':'数据编号', 'amount':'还款金额(元, 精确到分)'},...]")
 				reqBo.put("details", JSON.toJSONString(list));
-				collectionSystemUtil.consumerRepayment(reqBo);
+				DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
+				noticeRecordDo.setUserId(repaymentDo.getUserId());
+				noticeRecordDo.setRefId(String.valueOf(repaymentDo.getRid()));
+				noticeRecordDo.setType(DsedNoticeType.OVERDUEREPAY.code);
+				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+				noticeRecordDo.setParams(JSON.toJSONString(reqBo));
+				dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
+				boolean result = collectionSystemUtil.consumerRepayment(reqBo);
+				if(result){
+					noticeRecordDo.setRid(noticeRecordDo.getRid());
+					noticeRecordDo.setGmtModified(new Date());
+					dsedNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
+				}
 			} catch (Exception e) {
 				logger.error("向催收平台同步还款信息失败", e);
 			}

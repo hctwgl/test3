@@ -208,8 +208,6 @@ import java.math.BigDecimal;
     public void setTimes(String times){
       this.times = times;
     }
-
-
     public String getParams() {
         return params;
     }
