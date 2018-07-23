@@ -511,7 +511,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			Map<String, String> data = new HashMap<String, String>();
 			DsedUserDo userDo=dsedUserDao.getById(dsedLoanDo.getUserId());
 			data.put("dataId", String.valueOf(dsedLoanDo.getRid()));
-			data.put("caseName",dsedLoanDo.getLoanNo());
+			data.put("caseName","dsed_"+dsedLoanDo.getNper()+"/"+dsedLoanDo.getPeriods());
 			data.put("planRepaymenTime", DateUtil.formatDateTime(dsedLoanDo.getGmtPlanRepay()));
 			BigDecimal currentAmount = BigDecimalUtil.add(dsedLoanDo.getAmount(), dsedLoanDo.getRepaidOverdueAmount(),dsedLoanDo.getRepaidInterestFee(), dsedLoanDo.getRepaidServiceFee()).subtract(dsedLoanDo.getRepayAmount());//应还金额
 			data.put("residueAmount", String.valueOf(BigDecimalUtil.add(currentAmount,dsedLoanDo.getOverdueAmount(),dsedLoanDo.getInterestFee(),dsedLoanDo.getOverdueAmount(),dsedLoanDo.getServiceFee())));
@@ -524,14 +524,14 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			data.put("payTime", DateUtil.formatDateTime(dsedLoanDo.getGmtCreate()));
 			data.put("phoneNumber",userDo.getMobile());
 			data.put("address",userDo.getAddress());
-			data.put("userName",userDo.getUserName());
+			data.put("userName",userDo.getMobile());
 			data.put("productName","XGXY");
 			arrayList.add(data);
 		}
 		DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
 		noticeRecordDo.setUserId(repaymentDo.getUserId());
 		noticeRecordDo.setRefId(String.valueOf(repaymentDo.getRid()));
-		noticeRecordDo.setType(DsedNoticeType.OVERDUEREPAY.code);
+		noticeRecordDo.setType(DsedNoticeType.COLLECT.code);
 		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 		Map<String,String>  params=new HashMap<>();
 		params.put("orderNo",getOrderNo("XGXY"));
