@@ -75,8 +75,6 @@ public class DsedLegalContractPdfCreateServiceImpl implements DsedLegalContractP
 
         map.put("idNumber", dsedUserDo.getIdNumber());
         map.put("realName", dsedUserDo.getRealName());
-        DsedResourceDo lenderDo = dsedResourceService.getConfigByTypesAndSecType(DsedResourceType.borrowRate.getCode(), AfResourceSecType.borrowCashLenderForCash.getCode());
-        map.put("lender", lenderDo.getValue());// 出借人
         map.put("mobile", dsedUserDo.getMobile());// 联系电话
         getSeal(map, dsedUserDo, investorList);//获取印章
         return dsedUserDo;
@@ -286,7 +284,7 @@ public class DsedLegalContractPdfCreateServiceImpl implements DsedLegalContractP
     public String getProtocalLegalWithOutLenderByType(Integer debtType, String orderNo, String protocolUrl, String borrowerName, List<EdspayInvestorInfoBo> investorList) throws IOException {
         Map<String, Object> map = new HashMap();
         map.put("personKey", borrowerName);//借款人印章定位关键字
-        if (debtType == 2){//白领贷借款
+        if (debtType == 3){//白领贷借款
             DsedLoanDo loanDo = dsedLoanService.getByLoanNo(orderNo);
             if (loanDo == null) {
                 logger.error("白领贷借款信息不存在 => {}", orderNo);

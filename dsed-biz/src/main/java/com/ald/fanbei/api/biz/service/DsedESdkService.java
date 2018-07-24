@@ -80,4 +80,6 @@ public interface DsedESdkService {
 
     void getSeal(ModelMap model, DsedUserDo dsedUserDo);
 
+    void sealInit();
+
 }
