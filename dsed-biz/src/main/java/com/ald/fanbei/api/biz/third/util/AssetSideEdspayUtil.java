@@ -217,7 +217,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					dsedLoanService.dealLoanFail(dsedLoanDo, periodDos,"推送失败关闭");
 				}else{
 					// 调用UPS打款
-					UpsDelegatePayRespBo upsResult = upsUtil.dsedDelegatePay(dsedLoanDo.getArrivalAmount(),
+					UpsDelegatePayRespBo upsResult = upsUtil.dsedDelegatePay(dsedLoanDo.getAmount(),
 							afUserDo.getRealName(), bankCard.getBankCardNumber(), afUserDo.getRid().toString(), bankCard.getMobile(),
 	                        bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
 	                        "DSED_LOAN", dsedLoanDo.getRid().toString(),afUserDo.getIdNumber());
@@ -313,7 +313,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 								dsedLoanService.dealLoanFail(dsedLoanDo, periodDos,"浙商审核失败关闭");
 							}else{
 								// 调用UPS打款
-								UpsDelegatePayRespBo upsResult = upsUtil.dsedDelegatePay(dsedLoanDo.getArrivalAmount(),
+								UpsDelegatePayRespBo upsResult = upsUtil.dsedDelegatePay(dsedLoanDo.getAmount(),
 										afUserDo.getRealName(), bankCard.getBankCardNumber(), afUserDo.getRid().toString(), bankCard.getMobile(),
 				                        bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
 				                        "DSED_LOAN", dsedLoanDo.getRid().toString(),afUserDo.getIdNumber());
@@ -418,7 +418,7 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					dsedLoanService.dealLoanFail(dsedLoanDo, periodDos,"推送钱包最大失败次数关闭");
 				}else{
 					// 调用UPS打款
-					UpsDelegatePayRespBo upsResult = upsUtil.dsedDelegatePay(dsedLoanDo.getArrivalAmount(),
+					UpsDelegatePayRespBo upsResult = upsUtil.dsedDelegatePay(dsedLoanDo.getAmount(),
 							afUserDo.getRealName(), bankCard.getBankCardNumber(), afUserDo.getRid().toString(), bankCard.getMobile(),
 	                        bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
 	                        "DSED_LOAN", dsedLoanDo.getRid().toString(),afUserDo.getIdNumber());
