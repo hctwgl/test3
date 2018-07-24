@@ -108,11 +108,19 @@ public class NoticeTask {
                             continue;
                         }
                         if (StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUEREPAY.code)) {
-                            updateNoticeRecord(recordDo, collectionSystemUtil.dsedRePayNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+                            if(StringUtils.isBlank(recordDo.getParams())){
+                                dsedNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
+                            }else {
+                                updateNoticeRecord(recordDo, collectionSystemUtil.dsedRePayNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+                            }
                             continue;
                         }
                         if (StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.COLLECT.code)) {
-                            updateNoticeRecord(recordDo, collectionSystemUtil.noticeRiskCollect(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+                            if(StringUtils.isBlank(recordDo.getParams())){
+                                dsedNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
+                            }else {
+                                updateNoticeRecord(recordDo, collectionSystemUtil.noticeRiskCollect(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+                            }
                             continue;
                         }
                         if(StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUE.code)){
