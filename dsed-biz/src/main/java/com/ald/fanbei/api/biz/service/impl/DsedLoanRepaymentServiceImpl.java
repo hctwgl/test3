@@ -583,7 +583,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 						HashMap<String, String> data = new HashMap<String, String>();
 						data.put("dataId",dsedLoanPeriodsDo.getRid().toString());
 						if(StringUtil.equals(repaymentDo.getPreRepayStatus(),YesNoStatus.NO.getCode())){
-							if(repayAmount.compareTo(repaymentDo.getActualAmount())>0){
+							if(repayAmount.compareTo(repaymentDo.getActualAmount())>=0){
 								amount = repaymentDo.getActualAmount();
 								data.put("amount",repaymentDo.getActualAmount().toString());
 							}
@@ -1131,19 +1131,23 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	 */
 	@Override
 	public void offlineRepay(String loanNo ,Long loanId,String totalAmount,String repaymentNo,Long userId,String type,String repayTime,String orderNo,List<DsedLoanPeriodsDo> list) {
+		try {
+			DsedLoanDo dsedLoanDo = dsedLoanDao.getByLoanNo(loanNo);
 
-		DsedLoanDo dsedLoanDo = dsedLoanDao.getByLoanNo(loanNo);
+			LoanRepayBo bo = buildLoanRepayBo(userId,dsedLoanDo, loanNo, AfRepayCollectionType.COLLECT.getCode(), totalAmount, repaymentNo,list);
 
-		LoanRepayBo bo = buildLoanRepayBo(userId,dsedLoanDo, loanNo, AfRepayCollectionType.COLLECT.getCode(), totalAmount, repaymentNo,list);
+			List<DsedLoanPeriodsDo> loanPeriodsDoList = getLoanPeriodsIds(bo.loanId, bo.amount);
+			bo.dsedLoanPeriodsDoList = loanPeriodsDoList;
 
-		List<DsedLoanPeriodsDo> loanPeriodsDoList = getLoanPeriodsIds(bo.loanId, bo.amount);
-		bo.dsedLoanPeriodsDoList = loanPeriodsDoList;
+			checkOfflineRepayment(repaymentNo);
 
-		checkOfflineRepayment(repaymentNo);
+			generateRepayRecords(bo);
 
-		generateRepayRecords(bo);
+			dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.dsedloanRepaymentDo,AfRepayCollectionType.COLLECT.getCode(),null,null,true);
 
-		dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.dsedloanRepaymentDo,AfRepayCollectionType.COLLECT.getCode(),null,null,true);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 
 	}
 
