@@ -90,7 +90,7 @@ public class LoanOverDueTask {
         try{
         	String curHostIp = getHostIpUtil.getIpAddress();
         	logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-        	if(StringUtils.equals(getHostIpUtil.getIpAddress(), "192.168.117.76")){
+        	if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)){
         		int pageSize = 200;
                 int totalRecord = dsedLoanPeriodsService.getLoanOverdueCount();
                 int totalPageNum =totalRecord/pageSize+1;
