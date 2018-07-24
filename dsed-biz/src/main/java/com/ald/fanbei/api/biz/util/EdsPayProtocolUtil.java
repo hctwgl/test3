@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.common.util;
+package com.ald.fanbei.api.biz.util;
 
 import com.ald.fanbei.api.biz.bo.aassetside.edspay.AssetSideRespBo;
 import com.ald.fanbei.api.biz.bo.aassetside.edspay.EdspayBackPdfReqBo;

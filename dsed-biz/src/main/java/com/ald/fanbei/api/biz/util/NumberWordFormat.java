@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.common.util;
+package com.ald.fanbei.api.biz.util;
 
 
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * @类描述：用户工具类
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("numberWordFormat")
+@Component
 public class NumberWordFormat {
     public static final String ZERO = "zero";
     public static final String NEGATIVE = "negative";
@@ -178,49 +178,6 @@ public class NumberWordFormat {
             }
         }
         return i;
-    }
-    public static void main(String[] args) {
-//          NumberWordFormat nwf = new NumberWordFormat();
-//          System.out.println(nwf.format(1432008));
-//          int  i = nwf.parse("one million four hundred thirty two thousand eight");
-//          System.out.println("i="+i);
-        NumberWordFormat numberWordFormat = new NumberWordFormat();
-        Boolean flag = false;
-        Scanner sc = new Scanner(System.in);
-        try {
-            do {
-                System.out.println("请选择format还是parse，format输入1，parse输入2");
-                String input = sc.nextLine();
-                if("1".equals(input)){
-                    System.out.println("您选择了format，请输入数字 （注：范围在999999999和-999999999之间）:");
-                    input = sc.nextLine();
-                    int num = Integer.parseInt(input);
-                    if(num > 999999999 || num< -999999999 || input.length() > String.valueOf(num).length()){
-                        throw new NumberFormatException();
-                    }
-                    System.out.println("转换结果为： " + numberWordFormat.format(num));
-                }else if("2".equals(input)){
-                    System.out.println("您选择了parse，请输入英文数字,注意格式（每输入一个单词后一空格）:");
-                    input = sc.nextLine();
-                    try {
-                        System.out.println("转换结果为： " + numberWordFormat.parse(input));
-                    } catch (Exception e) {
-                        System.out.println("请输入正确的英文单词及格式!!重新输入!!");
-                    }
-                }else {
-                    System.out.println("输入错误，请重新输入！！");
-                }
-                System.out.println("是否继续？<Y/N>");
-                input = sc.nextLine();
-                if("Y".equalsIgnoreCase(input)){
-                    flag = true;
-                }else {
-                    flag = false;
-                }
-            } while (flag);
-        } finally {
-            sc.close();
-        }
     }
 
 }
