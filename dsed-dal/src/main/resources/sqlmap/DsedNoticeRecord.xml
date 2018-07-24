@@ -194,6 +194,9 @@
             </if>
             status,
             times,
+            <if test="params != null">
+                params,
+            </if>
         </trim>
 
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -209,6 +212,9 @@
             </if>
               'FAIL',
               '5',
+            <if test="params != null" >
+                #{params,jdbcType=VARCHAR},
+            </if>
         </trim>
     </insert>
 
