@@ -383,4 +383,14 @@
         select trade_no from dsed_loan_repayment WHERE trade_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
     </select>
 
+    <select id="getLoanRepaymentByTradeNo" parameterType="java.lang.String" resultType="DsedLoanRepaymentDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        dsed_loan_repayment
+        WHERE
+        is_delete = 0 and trade_no_out = #{outTradeNo}
+        limit 1
+    </select>
+
 </mapper>

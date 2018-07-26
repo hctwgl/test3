@@ -156,7 +156,9 @@ public class DsedLoanPeriodsServiceImpl extends ParentServiceImpl<DsedLoanPeriod
 		return dsedLoanPeriodsDao.getOneByLoanId(loanId);
 	}
 
-
-
+	@Override
+	public List<DsedLoanPeriodsDo> listByLoanId(Long rid) {
+		return dsedLoanPeriodsDao.listByLoanId(rid);
+	}
 
 }
