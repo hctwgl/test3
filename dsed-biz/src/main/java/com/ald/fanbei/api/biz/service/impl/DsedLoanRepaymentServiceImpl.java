@@ -527,6 +527,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			data.put("principal", String.valueOf(currentAmount));
 			data.put("overdueAmount", String.valueOf(dsedLoanDo.getOverdueAmount()));
 			data.put("nper", String.valueOf(dsedLoanDo.getNper()));
+			data.put("periods",String.valueOf(dsedLoanDo.getPeriods()));
 			data.put("userId", String.valueOf(userDo.getRid()));
 			data.put("realName",userDo.getRealName());
 			data.put("idNumber",userDo.getIdNumber());
