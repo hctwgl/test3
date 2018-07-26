@@ -33,4 +33,6 @@ public interface DsedLoanRepaymentDao extends BaseDao<DsedLoanRepaymentDo, Long>
      */
     String getCurrentLastRepayNo(String orderNoPre);
 
+    DsedLoanRepaymentDo getLoanRepaymentByTradeNo(String outTradeNo);
+
 }

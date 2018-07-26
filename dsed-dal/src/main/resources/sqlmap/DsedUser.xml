@@ -405,6 +405,14 @@
         LIMIT 0,1
     </select>
 
+    <select id="getUserByMobile" resultType="com.ald.fanbei.api.dal.domain.DsedUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM dsed_user
+        WHERE is_delete = 0 AND mobile=#{mobile}
+        LIMIT 0,1
+    </select>
+
     <select id="getByOpenId" resultType="com.ald.fanbei.api.dal.domain.DsedUserDo">
         SELECT
         <include refid="queryFields" />
@@ -428,4 +436,15 @@
         <include refid="commonCondition"/>
     </select>
     
+   	<select id="getUserById" resultType="com.ald.fanbei.api.dal.domain.DsedUserDo">
+		SELECT
+			<include refid="queryFields" />
+		FROM
+			dsed_user
+		WHERE
+			is_delete = 0
+		AND
+			id = #{userId}
+	</select>
+	
 </mapper>

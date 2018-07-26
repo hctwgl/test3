@@ -16,4 +16,8 @@ public interface DsedUserDao extends BaseDao<DsedUserDo, Long> {
 
     DsedUserDo getByOpenId(String openId);
 
+	DsedUserDo getUserById(Long userId);
+
+	DsedUserDo getUserByMobile(String mobile);
+
 }

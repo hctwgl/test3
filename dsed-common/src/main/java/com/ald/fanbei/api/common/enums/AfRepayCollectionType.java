@@ -6,6 +6,7 @@ package com.ald.fanbei.api.common.enums;
  */
 public enum AfRepayCollectionType {
 	 APP("10", "app线上还款"),
+     COLLECT("30", "催收逾期还款"),
 	 OFFLINE("20", "线下还款");
     
     private String code;
