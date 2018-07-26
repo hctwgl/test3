@@ -9,7 +9,9 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.DsedLoanPeriodStatus;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -180,6 +182,7 @@ public class LoanOverDueTask {
    }
    void  collectionPush(List<DsedLoanPeriodsDto> dsedLoanDos){
        List<Map<String,String>> datas=new ArrayList<>();
+
        for(DsedLoanPeriodsDto dsedLoanDo:dsedLoanDos){
            DsedUserDo userDo=userService.getById(dsedLoanDo.getUserId());
            Map<String,String> data=new HashMap<>();
@@ -199,6 +202,22 @@ public class LoanOverDueTask {
            data.put("address",userDo.getAddress());
            data.put("userName",userDo.getMobile());
            data.put("productName","XGXY");
+           data.put("borrowAmount",String.valueOf(dsedLoanDo.getAmount()));
+           data.put("appName","dsed");
+           data.put("repaymentPeriod","1");
+           StringBuffer sb = new StringBuffer();
+           List<DsedLoanPeriodsDo> list=dsedLoanPeriodsService.getLoanPeriodsByLoanId(dsedLoanDo.getLoanId());
+           for(DsedLoanPeriodsDo dsedLoan : list){
+               if(StringUtil.equals(dsedLoan.getStatus(),DsedLoanPeriodStatus.FINISHED.name())){
+                   sb.append(dsedLoan.getNper()).append(",");
+               }
+           }
+           if(sb.length() > 0){
+               sb = sb.deleteCharAt(sb.length()-1);
+           }
+           data.put("havePaied",sb.toString());
+           data.put("overdueDay",String.valueOf(dsedLoanDo.getOverdueDays()));
+           data.put("overdueAmount",String.valueOf(BigDecimalUtil.add(dsedLoanDo.getOverdueAmount(),dsedLoanDo.getRepaidOverdueAmount())));
            datas.add(data);
        }
 
