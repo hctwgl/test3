@@ -63,7 +63,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("companyId","");
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
 			logger.info("dsed overdue notice collect request :" + JSON.toJSONString(params));
-			String reqResult = HttpUtil.post("http://192.168.106.20:10086/api/ald/collect/v1/third/import", params);
+			String reqResult = HttpUtil.post(getUrl()+"/api/ald/collect/v1/third/import", params);
 			logThird(reqResult, "dsedNoticeCollect", JSON.toJSONString(data));
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
@@ -86,7 +86,7 @@ public class CollectionSystemUtil extends AbstractThird {
 	 */
 	public boolean noticeRiskCollect(Map<String,String>  data) {
 		try {
-			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/third/import", data);
+			String reqResult = HttpUtil.post(getUrl()+"/api/ald/collect/v1/third/import", data);
 			logThird(reqResult, "dsedNoticeCollect", JSON.toJSONString(data));
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
@@ -112,7 +112,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			Map<String, String> params = new HashMap<>();
 			params.put("info",JSON.toJSONString(data));
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
-			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/import", params);
+			String reqResult = HttpUtil.post(getUrl()+"/api/ald/collect/v1/import", params);
 			logThird(reqResult, "dsedRePayCollect", JSON.toJSONString(data));
 			if (StringUtil.isBlank(reqResult)) {
 				throw new FanbeiException("dsed overdue notice collect request fail , reqResult is null");
@@ -141,7 +141,7 @@ public class CollectionSystemUtil extends AbstractThird {
 	public boolean consumerRepayment(Map<String, String> reqBo) {
 		// APP还款类型写3 , 线下还款写4
 		try {
-			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/third/repayment", reqBo);
+			String reqResult = HttpUtil.post(getUrl()+"/api/ald/collect/v1/third/repayment", reqBo);
 			logger.info(getUrl() + "/api/ald/collect/v1/third/repayment");
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.equals(reqResult.toUpperCase(), DsedNoticeStatus.SUCCESS.code)) {
