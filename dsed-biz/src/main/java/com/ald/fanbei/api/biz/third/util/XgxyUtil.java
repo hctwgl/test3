@@ -99,7 +99,7 @@ public class XgxyUtil extends AbstractThird {
             if (url.contains("https")){
                 reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(params));
             }else {
-                reqResult = HttpUtil.doHttpPost(url, JSON.toJSONString(params));
+                reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(params));
             }
             logThird(reqResult, url, JSON.toJSONString(overdue));
             if (StringUtil.isBlank(reqResult)) {
@@ -134,7 +134,7 @@ public class XgxyUtil extends AbstractThird {
             if (url.contains("https")){
                 reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(p));
             }else {
-                reqResult = HttpUtil.doHttpPost(url, JSON.toJSONString(p));
+                reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
             }
             logThird(reqResult, url, JSON.toJSONString(data));
             if (StringUtil.isBlank(reqResult)) {
@@ -167,7 +167,7 @@ public class XgxyUtil extends AbstractThird {
             if (url.contains("https")){
                 reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(params));
             }else {
-                reqResult = HttpUtil.doHttpPost(url, JSON.toJSONString(params));
+                reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(params));
             }
             logThird(reqResult, url, JSON.toJSONString(data));
             if (StringUtil.isBlank(reqResult)) {
