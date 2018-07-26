@@ -624,7 +624,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	public HashMap<String,String> buildData(DsedLoanRepaymentDo repaymentDo){
 		HashMap<String,String> data = new HashMap<String,String>();
 		DsedLoanDo loanDo = dsedLoanDao.getById(repaymentDo.getLoanId());
-		if(StringUtil.equals(repaymentDo.getStatus(),"SUCC")){
+		if(StringUtil.equals(repaymentDo.getStatus(),DsedLoanRepaymentStatus.SUCC.name())){
 			List<XgxyRepayBo> borrowBillDetails = new ArrayList<XgxyRepayBo>();
 			data.put("amount",repaymentDo.getActualAmount().toString());
 			data.put("borrowNo",loanDo.getLoanNo());
@@ -667,7 +667,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			JSONArray json = JSONArray.fromObject(borrowBillDetails);
 			String jsonStr = json.toString();
 			data.put("borrowBillDetails",jsonStr);
-		}else if(StringUtil.equals(repaymentDo.getStatus(),"FAIL")){
+		}else if(StringUtil.equals(repaymentDo.getStatus(),DsedLoanRepaymentStatus.FAIL.name())){
 			data.put("reason","银行卡交易失败，您可换卡或稍后重试");
 			data.put("borrowNo",loanDo.getLoanNo());
 			data.put("status","REPAYFAIL");

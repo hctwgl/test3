@@ -361,7 +361,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setRemark(remark.trim());
 		reqBo.setReturnUrl("");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
-//		reqBo.setNotifyUrl("http://192.168.117.188:8089/third/ups/collect");
+//		reqBo.setNotifyUrl("http://192.168.117.188:8080/third/ups/collect");
 		logger.info("bank collecnotifyUrl = "+ getNotifyHost() + "/third/ups/collect");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		dsedUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "collect", orderNo, "", merPriv, userNo));
