@@ -63,7 +63,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("companyId","");
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
 			logger.info("dsed overdue notice collect request :" + JSON.toJSONString(params));
-			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/third/import", params);
+			String reqResult = HttpUtil.post("http://192.168.106.20:10086/api/ald/collect/v1/third/import", params);
 			logThird(reqResult, "dsedNoticeCollect", JSON.toJSONString(data));
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
