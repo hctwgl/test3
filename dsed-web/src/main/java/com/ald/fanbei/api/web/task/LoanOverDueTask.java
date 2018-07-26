@@ -201,6 +201,7 @@ public class LoanOverDueTask {
            data.put("phoneNumber",userDo.getMobile());
            data.put("address",userDo.getAddress());
            data.put("userName",userDo.getMobile());
+           data.put("periods", String.valueOf(dsedLoanDo.getPeriods()));
            data.put("productName","XGXY");
            data.put("borrowAmount",String.valueOf(dsedLoanDo.getAmount()));
            data.put("appName","dsed");
