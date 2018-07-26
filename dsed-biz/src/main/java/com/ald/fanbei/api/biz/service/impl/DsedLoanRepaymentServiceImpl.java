@@ -507,6 +507,15 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 	private void collectRisk(List<DsedLoanPeriodsDo> list,DsedLoanRepaymentDo repaymentDo) {
 		List<Map<String, String>> arrayList = new ArrayList<Map<String, String>>();
+		StringBuffer sb = new StringBuffer();
+		for(DsedLoanPeriodsDo dsedLoanDo : list){
+			if(StringUtil.equals(dsedLoanDo.getStatus(),DsedLoanPeriodStatus.FINISHED.name())){
+				sb.append(dsedLoanDo.getNper()).append(",");
+			}
+		}
+		if(sb.length() > 0){
+			sb = sb.deleteCharAt(sb.length()-1);
+		}
 		for(DsedLoanPeriodsDo dsedLoanDo : list){
 			Map<String, String> data = new HashMap<String, String>();
 			DsedUserDo userDo=dsedUserDao.getById(dsedLoanDo.getUserId());
@@ -526,6 +535,12 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			data.put("address",userDo.getAddress());
 			data.put("userName",userDo.getMobile());
 			data.put("productName","XGXY");
+			data.put("borrowAmount",String.valueOf(dsedLoanDo.getAmount()));
+			data.put("appName","dsed");
+			data.put("repaymentPeriod","1");
+			data.put("havePaied",sb.toString());
+			data.put("overdueDay",String.valueOf(dsedLoanDo.getOverdueDays()));
+			data.put("overdueAmount",String.valueOf(BigDecimalUtil.add(dsedLoanDo.getOverdueAmount(),dsedLoanDo.getRepaidOverdueAmount())));
 			arrayList.add(data);
 		}
 		DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
