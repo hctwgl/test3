@@ -83,8 +83,8 @@ public class LoanOverDueTask {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
     
-//    @Scheduled(cron = "0 0 0 * * ?")
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0 0/5 * * * ?")
     public void laonDueJob(){
         try{
         	String curHostIp = getHostIpUtil.getIpAddress();
@@ -103,7 +103,7 @@ public class LoanOverDueTask {
                         //计算逾期
                         this.calcuOverdueRecords(loanDos);
                         //通知催收逾期人员通讯录
-                        collectionPush(loanDos);
+                       //TODO collectionPush(loanDos);
                     }
 
                 }
