@@ -32,9 +32,6 @@ public class CollectionSystemUtil extends AbstractThird {
 
 	private static String url = null;
 
-	@Resource
-	CommitRecordUtil commitRecordUtil;
-
 	private static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL);
@@ -63,7 +60,13 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("companyId","");
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
 			logger.info("dsed overdue notice collect request :" + JSON.toJSONString(params));
-			String reqResult = HttpUtil.post(getUrl()+"/api/ald/collect/v1/third/import", params);
+			String url = getUrl() + "/api/ald/collect/v1/third/import";
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(params));
+			}else {
+				reqResult = HttpUtil.post(url, params);
+			}
 			logThird(reqResult, "dsedNoticeCollect", JSON.toJSONString(data));
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
@@ -86,7 +89,13 @@ public class CollectionSystemUtil extends AbstractThird {
 	 */
 	public boolean noticeRiskCollect(Map<String,String>  data) {
 		try {
-			String reqResult = HttpUtil.post(getUrl()+"/api/ald/collect/v1/third/import", data);
+			String url = getUrl() + "/api/ald/collect/v1/third/import";
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(data));
+			}else {
+				reqResult = HttpUtil.post(url, data);
+			}
 			logThird(reqResult, "dsedNoticeCollect", JSON.toJSONString(data));
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
@@ -112,7 +121,13 @@ public class CollectionSystemUtil extends AbstractThird {
 			Map<String, String> params = new HashMap<>();
 			params.put("info",JSON.toJSONString(data));
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
-			String reqResult = HttpUtil.post(getUrl()+"/api/ald/collect/v1/import", params);
+			String url = getUrl() + "/api/ald/collect/v1/third/import";
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(params));
+			}else {
+				reqResult = HttpUtil.post(url, params);
+			}
 			logThird(reqResult, "dsedRePayCollect", JSON.toJSONString(data));
 			if (StringUtil.isBlank(reqResult)) {
 				throw new FanbeiException("dsed overdue notice collect request fail , reqResult is null");
@@ -141,7 +156,13 @@ public class CollectionSystemUtil extends AbstractThird {
 	public boolean consumerRepayment(Map<String, String> reqBo) {
 		// APP还款类型写3 , 线下还款写4
 		try {
-			String reqResult = HttpUtil.post(getUrl()+"/api/ald/collect/v1/third/repayment", reqBo);
+			String url = getUrl() + "/api/ald/collect/v1/third/repayment";
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(reqBo));
+			}else {
+				reqResult = HttpUtil.post(url, reqBo);
+			}
 			logger.info(getUrl() + "/api/ald/collect/v1/third/repayment");
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.equals(reqResult.toUpperCase(), DsedNoticeStatus.SUCCESS.code)) {

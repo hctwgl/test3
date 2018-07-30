@@ -34,7 +34,7 @@ public interface DsedLoanRepaymentService{
     void repay(DsedLoanRepaymentServiceImpl.LoanRepayBo bo, String bankPayType);
 
     void dealRepaymentSucess(String tradeNo, String outTradeNo);
-    void dealRepaymentSucess(String tradeNo, String outTradeNo, final DsedLoanRepaymentDo repaymentDo, String operator, Long collectionRepaymentId, List<HashMap> periodsList);
+    void dealRepaymentSucess(String tradeNo, String outTradeNo, final DsedLoanRepaymentDo repaymentDo, String operator, Long collectionRepaymentId, List<HashMap> periodsList,boolean flag);
 
     void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg);
 
@@ -66,7 +66,7 @@ public interface DsedLoanRepaymentService{
      * @param orderNo
      * @param list
      */
-//    void offlineRepay(String loanNo,Long loanId,String totalAmount,String repaymentNo,Long userId,String type,String repayTime,String orderNo,List<DsedLoanPeriodsDo> list);
+    void offlineRepay(String loanNo,Long loanId,String totalAmount,String repaymentNo,Long userId,String type,String repayTime,String orderNo,List<DsedLoanPeriodsDo> list);
 
 
 }
