@@ -537,9 +537,13 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	private void collectRisk(List<DsedLoanPeriodsDo> list,DsedLoanRepaymentDo repaymentDo,Long rid) {
 		List<Map<String, String>> arrayList = new ArrayList<Map<String, String>>();
 		StringBuffer sb = new StringBuffer();
+		int overdueDays = 0;
 		for(DsedLoanPeriodsDo dsedLoanDo : list){
 			if(StringUtil.equals(dsedLoanDo.getStatus(),DsedLoanPeriodStatus.FINISHED.name())){
 				sb.append(dsedLoanDo.getNper()).append(",");
+			}
+			if(dsedLoanDo.getOverdueDays() > overdueDays){
+				overdueDays = dsedLoanDo.getOverdueDays();
 			}
 		}
 		if(sb.length() > 0){
@@ -589,7 +593,8 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		params.put("arrivalAmount",String.valueOf(loanDo.getAmount()));
 		params.put("loanStatus",loanDo.getStatus());
 		params.put("repayTime",DateUtil.formatDateTime(loanDo.getGmtCreate()));
-		params.put("maxOverdueDay",String.valueOf(loanDo.getOverdueDays()));
+		params.put("maxOverdueDay",String.valueOf(overdueDays));
+		params.put("loanRemark",loanDo.getLoanRemark());
 		params.put("info",JSON.toJSONString(arrayList));
 		params.put("companyId","");
 		params.put("token",collectRiskToken);
