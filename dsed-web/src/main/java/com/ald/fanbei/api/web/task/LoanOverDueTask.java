@@ -207,6 +207,8 @@ public class LoanOverDueTask {
            data.put("appName","dsed");
            data.put("repaymentPeriod","1");
            data.put("type",dsedLoanDo.getStatus());
+           data.put("repayAmount",String.valueOf(dsedLoanDo.getRepayAmount()));
+           data.put("amount",String.valueOf(dsedLoanDo.getAmount()));
            StringBuffer sb = new StringBuffer();
            List<DsedLoanPeriodsDo> list=dsedLoanPeriodsService.getLoanPeriodsByLoanId(dsedLoanDo.getLoanId());
            for(DsedLoanPeriodsDo dsedLoan : list){

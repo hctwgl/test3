@@ -498,7 +498,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 						nofityRisk(loanRepayDealBo,repaymentDo);
 					}else {
 						//催收逾期还款
-						collectRisk(loanRepayDealBo.loanPeriodsDoList,repaymentDo);
+						collectRisk(loanRepayDealBo.loanPeriodsDoList,repaymentDo,loanRepayDealBo.loanDo.getRid());
 					}
 				}catch (Exception e){
 					e.printStackTrace();
@@ -534,7 +534,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	}
 
 
-	private void collectRisk(List<DsedLoanPeriodsDo> list,DsedLoanRepaymentDo repaymentDo) {
+	private void collectRisk(List<DsedLoanPeriodsDo> list,DsedLoanRepaymentDo repaymentDo,Long rid) {
 		List<Map<String, String>> arrayList = new ArrayList<Map<String, String>>();
 		StringBuffer sb = new StringBuffer();
 		for(DsedLoanPeriodsDo dsedLoanDo : list){
@@ -545,6 +545,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		if(sb.length() > 0){
 			sb = sb.deleteCharAt(sb.length()-1);
 		}
+		DsedLoanDo loanDo = dsedLoanDao.getById(rid);
 		for(DsedLoanPeriodsDo dsedLoanDo : list){
 			Map<String, String> data = new HashMap<String, String>();
 			DsedUserDo userDo=dsedUserDao.getById(dsedLoanDo.getUserId());
@@ -572,6 +573,8 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			data.put("overdueDay",String.valueOf(dsedLoanDo.getOverdueDays()));
 			data.put("overdueAmount",String.valueOf(BigDecimalUtil.add(dsedLoanDo.getOverdueAmount(),dsedLoanDo.getRepaidOverdueAmount())));
 			data.put("type",dsedLoanDo.getStatus());
+			data.put("repayAmount",String.valueOf(dsedLoanDo.getRepayAmount()));
+			data.put("amount",String.valueOf(dsedLoanDo.getAmount()));
 			arrayList.add(data);
 		}
 		DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
@@ -581,6 +584,12 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 		Map<String,String>  params=new HashMap<>();
 		params.put("orderNo",getOrderNo("XGXY"));
+		params.put("loanNo",String.valueOf(loanDo.getLoanNo()));
+		params.put("loanAmount",String.valueOf(loanDo.getAmount()));
+		params.put("arrivalAmount",String.valueOf(loanDo.getAmount()));
+		params.put("loanStatus",loanDo.getStatus());
+		params.put("repayTime",DateUtil.formatDateTime(loanDo.getGmtCreate()));
+		params.put("maxOverdueDay",String.valueOf(loanDo.getOverdueDays()));
 		params.put("info",JSON.toJSONString(arrayList));
 		params.put("companyId","");
 		params.put("token",collectRiskToken);
