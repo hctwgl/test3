@@ -558,6 +558,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			data.put("planRepaymenTime", DateUtil.formatDateTime(dsedLoanDo.getGmtPlanRepay()));
 			BigDecimal currentAmount = BigDecimalUtil.add(dsedLoanDo.getAmount(), dsedLoanDo.getRepaidOverdueAmount(),dsedLoanDo.getRepaidInterestFee(), dsedLoanDo.getRepaidServiceFee()).subtract(dsedLoanDo.getRepayAmount());//应还金额
 			data.put("residueAmount", String.valueOf(BigDecimalUtil.add(currentAmount,dsedLoanDo.getOverdueAmount(),dsedLoanDo.getInterestFee(),dsedLoanDo.getOverdueAmount(),dsedLoanDo.getServiceFee())));
+			//账单
 			data.put("principal", String.valueOf(currentAmount));
 			data.put("overdueAmount", String.valueOf(dsedLoanDo.getOverdueAmount()));
 			data.put("nper", String.valueOf(dsedLoanDo.getNper()));
@@ -579,6 +580,14 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			data.put("type",dsedLoanDo.getStatus());
 			data.put("repayAmount",String.valueOf(dsedLoanDo.getRepayAmount()));
 			data.put("amount",String.valueOf(dsedLoanDo.getAmount()));
+			//借款
+			data.put("loanNo",String.valueOf(loanDo.getLoanNo()));
+			data.put("loanAmount",String.valueOf(loanDo.getAmount()));
+			data.put("arrivalAmount",String.valueOf(loanDo.getAmount()));
+			data.put("loanStatus",loanDo.getStatus());
+			data.put("repayTime",DateUtil.formatDateTime(loanDo.getGmtCreate()));
+			data.put("maxOverdueDay",String.valueOf(overdueDays));
+			data.put("loanRemark",loanDo.getLoanRemark());
 			arrayList.add(data);
 		}
 		DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
@@ -588,13 +597,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 		Map<String,String>  params=new HashMap<>();
 		params.put("orderNo",getOrderNo("XGXY"));
-		params.put("loanNo",String.valueOf(loanDo.getLoanNo()));
-		params.put("loanAmount",String.valueOf(loanDo.getAmount()));
-		params.put("arrivalAmount",String.valueOf(loanDo.getAmount()));
-		params.put("loanStatus",loanDo.getStatus());
-		params.put("repayTime",DateUtil.formatDateTime(loanDo.getGmtCreate()));
-		params.put("maxOverdueDay",String.valueOf(overdueDays));
-		params.put("loanRemark",loanDo.getLoanRemark());
 		params.put("info",JSON.toJSONString(arrayList));
 		params.put("companyId","");
 		params.put("token",collectRiskToken);

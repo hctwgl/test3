@@ -184,6 +184,7 @@ public class LoanOverDueTask {
        List<Map<String,String>> datas=new ArrayList<>();
 
        for(DsedLoanPeriodsDto dsedLoanDo:dsedLoanDos){
+           DsedLoanDo loanDo = dsedLoanService.getByLoanNo(dsedLoanDo.getLoanNo());
            DsedUserDo userDo=userService.getById(dsedLoanDo.getUserId());
            Map<String,String> data=new HashMap<>();
            data.put("dataId", String.valueOf(dsedLoanDo.getRid()));
@@ -210,10 +211,14 @@ public class LoanOverDueTask {
            data.put("repayAmount",String.valueOf(dsedLoanDo.getRepayAmount()));
            data.put("amount",String.valueOf(dsedLoanDo.getAmount()));
            StringBuffer sb = new StringBuffer();
+           int overdueDays = 0;
            List<DsedLoanPeriodsDo> list=dsedLoanPeriodsService.getLoanPeriodsByLoanId(dsedLoanDo.getLoanId());
            for(DsedLoanPeriodsDo dsedLoan : list){
                if(StringUtil.equals(dsedLoan.getStatus(),DsedLoanPeriodStatus.FINISHED.name())){
                    sb.append(dsedLoan.getNper()).append(",");
+               }
+               if(dsedLoan.getOverdueDays() > overdueDays){
+                   overdueDays = dsedLoan.getOverdueDays();
                }
            }
            if(sb.length() > 0){
@@ -222,6 +227,15 @@ public class LoanOverDueTask {
            data.put("havePaied",sb.toString());
            data.put("overdueDay",String.valueOf(dsedLoanDo.getOverdueDays()));
            data.put("overdueAmount",String.valueOf(BigDecimalUtil.add(dsedLoanDo.getOverdueAmount(),dsedLoanDo.getRepaidOverdueAmount())));
+
+           data.put("loanNo",String.valueOf(loanDo.getLoanNo()));
+           data.put("loanAmount",String.valueOf(loanDo.getAmount()));
+           data.put("arrivalAmount",String.valueOf(loanDo.getAmount()));
+           data.put("loanStatus",loanDo.getStatus());
+           data.put("repayTime",DateUtil.formatDateTime(loanDo.getGmtCreate()));
+           data.put("maxOverdueDay",String.valueOf(overdueDays));
+           data.put("loanRemark",loanDo.getLoanRemark());
+
            datas.add(data);
        }
 
