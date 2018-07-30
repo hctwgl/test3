@@ -571,6 +571,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			data.put("havePaied",sb.toString());
 			data.put("overdueDay",String.valueOf(dsedLoanDo.getOverdueDays()));
 			data.put("overdueAmount",String.valueOf(BigDecimalUtil.add(dsedLoanDo.getOverdueAmount(),dsedLoanDo.getRepaidOverdueAmount())));
+			data.put("type",dsedLoanDo.getStatus());
 			arrayList.add(data);
 		}
 		DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
