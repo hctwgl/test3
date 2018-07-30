@@ -37,7 +37,7 @@
 		<property name="configLocation" value="classpath:props/velocity.properties">
 		</property>
 	</bean>
-
+	<bean  class="com.ald.fanbei.api.web.application.SpringInit" />
 	<bean id="viewResolver"
 		class="org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver"
 		p:cache="true" p:suffix=".vm" p:layoutUrl="layout/default.vm"

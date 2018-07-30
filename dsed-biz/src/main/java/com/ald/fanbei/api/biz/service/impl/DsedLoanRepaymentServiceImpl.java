@@ -24,18 +24,38 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.KuaijieDsedLoanBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.XgxyRepayBo;
+import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
+import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.DsedNoticeRecordService;
 import com.ald.fanbei.api.biz.service.DsedUpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.service.DsedUserService;
+import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
+import com.ald.fanbei.api.common.enums.DsedLoanPeriodStatus;
+import com.ald.fanbei.api.common.enums.DsedLoanRepaymentStatus;
+import com.ald.fanbei.api.common.enums.DsedLoanStatus;
+import com.ald.fanbei.api.common.enums.DsedNoticeType;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.DsedLoanDao;
+import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
+import com.ald.fanbei.api.dal.dao.DsedLoanRepaymentDao;
+import com.ald.fanbei.api.dal.dao.DsedUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
@@ -44,33 +64,36 @@ import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
+import com.timevale.esign.sdk.tech.service.impl.b;
 
 import net.sf.json.JSONArray;
 
 
 /**
  * 都市易贷借款还款表ServiceImpl
- * 
+ *
  * @author guoshuaiqiang
  * @version 1.0.0 初始化
  * @date 2018-06-19 10:45:15
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
- 
+
 @SuppressWarnings("rawtypes")
 @Service("dsedLoanRepaymentService")
 public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstract implements DsedLoanRepaymentService {
-	
-    private static final Logger logger = LoggerFactory.getLogger(DsedLoanRepaymentServiceImpl.class);
-   
-    @Resource
-    private DsedLoanRepaymentDao dsedLoanRepaymentDao;
-    @Resource
+
+	private static final Logger logger = LoggerFactory.getLogger(DsedLoanRepaymentServiceImpl.class);
+
+	@Resource
+	private DsedLoanRepaymentDao dsedLoanRepaymentDao;
+	@Resource
 	private DsedUserBankcardDao dsedUserBankcardDao;
 	@Resource
 	private RedisTemplate<String, ?> redisTemplate;
 	@Resource
 	private GeneratorClusterNo generatorClusterNo;
+	@Resource
+	UpsUtil upsUtil;
 	@Resource
 	private TransactionTemplate transactionTemplate;
 	@Resource
@@ -79,6 +102,8 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	DsedLoanDao dsedLoanDao;
 	@Resource
 	private CollectionSystemUtil collectionSystemUtil;
+	@Resource
+	DsedUserService dsedUserService;
 	@Resource
 	DsedNoticeRecordService dsedNoticeRecordService;
 	@Resource
@@ -91,6 +116,9 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	private static String nofityRiskToken = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6M30.eyJhdWQiOiIzIiwiaXNzIjoiQUxEIiwiaWF0IjoxNTMxODgwNjE5fQ.hU2GhPAbTKTXdVHpLscbjxJ7pc710jNdsxoteipwdMs";
 
 
+	DsedLoanPeriodsService dsedLoanPeriodsService;
+	@Resource
+	AssetSideEdspayUtil assetSideEdspayUtil;
 
 	@Override
 	public DsedLoanRepaymentDo getProcessLoanRepaymentByLoanId(Long loanId){
@@ -225,7 +253,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				bo.dsedloanRepaymentDo.setRemark("exception occur,msg = " + e.getMessage());
 				dsedLoanRepaymentDao.updateStatusById(bo.dsedloanRepaymentDo);
 			}
-			
+
 			unLockRepay(bo.userId);
 			if(e instanceof FanbeiException) {
 				throw e;
@@ -439,7 +467,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				@Override
 				public Long doInTransaction(TransactionStatus status) {
 					try {
- 						dealLoanRepay(loanRepayDealBo, repaymentDo,periodsList);
+						dealLoanRepay(loanRepayDealBo, repaymentDo,periodsList);
 						// 最后一期还完后， 修改loan状态FINSH
 						dealLoanStatus(loanRepayDealBo);
 						dealSum(loanRepayDealBo);
@@ -476,6 +504,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 					e.printStackTrace();
 				}
 				HashMap<String,String> data = buildData(repaymentDo);
+
 				logger.info("dealRepaymentSucess data cfp "+JSON.toJSONString(data));
 				if(xgxyUtil.dsedRePayNoticeRequest(data)){
 					noticeRecordDo.setRid(noticeRecordDo.getRid());
@@ -793,7 +822,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 		List<DsedLoanPeriodsDo> loanPeriodsDoList = new ArrayList<DsedLoanPeriodsDo>();
 
-
 		if(repaymentDo.getPreRepayStatus().equals("Y")) {	// 提前还款
 			loanRepayDealBo.isAllRepay = true;
 			String[] repayPeriodsIds = repaymentDo.getRepayPeriods().split(",");
@@ -1012,6 +1040,19 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 			loanRepayDealBo.loanDo.setStatus(DsedLoanStatus.FINISHED.name());
 
+			boolean isBefore = DateUtil.isBefore(new Date(),DateUtil.addDays(loanPeriodsDo.getGmtPlanRepay(), -1));
+			if (isBefore) {
+				if (assetSideEdspayUtil.isPush(loanRepayDealBo.loanDo)) {
+					List<ModifiedBorrowInfoVo> modifiedLoanInfo = assetSideEdspayUtil.buildModifiedInfo(loanRepayDealBo.loanDo,3);
+					boolean result = assetSideEdspayUtil.transModifiedBorrowInfo(modifiedLoanInfo,Constants.ASSET_SIDE_EDSPAY_FLAG, Constants.ASSET_SIDE_FANBEI_FLAG);
+					if (result) {
+						logger.info("dsed transModifiedBorrowInfo success,loanId="+loanRepayDealBo.loanDo.getRid());
+					}else{
+						assetSideEdspayUtil.transFailRecord(loanRepayDealBo.loanDo, modifiedLoanInfo);
+					}
+				}
+			}
+
 		}
 	}
 
@@ -1038,7 +1079,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		public BigDecimal rebateAmount = BigDecimal.ZERO; //可选字段
 		public BigDecimal reductionAmount = BigDecimal.ZERO; //可选字段
 		public List<HashMap> periodsList;
-		public String repayType;
 		public String payPwd;
 		public Long cardId;
 		public Long couponId;			//可选字段
@@ -1050,6 +1090,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		/* biz 业务处理字段 */
 		public String remoteIp;
 		public String name;
+		public String repayType;
 		public boolean isAllRepay = false;	// 是否是提前还款（默认false为按期还款）
 		/* biz 业务处理字段 */
 

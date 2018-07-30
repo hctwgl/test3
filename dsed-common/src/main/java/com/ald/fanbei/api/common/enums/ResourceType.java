@@ -52,6 +52,7 @@ public enum ResourceType {
 	APP_UPDATE_COUPON_NEW("APP_UPDATE_COUPON_NEW","版本升级优惠券（新用户）"),
 	
 	ASSET_PUSH_CONF("ASSET_PUSH_CONF","债权实时推送相关配置"),
+	ASSET_SIDE_CONFIG("ASSET_SIDE_CONFIG","资产方相关配置"),
 	BKL_WHITE_LIST_CONF("BKL_WHITE_LIST_CONF","百可录电核白名单配置"),
 	BKL_CONF_SWITCH("BKL_CONF_SWITCH","百可录电核开关"),
 

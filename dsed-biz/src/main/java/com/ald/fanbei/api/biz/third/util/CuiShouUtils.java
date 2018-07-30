@@ -86,6 +86,7 @@ public class CuiShouUtils {
             List<DsedLoanPeriodsDo> list = new ArrayList<>();
             String totalAmount = repaymentBo.getTotalAmount();
             String repaymentNo = repaymentBo.getRepaymentNo();
+            String userId = repaymentBo.getRepaymentAcc();
             String type = repaymentBo.getType();
             String repayTime = repaymentBo.getRepayTime();
             String orderNo = repaymentBo.getOrderNo();

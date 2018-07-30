@@ -3,12 +3,14 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.beanutils.ConvertUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -20,29 +22,42 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.XgxyPayBo;
+import com.ald.fanbei.api.biz.bo.assetpush.AssetPushType;
+import com.ald.fanbei.api.biz.bo.assetpush.EdspayGetCreditRespBo;
 import com.ald.fanbei.api.biz.bo.dsed.DsedApplyLoanBo;
 import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.DsedLoanProductService;
+import com.ald.fanbei.api.biz.service.DsedLoanPushService;
 import com.ald.fanbei.api.biz.service.DsedLoanService;
 import com.ald.fanbei.api.biz.service.DsedNoticeRecordService;
+import com.ald.fanbei.api.biz.service.DsedResourceService;
+import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.DsedLoanPeriodStatus;
 import com.ald.fanbei.api.common.enums.DsedLoanStatus;
 import com.ald.fanbei.api.common.enums.DsedNoticeType;
+import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.DsedLoanDao;
 import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
 import com.ald.fanbei.api.dal.dao.DsedUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
+import com.ald.fanbei.api.dal.domain.DsedLoanPushDo;
 import com.ald.fanbei.api.dal.domain.DsedLoanRateDo;
 import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
+import com.ald.fanbei.api.dal.domain.DsedResourceDo;
 import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
+import com.alibaba.fastjson.JSON;
 
 
 /**
@@ -61,6 +76,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 
     @Resource
     private DsedLoanDao dsedLoanDao;
+    
 
     @Resource
     private RedisTemplate<String, ?> redisTemplate;
@@ -92,6 +108,15 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
     @Resource
     private DsedLoanProductService dsedLoanProductService;
 
+    @Resource
+    private DsedResourceService dsedResourceService;
+    
+    @Resource
+    private AssetSideEdspayUtil assetSideEdspayUtil;
+    
+    @Resource
+    private DsedLoanPushService dsedLoanPushService;
+    
     @Override
     public BaseDao<DsedLoanDo, Long> getDao() {
         return dsedLoanDao;
@@ -113,7 +138,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
                 periodDos.add((DsedLoanPeriodsDo) o);
             }
 
-            final DsedUserBankcardDo bankCard = dsedUserBankcardDao.getUserMainBankcardByUserId(userId,reqParam.bankCardNumber);
+            final DsedUserBankcardDo bankCard = dsedUserBankcardDao.getUserBankcardByCardNumber(userId,reqParam.bankCardNumber);
 
             if (bankCard == null){
                 throw new FanbeiException(FanbeiExceptionCode.DSED_BANK_NOT_EXIST_ERROR);
@@ -122,21 +147,48 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
             this.saveLoanRecords(bo, loanDo, periodDos, bankCard);
 
             try {
-                // 调用UPS打款
-                UpsDelegatePayRespBo upsResult = upsUtil.dsedDelegatePay(bo.reqParam.amount,
-                        bo.realName, bankCard.getBankCardNumber(), userId.toString(), bankCard.getMobile(),
-                        bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
-                        "DSED_LOAN", loanDo.getRid().toString(),bo.idNumber);
-                loanDo.setTradeNoOut(upsResult.getOrderNo());
-                if (!upsResult.isSuccess()) {
-                    //审核通过，ups打款失败
-                    dealLoanFail(loanDo, periodDos, upsResult.getRespCode());
-                    throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL);
-                }
-                loanDo.setStatus(DsedLoanStatus.TRANSFERING.name());
-                dsedLoanDao.updateById(loanDo);
-                // 增加日志
-//				afUserAccountLogDao.addUserAccountLog(BuildInfoUtil.buildUserAccountLogDo(UserAccountLogType.LOAN, loanDo.getAmount(), userId, loanDo.getRid()));
+				Boolean isWhite=true;
+				DsedResourceDo pushWhiteResource = dsedResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_WHITE.getCode());
+				if (pushWhiteResource != null && pushWhiteResource.getValue3() !=null) {
+					//白名单开启
+					String[] whiteUserIdStrs = pushWhiteResource.getValue3().split(",");
+					Long[]  whiteUserIds = (Long[]) ConvertUtils.convert(whiteUserIdStrs, Long.class);
+					if(!Arrays.asList(whiteUserIds).contains(userId)){
+						//不在白名单不推送
+						isWhite=false;
+					}
+				}
+				DsedResourceDo assetPushResource = dsedResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
+				AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
+				Boolean bankIsMaintaining = bankIsMaintaining(assetPushResource);
+				if (StringUtil.equals(assetPushType.getDsed(), YesNoStatus.YES.getCode())
+					&&(StringUtil.equals(loanDo.getAppName(), "www")||StringUtil.equals(loanDo.getAppName(), ""))
+					&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&isWhite&&!bankIsMaintaining) {//推送eds放款
+					List<EdspayGetCreditRespBo> dsedBorrowInfo = assetSideEdspayUtil.buildDsedBorrowInfo(loanDo);
+					//债权实时推送
+					boolean result = assetSideEdspayUtil.dsedCurPush(dsedBorrowInfo, Constants.ASSET_SIDE_EDSPAY_FLAG,Constants.ASSET_SIDE_FANBEI_FLAG);
+					if (result) {
+						logger.info("dsedCurPush suceess,orderNo="+dsedBorrowInfo.get(0).getOrderNo());
+						loanDo.setStatus(DsedLoanStatus.TRANSFERING.name());
+						dsedLoanDao.updateById(loanDo);
+						// 增加日志
+						DsedLoanPushDo loanPush = buildLoanPush(loanDo.getRid(),dsedBorrowInfo.get(0).getApr(), dsedBorrowInfo.get(0).getManageFee());
+						dsedLoanPushService.saveOrUpdate(loanPush);
+					}
+				}else{// 调用UPS打款
+	                UpsDelegatePayRespBo upsResult = upsUtil.dsedDelegatePay(bo.reqParam.amount,
+	                        bo.realName, bankCard.getBankCardNumber(), userId.toString(), bankCard.getMobile(),
+	                        bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
+	                        "DSED_LOAN", loanDo.getRid().toString(),bo.idNumber);
+	                loanDo.setTradeNoOut(upsResult.getOrderNo());
+	                if (!upsResult.isSuccess()) {
+	                    //审核通过，ups打款失败
+	                    dealLoanFail(loanDo, periodDos, "UPS打款失败，" + upsResult.getRespCode());
+	                    throw new FanbeiException(FanbeiExceptionCode.LOAN_UPS_DRIECT_FAIL);
+	                }
+	                loanDo.setStatus(DsedLoanStatus.TRANSFERING.name());
+	                dsedLoanDao.updateById(loanDo);	
+				}
             } catch (Exception e) {
                 loanDo.setStatus(DsedLoanStatus.CLOSED.name());
                 dsedLoanDao.updateById(loanDo);
@@ -151,6 +203,19 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
             this.unlockLoan(userId);
         }
     }
+    
+    private Boolean bankIsMaintaining(DsedResourceDo assetPushResource) {
+		Boolean bankIsMaintaining=false;
+		if (null != assetPushResource && StringUtil.isNotBlank(assetPushResource.getValue4())) {
+			String[] split = assetPushResource.getValue4().split(",");
+			String maintainStart = split[0];
+			String maintainEnd = split[1];
+			Date maintainStartDate =DateUtil.parseDate(maintainStart,DateUtil.DATE_TIME_SHORT);
+			Date gmtCreateEndDate =DateUtil.parseDate(maintainEnd,DateUtil.DATE_TIME_SHORT);
+			 bankIsMaintaining = DateUtil.isBetweenDateRange(new Date(),maintainStartDate,gmtCreateEndDate);
+		}
+		return bankIsMaintaining;
+	}
 
     @Override
     public DsedLoanDo resolveLoan(BigDecimal amount, Long userId, int periods, String loanNo, String prdType) {
@@ -281,10 +346,11 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
         logger.info("--->close periods");
     }
 
-    private void dealLoanFail(final DsedLoanDo loanDo, List<DsedLoanPeriodsDo> periodDos, String msg) {
+    @Override
+    public void dealLoanFail(final DsedLoanDo loanDo, List<DsedLoanPeriodsDo> periodDos, String msg) {
         Date cur = new Date();
         loanDo.setStatus(DsedLoanStatus.CLOSED.name());
-        loanDo.setRemark("UPS打款失败，" + msg);
+        loanDo.setRemark(msg);
         loanDo.setGmtClose(cur);
         loanDo.setGmtModified(cur);
         logger.info("--->close loan UPS打款失败:loanId=" + loanDo.getRid());
@@ -375,5 +441,16 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 	@Override
 	public int updateByLoanId(DsedLoanDo loanDo) {
 		return dsedLoanDao.updateByLoanId(loanDo);
+	}
+	
+	private DsedLoanPushDo buildLoanPush(Long rid, BigDecimal apr,BigDecimal manageFee) {
+		DsedLoanPushDo loanPushDo =new DsedLoanPushDo();
+		Date now = new Date();
+		loanPushDo.setGmtCreate(now);
+		loanPushDo.setGmtModified(now);
+		loanPushDo.setLoanId(rid);
+		loanPushDo.setBorrowRate(apr);
+		loanPushDo.setProfitRate(manageFee);
+		return loanPushDo;
 	}
 }

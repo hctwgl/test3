@@ -16,4 +16,33 @@ public enum  DsedLoanStatus {
         this.desz = desz;
         this.code = code;
     }
+
+	/**
+	 * @return the desz
+	 */
+	public String getDesz() {
+		return desz;
+	}
+
+	/**
+	 * @param desz the desz to set
+	 */
+	public void setDesz(String desz) {
+		this.desz = desz;
+	}
+
+	/**
+	 * @return the code
+	 */
+	public String getCode() {
+		return code;
+	}
+
+	/**
+	 * @param code the code to set
+	 */
+	public void setCode(String code) {
+		this.code = code;
+	}
+    
 }
