@@ -54,6 +54,7 @@ public class CuiShouUtils {
         try {
             String sign = request.getParameter("sign");
             String data = request.getParameter("data");
+            thirdLog.error("offlineRepaymentMoney data", data);
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
             if (!sign1.equals(sign)) return JSONObject.toJSONString(new CuiShouBackMoney(201, "sign error"));

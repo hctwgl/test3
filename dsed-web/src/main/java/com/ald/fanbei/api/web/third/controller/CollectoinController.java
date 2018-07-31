@@ -27,7 +27,6 @@ public class CollectoinController {
     @ResponseBody
     @RequestMapping(value = {"/offLineBackMoney"}, method = RequestMethod.POST)
     public String offLineBackMoney(HttpServletRequest request){
-        thirdLog.error("offlineRepaymentMoney error", 111);
         return cuiShouUtils.offlineRepaymentMoney(request);
     }
 
