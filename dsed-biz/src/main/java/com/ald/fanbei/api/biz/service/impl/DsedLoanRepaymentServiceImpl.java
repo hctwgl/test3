@@ -582,6 +582,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			data.put("type",dsedLoanDo.getStatus());
 			data.put("repayAmount",String.valueOf(dsedLoanDo.getRepayAmount()));
 			data.put("amount",String.valueOf(dsedLoanDo.getAmount()));
+			data.put("notReductionAmount","");
 			//借款
 			data.put("loanNo",String.valueOf(loanDo.getLoanNo()));
 			data.put("loanAmount",String.valueOf(loanDo.getAmount()));
@@ -931,6 +932,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		if (repayAmount.compareTo(overdueAmount) > 0) {
 			loanPeriodsDo.setRepaidOverdueAmount(BigDecimalUtil.add(loanPeriodsDo.getRepaidOverdueAmount(), overdueAmount).subtract(reductionAmount));
 			loanPeriodsDo.setOverdueAmount(BigDecimal.ZERO);
+			loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(overdueAmount,loanPeriodsDo.getRepayAmount()));
 			LoanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(overdueAmount);
 			LoanRepayDealBo.curRepayOverdue = overdueAmount;
 
@@ -941,6 +943,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		} else {
 			loanPeriodsDo.setRepaidOverdueAmount(BigDecimalUtil.add(loanPeriodsDo.getRepaidOverdueAmount(), repayAmount).subtract(reductionAmount));
 			loanPeriodsDo.setOverdueAmount(overdueAmount.subtract(repayAmount).add(reductionAmount));
+			loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(repayAmount,loanPeriodsDo.getRepayAmount()));
 			LoanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 			LoanRepayDealBo.curRepayOverdue = repayAmount;
 
@@ -964,11 +967,13 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		if (repayAmount.compareTo(poundageAmount) > 0) {
 			loanPeriodsDo.setRepaidServiceFee(BigDecimalUtil.add(loanPeriodsDo.getRepaidServiceFee(), poundageAmount));
 			loanPeriodsDo.setServiceFee(BigDecimal.ZERO);
+			loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(poundageAmount,loanPeriodsDo.getRepayAmount()));
 			LoanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(poundageAmount);
 			LoanRepayDealBo.curRepayService = poundageAmount;
 		} else {
 			loanPeriodsDo.setRepaidServiceFee(BigDecimalUtil.add(loanPeriodsDo.getRepaidServiceFee(), repayAmount));
 			loanPeriodsDo.setServiceFee(poundageAmount.subtract(repayAmount));
+			loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(repayAmount,loanPeriodsDo.getRepayAmount()));
 			LoanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 			LoanRepayDealBo.curRepayService = repayAmount;
 		}
@@ -987,11 +992,13 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		if (repayAmount.compareTo(rateAmount) > 0) {
 			loanPeriodsDo.setRepaidInterestFee(BigDecimalUtil.add(loanPeriodsDo.getRepaidInterestFee(), rateAmount));
 			loanPeriodsDo.setInterestFee(BigDecimal.ZERO);
+			loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(rateAmount,loanPeriodsDo.getRepayAmount()));
 			LoanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(rateAmount);
 			LoanRepayDealBo.curRepayInterest = rateAmount;
 		} else {
 			loanPeriodsDo.setRepaidInterestFee(BigDecimalUtil.add(loanPeriodsDo.getRepaidInterestFee(), repayAmount));
 			loanPeriodsDo.setInterestFee(rateAmount.subtract(repayAmount));
+			loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(repayAmount,loanPeriodsDo.getRepayAmount()));
 			LoanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 			LoanRepayDealBo.curRepayInterest = repayAmount;
 		}
@@ -1016,23 +1023,15 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		BigDecimal calculateRestAmount = calculateRestAmount(loanPeriodsDo);
 		BigDecimal repayAmount = loanRepayDealBo.curRepayAmoutStub;
 
-		if(repaymentDo.getRepayAmount().compareTo(calculateRestAmount) >= 0){	// 针对多期已出账 的部分还款
-			if(repayAmount.compareTo(calculateRestAmount) >= 0){
-				loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepayAmount(),calculateRestAmount));
-				loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(calculateRestAmount.subtract(curRepayOSI));
-			}else {
-				loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepayAmount(),repayAmount.add(curRepayOSI)));
-				loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
-			}
-		}else{
-			if(loanPeriodsDo.getRepayAmount().compareTo(BigDecimal.ZERO) == 0) {
-				loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepaidInterestFee(),
-						loanPeriodsDo.getRepaidOverdueAmount(),loanPeriodsDo.getRepaidServiceFee(),repayAmount));
-			}else {
-				loanPeriodsDo.setRepayAmount(loanPeriodsDo.getRepayAmount().add(repaymentDo.getRepayAmount()));
-			}
+		// 针对多期已出账 的部分还款
+		if(repayAmount.compareTo(calculateRestAmount) >= 0){
+			loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepayAmount(),calculateRestAmount));
+			loanRepayDealBo.curRepayAmoutStub = repayAmount.subtract(calculateRestAmount);
+		}else {
+			loanPeriodsDo.setRepayAmount(BigDecimalUtil.add(loanPeriodsDo.getRepayAmount(),repayAmount));
 			loanRepayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 		}
+
 
 		// 所有已还金额
 		BigDecimal allRepayAmount = loanPeriodsDo.getRepayAmount();
