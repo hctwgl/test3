@@ -907,7 +907,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 					dealLoanRepayInterest(loanRepayDealBo, loanPeriodsDo);		//利息
 					dealLoanRepayIfFinish(loanRepayDealBo, repaymentDo, loanPeriodsDo,reductionAmount);	//修改借款分期状态
 				}
-                logger.info(" cfp dealRepaymentSuccess process begin, loanPeriodsDo="  + JSON.toJSONString(loanPeriodsDo));
                 dsedLoanPeriodsDao.updateById(loanPeriodsDo);
 			}
 		}
@@ -1040,7 +1039,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 		BigDecimal minus = allRepayAmount.subtract(sumAmount); //容许多还一块钱，兼容离线还款 场景
 		logger.info("dealRepaymentSucess process dealLoanRepayIfFinish allRepayAmount="+allRepayAmount+",minus="+minus+",loanPeriodsDo="+ JSONObject.toJSONString(loanPeriodsDo)+",repaymentDo="+JSONObject.toJSONString(repaymentDo)+",loanRepayDealBo="+JSONObject.toJSONString(loanRepayDealBo));
-		if (minus.compareTo(BigDecimal.ZERO) >= 0 && minus.compareTo(BigDecimal.ONE) <= 0) {
+		if (minus.compareTo(BigDecimal.ZERO) >= 0) {
 			loanPeriodsDo.setStatus(DsedLoanPeriodStatus.FINISHED.name());
 		} else if (minus.compareTo(BigDecimal.ZERO) < 0) {	// 部分还款
 			loanPeriodsDo.setStatus(DsedLoanPeriodStatus.PART_REPAY.name());
