@@ -12,6 +12,8 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.common.enums.DsedLoanPeriodStatus;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.DsedContractPdfDao;
+import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -34,13 +36,6 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.DsedNoticeType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.dal.domain.DsedLoanDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanOverdueLogDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
-import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
-import com.ald.fanbei.api.dal.domain.DsedUserContactsDo;
-import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 
 
@@ -80,6 +75,9 @@ public class LoanOverDueTask {
 
     @Resource
     private DsedUserContactsService contactsService;
+
+    @Resource
+    DsedContractPdfDao dsedContractPdfDao;
 
     @Resource
     GetHostIpUtil getHostIpUtil;
@@ -235,7 +233,15 @@ public class LoanOverDueTask {
            data.put("repayTime",DateUtil.formatDateTime(loanDo.getGmtCreate()));
            data.put("maxOverdueDay",String.valueOf(overdueDays));
            data.put("loanRemark",loanDo.getLoanRemark());
-
+           DsedContractPdfDo dsedContractPdfDo = new DsedContractPdfDo();
+           dsedContractPdfDo.setType((byte) 5);
+           dsedContractPdfDo.setTypeId(loanDo.getRid());
+           DsedContractPdfDo contractPdfDo = dsedContractPdfDao.selectByTypeId(dsedContractPdfDo);
+           if(null != contractPdfDo){
+               data.put("contractPdfUrl",contractPdfDo.getContractPdfUrl());
+           }else {
+               data.put("contractPdfUrl","");
+           }
            datas.add(data);
        }
 

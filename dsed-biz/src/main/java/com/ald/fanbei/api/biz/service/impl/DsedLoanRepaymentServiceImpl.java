@@ -15,6 +15,7 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,11 +57,6 @@ import com.ald.fanbei.api.dal.dao.DsedLoanDao;
 import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
 import com.ald.fanbei.api.dal.dao.DsedLoanRepaymentDao;
 import com.ald.fanbei.api.dal.dao.DsedUserBankcardDao;
-import com.ald.fanbei.api.dal.domain.DsedLoanDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
-import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
-import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
@@ -110,6 +106,8 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	XgxyUtil xgxyUtil;
 	@Resource
 	DsedUserDao dsedUserDao;
+	@Resource
+	DsedContractPdfDao dsedContractPdfDao;
 
 	private static String collectRiskToken = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk";
 
@@ -550,6 +548,10 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			sb = sb.deleteCharAt(sb.length()-1);
 		}
 		DsedLoanDo loanDo = dsedLoanDao.getById(rid);
+		DsedContractPdfDo dsedContractPdfDo = new DsedContractPdfDo();
+		dsedContractPdfDo.setType((byte) 5);
+		dsedContractPdfDo.setTypeId(rid);
+		DsedContractPdfDo contractPdfDo = dsedContractPdfDao.selectByTypeId(dsedContractPdfDo);
 		for(DsedLoanPeriodsDo dsedLoanDo : list){
 			Map<String, String> data = new HashMap<String, String>();
 			DsedUserDo userDo=dsedUserDao.getById(dsedLoanDo.getUserId());
@@ -588,6 +590,11 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			data.put("repayTime",DateUtil.formatDateTime(loanDo.getGmtCreate()));
 			data.put("maxOverdueDay",String.valueOf(overdueDays));
 			data.put("loanRemark",loanDo.getLoanRemark());
+			if(null != contractPdfDo){
+				data.put("contractPdfUrl",contractPdfDo.getContractPdfUrl());
+			}else {
+				data.put("contractPdfUrl","");
+			}
 			arrayList.add(data);
 		}
 		DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
