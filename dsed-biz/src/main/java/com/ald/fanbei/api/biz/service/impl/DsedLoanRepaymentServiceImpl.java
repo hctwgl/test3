@@ -907,7 +907,8 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 					dealLoanRepayInterest(loanRepayDealBo, loanPeriodsDo);		//利息
 					dealLoanRepayIfFinish(loanRepayDealBo, repaymentDo, loanPeriodsDo,reductionAmount);	//修改借款分期状态
 				}
-				dsedLoanPeriodsDao.updateById(loanPeriodsDo);
+                logger.info(" cfp dealRepaymentSuccess process begin, loanPeriodsDo="  + JSON.toJSONString(loanPeriodsDo));
+                dsedLoanPeriodsDao.updateById(loanPeriodsDo);
 			}
 		}
 
