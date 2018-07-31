@@ -104,7 +104,7 @@ public class LoanOverDueTask {
                         //计算逾期
                         this.calcuOverdueRecords(loanDos);
                         //通知催收逾期人员通讯录
-                       collectionPush(loanDos);
+                        collectionPush(loanDos);
                     }
 
                 }
@@ -180,7 +180,6 @@ public class LoanOverDueTask {
    }
    void  collectionPush(List<DsedLoanPeriodsDto> dsedLoanDos){
        List<Map<String,String>> datas=new ArrayList<>();
-
        for(DsedLoanPeriodsDto dsedLoanDo:dsedLoanDos){
            DsedLoanDo loanDo = dsedLoanService.getByLoanNo(dsedLoanDo.getLoanNo());
            DsedUserDo userDo=userService.getById(dsedLoanDo.getUserId());
