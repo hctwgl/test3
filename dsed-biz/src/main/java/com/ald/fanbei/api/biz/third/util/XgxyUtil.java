@@ -84,7 +84,7 @@ public class XgxyUtil extends AbstractThird {
      */
     public boolean overDueNoticeRequest(Map<String,String> data) {
         try {
-            logger.info("overDueNoticeRequest request start");
+            logger.info("overDueNoticeRequest to xgxy request start");
             Map<String, Object> params = new HashMap<>();
             params.put("appId", "edspay");
             Map<String, String> overdue = new HashMap<>();
@@ -111,7 +111,7 @@ public class XgxyUtil extends AbstractThird {
                 return true;
             }
         } catch (Exception e) {
-            logger.info("overDueNoticeRequest request fail", e);
+            logger.info("overDueNoticeRequest to xgxy request fail", e);
         }
         return false;
 
