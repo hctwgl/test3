@@ -599,7 +599,7 @@
 
 
 	<update id="updateByLoanId" parameterType="DsedLoanDo">
-        UPDATE dsed_loan SET overdue_amount = #{overdueAmount},overdue_days = #{overdueDays}
+        UPDATE dsed_loan SET overdue_amount = #{overdueAmount},overdue_days = #{overdueDays},overdue_status = #{overdueStatus}
         where is_delete = 0 and id = #{rid}
     </update>
 

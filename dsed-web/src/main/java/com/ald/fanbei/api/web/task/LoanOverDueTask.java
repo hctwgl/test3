@@ -147,6 +147,7 @@ public class LoanOverDueTask {
                 newloanDo.setRid(dsedLoanDo.getLoanId());
                 newloanDo.setOverdueDays(dsedLoanDo.getOverdueDays());
                 newloanDo.setOverdueAmount(dsedLoanDo.getOverdueAmount());
+                newloanDo.setOverdueStatus("Y");
                 dsedLoanService.updateByLoanId(newloanDo);
                 //新增逾期日志
                 loanOverdueLogService.addLoanOverdueLog(buildLoanOverdueLog(dsedLoanDo.getRid(), currentAmount, newOverdueAmount, dsedLoanDo.getUserId()));
