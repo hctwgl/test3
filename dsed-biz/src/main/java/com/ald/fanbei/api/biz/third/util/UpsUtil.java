@@ -63,7 +63,8 @@ public class UpsUtil extends AbstractThird {
 	
 	private static String SYS_KEY = "02";
 	private static String TRADE_STATUE_SUCC = "00";
-	
+	private static String DSED = "DSED";
+
 	private static String TRADE_STATUE_PART_SUCC = "01"; // 部分成功 
 	private static String TRADE_STATUE_ALREADY__SUCC = "02"; // 已经成功
 	
@@ -232,7 +233,7 @@ public class UpsUtil extends AbstractThird {
 		String orderNo = getOrderNo("sign", mobile.substring(mobile.length()-4,mobile.length()));
 		UpsAuthSignReqBo reqBo = new UpsAuthSignReqBo();
 		setPubParam(reqBo,"authSign",orderNo,clientType);
-		reqBo.setUserNo(userNo);
+		reqBo.setUserNo(DSED+userNo);
 		reqBo.setBankCode(bankCode);
 		reqBo.setRealName(realName);
 		reqBo.setPhone(mobile);
@@ -281,7 +282,7 @@ public class UpsUtil extends AbstractThird {
 		String orderNo = getOrderNo("asva", cardNo.substring(cardNo.length()-4,cardNo.length()));
 		UpsAuthSignValidReqBo reqBo = new UpsAuthSignValidReqBo();
 		setPubParam(reqBo,"authSignValid",orderNo,clientType);
-		reqBo.setUserNo(userNo);
+		reqBo.setUserNo(DSED+userNo);
 		reqBo.setCardNo(cardNo);
 		reqBo.setSmsCode(verifyCode);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignValidNotify");
