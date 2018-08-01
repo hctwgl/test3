@@ -228,6 +228,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
 			bo.tradeNo = tradeNo;
 			bo.name = name;
+            bo.repayType = DsedRepayType.ONLINE.getName();
 
 			// 根据 还款金额 更新期数信息
 			if (!bo.isAllRepay) { // 非提前结清
@@ -303,7 +304,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		String tradeNo = bo.tradeNo;
 		String name = bo.name;
 
-		DsedLoanRepaymentDo loanRepaymentDo = buildRepayment( bo.amount, tradeNo, now, bo.amount, 0l,
+		DsedLoanRepaymentDo loanRepaymentDo = buildRepayment( bo.repayType,bo.amount, tradeNo, now, bo.amount, 0l,
 				null, BigDecimal.ZERO, bo.dsedLoanDo.getRid(), bo.outTradeNo, name, bo.userId,bo.dsedLoanDo.getPrdType(),bo.bankNo,bo.cardName,bo.dsedLoanPeriodsDoList,bo.isAllRepay);
 
 		dsedLoanRepaymentDao.saveRecord(loanRepaymentDo);
@@ -313,7 +314,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		logger.info("Repay.add repayment finish,name="+ name +",tradeNo="+tradeNo+",borrowRepayment="+ JSON.toJSONString(loanRepaymentDo));
 	}
 
-	private DsedLoanRepaymentDo buildRepayment( BigDecimal repaymentAmount, String repayNo, Date gmtCreate, BigDecimal actualAmount,
+	private DsedLoanRepaymentDo buildRepayment( String repayType ,BigDecimal repaymentAmount, String repayNo, Date gmtCreate, BigDecimal actualAmount,
 											 Long userCouponId, BigDecimal couponAmount, BigDecimal rebateAmount, Long loanId, String payTradeNo, String name, Long userId,
 												String prdType,String bankNo,String cardName,List<DsedLoanPeriodsDo> loanPeriodsDoList,boolean isAllRepay) {
 		DsedLoanRepaymentDo loanRepay = new DsedLoanRepaymentDo();
@@ -346,7 +347,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		loanRepay.setGmtCreate(gmtCreate);
 		loanRepay.setBankCardNumber(bankNo);
 		loanRepay.setBankCardName(cardName);
-
+        loanRepay.setRepayChannel(repayType);
 		return loanRepay;
 	}
 
@@ -489,6 +490,8 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				noticeRecordDo.setRefId(String.valueOf(repaymentDo.getRid()));
 				noticeRecordDo.setType(getStatus(repaymentDo));
 				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+                HashMap<String,String> data = buildData(repaymentDo);
+				noticeRecordDo.setParams(JSON.toJSONString(data));
 				dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
 				try {
 					if(!flag){
@@ -501,8 +504,6 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 				}catch (Exception e){
 					e.printStackTrace();
 				}
-				HashMap<String,String> data = buildData(repaymentDo);
-
 				logger.info("dealRepaymentSucess data cfp "+JSON.toJSONString(data));
 				if(xgxyUtil.dsedRePayNoticeRequest(data)){
 					noticeRecordDo.setRid(noticeRecordDo.getRid());
@@ -524,7 +525,11 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			DsedLoanPeriodsDo loanPeriodsDo = dsedLoanPeriodsDao.getById(Long.parseLong(repayPeriodsIds[i]));
 			if(loanPeriodsDo!=null){
 				if(StringUtil.equals(loanPeriodsDo.getOverdueStatus(), YesNoStatus.YES.getCode())){
-					return DsedNoticeType.OVERDUEREPAY.code;
+					if(StringUtil.equals(repaymentDo.getRepayChannel(), DsedRepayType.COLLECT.getName())){
+                        return DsedNoticeType.XGXY_COLLECT.code;
+                    }else {
+                        return DsedNoticeType.XGXY_OVERDUEREPAY.code;
+                    }
 				}
 			}
 		}
@@ -700,6 +705,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			data.put("borrowNo",loanDo.getLoanNo());
 			data.put("status","REPAYSUCCESS");
 			data.put("tradeNo",repaymentDo.getTradeNo());
+			data.put("repayChannel",repaymentDo.getRepayChannel());
 			if(StringUtil.equals(loanDo.getStatus(),DsedLoanStatus.FINISHED.name())){
 				data.put("totalIsFinish","Y");
 			}else {
@@ -1214,7 +1220,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		try {
 			DsedLoanDo dsedLoanDo = dsedLoanDao.getByLoanNo(loanNo);
 
-			LoanRepayBo bo = buildLoanRepayBo(userId,dsedLoanDo, loanNo, AfRepayCollectionType.COLLECT.getCode(), totalAmount, repaymentNo,list);
+			LoanRepayBo bo = buildLoanRepayBo(userId,dsedLoanDo, loanNo, DsedRepayType.COLLECT.getName(), totalAmount, repaymentNo,list);
 
 			List<DsedLoanPeriodsDo> loanPeriodsDoList = getLoanPeriodsIds(bo.loanId, bo.amount);
 			bo.dsedLoanPeriodsDoList = loanPeriodsDoList;
@@ -1223,7 +1229,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 
 			generateRepayRecords(bo);
 
-			dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.dsedloanRepaymentDo,AfRepayCollectionType.COLLECT.getCode(),null,null,true);
+			dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.dsedloanRepaymentDo,DsedRepayType.COLLECT.getName(),null,null,true);
 
 		}catch (Exception e){
 			e.printStackTrace();
@@ -1250,7 +1256,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		bo.cardName = "";
 		bo.bankNo = "";
 		bo.isAllRepay = false;
-		bo.name = AfRepayCollectionType.COLLECT.getName();
+		bo.name = DsedRepayType.COLLECT.getName();
 		return bo;
 	}
 
