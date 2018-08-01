@@ -252,15 +252,24 @@ public class LoanOverDueTask {
        noticeRecordDo.setUserId(loanOverDue.getUserId());
        noticeRecordDo.setRefId(String.valueOf(loanOverDue.getRid()));
        noticeRecordDo.setType(DsedNoticeType.OVERDUE.code);
+       noticeRecordDo.setParams(JSON.toJSONString(buildParams(loanOverDue)));
        noticeRecordService.addNoticeRecord(noticeRecordDo);
-       if(xgxyUtil.overDueNoticeRequest(buildOverdue(loanOverDue))){
+       if(xgxyUtil.overDueNoticeRequest(buildParams(loanOverDue))){
            noticeRecordDo.setRid(noticeRecordDo.getRid());
            noticeRecordDo.setGmtModified(new Date());
            noticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
        }
    }
 
+   Map<String,String> buildParams(DsedLoanPeriodsDto loanOverDue){
+       Map<String,String> map=new HashMap<>();
+       map.put("borrowNo",loanOverDue.getLoanNo());
+       map.put("curPeriod", String.valueOf(loanOverDue.getNper()));
+       map.put("overdueDays", String.valueOf(loanOverDue.getOverdueDays()));
+       map.put("tradeNo",loanOverDue.getTradeNoOut());
+       return map;
 
+   }
    private DsedLoanOverdueLogDo buildLoanOverdueLog(Long periodsId,BigDecimal currentAmount,BigDecimal interest,Long userId){
        DsedLoanOverdueLogDo overdueLog = new DsedLoanOverdueLogDo();
        overdueLog.setPeriodsId(periodsId);
@@ -269,13 +278,6 @@ public class LoanOverDueTask {
        overdueLog.setUserId(userId);
        return overdueLog;
    }
-    XgxyOverdueBo buildOverdue(DsedLoanPeriodsDo periodsDo){
-        XgxyOverdueBo overdueBo=new XgxyOverdueBo();
-        overdueBo.setBorrowNo(periodsDo.getLoanNo());
-        overdueBo.setCurPeriod(String.valueOf(periodsDo.getNper()));
-        overdueBo.setOverdueDays(periodsDo.getOverdueDays());
-        overdueBo.setTradeNo(overdueBo.getTradeNo());
-        return overdueBo;
-    }
+
 
 }

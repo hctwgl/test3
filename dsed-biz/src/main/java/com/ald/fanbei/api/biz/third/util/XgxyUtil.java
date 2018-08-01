@@ -79,18 +79,19 @@ public class XgxyUtil extends AbstractThird {
     /**
      * 逾期通知请求
      *
-     * @param overdueBo
+     * @param data
      * @return
      */
-    public boolean overDueNoticeRequest(XgxyOverdueBo overdueBo) {
+    public boolean overDueNoticeRequest(Map<String,String> data) {
         try {
             logger.info("overDueNoticeRequest request start");
             Map<String, Object> params = new HashMap<>();
             params.put("appId", "edspay");
             Map<String, String> overdue = new HashMap<>();
-            overdue.put("borrowNo", overdueBo.getBorrowNo());
-            overdue.put("overdueDays", String.valueOf(overdueBo.getOverdueDays()));
-            overdue.put("curPeriod", overdueBo.getCurPeriod());
+            overdue.put("borrowNo", data.get("borrowNo"));
+            overdue.put("overdueDays", data.get("overdueDays"));
+            overdue.put("curPeriod", data.get("curPeriod"));
+            overdue.put("tradeNo", data.get("tradeNo"));
             params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
             
