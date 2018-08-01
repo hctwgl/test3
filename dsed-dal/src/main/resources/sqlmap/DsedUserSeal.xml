@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ald.fanbei.api.dal.dao.DsedUserSealDao">
+    <resultMap id="BaseResultMap" type="DsedUserSealDo">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_seal" property="userSeal" jdbcType="VARCHAR"/>
+        <result column="user_type" property="userType" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="edspay_user_card_id" property="edspayUserCardId" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="user_account_id" property="userAccountId" jdbcType="BIGINT"/>
+        <result column="is_delete" property="isDelete"/>
+        <result column="gmt_create" property="gmtCreate"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_seal, user_id,user_account_id,user_type,user_name,is_delete,gmt_create,edspay_user_card_id
+  </sql>
+    <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from dsed_user_seal
+        where user_id = #{userId,jdbcType=BIGINT}
+        and is_delete = 0
+        limit 1
+    </select>
+    <select id="selectByCardId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from dsed_user_seal
+        where edspay_user_card_id = #{edspayUserCardId}
+        and is_delete = 0
+        limit 1
+    </select>
+    <select id="selectBySealInfo" resultMap="BaseResultMap" parameterType="DsedUserSealDo">
+        select
+        a.id,a.user_seal,a.user_type,a.user_account_id,a.user_name
+        ,if(user_type=3,a.edspay_user_card_id,c.id_number) as edspayUserCardId
+        from dsed_user_seal a
+        LEFT JOIN dsed_user c on a.user_id = c.user_id
+        <where>
+            a.is_delete = 0
+            <if test="edspayUserCardId != null and edspayUserCardId != ''  and userType == 3">
+                and a.edspay_user_card_id = #{edspayUserCardId}
+            </if>
+            <if test="edspayUserCardId != null and edspayUserCardId != ''  and userType != 3">
+                and c.id_number = #{edspayUserCardId}
+            </if>
+            <if test="userName != null and userName != ''">
+                and a.user_name = #{userName}
+            </if>
+            <if test="userType != null and userType != ''">
+                and a.user_type = #{userType}
+            </if>
+            <if test="userId != null">
+                and a.user_id = #{userId}
+            </if>
+        </where>
+            limit 1
+    </select>
+    <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from dsed_user_seal
+        where id = #{id}
+        and is_delete = 0
+        limit 1
+    </select>
+    <select id="selectByIds" resultMap="BaseResultMap" parameterType="java.util.List">
+        select
+        <include refid="Base_Column_List"/>
+        from dsed_user_seal
+        where id in
+        <foreach collection="list" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+        and is_delete = 0
+        limit 1
+    </select>
+    <select id="selectByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from dsed_user_seal
+        where user_name = #{userName}
+        and is_delete = 0
+        limit 1
+    </select>
+    <select id="selectByUserType" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from dsed_user_seal
+        where user_type = #{userType}
+        and is_delete = 0
+    </select>
+    <delete id="deleteById" parameterType="java.lang.Long">
+    delete from dsed_user_seal
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="DsedUserSealDo" useGeneratedKeys="true" keyProperty="id">
+    insert into dsed_user_seal (user_seal, user_id,user_account_id,user_type,user_name,gmt_create,is_delete,edspay_user_card_id
+      )
+    values (#{userSeal,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT},#{userAccountId},#{userType},#{userName},now(),0,#{edspayUserCardId}
+      )
+  </insert>
+    <update id="updateByUserId" parameterType="DsedUserSealDo">
+        update dsed_user_seal
+        set user_seal = #{userSeal,jdbcType=VARCHAR}
+        <if test="userAccountId != null ">
+            , user_account_id = #{userAccountId}
+        </if>
+        <if test="userType != null ">
+            , user_type = #{userType}
+        </if>
+        <if test="userName != null ">
+            , user_name = #{userName}
+        </if>
+        <if test="edspayUserCardId != null ">
+            , edspay_user_card_id = #{edspayUserCardId}
+        </if>
+        where user_id = #{userId,jdbcType=BIGINT}
+    </update>
+</mapper>

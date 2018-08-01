@@ -44,4 +44,9 @@ public class DsedUserServiceImpl extends ParentServiceImpl<DsedUserDo, Long> imp
 	public DsedUserDo getUserById(Long userId) {
 		return dsedUserDao.getUserById(userId) ;
 	}
+
+	@Override
+	public DsedUserDo getUserByMobile(String mobile) {
+		return dsedUserDao.getUserByMobile(mobile);
+	}
 }
