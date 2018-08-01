@@ -184,6 +184,9 @@ public class NoticeTask {
         DsedNoticeRecordDo buildRecord=new DsedNoticeRecordDo();
         buildRecord.setRid(recordDo.getRid());
         buildRecord.setTimes(String.valueOf(Integer.parseInt(recordDo.getTimes())-1));
+        if(StringUtils.isNotBlank(recordDo.getParams())){
+            buildRecord.setParams(recordDo.getParams());
+        }
         return buildRecord;
     }
 
