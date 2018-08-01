@@ -36,7 +36,7 @@
         a.id,a.user_seal,a.user_type,a.user_account_id,a.user_name
         ,if(user_type=3,a.edspay_user_card_id,c.id_number) as edspayUserCardId
         from dsed_user_seal a
-        LEFT JOIN dsed_user c on a.user_id = c.user_id
+        LEFT JOIN dsed_user c on a.user_id = c.id
         <where>
             a.is_delete = 0
             <if test="edspayUserCardId != null and edspayUserCardId != ''  and userType == 3">
