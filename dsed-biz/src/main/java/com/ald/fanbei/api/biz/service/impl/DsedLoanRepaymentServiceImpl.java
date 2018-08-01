@@ -769,17 +769,18 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		// 解锁还款
 		unLockRepay(loanRepaymentDo.getUserId());
 		//还款失败，调用西瓜信用通知接口
-		DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
-		noticeRecordDo.setUserId(loanRepaymentDo.getUserId());
-		noticeRecordDo.setRefId(String.valueOf(loanRepaymentDo.getRid()));
-		noticeRecordDo.setType(getStatus(loanRepaymentDo));
-		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
-		dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
 		DsedLoanDo loanDo = dsedLoanDao.getById(loanRepaymentDo.getLoanId());
 		HashMap<String, String> data = new HashMap<String, String>();
 		data.put("reason",errorMsg);
 		data.put("borrowNo",loanDo.getLoanNo());
 		data.put("status","REPAYFAIL");
+		DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
+		noticeRecordDo.setUserId(loanRepaymentDo.getUserId());
+		noticeRecordDo.setRefId(String.valueOf(loanRepaymentDo.getRid()));
+		noticeRecordDo.setType(getStatus(loanRepaymentDo));
+		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+		noticeRecordDo.setParams(JSON.toJSONString(data));
+		dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
 		if (xgxyUtil.dsedRePayNoticeRequest(data)) {
 			noticeRecordDo.setRid(noticeRecordDo.getRid());
 			noticeRecordDo.setGmtModified(new Date());
