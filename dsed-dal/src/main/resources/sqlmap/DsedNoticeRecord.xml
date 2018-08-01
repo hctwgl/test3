@@ -174,7 +174,10 @@
         <set>
             gmt_modified = now(),
             <if test="times != null and times != '' ">
-                times = #{times,jdbcType=VARCHAR}
+                times = #{times,jdbcType=VARCHAR},
+            </if>
+            <if test="params != null and params != '' ">
+                params = #{params}
             </if>
         </set>
         WHERE id = #{rid ,jdbcType=BIGINT}
