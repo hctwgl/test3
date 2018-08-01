@@ -67,7 +67,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			}else {
 				reqResult = HttpUtil.post(url, params);
 			}
-			logThird(reqResult, "dsedNoticeCollect", JSON.toJSONString(data));
+			logThird(reqResult, "noticeCollect", JSON.toJSONString(data));
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new FanbeiException("dsed overdue notice collect request fail , reqResult is null");

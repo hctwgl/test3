@@ -89,7 +89,6 @@ public class NoticeTask {
                             continue;
                         }
                         final DsedLoanDo loanDo=dsedLoanService.getById(Long.valueOf(recordDo.getRefId()));
-                        final DsedLoanPeriodsDo periodsDo=dsedLoanPeriodsService.getById(Long.valueOf(recordDo.getRefId()));
                         if (StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.PAY.code)) {
                             if(loanDo==null || loanDo.getIsDelete()==1){
                                 dsedNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
@@ -120,17 +119,17 @@ public class NoticeTask {
                             continue;
                         }
                         if(StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUE.code)){
-                            if(periodsDo==null || periodsDo.getIsDelete()==1){
+                            if(StringUtils.isBlank(recordDo.getParams())){
                                 dsedNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
                             }else {
-                                updateNoticeRecord(recordDo, xgxyUtil.overDueNoticeRequest(buildOverdue(periodsDo)));
+                                updateNoticeRecord(recordDo, xgxyUtil.overDueNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
                             }
                             continue;
                         }
                         if(StringUtils.isBlank(all_noticedfail_moreonce.get(recordDo.getRid()))){
                             Runnable thread = new Runnable(){
                                 public void run(){
-                                    nextNotice(recordDo, loanDo, periodsDo);
+                                    nextNotice(recordDo, loanDo);
                                 }
                             };
                             executor.execute(thread);
@@ -144,7 +143,7 @@ public class NoticeTask {
 		}
     }
 
-     void nextNotice(DsedNoticeRecordDo recordDo,DsedLoanDo loanDo,DsedLoanPeriodsDo periodsDo){
+     void nextNotice(DsedNoticeRecordDo recordDo,DsedLoanDo loanDo){
          all_noticedfail_moreonce.put(recordDo.getRid(),recordDo.getTimes());
          try {
              Thread.sleep(1000*60*request_times[Integer.parseInt(recordDo.getTimes())-1]);
@@ -153,8 +152,8 @@ public class NoticeTask {
              }else if((StringUtils.equals(recordDo.getType(), DsedNoticeType.REPAY.code)
                      ||StringUtils.equals(recordDo.getType(), DsedNoticeType.XGXY_COLLECT.code)||StringUtils.equals(recordDo.getType(), DsedNoticeType.XGXY_OVERDUEREPAY.code))) {
                  updateNoticeRecord(recordDo, xgxyUtil.dsedRePayNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
-             }else if(StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUE.code)&&periodsDo!=null) {
-                 updateNoticeRecord(recordDo, xgxyUtil.overDueNoticeRequest(buildOverdue(periodsDo)));
+             }else if(StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUE.code)) {
+                 updateNoticeRecord(recordDo, xgxyUtil.overDueNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
              }else if(StringUtils.equals(recordDo.getType(), DsedNoticeType.OVERDUEREPAY.code)){
                  updateNoticeRecord(recordDo, collectionSystemUtil.dsedRePayNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
              }else if(StringUtils.equals(recordDo.getType(), DsedNoticeType.COLLECT.code)){
