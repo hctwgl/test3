@@ -1,6 +1,9 @@
 
 package com.ald.fanbei.api.common.exception;
 
+import com.ald.fanbei.api.common.enums.UpsErrorType;
+import org.apache.commons.lang.StringUtils;
+
 /**
  *@类AppExceptionCode.java 的实现描述：错误枚举类
  *@author 陈金虎 2017年1月16日 下午11:27:54
@@ -109,6 +112,15 @@ public enum FanbeiExceptionCode {
         }
 
         return null;
+    }
+
+    public static FanbeiExceptionCode getByErrorMessage(String errorMsg) {
+        for (FanbeiExceptionCode fanbeiExceptionCode : FanbeiExceptionCode.values()) {
+            if (StringUtils.equals(errorMsg, fanbeiExceptionCode.getErrorMsg())) {
+                return fanbeiExceptionCode;
+            }
+        }
+        return UPS_ERROR_5002;
     }
 
     public String getCode() {
