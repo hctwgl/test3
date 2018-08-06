@@ -30,6 +30,9 @@ public class SyncUserInfoApi implements DsedH5Handle {
         String openId = String.valueOf(context.getDataMap().get("userId"));
         String idNumber = String.valueOf(context.getDataMap().get("idNumber"));
         String mobile = String.valueOf(context.getDataMap().get("bankMobile"));
+        String address = String.valueOf(context.getDataMap().get("address"));
+        String gender = String.valueOf(context.getDataMap().get("gender"));
+        String birthday = String.valueOf(context.getDataMap().get("birthday"));
         DsedUserDo dsedUserDo = new DsedUserDo();
         dsedUserDo.setRealName(realName);
         dsedUserDo.setIdNumber(idNumber);
@@ -38,6 +41,9 @@ public class SyncUserInfoApi implements DsedH5Handle {
         dsedUserDo.setOpenId(openId);
         dsedUserDo.setGmtCreate(new Date());
         dsedUserDo.setGmtModified(new Date());
+        dsedUserDo.setAddress(address);
+        dsedUserDo.setBirthday(birthday);
+        dsedUserDo.setGender(gender);
         DsedUserDo userDo = dsedUserService.getById(userId);
         if (userDo == null) {
             dsedUserService.saveRecord(dsedUserDo);
