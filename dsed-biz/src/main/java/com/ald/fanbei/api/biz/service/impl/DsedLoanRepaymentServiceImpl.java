@@ -560,6 +560,10 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		for(DsedLoanPeriodsDo dsedLoanDo : list){
 			Map<String, String> data = new HashMap<String, String>();
 			DsedUserDo userDo=dsedUserDao.getById(dsedLoanDo.getUserId());
+			//用户信息
+			data.put("address",userDo.getAddress());
+			data.put("gender",userDo.getGender());
+			data.put("birthday",userDo.getBirthday());
 			data.put("dataId", String.valueOf(dsedLoanDo.getRid()));
 			data.put("caseName","dsed_"+dsedLoanDo.getNper()+"/"+dsedLoanDo.getPeriods());
 			data.put("planRepaymenTime", DateUtil.formatDateTime(dsedLoanDo.getGmtPlanRepay()));

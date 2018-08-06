@@ -185,6 +185,9 @@ public class LoanOverDueTask {
            DsedLoanDo loanDo = dsedLoanService.getByLoanNo(dsedLoanDo.getLoanNo());
            DsedUserDo userDo=userService.getById(dsedLoanDo.getUserId());
            Map<String,String> data=new HashMap<>();
+           data.put("address",userDo.getAddress());
+           data.put("gender",userDo.getGender());
+           data.put("birthday",userDo.getBirthday());
            data.put("dataId", String.valueOf(dsedLoanDo.getRid()));
            data.put("caseName","dsed_"+dsedLoanDo.getNper()+"/"+dsedLoanDo.getPeriods());
            data.put("planRepaymenTime", DateUtil.formatDateTime(dsedLoanDo.getGmtPlanRepay()));
