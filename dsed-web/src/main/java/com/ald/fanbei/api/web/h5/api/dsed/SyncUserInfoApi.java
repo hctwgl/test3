@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.h5.api.dsed;
 
 import com.ald.fanbei.api.biz.service.DsedUserService;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.ald.fanbei.api.web.common.DsedH5Handle;
@@ -48,6 +49,10 @@ public class SyncUserInfoApi implements DsedH5Handle {
         if (userDo == null) {
             dsedUserService.saveRecord(dsedUserDo);
         }
+        if(StringUtil.isBlank(userDo.getAddress()) || StringUtil.isBlank(userDo.getBirthday()) || StringUtil.isBlank(userDo.getGender())){
+            dsedUserService.updateById(dsedUserDo);
+        }
+
         return resp;
     }
 
