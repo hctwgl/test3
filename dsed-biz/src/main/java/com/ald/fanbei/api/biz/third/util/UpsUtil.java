@@ -159,7 +159,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setBankCode(bankCode);
 		reqBo.setPurpose(purpose);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/delegatePay");
-		logger.info("cfp String sign",createLinkString(reqBo));
+		logger.info("cfp String sign= "+createLinkString(reqBo));
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		try {
 //			afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
