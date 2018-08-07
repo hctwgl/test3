@@ -541,7 +541,14 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		List<Map<String, String>> arrayList = new ArrayList<Map<String, String>>();
 		StringBuffer sb = new StringBuffer();
 		int overdueDays = 0;
+		List<DsedLoanPeriodsDo> newlist = new ArrayList<DsedLoanPeriodsDo>();
 		for(DsedLoanPeriodsDo dsedLoanDo : list){
+			if(StringUtil.equals(dsedLoanDo.getOverdueStatus(),YesNoStatus.YES.getCode())){
+				newlist.add(dsedLoanDo);
+			}
+		}
+
+		for(DsedLoanPeriodsDo dsedLoanDo : newlist){
 			if(StringUtil.equals(dsedLoanDo.getStatus(),DsedLoanPeriodStatus.FINISHED.name())){
 				sb.append(dsedLoanDo.getNper()).append(",");
 			}
@@ -557,7 +564,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		dsedContractPdfDo.setType((byte) 5);
 		dsedContractPdfDo.setTypeId(rid);
 		DsedContractPdfDo contractPdfDo = dsedContractPdfDao.selectByTypeId(dsedContractPdfDo);
-		for(DsedLoanPeriodsDo dsedLoanDo : list){
+		for(DsedLoanPeriodsDo dsedLoanDo : newlist){
 			Map<String, String> data = new HashMap<String, String>();
 			DsedUserDo userDo=dsedUserDao.getById(dsedLoanDo.getUserId());
 			//用户信息
