@@ -501,7 +501,6 @@ public class UpsUtil extends AbstractThird {
 	public UpsSignReleaseRespBo signRelease(String userNo,String bankCode,String realName,String phone,
 			String certNo,String cardNo,String clientType){
 		String orderNo = getOrderNo("sire", phone.substring(phone.length()-4,phone.length()));
-		logger.info("ups orderNo cfp = " + orderNo);
 		UpsSignReleaseReqBo reqBo = new UpsSignReleaseReqBo();
 		setPubParam(reqBo,"signRelease",orderNo,clientType);
 		reqBo.setUserNo(userNo);
@@ -512,6 +511,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCertNo(certNo);
 		reqBo.setCardNo(cardNo);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/signRelease");
+		logger.info("cfp String sign",createLinkString(reqBo));
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		dsedUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "signRelease", orderNo, "", "", userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);

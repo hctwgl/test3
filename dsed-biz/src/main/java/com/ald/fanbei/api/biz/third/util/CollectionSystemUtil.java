@@ -89,6 +89,7 @@ public class CollectionSystemUtil extends AbstractThird {
 	 */
 	public boolean noticeRiskCollect(Map<String,String>  data) {
 		try {
+//			String url = "http://192.168.110.70:8080/api/ald/collect/v1/third/import";
 			String url = getUrl() + "/api/ald/collect/v1/third/import";
 			String reqResult = "";
 			if (url.contains("https")){
