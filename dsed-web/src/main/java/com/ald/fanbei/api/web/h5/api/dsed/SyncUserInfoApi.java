@@ -1,11 +1,13 @@
 package com.ald.fanbei.api.web.h5.api.dsed;
 
 import com.ald.fanbei.api.biz.service.DsedUserService;
+import com.ald.fanbei.api.common.enums.GenderType;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.ald.fanbei.api.web.common.DsedH5Handle;
 import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -31,9 +33,16 @@ public class SyncUserInfoApi implements DsedH5Handle {
         String openId = String.valueOf(context.getDataMap().get("userId"));
         String idNumber = String.valueOf(context.getDataMap().get("idNumber"));
         String mobile = String.valueOf(context.getDataMap().get("bankMobile"));
-        String address = String.valueOf(context.getDataMap().get("address"));
-        String gender = String.valueOf(context.getDataMap().get("gender"));
-        String birthday = String.valueOf(context.getDataMap().get("birthday"));
+        String address = ObjectUtils.toString(context.getDataMap().get("address"), "");
+        String gender = ObjectUtils.toString(context.getDataMap().get("gender"), "");
+        if(StringUtil.equals(gender, GenderType.M.getName())){
+            gender = GenderType.M.getCode();
+        }else if(StringUtil.equals(gender,GenderType.F.getName())){
+            gender = GenderType.F.getCode();
+        }else {
+            gender = GenderType.U.getCode();
+        }
+        String birthday = ObjectUtils.toString(context.getDataMap().get("birthday"), "");
         DsedUserDo dsedUserDo = new DsedUserDo();
         dsedUserDo.setRealName(realName);
         dsedUserDo.setIdNumber(idNumber);
