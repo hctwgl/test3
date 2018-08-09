@@ -569,7 +569,15 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			DsedUserDo userDo=dsedUserDao.getById(dsedLoanDo.getUserId());
 			//用户信息
 			data.put("address",userDo.getAddress());
-			data.put("gender",userDo.getGender());
+			String gender = userDo.getGender();
+			if(StringUtil.equals(gender, GenderType.M.getCode())){
+				gender = GenderType.M.getName();
+			}else if(StringUtil.equals(gender,GenderType.F.getCode())){
+				gender = GenderType.F.getName();
+			}else {
+				gender = GenderType.U.getName();
+			}
+			data.put("gender",gender);
 			data.put("birthday",userDo.getBirthday());
 			data.put("dataId", String.valueOf(dsedLoanDo.getRid()));
 			data.put("caseName","dsed_"+dsedLoanDo.getNper()+"/"+dsedLoanDo.getPeriods());

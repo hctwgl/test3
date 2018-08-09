@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.common.enums.DsedLoanPeriodStatus;
+import com.ald.fanbei.api.common.enums.GenderType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.DsedContractPdfDao;
@@ -186,7 +187,15 @@ public class LoanOverDueTask {
            DsedUserDo userDo=userService.getById(dsedLoanDo.getUserId());
            Map<String,String> data=new HashMap<>();
            data.put("address",userDo.getAddress());
-           data.put("gender",userDo.getGender());
+           String gender = userDo.getGender();
+           if(StringUtil.equals(gender, GenderType.M.getCode())){
+               gender = GenderType.M.getName();
+           }else if(StringUtil.equals(gender,GenderType.F.getCode())){
+               gender = GenderType.F.getName();
+           }else {
+               gender = GenderType.U.getName();
+           }
+           data.put("gender",gender);
            data.put("birthday",userDo.getBirthday());
            data.put("dataId", String.valueOf(dsedLoanDo.getRid()));
            data.put("caseName","dsed_"+dsedLoanDo.getNper()+"/"+dsedLoanDo.getPeriods());
