@@ -180,6 +180,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 	                        bo.realName, bankCard.getBankCardNumber(), userId.toString(), bankCard.getMobile(),
 	                        bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
 	                        "DSED_LOAN", loanDo.getRid().toString(),bo.idNumber);
+	                logger.info("upsResult =" + upsResult);
 	                loanDo.setTradeNoOut(upsResult.getOrderNo());
 	                if (!upsResult.isSuccess()) {
 	                    //审核通过，ups打款失败
