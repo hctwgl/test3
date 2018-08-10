@@ -165,6 +165,7 @@ public class UpsUtil extends AbstractThird {
 		try {
 //			afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
 			dsedUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
+			logger.info("ups url="+getUpsUrl());
 			String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 			logThird(reqResult, "dsedDelegatePay", reqBo);
 			if(StringUtil.isBlank(reqResult)){
