@@ -802,6 +802,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 		data.put("reason",errorMsg);
 		data.put("borrowNo",loanDo.getLoanNo());
 		data.put("status","REPAYFAIL");
+		data.put("repayChannel",loanRepaymentDo.getRepayChannel());
 		DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
 		noticeRecordDo.setUserId(loanRepaymentDo.getUserId());
 		noticeRecordDo.setRefId(String.valueOf(loanRepaymentDo.getRid()));
