@@ -250,6 +250,15 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			if(bo.dsedloanRepaymentDo != null) {
 				bo.dsedloanRepaymentDo.setStatus(DsedLoanRepaymentStatus.FAIL.name());
 				bo.dsedloanRepaymentDo.setRemark("exception occur,msg = " + e.getMessage());
+				if(e instanceof FanbeiException) {
+					FanbeiException fanbeiException = (FanbeiException)e;
+					FanbeiExceptionCode fanbeiExceptionCode = fanbeiException.getErrorCode();
+					bo.dsedloanRepaymentDo.setErrorMessage(fanbeiExceptionCode.getErrorMsg());
+					bo.dsedloanRepaymentDo.setErrorCode(fanbeiExceptionCode.getErrorCode());
+				}else {
+					bo.dsedloanRepaymentDo.setErrorMessage(e.getMessage());
+					bo.dsedloanRepaymentDo.setErrorCode(2107);
+				}
 				dsedLoanRepaymentDao.updateStatusById(bo.dsedloanRepaymentDo);
 			}
 
