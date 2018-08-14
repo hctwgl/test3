@@ -131,6 +131,7 @@ public class XgxyUtil extends AbstractThird {
             p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             p.put("appId", "edspay");
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackRepayResult";
+            logger.info("data = " + data +",url = " +url );
             String reqResult = "";
             if (url.contains("https")){
                 reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(p));
