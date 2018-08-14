@@ -727,6 +727,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 	public HashMap<String,String> buildData(DsedLoanRepaymentDo repaymentDo){
 		HashMap<String,String> data = new HashMap<String,String>();
 		DsedLoanDo loanDo = dsedLoanDao.getById(repaymentDo.getLoanId());
+		logger.info("buildData loanDo = "+loanDo+",repaymentDo = " + repaymentDo);
 		if(StringUtil.equals(repaymentDo.getStatus(),DsedLoanRepaymentStatus.SUCC.name())){
 			List<XgxyRepayBo> borrowBillDetails = new ArrayList<XgxyRepayBo>();
 			data.put("amount",repaymentDo.getActualAmount().toString());
