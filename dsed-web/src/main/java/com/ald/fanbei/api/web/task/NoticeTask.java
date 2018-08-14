@@ -90,6 +90,7 @@ public class NoticeTask {
                         final DsedLoanDo loanDo=dsedLoanService.getById(Long.valueOf(recordDo.getRefId()));
                         final DsedLoanRepaymentDo loanRepaymentDo=dsedLoanRepaymentService.getById(Long.valueOf(recordDo.getRefId()));
                         final DsedLoanPeriodsDo periodsDo=dsedLoanPeriodsService.getById(Long.valueOf(recordDo.getRefId()));
+                        logger.info("NoticeTask loanDo = " + loanDo +",loanRepaymentDo = " +loanRepaymentDo +",periodsDo = " + periodsDo);
                         if (StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), DsedNoticeType.PAY.code)) {
                             if(loanDo==null || loanDo.getIsDelete()==1){
                                 dsedNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
