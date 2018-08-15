@@ -374,6 +374,12 @@
             <if test="tradeNoOut != null and tradeNoOut != '' ">
                 trade_no_out = #{tradeNoOut,jdbcType=VARCHAR},
             </if>
+            <if test="errorMessage != null and errorMessage != '' ">
+                error_message = #{errorMessage,jdbcType=VARCHAR},
+            </if>
+            <if test="errorCode != null and errorCode != '' ">
+                error_code = #{errorCode,jdbcType=BIGINT},
+            </if>
         </set>
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT} AND status in ('APPLY','SMS')
     </update>
