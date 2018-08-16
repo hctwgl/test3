@@ -508,10 +508,9 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 					if(!flag){
 						//app逾期还款通知催收
 						nofityRisk(loanRepayDealBo,repaymentDo);
-					}else {
-						//催收逾期还款
-						collectRisk(loanRepayDealBo.loanPeriodsDoList,repaymentDo,loanRepayDealBo.loanDo.getRid());
 					}
+					//催收逾期还款
+					collectRisk(loanRepayDealBo.loanPeriodsDoList,repaymentDo,loanRepayDealBo.loanDo.getRid());
 				}catch (Exception e){
 					e.printStackTrace();
 				}
