@@ -58,6 +58,12 @@ import java.math.BigDecimal;
     private String times;
 
 
+    private String params;
+
+
+
+
+
     /**
      * 获取主键Id
      *
@@ -202,5 +208,11 @@ import java.math.BigDecimal;
     public void setTimes(String times){
       this.times = times;
     }
+    public String getParams() {
+        return params;
+    }
 
+    public void setParams(String params) {
+        this.params = params;
+    }
 }

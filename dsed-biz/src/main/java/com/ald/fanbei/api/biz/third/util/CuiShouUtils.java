@@ -54,6 +54,7 @@ public class CuiShouUtils {
         try {
             String sign = request.getParameter("sign");
             String data = request.getParameter("data");
+            thirdLog.error("offlineRepaymentMoney data", data);
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
             if (!sign1.equals(sign)) return JSONObject.toJSONString(new CuiShouBackMoney(201, "sign error"));
@@ -86,7 +87,6 @@ public class CuiShouUtils {
             List<DsedLoanPeriodsDo> list = new ArrayList<>();
             String totalAmount = repaymentBo.getTotalAmount();
             String repaymentNo = repaymentBo.getRepaymentNo();
-            String userId = repaymentBo.getRepaymentAcc();
             String type = repaymentBo.getType();
             String repayTime = repaymentBo.getRepayTime();
             String orderNo = repaymentBo.getOrderNo();
@@ -94,6 +94,7 @@ public class CuiShouUtils {
             JSONArray detailsArray = obj.getJSONArray("details");
             Long loanId = 0l;
             String loanNo = "";
+            Long userId = 0l;
 
             if(detailsArray != null && detailsArray.size()>0){
                 String id = String.valueOf(detailsArray.getJSONObject(0).get("dataId"));
@@ -101,11 +102,7 @@ public class CuiShouUtils {
                 loanId = dsedLoanPeriodsDo.getLoanId();
                 loanNo = dsedLoanPeriodsDo.getLoanNo();
                 DsedLoanDo dsedLoanDo = dsedLoanService.getByLoanNo(loanNo);
-                if(!StringUtil.equals(dsedLoanDo.getUserId()+"",userId+"")){
-                    cuiShouBackMoney.setCode(305);
-                    thirdLog.error("offlineLoanRepaymentNotify error loanNo =" + orderNo);
-                    return cuiShouBackMoney;
-                }
+                userId = dsedLoanDo.getUserId();
             }
             for(int i=0;detailsArray.size()>i;i++){
                 String id = String.valueOf(detailsArray.getJSONObject(i).get("dataId"));
@@ -133,8 +130,8 @@ public class CuiShouUtils {
                 thirdLog.error("offlineLoanRepaymentNotify error loanNo =" + orderNo);
                 return cuiShouBackMoney;
             }
-            if (StringUtil.isAllNotEmpty(orderNo, repaymentNo, userId)) {
-//                dsedLoanRepaymentService.offlineRepay(loanNo,loanId,totalAmount, repaymentNo, Long.parseLong(userId), type, repayTime, orderNo, list);
+            if (StringUtil.isAllNotEmpty(orderNo, repaymentNo)) {
+                dsedLoanRepaymentService.offlineRepay(loanNo,loanId,totalAmount, repaymentNo, userId, type, repayTime, orderNo, list);
             } else {
                 cuiShouBackMoney.setCode(303);
                 thirdLog.error("offlineLoanRepaymentNotify error loanNo =" + orderNo);

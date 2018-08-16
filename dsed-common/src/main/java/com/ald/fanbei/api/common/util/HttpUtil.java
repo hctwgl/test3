@@ -431,6 +431,7 @@ public class HttpUtil {
             connection.disconnect();
         } catch (Exception ex) {
             ex.printStackTrace();
+            logger.error("error = ",ex);
         } finally {
         }
         String repString = new String(buffer.toByteArray());

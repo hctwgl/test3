@@ -429,13 +429,10 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.DsedLoanDo">
         UPDATE dsed_loan
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
+            <if test="gmtCreate != null and gmtCreate != '' ">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
-            </if>
-            <if test="userId != null and userId != '' ">        
+            <if test="userId != null and userId != '' ">
                 user_id = #{userId,jdbcType=INTEGER},                
             </if>
             <if test="loanNo != null and loanNo != '' ">        
@@ -559,8 +556,9 @@
                 address = #{address,jdbcType=VARCHAR},                
             </if>
             <if test="deviceNo != null and deviceNo != '' ">        
-                device_no = #{deviceNo,jdbcType=VARCHAR}                
+                device_no = #{deviceNo,jdbcType=VARCHAR} ,
             </if>
+			  gmt_modified = now()
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
@@ -599,7 +597,7 @@
 
 
 	<update id="updateByLoanId" parameterType="DsedLoanDo">
-        UPDATE dsed_loan SET overdue_amount = #{overdueAmount},overdue_days = #{overdueDays}
+        UPDATE dsed_loan SET overdue_amount = #{overdueAmount},overdue_days = #{overdueDays},overdue_status = #{overdueStatus}
         where is_delete = 0 and id = #{rid}
     </update>
 

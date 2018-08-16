@@ -8,11 +8,9 @@ import java.util.Map;
 
 import com.ald.fanbei.api.biz.bo.CollectionDataBo;
 import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
-import com.ald.fanbei.api.common.enums.AfRepayCollectionType;
-import com.ald.fanbei.api.common.enums.AfRepeatCollectionType;
-import com.ald.fanbei.api.common.enums.DsedNoticeStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.*;
+import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Component;
 
@@ -34,9 +32,6 @@ public class CollectionSystemUtil extends AbstractThird {
 
 	private static String url = null;
 
-	@Resource
-	CommitRecordUtil commitRecordUtil;
-
 	private static String getUrl() {
 		if (url == null) {
 			url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL);
@@ -57,25 +52,60 @@ public class CollectionSystemUtil extends AbstractThird {
 	 * 都市e贷主动还款通知催收平台
 	 * @return
 	 */
-	public void noticeCollect(List<Map<String,String>>  data) {
+	public boolean noticeCollect(List<Map<String,String>>  data) {
 		try {
 			Map<String,String>  params=new HashMap<>();
 			params.put("orderNo",getOrderNo("XGXY"));
 			params.put("info",JSON.toJSONString(data));
 			params.put("companyId","");
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
-			logger.info("dsed overdue notice collect request :" + JSON.toJSONString(params));
-			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/third/import", params);
+			logger.info("dsed overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getUrl());
+			String url = getUrl() + "/api/ald/collect/v1/third/import";
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(params));
+			}else {
+				reqResult = HttpUtil.post(url, params);
+			}
+			logThird(reqResult, "noticeCollect", JSON.toJSONString(data));
+			logger.info("repaymentAchieve response :" + reqResult);
+			if (StringUtil.isBlank(reqResult)) {
+				throw new FanbeiException("dsed overdue notice collect request fail , reqResult is null");
+			}
+			if("success".equals(reqResult)){
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			logger.error("dsed overdue notice collect request error:", e);
+			throw new FanbeiException("dsed overdue notice collect request fail Exception is " + e + ",dsed overdue notice collect request send again");
+		}
+	}
+
+
+	/**
+	 * 都市e贷主动还款通知催收平台（补偿）
+	 * @return
+	 */
+	public boolean noticeRiskCollect(Map<String,String>  data) {
+		try {
+//			String url = "http://192.168.110.70:8080/api/ald/collect/v1/third/import";
+			String url = getUrl() + "/api/ald/collect/v1/third/import";
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(data));
+			}else {
+				reqResult = HttpUtil.post(url, data);
+			}
 			logThird(reqResult, "dsedNoticeCollect", JSON.toJSONString(data));
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new FanbeiException("dsed overdue notice collect request fail , reqResult is null");
 			}
 			if("success".equals(reqResult)){
-				logger.info("send overdue push user collect request success");
-			}else {
-				logger.info("send overdue push user collect request fail"+JSON.toJSONString(params));
+				return true;
 			}
+			return false;
 		} catch (Exception e) {
 			logger.error("dsed overdue notice collect request error:", e);
 			throw new FanbeiException("dsed overdue notice collect request fail Exception is " + e + ",dsed overdue notice collect request send again");
@@ -92,7 +122,13 @@ public class CollectionSystemUtil extends AbstractThird {
 			Map<String, String> params = new HashMap<>();
 			params.put("info",JSON.toJSONString(data));
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
-			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/import", params);
+			String url = getUrl() + "/api/ald/collect/v1/third/import";
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(params));
+			}else {
+				reqResult = HttpUtil.post(url, params);
+			}
 			logThird(reqResult, "dsedRePayCollect", JSON.toJSONString(data));
 			if (StringUtil.isBlank(reqResult)) {
 				throw new FanbeiException("dsed overdue notice collect request fail , reqResult is null");
@@ -118,17 +154,22 @@ public class CollectionSystemUtil extends AbstractThird {
 	 * @param reqBo
 	 * @return
 	 */
-	public void consumerRepayment(Map<String, String> reqBo) {
+	public boolean consumerRepayment(Map<String, String> reqBo) {
 		// APP还款类型写3 , 线下还款写4
 		try {
-			String reqResult = HttpUtil.post("http://192.168.117.72:8080/api/ald/collect/v1/third/repayment", reqBo);
+			String url = getUrl() + "/api/ald/collect/v1/third/repayment";
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(reqBo));
+			}else {
+				reqResult = HttpUtil.post(url, reqBo);
+			}
 			logger.info(getUrl() + "/api/ald/collect/v1/third/repayment");
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.equals(reqResult.toUpperCase(), DsedNoticeStatus.SUCCESS.code)) {
-				logger.info("consumerRepayment req success,reqResult" + reqResult);
-			} else {
-				throw new FanbeiException("consumerRepayment fail , reqResult is null");
+				return true;
 			}
+			return false;
 		} catch (Exception e) {
 			logger.error("consumerRepayment error:", e);
 			throw new FanbeiException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");

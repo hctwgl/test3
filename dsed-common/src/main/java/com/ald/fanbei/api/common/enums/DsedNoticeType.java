@@ -5,7 +5,10 @@ public enum  DsedNoticeType {
     PAY("打款", "PAY"),
     REPAY("还款", "REPAY"),
     OVERDUE("逾期", "OVERDUE"),
-    OVERDUEREPAY("逾期还款", "OVERDUEREPAY");
+    COLLECT("催收逾期还款推送催收", "COLLECT"),
+    XGXY_COLLECT("催收逾期还款推送西瓜", "XGXY_COLLECT"),
+    OVERDUEREPAY("App主动逾期还款推送催收", "OVERDUEREPAY"),
+    XGXY_OVERDUEREPAY("App主动逾期还款推送西瓜", "XGXY_OVERDUEREPAY");
 
     public String desz;
     public String code;

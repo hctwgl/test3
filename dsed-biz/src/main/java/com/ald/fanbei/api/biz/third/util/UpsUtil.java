@@ -160,10 +160,12 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setBankCode(bankCode);
 		reqBo.setPurpose(purpose);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/delegatePay");
+		logger.info("cfp String sign= "+createLinkString(reqBo));
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		try {
 //			afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
 			dsedUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
+			logger.info("ups url="+getUpsUrl());
 			String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 			logThird(reqResult, "dsedDelegatePay", reqBo);
 			if(StringUtil.isBlank(reqResult)){
@@ -362,7 +364,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setRemark(remark.trim());
 		reqBo.setReturnUrl("");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
-//		reqBo.setNotifyUrl("http://192.168.117.188:8089/third/ups/collect");
+//		reqBo.setNotifyUrl("http://192.168.117.188:8080/third/ups/collect");
 		logger.info("bank collecnotifyUrl = "+ getNotifyHost() + "/third/ups/collect");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		dsedUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "collect", orderNo, "", merPriv, userNo));
@@ -502,7 +504,6 @@ public class UpsUtil extends AbstractThird {
 	public UpsSignReleaseRespBo signRelease(String userNo,String bankCode,String realName,String phone,
 			String certNo,String cardNo,String clientType){
 		String orderNo = getOrderNo("sire", phone.substring(phone.length()-4,phone.length()));
-		logger.info("ups orderNo cfp = " + orderNo);
 		UpsSignReleaseReqBo reqBo = new UpsSignReleaseReqBo();
 		setPubParam(reqBo,"signRelease",orderNo,clientType);
 		reqBo.setUserNo(userNo);

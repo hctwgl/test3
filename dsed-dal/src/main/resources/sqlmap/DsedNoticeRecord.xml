@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,user_id,type,ref_id,status,times 
+        id rid,gmt_create,gmt_modified,user_id,type,ref_id,status,times,params
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -66,6 +66,9 @@
 	        <if test="times != null">        
 	            times,
 	        </if>
+            <if test="params != null">
+                params,
+            </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -90,6 +93,9 @@
 		    <if test="times != null" >
 		       #{times,jdbcType=VARCHAR},
 		    </if>
+            <if test="params != null" >
+                #{params,jdbcType=VARCHAR},
+            </if>
         </trim>
     </insert>
     
@@ -168,7 +174,10 @@
         <set>
             gmt_modified = now(),
             <if test="times != null and times != '' ">
-                times = #{times,jdbcType=VARCHAR}
+                times = #{times,jdbcType=VARCHAR},
+            </if>
+            <if test="params != null and params != '' ">
+                params = #{params}
             </if>
         </set>
         WHERE id = #{rid ,jdbcType=BIGINT}
@@ -188,6 +197,9 @@
             </if>
             status,
             times,
+            <if test="params != null">
+                params,
+            </if>
         </trim>
 
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -203,6 +215,9 @@
             </if>
               'FAIL',
               '5',
+            <if test="params != null" >
+                #{params,jdbcType=VARCHAR},
+            </if>
         </trim>
     </insert>
 

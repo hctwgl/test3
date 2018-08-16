@@ -79,18 +79,19 @@ public class XgxyUtil extends AbstractThird {
     /**
      * 逾期通知请求
      *
-     * @param overdueBo
+     * @param data
      * @return
      */
-    public boolean overDueNoticeRequest(XgxyOverdueBo overdueBo) {
+    public boolean overDueNoticeRequest(Map<String,String> data) {
         try {
-            logger.info("overDueNoticeRequest request start");
+            logger.info("overDueNoticeRequest to xgxy request start");
             Map<String, Object> params = new HashMap<>();
             params.put("appId", "edspay");
             Map<String, String> overdue = new HashMap<>();
-            overdue.put("borrowNo", overdueBo.getBorrowNo());
-            overdue.put("overdueDays", String.valueOf(overdueBo.getOverdueDays()));
-            overdue.put("curPeriod", overdueBo.getCurPeriod());
+            overdue.put("borrowNo", data.get("borrowNo"));
+            overdue.put("overdueDays", data.get("overdueDays"));
+            overdue.put("curPeriod", data.get("curPeriod"));
+            overdue.put("tradeNo", data.get("tradeNo"));
             params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
             
@@ -110,7 +111,7 @@ public class XgxyUtil extends AbstractThird {
                 return true;
             }
         } catch (Exception e) {
-            logger.info("overDueNoticeRequest request fail", e);
+            logger.info("overDueNoticeRequest to xgxy request fail", e);
         }
         return false;
 
@@ -131,6 +132,7 @@ public class XgxyUtil extends AbstractThird {
             p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             p.put("appId", "edspay");
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackRepayResult";
+            logger.info("data = " + data +",url = " +url );
             String reqResult = "";
             if (url.contains("https")){
                 reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(p));

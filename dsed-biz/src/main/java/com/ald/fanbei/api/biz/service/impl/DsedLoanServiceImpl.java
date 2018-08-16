@@ -180,6 +180,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 	                        bo.realName, bankCard.getBankCardNumber(), userId.toString(), bankCard.getMobile(),
 	                        bankCard.getBankName(), bankCard.getBankCode(), Constants.DEFAULT_LOAN_PURPOSE, "02",
 	                        "DSED_LOAN", loanDo.getRid().toString(),bo.idNumber);
+	                logger.info("upsResult =" + upsResult);
 	                loanDo.setTradeNoOut(upsResult.getOrderNo());
 	                if (!upsResult.isSuccess()) {
 	                    //审核通过，ups打款失败
@@ -375,9 +376,9 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
     private void dsedNoticeRecord(DsedLoanDo loanDo,String msg,String status) {
         try {
             //调用西瓜信用通知接口
-            DsedNoticeRecordDo noticeRecordDo = buildDsedNoticeRecord(loanDo);
-            dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
             XgxyPayBo xgxyPayBo = buildXgxyPay(loanDo, msg,status);
+            DsedNoticeRecordDo noticeRecordDo = buildDsedNoticeRecord(loanDo,xgxyPayBo);
+            dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
             if(xgxyUtil.payNoticeRequest(xgxyPayBo)){
                 noticeRecordDo.setRid(noticeRecordDo.getRid());
                 noticeRecordDo.setGmtModified(new Date());
@@ -398,12 +399,13 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
         return xgxyPayBo;
     }
 
-    private DsedNoticeRecordDo buildDsedNoticeRecord(DsedLoanDo loanDo) {
+    private DsedNoticeRecordDo buildDsedNoticeRecord(DsedLoanDo loanDo,XgxyPayBo xgxyPayBo) {
         DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
         noticeRecordDo.setUserId(loanDo.getUserId());
         noticeRecordDo.setRefId(String.valueOf(loanDo.getRid()));
         noticeRecordDo.setType(DsedNoticeType.PAY.code);
         noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+        noticeRecordDo.setParams(JSON.toJSONString(xgxyPayBo));
         return noticeRecordDo;
     }
 

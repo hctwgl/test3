@@ -9,7 +9,13 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.DsedLoanPeriodStatus;
+import com.ald.fanbei.api.common.enums.GenderType;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.DsedContractPdfDao;
+import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +37,6 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.DsedNoticeType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.dal.domain.DsedLoanDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanOverdueLogDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
-import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
-import com.ald.fanbei.api.dal.domain.DsedUserContactsDo;
-import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
 
 
@@ -79,11 +78,15 @@ public class LoanOverDueTask {
     private DsedUserContactsService contactsService;
 
     @Resource
+    DsedContractPdfDao dsedContractPdfDao;
+
+    @Resource
     GetHostIpUtil getHostIpUtil;
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
     
-    @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void laonDueJob(){
         try{
         	String curHostIp = getHostIpUtil.getIpAddress();
@@ -145,6 +148,7 @@ public class LoanOverDueTask {
                 newloanDo.setRid(dsedLoanDo.getLoanId());
                 newloanDo.setOverdueDays(dsedLoanDo.getOverdueDays());
                 newloanDo.setOverdueAmount(dsedLoanDo.getOverdueAmount());
+                newloanDo.setOverdueStatus("Y");
                 dsedLoanService.updateByLoanId(newloanDo);
                 //新增逾期日志
                 loanOverdueLogService.addLoanOverdueLog(buildLoanOverdueLog(dsedLoanDo.getRid(), currentAmount, newOverdueAmount, dsedLoanDo.getUserId()));
@@ -179,13 +183,25 @@ public class LoanOverDueTask {
    void  collectionPush(List<DsedLoanPeriodsDto> dsedLoanDos){
        List<Map<String,String>> datas=new ArrayList<>();
        for(DsedLoanPeriodsDto dsedLoanDo:dsedLoanDos){
+           DsedLoanDo loanDo = dsedLoanService.getByLoanNo(dsedLoanDo.getLoanNo());
            DsedUserDo userDo=userService.getById(dsedLoanDo.getUserId());
            Map<String,String> data=new HashMap<>();
+           data.put("address",userDo.getAddress());
+           String gender = userDo.getGender();
+           if(StringUtil.equals(gender, GenderType.M.getCode())){
+               gender = GenderType.M.getName();
+           }else if(StringUtil.equals(gender,GenderType.F.getCode())){
+               gender = GenderType.F.getName();
+           }else {
+               gender = GenderType.U.getName();
+           }
+           data.put("gender",gender);
+           data.put("birthday",userDo.getBirthday());
            data.put("dataId", String.valueOf(dsedLoanDo.getRid()));
-           data.put("caseName",dsedLoanDo.getLoanNo());
+           data.put("caseName","dsed_"+dsedLoanDo.getNper()+"/"+dsedLoanDo.getPeriods());
            data.put("planRepaymenTime", DateUtil.formatDateTime(dsedLoanDo.getGmtPlanRepay()));
            BigDecimal currentAmount = BigDecimalUtil.add(dsedLoanDo.getAmount(), dsedLoanDo.getRepaidOverdueAmount(),dsedLoanDo.getRepaidInterestFee(), dsedLoanDo.getRepaidServiceFee()).subtract(dsedLoanDo.getRepayAmount());//应还金额
-           data.put("residueAmount", String.valueOf(BigDecimalUtil.add(currentAmount,dsedLoanDo.getOverdueAmount(),dsedLoanDo.getInterestFee(),dsedLoanDo.getOverdueAmount(),dsedLoanDo.getServiceFee())));
+           data.put("residueAmount", String.valueOf(BigDecimalUtil.add(currentAmount,dsedLoanDo.getInterestFee(),dsedLoanDo.getOverdueAmount(),dsedLoanDo.getServiceFee())));
            data.put("principal", String.valueOf(currentAmount));
            data.put("overdueAmount", String.valueOf(dsedLoanDo.getOverdueAmount()));
            data.put("nper", String.valueOf(dsedLoanDo.getNper()));
@@ -195,11 +211,53 @@ public class LoanOverDueTask {
            data.put("payTime", DateUtil.formatDateTime(dsedLoanDo.getGmtArrival()));
            data.put("phoneNumber",userDo.getMobile());
            data.put("address",userDo.getAddress());
-           data.put("userName",userDo.getUserName());
+           data.put("userName",userDo.getMobile());
+           data.put("periods", String.valueOf(dsedLoanDo.getPeriods()));
            data.put("productName","XGXY");
+           data.put("borrowAmount",String.valueOf(dsedLoanDo.getAmount()));
+           data.put("appName","dsed");
+           data.put("repaymentPeriod","1");
+           data.put("type",dsedLoanDo.getStatus());
+           data.put("repayAmount",String.valueOf(dsedLoanDo.getRepayAmount()));
+           data.put("amount",String.valueOf(dsedLoanDo.getAmount()));
+           StringBuffer sb = new StringBuffer();
+           int overdueDays = 0;
+           List<DsedLoanPeriodsDo> list=dsedLoanPeriodsService.getLoanPeriodsByLoanId(dsedLoanDo.getLoanId());
+           for(DsedLoanPeriodsDo dsedLoan : list){
+               if(StringUtil.equals(dsedLoan.getStatus(),DsedLoanPeriodStatus.FINISHED.name())){
+                   sb.append(dsedLoan.getNper()).append(",");
+               }
+               if(dsedLoan.getOverdueDays() > overdueDays){
+                   overdueDays = dsedLoan.getOverdueDays();
+               }
+           }
+           if(sb.length() > 0){
+               sb = sb.deleteCharAt(sb.length()-1);
+           }
+           data.put("havePaied",sb.toString());
+           data.put("overdueDay",String.valueOf(dsedLoanDo.getOverdueDays()));
+           data.put("overdueAmount",String.valueOf(BigDecimalUtil.add(dsedLoanDo.getOverdueAmount(),dsedLoanDo.getRepaidOverdueAmount())));
+
+           data.put("loanNo",String.valueOf(loanDo.getLoanNo()));
+           data.put("loanAmount",String.valueOf(loanDo.getAmount()));
+           data.put("arrivalAmount",String.valueOf(loanDo.getAmount()));
+           data.put("loanStatus",loanDo.getStatus());
+           data.put("repayTime",DateUtil.formatDateTime(loanDo.getGmtCreate()));
+           data.put("maxOverdueDay",String.valueOf(overdueDays));
+           data.put("loanRemark",loanDo.getLoanRemark());
+           DsedContractPdfDo dsedContractPdfDo = new DsedContractPdfDo();
+           dsedContractPdfDo.setType((byte) 5);
+           dsedContractPdfDo.setTypeId(loanDo.getRid());
+           DsedContractPdfDo contractPdfDo = dsedContractPdfDao.selectByTypeId(dsedContractPdfDo);
+           if(null != contractPdfDo){
+               data.put("contractPdfUrl",contractPdfDo.getContractPdfUrl());
+           }else {
+               data.put("contractPdfUrl","");
+           }
            datas.add(data);
        }
-        collectionSystemUtil.noticeCollect(datas);
+
+       collectionSystemUtil.noticeCollect(datas);
     }
 
    void  overDueNotice(DsedLoanPeriodsDto loanOverDue){
@@ -207,15 +265,24 @@ public class LoanOverDueTask {
        noticeRecordDo.setUserId(loanOverDue.getUserId());
        noticeRecordDo.setRefId(String.valueOf(loanOverDue.getRid()));
        noticeRecordDo.setType(DsedNoticeType.OVERDUE.code);
+       noticeRecordDo.setParams(JSON.toJSONString(buildParams(loanOverDue)));
        noticeRecordService.addNoticeRecord(noticeRecordDo);
-       if(xgxyUtil.overDueNoticeRequest(buildOverdue(loanOverDue))){
+       if(xgxyUtil.overDueNoticeRequest(buildParams(loanOverDue))){
            noticeRecordDo.setRid(noticeRecordDo.getRid());
            noticeRecordDo.setGmtModified(new Date());
            noticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
        }
    }
 
+   Map<String,String> buildParams(DsedLoanPeriodsDto loanOverDue){
+       Map<String,String> map=new HashMap<>();
+       map.put("borrowNo",loanOverDue.getLoanNo());
+       map.put("curPeriod", String.valueOf(loanOverDue.getNper()));
+       map.put("overdueDays", String.valueOf(loanOverDue.getOverdueDays()));
+       map.put("tradeNo",loanOverDue.getTradeNoOut());
+       return map;
 
+   }
    private DsedLoanOverdueLogDo buildLoanOverdueLog(Long periodsId,BigDecimal currentAmount,BigDecimal interest,Long userId){
        DsedLoanOverdueLogDo overdueLog = new DsedLoanOverdueLogDo();
        overdueLog.setPeriodsId(periodsId);
@@ -224,13 +291,6 @@ public class LoanOverDueTask {
        overdueLog.setUserId(userId);
        return overdueLog;
    }
-    XgxyOverdueBo buildOverdue(DsedLoanPeriodsDo periodsDo){
-        XgxyOverdueBo overdueBo=new XgxyOverdueBo();
-        overdueBo.setBorrowNo(periodsDo.getLoanNo());
-        overdueBo.setCurPeriod(String.valueOf(periodsDo.getNper()));
-        overdueBo.setOverdueDays(periodsDo.getOverdueDays());
-        overdueBo.setTradeNo(overdueBo.getTradeNo());
-        return overdueBo;
-    }
+
 
 }

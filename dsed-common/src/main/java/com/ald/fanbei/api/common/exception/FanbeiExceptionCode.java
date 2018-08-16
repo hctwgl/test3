@@ -1,6 +1,9 @@
 
 package com.ald.fanbei.api.common.exception;
 
+import com.ald.fanbei.api.common.enums.UpsErrorType;
+import org.apache.commons.lang.StringUtils;
+
 /**
  *@类AppExceptionCode.java 的实现描述：错误枚举类
  *@author 陈金虎 2017年1月16日 下午11:27:54
@@ -20,6 +23,7 @@ public enum FanbeiExceptionCode {
     UPS_QUICK_PAY_CONFIRM_ERROR("UPS_QUICK_PAY_CONFIRM_ERROR",1760,"ups quick pay confirm error","快捷支付确认支付失败"),
     SIGN_RELEASE_ERROR("SIGN_RELEASE_ERROR",1568,"sign release error","银行卡解绑失败"),
     UPS_ORDERNO_BUILD_ERROR("UPS_ORDERNO_BUILD_ERROR",1561,"ups order build error","构建订单错误"),
+    BORROW_STATS_IS_NOT_TRANSFERRED("BORROW_STATS_IS_NOT_TRANSFERRED",1540,"borrow stats is not transferred","借款正在审核中"),
     LOAN_UPS_DRIECT_FAIL("",2107,"","请求打款实时失败"),
     LOAN_CONCURRENT_LIMIT("",2110,"","同一时刻只能发起一笔贷款申请"),
     LOAN_PERIOD_CAN_NOT_REPAY_ERROR("LOAN_PERIOD_CAN_NOT_REPAY_ERROR",2014,"loan period can not repay error","当前借款未到还款时间"),
@@ -109,6 +113,15 @@ public enum FanbeiExceptionCode {
         }
 
         return null;
+    }
+
+    public static FanbeiExceptionCode getByErrorMessage(String errorMsg) {
+        for (FanbeiExceptionCode fanbeiExceptionCode : FanbeiExceptionCode.values()) {
+            if (StringUtils.equals(errorMsg, fanbeiExceptionCode.getErrorMsg())) {
+                return fanbeiExceptionCode;
+            }
+        }
+        return UPS_ERROR_5002;
     }
 
     public String getCode() {
