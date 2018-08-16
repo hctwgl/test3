@@ -1097,7 +1097,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			loanDo.setGmtModified(new Date());
 			loanDo.setGmtFinish(new Date());
 			dsedLoanDao.updateById(loanDo);
-
+			logger.info("dealLoanStatus loanDo = "+ loanDo);
 			loanRepayDealBo.loanDo.setStatus(DsedLoanStatus.FINISHED.name());
 
 			boolean isBefore = DateUtil.isBefore(new Date(),DateUtil.addDays(loanPeriodsDo.getGmtPlanRepay(), -1));
