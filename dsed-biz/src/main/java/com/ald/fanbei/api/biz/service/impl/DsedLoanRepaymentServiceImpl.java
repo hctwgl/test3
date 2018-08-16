@@ -247,6 +247,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			// 还款操作
 			doRepay(bo, bo.dsedloanRepaymentDo, bankPayType);
 		} catch (Exception e) {
+			logger.info("repay fail dsedloanRepaymentDo = " + bo.dsedloanRepaymentDo);
 			if(bo.dsedloanRepaymentDo != null) {
 				bo.dsedloanRepaymentDo.setStatus(DsedLoanRepaymentStatus.FAIL.name());
 				bo.dsedloanRepaymentDo.setRemark("exception occur,msg = " + e.getMessage());
@@ -259,6 +260,7 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 					bo.dsedloanRepaymentDo.setErrorMessage(e.getMessage());
 					bo.dsedloanRepaymentDo.setErrorCode(2107);
 				}
+				logger.info("repay fail dsedloanRepaymentDo = " + bo.dsedloanRepaymentDo);
 				dsedLoanRepaymentDao.updateStatusById(bo.dsedloanRepaymentDo);
 			}
 
