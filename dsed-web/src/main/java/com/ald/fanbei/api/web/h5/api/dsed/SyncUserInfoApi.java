@@ -57,10 +57,10 @@ public class SyncUserInfoApi implements DsedH5Handle {
         DsedUserDo userDo = dsedUserService.getById(userId);
         if (userDo == null) {
             dsedUserService.saveRecord(dsedUserDo);
-        }
-        if(StringUtil.isBlank(userDo.getAddress()) || StringUtil.isBlank(userDo.getBirthday()) || StringUtil.isBlank(userDo.getGender())){
+        }else if(StringUtil.isBlank(userDo.getAddress()) || StringUtil.isBlank(userDo.getBirthday()) || StringUtil.isBlank(userDo.getGender())){
             dsedUserService.updateById(dsedUserDo);
         }
+
 
         return resp;
     }
