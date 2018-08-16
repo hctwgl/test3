@@ -85,8 +85,8 @@ public class LoanOverDueTask {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
     
-//    @Scheduled(cron = "0 0 0 * * ?")
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0 0/1 * * * ?")
     public void laonDueJob(){
         try{
         	String curHostIp = getHostIpUtil.getIpAddress();
