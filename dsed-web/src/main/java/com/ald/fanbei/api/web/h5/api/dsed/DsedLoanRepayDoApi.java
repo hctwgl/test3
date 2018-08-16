@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.h5.api.dsed;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.impl.DsedLoanRepaymentServiceImpl.LoanRepayBo;
+import com.ald.fanbei.api.common.enums.DsedLoanStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
@@ -11,6 +12,7 @@ import com.ald.fanbei.api.web.common.DsedH5Handle;
 import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.LoanRepayDoParam;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -96,9 +98,12 @@ public class DsedLoanRepayDoApi implements DsedH5Handle {
 	}
 	
 	private void checkFrom(LoanRepayBo bo) {
-		DsedLoanDo dsedLoanDo = null;
-		if((dsedLoanDo = dsedLoanService.getByLoanNo(bo.borrowNo)) == null ){
+		DsedLoanDo dsedLoanDo = dsedLoanService.getByLoanNo(bo.borrowNo);
+		if(dsedLoanDo  == null ){
 			throw new FanbeiException("borrow cash not exist",FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
+		}
+		if(StringUtils.equals(dsedLoanDo.getStatus(), DsedLoanStatus.TRANSFERRED.name())){
+			throw new FanbeiException("borrow stats is not transferred",FanbeiExceptionCode.BORROW_STATS_IS_NOT_TRANSFERRED);
 		}
 		bo.dsedLoanDo = dsedLoanDo;
 		bo.loanId = dsedLoanDo.getRid();
