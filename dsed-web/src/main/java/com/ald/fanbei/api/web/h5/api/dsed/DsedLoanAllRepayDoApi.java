@@ -112,7 +112,7 @@ public class DsedLoanAllRepayDoApi implements DsedH5Handle {
 		if((dsedLoanDo = dsedLoanService.getByLoanNo(bo.borrowNo)) == null ){
 			throw new FanbeiException("borrow cash not exist",FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
 		}
-		if(StringUtils.equals(dsedLoanDo.getStatus(), DsedLoanStatus.TRANSFERRED.name())){
+		if(!StringUtils.equals(dsedLoanDo.getStatus(), DsedLoanStatus.TRANSFERRED.name())){
 			throw new FanbeiException("borrow stats is not transferred",FanbeiExceptionCode.BORROW_STATS_IS_NOT_TRANSFERRED);
 		}
 		bo.dsedLoanDo = dsedLoanDo;
