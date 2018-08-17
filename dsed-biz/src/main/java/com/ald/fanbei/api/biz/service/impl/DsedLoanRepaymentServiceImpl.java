@@ -632,24 +632,26 @@ public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstr
 			}
 			arrayList.add(data);
 		}
-		DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
-		noticeRecordDo.setUserId(repaymentDo.getUserId());
-		noticeRecordDo.setRefId(String.valueOf(repaymentDo.getRid()));
-		noticeRecordDo.setType(DsedNoticeType.COLLECT.code);
-		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
-		Map<String,String>  params=new HashMap<>();
-		params.put("orderNo",getOrderNo("XGXY"));
-		params.put("info",JSON.toJSONString(arrayList));
-		params.put("companyId","");
-		params.put("token",collectRiskToken);
-		noticeRecordDo.setParams(JSON.toJSONString(params));
-		dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
-		boolean result = collectionSystemUtil.noticeRiskCollect(params);
-		if(result){
-			noticeRecordDo.setRid(noticeRecordDo.getRid());
-			noticeRecordDo.setGmtModified(new Date());
-			dsedNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
-		}
+		if(newlist.size()>0){
+            DsedNoticeRecordDo noticeRecordDo = new DsedNoticeRecordDo();
+            noticeRecordDo.setUserId(repaymentDo.getUserId());
+            noticeRecordDo.setRefId(String.valueOf(repaymentDo.getRid()));
+            noticeRecordDo.setType(DsedNoticeType.COLLECT.code);
+            noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+            Map<String,String>  params=new HashMap<>();
+            params.put("orderNo",getOrderNo("XGXY"));
+            params.put("info",JSON.toJSONString(arrayList));
+            params.put("companyId","");
+            params.put("token",collectRiskToken);
+            noticeRecordDo.setParams(JSON.toJSONString(params));
+            dsedNoticeRecordService.addNoticeRecord(noticeRecordDo);
+            boolean result = collectionSystemUtil.noticeRiskCollect(params);
+            if(result){
+                noticeRecordDo.setRid(noticeRecordDo.getRid());
+                noticeRecordDo.setGmtModified(new Date());
+                dsedNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
+            }
+        }
 	}
 
 	/**
