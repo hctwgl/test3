@@ -1,15 +1,27 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Resource;
-
+import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.bo.XgxyPayBo;
+import com.ald.fanbei.api.biz.bo.assetpush.AssetPushType;
+import com.ald.fanbei.api.biz.bo.assetpush.EdspayGetCreditRespBo;
+import com.ald.fanbei.api.biz.bo.dsed.DsedApplyLoanBo;
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.dao.DsedLoanDao;
+import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
+import com.ald.fanbei.api.dal.dao.DsedUserBankcardDao;
+import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -20,44 +32,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.bo.XgxyPayBo;
-import com.ald.fanbei.api.biz.bo.assetpush.AssetPushType;
-import com.ald.fanbei.api.biz.bo.assetpush.EdspayGetCreditRespBo;
-import com.ald.fanbei.api.biz.bo.dsed.DsedApplyLoanBo;
-import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
-import com.ald.fanbei.api.biz.service.DsedLoanProductService;
-import com.ald.fanbei.api.biz.service.DsedLoanPushService;
-import com.ald.fanbei.api.biz.service.DsedLoanService;
-import com.ald.fanbei.api.biz.service.DsedNoticeRecordService;
-import com.ald.fanbei.api.biz.service.DsedResourceService;
-import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
-import com.ald.fanbei.api.biz.third.util.XgxyUtil;
-import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.AfResourceSecType;
-import com.ald.fanbei.api.common.enums.DsedLoanPeriodStatus;
-import com.ald.fanbei.api.common.enums.DsedLoanStatus;
-import com.ald.fanbei.api.common.enums.DsedNoticeType;
-import com.ald.fanbei.api.common.enums.ResourceType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.dao.DsedLoanDao;
-import com.ald.fanbei.api.dal.dao.DsedLoanPeriodsDao;
-import com.ald.fanbei.api.dal.dao.DsedUserBankcardDao;
-import com.ald.fanbei.api.dal.domain.DsedLoanDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanPeriodsDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanPushDo;
-import com.ald.fanbei.api.dal.domain.DsedLoanRateDo;
-import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
-import com.ald.fanbei.api.dal.domain.DsedResourceDo;
-import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
-import com.alibaba.fastjson.JSON;
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -126,7 +108,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
     public void doLoan(DsedApplyLoanBo bo) {
         Long userId = bo.userId;
         this.lockLoan(userId);
-
+        logger.info("dsedLoanService doLoan start ="+ new Date().getTime());
         try {
             // 解析分期
             final DsedApplyLoanBo.ReqParam reqParam = bo.reqParam;
@@ -161,6 +143,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 				DsedResourceDo assetPushResource = dsedResourceService.getConfigByTypesAndSecType(ResourceType.ASSET_PUSH_CONF.getCode(), AfResourceSecType.ASSET_PUSH_RECEIVE.getCode());
 				AssetPushType assetPushType = JSON.toJavaObject(JSON.parseObject(assetPushResource.getValue()), AssetPushType.class);
 				Boolean bankIsMaintaining = bankIsMaintaining(assetPushResource);
+				logger.info("dsedLoanService doLoan ups start ="+ new Date().getTime());
 				if (StringUtil.equals(assetPushType.getDsed(), YesNoStatus.YES.getCode())
 					&&(StringUtil.equals(loanDo.getAppName(), "www")||StringUtil.equals(loanDo.getAppName(), ""))
 					&&StringUtil.equals(YesNoStatus.NO.getCode(), assetPushResource.getValue3())&&isWhite&&!bankIsMaintaining) {//推送eds放款
@@ -182,6 +165,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
 	                        "DSED_LOAN", loanDo.getRid().toString(),bo.idNumber);
 	                logger.info("upsResult =" + upsResult);
 	                loanDo.setTradeNoOut(upsResult.getOrderNo());
+                    logger.info("dsedLoanService doLoan ups end ="+ new Date().getTime());
 	                if (!upsResult.isSuccess()) {
 	                    //审核通过，ups打款失败
 	                    dealLoanFail(loanDo, periodDos, "UPS打款失败，" + upsResult.getRespCode());
@@ -201,6 +185,7 @@ public class DsedLoanServiceImpl extends ParentServiceImpl<DsedLoanDo, Long> imp
             }
 
         } finally {
+            logger.info("dsedLoanService doLoan end ="+ new Date().getTime());
             this.unlockLoan(userId);
         }
     }
