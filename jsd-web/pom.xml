@@ -11,7 +11,7 @@
 	<artifactId>jsd-web</artifactId>
 	<packaging>war</packaging>
 	<version>2.0</version>
-	<name>dsed-web Maven Webapp</name>
+	<name>jsd-web Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
