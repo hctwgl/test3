@@ -106,9 +106,9 @@ public class MybatisGenerate {
 				// 模板文件路径
 				String tplPath = "";
 				if (db.equals("mysql")) {
-					tplPath = StringUtils.replace(realProjectPath + "/dsed-common/generate/template/mysql", "/", separator);
+					tplPath = StringUtils.replace(realProjectPath + "/jsd-common/generate/template/mysql", "/", separator);
 				} else if (db.equals("oracle")) {
-					tplPath = StringUtils.replace(realProjectPath + "/dsed-common/generate/template/oracle", "/", separator);
+					tplPath = StringUtils.replace(realProjectPath + "/jsd-common/generate/template/oracle", "/", separator);
 				}
 
 				// Java文件路径,使用
