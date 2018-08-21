@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.ly.dsed</groupId>
-	<artifactId>dsed</artifactId>
+	<groupId>com.ly.jsd</groupId>
+	<artifactId>jsd</artifactId>
 	<version>1.0.0</version>
 	<packaging>pom</packaging>
-	<name>dsed</name>
+	<name>jsd</name>
 	<url>http://maven.apache.org</url>
 	<properties>
 		<java.version>1.8</java.version>
@@ -398,10 +398,10 @@
 		</dependency>
 	</dependencies>
 	<modules>
-		<module>dsed-common</module>
-		<module>dsed-dal</module>
-		<module>dsed-biz</module>
-		<module>dsed-web</module>
+		<module>jsd-common</module>
+		<module>jsd-dal</module>
+		<module>jsd-biz</module>
+		<module>jsd-web</module>
 	</modules>
 	<build>
 		<resources>
