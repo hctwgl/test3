@@ -11,7 +11,7 @@
 	<artifactId>jsd-biz</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0.0</version>
-	<name>jsed-biz</name>
+	<name>jsd-biz</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
