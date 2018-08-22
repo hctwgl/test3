@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_borrow_legal_order_overdue表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderOverdueDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,user_id,borrow_legal_order_cash_id,interest,current_amount 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="borrowLegalOrderCashId != null and borrowLegalOrderCashId != ''">
+            AND borrow_legal_order_cash_id = #{borrowLegalOrderCashId,jdbcType=INTEGER}
+        </if>
+        <if test="interest != null and interest != ''">
+            AND interest = #{interest,jdbcType=DECIMAL}
+        </if>
+        <if test="currentAmount != null and currentAmount != ''">
+            AND current_amount = #{currentAmount,jdbcType=DECIMAL}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderOverdueDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO jsd_borrow_legal_order_overdue
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="borrowLegalOrderCashId != null">        
+	            borrow_legal_order_cash_id,
+	        </if>
+	        <if test="interest != null">        
+	            interest,
+	        </if>
+	        <if test="currentAmount != null">        
+	            current_amount,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="borrowLegalOrderCashId != null" >
+		       #{borrowLegalOrderCashId,jdbcType=INTEGER},
+		    </if>
+		    <if test="interest != null" >
+		       #{interest,jdbcType=DECIMAL},
+		    </if>
+		    <if test="currentAmount != null" >
+		       #{currentAmount,jdbcType=DECIMAL},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderOverdueDo">
+        UPDATE jsd_borrow_legal_order_overdue
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+            <if test="borrowLegalOrderCashId != null and borrowLegalOrderCashId != '' ">        
+                borrow_legal_order_cash_id = #{borrowLegalOrderCashId,jdbcType=INTEGER},                
+            </if>
+            <if test="interest != null and interest != '' ">        
+                interest = #{interest,jdbcType=DECIMAL},                
+            </if>
+            <if test="currentAmount != null and currentAmount != '' ">        
+                current_amount = #{currentAmount,jdbcType=DECIMAL}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderOverdueDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order_overdue
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderOverdueDo" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderOverdueDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order_overdue
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderOverdueDo" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderOverdueDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order_overdue
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>

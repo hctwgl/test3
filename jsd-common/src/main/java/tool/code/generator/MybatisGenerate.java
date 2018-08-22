@@ -115,13 +115,13 @@ public class MybatisGenerate {
 //				String javaPath = StringUtils.replaceEach(
 //						projectPath + "/src/main/java/" + StringUtils.lowerCase(packageName), new String[] { "/", "." },
 //						new String[] { separator, separator });
-				String dalPath = StringUtils.replaceEach(realProjectPath + "/dsed-dal" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/dal", new String[] { "/", "." },new String[] { separator, separator });
-				String bizPath = StringUtils.replaceEach(realProjectPath + "/dsed-biz" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/biz", new String[] { "/", "." },new String[] { separator, separator });
-				String webPath = StringUtils.replaceEach(realProjectPath + "/dsed-web" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/web", new String[] { "/", "." },new String[] { separator, separator });
+				String dalPath = StringUtils.replaceEach(realProjectPath + "/jsd-dal" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/dal", new String[] { "/", "." },new String[] { separator, separator });
+				String bizPath = StringUtils.replaceEach(realProjectPath + "/jsd-biz" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/biz", new String[] { "/", "." },new String[] { separator, separator });
+				String webPath = StringUtils.replaceEach(realProjectPath + "/jsd-web" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/web", new String[] { "/", "." },new String[] { separator, separator });
 				
 				// mybatis文件生成地址
 				
-				String batisPath = StringUtils.replace(realProjectPath + "/dsed-dal/src/main/resources/sqlmap", "/", separator);
+				String batisPath = StringUtils.replace(realProjectPath + "/jsd-dal/src/main/resources/sqlmap", "/", separator);
 
 				// 代码模板配置
 				Configuration cfg = new Configuration();

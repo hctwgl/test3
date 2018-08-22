@@ -20,11 +20,11 @@ public class Create {
 		String database = "51fanbei_app";
 
 
-		String tables = "dsed_commit_record";
+		String tables = "jsd_borrow_cash,jsd_borrow_cash_renewal,jsd_borrow_cash_repayment,jsd_borrow_legal_order,jsd_borrow_legal_order_cash,jsd_borrow_legal_order_logistics,jsd_borrow_legal_order_overdue,jsd_borrow_legal_order_repayment";
 
 		// 配置作者及Domain说明
-		String classAuthor = "wujun";
-		String functionName = "重复提交表";
+		String classAuthor = "yanghailong";
+		String functionName = "极速贷";
 
 
 //		String tables = "af_facescore_img";

@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_borrow_legal_order_cash表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modifed,user_id,borrow_id,borrow_legal_order_id,cash_no,type,amount,status,remark,borrow_remark,refund_remark,overdue_day,overdue_status,overdue_amount,sum_repaid_overdue,repaid_amount,poundage_amount,sum_repaid_poundage,interest_amount,sum_repaid_interest,poundage_rate,interest_rate,plan_repay_days,gmt_plan_repay,gmt_close,gmt_last_repayment,gmt_finish 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModifed !=null">
+            AND gmt_modifed = #{gmtModifed,jdbcType=TIMESTAMP}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="borrowId != null and borrowId != ''">
+            AND borrow_id = #{borrowId,jdbcType=INTEGER}
+        </if>
+        <if test="borrowLegalOrderId != null and borrowLegalOrderId != ''">
+            AND borrow_legal_order_id = #{borrowLegalOrderId,jdbcType=INTEGER}
+        </if>
+        <if test="cashNo != null and cashNo != ''">
+            AND cash_no = #{cashNo,jdbcType=VARCHAR}
+        </if>
+        <if test="type != null and type != ''">
+            AND type = #{type,jdbcType=VARCHAR}
+        </if>
+        <if test="amount != null and amount != ''">
+            AND amount = #{amount,jdbcType=DECIMAL}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="remark != null and remark != ''">
+            AND remark = #{remark,jdbcType=VARCHAR}
+        </if>
+        <if test="borrowRemark != null and borrowRemark != ''">
+            AND borrow_remark = #{borrowRemark,jdbcType=VARCHAR}
+        </if>
+        <if test="refundRemark != null and refundRemark != ''">
+            AND refund_remark = #{refundRemark,jdbcType=VARCHAR}
+        </if>
+        <if test="overdueDay != null and overdueDay != ''">
+            AND overdue_day = #{overdueDay,jdbcType=INTEGER}
+        </if>
+        <if test="overdueStatus != null and overdueStatus != ''">
+            AND overdue_status = #{overdueStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="overdueAmount != null and overdueAmount != ''">
+            AND overdue_amount = #{overdueAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="sumRepaidOverdue != null and sumRepaidOverdue != ''">
+            AND sum_repaid_overdue = #{sumRepaidOverdue,jdbcType=DECIMAL}
+        </if>
+        <if test="repaidAmount != null and repaidAmount != ''">
+            AND repaid_amount = #{repaidAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="poundageAmount != null and poundageAmount != ''">
+            AND poundage_amount = #{poundageAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="sumRepaidPoundage != null and sumRepaidPoundage != ''">
+            AND sum_repaid_poundage = #{sumRepaidPoundage,jdbcType=DECIMAL}
+        </if>
+        <if test="interestAmount != null and interestAmount != ''">
+            AND interest_amount = #{interestAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="sumRepaidInterest != null and sumRepaidInterest != ''">
+            AND sum_repaid_interest = #{sumRepaidInterest,jdbcType=DECIMAL}
+        </if>
+        <if test="poundageRate != null and poundageRate != ''">
+            AND poundage_rate = #{poundageRate,jdbcType=DECIMAL}
+        </if>
+        <if test="interestRate != null and interestRate != ''">
+            AND interest_rate = #{interestRate,jdbcType=DECIMAL}
+        </if>
+        <if test="planRepayDays != null and planRepayDays != ''">
+            AND plan_repay_days = #{planRepayDays,jdbcType=INTEGER}
+        </if>
+        <if test="gmtPlanRepay !=null">
+            AND gmt_plan_repay = #{gmtPlanRepay,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtClose !=null">
+            AND gmt_close = #{gmtClose,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtLastRepayment !=null">
+            AND gmt_last_repayment = #{gmtLastRepayment,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtFinish !=null">
+            AND gmt_finish = #{gmtFinish,jdbcType=TIMESTAMP}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO jsd_borrow_legal_order_cash
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModifed != null">        
+	            gmt_modifed,
+	        </if>
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="borrowId != null">        
+	            borrow_id,
+	        </if>
+	        <if test="borrowLegalOrderId != null">        
+	            borrow_legal_order_id,
+	        </if>
+	        <if test="cashNo != null">        
+	            cash_no,
+	        </if>
+	        <if test="type != null">        
+	            type,
+	        </if>
+	        <if test="amount != null">        
+	            amount,
+	        </if>
+	        <if test="status != null">        
+	            status,
+	        </if>
+	        <if test="remark != null">        
+	            remark,
+	        </if>
+	        <if test="borrowRemark != null">        
+	            borrow_remark,
+	        </if>
+	        <if test="refundRemark != null">        
+	            refund_remark,
+	        </if>
+	        <if test="overdueDay != null">        
+	            overdue_day,
+	        </if>
+	        <if test="overdueStatus != null">        
+	            overdue_status,
+	        </if>
+	        <if test="overdueAmount != null">        
+	            overdue_amount,
+	        </if>
+	        <if test="sumRepaidOverdue != null">        
+	            sum_repaid_overdue,
+	        </if>
+	        <if test="repaidAmount != null">        
+	            repaid_amount,
+	        </if>
+	        <if test="poundageAmount != null">        
+	            poundage_amount,
+	        </if>
+	        <if test="sumRepaidPoundage != null">        
+	            sum_repaid_poundage,
+	        </if>
+	        <if test="interestAmount != null">        
+	            interest_amount,
+	        </if>
+	        <if test="sumRepaidInterest != null">        
+	            sum_repaid_interest,
+	        </if>
+	        <if test="poundageRate != null">        
+	            poundage_rate,
+	        </if>
+	        <if test="interestRate != null">        
+	            interest_rate,
+	        </if>
+	        <if test="planRepayDays != null">        
+	            plan_repay_days,
+	        </if>
+	        <if test="gmtPlanRepay != null">        
+	            gmt_plan_repay,
+	        </if>
+	        <if test="gmtClose != null">        
+	            gmt_close,
+	        </if>
+	        <if test="gmtLastRepayment != null">        
+	            gmt_last_repayment,
+	        </if>
+	        <if test="gmtFinish != null">        
+	            gmt_finish,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModifed != null" >
+		       #{gmtModifed,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="borrowId != null" >
+		       #{borrowId,jdbcType=INTEGER},
+		    </if>
+		    <if test="borrowLegalOrderId != null" >
+		       #{borrowLegalOrderId,jdbcType=INTEGER},
+		    </if>
+		    <if test="cashNo != null" >
+		       #{cashNo,jdbcType=VARCHAR},
+		    </if>
+		    <if test="type != null" >
+		       #{type,jdbcType=VARCHAR},
+		    </if>
+		    <if test="amount != null" >
+		       #{amount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="status != null" >
+		       #{status,jdbcType=VARCHAR},
+		    </if>
+		    <if test="remark != null" >
+		       #{remark,jdbcType=VARCHAR},
+		    </if>
+		    <if test="borrowRemark != null" >
+		       #{borrowRemark,jdbcType=VARCHAR},
+		    </if>
+		    <if test="refundRemark != null" >
+		       #{refundRemark,jdbcType=VARCHAR},
+		    </if>
+		    <if test="overdueDay != null" >
+		       #{overdueDay,jdbcType=INTEGER},
+		    </if>
+		    <if test="overdueStatus != null" >
+		       #{overdueStatus,jdbcType=VARCHAR},
+		    </if>
+		    <if test="overdueAmount != null" >
+		       #{overdueAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="sumRepaidOverdue != null" >
+		       #{sumRepaidOverdue,jdbcType=DECIMAL},
+		    </if>
+		    <if test="repaidAmount != null" >
+		       #{repaidAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="poundageAmount != null" >
+		       #{poundageAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="sumRepaidPoundage != null" >
+		       #{sumRepaidPoundage,jdbcType=DECIMAL},
+		    </if>
+		    <if test="interestAmount != null" >
+		       #{interestAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="sumRepaidInterest != null" >
+		       #{sumRepaidInterest,jdbcType=DECIMAL},
+		    </if>
+		    <if test="poundageRate != null" >
+		       #{poundageRate,jdbcType=DECIMAL},
+		    </if>
+		    <if test="interestRate != null" >
+		       #{interestRate,jdbcType=DECIMAL},
+		    </if>
+		    <if test="planRepayDays != null" >
+		       #{planRepayDays,jdbcType=INTEGER},
+		    </if>
+		    <if test="gmtPlanRepay != null" >
+		       #{gmtPlanRepay,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtClose != null" >
+		       #{gmtClose,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtLastRepayment != null" >
+		       #{gmtLastRepayment,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtFinish != null" >
+		       #{gmtFinish,jdbcType=TIMESTAMP},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">
+        UPDATE jsd_borrow_legal_order_cash
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModifed != null and gmtModifed != '' ">        
+                gmt_modifed = #{gmtModifed,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+            <if test="borrowId != null and borrowId != '' ">        
+                borrow_id = #{borrowId,jdbcType=INTEGER},                
+            </if>
+            <if test="borrowLegalOrderId != null and borrowLegalOrderId != '' ">        
+                borrow_legal_order_id = #{borrowLegalOrderId,jdbcType=INTEGER},                
+            </if>
+            <if test="cashNo != null and cashNo != '' ">        
+                cash_no = #{cashNo,jdbcType=VARCHAR},                
+            </if>
+            <if test="type != null and type != '' ">        
+                type = #{type,jdbcType=VARCHAR},                
+            </if>
+            <if test="amount != null and amount != '' ">        
+                amount = #{amount,jdbcType=DECIMAL},                
+            </if>
+            <if test="status != null and status != '' ">        
+                status = #{status,jdbcType=VARCHAR},                
+            </if>
+            <if test="remark != null and remark != '' ">        
+                remark = #{remark,jdbcType=VARCHAR},                
+            </if>
+            <if test="borrowRemark != null and borrowRemark != '' ">        
+                borrow_remark = #{borrowRemark,jdbcType=VARCHAR},                
+            </if>
+            <if test="refundRemark != null and refundRemark != '' ">        
+                refund_remark = #{refundRemark,jdbcType=VARCHAR},                
+            </if>
+            <if test="overdueDay != null and overdueDay != '' ">        
+                overdue_day = #{overdueDay,jdbcType=INTEGER},                
+            </if>
+            <if test="overdueStatus != null and overdueStatus != '' ">        
+                overdue_status = #{overdueStatus,jdbcType=VARCHAR},                
+            </if>
+            <if test="overdueAmount != null and overdueAmount != '' ">        
+                overdue_amount = #{overdueAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="sumRepaidOverdue != null and sumRepaidOverdue != '' ">        
+                sum_repaid_overdue = #{sumRepaidOverdue,jdbcType=DECIMAL},                
+            </if>
+            <if test="repaidAmount != null and repaidAmount != '' ">        
+                repaid_amount = #{repaidAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="poundageAmount != null and poundageAmount != '' ">        
+                poundage_amount = #{poundageAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="sumRepaidPoundage != null and sumRepaidPoundage != '' ">        
+                sum_repaid_poundage = #{sumRepaidPoundage,jdbcType=DECIMAL},                
+            </if>
+            <if test="interestAmount != null and interestAmount != '' ">        
+                interest_amount = #{interestAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="sumRepaidInterest != null and sumRepaidInterest != '' ">        
+                sum_repaid_interest = #{sumRepaidInterest,jdbcType=DECIMAL},                
+            </if>
+            <if test="poundageRate != null and poundageRate != '' ">        
+                poundage_rate = #{poundageRate,jdbcType=DECIMAL},                
+            </if>
+            <if test="interestRate != null and interestRate != '' ">        
+                interest_rate = #{interestRate,jdbcType=DECIMAL},                
+            </if>
+            <if test="planRepayDays != null and planRepayDays != '' ">        
+                plan_repay_days = #{planRepayDays,jdbcType=INTEGER},                
+            </if>
+            <if test="gmtPlanRepay != null and gmtPlanRepay != '' ">        
+                gmt_plan_repay = #{gmtPlanRepay,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtClose != null and gmtClose != '' ">        
+                gmt_close = #{gmtClose,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtLastRepayment != null and gmtLastRepayment != '' ">        
+                gmt_last_repayment = #{gmtLastRepayment,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtFinish != null and gmtFinish != '' ">        
+                gmt_finish = #{gmtFinish,jdbcType=TIMESTAMP}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order_cash
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order_cash
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order_cash
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>
