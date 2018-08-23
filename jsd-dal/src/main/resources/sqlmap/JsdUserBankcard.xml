@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_user_bankcard表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.JsdUserBankcardDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,bank_card_number,is_main,bank_name,status,valid_date,safe_code,xgxy_bind_no 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            AND mobile = #{mobile,jdbcType=VARCHAR}
+        </if>
+        <if test="bankCode != null and bankCode != ''">
+            AND bank_code = #{bankCode,jdbcType=VARCHAR}
+        </if>
+        <if test="bankCardNumber != null and bankCardNumber != ''">
+            AND bank_card_number = #{bankCardNumber,jdbcType=VARCHAR}
+        </if>
+        <if test="isMain != null and isMain != ''">
+            AND is_main = #{isMain,jdbcType=VARCHAR}
+        </if>
+        <if test="bankName != null and bankName != ''">
+            AND bank_name = #{bankName,jdbcType=VARCHAR}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="validDate != null and validDate != ''">
+            AND valid_date = #{validDate,jdbcType=VARCHAR}
+        </if>
+        <if test="safeCode != null and safeCode != ''">
+            AND safe_code = #{safeCode,jdbcType=VARCHAR}
+        </if>
+        <if test="xgxyBindNo != null and xgxyBindNo != ''">
+            AND xgxy_bind_no = #{xgxyBindNo,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdUserBankcardDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO jsd_user_bankcard
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="mobile != null">        
+	            mobile,
+	        </if>
+	        <if test="bankCode != null">        
+	            bank_code,
+	        </if>
+	        <if test="bankCardNumber != null">        
+	            bank_card_number,
+	        </if>
+	        <if test="isMain != null">        
+	            is_main,
+	        </if>
+	        <if test="bankName != null">        
+	            bank_name,
+	        </if>
+	        <if test="status != null">        
+	            status,
+	        </if>
+	        <if test="validDate != null">        
+	            valid_date,
+	        </if>
+	        <if test="safeCode != null">        
+	            safe_code,
+	        </if>
+	        <if test="xgxyBindNo != null">        
+	            xgxy_bind_no,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="mobile != null" >
+		       #{mobile,jdbcType=VARCHAR},
+		    </if>
+		    <if test="bankCode != null" >
+		       #{bankCode,jdbcType=VARCHAR},
+		    </if>
+		    <if test="bankCardNumber != null" >
+		       #{bankCardNumber,jdbcType=VARCHAR},
+		    </if>
+		    <if test="isMain != null" >
+		       #{isMain,jdbcType=VARCHAR},
+		    </if>
+		    <if test="bankName != null" >
+		       #{bankName,jdbcType=VARCHAR},
+		    </if>
+		    <if test="status != null" >
+		       #{status,jdbcType=VARCHAR},
+		    </if>
+		    <if test="validDate != null" >
+		       #{validDate,jdbcType=VARCHAR},
+		    </if>
+		    <if test="safeCode != null" >
+		       #{safeCode,jdbcType=VARCHAR},
+		    </if>
+		    <if test="xgxyBindNo != null" >
+		       #{xgxyBindNo,jdbcType=VARCHAR},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdUserBankcardDo">
+        UPDATE jsd_user_bankcard
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+            <if test="mobile != null and mobile != '' ">        
+                mobile = #{mobile,jdbcType=VARCHAR},                
+            </if>
+            <if test="bankCode != null and bankCode != '' ">        
+                bank_code = #{bankCode,jdbcType=VARCHAR},                
+            </if>
+            <if test="bankCardNumber != null and bankCardNumber != '' ">        
+                bank_card_number = #{bankCardNumber,jdbcType=VARCHAR},                
+            </if>
+            <if test="isMain != null and isMain != '' ">        
+                is_main = #{isMain,jdbcType=VARCHAR},                
+            </if>
+            <if test="bankName != null and bankName != '' ">        
+                bank_name = #{bankName,jdbcType=VARCHAR},                
+            </if>
+            <if test="status != null and status != '' ">        
+                status = #{status,jdbcType=VARCHAR},                
+            </if>
+            <if test="validDate != null and validDate != '' ">        
+                valid_date = #{validDate,jdbcType=VARCHAR},                
+            </if>
+            <if test="safeCode != null and safeCode != '' ">        
+                safe_code = #{safeCode,jdbcType=VARCHAR},                
+            </if>
+            <if test="xgxyBindNo != null and xgxyBindNo != '' ">        
+                xgxy_bind_no = #{xgxyBindNo,jdbcType=VARCHAR}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.JsdUserBankcardDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_user_bankcard
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdUserBankcardDo" parameterType="com.ald.fanbei.api.dal.domain.JsdUserBankcardDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_user_bankcard
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdUserBankcardDo" parameterType="com.ald.fanbei.api.dal.domain.JsdUserBankcardDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_user_bankcard
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>
