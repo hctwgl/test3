@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,16 +11,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashRenewalDao;
+import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import com.ald.fanbei.api.biz.bo.KuaijieJsdRenewalPayBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.DsedUpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
+import com.alibaba.fastjson.JSON;
 
 
 
@@ -39,45 +48,53 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
    
     @Resource
     private JsdBorrowCashRenewalDao jsdBorrowCashRenewalDao;
+    @Resource
+    private JsdUserBankcardDao JsdUserBankcardDao;
 
 	
 	@Override
 	public Map<String, Object> doRenewal(JsdRenewalDealBo bo) {
+		Map<String, Object> map = new HashMap<String, Object>();
 
-		return null;
-	}
-
-	@Override
-	public long dealJsdRenewalSucess(String outTradeNo, String tradeNo) {
-
-		return 0;
-	}
-
-	@Override
-	public long dealJsdRenewalFail(String outTradeNo, String tradeNo, String errorMsg) {
-
-		return 0;
-	}
-
-	@Override
-	public JsdBorrowCashRenewalDo getLastJsdRenewalByBorrowId(Long borrowId) {
-
-		return null;
-	}
-
-	
-	@Override
-	protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo) {
+		if (bo.cardId > 0) { // 银行卡支付
+			String name = Constants.DEFAULT_RENEWAL_NAME_BORROW_CASH;
+			JsdBorrowCashDo borrowCashDo = bo.borrowCashDo;
+			JsdBorrowCashRenewalDo renewalDo = bo.renewalDo;
+			JsdBorrowLegalOrderCashDo legalOrderCashDo = bo.legalOrderCashDo;
+			JsdBorrowLegalOrderDo legalOrderDo = bo.legalOrderDo;
+			JsdUserDo userDo = bo.userDo; 
+			
+			HashMap<String,Object> bank = JsdUserBankcardDao.getUserBankInfo(bo.cardId);
+		    KuaijieJsdRenewalPayBo bizObject = new KuaijieJsdRenewalPayBo(bo.renewalDo, bo);
+		    
+		    if (BankPayChannel.KUAIJIE.getCode().equals(bo.bankChannel)) {// 快捷支付
+				map = sendKuaiJieSms(bank, renewalDo.getTradeNo(), bo.actualAmount, userDo.getRid(), userDo.getRealName(), 
+						userDo.getIdNumber(), JSON.toJSONString(bizObject), "jsdBorrowCashRenewalService",Constants.DEFAULT_PAY_PURPOSE, name, 
+					PayOrderSource.RENEW_JSD.getCode());
+			} else {// 代扣
+				map = doUpsPay(bo.bankChannel, bank, renewalDo.getTradeNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(),
+						userDo.getIdNumber(), "", JSON.toJSONString(bizObject),Constants.DEFAULT_PAY_PURPOSE, name, 
+					PayOrderSource.RENEW_JSD.getCode());
+		    }
+		} else {
+		    throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+		}
 		
+		return map;
 	}
-
+	
 	@Override
 	protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
 		
 	}
-
+	
 	@Override
 	protected void kuaijieConfirmPre(String payTradeNo, String bankChannel,	String payBizObject) {
+		
+	}
+
+	@Override
+	protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo) {
 		
 	}
 
@@ -92,6 +109,26 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		
 	}
 
+	
+	
+	@Override
+	public long dealJsdRenewalSucess(String outTradeNo, String tradeNo) {
+		
+		return 0;
+	}
+	
+	@Override
+	public long dealJsdRenewalFail(String outTradeNo, String tradeNo, String errorMsg) {
+		
+		return 0;
+	}
+	
+	@Override
+	public JsdBorrowCashRenewalDo getLastJsdRenewalByBorrowId(Long borrowId) {
+		
+		return null;
+	}
+	
 	
 	public static class JsdRenewalDealBo {
 		JsdBorrowCashDo borrowCashDo;

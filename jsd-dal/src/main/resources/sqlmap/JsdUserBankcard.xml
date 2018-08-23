@@ -8,6 +8,10 @@
         id rid,gmt_create,gmt_modified,user_id,mobile,bank_code,bank_card_number,is_main,bank_name,status,valid_date,safe_code,xgxy_bind_no 
     </sql>
     
+    <sql id="queryWithFields">
+        b.id rid,b.gmt_create gmtCreate,b.gmt_modified gmtModified,b.user_id userId,b.mobile,b.bank_code bankCode,b.bank_card_number bankCardNumber,b.is_main isMain,b.bank_name bankName,b.status,a.pay_type bankChannel,b.valid_date validDate,b.safe_code safeCode
+    </sql>
+    
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
     	WHERE is_delete = 0
@@ -198,6 +202,20 @@
         <include refid="queryFields" />
         FROM jsd_user_bankcard
         <include refid="commonCondition"/>
+    </select>
+    
+    <select id="getUserBankInfo" resultType="java.util.HashMap">
+        SELECT
+        <include refid="queryWithFields"/>
+        FROM
+        jsd_user_bankcard b
+        join jsd_bank a on b.bank_code = a.bank_code
+        WHERE
+        b.is_delete=0
+        and a.is_delete = 0 and a.is_valid = 'Y'
+        AND b.bank_card_number=#{bankNo}
+        AND
+        b.status='B'
     </select>
     
 </mapper>
