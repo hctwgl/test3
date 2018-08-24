@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.h5.api.jsd;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Date;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -23,6 +24,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
@@ -72,6 +74,9 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		
 		// 借款记录
 		JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByBorrowNo(paramBo.borrowNo);
+		if(borrowCashDo == null || !StringUtil.equals(borrowCashDo.getStatus(), "")){
+			throw new FanbeiException("No borrow can renewal", FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
+		}
 		
 		// 最近一次还款记录
 		JsdBorrowCashRepaymentDo lastRepaymentDo = jsdBorrowCashRepaymentService.getLastByBorrowId(borrowCashDo.getRid());
@@ -82,13 +87,19 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		// 最近一次续期记录
 		JsdBorrowCashRenewalDo lastRenewalDo = jsdBorrowCashRenewalService.getLastJsdRenewalByBorrowId(borrowCashDo.getRid());
 		if (null != lastRenewalDo && StringUtils.equals(lastRenewalDo.getStatus(), "P")) {
-            throw new FanbeiException("There is a renewal is processing", FanbeiExceptionCode.HAVE_A_RENEWAL_PROCESSING);
+			throw new FanbeiException("There is a renewal is processing", FanbeiExceptionCode.HAVE_A_RENEWAL_PROCESSING);
         }
-		
 		
 		// 用户信息
 		JsdUserDo userDo = jsdUserService.getById(paramBo.userId);
+		if(userDo == null) {
+			throw new FanbeiException("user not exist error", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+		}
 		JsdUserBankcardDo userBankcardDo = jsdUserBankcardService.getByBankNo(paramBo.bankNo);
+		if(userBankcardDo == null) {
+			throw new FanbeiException("user bankcard not exist error", FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+		}
+		
 		paramBo.userDo = userDo;
 		paramBo.userBankDo = userBankcardDo;
 		paramBo.borrowCashDo = borrowCashDo;
@@ -131,9 +142,9 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		BigDecimal renewalAmount = BigDecimalUtil.subtract(allAmount, borrowCashDo.getRepayAmount()).subtract(capital);
 		
 		// 下期利息
-		BigDecimal nextInterest = BigDecimalUtil.multiply(renewalAmount, paramBo.rate, new BigDecimal(paramBo.delayDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
+		BigDecimal nextInterest = BigDecimalUtil.multiply(renewalAmount, paramBo.cashRate, new BigDecimal(paramBo.delayDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
 		// 下期手续费
-		BigDecimal nextPoundage = BigDecimalUtil.multiply(renewalAmount, paramBo.poundageRate, new BigDecimal(paramBo.delayDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
+		BigDecimal nextPoundage = BigDecimalUtil.multiply(renewalAmount, paramBo.cashPoundageRate, new BigDecimal(paramBo.delayDay).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
 		
 		// 续期实付=上期利息 +上期逾期费+上期手续费+本金还款部分 +上期商品价格
 		BigDecimal actualAmount = BigDecimalUtil.add(poundage, rateAmount ,overdueAmount, capital, paramBo.goodsPrice);
@@ -156,8 +167,8 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		renewalDo.setRenewalNo(paramBo.delayNo);
 		renewalDo.setTradeNo(paramBo.delayNo);
 		renewalDo.setRenewalDay(paramBo.delayDay);
-		renewalDo.setPoundageRate(paramBo.poundageRate);
-		renewalDo.setBaseBankRate(paramBo.rate);
+		renewalDo.setPoundageRate(paramBo.cashPoundageRate);
+		renewalDo.setBaseBankRate(paramBo.cashRate);
 		renewalDo.setOverdueDay(borrowCashDo.getOverdueDay().intValue());
 		renewalDo.setOverdueStatus(borrowCashDo.getOverdueStatus());
 		renewalDo.setGmtPlanRepayment(borrowCashDo.getGmtPlanRepayment());
@@ -169,6 +180,23 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 	 */
 	private JsdBorrowLegalOrderDo buildOrderDo(JsdRenewalDealBo paramBo) {
 		JsdBorrowLegalOrderDo orderDo = new JsdBorrowLegalOrderDo();
+		orderDo.setUserId(paramBo.userId);
+		orderDo.setBorrowId(paramBo.borrowCashDo.getRid());
+		orderDo.setOrderNo("");
+		orderDo.setStatus("");
+		orderDo.setPriceAmount(paramBo.goodsPrice);
+		orderDo.setGoodsName(paramBo.goodsName);
+
+		orderDo.setGoodsId(0);
+		orderDo.setAddress("");
+		orderDo.setLogisticsCompany("");
+		orderDo.setLogisticsInfo("");
+		orderDo.setLogisticsNo("");
+		orderDo.setDeliveryPhone("");
+		orderDo.setDeliveryUser("");;
+		orderDo.setSmartAddressScore(0);
+//		orderDo.setGmtDeliver();
+//		orderDo.setGmtConfirmReceived();
 		
 		return orderDo;
 	}
@@ -176,7 +204,34 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 	 * 续期订单借款记录
 	 */
 	private JsdBorrowLegalOrderCashDo buildOrderCashDo(JsdRenewalDealBo paramBo) {
+		JsdBorrowLegalOrderCashDo lastOrderCashDo = null;
+		
+		JsdBorrowCashDo borrowCashDo = paramBo.borrowCashDo;
+		int renewalDay = paramBo.delayDay.intValue();
 		JsdBorrowLegalOrderCashDo orderCashDo = new JsdBorrowLegalOrderCashDo();
+		
+		orderCashDo.setUserId(paramBo.userId);
+		orderCashDo.setBorrowId(borrowCashDo.getRid());
+		orderCashDo.setCashNo("");
+		orderCashDo.setType(renewalDay+"");
+		orderCashDo.setAmount(paramBo.goodsPrice);
+		orderCashDo.setStatus("APPLYING");
+		orderCashDo.setBorrowRemark("");
+		orderCashDo.setRefundRemark("");
+		orderCashDo.setOverdueDay((short)0);
+		orderCashDo.setOverdueStatus("N");
+		orderCashDo.setRepaidAmount(BigDecimal.ZERO);
+		orderCashDo.setOverdueAmount(BigDecimal.ZERO);
+		orderCashDo.setSumRepaidPoundage(BigDecimal.ZERO);
+		orderCashDo.setPlanRepayDays(renewalDay);
+		orderCashDo.setPoundageAmount(paramBo.goodsPrice.multiply(paramBo.orderPoundageRate).multiply(new BigDecimal(renewalDay)).divide(new BigDecimal(Constants.ONE_YEAY_DAYS) ,2 , RoundingMode.HALF_UP));
+		orderCashDo.setInterestAmount(paramBo.goodsPrice.multiply(paramBo.orderRate).multiply(new BigDecimal(renewalDay)).divide(new BigDecimal(Constants.ONE_YEAY_DAYS) ,2 , RoundingMode.HALF_UP));
+		orderCashDo.setPoundageRate(paramBo.orderPoundageRate.multiply(new BigDecimal(100)));
+		orderCashDo.setInterestRate(paramBo.orderRate.multiply(new BigDecimal(100)));
+		orderCashDo.setSumRepaidOverdue(BigDecimal.ZERO);
+		orderCashDo.setSumRepaidInterest(BigDecimal.ZERO);
+		Date date = DateUtil.addDays(lastOrderCashDo.getGmtPlanRepay(), renewalDay);
+		orderCashDo.setGmtPlanRepay(date);
 		
 		return orderCashDo;
 	}
@@ -220,8 +275,13 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		BigDecimal poundageRate = null;
 		//借款利率
 		BigDecimal baseBankRate = null;
-		//借款利率
+		//需还本金比例
 		BigDecimal capitalRate = null;
+		
+		//订单手续费率
+		BigDecimal orderPoundageRate = null;
+		//订单利率
+		BigDecimal orderRate = null;
 		
 		if(resourceDo!=null) {
 			String rateStr = resourceDo.getValue();
@@ -230,12 +290,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 			for (int i = 0; i < array.size(); i++) {
 				JSONObject info = array.getJSONObject(i);
 				String borrowTag = info.getString("borrowTag");
-				if (StringUtils.equals("BEHEAD", borrowTag)) {
-					baseBankRate = info.getBigDecimal("interestRate");
-					poundageRate = info.getBigDecimal("poundageRate");
-					capitalRate = info.getBigDecimal("capitalRate");
-				}
-				if (StringUtils.equals("SELL", borrowTag)) {
+				if (StringUtils.equals("BORROW_CASH", borrowTag)) {
 					baseBankRate = info.getBigDecimal("interestRate");
 					poundageRate = info.getBigDecimal("poundageRate");
 					capitalRate = info.getBigDecimal("capitalRate");
@@ -246,8 +301,10 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		}
 		
 				
-		paramBo.poundageRate = poundageRate;
-		paramBo.rate = baseBankRate;
+		paramBo.orderPoundageRate = orderPoundageRate;
+		paramBo.orderRate = orderRate;
+		paramBo.cashPoundageRate = poundageRate;
+		paramBo.cashRate = baseBankRate;
 		paramBo.capitalRate = capitalRate;
 	}
 }

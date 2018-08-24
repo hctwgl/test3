@@ -140,9 +140,11 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		public JsdUserBankcardDo userBankDo; 
 		public Long cardId; 
 		
-		public BigDecimal rate;
 		public BigDecimal capitalRate;
-		public BigDecimal poundageRate;
+		public BigDecimal cashRate;
+		public BigDecimal cashPoundageRate;
+		public BigDecimal orderRate;
+		public BigDecimal orderPoundageRate;
 		
 		/*-请求参数->*/
 		public String borrowNo;

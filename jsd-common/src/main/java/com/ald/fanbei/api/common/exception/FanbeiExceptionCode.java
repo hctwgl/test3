@@ -40,6 +40,7 @@ public enum FanbeiExceptionCode {
     LOAN_REPAY_AMOUNT_ERROR("LOAN_REPAY_AMOUNT_ERROR",2013,"loan repay amount error","还款金额有误请重新检查"),
     REQUEST_INVALID_SIGN_ERROR("REQUEST_INVALID_SIGN_ERROR", 1005, "sign is invalid", "非法请求"),
     USER_BANKCARD_NOT_EXIST_ERROR("USER_BANKCARD_NOT_EXIST_ERROR",1302,"user bankcard not exist error","用户银行卡不存在"),
+    USER_NOT_EXIST_ERROR("USER_NOT_EXIST_ERROR",1303,"user not exist error","用户不存在"),
     REQUEST_PARAM_ERROR("REQUEST_PARAM_ERROR", 1006, "request param error", "请求参数不正确"),
     SUCCESS("SUCCESS", 200, "success", "成功"), FAILED("FAILED", 201, "failed", "失败"),
     BANK_LIMIT_MONEY("BANK_LIMIT_MONEY",1324,"bank limit money","该银行单笔限额，请使用其他银行卡还款，谢谢！"),
@@ -75,6 +76,7 @@ public enum FanbeiExceptionCode {
     HAVE_A_RENEWAL_PROCESSING("HAVE_A_RENEWAL_PROCESSING",6002,"","有一笔续期在处理中"),
     FUNCTIONAL_MAINTENANCE("FUNCTIONAL_MAINTENANCE",6003,"","功能维护中"), 
     GET_JSD_RATE_ERROR("GET_JSD_RATE_ERROR",6004,"","获取利率失败，请联系客服"),
+    RENEWAL_ORDER_NOT_EXIST_ERROR("RENEWAL_ORDER_NOT_EXIST_ERROR",6005,"","无可续期的订单"),
     
     ;
 
