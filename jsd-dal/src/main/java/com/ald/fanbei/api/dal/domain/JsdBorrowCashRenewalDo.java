@@ -5,7 +5,7 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 /**
- * 极速贷实体
+ * 极速贷续期实体
  * 
  * @author yanghailong
  * @version 1.0.0 初始化

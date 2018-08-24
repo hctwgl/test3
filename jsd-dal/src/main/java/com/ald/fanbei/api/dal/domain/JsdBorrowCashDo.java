@@ -80,8 +80,20 @@ import java.math.BigDecimal;
      * 手续费
      */
     private BigDecimal poundage;
-
     /**
+     * 利息
+     */
+    private BigDecimal rateAmount;
+
+    public BigDecimal getRateAmount() {
+		return rateAmount;
+	}
+
+	public void setRateAmount(BigDecimal rateAmount) {
+		this.rateAmount = rateAmount;
+	}
+
+	/**
      * 已还本金
      */
     private BigDecimal repayPrinciple;

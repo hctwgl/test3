@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_resource表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.JsdResourceDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,creator,modifier,data_type,type,type_desc,name,value,description,sec_type,value_1,value_2,value_3,value_4,value_5,pic1,pic2,sort,effective_start_time,effective_end_time,is_enable,env 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="creator != null and creator != ''">
+            AND creator = #{creator,jdbcType=VARCHAR}
+        </if>
+        <if test="modifier != null and modifier != ''">
+            AND modifier = #{modifier,jdbcType=VARCHAR}
+        </if>
+        <if test="dataType != null and dataType != ''">
+            AND data_type = #{dataType,jdbcType=VARCHAR}
+        </if>
+        <if test="type != null and type != ''">
+            AND type = #{type,jdbcType=VARCHAR}
+        </if>
+        <if test="typeDesc != null and typeDesc != ''">
+            AND type_desc = #{typeDesc,jdbcType=VARCHAR}
+        </if>
+        <if test="name != null and name != ''">
+            AND name = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="value != null and value != ''">
+            AND value = #{value,jdbcType=VARCHAR}
+        </if>
+        <if test="description != null and description != ''">
+            AND description = #{description,jdbcType=VARCHAR}
+        </if>
+        <if test="secType != null and secType != ''">
+            AND sec_type = #{secType,jdbcType=VARCHAR}
+        </if>
+        <if test="value1 != null and value1 != ''">
+            AND value_1 = #{value1,jdbcType=VARCHAR}
+        </if>
+        <if test="value2 != null and value2 != ''">
+            AND value_2 = #{value2,jdbcType=VARCHAR}
+        </if>
+        <if test="value3 != null and value3 != ''">
+            AND value_3 = #{value3,jdbcType=VARCHAR}
+        </if>
+        <if test="value4 != null and value4 != ''">
+            AND value_4 = #{value4,jdbcType=VARCHAR}
+        </if>
+        <if test="value5 != null and value5 != ''">
+            AND value_5 = #{value5,jdbcType=VARCHAR}
+        </if>
+        <if test="pic1 != null and pic1 != ''">
+            AND pic1 = #{pic1,jdbcType=VARCHAR}
+        </if>
+        <if test="pic2 != null and pic2 != ''">
+            AND pic2 = #{pic2,jdbcType=VARCHAR}
+        </if>
+        <if test="sort != null and sort != ''">
+            AND sort = #{sort,jdbcType=INTEGER}
+        </if>
+        <if test="effectiveStartTime !=null">
+            AND effective_start_time = #{effectiveStartTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="effectiveEndTime !=null">
+            AND effective_end_time = #{effectiveEndTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="isEnable != null and isEnable != ''">
+            AND is_enable = #{isEnable,jdbcType=INTEGER}
+        </if>
+        <if test="env != null and env != ''">
+            AND env = #{env,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdResourceDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO jsd_resource
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="creator != null">        
+	            creator,
+	        </if>
+	        <if test="modifier != null">        
+	            modifier,
+	        </if>
+	        <if test="dataType != null">        
+	            data_type,
+	        </if>
+	        <if test="type != null">        
+	            type,
+	        </if>
+	        <if test="typeDesc != null">        
+	            type_desc,
+	        </if>
+	        <if test="name != null">        
+	            name,
+	        </if>
+	        <if test="value != null">        
+	            value,
+	        </if>
+	        <if test="description != null">        
+	            description,
+	        </if>
+	        <if test="secType != null">        
+	            sec_type,
+	        </if>
+	        <if test="value1 != null">        
+	            value_1,
+	        </if>
+	        <if test="value2 != null">        
+	            value_2,
+	        </if>
+	        <if test="value3 != null">        
+	            value_3,
+	        </if>
+	        <if test="value4 != null">        
+	            value_4,
+	        </if>
+	        <if test="value5 != null">        
+	            value_5,
+	        </if>
+	        <if test="pic1 != null">        
+	            pic1,
+	        </if>
+	        <if test="pic2 != null">        
+	            pic2,
+	        </if>
+	        <if test="sort != null">        
+	            sort,
+	        </if>
+	        <if test="effectiveStartTime != null">        
+	            effective_start_time,
+	        </if>
+	        <if test="effectiveEndTime != null">        
+	            effective_end_time,
+	        </if>
+	        <if test="isEnable != null">        
+	            is_enable,
+	        </if>
+	        <if test="env != null">        
+	            env,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="creator != null" >
+		       #{creator,jdbcType=VARCHAR},
+		    </if>
+		    <if test="modifier != null" >
+		       #{modifier,jdbcType=VARCHAR},
+		    </if>
+		    <if test="dataType != null" >
+		       #{dataType,jdbcType=VARCHAR},
+		    </if>
+		    <if test="type != null" >
+		       #{type,jdbcType=VARCHAR},
+		    </if>
+		    <if test="typeDesc != null" >
+		       #{typeDesc,jdbcType=VARCHAR},
+		    </if>
+		    <if test="name != null" >
+		       #{name,jdbcType=VARCHAR},
+		    </if>
+		    <if test="value != null" >
+		       #{value,jdbcType=VARCHAR},
+		    </if>
+		    <if test="description != null" >
+		       #{description,jdbcType=VARCHAR},
+		    </if>
+		    <if test="secType != null" >
+		       #{secType,jdbcType=VARCHAR},
+		    </if>
+		    <if test="value1 != null" >
+		       #{value1,jdbcType=VARCHAR},
+		    </if>
+		    <if test="value2 != null" >
+		       #{value2,jdbcType=VARCHAR},
+		    </if>
+		    <if test="value3 != null" >
+		       #{value3,jdbcType=VARCHAR},
+		    </if>
+		    <if test="value4 != null" >
+		       #{value4,jdbcType=VARCHAR},
+		    </if>
+		    <if test="value5 != null" >
+		       #{value5,jdbcType=VARCHAR},
+		    </if>
+		    <if test="pic1 != null" >
+		       #{pic1,jdbcType=VARCHAR},
+		    </if>
+		    <if test="pic2 != null" >
+		       #{pic2,jdbcType=VARCHAR},
+		    </if>
+		    <if test="sort != null" >
+		       #{sort,jdbcType=INTEGER},
+		    </if>
+		    <if test="effectiveStartTime != null" >
+		       #{effectiveStartTime,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="effectiveEndTime != null" >
+		       #{effectiveEndTime,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="isEnable != null" >
+		       #{isEnable,jdbcType=INTEGER},
+		    </if>
+		    <if test="env != null" >
+		       #{env,jdbcType=VARCHAR},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdResourceDo">
+        UPDATE jsd_resource
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null and gmtModified != '' ">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="creator != null and creator != '' ">        
+                creator = #{creator,jdbcType=VARCHAR},                
+            </if>
+            <if test="modifier != null and modifier != '' ">        
+                modifier = #{modifier,jdbcType=VARCHAR},                
+            </if>
+            <if test="dataType != null and dataType != '' ">        
+                data_type = #{dataType,jdbcType=VARCHAR},                
+            </if>
+            <if test="type != null and type != '' ">        
+                type = #{type,jdbcType=VARCHAR},                
+            </if>
+            <if test="typeDesc != null and typeDesc != '' ">        
+                type_desc = #{typeDesc,jdbcType=VARCHAR},                
+            </if>
+            <if test="name != null and name != '' ">        
+                name = #{name,jdbcType=VARCHAR},                
+            </if>
+            <if test="value != null and value != '' ">        
+                value = #{value,jdbcType=VARCHAR},                
+            </if>
+            <if test="description != null and description != '' ">        
+                description = #{description,jdbcType=VARCHAR},                
+            </if>
+            <if test="secType != null and secType != '' ">        
+                sec_type = #{secType,jdbcType=VARCHAR},                
+            </if>
+            <if test="value1 != null and value1 != '' ">        
+                value_1 = #{value1,jdbcType=VARCHAR},                
+            </if>
+            <if test="value2 != null and value2 != '' ">        
+                value_2 = #{value2,jdbcType=VARCHAR},                
+            </if>
+            <if test="value3 != null and value3 != '' ">        
+                value_3 = #{value3,jdbcType=VARCHAR},                
+            </if>
+            <if test="value4 != null and value4 != '' ">        
+                value_4 = #{value4,jdbcType=VARCHAR},                
+            </if>
+            <if test="value5 != null and value5 != '' ">        
+                value_5 = #{value5,jdbcType=VARCHAR},                
+            </if>
+            <if test="pic1 != null and pic1 != '' ">        
+                pic1 = #{pic1,jdbcType=VARCHAR},                
+            </if>
+            <if test="pic2 != null and pic2 != '' ">        
+                pic2 = #{pic2,jdbcType=VARCHAR},                
+            </if>
+            <if test="sort != null and sort != '' ">        
+                sort = #{sort,jdbcType=INTEGER},                
+            </if>
+            <if test="effectiveStartTime != null and effectiveStartTime != '' ">        
+                effective_start_time = #{effectiveStartTime,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="effectiveEndTime != null and effectiveEndTime != '' ">        
+                effective_end_time = #{effectiveEndTime,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="isEnable != null and isEnable != '' ">        
+                is_enable = #{isEnable,jdbcType=INTEGER},                
+            </if>
+            <if test="env != null and env != '' ">        
+                env = #{env,jdbcType=VARCHAR}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.JsdResourceDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_resource
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdResourceDo" parameterType="com.ald.fanbei.api.dal.domain.JsdResourceDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_resource
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdResourceDo" parameterType="com.ald.fanbei.api.dal.domain.JsdResourceDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_resource
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>
