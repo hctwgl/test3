@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdResourceDao;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
@@ -32,5 +33,10 @@ public class JsdResourceServiceImpl extends ParentServiceImpl<JsdResourceDo, Lon
 		@Override
 	public BaseDao<JsdResourceDo, Long> getDao() {
 		return jsdResourceDao;
+	}
+
+	@Override
+	public JsdResourceDo getByTypeAngSecType(String type, String secType) {
+		return jsdResourceDao.getByTypeAngSecType(type, secType);
 	}
 }

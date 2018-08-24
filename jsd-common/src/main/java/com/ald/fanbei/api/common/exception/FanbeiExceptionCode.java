@@ -73,6 +73,8 @@ public enum FanbeiExceptionCode {
     
     HAVE_A_REPAYMENT_PROCESSING("HAVE_A_REPAYMENT_PROCESSING",6001,"","有一笔还款在处理中"), 
     HAVE_A_RENEWAL_PROCESSING("HAVE_A_RENEWAL_PROCESSING",6002,"","有一笔续期在处理中"),
+    FUNCTIONAL_MAINTENANCE("FUNCTIONAL_MAINTENANCE",6003,"","功能维护中"), 
+    GET_JSD_RATE_ERROR("GET_JSD_RATE_ERROR",6004,"","获取利率失败，请联系客服"),
     
     ;
 

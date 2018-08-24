@@ -344,4 +344,12 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getLastJsdRenewalByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
+    	select 
+			<include refid="queryFields"/> 
+		from jsd_borrow_cash_renewal 
+		WHERE is_delete = 0 AND borrow_id=#{borrowId} 
+		ORDER BY gmt_create DESC 
+		LIMIT 1 
+    </select>
 </mapper>

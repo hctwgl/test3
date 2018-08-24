@@ -204,7 +204,7 @@
         <include refid="commonCondition"/>
     </select>
     
-    <select id="getUserBankInfo" resultType="java.util.HashMap">
+    <select id="getUserBankInfoByBankNo" resultType="java.util.HashMap">
         SELECT
         <include refid="queryWithFields"/>
         FROM
@@ -218,4 +218,17 @@
         b.status='B'
     </select>
     
+    <select id="getByBankNo" resultType="com.ald.fanbei.api.dal.domain.JsdUserBankcardDo">
+    	SELECT
+        <include refid="queryWithFields"/>
+        FROM
+        jsd_user_bankcard b
+        join jsd_bank a on b.bank_code = a.bank_code
+        WHERE
+        b.is_delete=0
+        and a.is_delete = 0 and a.is_valid = 'Y'
+        AND b.bank_card_number=#{bankNo}
+        AND
+        b.status='B'
+    </select>
 </mapper>

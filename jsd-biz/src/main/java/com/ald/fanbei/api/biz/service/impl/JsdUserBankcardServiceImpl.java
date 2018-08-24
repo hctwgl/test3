@@ -1,10 +1,13 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.HashMap;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
@@ -32,5 +35,10 @@ public class JsdUserBankcardServiceImpl extends ParentServiceImpl<JsdUserBankcar
 		@Override
 	public BaseDao<JsdUserBankcardDo, Long> getDao() {
 		return jsdUserBankcardDao;
+	}
+
+	@Override
+	public JsdUserBankcardDo getByBankNo(String bankNo) {
+		return jsdUserBankcardDao.getByBankNo(bankNo);
 	}
 }

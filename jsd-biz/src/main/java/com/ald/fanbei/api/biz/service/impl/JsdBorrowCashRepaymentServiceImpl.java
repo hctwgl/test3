@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashRepaymentDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
@@ -32,5 +33,10 @@ public class JsdBorrowCashRepaymentServiceImpl extends ParentServiceImpl<JsdBorr
 		@Override
 	public BaseDao<JsdBorrowCashRepaymentDo, Long> getDao() {
 		return jsdBorrowCashRepaymentDao;
+	}
+
+	@Override
+	public JsdBorrowCashRepaymentDo getLastByBorrowId(Long borrowId) {
+		return jsdBorrowCashRepaymentDao.getLastByBorrowId(borrowId);
 	}
 }

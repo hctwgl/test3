@@ -12,6 +12,8 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
  */
 public interface JsdBorrowCashRenewalDao extends BaseDao<JsdBorrowCashRenewalDo, Long> {
 
+	JsdBorrowCashRenewalDo getLastJsdRenewalByBorrowId(Long borrowId);
+
     
 
 }

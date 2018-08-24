@@ -14,8 +14,8 @@ import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
  */
 public interface JsdUserBankcardDao extends BaseDao<JsdUserBankcardDo, Long> {
 
-	HashMap<String, Object> getUserBankInfo(Long cardId);
-
-    
+	HashMap<String, Object> getUserBankInfoByBankNo(String bankNo);
+	
+	JsdUserBankcardDo getByBankNo(String bankNo);
 
 }

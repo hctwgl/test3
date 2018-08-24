@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
  */
 public interface JsdBorrowCashRepaymentService extends ParentService<JsdBorrowCashRepaymentDo, Long>{
 
+	JsdBorrowCashRepaymentDo getLastByBorrowId(Long borrowId);
+
 }

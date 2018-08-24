@@ -416,4 +416,11 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getByBorrowNo" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
+    	SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_cash
+        WHERE is_delete = 0 AND borrow_no=#{borrowNo}
+        limit 0,1
+    </select>
 </mapper>

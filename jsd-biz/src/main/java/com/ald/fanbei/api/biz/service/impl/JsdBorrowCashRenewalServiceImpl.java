@@ -23,6 +23,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.biz.bo.KuaijieJsdRenewalPayBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
@@ -64,7 +65,7 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 			JsdBorrowLegalOrderDo legalOrderDo = bo.legalOrderDo;
 			JsdUserDo userDo = bo.userDo; 
 			
-			HashMap<String,Object> bank = JsdUserBankcardDao.getUserBankInfo(bo.cardId);
+			HashMap<String,Object> bank = JsdUserBankcardDao.getUserBankInfoByBankNo("");
 		    KuaijieJsdRenewalPayBo bizObject = new KuaijieJsdRenewalPayBo(bo.renewalDo, bo);
 		    
 		    if (BankPayChannel.KUAIJIE.getCode().equals(bo.bankChannel)) {// 快捷支付
@@ -125,28 +126,47 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 	
 	@Override
 	public JsdBorrowCashRenewalDo getLastJsdRenewalByBorrowId(Long borrowId) {
-		
-		return null;
+		return jsdBorrowCashRenewalDao.getLastJsdRenewalByBorrowId(borrowId);
 	}
 	
 	
 	public static class JsdRenewalDealBo {
-		JsdBorrowCashDo borrowCashDo;
-		JsdBorrowCashRenewalDo renewalDo;
-		JsdBorrowLegalOrderCashDo legalOrderCashDo;
-		JsdBorrowLegalOrderDo legalOrderDo;
-		JsdUserDo userDo; 
-		Long cardId; 
 		
-		BigDecimal repaymentAmount;
-		BigDecimal actualAmount; 
-		BigDecimal capital; 
+		public JsdBorrowCashDo borrowCashDo;
+		public JsdBorrowCashRenewalDo renewalDo;
+		public JsdBorrowLegalOrderCashDo legalOrderCashDo;
+		public JsdBorrowLegalOrderDo legalOrderDo;
+		public JsdUserDo userDo; 
+		public JsdUserBankcardDo userBankDo; 
+		public Long cardId; 
 		
-		Long goodsId; // 搭售商品id
-		String deliveryUser; // 收件人
-		String deliveryPhone; // 收件人号码
-		String address; // 地址
-		String bankChannel; 
-		Integer appVersion;
+		public BigDecimal rate;
+		public BigDecimal capitalRate;
+		public BigDecimal poundageRate;
+		
+		/*-请求参数->*/
+		public String borrowNo;
+		public String delayNo;
+		public String bankNo;
+		public BigDecimal amount;
+		public Long delayDay;
+		public String isTying;
+		public String tyingType;
+		public String goodsName;
+		public String goodsImage;
+		public BigDecimal goodsPrice;
+		public Long userId;
+		/*-------<*/
+		
+		public BigDecimal repaymentAmount;
+		public BigDecimal actualAmount; 
+		public BigDecimal capital; 
+		
+		public Long goodsId; // 搭售商品id
+		public String deliveryUser; // 收件人
+		public String deliveryPhone; // 收件人号码
+		public String address; // 地址
+		public String bankChannel; 
+		public Integer appVersion;
 	}
 }

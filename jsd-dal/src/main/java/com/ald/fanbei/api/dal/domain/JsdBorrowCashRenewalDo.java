@@ -455,7 +455,7 @@ import java.math.BigDecimal;
      *
      * @return 平台提供给三方支付的交易流水号
      */
-    public String getPayTradeNo(){
+    public String getRenewalNo(){
       return renewalNo;
     }
 
@@ -464,7 +464,7 @@ import java.math.BigDecimal;
      * 
      * @param payTradeNo 要设置的平台提供给三方支付的交易流水号
      */
-    public void setPayTradeNo(String renewalNo){
+    public void setRenewalNo(String renewalNo){
       this.renewalNo = renewalNo;
     }
 

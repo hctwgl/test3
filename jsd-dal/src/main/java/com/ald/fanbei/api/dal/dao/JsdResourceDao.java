@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 
 /**
@@ -12,6 +14,6 @@ import com.ald.fanbei.api.dal.domain.JsdResourceDo;
  */
 public interface JsdResourceDao extends BaseDao<JsdResourceDo, Long> {
 
-    
+	JsdResourceDo getByTypeAngSecType(@Param("type")String type, @Param("secType")String secType);
 
 }
