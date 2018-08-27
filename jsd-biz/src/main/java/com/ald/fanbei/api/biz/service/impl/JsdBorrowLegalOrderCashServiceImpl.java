@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
@@ -13,7 +14,7 @@ import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
 
 
 /**
- * 极速贷ServiceImpl
+ * 极速贷订单借款ServiceImpl
  * 
  * @author yanghailong
  * @version 1.0.0 初始化
@@ -32,5 +33,10 @@ public class JsdBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<JsdBor
 		@Override
 	public BaseDao<JsdBorrowLegalOrderCashDo, Long> getDao() {
 		return jsdBorrowLegalOrderCashDao;
+	}
+
+	@Override
+	public JsdBorrowLegalOrderCashDo getLastOrderCashByBorrowId(Long borrowId) {
+		return jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(borrowId);
 	}
 }

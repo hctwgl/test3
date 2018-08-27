@@ -21,4 +21,6 @@ public interface JsdBorrowCashRenewalService {
 	public long dealJsdRenewalFail(final String outTradeNo, final String tradeNo, String errorMsg);
 
 	JsdBorrowCashRenewalDo getLastJsdRenewalByBorrowId(Long borrowId);
+
+	int saveRecord(JsdBorrowCashRenewalDo renewalDo);
 }

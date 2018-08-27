@@ -392,4 +392,14 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getLastOrderCashByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">
+    	SELECT
+		<include refid="queryFields" />
+		FROM
+		jsd_borrow_legal_order_cash
+		WHERE
+		is_delete = 0 AND borrow_id = #{borrowId} AND status != 'CLOSED'
+		ORDER BY gmt_create DESC
+		LIMIT 1
+    </select>
 </mapper>

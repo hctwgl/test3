@@ -74,8 +74,7 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 					PayOrderSource.RENEW_JSD.getCode());
 			} else {// 代扣
 				map = doUpsPay(bo.bankChannel, bank, renewalDo.getTradeNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(),
-						userDo.getIdNumber(), "", JSON.toJSONString(bizObject),Constants.DEFAULT_PAY_PURPOSE, name, 
-					PayOrderSource.RENEW_JSD.getCode());
+						userDo.getIdNumber(), "", JSON.toJSONString(bizObject),Constants.DEFAULT_PAY_PURPOSE, name, PayOrderSource.RENEW_JSD.getCode());
 		    }
 		} else {
 		    throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
@@ -170,5 +169,11 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		public String address; // 地址
 		public String bankChannel; 
 		public Integer appVersion;
+	}
+
+
+	@Override
+	public int saveRecord(JsdBorrowCashRenewalDo renewalDo) {
+		return jsdBorrowCashRenewalDao.saveRecord(renewalDo);
 	}
 }
