@@ -1,28 +1,41 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.dbunit.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.AfResourceSecType;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
+import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
+import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashRenewalDao;
+import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
+import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
+import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderRepaymentDao;
 import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
+import com.ald.fanbei.api.dal.dao.JsdUserDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.biz.bo.KuaijieJsdRenewalPayBo;
@@ -50,7 +63,17 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
     @Resource
     private JsdBorrowCashRenewalDao jsdBorrowCashRenewalDao;
     @Resource
-    private JsdUserBankcardDao JsdUserBankcardDao;
+    private JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
+    @Resource
+    private JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
+    @Resource
+    private JsdBorrowLegalOrderRepaymentDao jsdBorrowLegalOrderRepaymentDao;
+    @Resource
+    private JsdUserBankcardDao jsdUserBankcardDao;
+    @Resource
+    private TransactionTemplate transactionTemplate;
+    @Resource
+    private JsdUserDao jsdUserDao;
 
 	
 	@Override
@@ -59,17 +82,14 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 
 		if (bo.cardId > 0) { // 银行卡支付
 			String name = Constants.DEFAULT_RENEWAL_NAME_BORROW_CASH;
-			JsdBorrowCashDo borrowCashDo = bo.borrowCashDo;
 			JsdBorrowCashRenewalDo renewalDo = bo.renewalDo;
-			JsdBorrowLegalOrderCashDo legalOrderCashDo = bo.legalOrderCashDo;
-			JsdBorrowLegalOrderDo legalOrderDo = bo.legalOrderDo;
 			JsdUserDo userDo = bo.userDo; 
 			
-			HashMap<String,Object> bank = JsdUserBankcardDao.getUserBankInfoByBankNo("");
+			HashMap<String,Object> bank = jsdUserBankcardDao.getUserBankInfoByBankNo("");
 		    KuaijieJsdRenewalPayBo bizObject = new KuaijieJsdRenewalPayBo(bo.renewalDo, bo);
 		    
 		    if (BankPayChannel.KUAIJIE.getCode().equals(bo.bankChannel)) {// 快捷支付
-				map = sendKuaiJieSms(bank, renewalDo.getTradeNo(), bo.actualAmount, userDo.getRid(), userDo.getRealName(), 
+				map = sendKuaiJieSms(bank, renewalDo.getRenewalNo(), bo.actualAmount, userDo.getRid(), userDo.getRealName(), 
 						userDo.getIdNumber(), JSON.toJSONString(bizObject), "jsdBorrowCashRenewalService",Constants.DEFAULT_PAY_PURPOSE, name, 
 					PayOrderSource.RENEW_JSD.getCode());
 			} else {// 代扣
@@ -84,50 +104,113 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 	}
 	
 	@Override
-	protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-		
+	protected void daikouConfirmPre(String renewalNo, String bankChannel, String payBizObject) {
+		KuaijieJsdRenewalPayBo renewalPayBo = JSON.parseObject(payBizObject,KuaijieJsdRenewalPayBo.class);
+		if(renewalPayBo!=null){
+			dealChangStatus(renewalNo, "", JsdRenewalDetailStatus.PROCESS.name(), renewalPayBo.getRenewal().getRid());
+		}
 	}
 	
 	@Override
-	protected void kuaijieConfirmPre(String payTradeNo, String bankChannel,	String payBizObject) {
-		
+	protected void kuaijieConfirmPre(String renewalNo, String bankChannel, String payBizObject) {
+		KuaijieJsdRenewalPayBo renewalPayBo = JSON.parseObject(payBizObject,KuaijieJsdRenewalPayBo.class);
+		if(renewalPayBo!=null){
+			dealChangStatus(renewalNo, "", JsdRenewalDetailStatus.PROCESS.name(), renewalPayBo.getRenewal().getRid());
+		}
 	}
 
 	@Override
-	protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo) {
-		
+	protected void quickPaySendSmmSuccess(String renewalNo, String payBizObject, UpsCollectRespBo respBo) {
+		KuaijieJsdRenewalPayBo renewalPayBo = JSON.parseObject(payBizObject,KuaijieJsdRenewalPayBo.class);
+		if(renewalPayBo!=null){
+			dealChangStatus(renewalNo, "", JsdRenewalDetailStatus.SMS.name(), renewalPayBo.getRenewal().getRid());
+		} 
 	}
 
 	@Override
-	protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
+	protected Map<String, Object> upsPaySuccess(String renewalNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
+		KuaijieJsdRenewalPayBo renewalPayBo = JSON.parseObject(payBizObject,KuaijieJsdRenewalPayBo.class);
 		
-		return null;
+		Map<String, Object> resulMap = new HashMap<String, Object>();
+        resulMap.put("outTradeNo", respBo.getOrderNo());
+        resulMap.put("tradeNo", respBo.getTradeNo());
+        resulMap.put("cardNo", Base64.encodeString(cardNo));
+        resulMap.put("refId", renewalPayBo.getRenewal().getRid());
+        resulMap.put("type", "");
+		return resulMap;
 	}
 
 	@Override
-	protected void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
-		
+	protected void roolbackBizData(String renewalNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
+		dealJsdRenewalFail(renewalNo, "", errorMsg);
 	}
 
-	
-	
-	@Override
-	public long dealJsdRenewalSucess(String outTradeNo, String tradeNo) {
+	private long dealChangStatus(final String renewalNo, final String tradeNo, final String status, final Long renewalId) {
 		
-		return 0;
+		return transactionTemplate.execute(new TransactionCallback<Long>() {
+		    @Override
+		    public Long doInTransaction(TransactionStatus t) {
+		    	try {
+		    		Date now = new Date();
+		    		
+		    		// 更新当前续期状态
+		    		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getById(renewalId);
+		    		renewalDo.setStatus(status);
+		    		renewalDo.setGmtModified(now);
+		    		jsdBorrowCashRenewalDao.updateById(renewalDo);
+		    		
+		    		// 更新新增订单还款状态
+		    		JsdBorrowLegalOrderRepaymentDo repaymentByBorrowId = jsdBorrowLegalOrderRepaymentDao.getNewOrderRepaymentByBorrowId(renewalDo.getBorrowId());
+		    		if(repaymentByBorrowId!=null){
+		    			repaymentByBorrowId.setStatus(status);
+		    			repaymentByBorrowId.setGmtModified(now);
+		    			jsdBorrowLegalOrderRepaymentDao.updateById(repaymentByBorrowId);
+		    		}
+		    		
+		    		if(JsdRenewalDetailStatus.NO.name().equals(status)){
+		    			// 关闭新增订单借款
+		    			JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(renewalDo.getBorrowId());
+		    			if(JsdBorrowLegalOrderCashStatus.APPLYING.name().equals(orderCashDo.getStatus())){
+		    				orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.CLOSED.name());
+		    				orderCashDo.setGmtModifed(now);
+		    			}
+		    			// 关闭新增订单
+		    			JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getById(orderCashDo.getBorrowLegalOrderId());
+		    			if("UNPAID".equals(orderDo.getStatus())){
+		    				orderDo.setStatus("CLOSED");
+		    				orderDo.setGmtModified(now);
+		    			}
+		    			jsdBorrowLegalOrderCashDao.updateById(orderCashDo);
+		    			jsdBorrowLegalOrderDao.updateById(orderDo);
+		    		}
+		    		
+		    		return 1l;
+				} catch (Exception e) {
+					t.setRollbackOnly();
+				    logger.info("update renewal status error", e);
+				    return 0l;
+				}
+		    }
+		});
 	}
 	
 	@Override
-	public long dealJsdRenewalFail(String outTradeNo, String tradeNo, String errorMsg) {
+	public long dealJsdRenewalSucess(String renewalNo, String tradeNo) {
 		
-		return 0;
+		return 1l;
 	}
 	
 	@Override
-	public JsdBorrowCashRenewalDo getLastJsdRenewalByBorrowId(Long borrowId) {
-		return jsdBorrowCashRenewalDao.getLastJsdRenewalByBorrowId(borrowId);
+	public long dealJsdRenewalFail(String renewalNo, String tradeNo, String errorMsg) {
+		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByRenewalNo(renewalNo);
+		if(JsdRenewalDetailStatus.YES.name().equals(renewalDo.getStatus())){
+			return 0l;
+		}
+		
+		dealChangStatus(renewalNo, tradeNo, JsdRenewalDetailStatus.NO.name(), renewalDo.getRid());
+		
+		return 1l;
 	}
-	
 	
 	public static class JsdRenewalDealBo {
 		
@@ -176,4 +259,10 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 	public int saveRecord(JsdBorrowCashRenewalDo renewalDo) {
 		return jsdBorrowCashRenewalDao.saveRecord(renewalDo);
 	}
+	
+	@Override
+	public JsdBorrowCashRenewalDo getLastJsdRenewalByBorrowId(Long borrowId) {
+		return jsdBorrowCashRenewalDao.getLastJsdRenewalByBorrowId(borrowId);
+	}
+	
 }

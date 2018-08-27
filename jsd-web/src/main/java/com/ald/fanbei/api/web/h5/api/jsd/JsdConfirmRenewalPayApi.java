@@ -25,6 +25,10 @@ import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRenewalServiceImpl.JsdRenewalDealBo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowOrderRepaymentStatus;
+import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -123,7 +127,8 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 					JsdBorrowLegalOrderCashDo legalOrderCashDo = buildOrderCashDo(paramBo);
 					JsdBorrowLegalOrderCashDo lastOrderCashDo = jsdBorrowLegalOrderCashService.getLastOrderCashByBorrowId(borrowCashDo.getRid());
 					JsdBorrowLegalOrderRepaymentDo orderCashRepaymentDo = null;
-					if(lastOrderCashDo.getStatus().equals("AWAIT_REPAY") || lastOrderCashDo.getStatus().equals("PART_REPAID")){
+					if(lastOrderCashDo.getStatus().equals(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.name()) 
+							|| lastOrderCashDo.getStatus().equals(JsdBorrowLegalOrderCashStatus.PART_REPAID.name())){
 						orderCashRepaymentDo = buildOrderCashRepaymentDo(paramBo);
 						jsdBorrowLegalOrderRepaymentService.saveRecord(orderCashRepaymentDo);
 					}
@@ -191,7 +196,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		JsdBorrowCashRenewalDo renewalDo = new JsdBorrowCashRenewalDo();
 		renewalDo.setBorrowId(borrowCashDo.getRid());
 		renewalDo.setUserId(paramBo.userId);
-		renewalDo.setStatus("A");
+		renewalDo.setStatus(JsdRenewalDetailStatus.APPLY.name());
 		renewalDo.setRemark(borrowCashDo.getRemark());
 		renewalDo.setRenewalAmount(renewalAmount);
 		renewalDo.setPriorInterest(borrowCashDo.getRateAmount());
@@ -222,7 +227,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		orderDo.setUserId(paramBo.userId);
 		orderDo.setBorrowId(paramBo.borrowCashDo.getRid());
 		orderDo.setOrderNo(paramBo.delayNo);
-		orderDo.setStatus("UNPAID");
+		orderDo.setStatus(JsdBorrowLegalOrderStatus.UNPAID.name());
 		orderDo.setPriceAmount(paramBo.goodsPrice);
 		orderDo.setGoodsName(paramBo.goodsName);
 
@@ -254,7 +259,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		orderCashDo.setCashNo(borrowCashDo.getBorrowNo());
 		orderCashDo.setType(renewalDay+"");
 		orderCashDo.setAmount(paramBo.goodsPrice);
-		orderCashDo.setStatus("APPLYING");
+		orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.APPLYING.name());
 		orderCashDo.setBorrowRemark(lastOrderCashDo.getBorrowRemark());
 		orderCashDo.setRefundRemark(lastOrderCashDo.getRefundRemark());
 		orderCashDo.setOverdueDay((short)0);
@@ -291,7 +296,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		orderRepaymentDo.setActualAmount(BigDecimal.ZERO);
 		orderRepaymentDo.setName(Constants.DEFAULT_RENEWAL_NAME_BORROW_CASH);
 		orderRepaymentDo.setTradeNo(paramBo.delayNo);
-		orderRepaymentDo.setStatus("A");
+		orderRepaymentDo.setStatus(JsdBorrowOrderRepaymentStatus.APPLY.name());
 		orderRepaymentDo.setCardName(paramBo.userBankDo.getBankName());
 		orderRepaymentDo.setCardNo(paramBo.userBankDo.getBankCardNumber());
 		

@@ -236,4 +236,13 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getNewOrderRepaymentByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo">
+    	SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order_repayment
+        WHERE is_delete = 0
+        AND borrow_id=#{borrowId}
+        AND status in ('A','P')
+        limit 0,1
+    </select>
 </mapper>
