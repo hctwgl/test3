@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 极速贷Dao
@@ -12,8 +13,16 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
  */
 public interface JsdBorrowLegalOrderRepaymentDao extends BaseDao<JsdBorrowLegalOrderRepaymentDo, Long> {
 
-	JsdBorrowLegalOrderRepaymentDo getNewOrderRepaymentByBorrowId(Long borrowId);
 
-    
+    JsdBorrowLegalOrderRepaymentDo getLastByBorrowId(@Param("borrowId") Long borrowId);
 
+
+    JsdBorrowLegalOrderRepaymentDo  getBorrowLegalOrderRepaymentByTradeNo(@Param("tradeNo")String tradeNo);
+
+    /**
+     * 更新记录
+     * @param jsdBorrowLegalOrderRepaymentDo
+     * @return
+     */
+    int updateBorrowLegalOrderRepayment(JsdBorrowLegalOrderRepaymentDo jsdBorrowLegalOrderRepaymentDo);
 }

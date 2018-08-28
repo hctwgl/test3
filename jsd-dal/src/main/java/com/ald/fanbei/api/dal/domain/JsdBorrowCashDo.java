@@ -85,13 +85,6 @@ import java.math.BigDecimal;
      */
     private BigDecimal rateAmount;
 
-    public BigDecimal getRateAmount() {
-		return rateAmount;
-	}
-
-	public void setRateAmount(BigDecimal rateAmount) {
-		this.rateAmount = rateAmount;
-	}
 
 	/**
      * 已还本金
@@ -107,6 +100,7 @@ import java.math.BigDecimal;
      * 逾期费
      */
     private BigDecimal overdueAmount;
+
 
     /**
      * 累计利息
@@ -288,8 +282,17 @@ import java.math.BigDecimal;
       this.status = status;
     }
 
-    /**
+   public BigDecimal getRateAmount() {
+      return rateAmount;
+   }
+
+   public void setRateAmount(BigDecimal rateAmount) {
+      this.rateAmount = rateAmount;
+   }
+
+   /**
      * 获取备注
+
      *
      * @return 备注
      */

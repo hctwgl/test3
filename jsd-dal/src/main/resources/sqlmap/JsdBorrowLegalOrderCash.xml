@@ -285,7 +285,7 @@
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
             <if test="gmtModifed != null and gmtModifed != '' ">        
-                gmt_modifed = NOW(),                
+                gmt_modifed = #{gmtModifed,jdbcType=TIMESTAMP},                
             </if>
             <if test="userId != null and userId != '' ">        
                 user_id = #{userId,jdbcType=INTEGER},                
@@ -390,6 +390,22 @@
         <include refid="queryFields" />
         FROM jsd_borrow_legal_order_cash
         <include refid="commonCondition"/>
+    </select>
+
+    <select id="getBorrowLegalOrderCashByBorrowId"
+            resultType="com.ald.fanbei.api.dal.domain.AfBorrowLegalOrderCashDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order_cash
+        WHERE
+        borrow_id = #{borrowId}
+        AND
+        is_delete = 0
+        AND
+        status
+        IN ('AWAIT_REPAY','PART_REPAID')
+        ORDER BY id DESC
+        LIMIT 1
     </select>
     
     <select id="getLastOrderCashByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">

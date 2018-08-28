@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 极速贷Dao
@@ -14,6 +15,34 @@ public interface JsdBorrowCashRepaymentDao extends BaseDao<JsdBorrowCashRepaymen
 
 	JsdBorrowCashRepaymentDo getLastByBorrowId(Long borrowId);
 
-    
+
+    /**
+     * 获取最近还款编号
+     * @param orderNoPre
+     * @return
+     */
+     String getCurrentLastRepayNo(String orderNoPre);
+
+    JsdBorrowCashRepaymentDo getLastRepaymentBorrowCashByBorrowId(@Param("borrowId") Long borrowId);
+
+
+    JsdBorrowCashRepaymentDo getRepaymentByPayTradeNo(@Param("tradeNo")String tradeNo);
+
+
+    /**
+     * 更新记录
+     *
+     * @param jsdBorrowCashRepaymentDo
+     * @return
+     */
+    int updateRepaymentBorrowCash(JsdBorrowCashRepaymentDo jsdBorrowCashRepaymentDo);
+
+
+    /**
+     * @param trandeNo 可选参数
+     * @param repaymentId
+     * @return
+     */
+    int status2Process(@Param("trandeNo") String trandeNo, @Param("repaymentId") Long repaymentId);
 
 }

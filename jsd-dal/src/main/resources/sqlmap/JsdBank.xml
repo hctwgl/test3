@@ -7,7 +7,7 @@
     <sql id="queryFields">
         id rid,gmt_create,bank_code,bank_name,bank_icon,is_valid,pay_type,color 
     </sql>
-    
+
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
     	WHERE is_delete = 0
@@ -139,5 +139,13 @@
         FROM jsd_bank
         <include refid="commonCondition"/>
     </select>
-    
+
+    <select id="getBankNameByCardNumAndUserId" resultType="java.lang.String">
+        SELECT b.bank_name
+        FROM jsd_bank b LEFT JOIN jsd_user_bank u ON  b.bank_code=u.bank_code
+        WHERE is_delete = 0 AND u.user_id=#{userId} AND u.bank_card_number=#{bankNo}
+        <include refid="commonCondition"/>
+    </select>
+
+
 </mapper>

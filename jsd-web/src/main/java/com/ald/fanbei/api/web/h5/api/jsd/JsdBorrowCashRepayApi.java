@@ -2,6 +2,7 @@ package com.ald.fanbei.api.web.h5.api.jsd;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.BorrowCashRepayBo;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
@@ -11,6 +12,7 @@ import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.DsedH5Handle;
 import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
+import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.BorrowCashRepayDoParam;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
@@ -20,7 +22,8 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component("pushRepayment")
+@Component("jsdBorrowCashRepayApi")
+@Validator("borrowCashRepayDoParam")
 public class JsdBorrowCashRepayApi implements DsedH5Handle {
 
     @Resource
@@ -49,12 +52,16 @@ public class JsdBorrowCashRepayApi implements DsedH5Handle {
         JsdUserDo jsdUserDo = jsdUserService.getById(userId);
 
         BorrowCashRepayBo bo = this.extractAndCheck(context, userId);
-        bo.jsdUserDoUserDo = jsdUserDo;
+        bo.userDo = jsdUserDo;
         bo.remoteIp = context.getClientIp();
         this.jsdBorrowCashRepaymentService.repay(bo,bo.payType);
 
         Map<String, Object> hashMap = new HashMap<String, Object>();
-        hashMap.put("payMethod",bo.payType);
+        String repaySMS="N";
+        if(BankPayChannel.KUAIJIE.getCode().equals(bo.payType)){
+            repaySMS="Y";
+        }
+        hashMap.put("repaySMS",repaySMS);
         hashMap.put("busiFlag",bo.tradeNo);
         resp.setData(hashMap);
         return resp;
@@ -78,7 +85,7 @@ public class JsdBorrowCashRepayApi implements DsedH5Handle {
     }
 
     private void checkPwdAndCard(BorrowCashRepayBo bo) {
-        HashMap<String,Object> map = jsdUserBankcardService.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
+        HashMap<String,Object> map = jsdUserBankcardService.getBankByBankNoAndUserId(bo.userId,bo.bankNo);
         if (null == map) {
             throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }

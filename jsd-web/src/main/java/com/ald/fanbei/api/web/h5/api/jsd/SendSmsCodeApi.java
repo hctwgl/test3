@@ -7,6 +7,7 @@ import com.ald.fanbei.api.biz.bo.UpsResendSmsRespBo;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
+import com.ald.fanbei.api.common.enums.SmsCodeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
@@ -27,7 +28,7 @@ import java.util.Date;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("quickPaymentResendCodeApi")
-public class QuickResendCodeApi implements DsedH5Handle {
+public class SendSmsCodeApi implements DsedH5Handle {
     @Resource
     UpsUtil upsUtil;
 
@@ -38,21 +39,27 @@ public class QuickResendCodeApi implements DsedH5Handle {
     @Override
     public DsedH5HandleResponse process(Context context) {
 
-
 	DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
+	String busiFlag = ObjectUtils.toString(context.getData("busiFlag"), null);
+	String type = ObjectUtils.toString(context.getData("type"), null);
+	Long userId=context.getUserId();
+	UpsResendSmsRespBo respBo=null;
 
-	String tradeNo = ObjectUtils.toString(context.getData("tradeNo"), null);
-
-	if (StringUtils.isBlank(tradeNo)) {
+	if (StringUtils.isBlank(busiFlag)) {
 		return new DsedH5HandleResponse(3001, FanbeiExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
 	}
-	String orderNo = generatorClusterNo.getRepaymentNo(new Date(), BankPayChannel.KUAIJIE.getCode());
-	UpsResendSmsRespBo respBo = upsUtil.quickPayResendSms(tradeNo,orderNo);
+	if(SmsCodeType.REPAY.getCode().equals(type)){
+		String orderNo = generatorClusterNo.getRepaymentNo(new Date(), BankPayChannel.KUAIJIE.getCode());
+		respBo = upsUtil.quickPayResendSms(busiFlag,orderNo);
+		if (!respBo.isSuccess()) {
+			throw new FanbeiException(respBo.getRespDesc());
+		}
 
-	if (!respBo.isSuccess()) {
-		throw new FanbeiException(respBo.getRespDesc());
 	}
-		resp.setData(respBo);
+
+
+
+	resp.setData(respBo);
 
 	return resp;
     }

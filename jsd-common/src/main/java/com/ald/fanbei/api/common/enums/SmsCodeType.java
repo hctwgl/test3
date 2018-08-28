@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum SmsCodeType {
 	REPAY("REPAY","还款", ""),
+	DELAY("DELAY","展期", ""),
 	BIND("BIND", "绑卡","");
 
 

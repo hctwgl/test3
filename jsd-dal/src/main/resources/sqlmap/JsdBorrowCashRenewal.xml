@@ -352,11 +352,4 @@
 		ORDER BY gmt_create DESC 
 		LIMIT 1 
     </select>
-    
-    <select id="getByRenewalNo" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
-    	select 
-			<include refid="queryFields"/> 
-		from jsd_borrow_cash_renewal WHERE is_delete=0 and renewalNo=#{renewalNo}
-		LIMIT 1 
-    </select>
 </mapper>

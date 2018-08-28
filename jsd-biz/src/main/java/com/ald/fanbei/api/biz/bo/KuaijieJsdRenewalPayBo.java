@@ -21,11 +21,11 @@ public class KuaijieJsdRenewalPayBo implements Serializable {
     private JsdBorrowCashRenewalDo renewalDo;
     private JsdRenewalDealBo bo;
 
-    public JsdBorrowCashRenewalDo getRenewal() {
+    public JsdBorrowCashRenewalDo getRepayment() {
 	return renewalDo;
     }
 
-    public void setRenewal(JsdBorrowCashRenewalDo renewalDo) {
+    public void setRepayment(JsdBorrowCashRenewalDo renewalDo) {
 	this.renewalDo = renewalDo;
     }
 

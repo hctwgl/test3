@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+na<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- dsed_user_bankcard表 -->
 <mapper namespace="com.ald.fanbei.api.dal.dao.DsedUserBankcardDao">
@@ -195,7 +195,7 @@
     </select>
 
     <!-- chefeipeng 获取用户所选银行卡对应的支付方式(代扣WITHHOLD、快捷支付KUAIJIE(有短信)) -->
-    <select id="getPayTypeByBankNoAndUserId" resultType="java.util.HashMap" >
+    <select id="getBankByBankNoAndUserId" resultType="java.util.HashMap" >
         SELECT
 		    u.id rid,u.gmt_create gmtCreate,u.gmt_modified gmtModified,u.user_id userId,u.mobile,u.bank_code bankCode,u.bank_card_number bankCardNumber,u.is_main isMain,b.bank_name bankName,u.status,b.bank_icon bankIcon,b.is_valid isValid,b.pay_type bankChannel,u.valid_date validDate,u.safe_code safeCode
         FROM
