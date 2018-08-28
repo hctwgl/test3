@@ -6,11 +6,13 @@ import com.ald.fanbei.api.biz.bo.KuaijieDsedLoanBo;
 import com.ald.fanbei.api.biz.bo.KuaijieRepayBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.*;
@@ -25,12 +27,13 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashRepaymentDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 
@@ -47,7 +50,7 @@ import java.util.concurrent.TimeUnit;
 public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceAbstract implements  JsdBorrowCashRepaymentService {
 	
     private static final Logger logger = LoggerFactory.getLogger(JsdBorrowCashRepaymentServiceImpl.class);
-   
+
     @Resource
     private JsdBorrowCashRepaymentDao jsdBorrowCashRepaymentDao;
 
@@ -59,6 +62,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
     @Resource
 	private JsdUserDao jsdUserDao;
 
+    @Resource
+	private JsdBorrowCashDao jsdBorrowCashDao;
 
     @Resource
 	private JsdBorrowLegalOrderRepaymentDao jsdBorrowLegalOrderRepaymentDao;
@@ -67,6 +72,12 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 
 	@Resource
 	GeneratorClusterNo generatorClusterNo;
+	@Resource
+	TransactionTemplate transactionTemplate;
+	@Resource
+	private JsdNoticeRecordDao jsdNoticeRecordDao;
+    @Resource
+	XgxyUtil xgxyUtil;
 	@Override
 	public String getCurrentLastRepayNo(String orderNoPre) {
 		return jsdBorrowCashRepaymentDao.getCurrentLastRepayNo(orderNoPre);
@@ -293,6 +304,365 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 
 	}
 
+	@Override
+	public void dealRepaymentSucess(String tradeNo, String outTradeNo) {
+		final JsdBorrowCashRepaymentDo repaymentDo = jsdBorrowCashRepaymentDao.getRepaymentByPayTradeNo(tradeNo);
+		final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = jsdBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByTradeNo(tradeNo);
+		dealRepaymentSucess(tradeNo, outTradeNo, repaymentDo, orderRepaymentDo,false,null);
+	}
+
+	public void dealRepaymentSucess(String tradeNo, String outTradeNo, final JsdBorrowCashRepaymentDo repaymentDo, final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, Boolean flag, final String isBalance) {
+		try {
+			lock(tradeNo);
+
+			logger.info("dealRepaymentSucess process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo + ",borrowRepayment=" + JSON.toJSONString(repaymentDo) + ", orderRepayment=" + JSON.toJSONString(orderRepaymentDo));
+
+			preCheck(repaymentDo, orderRepaymentDo, tradeNo);
+			final RepayDealBo repayDealBo = new RepayDealBo();
+			repayDealBo.curTradeNo = tradeNo;
+			repayDealBo.curOutTradeNo = outTradeNo;
+
+			long resultValue = transactionTemplate.execute(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					try {
+						dealOrderRepay(repayDealBo, orderRepaymentDo,isBalance);
+						dealBorrowRepay(repayDealBo, repaymentDo,isBalance);
+						dealSum(repayDealBo);
+						return 1L;
+					} catch (Exception e) {
+						status.setRollbackOnly();
+						logger.info("dealRepaymentSucess error", e);
+						throw e;
+					}
+				}
+			});
+
+			if (resultValue == 1L) {
+				try {
+					repaymentDo.setStatus(DsedLoanRepaymentStatus.SUCC.name());
+					//还款成功，调用西瓜信用通知接口
+					JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
+					noticeRecordDo.setUserId(repaymentDo.getUserId());
+					noticeRecordDo.setRefId(String.valueOf(repaymentDo.getRid()));
+					noticeRecordDo.setType(getStatus(repaymentDo.getBorrowId()));
+					noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+					HashMap data = buildData(repaymentDo);
+					noticeRecordDo.setParams(JSON.toJSONString(data));
+					jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+					try {
+//						if(!flag){
+//							//app逾期还款通知催收
+//							nofityRisk(loanRepayDealBo,repaymentDo);
+//						}
+//						//催收逾期还款
+//						collectRisk(loanRepayDealBo.loanPeriodsDoList,repaymentDo,loanRepayDealBo.loanDo.getRid());
+					}catch (Exception e){
+						e.printStackTrace();
+					}
+					logger.info("dealRepaymentSucess data cfp "+JSON.toJSONString(data));
+					if(xgxyUtil.dsedRePayNoticeRequest(data)){
+						noticeRecordDo.setRid(noticeRecordDo.getRid());
+						noticeRecordDo.setGmtModified(new Date());
+						jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
+					}
+				}
+				catch (Exception e){
+					logger.error("notice eca fail error=",e);
+				}
+			}
+
+		}finally {
+			unLock(tradeNo);
+
+			// 解锁还款
+			unLockRepay(repaymentDo.getUserId());
+		}
+	}
+
+	private HashMap buildData(JsdBorrowCashRepaymentDo repaymentDo){
+		    HashMap<String,String> map=new HashMap<>();
+		    JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(repaymentDo.getBorrowId());
+		    map.put("repayNo",repaymentDo.getRepayNo());
+			map.put("status",YesNoStatus.YES.getCode());
+			map.put("tradeNo",repaymentDo.getTradeNo());
+			map.put("borrowNo",borrowCashDo.getBorrowNo());
+			map.put("period","1");
+			map.put("amount", String.valueOf(repaymentDo.getActualAmount()));
+			map.put("type",repaymentDo.getType());
+			Date now=new Date();
+		    map.put("timestamp", String.valueOf(now.getTime()));
+		    if(JsdBorrowCashStatus.FINISHED.getCode().equals(borrowCashDo.getStatus())){
+				map.put("isFinish",YesNoStatus.YES.getCode());
+			}else {
+				map.put("isFinish",YesNoStatus.NO.getCode());
+			}
+            return map;
+	}
+
+	public String getStatus (Long borrowId){
+		JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(borrowId);
+		if(borrowCashDo!=null){
+			if(StringUtil.equals(borrowCashDo.getOverdueStatus(), YesNoStatus.YES.getCode())){
+				if(StringUtil.equals(borrowCashDo.getType(), JsdRepayType.COLLECT.getName())){
+					return DsedNoticeType.XGXY_COLLECT.code;
+				}else {
+					return DsedNoticeType.XGXY_OVERDUEREPAY.code;
+				}
+			}
+		}
+		return DsedNoticeType.REPAY.code;
+	}
+	private void dealSum(RepayDealBo repayDealBo){
+		JsdBorrowLegalOrderCashDo orderCashDo = repayDealBo.orderCashDo;
+		JsdBorrowCashDo cashDo = repayDealBo.cashDo;
+
+		repayDealBo.sumBorrowAmount = repayDealBo.sumBorrowAmount.add(orderCashDo.getAmount());
+		repayDealBo.sumRepaidAmount = repayDealBo.sumRepaidAmount.add(orderCashDo.getRepaidAmount());
+		repayDealBo.sumInterest = repayDealBo.sumInterest.add(orderCashDo.getInterestAmount()).add(orderCashDo.getSumRepaidInterest());
+		repayDealBo.sumPoundage = repayDealBo.sumPoundage.add(orderCashDo.getPoundageAmount()).add(orderCashDo.getSumRepaidPoundage());
+		repayDealBo.sumOverdueAmount = repayDealBo.sumOverdueAmount.add(orderCashDo.getOverdueAmount()).add(orderCashDo.getSumRepaidOverdue());
+		repayDealBo.sumIncome = repayDealBo.sumIncome.add(repayDealBo.sumPoundage).add(repayDealBo.sumOverdueAmount).add(repayDealBo.sumInterest);
+
+		repayDealBo.sumBorrowAmount = repayDealBo.sumBorrowAmount.add(cashDo.getAmount());
+		repayDealBo.sumRepaidAmount = repayDealBo.sumRepaidAmount.add(cashDo.getRepayAmount());
+		repayDealBo.sumInterest = repayDealBo.sumInterest.add(cashDo.getRateAmount()).add(cashDo.getSumRate());
+		repayDealBo.sumPoundage = repayDealBo.sumPoundage.add(cashDo.getPoundage()).add(cashDo.getSumRenewalPoundage());
+		repayDealBo.sumOverdueAmount = repayDealBo.sumOverdueAmount.add(cashDo.getOverdueAmount()).add(cashDo.getSumOverdue());
+		repayDealBo.sumIncome = repayDealBo.sumIncome.add(repayDealBo.sumPoundage).add(repayDealBo.sumOverdueAmount).add(repayDealBo.sumInterest);
+
+		repayDealBo.sumAmount = repayDealBo.sumBorrowAmount.add(repayDealBo.sumIncome);
+	}
+
+	/**
+	 * 需在事务管理块中调用此函数!
+	 * @param repayDealBo
+	 * @param repaymentDo
+	 */
+	private void dealBorrowRepay(RepayDealBo repayDealBo, JsdBorrowCashRepaymentDo repaymentDo,String isBalance) {
+		if(repaymentDo == null) return;
+
+		JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(repaymentDo.getBorrowId());
+		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(cashDo.getRid());//
+		cashDo.setRemark("");
+		repayDealBo.curRepayAmoutStub = repaymentDo.getRepaymentAmount();
+		repayDealBo.curSumRepayAmount = repayDealBo.curSumRepayAmount.add(repaymentDo.getRepaymentAmount());
+		repayDealBo.curCardNo = repaymentDo.getCardNumber();
+		repayDealBo.curCardName = repaymentDo.getCardName();
+		repayDealBo.curName = repaymentDo.getName();
+
+		repayDealBo.cashDo = cashDo;
+		repayDealBo.orderCashDo = orderCashDo;
+		repayDealBo.overdueDay = cashDo.getOverdueDay();
+		repayDealBo.borrowNo = cashDo.getBorrowNo();
+		repayDealBo.refId += repaymentDo.getBorrowId();
+		repayDealBo.userId = cashDo.getUserId();
+
+		dealBorrowRepayOverdue(repayDealBo, cashDo);//逾期费
+		dealBorrowRepayPoundage(repayDealBo, cashDo);//手续费
+		dealBorrowRepayInterest(repayDealBo, cashDo);//利息
+
+		changBorrowRepaymentStatus(repayDealBo.curOutTradeNo, JsdBorrowCashRepaymentStatus.YES.getCode(), repaymentDo.getRid());
+
+		dealBorrowRepayIfFinish(repayDealBo, repaymentDo, cashDo,isBalance);
+		jsdBorrowCashDao.updateById(cashDo);
+	}
+
+
+	private void dealBorrowRepayOverdue(RepayDealBo repayDealBo, JsdBorrowCashDo afBorrowCashDo) {
+		if(repayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
+
+		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
+		BigDecimal overdueAmount = afBorrowCashDo.getOverdueAmount();
+
+		if (repayAmount.compareTo(overdueAmount) > 0) {
+			afBorrowCashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), overdueAmount));
+			afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);
+			repayDealBo.curRepayAmoutStub = repayAmount.subtract(overdueAmount);
+		} else {
+			afBorrowCashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), repayAmount));
+			afBorrowCashDo.setOverdueAmount(overdueAmount.subtract(repayAmount));
+			repayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
+		}
+	}
+	private void dealBorrowRepayPoundage(RepayDealBo repayDealBo, JsdBorrowCashDo afBorrowCashDo) {
+		if(repayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
+
+		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
+		BigDecimal poundageAmount = afBorrowCashDo.getPoundage();
+
+		if (repayAmount.compareTo(poundageAmount) > 0) {
+			afBorrowCashDo.setSumRenewalPoundage(BigDecimalUtil.add(afBorrowCashDo.getSumRenewalPoundage(), poundageAmount));
+			afBorrowCashDo.setPoundage(BigDecimal.ZERO);
+			repayDealBo.curRepayAmoutStub = repayAmount.subtract(poundageAmount);
+		} else {
+			afBorrowCashDo.setSumRenewalPoundage(BigDecimalUtil.add(afBorrowCashDo.getSumRenewalPoundage(), repayAmount));
+			afBorrowCashDo.setPoundage(poundageAmount.subtract(repayAmount));
+			repayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
+		}
+	}
+	private void dealBorrowRepayInterest(RepayDealBo repayDealBo, JsdBorrowCashDo afBorrowCashDo) {
+		if(repayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
+
+		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
+		BigDecimal rateAmount = afBorrowCashDo.getRateAmount();
+
+		if (repayAmount.compareTo(rateAmount) > 0) {
+			afBorrowCashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), rateAmount));
+			afBorrowCashDo.setRateAmount(BigDecimal.ZERO);
+			repayDealBo.curRepayAmoutStub = repayAmount.subtract(rateAmount);
+		} else {
+			afBorrowCashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), repayAmount));
+			afBorrowCashDo.setRateAmount(rateAmount.subtract(repayAmount));
+			repayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
+		}
+	}
+	private void dealBorrowRepayIfFinish(RepayDealBo repayDealBo, JsdBorrowCashRepaymentDo repaymentDo, JsdBorrowCashDo cashDo,String isBalance) {
+		BigDecimal sumAmount = BigDecimalUtil.add(cashDo.getAmount(),
+				cashDo.getOverdueAmount(), cashDo.getSumOverdue(),
+				cashDo.getRateAmount(), cashDo.getSumRate(),
+				cashDo.getPoundage(), cashDo.getSumRenewalPoundage());
+		BigDecimal allRepayAmount = cashDo.getRepayAmount().add(repaymentDo.getRepaymentAmount());
+		cashDo.setRepayAmount(allRepayAmount);
+		cashDo.setType(JsdRepayType.ONLINE.getCode());
+		if (sumAmount.compareTo(allRepayAmount) <= 0) {
+			cashDo.setStatus(JsdBorrowCashStatus.FINISHED.getCode());
+			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
+		}else if (YesNoStatus.YES.getCode().equals(isBalance)){//线下还款平账
+			cashDo.setStatus(JsdBorrowCashStatus.FINISHED.getCode());
+			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
+		}
+	}
+
+
+	/**
+	 * 需在事务管理块中调用此函数!
+	 * @param repayDealBo
+	 * @param orderRepaymentDo
+	 */
+	private void dealOrderRepay(RepayDealBo repayDealBo, JsdBorrowLegalOrderRepaymentDo orderRepaymentDo,String isBalance) {
+		if(orderRepaymentDo == null) return;
+
+		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getById(orderRepaymentDo.getBorrowLegalOrderCashId());
+		JsdBorrowCashDo cashDo =jsdBorrowCashDao.getById(orderCashDo.getBorrowId());
+
+		repayDealBo.curRepayAmoutStub = orderRepaymentDo.getRepayAmount();
+		repayDealBo.curSumRepayAmount = repayDealBo.curSumRepayAmount.add(orderRepaymentDo.getRepayAmount());
+		repayDealBo.curCardNo = orderRepaymentDo.getCardNo();
+		repayDealBo.curCardName = orderRepaymentDo.getCardName();
+		repayDealBo.curName = orderRepaymentDo.getName();
+
+		repayDealBo.cashDo = cashDo;
+		repayDealBo.orderCashDo = orderCashDo;
+		repayDealBo.overdueDay = cashDo.getOverdueDay();
+		repayDealBo.borrowNo = cashDo.getBorrowNo();
+		repayDealBo.refId += orderCashDo.getRid();
+		repayDealBo.userId = cashDo.getUserId();
+		repayDealBo.renewalNum = cashDo.getRenewalNum();
+
+		dealOrderRepayOverdue(repayDealBo, orderCashDo);//逾期费
+		dealOrderRepayPoundage(repayDealBo, orderCashDo);//手续费
+		dealOrderRepayInterest(repayDealBo, orderCashDo);//利息
+
+		dealOrderRepayIfFinish(repayDealBo, orderRepaymentDo, orderCashDo,isBalance);
+		jsdBorrowLegalOrderCashDao.updateById(orderCashDo);
+
+		changOrderRepaymentStatus(repayDealBo.curOutTradeNo, JsdBorrowLegalRepaymentStatus.YES.getCode(), orderRepaymentDo.getRid());
+	}
+	private void dealOrderRepayIfFinish(RepayDealBo repayDealBo, JsdBorrowLegalOrderRepaymentDo orderRepaymentBo, JsdBorrowLegalOrderCashDo orderCashDo,String isBalance) {
+		BigDecimal sumAmount = BigDecimalUtil.add(orderCashDo.getAmount(),
+				orderCashDo.getOverdueAmount(),orderCashDo.getSumRepaidOverdue(),
+				orderCashDo.getPoundageAmount(),orderCashDo.getSumRepaidPoundage(),
+				orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidInterest());
+		BigDecimal allRepayAmount = orderCashDo.getRepaidAmount().add(orderRepaymentBo.getRepayAmount());
+		Date now = new Date();
+		orderCashDo.setRepaidAmount(allRepayAmount);
+		orderCashDo.setGmtLastRepayment(now);
+
+		if (sumAmount.compareTo(allRepayAmount) == 0) {
+			orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.FINISHED.getCode());
+			orderCashDo.setGmtFinish(now);
+		}else if (YesNoStatus.YES.getCode().equals(isBalance)){//线下还款平账
+			orderCashDo.setStatus(JsdBorrowCashStatus.FINISHED.getCode());
+			orderCashDo.setGmtFinish(now);
+		} else {
+			orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.PART_REPAID.getCode());
+		}
+	}
+	private void preCheck(JsdBorrowCashRepaymentDo repaymentDo, JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, String tradeNo) {
+		// 检查交易流水 对应记录数据库中是否已经处理
+		if ((repaymentDo != null && YesNoStatus.YES.getCode().equals(repaymentDo.getStatus()) )
+				|| (orderRepaymentDo != null && YesNoStatus.YES.getCode().equals(orderRepaymentDo.getStatus()) )) {
+			throw new FanbeiException("preCheck,repayment has been dealed!"); // TODO
+		}
+
+	}
+	private void dealOrderRepayOverdue(RepayDealBo repayDealBo, JsdBorrowLegalOrderCashDo orderCashDo) {
+		if(repayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
+
+		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
+		BigDecimal overdueAmount = orderCashDo.getOverdueAmount();
+
+		if (repayAmount.compareTo(overdueAmount) > 0) {
+			orderCashDo.setSumRepaidOverdue(BigDecimalUtil.add(orderCashDo.getSumRepaidOverdue(), overdueAmount));
+			orderCashDo.setOverdueAmount(BigDecimal.ZERO);
+			repayDealBo.curRepayAmoutStub = repayAmount.subtract(overdueAmount);
+		} else {
+			orderCashDo.setSumRepaidOverdue(BigDecimalUtil.add(orderCashDo.getSumRepaidOverdue(), repayAmount));
+			orderCashDo.setOverdueAmount(overdueAmount.subtract(repayAmount));
+			repayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
+		}
+	}
+
+	private void dealOrderRepayPoundage(RepayDealBo repayDealBo, JsdBorrowLegalOrderCashDo orderCashDo) {
+		if(repayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
+
+		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
+		BigDecimal poundageAmount = orderCashDo.getPoundageAmount();
+
+		if (repayAmount.compareTo(poundageAmount) > 0) {
+			orderCashDo.setSumRepaidPoundage(BigDecimalUtil.add(orderCashDo.getSumRepaidPoundage(), poundageAmount));
+			orderCashDo.setPoundageAmount(BigDecimal.ZERO);
+			repayDealBo.curRepayAmoutStub = repayAmount.subtract(poundageAmount);
+		} else {
+			orderCashDo.setSumRepaidPoundage(BigDecimalUtil.add(orderCashDo.getSumRepaidPoundage(), repayAmount));
+			orderCashDo.setPoundageAmount(poundageAmount.subtract(repayAmount));
+			repayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
+		}
+	}
+	private void dealOrderRepayInterest(RepayDealBo repayDealBo, JsdBorrowLegalOrderCashDo orderCashDo) {
+		if(repayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
+
+		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
+		BigDecimal rateAmount = orderCashDo.getInterestAmount();
+
+		if (repayAmount.compareTo(rateAmount) > 0) {
+			orderCashDo.setSumRepaidInterest(BigDecimalUtil.add(orderCashDo.getSumRepaidInterest(), rateAmount));
+			orderCashDo.setInterestAmount(BigDecimal.ZERO);
+			repayDealBo.curRepayAmoutStub = repayAmount.subtract(rateAmount);
+		} else {
+			orderCashDo.setSumRepaidInterest(BigDecimalUtil.add(orderCashDo.getSumRepaidInterest(), repayAmount));
+			orderCashDo.setInterestAmount(rateAmount.subtract(repayAmount));
+			repayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
+		}
+	}
+	/**
+	 * 锁住目标流水号的还款，防止重复回调
+	 */
+	private void lock(String tradeNo) {
+		String key = tradeNo + "_success_legalRepay";
+		long count = redisTemplate.opsForValue().increment(key, 1);
+		redisTemplate.expire(key, 30, TimeUnit.SECONDS);
+		if (count != 1) {
+			throw new FanbeiException(FanbeiExceptionCode.UPS_REPEAT_NOTIFY);
+		}
+	}
+
+	private void unLock(String tradeNo) {
+		String key = tradeNo + "_success_legalRepay";
+		redisTemplate.delete(key);
+	}
+
 	private long changBorrowRepaymentStatus(String outTradeNo, String status, Long rid) {
 		JsdBorrowCashRepaymentDo repayment = new JsdBorrowCashRepaymentDo();
 		repayment.setStatus(status);
@@ -367,6 +737,33 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 
 
 
+	}
+
+
+	public static class RepayDealBo {
+		BigDecimal curRepayAmoutStub; 	//当前还款额变化句柄
+		BigDecimal curSumRepayAmount = BigDecimal.ZERO;	//当前还款总额(借款还款+订单还款)
+		String curCardNo;				//当前还款卡号
+		String curCardName;				//当前还款卡别名
+		String curName;					//当前还款名称，用来识别自动代付还款
+		String curTradeNo;
+		String curOutTradeNo;
+
+		BigDecimal sumRepaidAmount = BigDecimal.ZERO;	//对应借款的还款总额
+		BigDecimal sumAmount = BigDecimal.ZERO;			//对应借款总额（包含所有费用）
+		BigDecimal sumBorrowAmount = BigDecimal.ZERO;	//对应借款总额（不包含其他费用）
+		BigDecimal sumInterest = BigDecimal.ZERO;		//对应借款的利息总额
+		BigDecimal sumPoundage = BigDecimal.ZERO;		//对应借款的手续费总额
+		BigDecimal sumOverdueAmount = BigDecimal.ZERO;	//对应借款的逾期费总额
+		BigDecimal sumIncome = BigDecimal.ZERO;			//对应借款我司产生的总收入
+
+		JsdBorrowCashDo cashDo;							//借款
+		JsdBorrowLegalOrderCashDo orderCashDo;			//订单借款
+		long overdueDay = 0;								//对应借款的逾期天数
+		String borrowNo;								//借款流水号
+		String refId = "";								//还款的id串
+		Long userId ;									//目标用户id
+		Long renewalNum;                            //续借次数
 	}
 
 }

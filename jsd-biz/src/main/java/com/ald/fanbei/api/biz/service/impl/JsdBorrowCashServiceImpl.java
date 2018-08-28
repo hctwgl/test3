@@ -39,4 +39,6 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	public JsdBorrowCashDo getByBorrowNo(String borrowNo) {
 		return jsdBorrowCashDao.getByBorrowNo(borrowNo);
 	}
+
+
 }

@@ -16,4 +16,6 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     JsdBorrowCashDo getByBorrowNo(String borrowNo);
 
 
+
+
 }

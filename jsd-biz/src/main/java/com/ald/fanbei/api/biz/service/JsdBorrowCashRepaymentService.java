@@ -30,5 +30,6 @@ public interface JsdBorrowCashRepaymentService{
 
     void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg);
 
+    void dealRepaymentSucess(String tradeNo, String outTradeNo);
 
 }

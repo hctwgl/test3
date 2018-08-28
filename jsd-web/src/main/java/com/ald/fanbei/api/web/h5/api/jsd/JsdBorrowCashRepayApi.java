@@ -62,7 +62,6 @@ public class JsdBorrowCashRepayApi implements DsedH5Handle {
             repaySMS="Y";
         }
         hashMap.put("repaySMS",repaySMS);
-        hashMap.put("busiFlag",bo.tradeNo);
         resp.setData(hashMap);
         return resp;
     }

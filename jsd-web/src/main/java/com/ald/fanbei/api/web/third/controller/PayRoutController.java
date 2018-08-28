@@ -4,6 +4,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -30,8 +32,11 @@ public class PayRoutController {
 
 	@Resource
 	DsedLoanService dsedLoanService;
+
+
+
 	@Resource
-	DsedLoanRepaymentService dsedLoanRepaymentService;
+	JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
 
 
 
@@ -93,7 +98,7 @@ public class PayRoutController {
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代付成功
 				dsedLoanService.dealLoanSucc(result, outTradeNo);
-			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理失败代付
+    		} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理失败代付
 				dsedLoanService.dealLoanFail(result, outTradeNo, "");
 			}
 			return "SUCCESS";
@@ -129,9 +134,9 @@ public class PayRoutController {
 				+ respDesc);
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代收成功
-				dsedLoanRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
+				jsdBorrowCashRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
-				dsedLoanRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, respDesc);
+				jsdBorrowCashRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, respDesc);
 			}
 			return "SUCCESS";
 		} catch (Exception e) {

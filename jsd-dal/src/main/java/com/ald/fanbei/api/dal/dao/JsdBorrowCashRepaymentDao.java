@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import org.apache.ibatis.annotations.Param;
 
@@ -44,5 +45,9 @@ public interface JsdBorrowCashRepaymentDao extends BaseDao<JsdBorrowCashRepaymen
      * @return
      */
     int status2Process(@Param("trandeNo") String trandeNo, @Param("repaymentId") Long repaymentId);
+
+
+    JsdBorrowCashRepaymentDo getRepayByTradeNo(@Param("tradeNo") String tradeNo);
+
 
 }
