@@ -213,7 +213,7 @@
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
             <if test="gmtModified != null and gmtModified != '' ">        
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+                gmt_modified = NOW(),                
             </if>
             <if test="userId != null and userId != '' ">        
                 user_id = #{userId,jdbcType=INTEGER},                
