@@ -7,6 +7,7 @@ public enum  JsdRenewalDetailStatus {
 
     APPLY("A", "新建状态"),
     PROCESS("P", "处理中"),
+    SMS("S", "快捷支付发完短信"),
     NO("N", "续期失败"),
     YES("Y", "续期成功");
 

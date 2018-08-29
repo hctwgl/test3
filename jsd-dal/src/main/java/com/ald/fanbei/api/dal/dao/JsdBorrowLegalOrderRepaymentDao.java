@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
+
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -25,4 +26,7 @@ public interface JsdBorrowLegalOrderRepaymentDao extends BaseDao<JsdBorrowLegalO
      * @return
      */
     int updateBorrowLegalOrderRepayment(JsdBorrowLegalOrderRepaymentDo jsdBorrowLegalOrderRepaymentDo);
+
+
+	JsdBorrowLegalOrderRepaymentDo getNewOrderRepaymentByBorrowId(Long borrowId);
 }
