@@ -166,7 +166,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 		repayment.setStatus(JsdBorrowLegalRepaymentStatus.APPLY.getCode());
 		repayment.setCardNo(cardNo);
 		HashMap bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,cardNo);
-		repayment.setCardName((String) bank.get("bankName"));
+		repayment.setCardName((String) bank.get("bankChannel"));
 		Date now = new Date();
 		repayment.setGmtCreate(now);
 		repayment.setGmtModified(now);

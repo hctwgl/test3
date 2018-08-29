@@ -77,7 +77,6 @@ public class JsdBorrowCashRepayApi implements DsedH5Handle {
         bo.bankNo = param.bankNo;
         bo.period = param.period;
         bo.repayNo=param.repayNo;
-        bo.timestamp=param.timestamp;
         checkPwdAndCard(bo);
         checkFrom(bo);
         return bo;
@@ -91,16 +90,17 @@ public class JsdBorrowCashRepayApi implements DsedH5Handle {
         //还款金额是否大于银行单笔限额
 //		dsedUserBankcardService.checkUpsBankLimit(map.get("bankCode").toString(), map.get("bankChannel").toString(), bo.amount);
         bo.cardName = map.get("bankName").toString();
-        bo.payType=map.get("payType").toString();
+        bo.payType=map.get("bankChannel").toString();
     }
 
     private void checkFrom(BorrowCashRepayBo bo) {
       JsdBorrowCashDo cashDo= jsdBorrowCashService.getByBorrowNo(bo.borrowNo);
+      bo.borrowId=cashDo.getRid();
       if(cashDo  == null ){
             throw new FanbeiException("borrow cash not exist",FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
       }
-      if(!StringUtils.equals(cashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.name())){
-            throw new FanbeiException("borrow stats is not transferred",FanbeiExceptionCode.BORROW_STATS_IS_NOT_TRANSFERRED);
+      if(!StringUtils.equals(cashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.code)){
+            throw new FanbeiException("borrow stats is not transfered",FanbeiExceptionCode.BORROW_STATS_IS_NOT_TRANSFERRED);
       }
       //检查处理中 还款 商品还款  续期
       JsdBorrowCashRepaymentDo repaymentDo= jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(cashDo.getRid());

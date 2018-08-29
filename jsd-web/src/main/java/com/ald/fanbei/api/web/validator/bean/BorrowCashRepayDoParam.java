@@ -7,7 +7,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-@Component("BorrowCashRepayDoParam")
+@Component("borrowCashRepayDoParam")
 public class BorrowCashRepayDoParam {
 	@NotNull
 	@DecimalMin("0")
@@ -26,8 +26,8 @@ public class BorrowCashRepayDoParam {
 	@DecimalMin("0")
 	public int period;
 
-	@NotNull
-	public Long timestamp;
+
+	public String timestamp;
 
 
 }
