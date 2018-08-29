@@ -132,7 +132,7 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 
 	@Override
 	protected Map<String, Object> upsPaySuccess(String renewalNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
-		KuaijieJsdRenewalPayBo renewalPayBo = JSON.parseObject(payBizObject,KuaijieJsdRenewalPayBo.class);
+//		KuaijieJsdRenewalPayBo renewalPayBo = JSON.parseObject(payBizObject,KuaijieJsdRenewalPayBo.class);
 		
 		Map<String, Object> resulMap = new HashMap<String, Object>();
 //        resulMap.put("outTradeNo", respBo.getOrderNo());
@@ -140,7 +140,9 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 //        resulMap.put("cardNo", Base64.encodeString(cardNo));
 //        resulMap.put("refId", renewalPayBo.getRenewal().getRid());
 //        resulMap.put("type", "");
-		resulMap.put("repaySMS", "N");
+		if(!BankPayChannel.KUAIJIE.getCode().equals(bankChannel)){
+			resulMap.put("repaySMS", "N");
+		}
 		return resulMap;
 	}
 

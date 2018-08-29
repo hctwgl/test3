@@ -36,6 +36,8 @@ public class ConfirmSmsApi implements DsedH5Handle {
 	@Autowired
 	@Qualifier("jsdBorrowCashRepaymentService")
 	DsedUpsPayKuaijieServiceAbstract jsdBorrowCashRepaymentService;
+	@Qualifier("jsdBorrowCashRenewalService")
+	DsedUpsPayKuaijieServiceAbstract jsdBorrowCashRenewalService;
 
 
 
@@ -66,13 +68,25 @@ public class ConfirmSmsApi implements DsedH5Handle {
 				case "jsdBorrowCashRepaymentService":
 					map = jsdBorrowCashRepaymentService.doUpsPay(busiFlag, smsCode);
 					break;
-				case "jsdBorrowCashRenewalService":
-					map = jsdBorrowCashRepaymentService.doUpsPay(busiFlag, smsCode);
-					break;
 				default:
 					throw new FanbeiException("ups kuaijie not support", FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
 			}
-		}
+			
+		}else if(SmsCodeType.DELAY.getCode().equals(type)){
+ 			Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + busiFlag);
+ 			if (beanName == null) {
+ 				// 未获取到缓存数据，支付订单过期
+ 				throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+ 			}
+ 			
+ 			switch (beanName.toString()) {
+	 			case "jsdBorrowCashRenewalService":
+	 				map = jsdBorrowCashRenewalService.doUpsPay(busiFlag, smsCode);
+	 				break;
+	 			default:
+	 				throw new FanbeiException("ups kuaijie not support", FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
+	 		}
+ 		}
 
 		resp.setData(map);
 		return resp;
