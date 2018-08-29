@@ -166,6 +166,11 @@ public class GetRenewalDetailApi implements DsedH5Handle {
 						 "元,本金还款部分"+capital+
 						 "元,本期商品价格"+waitOrderAmount+"元";
 		
+		BigDecimal principalAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumOverdue(), 
+										borrowCashDo.getSumRate(), borrowCashDo.getSumRenewalPoundage())
+										.subtract(borrowCashDo.getRepayAmount().add(capital));
+		
+		delayInfo.put("principalAmount", principalAmount);	// 展期后剩余借款本金
 		delayInfo.put("deferAmount", renewalPayAmount);	// 需支付总金额
 		delayInfo.put("deferDay", allowRenewalDay);	// 续期天数
 		delayInfo.put("deferRemark", deferRemark);	// 费用明细	展期金额的相关具体描述（多条说明用英文逗号,用间隔）

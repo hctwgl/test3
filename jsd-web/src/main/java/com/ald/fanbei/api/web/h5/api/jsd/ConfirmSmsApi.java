@@ -66,6 +66,9 @@ public class ConfirmSmsApi implements DsedH5Handle {
 				case "jsdBorrowCashRepaymentService":
 					map = jsdBorrowCashRepaymentService.doUpsPay(busiFlag, smsCode);
 					break;
+				case "jsdBorrowCashRenewalService":
+					map = jsdBorrowCashRepaymentService.doUpsPay(busiFlag, smsCode);
+					break;
 				default:
 					throw new FanbeiException("ups kuaijie not support", FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
 			}

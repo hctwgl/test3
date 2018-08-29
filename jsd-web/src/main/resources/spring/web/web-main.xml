@@ -107,8 +107,8 @@
 				
 				<entry key="/third/eca/v1/getDelayDetail" value-ref="getRenewalDetailApi" />
 				<entry key="/third/eca/v1/pushDelay" value-ref="jsdConfirmRenewalPayApi" />
-
-				<entry key="/third/xgxy/v1/pushRepayment" value-ref="jsdBorrowCashRepayApi" />
+				<entry key="/third/eca/v1/submitMessage" value-ref="confirmSmsApi" />
+				<entry key="/third/eca/v1/pushRepayment" value-ref="jsdBorrowCashRepayApi" />
 
 
 
