@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdUserDao;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
@@ -32,5 +33,10 @@ public class JsdUserServiceImpl extends ParentServiceImpl<JsdUserDo, Long> imple
 		@Override
 	public BaseDao<JsdUserDo, Long> getDao() {
 		return jsdUserDao;
+	}
+
+	@Override
+	public JsdUserDo getByOpenId(String openId) {
+		return jsdUserDao.getByOpenId(openId);
 	}
 }

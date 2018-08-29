@@ -16,4 +16,6 @@ public interface JsdUserBankcardService extends ParentService<JsdUserBankcardDo,
 
 	JsdUserBankcardDo getByBankNo(String bankNo);
 
+	HashMap<String, Object> getPayTypeByBankNoAndUserId(String bankNo, Long userId);
+
 }

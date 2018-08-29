@@ -2,6 +2,8 @@ package com.ald.fanbei.api.dal.dao;
 
 import java.util.HashMap;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 
 /**
@@ -17,5 +19,7 @@ public interface JsdUserBankcardDao extends BaseDao<JsdUserBankcardDo, Long> {
 	HashMap<String, Object> getUserBankInfoByBankNo(String bankNo);
 	
 	JsdUserBankcardDo getByBankNo(String bankNo);
+
+	HashMap<String, Object> getPayTypeByBankNoAndUserId(@Param("bankNo")String bankNo, @Param("userId")Long userId);
 
 }

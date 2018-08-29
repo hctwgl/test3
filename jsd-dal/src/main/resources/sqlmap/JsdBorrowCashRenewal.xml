@@ -216,7 +216,7 @@
 		       #{cardNumber,jdbcType=VARCHAR},
 		    </if>
 		    <if test="renewalNo != null" >
-		       #{renewal_no,jdbcType=VARCHAR},
+		       #{renewalNo,jdbcType=VARCHAR},
 		    </if>
 		    <if test="tradeNo != null" >
 		       #{tradeNo,jdbcType=VARCHAR},

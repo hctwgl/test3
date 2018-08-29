@@ -3,6 +3,7 @@ package com.ald.fanbei.api.web.h5.api.jsd;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -25,6 +26,7 @@ import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRenewalServiceImpl.JsdRenewalDealBo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowOrderRepaymentStatus;
@@ -49,6 +51,7 @@ import com.ald.fanbei.api.web.common.DsedH5Handle;
 import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 
 /**  
  * @Description: 极速贷  续期确认支付
@@ -87,7 +90,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		
 		// 借款记录
 		JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByBorrowNo(paramBo.borrowNo);
-		if(borrowCashDo == null || !StringUtil.equals(borrowCashDo.getStatus(), "")){
+		if(borrowCashDo == null || !StringUtil.equals(borrowCashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.getCode())){
 			throw new FanbeiException("No borrow can renewal", FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		}
 		
@@ -108,13 +111,11 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		if(userDo == null) {
 			throw new FanbeiException("user not exist error", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 		}
-		JsdUserBankcardDo userBankcardDo = jsdUserBankcardService.getByBankNo(paramBo.bankNo);
-		if(userBankcardDo == null) {
-			throw new FanbeiException("user bankcard not exist error", FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
-		}
+		HashMap<String,Object> map = jsdUserBankcardService.getPayTypeByBankNoAndUserId(paramBo.bankNo, paramBo.userId);
+		paramBo.bankChannel = map.get("bankChannel").toString();
+		paramBo.bankName = map.get("bankName").toString();
 		
 		paramBo.userDo = userDo;
-		paramBo.userBankDo = userBankcardDo;
 		paramBo.borrowCashDo = borrowCashDo;
 
 		transactionTemplate.execute(new TransactionCallback<Long>() {
@@ -206,8 +207,8 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		renewalDo.setActualAmount(actualAmount);
 		renewalDo.setNextInterest(nextInterest);
 		renewalDo.setNextPoundage(nextPoundage);
-		renewalDo.setCardName(paramBo.userBankDo.getBankName());
-		renewalDo.setCardNumber(paramBo.userBankDo.getBankCardNumber());
+		renewalDo.setCardName(paramBo.bankName);
+		renewalDo.setCardNumber(paramBo.bankNo);
 		renewalDo.setRenewalNo(paramBo.delayNo);
 		renewalDo.setTradeNo(paramBo.delayNo);
 		renewalDo.setRenewalDay(paramBo.delayDay);
@@ -216,6 +217,8 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		renewalDo.setOverdueDay(borrowCashDo.getOverdueDay().intValue());
 		renewalDo.setOverdueStatus(borrowCashDo.getOverdueStatus());
 		renewalDo.setGmtPlanRepayment(borrowCashDo.getGmtPlanRepayment());
+		renewalDo.setGmtCreate(new Date());
+		renewalDo.setGmtModified(new Date());
 		
 		return renewalDo;
 	}
@@ -224,6 +227,8 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 	 */
 	private JsdBorrowLegalOrderDo buildOrderDo(JsdRenewalDealBo paramBo) {
 		JsdBorrowLegalOrderDo orderDo = new JsdBorrowLegalOrderDo();
+		orderDo.setGmtCreate(new Date());
+		orderDo.setGmtModified(new Date());
 		orderDo.setUserId(paramBo.userId);
 		orderDo.setBorrowId(paramBo.borrowCashDo.getRid());
 		orderDo.setOrderNo(paramBo.delayNo);
@@ -256,7 +261,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		JsdBorrowLegalOrderCashDo orderCashDo = new JsdBorrowLegalOrderCashDo();
 		orderCashDo.setUserId(paramBo.userId);
 		orderCashDo.setBorrowId(borrowCashDo.getRid());
-		orderCashDo.setCashNo(borrowCashDo.getBorrowNo());
+		orderCashDo.setCashNo(paramBo.delayNo);
 		orderCashDo.setType(renewalDay+"");
 		orderCashDo.setAmount(paramBo.goodsPrice);
 		orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.APPLYING.name());
@@ -276,6 +281,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		orderCashDo.setSumRepaidInterest(BigDecimal.ZERO);
 		Date date = DateUtil.addDays(lastOrderCashDo.getGmtPlanRepay(), renewalDay);
 		orderCashDo.setGmtPlanRepay(date);
+		orderCashDo.setGmtCreate(new Date());
 		
 		return orderCashDo;
 	}
@@ -297,8 +303,10 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		orderRepaymentDo.setName(Constants.DEFAULT_RENEWAL_NAME_BORROW_CASH);
 		orderRepaymentDo.setTradeNo(paramBo.delayNo);
 		orderRepaymentDo.setStatus(JsdBorrowOrderRepaymentStatus.APPLY.name());
-		orderRepaymentDo.setCardName(paramBo.userBankDo.getBankName());
-		orderRepaymentDo.setCardNo(paramBo.userBankDo.getBankCardNumber());
+		orderRepaymentDo.setCardName(paramBo.bankName);
+		orderRepaymentDo.setCardNo(paramBo.bankNo);
+		orderRepaymentDo.setGmtCreate(new Date());
+		orderRepaymentDo.setGmtModified(new Date());
 		
 		return orderRepaymentDo;
 	}
@@ -317,10 +325,15 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		bo.delayDay = NumberUtil.objToLongDefault(context.getDataMap().get("delayDay"), 0l);		// 展期天数
 		bo.isTying = ObjectUtils.toString(context.getDataMap().get("isTying"), "");				// 是否搭售【Y：搭售，N：不搭售】
 		bo.tyingType = ObjectUtils.toString(context.getDataMap().get("tyingType"), "");			// 搭售模式【BEHEAD：砍头，SELL：赊销】（搭售为Y时）
-		bo.goodsName = ObjectUtils.toString(context.getDataMap().get("goodsName"), "");			// 商品名称（搭售为Y时）
-		bo.goodsImage = ObjectUtils.toString(context.getDataMap().get("goodsImage"), "");		// 商品图片
-		bo.goodsPrice = NumberUtil.objToBigDecimalDefault(context.getDataMap().get("goodsPrice"),BigDecimal.ZERO);	// 商品价格
 		bo.userId = context.getUserId();
+		
+		String goodsInfoStr = ObjectUtils.toString(context.getDataMap().get("goodsInfo"), "");
+		Map<String,String> goodsInfo = new HashMap<String, String>();
+		Gson gson = new Gson();
+		goodsInfo = gson.fromJson(goodsInfoStr, goodsInfo.getClass());
+		bo.goodsName = ObjectUtils.toString(goodsInfo.get("goodsName"), "");
+		bo.goodsImage = ObjectUtils.toString(goodsInfo.get("goodsImage"), "");
+		bo.goodsPrice = NumberUtil.objToBigDecimalDefault(goodsInfo.get("goodsPrice"), BigDecimal.ZERO);
 		
 		if(StringUtil.equals("N", bo.isTying) && StringUtil.equals("BEHEAD", bo.tyingType)) {
 			throw new FanbeiException(FanbeiExceptionCode.FUNCTIONAL_MAINTENANCE);

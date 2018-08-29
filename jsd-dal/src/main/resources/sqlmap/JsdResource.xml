@@ -336,7 +336,7 @@
     	SELECT
         <include refid="queryFields" />
         FROM jsd_resource
-        WHERE is_delete = 0 AND type=#{type} AND sec_type=#{sec_type} AND is_enable=0
+        WHERE is_delete = 0 AND type=#{type} AND sec_type=#{secType} AND is_enable=0
         LIMIT 0,1
     </select>
     

@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.JsdUserDo;
  */
 public interface JsdUserService extends ParentService<JsdUserDo, Long>{
 
+	JsdUserDo getByOpenId(String openId);
+
 }

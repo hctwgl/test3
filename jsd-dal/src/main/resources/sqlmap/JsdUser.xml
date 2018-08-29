@@ -356,4 +356,13 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getByOpenId" resultType="com.ald.fanbei.api.dal.domain.JsdUserDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_user
+        WHERE is_delete = 0 AND open_id=#{openId}
+        LIMIT 0,1
+    </select>
+    
+    
 </mapper>

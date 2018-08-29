@@ -41,4 +41,9 @@ public class JsdUserBankcardServiceImpl extends ParentServiceImpl<JsdUserBankcar
 	public JsdUserBankcardDo getByBankNo(String bankNo) {
 		return jsdUserBankcardDao.getByBankNo(bankNo);
 	}
+
+	@Override
+	public HashMap<String, Object> getPayTypeByBankNoAndUserId(String bankNo, Long userId) {
+		return jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bankNo, userId);
+	}
 }

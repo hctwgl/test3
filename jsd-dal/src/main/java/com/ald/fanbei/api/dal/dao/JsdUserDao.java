@@ -12,6 +12,8 @@ import com.ald.fanbei.api.dal.domain.JsdUserDo;
  */
 public interface JsdUserDao extends BaseDao<JsdUserDo, Long> {
 
+	JsdUserDo getByOpenId(String openId);
+
     
 
 }

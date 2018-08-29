@@ -93,25 +93,21 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 	public Map<String, Object> doRenewal(JsdRenewalDealBo bo) {
 		Map<String, Object> map = new HashMap<String, Object>();
 
-		if (bo.cardId > 0) { // 银行卡支付
-			String name = Constants.DEFAULT_RENEWAL_NAME_BORROW_CASH;
-			JsdBorrowCashRenewalDo renewalDo = bo.renewalDo;
-			JsdUserDo userDo = bo.userDo; 
-			
-			HashMap<String,Object> bank = jsdUserBankcardDao.getUserBankInfoByBankNo("");
-		    KuaijieJsdRenewalPayBo bizObject = new KuaijieJsdRenewalPayBo(bo.renewalDo, bo);
-		    
-		    if (BankPayChannel.KUAIJIE.getCode().equals(bo.bankChannel)) {// 快捷支付
-				map = sendKuaiJieSms(bank, renewalDo.getRenewalNo(), bo.actualAmount, userDo.getRid(), userDo.getRealName(), 
-						userDo.getIdNumber(), JSON.toJSONString(bizObject), "jsdBorrowCashRenewalService",Constants.DEFAULT_PAY_PURPOSE, name, 
-					PayOrderSource.RENEW_JSD.getCode());
-			} else {// 代扣
-				map = doUpsPay(bo.bankChannel, bank, renewalDo.getTradeNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(),
-						userDo.getIdNumber(), "", JSON.toJSONString(bizObject),Constants.DEFAULT_PAY_PURPOSE, name, PayOrderSource.RENEW_JSD.getCode());
-		    }
-		} else {
-		    throw new FanbeiException("bank card pay error", FanbeiExceptionCode.BANK_CARD_PAY_ERR);
-		}
+		String name = Constants.DEFAULT_RENEWAL_NAME_BORROW_CASH;
+		JsdBorrowCashRenewalDo renewalDo = bo.renewalDo;
+		JsdUserDo userDo = bo.userDo; 
+		
+		HashMap<String,Object> bank = jsdUserBankcardDao.getUserBankInfoByBankNo(bo.bankNo);
+	    KuaijieJsdRenewalPayBo bizObject = new KuaijieJsdRenewalPayBo(bo.renewalDo, bo);
+	    
+	    if (BankPayChannel.KUAIJIE.getCode().equals(bo.bankChannel)) {// 快捷支付
+			map = sendKuaiJieSms(bank, renewalDo.getRenewalNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(), 
+					userDo.getIdNumber(), JSON.toJSONString(bizObject), "jsdBorrowCashRenewalService",Constants.DEFAULT_PAY_PURPOSE, name, 
+				PayOrderSource.RENEW_JSD.getCode());
+		} else {// 代扣
+			map = doUpsPay(bo.bankChannel, bank, renewalDo.getTradeNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(),
+					userDo.getIdNumber(), "", JSON.toJSONString(bizObject),Constants.DEFAULT_PAY_PURPOSE, name, PayOrderSource.RENEW_JSD.getCode());
+	    }
 		
 		return map;
 	}
@@ -331,7 +327,6 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		public JsdBorrowLegalOrderCashDo legalOrderCashDo;
 		public JsdBorrowLegalOrderDo legalOrderDo;
 		public JsdUserDo userDo; 
-		public JsdUserBankcardDo userBankDo; 
 		public Long cardId; 
 		
 		public BigDecimal capitalRate;
@@ -363,6 +358,7 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		public String deliveryPhone; // 收件人号码
 		public String address; // 地址
 		public String bankChannel; 
+		public String bankName;
 		public Integer appVersion;
 	}
 

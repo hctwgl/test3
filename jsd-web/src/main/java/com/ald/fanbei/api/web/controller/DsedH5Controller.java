@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.dsed.DsedParam;
 import com.ald.fanbei.api.biz.service.DsedUserService;
+import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
@@ -27,6 +28,7 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.context.ContextImpl;
 import com.ald.fanbei.api.dal.domain.DsedUserDo;
+import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.web.chain.impl.InterceptorChain;
 import com.ald.fanbei.api.web.common.BaseController;
 import com.ald.fanbei.api.web.common.DsedH5Handle;
@@ -51,12 +53,12 @@ public class DsedH5Controller extends BaseController {
     DsedH5HandleFactory dsedH5HandleFactory;
 
     @Resource
-    DsedUserService dsedUserService;
+    JsdUserService jsdUserService;
 
     @Resource
     InterceptorChain interceptorChain;
 
-    @RequestMapping(value = "/third/xgxy/v1/**", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+    @RequestMapping(value = {"/third/xgxy/v1/**","/third/eca/v1/**"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     @ResponseBody
     public String h5Request(@RequestBody DsedParam param, HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
@@ -85,7 +87,7 @@ public class DsedH5Controller extends BaseController {
             String decryptData = AesUtil.decryptFromBase64Third(data, PRIVATE_KEY);
             JSONObject dataInfo = JSONObject.parseObject(decryptData);
             String openId = (String.valueOf(dataInfo.get("userId")));
-            DsedUserDo userDo = dsedUserService.getByOpenId(openId);
+            JsdUserDo userDo = jsdUserService.getByOpenId(openId);
             systemsMap = JSON.parseObject(decryptData);
             builder.method(method).systemsMap(systemsMap);
             if (userDo != null) {
