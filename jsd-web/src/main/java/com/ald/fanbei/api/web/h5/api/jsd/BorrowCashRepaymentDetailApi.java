@@ -35,6 +35,9 @@ public class BorrowCashRepaymentDetailApi implements DsedH5Handle {
         String period = ObjectUtils.toString(context.getData("period"), null);
         Long timestamp = Long.valueOf(context.getData("period").toString());
         JsdBorrowCashDo cashDo=jsdBorrowCashService.getByBorrowNo(borrowNo);
+        if(cashDo==null){
+            throw new FanbeiException(FanbeiExceptionCode.JSD_BORROW_IS_NULL);
+        }
         JsdBorrowLegalOrderCashDo orderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(cashDo.getRid());
         BorrowAmount bo=new BorrowAmount();
         calculateAmount(bo,cashDo,orderCashDo);
@@ -42,14 +45,13 @@ public class BorrowCashRepaymentDetailApi implements DsedH5Handle {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("amount",bo.amount);
         map.put("remark",bo.remark);
+        map.put("timestamp",timestamp);
         resp.setData(map);
         return resp;
     }
 
     private void calculateAmount(BorrowAmount bo,JsdBorrowCashDo cashDo, JsdBorrowLegalOrderCashDo orderCashDo){
-        if(cashDo==null){
-            throw new FanbeiException(FanbeiExceptionCode.JSD_BORROW_IS_NULL);
-        }
+
         bo.cashAmount=BigDecimal.ZERO;
         bo.cashPoundage=BigDecimal.ZERO;
         bo.principle=BigDecimal.ZERO;
