@@ -219,24 +219,6 @@
     </select>
 
 
-    <!-- chefeipeng 获取用户所选银行卡对应的支付方式(代扣WITHHOLD、快捷支付KUAIJIE(有短信)) -->
-    <select id="getPayTypeByBankNoAndUserId" resultType="java.util.HashMap" >
-        SELECT
-		    u.id rid,u.gmt_create gmtCreate,u.gmt_modified gmtModified,u.user_id userId,u.mobile,u.bank_code bankCode,u.bank_card_number bankCardNumber,u.is_main isMain,b.bank_name bankName,u.status,b.bank_icon bankIcon,b.is_valid isValid,b.pay_type bankChannel,u.valid_date validDate,u.safe_code safeCode
-        FROM
-            jsd_user_bankcard u,
-            jsd_bank b
-        WHERE
-            b.bank_code = u.bank_code
-        AND b.is_delete = u.is_delete
-        AND b.is_delete = 0
-        AND b.is_valid = 'Y'
-        AND u. STATUS = 'B'
-        and u.user_id = #{userId}
-        and u.bank_card_number = #{cardNumber}
-
-    </select>
-    
     <select id="getByBankNo" resultType="com.ald.fanbei.api.dal.domain.JsdUserBankcardDo">
     	SELECT
         <include refid="queryWithFields"/>

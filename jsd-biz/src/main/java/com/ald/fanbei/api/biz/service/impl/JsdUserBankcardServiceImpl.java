@@ -37,7 +37,7 @@ public class JsdUserBankcardServiceImpl extends ParentServiceImpl<JsdUserBankcar
 
 	@Override
 	public HashMap<String, Object> getBankByBankNoAndUserId(Long userId, String bankNo) {
-		return jsdUserBankcardDao.getBankByBankNoAndUserId( userId,  bankNo);
+		return jsdUserBankcardDao.getPayTypeByBankNoAndUserId( userId,  bankNo);
 	}
 
 	@Override
@@ -45,8 +45,4 @@ public class JsdUserBankcardServiceImpl extends ParentServiceImpl<JsdUserBankcar
 		return jsdUserBankcardDao.getByBankNo(bankNo);
 	}
 
-	@Override
-	public HashMap<String, Object> getPayTypeByBankNoAndUserId(String bankNo, Long userId) {
-		return jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bankNo, userId);
-	}
 }

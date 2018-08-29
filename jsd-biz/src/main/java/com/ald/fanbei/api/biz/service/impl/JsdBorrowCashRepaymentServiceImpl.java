@@ -104,7 +104,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 	}
 	private Map<String, Object> doRepay(BorrowCashRepayBo bo,JsdBorrowCashRepaymentDo repayment ,String bankChannel) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
-		HashMap bank = jsdUserBankcardDao.getBankByBankNoAndUserId(bo.userId,bo.bankNo);
+		HashMap bank = jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
 		KuaijieRepayBo bizObject = new KuaijieRepayBo();
 		if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 			repayment.setStatus(JsdBorrowCashRepaymentStatus.SMS.getCode());
@@ -165,7 +165,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 		repayment.setTradeNo(bo.tradeNo);
 		repayment.setStatus(JsdBorrowLegalRepaymentStatus.APPLY.getCode());
 		repayment.setCardNo(cardNo);
-		HashMap bank=jsdUserBankcardDao.getBankByBankNoAndUserId(bo.userId,cardNo);
+		HashMap bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,cardNo);
 		repayment.setCardName((String) bank.get("bankName"));
 		Date now = new Date();
 		repayment.setGmtCreate(now);
@@ -191,7 +191,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 		repay.setTradeNo(repayNo);
 		repay.setCardNumber(cardNo);
 		repay.setType(repayType);
-		HashMap bank=jsdUserBankcardDao.getBankByBankNoAndUserId(userId,cardNo);
+		HashMap bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(userId,cardNo);
 		repay.setCardName((String) bank.get("bankName"));
 		return repay;
 	}
