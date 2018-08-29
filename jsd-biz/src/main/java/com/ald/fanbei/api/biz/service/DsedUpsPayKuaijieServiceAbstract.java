@@ -157,8 +157,9 @@ public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
 		}
 
 		Map<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap.put("resp", respBo);
-		resultMap.put("orderNo", respBo.getOrderNo());
+//		resultMap.put("resp", respBo);
+//		resultMap.put("orderNo", respBo.getOrderNo());
+		resultMap.put("repaySMS", "Y");
 		return resultMap;
 	}
 

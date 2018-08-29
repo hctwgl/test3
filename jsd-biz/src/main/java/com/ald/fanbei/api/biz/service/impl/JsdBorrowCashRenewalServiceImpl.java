@@ -135,11 +135,12 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		KuaijieJsdRenewalPayBo renewalPayBo = JSON.parseObject(payBizObject,KuaijieJsdRenewalPayBo.class);
 		
 		Map<String, Object> resulMap = new HashMap<String, Object>();
-        resulMap.put("outTradeNo", respBo.getOrderNo());
-        resulMap.put("tradeNo", respBo.getTradeNo());
-        resulMap.put("cardNo", Base64.encodeString(cardNo));
-        resulMap.put("refId", renewalPayBo.getRenewal().getRid());
-        resulMap.put("type", "");
+//        resulMap.put("outTradeNo", respBo.getOrderNo());
+//        resulMap.put("tradeNo", respBo.getTradeNo());
+//        resulMap.put("cardNo", Base64.encodeString(cardNo));
+//        resulMap.put("refId", renewalPayBo.getRenewal().getRid());
+//        resulMap.put("type", "");
+		resulMap.put("repaySMS", "N");
 		return resulMap;
 	}
 
