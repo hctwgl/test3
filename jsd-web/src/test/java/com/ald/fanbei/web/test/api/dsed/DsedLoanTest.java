@@ -158,7 +158,7 @@ public class DsedLoanTest extends BaseTest {
 
     @Test
     public void dsedrepayLoan() {
-        String url = urlBase + "/third/xgxy/v1/repayComfirm";
+        String url = urlBase + "/third/xgxy/v1/pushRepayment";
         Map<String,String> params = new HashMap<>();
         params.put("amount", 0.01+"");
         params.put("curPeriod", 1+"");

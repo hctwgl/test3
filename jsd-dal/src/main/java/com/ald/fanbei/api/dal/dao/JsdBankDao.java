@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBankDo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 极速贷银行卡信息Dao
@@ -12,6 +13,7 @@ import com.ald.fanbei.api.dal.domain.JsdBankDo;
  */
 public interface JsdBankDao extends BaseDao<JsdBankDo, Long> {
 
+    String getBankNameByCardNumAndUserId(@Param("bankNo") String bankNo, @Param("userId")Long userId);
     
 
 }

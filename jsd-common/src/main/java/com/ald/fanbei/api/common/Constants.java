@@ -9,6 +9,9 @@ import java.math.BigDecimal;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public class Constants {
+
+
+	public static final String CACHEKEY_REPAYCASHNO_LOCK = "fbapi_repay_cash_no_lock";
 	public static final String XGXY_REQ_CODE = "200";
 
 	public static final long SECOND_OF_TEN_MINITS = 10 * 60l;
@@ -284,8 +287,8 @@ public class Constants {
 	public static final String CONFKEY_TAOBAO_ICON_COMMON_LOCATION = "http://img02.taobaocdn.com/bao/uploaded/";
 
 	public static final String OFFLINE_CACHEKEY_REPAYCASHNO = "dsed_offline_repay_cash_no";
-	public static final String CACHEKEY_REPAYCASHNO = "dsed_repay_cash_no";
-	public static final String CACHEKEY_ORDERNO_LOCK = "dsed_order_lock";
+	public static final String CACHEKEY_REPAYCASHNO = "jsd_repay_cash_no";
+	public static final String CACHEKEY_ORDERNO_LOCK = "jsd_order_lock";
 	public static final String CACHEKEY_ORDERNO = "dsed_order";
 	public static final String CACHEKEY_BORROWNO_LOCK = "dsed_borrow_no_lock";
 	public static final String CACHEKEY_BORROWNO = "dsed_borrow_no";
@@ -293,6 +296,13 @@ public class Constants {
 	public static final String CACHEKEY_REPAYNO = "dsed_repay_no";
 	public static final String CACHEKEY_REFUND_NO_LOCK = "dsed_refund_no_lock";
 	public static final String CACHEKEY_REFUND_NO = "dsed_brefund_no";
+
+
+
+
+
+
+
 
 	public static final String CONFIG_KEY_LOCK_TRY_TIMES = "fbapi.sync.lock.try.times";
 	public static final String CONFKEY_KXG_URL_CHARGE = "fbapi.kxg.url.charge";

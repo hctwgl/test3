@@ -11,6 +11,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum FanbeiExceptionCode {
 
+    JSD_PARAMS_ERROR("JSD_PARAMS_ERROR", 9999, "params error", "参数错误"),
+
+
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "流量过大系统开小差啦，请尝试重新发起"),
     CALCULATE_SHA_256_ERROR("CALCULATE_SHA_256_ERROR",1009,"cal sha 265 error","系统错误"),
     UPS_QUERY_TRADE_ERROR("UPS_QUERY_TRADE_ERROR",1555,"ups query trade error","单笔交易查询失败"),
@@ -28,6 +31,17 @@ public enum FanbeiExceptionCode {
     LOAN_CONCURRENT_LIMIT("",2110,"","同一时刻只能发起一笔贷款申请"),
     LOAN_PERIOD_CAN_NOT_REPAY_ERROR("LOAN_PERIOD_CAN_NOT_REPAY_ERROR",2014,"loan period can not repay error","当前借款未到还款时间"),
     LOAN_REPAY_PROCESS_ERROR("LOAN_REPAY_PROCESS_ERROR",2018,"loan repay not exist","您有一笔还款正在处理中，请稍后重试"),
+
+    BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR("BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR",2020,"borrow cash repay more than borrow cash","还款金额大于借款金额"),
+
+
+    HAVE_A_PROCESS_RENEWAL_DETAIL("HAVE_A_PROCESS_RENEWAL_DETAIL",2021,"borrow a process renewal record","存在处理中续期记录,请稍后重试"),
+
+    LEGAL_REPAY_PROCESS_ERROR("LEGAL_REPAY_PROCESS_ERROR",2122,"legal order repay not exist","您有一笔商品还款正在处理中，请稍后重试"),
+
+    JSD_BORROW_IS_NULL("JSD_BORROW_IS_NULL", 2126, "borrow is null", "借款信息是空"),
+
+
     UPS_REPEAT_NOTIFY("UPS_REPEAT_NOTIFY",1549,"ups repeat notify","重复UPS回调"),
     UPS_KUAIJIE_NOT_SUPPORT("UPS_KUAIJIE_NOT_SUPPORT",1581,"ups kuaijie not support","当前业务，未支持快捷支付"),
     BORROW_DETAIL_NOT_EXIST_ERROR("BORROW_DETAIL_NOT_EXIST_ERROR",1705,"borrow detail not exist error","借款详情不存在"),
@@ -70,15 +84,17 @@ public enum FanbeiExceptionCode {
     UPS_ERROR_4014("UPS_ERROR_4014",4014,"","交易失败，您可联系发卡行"),
     UPS_ERROR_5001("UPS_ERROR_5001",5001,"","卡未开通银联无卡支付，您可换卡重试"),
     UPS_ERROR_default("UPS_ERROR_default",5003,"","银行卡交易失败，您可换卡或稍后重试"),
-    UPS_ERROR_5002("UPS_ERROR_5002",5002,"","银行卡交易失败，您可换卡或稍后重试"), 
-    
-    HAVE_A_REPAYMENT_PROCESSING("HAVE_A_REPAYMENT_PROCESSING",6001,"","有一笔还款在处理中"), 
+    UPS_ERROR_5002("UPS_ERROR_5002",5002,"","银行卡交易失败，您可换卡或稍后重试"),
+
+    HAVE_A_REPAYMENT_PROCESSING("HAVE_A_REPAYMENT_PROCESSING",6001,"","有一笔还款在处理中"),
     HAVE_A_RENEWAL_PROCESSING("HAVE_A_RENEWAL_PROCESSING",6002,"","有一笔续期在处理中"),
-    FUNCTIONAL_MAINTENANCE("FUNCTIONAL_MAINTENANCE",6003,"","功能维护中"), 
+    FUNCTIONAL_MAINTENANCE("FUNCTIONAL_MAINTENANCE",6003,"","功能维护中"),
     GET_JSD_RATE_ERROR("GET_JSD_RATE_ERROR",6004,"","获取利率失败，请联系客服"),
     RENEWAL_ORDER_NOT_EXIST_ERROR("RENEWAL_ORDER_NOT_EXIST_ERROR",6005,"","无可续期的订单"),
-    
+
     ;
+
+
 
 
 

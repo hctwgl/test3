@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.web.h5.api.dsed;
 
-import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.impl.DsedLoanRepaymentServiceImpl.LoanRepayBo;
 import com.ald.fanbei.api.common.enums.DsedLoanStatus;

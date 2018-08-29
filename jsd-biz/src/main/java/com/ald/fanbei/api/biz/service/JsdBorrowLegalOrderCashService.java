@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.biz.service;
 
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
+import org.apache.ibatis.annotations.Param;
+
+import java.math.BigDecimal;
 
 /**
  * 极速贷订单借款Service
@@ -14,4 +18,13 @@ public interface JsdBorrowLegalOrderCashService extends ParentService<JsdBorrowL
 
 	JsdBorrowLegalOrderCashDo getLastOrderCashByBorrowId(Long borrowId);
 
+
+    JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(@Param("borrowId")Long borrowId);
+    /**
+     * 计算剩余应还的金额
+     * @param cashDo
+     * @param orderCashDo
+     * @return
+     */
+    BigDecimal calculateLegalRestAmount(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderCashDo orderCashDo);
 }
