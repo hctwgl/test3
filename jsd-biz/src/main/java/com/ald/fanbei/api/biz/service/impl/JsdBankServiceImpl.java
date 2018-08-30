@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.DsedBankDo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,5 +33,10 @@ public class JsdBankServiceImpl extends ParentServiceImpl<JsdBankDo, Long> imple
 		@Override
 	public BaseDao<JsdBankDo, Long> getDao() {
 		return jsdBankDao;
+	}
+
+	@Override
+	public JsdBankDo getBankByName(String name) {
+		return jsdBankDao.getBankByName( name);
 	}
 }

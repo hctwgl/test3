@@ -67,7 +67,6 @@ public class DsedResendCodeApi implements DsedH5Handle {
 			resp.setData(respBo);
 		}else {
 			DsedUserDo user=dsedUserService.getByOpenId(openId);
-			//判断是否已经被绑定
 			DsedUserBankcardDo userBankcardDo=dsedUserBankcardService.getById(Long.valueOf(busiFlag));
 			//默认赋值为借记卡
 			String cardType = "00";

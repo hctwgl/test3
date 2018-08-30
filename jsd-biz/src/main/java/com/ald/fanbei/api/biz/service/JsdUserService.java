@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 
 /**
@@ -13,5 +14,7 @@ import com.ald.fanbei.api.dal.domain.JsdUserDo;
 public interface JsdUserService extends ParentService<JsdUserDo, Long>{
 
 	JsdUserDo getByOpenId(String openId);
+
+	int updateUser(DsedUserDo userDo);
 
 }

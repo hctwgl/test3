@@ -3,14 +3,23 @@
  */
 package com.ald.fanbei.api.web.h5.api.jsd;
 
+import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
 import com.ald.fanbei.api.biz.service.DsedUpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
+import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.enums.SmsCodeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
+import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.DsedUserDo;
+import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.web.common.DsedH5Handle;
 import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import org.apache.commons.lang.ObjectUtils;
@@ -18,6 +27,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -39,7 +51,17 @@ public class ConfirmSmsApi implements DsedH5Handle {
 	@Qualifier("jsdBorrowCashRenewalService")
 	DsedUpsPayKuaijieServiceAbstract jsdBorrowCashRenewalService;
 
+	@Resource
+	private JsdUserBankcardService jsdUserBankcardService;
 
+	@Resource
+	private JsdUserService jsdUserService;
+
+	@Resource
+	private TransactionTemplate transactionTemplate;
+
+	@Resource
+	private UpsUtil upsUtil;
 
     @Autowired
     BizCacheUtil bizCacheUtil;
@@ -52,6 +74,7 @@ public class ConfirmSmsApi implements DsedH5Handle {
 		String smsCode = ObjectUtils.toString(context.getData("code"), null);
 		String type = ObjectUtils.toString(context.getData("type"), null);
 		Long timestamp=Long.parseLong(context.getData("timestamp").toString());
+		Long userId=context.getUserId();
 		if (StringUtils.isBlank(busiFlag) || StringUtils.isBlank(smsCode)) {
 			return new DsedH5HandleResponse(3001, FanbeiExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
 		}
@@ -86,7 +109,34 @@ public class ConfirmSmsApi implements DsedH5Handle {
 	 			default:
 	 				throw new FanbeiException("ups kuaijie not support", FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
 	 		}
- 		}
+ 		}else if(SmsCodeType.BIND.getCode().equals(type)){
+			final JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getById(Long.valueOf(busiFlag));
+			final JsdUserDo userDo=jsdUserService.getById(userId);
+			int res =transactionTemplate.execute(new TransactionCallback<Integer>() {
+				@Override
+				public Integer doInTransaction(TransactionStatus status) {
+					DsedUserDo userUpdate=new DsedUserDo();
+					if(StringUtil.isEmpty(userDo.getRealName())){
+						userUpdate.setRid(userDo.getRid());
+						userUpdate.setRealName(userDo.getRealName());
+						jsdUserService.updateUser(userUpdate);
+					}
+					userBankcardDo.setStatus(BankcardStatus.BIND.getCode());
+					jsdUserBankcardService.updateUserBankcard(userBankcardDo);
+					UpsAuthSignValidRespBo upsResult = upsUtil.authSignValid(userDo.getRid()+"", userBankcardDo.getBankCardNumber(), smsCode, "02");
+					if(!upsResult.isSuccess()){
+						status.setRollbackOnly();
+						return 1000; //UPS绑卡失败
+					}
+					return 1; //仅当返回1 才操作成功
+				}
+			});
+			if(res == 1000) {
+				userBankcardDo.setStatus(BankcardStatus.UNBIND.getCode());
+				jsdUserBankcardService.updateUserBankcard(userBankcardDo);
+				return new DsedH5HandleResponse(1556, FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR.getErrorMsg());
+			}
+		}
 
 		resp.setData(map);
 		return resp;
