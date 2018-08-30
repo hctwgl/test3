@@ -368,31 +368,43 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		BigDecimal orderRate = null;
 
 		if(resourceDo!=null) {
-			String rateStr = resourceDo.getValue();
 			capitalRate = new BigDecimal(resourceDo.getValue1());
-			JSONArray array = JSONObject.parseArray(rateStr);
 
+			String rateStr = resourceDo.getValue();
+			JSONArray array = JSONObject.parseArray(rateStr);
 			for (int i = 0; i < array.size(); i++) {
 				JSONObject info = array.getJSONObject(i);
 				String borrowTag = info.getString("borrowTag");
-				if (StringUtils.equals("BORROW_CASH", borrowTag)) {
-					baseBankRate = info.getBigDecimal("interestRate");
-					poundageRate = info.getBigDecimal("poundageRate");
+				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
+					baseBankRate = info.getBigDecimal("borrowFirstType");
 				}
-				if (StringUtils.equals("ORDER_CASH", borrowTag)) {
-					orderRate = info.getBigDecimal("interestRate");
-					orderPoundageRate = info.getBigDecimal("poundageRate");
+				if(StringUtils.equals("SERVICE_RATE", borrowTag)){
+					poundageRate = info.getBigDecimal("borrowFirstType");
 				}
 			}
+			
+			String orderRateStr = resourceDo.getValue3();
+			JSONArray orderRateArray = JSONObject.parseArray(orderRateStr);
+			for (int i = 0; i < orderRateArray.size(); i++) {
+				JSONObject info = orderRateArray.getJSONObject(i);
+				String consumeTag = info.getString("consumeTag");
+				if (StringUtils.equals("INTEREST_RATE", consumeTag)) {
+					orderRate = info.getBigDecimal("consumeFirstType");
+				}
+				if(StringUtils.equals("SERVICE_RATE", consumeTag)){
+					orderPoundageRate = info.getBigDecimal("consumeFirstType");
+				}
+			}
+
 		}else {
 			throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
 		}
 
 
-		paramBo.orderPoundageRate = orderPoundageRate;
-		paramBo.orderRate = orderRate;
-		paramBo.cashPoundageRate = poundageRate;
-		paramBo.cashRate = baseBankRate;
+		paramBo.orderPoundageRate = orderPoundageRate.divide(new BigDecimal(100));
+		paramBo.orderRate = orderRate.divide(new BigDecimal(100));
+		paramBo.cashPoundageRate = poundageRate.divide(new BigDecimal(100));
+		paramBo.cashRate = baseBankRate.divide(new BigDecimal(100));
 		paramBo.capitalRate = capitalRate;
 	}
 }

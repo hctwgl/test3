@@ -116,9 +116,11 @@ public class GetRenewalDetailApi implements DsedH5Handle {
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject info = array.getJSONObject(i);
 			String borrowTag = info.getString("borrowTag");
-			if (StringUtils.equals("BORROW_CASH", borrowTag)) {
-				baseBankRate = info.getBigDecimal("interestRate");
-				poundageRate = info.getBigDecimal("poundageRate");
+			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
+				baseBankRate = info.getBigDecimal("borrowFirstType");
+			}
+			if(StringUtils.equals("SERVICE_RATE", borrowTag)){
+				poundageRate = info.getBigDecimal("borrowFirstType");
 			}
 		}
 		data.put("interestRate", baseBankRate);

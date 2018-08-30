@@ -330,7 +330,7 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		});
 		
 		if(result == 1l){
-			//还款失败，调用西瓜信用通知接口
+			//还款成功，调用西瓜信用通知接口
 			JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByRenewalNo(renewalNo);
 			JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
 			HashMap<String, String> data = new HashMap<String, String>();
