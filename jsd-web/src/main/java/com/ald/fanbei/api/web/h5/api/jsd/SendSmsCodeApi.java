@@ -70,7 +70,7 @@ public class SendSmsCodeApi implements DsedH5Handle {
 
 	}else if(SmsCodeType.BIND.getCode().equals(type)){
 
-		//判断是否已经被绑定
+
 		JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getById(Long.valueOf(busiFlag));
 		//默认赋值为借记卡
 		String cardType = "00";
