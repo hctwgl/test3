@@ -159,7 +159,7 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 				dealJsdRenewalFail(renewalNo, "", true, respBo.getRespCode(), respBo.getRespDesc());
 				throw new FanbeiException(errorMsg);
 			} else {
-				dealJsdRenewalFail(renewalNo, "", false, "", "UPS响应吗为空");
+				dealJsdRenewalFail(renewalNo, "", false, "", "UPS响应码为空");
 			}
 		} else {
 			// 未获取到缓存数据，支付订单过期
@@ -167,7 +167,7 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		}
 	}
 
-	private long dealChangStatus(final String renewalNo, final String tradeNo, final String status, final Long renewalId, String errorCode, String errorMsg) {
+	private long dealChangStatus(final String renewalNo, final String tradeNo, final String status, final Long renewalId, final String errorCode, final String errorMsg) {
 		
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 		    @Override
@@ -179,6 +179,10 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		    		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getById(renewalId);
 		    		renewalDo.setStatus(status);
 		    		renewalDo.setGmtModified(now);
+		    		if(!JsdRenewalDetailStatus.NO.getCode().equals(status)){
+		    			renewalDo.setFailCode(errorCode);
+		    			renewalDo.setFailMsg(errorMsg);
+		    		}
 		    		jsdBorrowCashRenewalDao.updateById(renewalDo);
 		    		
 		    		// 更新新增订单还款状态

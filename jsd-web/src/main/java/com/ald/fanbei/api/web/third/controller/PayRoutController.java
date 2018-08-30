@@ -4,8 +4,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.DsedLoanService;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 
@@ -33,8 +36,9 @@ public class PayRoutController {
 	@Resource
 	DsedLoanService dsedLoanService;
 
-
-
+	@Resource
+	JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
+	
 	@Resource
 	JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
 
@@ -134,9 +138,17 @@ public class PayRoutController {
 				+ respDesc);
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代收成功
-				jsdBorrowCashRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
+				if(PayOrderSource.REPAY_JSD.getCode().equals(merPriv)){
+					jsdBorrowCashRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
+				}else if(PayOrderSource.RENEW_JSD.getCode().equals(merPriv)){
+					jsdBorrowCashRenewalService.dealJsdRenewalSucess(outTradeNo, tradeNo);
+				}
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
-				jsdBorrowCashRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, respDesc);
+				if(PayOrderSource.REPAY_JSD.getCode().equals(merPriv)){
+					jsdBorrowCashRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, respDesc);
+				}else if(PayOrderSource.RENEW_JSD.getCode().equals(merPriv)){
+					jsdBorrowCashRenewalService.dealJsdRenewalFail(outTradeNo, tradeNo, true, respCode, respDesc);
+				}
 			}
 			return "SUCCESS";
 		} catch (Exception e) {
