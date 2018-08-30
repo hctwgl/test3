@@ -66,9 +66,8 @@ public class BorrowCashRepaymentDetailApi implements DsedH5Handle {
         if(orderCashDo!=null){
             bo.amount=bo.cashAmount.add(orderCashDo.getAmount()).add(orderCashDo.getOverdueAmount()).add(orderCashDo.getPoundageAmount()).add(orderCashDo.getInterestAmount())
                     .add(orderCashDo.getSumRepaidInterest()).add(orderCashDo.getSumRepaidOverdue()).add(orderCashDo.getSumRepaidPoundage()).subtract(orderCashDo.getRepaidAmount());
-            bo.orderAmount=bo.orderAmount.add(orderCashDo.getAmount()).add(orderCashDo.getOverdueAmount()).add(orderCashDo.getPoundageAmount()).add(orderCashDo.getInterestAmount())
-                    .add(orderCashDo.getSumRepaidInterest()).add(orderCashDo.getSumRepaidOverdue()).add(orderCashDo.getSumRepaidPoundage()).subtract(orderCashDo.getRepaidAmount());
-            bo.orderPoundage=bo.orderPoundage.add(orderCashDo.getAmount()).add(orderCashDo.getOverdueAmount()).add(orderCashDo.getPoundageAmount());
+            bo.orderAmount=bo.orderAmount.add(orderCashDo.getAmount()).add(orderCashDo.getSumRepaidInterest()).add(orderCashDo.getSumRepaidOverdue()).add(orderCashDo.getSumRepaidPoundage()).subtract(orderCashDo.getRepaidAmount());
+            bo.orderPoundage=bo.orderPoundage.add(orderCashDo.getInterestAmount()).add(orderCashDo.getOverdueAmount()).add(orderCashDo.getPoundageAmount());
         }
         bo.remark="费用明细: 1.其中含借款本金"+bo.principle+"元，利息&手续费&逾期费"+bo.cashPoundage+"元。2.商品金额为"+bo.orderAmount+"元，利息&手续费&逾期费"+bo.orderPoundage+"元。";
 

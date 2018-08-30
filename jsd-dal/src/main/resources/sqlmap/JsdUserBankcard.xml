@@ -248,4 +248,76 @@
         and u.user_id = #{userId}
         and u.bank_card_number = #{bankNo}
     </select>
+    <select id="getUserBankCardInfoByUserId" resultType="JsdUserBankcardDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_user_bankcard
+        WHERE
+        is_delete=0
+        AND
+        user_id = #{userId}
+        AND
+        status = 'B'
+    </select>
+
+
+    <update id="updateUserBankcard"  parameterType="JsdUserBankcardDo">
+        UPDATE
+        jsd_user_bankcard
+        SET
+        gmt_modified = NOW()
+
+        <if test="status != null">
+            ,status = #{status}
+        </if>
+        <if test="bankCardNumber != null">
+            ,bank_card_number = #{bankCardNumber}
+        </if>
+        <if test="isMain != null">
+            ,is_main = #{isMain}
+        </if>
+        <if test="bankCode != null">
+            ,bank_code = #{bankCode}
+        </if>
+        WHERE
+        id=#{rid}
+        AND
+        user_id = #{userId}
+        AND
+        is_delete = 0
+    </update>
+
+    <insert id="addUserBankcard" parameterType="JsdUserBankcardDo" useGeneratedKeys="true" keyProperty="rid">
+		INSERT INTO jsd_user_bankcard(gmt_create , gmt_modified , user_id , mobile , bank_code , bank_card_number , is_main , bank_name , valid_date,status,safe_code)
+		VALUES (
+    		NOW(),
+    		NOW(),
+    		#{userId},
+    		#{mobile},
+    		#{bankCode},
+    		#{bankCardNumber},
+    		#{isMain},
+    		#{bankName},
+    	    #{validDate},
+    		#{status},
+    	   #{safeCode}
+
+		)
+	</insert>
+
+
+    <select id="getUserBankByCardNo" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM
+			jsd_user_bankcard
+		WHERE
+			is_delete=0
+		AND
+			bank_card_number = #{cardNumber}
+		AND
+			status = 'B'
+	</select>
+
 </mapper>

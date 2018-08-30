@@ -2,9 +2,11 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.HashMap;
 
+import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * 极速贷用户银行卡信息Service
@@ -19,4 +21,14 @@ public interface JsdUserBankcardService extends ParentService<JsdUserBankcardDo,
 	JsdUserBankcardDo getByBankNo(String bankNo);
 
     HashMap<String,Object> getBankByBankNoAndUserId(Long userId,String bankNo);
+
+    List<JsdUserBankcardDo> getUserBankCardInfoByUserId(Long userId);
+
+    int addUserBankcard(JsdUserBankcardDo userBankcardDo);
+
+    int updateUserBankcard(JsdUserBankcardDo userBankcardDo);
+
+    int getUserBankByCardNo(String cardNumber);
+
+
 }

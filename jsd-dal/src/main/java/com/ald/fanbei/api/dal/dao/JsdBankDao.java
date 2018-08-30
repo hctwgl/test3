@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import com.ald.fanbei.api.dal.domain.DsedBankDo;
 import com.ald.fanbei.api.dal.domain.JsdBankDo;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,6 +15,7 @@ import org.apache.ibatis.annotations.Param;
 public interface JsdBankDao extends BaseDao<JsdBankDo, Long> {
 
     String getBankNameByCardNumAndUserId(@Param("bankNo") String bankNo, @Param("userId")Long userId);
-    
+
+    JsdBankDo getBankByName(String name);
 
 }

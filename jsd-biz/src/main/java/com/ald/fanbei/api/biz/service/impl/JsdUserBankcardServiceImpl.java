@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -40,6 +42,25 @@ public class JsdUserBankcardServiceImpl extends ParentServiceImpl<JsdUserBankcar
 		return jsdUserBankcardDao.getPayTypeByBankNoAndUserId( userId,  bankNo);
 	}
 
+	@Override
+	public List<JsdUserBankcardDo> getUserBankCardInfoByUserId(Long userId) {
+		return jsdUserBankcardDao.getUserBankCardInfoByUserId(userId);
+	}
+
+	@Override
+	public int addUserBankcard(JsdUserBankcardDo userBankcardDo) {
+		return jsdUserBankcardDao.addUserBankcard( userBankcardDo);
+	}
+
+	@Override
+	public int updateUserBankcard(JsdUserBankcardDo userBankcardDo) {
+		return jsdUserBankcardDao.updateUserBankcard( userBankcardDo);
+	}
+
+	@Override
+	public int getUserBankByCardNo(String cardNumber) {
+		return jsdUserBankcardDao.getUserBankByCardNo(cardNumber);
+	}
 	@Override
 	public JsdUserBankcardDo getByBankNo(String bankNo) {
 		return jsdUserBankcardDao.getByBankNo(bankNo);

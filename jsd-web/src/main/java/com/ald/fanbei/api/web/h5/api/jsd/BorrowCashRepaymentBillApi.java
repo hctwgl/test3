@@ -70,6 +70,7 @@ public class BorrowCashRepaymentBillApi implements DsedH5Handle {
         borrowBillDetail.put("unrepayOverdueAmount", String.valueOf(cashDo.getOverdueAmount()));
         borrowBillDetail.put("unrepayServiceAmount", String.valueOf(cashDo.getPoundage()));
         borrowBillDetails.add(borrowBillDetail);
+        map.put("borrowBillDetails",borrowBillDetails);
         return map;
     }
 }

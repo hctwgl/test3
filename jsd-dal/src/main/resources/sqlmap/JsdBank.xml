@@ -147,5 +147,12 @@
         <include refid="commonCondition"/>
     </select>
 
+    <select id="getBankByName" resultType="com.ald.fanbei.api.dal.domain.JsdBankDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_bank
+        WHERE bank_name=#{name}
+        limit 0,1
+    </select>
 
 </mapper>
