@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.dbunit.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +27,11 @@ import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashRenewalDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
@@ -110,7 +114,7 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 	protected void daikouConfirmPre(String renewalNo, String bankChannel, String payBizObject) {
 		KuaijieJsdRenewalPayBo renewalPayBo = JSON.parseObject(payBizObject,KuaijieJsdRenewalPayBo.class);
 		if(renewalPayBo!=null){
-			dealChangStatus(renewalNo, "", JsdRenewalDetailStatus.PROCESS.getCode(), renewalPayBo.getRenewal().getRid());
+			dealChangStatus(renewalNo, "", JsdRenewalDetailStatus.PROCESS.getCode(), renewalPayBo.getRenewal().getRid(), "", "");
 		}
 	}
 	
@@ -118,7 +122,7 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 	protected void kuaijieConfirmPre(String renewalNo, String bankChannel, String payBizObject) {
 		KuaijieJsdRenewalPayBo renewalPayBo = JSON.parseObject(payBizObject,KuaijieJsdRenewalPayBo.class);
 		if(renewalPayBo!=null){
-			dealChangStatus(renewalNo, "", JsdRenewalDetailStatus.PROCESS.getCode(), renewalPayBo.getRenewal().getRid());
+			dealChangStatus(renewalNo, "", JsdRenewalDetailStatus.PROCESS.getCode(), renewalPayBo.getRenewal().getRid(), "", "");
 		}
 	}
 
@@ -126,7 +130,7 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 	protected void quickPaySendSmmSuccess(String renewalNo, String payBizObject, UpsCollectRespBo respBo) {
 		KuaijieJsdRenewalPayBo renewalPayBo = JSON.parseObject(payBizObject,KuaijieJsdRenewalPayBo.class);
 		if(renewalPayBo!=null){
-			dealChangStatus(renewalNo, "", JsdRenewalDetailStatus.SMS.getCode(), renewalPayBo.getRenewal().getRid());
+			dealChangStatus(renewalNo, "", JsdRenewalDetailStatus.SMS.getCode(), renewalPayBo.getRenewal().getRid(), "", "");
 		} 
 	}
 
@@ -148,10 +152,22 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 
 	@Override
 	protected void roolbackBizData(String renewalNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo) {
-		dealJsdRenewalFail(renewalNo, "", errorMsg);
+		logger.info("payBizObject="+payBizObject+",renewalNo="+renewalNo);
+		
+		if (StringUtils.isNotBlank(payBizObject)) {
+			if (StringUtil.isNotBlank(respBo.getRespCode())) { // 处理业务数据
+				dealJsdRenewalFail(renewalNo, "", true, respBo.getRespCode(), respBo.getRespDesc());
+				throw new FanbeiException(errorMsg);
+			} else {
+				dealJsdRenewalFail(renewalNo, "", false, "", "UPS响应吗为空");
+			}
+		} else {
+			// 未获取到缓存数据，支付订单过期
+			throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+		}
 	}
 
-	private long dealChangStatus(final String renewalNo, final String tradeNo, final String status, final Long renewalId) {
+	private long dealChangStatus(final String renewalNo, final String tradeNo, final String status, final Long renewalId, String errorCode, String errorMsg) {
 		
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
 		    @Override
@@ -306,13 +322,13 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 	}
 	
 	@Override
-	public long dealJsdRenewalFail(String renewalNo, String tradeNo, String errorMsg) {
+	public long dealJsdRenewalFail(String renewalNo, String tradeNo, boolean isNeedMsgNotice, String errorCode, String errorMsg) {
 		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByRenewalNo(renewalNo);
 		if(JsdRenewalDetailStatus.YES.name().equals(renewalDo.getStatus())){
 			return 0l;
 		}
 		
-		dealChangStatus(renewalNo, tradeNo, JsdRenewalDetailStatus.NO.name(), renewalDo.getRid());
+		dealChangStatus(renewalNo, tradeNo, JsdRenewalDetailStatus.NO.name(), renewalDo.getRid(), errorCode, errorMsg);
 		
 		return 1l;
 	}
@@ -368,6 +384,11 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 	@Override
 	public JsdBorrowCashRenewalDo getLastJsdRenewalByBorrowId(Long borrowId) {
 		return jsdBorrowCashRenewalDao.getLastJsdRenewalByBorrowId(borrowId);
+	}
+
+	@Override
+	public JsdBorrowCashRenewalDo getRenewalByDelayNo(String delayNo) {
+		return jsdBorrowCashRenewalDao.getByRenewalNo(delayNo);
 	}
 	
 }

@@ -141,7 +141,32 @@ import java.math.BigDecimal;
      * 原预计还款时间
      */
     private Date gmtPlanRepayment;
+    /**
+     * 失败码
+     */
+    private String failCode;
+    
+	/**
+     * 失败原因
+     */
+    private String failMsg;
 
+    public String getFailCode() {
+    	return failCode;
+    }
+    
+    public void setFailCode(String failCode) {
+    	this.failCode = failCode;
+    }
+    
+    public String getFailMsg() {
+    	return failMsg;
+    }
+    
+    public void setFailMsg(String failMsg) {
+    	this.failMsg = failMsg;
+    }
+    
 
     /**
      * 获取主键Id

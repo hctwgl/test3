@@ -128,8 +128,8 @@ public class GetRenewalDetailApi implements DsedH5Handle {
 		return data;
 	}
 
-	private Map<String, Object> getRenewalDetail(JsdBorrowCashDo borrowCashDo, JsdResourceDo resource) {
-		Map<String, Object> delayInfo = new HashMap<String, Object>();
+	private JSONArray getRenewalDetail(JsdBorrowCashDo borrowCashDo, JsdResourceDo resource) {
+		
 		//上一笔订单记录
 		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashService.getLastOrderCashByBorrowId(borrowCashDo.getRid());
 		if(orderCashDo == null)	throw new FanbeiException(FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
@@ -138,43 +138,52 @@ public class GetRenewalDetailApi implements DsedH5Handle {
 		if(orderDo==null) throw new FanbeiException(FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		logger.info("last orderCash record = {} " , orderCashDo);
 		
+		JSONArray delayArray = new JSONArray();
+		
 		// 允许续期天数
-		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue2());
+		String[] renewalDayArr = resource.getValue2().split(",");
+		for (String renewalDayStr : renewalDayArr) {
+			BigDecimal allowRenewalDay = new BigDecimal(renewalDayStr);
+			Map<String, Object> delayInfo = new HashMap<String, Object>();
+			
+			// 续借需还本金比例
+			BigDecimal renewalCapitalRate = new BigDecimal(resource.getValue1());
+			//续借需要支付本金 = 借款金额 * 续借需还本金比例
+			BigDecimal capital = borrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
+			
+			// 上期订单待还本金
+			BigDecimal waitOrderAmount = BigDecimalUtil.add(orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),
+					orderCashDo.getSumRepaidPoundage()).subtract(orderCashDo.getRepaidAmount());
+			
+			// 上期总利息
+			BigDecimal rateAmount = BigDecimalUtil.add(borrowCashDo.getRateAmount(),orderCashDo.getInterestAmount());
+			// 上期总手续费
+			BigDecimal poundage = BigDecimalUtil.add(borrowCashDo.getPoundage(),orderCashDo.getPoundageAmount());
+			// 上期总逾期费
+			BigDecimal overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(),orderCashDo.getOverdueAmount());
+			
+			// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +上期待还订单)
+			BigDecimal renewalPayAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital, waitOrderAmount);
+			
+			String deferRemark = "上期利息"+rateAmount+
+					"元,上期手续费"+poundage+
+					"元,上期逾期费"+overdueAmount+
+					"元,本金还款部分"+capital+
+					"元,本期商品价格"+waitOrderAmount+"元";
+			
+			BigDecimal principalAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumOverdue(), 
+					borrowCashDo.getSumRate(), borrowCashDo.getSumRenewalPoundage())
+					.subtract(borrowCashDo.getRepayAmount().add(capital));
+			
+			delayInfo.put("principalAmount", principalAmount+"");	// 展期后剩余借款本金
+			delayInfo.put("deferAmount", renewalPayAmount+"");	// 需支付总金额
+			delayInfo.put("deferDay", allowRenewalDay+"");	// 续期天数
+			delayInfo.put("deferRemark", deferRemark);	// 费用明细	展期金额的相关具体描述（多条说明用英文逗号,用间隔）
+			
+			delayArray.add(delayInfo);
+		}
 		
-		// 续借需还本金比例
-		BigDecimal renewalCapitalRate = new BigDecimal(resource.getValue1());
-		//续借需要支付本金 = 借款金额 * 续借需还本金比例
-		BigDecimal capital = borrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
-
-		// 上期订单待还本金
-		BigDecimal waitOrderAmount = BigDecimalUtil.add(orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),
-				orderCashDo.getSumRepaidPoundage()).subtract(orderCashDo.getRepaidAmount());
-		
-		// 上期总利息
-		BigDecimal rateAmount = BigDecimalUtil.add(borrowCashDo.getRateAmount(),orderCashDo.getInterestAmount());
-		// 上期总手续费
-		BigDecimal poundage = BigDecimalUtil.add(borrowCashDo.getPoundage(),orderCashDo.getPoundageAmount());
-		// 上期总逾期费
-		BigDecimal overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(),orderCashDo.getOverdueAmount());
-
-		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +上期待还订单)
-		BigDecimal renewalPayAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital, waitOrderAmount);
-
-		String deferRemark = "上期利息"+rateAmount+
-						 "元,上期手续费"+poundage+
-						 "元,上期逾期费"+overdueAmount+
-						 "元,本金还款部分"+capital+
-						 "元,本期商品价格"+waitOrderAmount+"元";
-		
-		BigDecimal principalAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumOverdue(), 
-										borrowCashDo.getSumRate(), borrowCashDo.getSumRenewalPoundage())
-										.subtract(borrowCashDo.getRepayAmount().add(capital));
-		
-		delayInfo.put("principalAmount", principalAmount);	// 展期后剩余借款本金
-		delayInfo.put("deferAmount", renewalPayAmount);	// 需支付总金额
-		delayInfo.put("deferDay", allowRenewalDay);	// 续期天数
-		delayInfo.put("deferRemark", deferRemark);	// 费用明细	展期金额的相关具体描述（多条说明用英文逗号,用间隔）
-		return delayInfo;
+		return delayArray;
 	}
 }
 

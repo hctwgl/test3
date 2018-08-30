@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.util.Map;
+
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRenewalServiceImpl.JsdRenewalDealBo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 
@@ -18,9 +19,12 @@ public interface JsdBorrowCashRenewalService {
 
 	public long dealJsdRenewalSucess(String outTradeNo, String tradeNo);
 
-	public long dealJsdRenewalFail(final String outTradeNo, final String tradeNo, String errorMsg);
+	public long dealJsdRenewalFail(final String outTradeNo, final String tradeNo,boolean isNeedMsgNotice, String errorCode, String errorMsg);
 
 	JsdBorrowCashRenewalDo getLastJsdRenewalByBorrowId(Long borrowId);
 
 	int saveRecord(JsdBorrowCashRenewalDo renewalDo);
+
+	JsdBorrowCashRenewalDo getRenewalByDelayNo(String delayNo);
+
 }

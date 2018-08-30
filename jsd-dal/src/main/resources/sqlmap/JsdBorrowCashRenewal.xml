@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,borrow_id,user_id,status,remark,renewal_amount,prior_interest,prior_overdue,prior_poundage,capital,actual_amount,next_interest,next_poundage,card_name,card_number,renewal_no,trade_no,renewal_day,poundage_rate,base_bank_rate,overdue_day,overdue_status,gmt_plan_repayment 
+        id rid,gmt_create,gmt_modified,borrow_id,user_id,status,remark,renewal_amount,prior_interest,prior_overdue,prior_poundage,capital,actual_amount,next_interest,next_poundage,card_name,card_number,renewal_no,trade_no,renewal_day,poundage_rate,base_bank_rate,overdue_day,overdue_status,gmt_plan_repayment,fail_code,fail_msg 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -86,6 +86,12 @@
         <if test="gmtPlanRepayment !=null">
             AND gmt_plan_repayment = #{gmtPlanRepayment,jdbcType=TIMESTAMP}
         </if>
+        <if test="failCode !=null">
+            AND fail_code = #{failCode,jdbcType=VARCHAR}
+        </if>
+        <if test="failMsg !=null">
+            AND fail_msg = #{failMsg,jdbcType=VARCHAR}
+        </if>
     </sql>
 
     
@@ -164,6 +170,12 @@
 	        <if test="gmtPlanRepayment != null">        
 	            gmt_plan_repayment,
 	        </if>
+	        <if test="failCode != null">        
+	            fail_code,
+	        </if>
+	        <if test="failMsg != null">        
+	            fail_msg,
+	        </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -238,6 +250,12 @@
 		    </if>
 		    <if test="gmtPlanRepayment != null" >
 		       #{gmtPlanRepayment,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="failCode != null" >
+		       #{failCode,jdbcType=VARCHAR},
+		    </if>
+		    <if test="failMsg != null" >
+		       #{failMsg,jdbcType=VARCHAR},
 		    </if>
         </trim>
     </insert>
@@ -316,6 +334,12 @@
             </if>
             <if test="gmtPlanRepayment != null and gmtPlanRepayment != '' ">        
                 gmt_plan_repayment = #{gmtPlanRepayment,jdbcType=TIMESTAMP}                
+            </if>
+            <if test="failCode != null and failCode != '' ">        
+                fail_code = #{failCode,jdbcType=VARCHAR}                
+            </if>
+            <if test="failMsg != null and failMsg != '' ">        
+                fail_msg = #{failMsg,jdbcType=VARCHAR}                
             </if>
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
