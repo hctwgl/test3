@@ -50,10 +50,8 @@
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdUpsLogDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO jsd_ups_log
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">        
-	            gmt_create,
-	        </if>
-	        <if test="userId != null">        
+            gmt_create,
+            <if test="userId != null">
 	            user_id,
 	        </if>
 	        <if test="bankCardNumber != null">        
@@ -83,9 +81,7 @@
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
+		   now(),
 		    <if test="userId != null" >
 		       #{userId,jdbcType=INTEGER},
 		    </if>
