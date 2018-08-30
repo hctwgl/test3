@@ -263,7 +263,7 @@
         is_delete = 0
         AND
         borrow_id =
-        #{borrowCashId}
+        #{borrowId}
         AND
         status != 'A'
         ORDER BY

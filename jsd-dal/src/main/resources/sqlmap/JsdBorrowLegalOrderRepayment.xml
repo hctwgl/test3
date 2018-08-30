@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,user_id,borrow_id,borrow_legal_order_cash_id,repay_amount,actual_amount,name,trade_no,trade_no_ups,trade_no_wx,trade_no_zfb,status,card_name,card_no,gmt_create,gmt_modified,
+        id rid,user_id,borrow_id,borrow_legal_order_cash_id,repay_amount,actual_amount,name,trade_no,trade_no_ups,trade_no_wx,trade_no_zfb,status,card_name,card_no,gmt_create,gmt_modified
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -309,4 +309,17 @@
         AND status in ('A','P')
         limit 0,1
 	</select>
+
+
+    <select id="getLastByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo">
+        SELECT
+         <include refid="queryFields" />
+        FROM
+        jsd_borrow_legal_order_repayment
+        WHERE
+         is_delete = 0  AND borrow_id= #{borrowId}
+        ORDER BY gmt_create DESC
+        LIMIT 1
+    </select>
+
 </mapper>

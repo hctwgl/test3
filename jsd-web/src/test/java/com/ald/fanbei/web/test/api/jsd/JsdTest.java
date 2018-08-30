@@ -30,7 +30,7 @@ public class JsdTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-	String urlBase = "http://localhost:80";
+	String urlBase = "http://localhost:8078";
 //    String urlBase = "http://192.168.112.40:8080";
     
     String userName = "13165995223";
@@ -94,7 +94,28 @@ public class JsdTest extends BaseTest {
     	
     }
 
-    
+
+    /**
+     * 还款
+     */
+    @Test
+    public void repayLoan() {
+        String url = urlBase + "/third/eca/v1/pushRepayment";
+        Map<String,String> params = new HashMap<>();
+        params.put("amount", 1+"");
+        params.put("period", 1+"");
+        params.put("bankNo", "6228480329222552476");
+        params.put("borrowNo", "BO20180829002");
+        params.put("repayNo", "rn20180829002");
+        params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
     /**
      * 生成本地签名
      *
