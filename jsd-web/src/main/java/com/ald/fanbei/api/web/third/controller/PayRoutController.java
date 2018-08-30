@@ -38,7 +38,7 @@ public class PayRoutController {
 
 	@Resource
 	JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
-	
+
 	@Resource
 	JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
 
@@ -145,7 +145,7 @@ public class PayRoutController {
 				}
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
 				if(PayOrderSource.REPAY_JSD.getCode().equals(merPriv)){
-					jsdBorrowCashRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true, respDesc);
+					jsdBorrowCashRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true,"", respDesc);
 				}else if(PayOrderSource.RENEW_JSD.getCode().equals(merPriv)){
 					jsdBorrowCashRenewalService.dealJsdRenewalFail(outTradeNo, tradeNo, true, respCode, respDesc);
 				}

@@ -265,9 +265,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 		if (StringUtils.isNotBlank(payBizObject)) {
 			// 处理业务数据
 			if (StringUtil.isNotBlank(respBo.getRespCode())) {
-				dealRepaymentFail(payTradeNo, "", true, errorMsg);
+				dealRepaymentFail(payTradeNo, "", true, respBo.getRespCode(),errorMsg);
 			} else {
-				dealRepaymentFail(payTradeNo, "", false, "");
+				dealRepaymentFail(payTradeNo, "", false, "","UPS响应码为空");
 			}
 		} else {
 			// 未获取到缓存数据，支付订单过期
@@ -278,7 +278,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 	 * 还款失败后调用
 	 */
 	@Override
-	public void dealRepaymentFail(String tradeNo, String outTradeNo,boolean isNeedMsgNotice,String errorMsg) {
+	public void dealRepaymentFail(String tradeNo, String outTradeNo,boolean isNeedMsgNotice,String code,String errorMsg) {
 		final JsdBorrowCashRepaymentDo repaymentDo = jsdBorrowCashRepaymentDao.getRepaymentByPayTradeNo(tradeNo);
 		final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = jsdBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByTradeNo(tradeNo);
 		logger.info("dealRepaymentFail process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo
@@ -291,7 +291,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 		}
 
 		if(repaymentDo != null) {
-			changBorrowRepaymentStatus(outTradeNo, JsdBorrowCashRepaymentStatus.NO.getCode(), repaymentDo.getRid());
+			changBorrowRepaymentStatus(outTradeNo, JsdBorrowCashRepaymentStatus.NO.getCode(), repaymentDo.getRid(),code,errorMsg);
 		}
 		if(orderRepaymentDo != null) {
 			changOrderRepaymentStatus(outTradeNo, JsdBorrowLegalRepaymentStatus.NO.getCode(), orderRepaymentDo.getRid());
@@ -460,7 +460,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 		dealBorrowRepayPoundage(repayDealBo, cashDo);//手续费
 		dealBorrowRepayInterest(repayDealBo, cashDo);//利息
 
-		changBorrowRepaymentStatus(repayDealBo.curOutTradeNo, JsdBorrowCashRepaymentStatus.YES.getCode(), repaymentDo.getRid());
+		changBorrowRepaymentStatus(repayDealBo.curOutTradeNo, JsdBorrowCashRepaymentStatus.YES.getCode(), repaymentDo.getRid(),"","");
 
 		dealBorrowRepayIfFinish(repayDealBo, repaymentDo, cashDo,isBalance);
 		jsdBorrowCashDao.updateById(cashDo);
@@ -661,11 +661,16 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 		redisTemplate.delete(key);
 	}
 
-	private long changBorrowRepaymentStatus(String outTradeNo, String status, Long rid) {
+	private long changBorrowRepaymentStatus(String outTradeNo, String status, Long rid,String code,String msg) {
 		JsdBorrowCashRepaymentDo repayment = new JsdBorrowCashRepaymentDo();
 		repayment.setStatus(status);
 		repayment.setTradeNo(outTradeNo);
 		repayment.setRid(rid);
+		JsdBorrowCashRepaymentDo jsdBorrowCashRepaymentDo=jsdBorrowCashRepaymentDao.getById(rid);
+		if(!YesNoStatus.NO.getCode().equals(jsdBorrowCashRepaymentDo.getStatus())){
+			repayment.setFailCode(code);
+			repayment.setFailMsg(msg);
+		}
 		return jsdBorrowCashRepaymentDao.updateRepaymentBorrowCash(repayment);
 	}
 	private long changOrderRepaymentStatus(String outTradeNo, String status, Long rid) {

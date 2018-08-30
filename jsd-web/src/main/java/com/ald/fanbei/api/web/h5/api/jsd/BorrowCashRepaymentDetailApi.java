@@ -33,7 +33,7 @@ public class BorrowCashRepaymentDetailApi implements DsedH5Handle {
 
         String borrowNo = ObjectUtils.toString(context.getData("borrowNo"), null);
         String period = ObjectUtils.toString(context.getData("period"), null);
-        Long timestamp = Long.valueOf(context.getData("period").toString());
+        Long timestamp = Long.valueOf(context.getData("timestamp").toString());
         JsdBorrowCashDo cashDo=jsdBorrowCashService.getByBorrowNo(borrowNo);
         if(cashDo==null){
             throw new FanbeiException(FanbeiExceptionCode.JSD_BORROW_IS_NULL);

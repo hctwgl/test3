@@ -116,6 +116,25 @@ public class JsdTest extends BaseTest {
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
+
+    /**
+     * 还款
+     */
+    @Test
+    public void repayLoanDetail() {
+        String url = urlBase + "/third/eca/v1/getRepaymentDetail";
+        Map<String,String> params = new HashMap<>();
+        params.put("borrowNo", "BO20180829002");
+
+        params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
     /**
      * 生成本地签名
      *

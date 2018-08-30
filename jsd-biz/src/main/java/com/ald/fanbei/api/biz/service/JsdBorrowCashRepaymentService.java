@@ -28,7 +28,7 @@ public interface JsdBorrowCashRepaymentService{
 
     JsdBorrowCashRepaymentDo getLastRepaymentBorrowCashByBorrowId(Long borrowId);
 
-    void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String errorMsg);
+    void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String code,String errorMsg);
 
     void dealRepaymentSucess(String tradeNo, String outTradeNo);
 
