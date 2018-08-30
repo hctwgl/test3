@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_ups_log表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.JsdUpsLogDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,user_id,bank_card_number,bank_code,name,order_no,type,ref_id,status,amount 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="bankCardNumber != null and bankCardNumber != ''">
+            AND bank_card_number = #{bankCardNumber,jdbcType=VARCHAR}
+        </if>
+        <if test="bankCode != null and bankCode != ''">
+            AND bank_code = #{bankCode,jdbcType=VARCHAR}
+        </if>
+        <if test="name != null and name != ''">
+            AND name = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="orderNo != null and orderNo != ''">
+            AND order_no = #{orderNo,jdbcType=VARCHAR}
+        </if>
+        <if test="type != null and type != ''">
+            AND type = #{type,jdbcType=VARCHAR}
+        </if>
+        <if test="refId != null and refId != ''">
+            AND ref_id = #{refId,jdbcType=VARCHAR}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="amount != null and amount != ''">
+            AND amount = #{amount,jdbcType=DECIMAL}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdUpsLogDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO jsd_ups_log
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="bankCardNumber != null">        
+	            bank_card_number,
+	        </if>
+	        <if test="bankCode != null">        
+	            bank_code,
+	        </if>
+	        <if test="name != null">        
+	            name,
+	        </if>
+	        <if test="orderNo != null">        
+	            order_no,
+	        </if>
+	        <if test="type != null">        
+	            type,
+	        </if>
+	        <if test="refId != null">        
+	            ref_id,
+	        </if>
+	        <if test="status != null">        
+	            status,
+	        </if>
+	        <if test="amount != null">        
+	            amount,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="bankCardNumber != null" >
+		       #{bankCardNumber,jdbcType=VARCHAR},
+		    </if>
+		    <if test="bankCode != null" >
+		       #{bankCode,jdbcType=VARCHAR},
+		    </if>
+		    <if test="name != null" >
+		       #{name,jdbcType=VARCHAR},
+		    </if>
+		    <if test="orderNo != null" >
+		       #{orderNo,jdbcType=VARCHAR},
+		    </if>
+		    <if test="type != null" >
+		       #{type,jdbcType=VARCHAR},
+		    </if>
+		    <if test="refId != null" >
+		       #{refId,jdbcType=VARCHAR},
+		    </if>
+		    <if test="status != null" >
+		       #{status,jdbcType=VARCHAR},
+		    </if>
+		    <if test="amount != null" >
+		       #{amount,jdbcType=DECIMAL},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdUpsLogDo">
+        UPDATE jsd_ups_log
+          <set>
+            <if test="gmtCreate != null and gmtCreate != '' ">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="userId != null and userId != '' ">        
+                user_id = #{userId,jdbcType=INTEGER},                
+            </if>
+            <if test="bankCardNumber != null and bankCardNumber != '' ">        
+                bank_card_number = #{bankCardNumber,jdbcType=VARCHAR},                
+            </if>
+            <if test="bankCode != null and bankCode != '' ">        
+                bank_code = #{bankCode,jdbcType=VARCHAR},                
+            </if>
+            <if test="name != null and name != '' ">        
+                name = #{name,jdbcType=VARCHAR},                
+            </if>
+            <if test="orderNo != null and orderNo != '' ">        
+                order_no = #{orderNo,jdbcType=VARCHAR},                
+            </if>
+            <if test="type != null and type != '' ">        
+                type = #{type,jdbcType=VARCHAR},                
+            </if>
+            <if test="refId != null and refId != '' ">        
+                ref_id = #{refId,jdbcType=VARCHAR},                
+            </if>
+            <if test="status != null and status != '' ">        
+                status = #{status,jdbcType=VARCHAR},                
+            </if>
+            <if test="amount != null and amount != '' ">        
+                amount = #{amount,jdbcType=DECIMAL}                
+            </if>
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.JsdUpsLogDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_ups_log
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdUpsLogDo" parameterType="com.ald.fanbei.api.dal.domain.JsdUpsLogDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_ups_log
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdUpsLogDo" parameterType="com.ald.fanbei.api.dal.domain.JsdUpsLogDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_ups_log
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>

@@ -100,18 +100,17 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 		bo.name = name;
 		generateRepayRecords(bo);
 
-		return doRepay(bo,bo.repaymentDo,bankPayType);
+		return doRepay(bo,bankPayType);
 	}
-	private Map<String, Object> doRepay(BorrowCashRepayBo bo,JsdBorrowCashRepaymentDo repayment ,String bankChannel) {
+	private Map<String, Object> doRepay(BorrowCashRepayBo bo,String bankChannel) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HashMap bank = jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
 		KuaijieRepayBo bizObject = new KuaijieRepayBo();
 		if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
-			repayment.setStatus(JsdBorrowCashRepaymentStatus.SMS.getCode());
-			resultMap = sendKuaiJieSms(bank, bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(),
+			resultMap = sendKuaiJieSms(bank, bo.tradeNo, bo.amount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(),
 					JSON.toJSONString(bizObject), "afBorrowLegalRepaymentService", Constants.DEFAULT_PAY_PURPOSE,bo.name, PayOrderSource.REPAY_CASH_LEGAL.getCode());
 		} else {// 代扣
-			resultMap = doUpsPay(bankChannel, bank, bo.tradeNo, bo.actualAmount, bo.userId, bo.userDo.getRealName(),
+			resultMap = doUpsPay(bankChannel, bank, bo.tradeNo, bo.amount, bo.userId, bo.userDo.getRealName(),
 					bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE, bo.name, PayOrderSource.REPAY_CASH_LEGAL.getCode());
 		}
 		return resultMap;
@@ -134,27 +133,26 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 		BigDecimal borrowRepayAmount = bo.repaymentAmount.subtract(orderRemainShouldRepayAmount);
 		if(borrowRepayAmount.compareTo(BigDecimal.ZERO) > 0) { //还款额大于订单应还总额，拆分还款
 			borrowRepaymentDo = buildRepayment( borrowRepayAmount, tradeNo, now, borrowRepayAmount,
-					 bo.borrowId,  bo.outTradeNo, name, bo.userId,bo.repayType,bo.cardNo);
+					 bo.borrowId,  bo.outTradeNo, name, bo.userId,bo.repayType,bo.bankNo);
 			jsdBorrowCashRepaymentDao.saveRecord(borrowRepaymentDo);
 			bo.repaymentDo=borrowRepaymentDo;
 			if(!JsdBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
 				orderRepaymentDo = buildOrderRepayment(bo, borrowRepayAmount,
-						 orderRemainShouldRepayAmount,bo.cardNo);
+						 orderRemainShouldRepayAmount);
 				jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
 				bo.orderRepaymentDo=orderRepaymentDo;
 			}
 		} else { //还款全部进入订单欠款中
 			orderRepaymentDo = buildOrderRepayment(bo, borrowRepayAmount,
-					orderRemainShouldRepayAmount,bo.cardNo);
+					orderRemainShouldRepayAmount);
 			jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
-			bo.repaymentDo=borrowRepaymentDo;
-			bo.orderRepaymentDo=orderRepaymentDo;
 		}
-
+		bo.repaymentDo=borrowRepaymentDo;
+		bo.orderRepaymentDo=orderRepaymentDo;
 		logger.info("Repay.add repayment finish,name="+ name +"tradeNo="+tradeNo+",borrowRepayment="+ JSON.toJSONString(borrowRepaymentDo) + ",legalOrderRepayment="+ JSON.toJSONString(orderRepaymentDo));
 	}
 
-	private JsdBorrowLegalOrderRepaymentDo buildOrderRepayment(BorrowCashRepayBo bo, BigDecimal actualAmountForOrder, BigDecimal repayAmount,String cardNo) {
+	private JsdBorrowLegalOrderRepaymentDo buildOrderRepayment(BorrowCashRepayBo bo, BigDecimal actualAmountForOrder, BigDecimal repayAmount) {
 		JsdBorrowLegalOrderRepaymentDo repayment = new JsdBorrowLegalOrderRepaymentDo();
 
 		repayment.setUserId(bo.userId);
@@ -164,14 +162,14 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 		repayment.setName(bo.name);
 		repayment.setTradeNo(bo.tradeNo);
 		repayment.setStatus(JsdBorrowLegalRepaymentStatus.APPLY.getCode());
-		repayment.setCardNo(cardNo);
-		HashMap bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,cardNo);
-		repayment.setCardName((String) bank.get("bankChannel"));
+		repayment.setCardNo(bo.bankNo);
+		HashMap bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
+        repayment.setCardName((String) bank.get("bankChannel"));
 		Date now = new Date();
 		repayment.setGmtCreate(now);
 		repayment.setGmtModified(now);
 		repayment.setBorrowId(bo.borrowId);
-		repayment.setCardNo(cardNo);
+		repayment.setCardNo(bo.bankNo);
 		return repayment;
 	}
 

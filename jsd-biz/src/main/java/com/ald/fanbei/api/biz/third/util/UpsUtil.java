@@ -9,6 +9,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.dao.JsdUpsLogDao;
+import com.ald.fanbei.api.dal.domain.JsdUpsLogDo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -92,7 +94,10 @@ public class UpsUtil extends AbstractThird {
 
 	@Resource
 	DsedUpsLogDao dsedUpsLogDao;
-	
+
+	@Resource
+	JsdUpsLogDao jsdUpsLogDao;
+
 	@Autowired
 	BizCacheUtil bizCacheUtil;
 	
@@ -164,7 +169,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		try {
 //			afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
-			dsedUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
+			jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
 			logger.info("ups url="+getUpsUrl());
 			String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 			logThird(reqResult, "dsedDelegatePay", reqBo);
@@ -248,7 +253,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setReturnUrl(getNotifyHost() + "/third/ups/authSignReturn");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignNotify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		dsedUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNumber, "authSign", orderNo, "", "DSED_LOAN", userNo));
+		jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNumber, "authSign", orderNo, "", "DSED_LOAN", userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "authSign", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -289,7 +294,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setSmsCode(verifyCode);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignValidNotify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		dsedUpsLogDao.saveRecord(buildDsedUpsLog("", cardNo, "authSignValid", orderNo, verifyCode, "smsCode", userNo));
+		jsdUpsLogDao.saveRecord(buildDsedUpsLog("", cardNo, "authSignValid", orderNo, verifyCode, "smsCode", userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logger.info("upsUtil authSignValid reqResult ="+reqResult+",reqBo="+JSON.toJSONString(reqBo));
 		logThird(reqResult, "authSignValid", reqBo);
@@ -367,7 +372,7 @@ public class UpsUtil extends AbstractThird {
 //		reqBo.setNotifyUrl("http://192.168.117.188:8080/third/ups/collect");
 		logger.info("bank collecnotifyUrl = "+ getNotifyHost() + "/third/ups/collect");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		dsedUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "collect", orderNo, "", merPriv, userNo));
+			jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "collect", orderNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "collect", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -419,7 +424,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setValidDate(validDate);
 		reqBo.setSmsFlag("1");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		dsedUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "quickPay", orderNo, "", merPriv, userNo));
+		jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "quickPay", orderNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 //		String reqResult = HttpUtil.post("http://192.168.96.204:8080/ups/main.html", reqBo);
 		logThird(reqResult, "quickPay", reqBo);
@@ -452,7 +457,7 @@ public class UpsUtil extends AbstractThird {
         	    reqBo.setTradeType("pay_order");
         	    logger.info("bank quickPayResendCode = " + getNotifyHost() + "/third/ups/quickPayResendCode");
         	    reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-        	    dsedUpsLogDao.saveRecord(buildDsedUpsLog(upsCollectBo.getBankCode(), upsCollectBo.getCardNo(), "quickPayResendCode", payTradeNo, "", upsCollectBo.getMerPriv(), upsCollectBo.getUserNo()));
+				jsdUpsLogDao.saveRecord(buildDsedUpsLog(upsCollectBo.getBankCode(), upsCollectBo.getCardNo(), "quickPayResendCode", payTradeNo, "", upsCollectBo.getMerPriv(), upsCollectBo.getUserNo()));
         	    String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
         	    logThird(reqResult, "quickPayResendCode", reqBo);
         	    if (StringUtil.isBlank(reqResult)) {
@@ -484,7 +489,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setOldOrderNo(oldTradeNo);
 		reqBo.setSmsCode(smsCode);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		dsedUpsLogDao.saveRecord(buildDsedUpsLog("", "", "quickPayConfirm", tradeNo, "", merPriv, userNo));
+		jsdUpsLogDao.saveRecord(buildDsedUpsLog("", "", "quickPayConfirm", tradeNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "quickPayConfirm", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -515,7 +520,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCardNo(cardNo);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/signRelease");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		dsedUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "signRelease", orderNo, "", "", userNo));
+		jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "signRelease", orderNo, "", "", userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "signRelease", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -582,8 +587,8 @@ public class UpsUtil extends AbstractThird {
         return prestr;
     }
 
-	private static DsedUpsLogDo buildDsedUpsLog(String bankCode, String cardNumber, String name, String orderNo, String refId, String type, String userNo){
-		DsedUpsLogDo log = new DsedUpsLogDo();
+	private static JsdUpsLogDo buildDsedUpsLog(String bankCode, String cardNumber, String name, String orderNo, String refId, String type, String userNo){
+		JsdUpsLogDo log = new JsdUpsLogDo();
 		log.setBankCode(bankCode);
 		log.setBankCardNumber(cardNumber);
 		log.setName(name);

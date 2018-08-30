@@ -100,11 +100,11 @@ public class JsdTest extends BaseTest {
      */
     @Test
     public void repayLoan() {
-        String url = urlBase + "/third/xgxy/v1/pushRepayment";
+        String url = urlBase + "/third/eca/v1/pushRepayment";
         Map<String,String> params = new HashMap<>();
-        params.put("amount", 0.01+"");
+        params.put("amount", 1+"");
         params.put("period", 1+"");
-        params.put("bankNo", "6212261202028480466");
+        params.put("bankNo", "6228480329222552476");
         params.put("borrowNo", "BO20180829002");
         params.put("repayNo", "rn20180829002");
         params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
