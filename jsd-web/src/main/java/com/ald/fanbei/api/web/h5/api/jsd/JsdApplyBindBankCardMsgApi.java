@@ -47,8 +47,7 @@ public class JsdApplyBindBankCardMsgApi implements DsedH5Handle {
         String bankNo = ObjectUtils.toString(context.getData("bankNo"), null);
         String bankName = ObjectUtils.toString(context.getData("bankName"), null);
         String bankMobile = ObjectUtils.toString(context.getData("bankMobile"), null);
-        String validDate = ObjectUtils.toString(context.getData("validDate"), "");
-        String safeCode = ObjectUtils.toString(context.getData("safeCode"), "");
+        String bindNo = ObjectUtils.toString(context.getData("bindNo"), "");
         String timestamp = ObjectUtils.toString(context.getData("timestamp"), "");
 
         Long userid=context.getUserId();
@@ -64,7 +63,7 @@ public class JsdApplyBindBankCardMsgApi implements DsedH5Handle {
         }
         //创建用户银行卡新加状态
         JsdBankDo bank = jsdBankService.getBankByName(bankName);
-        JsdUserBankcardDo userBankcard = buildUserCard(bank.getBankCode(), bankName, bankNo, bankMobile, userid, isMain, validDate, safeCode);
+        JsdUserBankcardDo userBankcard = buildUserCard(bank.getBankCode(), bankName, bankNo, bankMobile, userid, isMain, bindNo);
         jsdUserBankcardService.addUserBankcard(userBankcard);
         JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getById(userBankcard.getRid());
         //默认赋值为借记卡
@@ -87,7 +86,7 @@ public class JsdApplyBindBankCardMsgApi implements DsedH5Handle {
         return resp;
     }
 
-    private JsdUserBankcardDo buildUserCard(String bankCode, String bankName, String cardNumber, String mobile, Long userId, String isMain, String validDate, String safeCode) {
+    private JsdUserBankcardDo buildUserCard(String bankCode, String bankName, String cardNumber, String mobile, Long userId, String isMain, String bindNo) {
         JsdUserBankcardDo bank = new JsdUserBankcardDo();
         bank.setBankCode(bankCode);
         bank.setBankName(bankName);
@@ -96,8 +95,9 @@ public class JsdApplyBindBankCardMsgApi implements DsedH5Handle {
         bank.setMobile(mobile);
         bank.setStatus(BankcardStatus.NEW.getCode());
         bank.setUserId(userId);
-        bank.setValidDate(validDate);
-        bank.setSafeCode(safeCode);
+        bank.setValidDate("");
+        bank.setSafeCode("");
+        bank.setXgxyBindNo(bindNo);
         return bank;
     }
 }
