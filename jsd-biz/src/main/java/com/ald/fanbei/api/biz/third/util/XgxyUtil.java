@@ -130,7 +130,7 @@ public class XgxyUtil extends AbstractThird {
             Map<String, String> p = new HashMap<>();
             p.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
-            p.put("appId", "edspay");
+            p.put("appId", "jsdpay");
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackRepayResult";
             logger.info("data = " + data +",url = " +url );
             String reqResult = "";
@@ -153,6 +153,43 @@ public class XgxyUtil extends AbstractThird {
 
         return false;
 
+    }
+    
+    /**
+     * 续期通知请求
+     *
+     * @param data
+     * @return
+     */
+    public boolean jsdRenewalNoticeRequest(HashMap<String, String> data) {
+    	try {
+    		logger.info("jsdRenewalNoticeRequest start data = "+data);
+    		Map<String, String> p = new HashMap<>();
+    		p.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+    		p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
+    		p.put("appId", "jsdpay");
+    		String url = getXgxyUrl() + "/third/eca/v1/delayNotify";
+    		logger.info("data = " + data +",url = " +url );
+    		String reqResult = "";
+    		if (url.contains("https")){
+    			reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(p));
+    		}else {
+    			reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+    		}
+    		logThird(reqResult, url, JSON.toJSONString(data));
+    		if (StringUtil.isBlank(reqResult)) {
+    			return false;
+    		}
+    		XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult, XgxyPayReqBo.class);
+    		if (Constants.XGXY_REQ_CODE.equals(rePayRespResult.get("code"))) {
+    			return true;
+    		}
+    	} catch (Exception e) {
+    		logger.info("renewalNoticeRequest request fail", e);
+    	}
+    	
+    	return false;
+    	
     }
 
 
