@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service;
 import java.util.Map;
 
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRenewalServiceImpl.JsdRenewalDealBo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 
 /**
@@ -26,5 +27,7 @@ public interface JsdBorrowCashRenewalService {
 	int saveRecord(JsdBorrowCashRenewalDo renewalDo);
 
 	JsdBorrowCashRenewalDo getRenewalByDelayNo(String delayNo);
+	
+	public void checkCanRenewal(JsdBorrowCashDo borrowCashDo);
 
 }

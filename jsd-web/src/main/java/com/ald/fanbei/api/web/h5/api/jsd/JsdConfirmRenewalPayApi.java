@@ -31,6 +31,7 @@ import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowOrderRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -353,7 +354,8 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 	 */
 	private void getRateInfo(JsdRenewalDealBo paramBo) {
 		// 利率配置
-		JsdResourceDo resourceDo = JsdResourceService.getByTypeAngSecType("JSD_CONFIG", "JSD_RATE_INFO");
+		JsdResourceDo rateResource = JsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RATE_INFO.getCode());
+		JsdResourceDo renewalResource = JsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RENEWAL_INFO.getCode());
 
 		//借款手续费率
 		BigDecimal poundageRate = null;
@@ -367,10 +369,10 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		//订单利率
 		BigDecimal orderRate = null;
 
-		if(resourceDo!=null) {
-			capitalRate = new BigDecimal(resourceDo.getValue1());
+		if(rateResource!=null && renewalResource !=null) {
+			capitalRate = new BigDecimal(renewalResource.getValue1());
 
-			String rateStr = resourceDo.getValue();
+			String rateStr = rateResource.getValue();
 			JSONArray array = JSONObject.parseArray(rateStr);
 			for (int i = 0; i < array.size(); i++) {
 				JSONObject info = array.getJSONObject(i);
@@ -383,7 +385,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 				}
 			}
 			
-			String orderRateStr = resourceDo.getValue3();
+			String orderRateStr = rateResource.getValue3();
 			JSONArray orderRateArray = JSONObject.parseArray(orderRateStr);
 			for (int i = 0; i < orderRateArray.size(); i++) {
 				JSONObject info = orderRateArray.getJSONObject(i);

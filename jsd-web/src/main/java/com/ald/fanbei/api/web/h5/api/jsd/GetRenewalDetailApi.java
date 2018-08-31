@@ -28,6 +28,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -70,6 +71,8 @@ public class GetRenewalDetailApi implements DsedH5Handle {
     @Resource
     private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
     @Resource
+    private JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
+    @Resource
     private JsdResourceService jsdResourceService;
 
 	@Override
@@ -86,11 +89,7 @@ public class GetRenewalDetailApi implements DsedH5Handle {
 		}
 		logger.info("getRenewalDetail jsdBorrowCash record = {} " , borrowCashDo);
 
-		// 还款记录
-		JsdBorrowCashRepaymentDo cashRepaymentDo = jsdBorrowCashRepaymentService.getLastByBorrowId(borrowCashDo.getRid());
-		if (null != cashRepaymentDo && StringUtils.equals(cashRepaymentDo.getStatus(), JsdBorrowCashRepaymentStatus.PROCESS.getCode())) {
-			throw new FanbeiException("There is a repayment is processing", FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING);
-		}
+		jsdBorrowCashRenewalService.checkCanRenewal(borrowCashDo);
 		
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("delayInfo", this.getRenewalDetail(borrowCashDo));
@@ -114,14 +113,14 @@ public class GetRenewalDetailApi implements DsedH5Handle {
 		if(orderDo==null) throw new FanbeiException(FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		logger.info("last orderCash record = {} " , orderCashDo);
 		
-		JsdResourceDo resource = jsdResourceService.getByTypeAngSecType("JSD_CONFIG", "JSD_RATE_INFO");
-		if(resource==null) throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
+		JsdResourceDo renewalResource = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RENEWAL_INFO.getCode());
+		if(renewalResource==null) throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
 
 		// 允许续期天数
-		BigDecimal allowRenewalDay = new BigDecimal(resource.getValue2());
+		BigDecimal allowRenewalDay = new BigDecimal(renewalResource.getValue());
 		
 		// 续借需还本金比例
-		BigDecimal renewalCapitalRate = new BigDecimal(resource.getValue1());
+		BigDecimal renewalCapitalRate = new BigDecimal(renewalResource.getValue1());
 		//续借需要支付本金 = 借款金额 * 续借需还本金比例
 		BigDecimal capital = borrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
 		
@@ -154,7 +153,7 @@ public class GetRenewalDetailApi implements DsedH5Handle {
 		delayInfo.put("deferDay", allowRenewalDay+"");	// 续期天数
 		delayInfo.put("deferRemark", deferRemark);	// 费用明细	展期金额的相关具体描述（多条说明用英文逗号,用间隔）
 		delayInfo.put("totalDiffFee", "");	// 展期后的利润差，西瓜会根据此金额匹配搭售商品 TODO
-		this.getRenewalRate(delayInfo, resource);
+		this.getRenewalRate(delayInfo);
 		
 		delayArray.add(delayInfo);
 		
@@ -162,14 +161,16 @@ public class GetRenewalDetailApi implements DsedH5Handle {
 	}
 	
 	
-	private void getRenewalRate(Map<String, Object> delayInfo, JsdResourceDo resource) {
+	private void getRenewalRate(Map<String, Object> delayInfo) {
+		JsdResourceDo rateResource = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RATE_INFO.getCode());
+		if(rateResource==null) throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
 		
 		//借款手续费率
 		BigDecimal poundageRate = null;
 		//借款利率
 		BigDecimal baseBankRate = null;
 		
-		String rateStr = resource.getValue();
+		String rateStr = rateResource.getValue();
 		JSONArray array = JSONObject.parseArray(rateStr);
 		for (int i = 0; i < array.size(); i++) {
 			JSONObject info = array.getJSONObject(i);
@@ -181,8 +182,8 @@ public class GetRenewalDetailApi implements DsedH5Handle {
 				poundageRate = info.getBigDecimal("borrowFirstType");
 			}
 		}
-		delayInfo.put("interestRate", baseBankRate);
-		delayInfo.put("serviceRate", poundageRate);
+		delayInfo.put("interestRate", baseBankRate.divide(new BigDecimal(100)));
+		delayInfo.put("serviceRate", poundageRate.divide(new BigDecimal(100)));
 	}
 }
 

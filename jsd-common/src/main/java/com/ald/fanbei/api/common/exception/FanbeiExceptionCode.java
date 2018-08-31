@@ -92,6 +92,7 @@ public enum FanbeiExceptionCode {
     GET_JSD_RATE_ERROR("GET_JSD_RATE_ERROR",6004,"","获取利率失败，请联系客服"),
     RENEWAL_ORDER_NOT_EXIST_ERROR("RENEWAL_ORDER_NOT_EXIST_ERROR",6005,"","无可展期的订单"),
     RENEWAL_NOT_EXIST_ERROR("RENEWAL_NOT_EXIST_ERROR",6006,"","展期信息不存在"),
+    CAN_NOT_RENEWAL_ERROR("CAN_NOT_RENEWAL_ERROR",6007,"","您的续期机会已用完"),
 
     ;
 
