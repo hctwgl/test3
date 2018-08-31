@@ -94,17 +94,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 			throw new FanbeiException("No borrow can renewal", FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		}
 
-		// 最近一次还款记录
-		JsdBorrowCashRepaymentDo lastRepaymentDo = jsdBorrowCashRepaymentService.getLastByBorrowId(borrowCashDo.getRid());
-		if (null != lastRepaymentDo && StringUtils.equals(lastRepaymentDo.getStatus(), "P")) {
-            throw new FanbeiException("There is a repayment is processing", FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING);
-        }
-
-		// 最近一次续期记录
-		JsdBorrowCashRenewalDo lastRenewalDo = jsdBorrowCashRenewalService.getLastJsdRenewalByBorrowId(borrowCashDo.getRid());
-		if (null != lastRenewalDo && StringUtils.equals(lastRenewalDo.getStatus(), "P")) {
-			throw new FanbeiException("There is a renewal is processing", FanbeiExceptionCode.HAVE_A_RENEWAL_PROCESSING);
-        }
+		jsdBorrowCashRenewalService.checkCanRenewal(borrowCashDo);
 
 		// 用户信息
 		JsdUserDo userDo = jsdUserService.getById(paramBo.userId);

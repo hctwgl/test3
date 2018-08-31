@@ -417,9 +417,10 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		
 		// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
 		JsdResourceDo resource = jsdResourceService.getByTypeAngSecType("JSD_CONFIG", "JSD_RENEWAL_INFO");
+		if(resource==null) throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
 		BigDecimal betweenDuedate = new BigDecimal(resource.getValue2()); // 距还款日天数
 		BigDecimal amountLimit = new BigDecimal(resource.getValue3()); // 最低续期金额
-
+		logger.info("checkCanRenewal betweenDuedate="+betweenDuedate+"amountLimit="+amountLimit);
 		BigDecimal waitRepayAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumOverdue(), borrowCashDo.getSumRate(), 
 													borrowCashDo.getSumRenewalPoundage(), borrowCashDo.getOverdueAmount(), borrowCashDo.getRateAmount(), 
 													borrowCashDo.getPoundage()).subtract(borrowCashDo.getRepayAmount());
