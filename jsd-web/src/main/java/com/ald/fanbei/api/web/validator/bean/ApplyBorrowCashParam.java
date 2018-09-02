@@ -19,13 +19,12 @@ public class ApplyBorrowCashParam {
 	@Pattern(regexp = "^[0-9]*[1-9][0-9]*$")
 	private String term;
 	@NotNull
-	private String borrowRemark;
+	private String loanRemark;
 	@NotNull
-	private String refundRemark;
-	@NotNull
+	private String repayRemark;
+
 	private String goodsName;
-	@NotNull
-	@DecimalMin("0")
+
 	private BigDecimal goodsAmount;
 
 
@@ -44,20 +43,20 @@ public class ApplyBorrowCashParam {
 		this.term = term;
 	}
 
-	public String getBorrowRemark() {
-		return borrowRemark;
+	public String getLoanRemark() {
+		return loanRemark;
 	}
 
-	public void setBorrowRemark(String borrowRemark) {
-		this.borrowRemark = borrowRemark;
+	public void setLoanRemark(String loanRemark) {
+		this.loanRemark = loanRemark;
 	}
 
-	public String getRefundRemark() {
-		return refundRemark;
+	public String getRepayRemark() {
+		return repayRemark;
 	}
 
-	public void setRefundRemark(String refundRemark) {
-		this.refundRemark = refundRemark;
+	public void setRepayRemark(String repayRemark) {
+		this.repayRemark = repayRemark;
 	}
 
 	public String getGoodsName() {

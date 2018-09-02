@@ -10,6 +10,7 @@ import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
 
+import java.util.Date;
 
 
 /**
@@ -32,5 +33,10 @@ public class JsdBorrowLegalOrderServiceImpl extends ParentServiceImpl<JsdBorrowL
 		@Override
 	public BaseDao<JsdBorrowLegalOrderDo, Long> getDao() {
 		return jsdBorrowLegalOrderDao;
+	}
+
+	@Override
+	public String getCurrentLastOrderNo(Date currentDate) {
+		return jsdBorrowLegalOrderDao.getCurrentLastOrderNo(currentDate);
 	}
 }

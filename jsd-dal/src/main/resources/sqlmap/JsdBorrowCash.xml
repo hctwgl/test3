@@ -428,5 +428,7 @@
         WHERE is_delete = 0 AND borrow_no=#{borrowNo}
         LIMIT 1
     </select>
-
+    <select id="getCurrentLastBorrowNo" resultType="java.lang.String">
+		select borrow_no from jsd_borrow_cash WHERE borrow_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
+	</select>
 </mapper>

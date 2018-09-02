@@ -2,6 +2,8 @@ package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 
+import java.util.Date;
+
 /**
  * 极速贷Dao
  * 
@@ -12,6 +14,6 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
  */
 public interface JsdBorrowLegalOrderDao extends BaseDao<JsdBorrowLegalOrderDo, Long> {
 
-    
+    String getCurrentLastOrderNo(Date currentDate);
 
 }

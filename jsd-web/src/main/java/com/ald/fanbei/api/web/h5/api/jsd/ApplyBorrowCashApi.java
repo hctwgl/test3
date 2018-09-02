@@ -7,6 +7,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.OriRateUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.FanbeiContext;
@@ -22,9 +23,11 @@ import com.ald.fanbei.api.web.common.DsedH5Handle;
 import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.ald.fanbei.api.web.validator.Validator;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -75,6 +78,8 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
     JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
     @Resource
     OriRateUtil oriRateUtil;
+    @Resource
+    GeneratorClusterNo generatorClusterNo;
 
     // [end]
     @Override
@@ -205,7 +210,10 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
         borrowCashBo.setTerm(ObjectUtils.toString(context.getData("term")));
         borrowCashBo.setTyingType(ObjectUtils.toString(context.getData("tyingType")));
         borrowCashBo.setUnit(ObjectUtils.toString(context.getData("unit")));
-        borrowCashBo.setJsdApplyBorrowCashBo((JsdGoodsInfoBo) context.getData("goodsInfo"));
+        String goodsInfoStr = ObjectUtils.toString(context.getDataMap().get("goodsInfo"), "");
+        Gson gson = new Gson();
+        JsdGoodsInfoBo jsdGoodsInfoBo = gson.fromJson(goodsInfoStr, JsdGoodsInfoBo.class);
+        borrowCashBo.setJsdApplyBorrowCashBo(jsdGoodsInfoBo);
         return borrowCashBo;
     }
 
@@ -236,7 +244,7 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
                 Constants.JSD_RATE_INFO);
         BigDecimal newRate = null;
         if (rateInfoDo != null) {
-            String borrowRate = rateInfoDo.getValue2();
+            String borrowRate = rateInfoDo.getValue();
             Map<String, Object> rateInfo = getRateInfo(borrowRate, borrowType, "borrow");
             double totalRate = (double) rateInfo.get("totalRate");
             newRate = BigDecimal.valueOf(totalRate / 100);
@@ -252,12 +260,13 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
     }
 
     private Map<String, Object> getRateInfo(String borrowRate, String borrowType, String tag) {
-        JsdResourceDo afResourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.BORROW_RATE.getCode(), AfResourceSecType.BORROW_CASH_INFO_LEGAL_NEW.getCode());
+        JsdResourceDo rateInfoDo = jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG,
+                Constants.JSD_RATE_INFO);
         String oneDay = "";
         String twoDay = "";
-        if (null != afResourceDo) {
-            oneDay = afResourceDo.getTypeDesc().split(",")[0];
-            twoDay = afResourceDo.getTypeDesc().split(",")[1];
+        if (null != rateInfoDo) {
+            oneDay = rateInfoDo.getTypeDesc().split(",")[0];
+            twoDay = rateInfoDo.getTypeDesc().split(",")[1];
         }
         Map<String, Object> rateInfo = Maps.newHashMap();
         double serviceRate = 0;
@@ -401,6 +410,8 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
         cal.add(Calendar.DAY_OF_YEAR, planRepayDays - 1);
         afBorrowLegalOrderCashDo.setPlanRepayDays(planRepayDays);
         afBorrowLegalOrderCashDo.setGmtPlanRepay(cal.getTime());
+        String cashNo = generatorClusterNo.geBorrowLegalOrderCashNo(new Date());
+        afBorrowLegalOrderCashDo.setCashNo(cashNo);
         return afBorrowLegalOrderCashDo;
     }
 
@@ -412,6 +423,8 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
         afBorrowLegalOrderDo.setPriceAmount(goodsAmount);
         afBorrowLegalOrderDo.setGoodsName(goodsName);
         afBorrowLegalOrderDo.setStatus(JsdBorrowLegalOrderStatus.UNPAID.getCode());
+        String orderCashNo = generatorClusterNo.getOrderNo(OrderType.LEGAL);
+        afBorrowLegalOrderDo.setOrderNo(orderCashNo);
         return afBorrowLegalOrderDo;
     }
 
@@ -432,7 +445,7 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
 
         Integer day = NumberUtil.objToIntDefault(type, 0);
         // 计算手续费和利息
-        String borrowRate = rateInfoDo.getValue2();
+        String borrowRate = rateInfoDo.getValue();
         JSONArray array = JSONObject.parseArray(borrowRate);
         double interestRate = 0; // 利率
         double serviceRate = 0; // 手续费率
@@ -474,6 +487,8 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
         afBorrowCashDo.setPoundageRate(new BigDecimal(serviceRate));
         afBorrowCashDo.setRiskDailyRate(oriRate);
         afBorrowCashDo.setProductNo(productNo);
+        afBorrowCashDo.setBorrowNo(generatorClusterNo.getLoanNo(new Date()));
+        afBorrowCashDo.setRepayPrinciple(BigDecimal.ZERO);
         return afBorrowCashDo;
     }
 

@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,6 +16,7 @@ import java.util.List;
  */
 public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
 
+    String getCurrentLastBorrowNo(String orderNoPre);
 
     JsdBorrowCashDo getByBorrowNo(@Param("borrowNo") String borrowNo);
 
