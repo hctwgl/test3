@@ -4,6 +4,7 @@ import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.jsd.JsdApplyBorrowCashBo;
 import com.ald.fanbei.api.biz.bo.jsd.JsdGoodsInfoBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.OriRateUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
@@ -47,7 +48,7 @@ import java.util.regex.Pattern;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("applyBorrowCashApi")
-@Validator("applyLegalBorrowCashParam")
+@Validator("applyBorrowCashParam")
 public class ApplyBorrowCashApi implements DsedH5Handle {
 
     protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");// 埋点日志
@@ -72,6 +73,8 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
     JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
     @Resource
     JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
+    @Resource
+    OriRateUtil oriRateUtil;
 
     // [end]
     @Override
@@ -209,9 +212,18 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
     ;
 
     private BigDecimal getRiskOriRate(String openId) {
+        BigDecimal oriRate = BigDecimal.valueOf(0.001);
 
-
-        return BigDecimal.ZERO;
+        try {
+            String poundageRate = oriRateUtil.getOriRateNoticeRequest(openId);
+            if(StringUtils.isBlank(poundageRate)) {
+                poundageRate = "0.001";
+            }
+            oriRate = new BigDecimal(poundageRate);
+        } catch (Exception e) {
+            logger.info(openId + "从西瓜信用获取分层用户额度失败：" + e);
+        }
+        return oriRate;
     }
 
     private BigDecimal getTiedGoodsInfo(BigDecimal borrowAmount, String borrowType, BigDecimal oriRate) {
@@ -510,7 +522,7 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
     /**
      * 借款时间
      *
-     * @param jsdBorrowCashDo
+     * @param
      * @return
      */
     public int borrowTime(final String type) {
