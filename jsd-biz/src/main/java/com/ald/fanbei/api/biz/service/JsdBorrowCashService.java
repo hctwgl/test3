@@ -15,6 +15,14 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     JsdBorrowCashDo getByBorrowNo(String borrowNo);
 
+    /**
+     * 是否可借款
+     *
+     * @param openId
+     * @return
+     */
+    boolean isCanBorrowCash(Long userId);
+
 
 
 

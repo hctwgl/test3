@@ -55,4 +55,8 @@ public interface Context {
 	public String getRealName();
 
 	public void setRealName(String realName);
+
+	public String getOpenId();
+
+	public void setOpenId(String openId);
 }

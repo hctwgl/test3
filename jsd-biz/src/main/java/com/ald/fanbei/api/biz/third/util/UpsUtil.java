@@ -195,6 +195,67 @@ public class UpsUtil extends AbstractThird {
 		}
 	}
 
+	/**
+	 * 单笔代付
+	 *
+	 * @param amount 金额
+	 * @param realName 真实姓名
+	 * @param cardNo 银行卡号
+	 * @param userNo 用户在商户的唯一标识
+	 * @param phone 用户在商户的唯一标识
+	 * @param bankName 银行名称
+	 * @param bankCode 银行编号
+	 * @param purpose 用途
+	 * @param clientType 客户端类型
+	 */
+	public UpsDelegatePayRespBo jsdDelegatePay(BigDecimal amount,String realName,String cardNo,String userNo,
+												String phone,String bankName,String bankCode,String purpose,String clientType,String merPriv,String reqExt,String idNumber){
+		amount = setActualAmount(amount);
+		String orderNo = getOrderNo("dpay", phone.substring(phone.length()-4,phone.length()));
+		UpsDelegatePayReqBo reqBo = new UpsDelegatePayReqBo();
+		setPubParam(reqBo,"delegatePay",orderNo,clientType);
+		reqBo.setMerPriv(merPriv);
+		reqBo.setReqExt(reqExt);
+		reqBo.setAmount(amount.toString());
+		reqBo.setRealName(realName);
+		reqBo.setCardNo(cardNo);
+		reqBo.setUserNo(userNo);
+		reqBo.setCertNo(idNumber);
+		reqBo.setPhone(phone);
+		reqBo.setBankName(bankName);
+		reqBo.setBankCode(bankCode);
+		reqBo.setPurpose(purpose);
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/delegatePay");
+		logger.info("cfp String sign= "+createLinkString(reqBo));
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		try {
+//			afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
+			jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
+			logger.info("ups url="+getUpsUrl());
+			String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+			logThird(reqResult, "jsdDelegatePay", reqBo);
+			if(StringUtil.isBlank(reqResult)){
+				UpsDelegatePayRespBo authSignResp = new UpsDelegatePayRespBo();
+				authSignResp.setSuccess(false);
+				return authSignResp;
+			}
+			UpsDelegatePayRespBo authSignResp = JSONObject.parseObject(reqResult,UpsDelegatePayRespBo.class);
+			if(authSignResp != null && authSignResp.getTradeState()!=null &&(StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)||StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_DEAL))){
+				authSignResp.setSuccess(true);
+				return authSignResp;
+			}else{
+				UpsDelegatePayRespBo authSignResp1 = new UpsDelegatePayRespBo();
+				authSignResp1.setSuccess(false);
+				return authSignResp1;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			UpsDelegatePayRespBo authSignResp = new UpsDelegatePayRespBo();
+			authSignResp.setSuccess(false);
+			return authSignResp;
+		}
+	}
+
 	
 	/**
 	 * 单笔交易查询
