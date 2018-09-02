@@ -173,6 +173,15 @@ import java.math.BigDecimal;
      */
     private String version;
 
+    private String productNo;
+
+    public String getProductNo() {
+        return productNo;
+    }
+
+    public void setProductNo(String productNo) {
+        this.productNo = productNo;
+    }
 
     /**
      * 获取主键Id

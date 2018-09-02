@@ -119,7 +119,7 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
                 return new DsedH5HandleResponse(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
             }
             final JsdBorrowCashDo jsdBorrowCashDo = buildBorrowCashDo(borrowAmount, borrowCashBo.getTerm(), mainCard,
-                    borrowCashBo.getUserId(), rateInfoDo, oriRate);
+                    borrowCashBo.getUserId(), rateInfoDo, oriRate,borrowCashBo.getProductNo());
 
             // 搭售商品订单
             final JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = buildBorrowLegalOrder(borrowAmount, borrowCashBo.getUserId(),
@@ -417,7 +417,7 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
 
     public JsdBorrowCashDo buildBorrowCashDo(BigDecimal amount, String type,
                                              JsdUserBankcardDo jsdUserBankcardDo, Long userId,
-                                             JsdResourceDo rateInfoDo, BigDecimal oriRate) {
+                                             JsdResourceDo rateInfoDo, BigDecimal oriRate,String productNo) {
         String oneDay = "";
         String twoDay = "";
         if (null != rateInfoDo) {
@@ -473,6 +473,7 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
         afBorrowCashDo.setArrivalAmount(amount);
         afBorrowCashDo.setPoundageRate(new BigDecimal(serviceRate));
         afBorrowCashDo.setRiskDailyRate(oriRate);
+        afBorrowCashDo.setProductNo(productNo);
         return afBorrowCashDo;
     }
 
