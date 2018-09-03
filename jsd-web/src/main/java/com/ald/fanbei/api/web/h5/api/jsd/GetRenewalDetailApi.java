@@ -152,8 +152,8 @@ public class GetRenewalDetailApi implements DsedH5Handle {
 		delayInfo.put("deferAmount", renewalPayAmount+"");	// 需支付总金额
 		delayInfo.put("deferDay", allowRenewalDay+"");	// 续期天数
 		delayInfo.put("deferRemark", deferRemark);	// 费用明细	展期金额的相关具体描述（多条说明用英文逗号,用间隔）
-		delayInfo.put("totalDiffFee", "");	// 展期后的利润差，西瓜会根据此金额匹配搭售商品 TODO
 		this.getRenewalRate(delayInfo);
+		delayInfo.put("totalDiffFee", this.getDiffFee(borrowCashDo, delayInfo));	// 展期后的利润差，西瓜会根据此金额匹配搭售商品 TODO
 		
 		delayArray.add(delayInfo);
 		
@@ -184,6 +184,26 @@ public class GetRenewalDetailApi implements DsedH5Handle {
 		}
 		delayInfo.put("interestRate", baseBankRate.divide(new BigDecimal(100)));
 		delayInfo.put("serviceRate", poundageRate.divide(new BigDecimal(100)));
+	}
+	
+	private BigDecimal getDiffFee(JsdBorrowCashDo borrowCashDo, Map<String, Object> delayInfo) {
+		
+		BigDecimal interestRate = new BigDecimal(delayInfo.get("interestRate").toString());
+		BigDecimal serviceRate = new BigDecimal(delayInfo.get("serviceRate").toString());
+		BigDecimal renewalAmount = new BigDecimal(delayInfo.get("principalAmount").toString());
+		BigDecimal renewalDay = new BigDecimal(delayInfo.get("deferDay").toString());
+
+		BigDecimal rateAmount = BigDecimalUtil.multiply(renewalAmount, interestRate, renewalDay.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
+		BigDecimal poundage = BigDecimalUtil.multiply(renewalAmount, serviceRate, renewalDay.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
+		
+		// 用户分层利率
+		BigDecimal riskDailyRate = borrowCashDo.getRiskDailyRate();
+		// 总利润
+		BigDecimal totalDiffFee = BigDecimalUtil.multiply(renewalAmount, renewalDay, riskDailyRate);
+		
+		BigDecimal diffFee = totalDiffFee.subtract(rateAmount).subtract(poundage);
+		
+		return diffFee;
 	}
 }
 

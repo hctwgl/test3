@@ -84,6 +84,12 @@ public class SendSmsCodeApi implements DsedH5Handle {
 		}else if(!"10".equals(upsResult.getNeedCode())){
 			return new DsedH5HandleResponse(1567, FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
 		}
+	}else if(SmsCodeType.DELAY.getCode().equals(type)){
+		String orderNo = generatorClusterNo.getRepaymentNo(new Date(), BankPayChannel.KUAIJIE.getCode());
+		respBo = upsUtil.quickPayResendSms(busiFlag,orderNo);
+		if (!respBo.isSuccess()) {
+			throw new FanbeiException(respBo.getRespDesc());
+		}
 	}
 
 

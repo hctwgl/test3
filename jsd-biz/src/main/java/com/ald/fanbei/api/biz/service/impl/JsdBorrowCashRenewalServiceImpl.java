@@ -50,12 +50,14 @@ import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.biz.bo.KuaijieJsdRenewalPayBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.DsedUpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.alibaba.fastjson.JSON;
 
@@ -115,9 +117,22 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 	    KuaijieJsdRenewalPayBo bizObject = new KuaijieJsdRenewalPayBo(bo.renewalDo, bo);
 	    
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bo.bankChannel)) {// 快捷支付
-			map = sendKuaiJieSms(bank, renewalDo.getRenewalNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(), 
+			/*map = sendKuaiJieSms(bank, renewalDo.getRenewalNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(), 
 					userDo.getIdNumber(), JSON.toJSONString(bizObject), "jsdBorrowCashRenewalService",Constants.DEFAULT_PAY_PURPOSE, name, 
-				PayOrderSource.RENEW_JSD.getCode());
+				PayOrderSource.RENEW_JSD.getCode());*/
+	    	
+	    	// 添加数据到redis缓存
+			UpsCollectBo upsCollectBo = new UpsCollectBo(bank, renewalDo.getRenewalNo(), renewalDo.getActualAmount(), userDo.getRid() + "", userDo.getRealName(), bank.get("mobile").toString(), bank.get("bankCode").toString(),
+					bank.get("bankCardNumber").toString(), userDo.getIdNumber(), Constants.DEFAULT_PAY_PURPOSE, name, "02", PayOrderSource.RENEW_JSD.getCode(), BankPayChannel.KUAIJIE.getCode(),
+					"jsd_loan");
+			// 支付请求对应的处理bean
+			bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + renewalDo.getRenewalNo(), "jsdBorrowCashRenewalService", UpsUtil.KUAIJIE_EXPIRE_SECONDS);
+			// 支付请求数据
+			bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_HEADER + renewalDo.getRenewalNo(), JSON.toJSONString(upsCollectBo), UpsUtil.KUAIJIE_EXPIRE_SECONDS);
+			// 支付相关业务数据（由子类业务处理）
+			bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_OBJECT_HEADER + renewalDo.getRenewalNo(), JSON.toJSONString(bizObject), UpsUtil.KUAIJIE_EXPIRE_SECONDS);
+			map.put("repaySMS", "Y");
+	    	
 		} else {// 代扣
 			map = doUpsPay(bo.bankChannel, bank, renewalDo.getTradeNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(),
 					userDo.getIdNumber(), "", JSON.toJSONString(bizObject),Constants.DEFAULT_PAY_PURPOSE, name, PayOrderSource.RENEW_JSD.getCode());
