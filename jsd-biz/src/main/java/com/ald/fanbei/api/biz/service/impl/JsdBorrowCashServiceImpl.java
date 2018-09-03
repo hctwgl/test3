@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -7,6 +8,8 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
@@ -26,7 +29,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     @Resource
     private JsdBorrowCashDao jsdBorrowCashDao;
 
-		@Override
+	@Override
 	public BaseDao<JsdBorrowCashDo, Long> getDao() {
 		return jsdBorrowCashDao;
 	}
@@ -49,12 +52,31 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
 	@Override
 	public void dealBorrowSucc(Long cashId, String outTradeNo) {
+		final JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
 		
+		Date currDate = new Date(System.currentTimeMillis());
+		cashDo.setGmtArrival(currDate);
+		
+        Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(currDate);
+        Date repaymentDay = DateUtil.addDays(arrivalEnd, Integer.valueOf(cashDo.getType()) - 1);
+        cashDo.setGmtPlanRepayment(repaymentDay);
+        
+        // TODO 事务更新 order待发货，orderCash待还
+        jsdBorrowCashDao.updateById(cashDo);
 	}
 
 	@Override
 	public void dealBorrowFail(Long cashId, String outTradeNo, String failMsg) {
+		final JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
 		
+        Date cur = new Date();
+        cashDo.setStatus(JsdBorrowCashStatus.CLOSED.code);
+        cashDo.setRemark("UPS打款失败，" + failMsg);
+        cashDo.setGmtModified(cur);
+        cashDo.setGmtClose(cur);
+        
+        // TODO 事务关闭 order 和 orderCash
+        jsdBorrowCashDao.updateById(cashDo);
 	}
 
 }

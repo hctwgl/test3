@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -49,15 +48,14 @@ import com.alibaba.fastjson.JSONObject;
 
 /**
  * @author 郭帅强 2018年1月17日 下午6:15:06
- * @类描述：FanbeiH5Controller
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
 public class JsdGatewayController {
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-    protected final Logger biLog = LoggerFactory.getLogger("DSED_BI");// 新app原生接口入口日志
-    protected final Logger mdLog = LoggerFactory.getLogger("DSED_MD");// 埋点日志
-    protected final Logger thirdLog = LoggerFactory.getLogger("DSED_THIRD");// 第三方调用日志
+    protected final Logger biLog = LoggerFactory.getLogger("JSD_BI");// 新app原生接口入口日志
+    protected final Logger mdLog = LoggerFactory.getLogger("JSD_MD");// 埋点日志
+    protected final Logger thirdLog = LoggerFactory.getLogger("JSD_THIRD");// 第三方调用日志
     private static String PRIVATE_KEY = ConfigProperties.get(Constants.CONFKEY_XGXY_AES_PASSWORD);
 	
     @Resource
@@ -78,11 +76,12 @@ public class JsdGatewayController {
     public String h5Request(@RequestBody JsdParam param, HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
         response.setContentType("application/json;charset=utf-8");
+        
         return this.processRequest(request, param.getData(), param.getSign());
     }
 
     
-    private String processRequest(HttpServletRequest request,String data, String sign) {
+    private String processRequest(HttpServletRequest request, String data, String sign) {
         JsdH5HandleResponse baseResponse;
         Context context = null;
         Long stmap = System.currentTimeMillis();
@@ -96,23 +95,28 @@ public class JsdGatewayController {
             baseResponse = buildErrorResult(FanbeiExceptionCode.SYSTEM_ERROR, request);
         }
         
-        doBiLog(context,request, baseResponse, null, System.currentTimeMillis() - stmap, context != null? context.getUserName():"");
+        doBiLog(context, request, baseResponse, System.currentTimeMillis() - stmap);
         return JSON.toJSONString(baseResponse);
     }
     private Context buildContext(HttpServletRequest request, String data) {
-
     	ContextBuilder contextBuilder = new ContextBuilder();
         String method = request.getRequestURI();
         Map<String, Object> dataMap = new HashMap<>();
 
         if (StringUtils.isNotEmpty(data)) {
             String decryptData = AesUtil.decryptFromBase64Third(data, PRIVATE_KEY);
-            JSONObject dataInfo = JSONObject.parseObject(decryptData);
-            String openId = (String.valueOf(dataInfo.get("openId")));
-            JsdUserDo userDo = jsdUserService.getByOpenId(openId);
             dataMap = JSON.parseObject(decryptData);
-            contextBuilder.method(method).systemsMap(dataMap);
-            if (userDo != null) {
+            Object openId = dataMap.get("openId");
+            if(openId == null) {
+            	throw new FanbeiException("OpenId can't be null!");
+            }
+            
+            JsdUserDo userDo = jsdUserService.getByOpenId(openId.toString());
+            
+            contextBuilder.method(method);
+            if (userDo == null) {
+            	throw new FanbeiException("Can't find refer user by openId " + openId);
+            } else {
             	contextBuilder.userName(userDo.getMobile());
             	contextBuilder.userId(userDo.getRid());
             	contextBuilder.idNumber(userDo.getIdNumber());
@@ -124,23 +128,15 @@ public class JsdGatewayController {
         contextBuilder.dataMap(dataMap);
         contextBuilder.clientIp(CommonUtil.getIpAddr(request));
         Context context = contextBuilder.build();
-        logger.info("BaseController buildContext data = "+data+",context=",JSON.toJSONString(context));
+        logger.info("buildContext success, ori data = "+data+", final context=" + JSON.toJSONString(context));
         return context;
     }
 
     public JsdH5HandleResponse doProcess(Context context) {
         interceptorChain.execute(context);
-        
-        JsdH5Handle methodHandle = jsdH5HandleFactory.getHandle(context.getMethod());
-
-        JsdH5HandleResponse handelResult;
         try {
-            handelResult = methodHandle.process(context);
-            int resultCode = handelResult.getCode();
-            if (resultCode != 200) {
-//            	logger.error(context.getId() + " err,Code=" + resultCode);
-            }
-            return handelResult;
+        	JsdH5Handle methodHandle = jsdH5HandleFactory.getHandle(context.getMethod());
+            return methodHandle.process(context);
         } catch (FanbeiException e) {
             logger.error("biz exception, msg=" + e.getMessage() + ", code=" + e.getErrorCode(), e);
             throw e;
@@ -151,7 +147,6 @@ public class JsdGatewayController {
     }
 
     
-
     protected JsdH5HandleResponse buildErrorResult(FanbeiExceptionCode exceptionCode, HttpServletRequest request) {
         JsdH5HandleResponse resp;
         if (exceptionCode == null) {
@@ -160,7 +155,6 @@ public class JsdGatewayController {
         resp = new JsdH5HandleResponse(exceptionCode);
         return resp;
     }
-
     protected JsdH5HandleResponse buildErrorResult(FanbeiException e, HttpServletRequest request) {
         FanbeiExceptionCode exceptionCode = e.getErrorCode();
         JsdH5HandleResponse resp;
@@ -177,11 +171,11 @@ public class JsdGatewayController {
     }
 
     private void checkSign(Context context, String sign) {
-        Map<String, Object> systemsMap = context.getDataMap();
-        String md5Value = generateSign(systemsMap, PRIVATE_KEY);
+        Map<String, Object> dataMap = context.getDataMap();
+        String md5Value = generateSign(dataMap, PRIVATE_KEY);
         if (logger.isDebugEnabled())
-            logger.info("signStrBefore=" + systemsMap + ",md5Value=" + md5Value + ",sign=" + sign);
-       /* if (!StringUtils.equals(sign, md5Value)) { TODO
+            logger.info("signStrBefore=" + dataMap + ",md5Value=" + md5Value + ",sign=" + sign);
+        /* if (!StringUtils.equals(sign, md5Value)) { TODO 取消注释
             logger.error("signStrBefore=" + systemsMap + ",md5Value=" + md5Value + ",sign=" + sign);
             throw new FanbeiException("sign is error", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
         }*/
@@ -265,33 +259,16 @@ public class JsdGatewayController {
      * @param appInfo
      * @param exeT
      */
-    protected void doBiLog(Context context,HttpServletRequest request, JsdH5HandleResponse respData, String appInfo, long exeT,
-                         String userName) {
+    protected void doBiLog(Context context, HttpServletRequest request, JsdH5HandleResponse respData, long exeT) {
         try {
-            JSONObject param = new JSONObject();
-            if (StringUtil.isBlank(userName)) {
-                userName = "no user";
-            }
-            JSONObject temp = null;
-            if (StringUtil.isNotBlank(appInfo)) {
-                temp = JSONObject.parseObject(appInfo);
-                userName = JSONObject.parseObject(appInfo).getString("userName");
-            }
-            param.put("_appInfo", temp);
-            Map<String, Object> map =  context.getDataMap();
-            Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<String, Object> entry = it.next();
-                param.put(entry.getKey(), entry.getValue());
-            }
             String ext1 = "";
             String ext2 = "";
             String ext3 = "";
             String ext4 = "";
             String ext5 = "";
 
-            this.doLog(param.toString(), respData, request.getMethod(), CommonUtil.getIpAddr(request), exeT + "",
-                    request.getRequestURI(), userName, ext1, ext2, ext3, ext4, ext5);
+            this.doLog(JSON.toJSONString(context.getDataMap()), respData, request.getMethod(), CommonUtil.getIpAddr(request), String.valueOf(exeT),
+                    request.getRequestURI(), context.getUserName(), ext1, ext2, ext3, ext4, ext5);
         } catch (Exception e) {
             logger.error("do log exception", e);
         }

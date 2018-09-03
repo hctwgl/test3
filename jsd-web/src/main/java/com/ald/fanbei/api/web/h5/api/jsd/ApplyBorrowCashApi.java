@@ -35,6 +35,7 @@ import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -94,13 +95,10 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
     
     @Override
     public JsdH5HandleResponse process(Context context) {
+    	this.lock(context.getUserId());
+    	
         JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
         JsdApplyBorrowCashBo applyCashBo = this.resolveParam(context);
-        
-        String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + context.getUserId();
-        if (!bizCacheUtil.getLock30Second(lockKey, "1")) {
-            return new JsdH5HandleResponse(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
-        }
         
         BigDecimal goodsAmount = BigDecimal.ZERO;
         BigDecimal borrowAmount = applyCashBo.getAmount();
@@ -113,7 +111,6 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         
         JsdGoodsInfoBo jsdGoodsInfoBo = applyCashBo.getJsdGoodsInfoBo();
         
-        // 判断用户借款金额是否在后台配置的金额范围内
         JsdResourceDo rateInfoDo = jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG, Constants.JSD_RATE_INFO);
         JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(applyCashBo.getBankNo());
         try {
@@ -122,12 +119,11 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
             if (!borrowFlag) {
                 return new JsdH5HandleResponse(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
             }
-            final JsdBorrowCashDo jsdBorrowCashDo = buildBorrowCashDo(borrowAmount, applyCashBo.getTerm(), mainCard,
-                    applyCashBo.getUserId(), rateInfoDo, oriRate,applyCashBo.getProductNo());
+            // 主借款
+            final JsdBorrowCashDo jsdBorrowCashDo = buildBorrowCashDo(borrowAmount, applyCashBo.getTerm(), mainCard, applyCashBo.getUserId(), rateInfoDo, oriRate,applyCashBo.getProductNo());
 
             // 搭售商品订单
-            final JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = buildBorrowLegalOrder(borrowAmount, applyCashBo.getUserId(),
-                    0l, jsdGoodsInfoBo.getGoodsName());
+            final JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = buildBorrowLegalOrder(borrowAmount, applyCashBo.getUserId(), 0l, jsdGoodsInfoBo.getGoodsName());
 
             // 订单借款
             final JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = buildBorrowLegalOrderCashDo(
@@ -140,8 +136,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
                     jsdBorrowCashService.saveRecord(jsdBorrowCashDo);
                     Long borrowId = jsdBorrowCashDo.getRid();
                     jsdBorrowLegalOrderDo.setBorrowId(borrowId);
-                    // 新增搭售商品订单
-                    jsdBorrowLegalOrderService.saveRecord(jsdBorrowLegalOrderDo);
+                    jsdBorrowLegalOrderService.saveRecord(jsdBorrowLegalOrderDo);// 新增搭售商品订单
                     Long orderId = jsdBorrowLegalOrderDo.getRid();
                     jsdBorrowLegalOrderCashDo.setBorrowId(borrowId);
                     jsdBorrowLegalOrderCashDo.setBorrowLegalOrderId(orderId);
@@ -149,45 +144,34 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
                     return borrowId;
                 }
             });
-            // 生成借款信息失败
-            if (borrowId == null) {
+            if (borrowId == null) {// 生成借款信息失败
                 return new JsdH5HandleResponse(FanbeiExceptionCode.ADD_JSD_BORROW_CASH_INFO_FAIL);
             }
-            // 借过款的放入缓存，借钱按钮不需要高亮显示
-            bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED, String.valueOf(applyCashBo.getUserId()));
-            final JsdBorrowCashDo cashDo = new JsdBorrowCashDo();
-            cashDo.setRid(borrowId);
+            final JsdBorrowCashDo cashDoForUpdate = new JsdBorrowCashDo();
+            cashDoForUpdate.setRid(borrowId);
             try {
-                String cardNo = mainCard.getBankCardNumber();
-                // 主卡号不能为空
-                if (StringUtils.isEmpty(cardNo)) {
-                    return new JsdH5HandleResponse(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
-                }
                 delegatePay(applyCashBo.getUserId(), borrowId, applyCashBo.getBankNo(), jsdBorrowLegalOrderDo, jsdBorrowLegalOrderCashDo);
                 return resp;
             } catch (Exception e) {
                 logger.error("apply legal borrow cash  error", e);
-                // 关闭借款
-                cashDo.setStatus(JsdBorrowCashStatus.CLOSED.getCode());
-                // 关闭搭售商品订单
-                jsdBorrowLegalOrderDo.setStatus(JsdBorrowLegalOrderCashStatus.CLOSED.getCode());
-                // 关闭搭售商品借款
-                jsdBorrowLegalOrderCashDo.setStatus(JsdBorrowLegalOrderStatus.CLOSED.getCode());
+                cashDoForUpdate.setStatus(JsdBorrowCashStatus.CLOSED.getCode());// 关闭借款
+                cashDoForUpdate.setRemark("Exception when delegatePay!");
+                jsdBorrowLegalOrderDo.setStatus(JsdBorrowLegalOrderCashStatus.CLOSED.getCode());// 关闭搭售商品订单
+                jsdBorrowLegalOrderCashDo.setStatus(JsdBorrowLegalOrderStatus.CLOSED.getCode());// 关闭搭售商品借款
 
-                // 如果属于非爱上街自定义异常，比如风控请求504等，则把风控状态置为待审核，同时添加备注说明，保证用户不会因为此原因进入借贷超市页面
                 transactionTemplate.execute(new TransactionCallback<String>() {
                     @Override
                     public String doInTransaction(TransactionStatus ts) {
-                        jsdBorrowCashService.updateById(cashDo);
+                        jsdBorrowCashService.updateById(cashDoForUpdate);
                         jsdBorrowLegalOrderCashService.updateById(jsdBorrowLegalOrderCashDo);
                         jsdBorrowLegalOrderService.updateById(jsdBorrowLegalOrderDo);
                         return "success";
                     }
                 });
-                throw new FanbeiException(FanbeiExceptionCode.ADD_JSD_BORROW_CASH_INFO_FAIL);
+                throw new FanbeiException(FanbeiExceptionCode.DELEGATEPAY_DIRECT_FAIL);
             }
         } finally {
-            bizCacheUtil.delCache(lockKey);
+            this.unLock(context.getUserId());
         }
 
     }
@@ -198,6 +182,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         JsdApplyBorrowCashBo applyCashBo = new JsdApplyBorrowCashBo();
         applyCashBo.setOpenId(context.getOpenId());
         applyCashBo.setUserId(context.getUserId());
+        
         applyCashBo.setAmount(param.getAmount());
         applyCashBo.setBankNo(param.getBankNo());
         applyCashBo.setIsTying(param.getIsTying());
@@ -347,103 +332,6 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         });
     }
 
-    /**
-     * 构建 商品借款 
-     * @param goodsAmount
-     * @param type
-     * @param userId
-     * @param orderId
-     * @param poundage
-     * @param borrowId
-     * @param overdueAmount
-     * @param borrowRemark
-     * @param refundRemark
-     * @param rateInfoDo
-     * @return
-     */
-    private JsdBorrowLegalOrderCashDo buildBorrowLegalOrderCashDo(BigDecimal goodsAmount, String type, Long userId,
-                                                                 Long orderId, BigDecimal poundage, Long borrowId, BigDecimal overdueAmount, String borrowRemark,
-                                                                 String refundRemark, JsdResourceDo rateInfoDo) {
-        Integer day = NumberUtil.objToIntDefault(type, 0);
-        String oneDay = "";
-        String twoDay = "";
-        if (null != rateInfoDo) {
-            oneDay = rateInfoDo.getTypeDesc().split(",")[0];
-            twoDay = rateInfoDo.getTypeDesc().split(",")[1];
-        }
-        // 计算手续费和利息
-        String borrowRate = rateInfoDo.getValue3();
-        JSONArray array = JSONObject.parseArray(borrowRate);
-        double interestRate = 0; // 利率
-        double serviceRate = 0; // 手续费率
-        for (int i = 0; i < array.size(); i++) {
-            JSONObject info = array.getJSONObject(i);
-            String consumeTag = info.getString("consumeTag");
-            if (StringUtils.equals("INTEREST_RATE", consumeTag)) {
-                if (StringUtils.equals(oneDay, type)) {
-                    interestRate = info.getDouble("consumeFirstType");
-                } else if (StringUtils.equals(twoDay, type)) {
-                    interestRate = info.getDouble("consumeSecondType");
-                }
-            } else if (StringUtils.equals("SERVICE_RATE", consumeTag)) {
-                if (StringUtils.equals(oneDay, type)) {
-                    serviceRate = info.getDouble("consumeFirstType");
-                } else if (StringUtils.equals(twoDay, type)) {
-                    serviceRate = info.getDouble("consumeSecondType");
-                }
-            }
-        }
-        BigDecimal rateAmount = new BigDecimal(interestRate / 100).multiply(new BigDecimal(day)).multiply(goodsAmount)
-                .divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-
-        BigDecimal poundageAmount = new BigDecimal(serviceRate / 100).multiply(new BigDecimal(day))
-                .multiply(goodsAmount).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-        JsdBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = new JsdBorrowLegalOrderCashDo();
-        afBorrowLegalOrderCashDo.setAmount(goodsAmount);
-        afBorrowLegalOrderCashDo.setType(type);
-        afBorrowLegalOrderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.APPLYING.getCode());
-        afBorrowLegalOrderCashDo.setUserId(userId);
-        afBorrowLegalOrderCashDo.setPoundageRate(BigDecimal.valueOf(serviceRate));
-        afBorrowLegalOrderCashDo.setInterestRate(BigDecimal.valueOf(interestRate));
-        afBorrowLegalOrderCashDo.setBorrowLegalOrderId(orderId);
-        afBorrowLegalOrderCashDo.setBorrowId(borrowId);
-        afBorrowLegalOrderCashDo.setOverdueAmount(overdueAmount);
-        afBorrowLegalOrderCashDo.setBorrowRemark(borrowRemark);
-        afBorrowLegalOrderCashDo.setRefundRemark(refundRemark);
-        afBorrowLegalOrderCashDo.setInterestAmount(rateAmount);
-        afBorrowLegalOrderCashDo.setPoundageAmount(poundageAmount);
-        afBorrowLegalOrderCashDo.setOverdueStatus("N");
-        // 获取借款天数
-        Integer planRepayDays = NumberUtil.objToIntDefault(type, 0);
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_YEAR, planRepayDays - 1);
-        afBorrowLegalOrderCashDo.setPlanRepayDays(planRepayDays);
-        afBorrowLegalOrderCashDo.setGmtPlanRepay(cal.getTime());
-        String cashNo = generatorClusterNo.geBorrowLegalOrderCashNo(new Date());
-        afBorrowLegalOrderCashDo.setCashNo(cashNo);
-        return afBorrowLegalOrderCashDo;
-    }
-    
-    /**
-     * 构建 商品订单
-     * @param goodsAmount
-     * @param userId
-     * @param borrowId
-     * @param goodsName
-     * @return
-     */
-    private JsdBorrowLegalOrderDo buildBorrowLegalOrder(BigDecimal goodsAmount, Long userId, Long borrowId,
-                                                       String goodsName) {
-        JsdBorrowLegalOrderDo afBorrowLegalOrderDo = new JsdBorrowLegalOrderDo();
-        afBorrowLegalOrderDo.setUserId(userId);
-        afBorrowLegalOrderDo.setBorrowId(borrowId);
-        afBorrowLegalOrderDo.setPriceAmount(goodsAmount);
-        afBorrowLegalOrderDo.setGoodsName(goodsName);
-        afBorrowLegalOrderDo.setStatus(JsdBorrowLegalOrderStatus.UNPAID.getCode());
-        String orderCashNo = generatorClusterNo.getOrderNo(OrderType.LEGAL);
-        afBorrowLegalOrderDo.setOrderNo(orderCashNo);
-        return afBorrowLegalOrderDo;
-    }
 
     /**
      * 构建 主借款
@@ -513,7 +401,116 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         afBorrowCashDo.setRepayPrinciple(BigDecimal.ZERO);
         return afBorrowCashDo;
     }
+    
+    /**
+     * 构建 商品订单
+     * @param goodsAmount
+     * @param userId
+     * @param borrowId
+     * @param goodsName
+     * @return
+     */
+    private JsdBorrowLegalOrderDo buildBorrowLegalOrder(BigDecimal goodsAmount, Long userId, Long borrowId,
+                                                       String goodsName) {
+        JsdBorrowLegalOrderDo afBorrowLegalOrderDo = new JsdBorrowLegalOrderDo();
+        afBorrowLegalOrderDo.setUserId(userId);
+        afBorrowLegalOrderDo.setBorrowId(borrowId);
+        afBorrowLegalOrderDo.setPriceAmount(goodsAmount);
+        afBorrowLegalOrderDo.setGoodsName(goodsName);
+        afBorrowLegalOrderDo.setStatus(JsdBorrowLegalOrderStatus.UNPAID.getCode());
+        String orderCashNo = generatorClusterNo.getOrderNo(OrderType.LEGAL);
+        afBorrowLegalOrderDo.setOrderNo(orderCashNo);
+        return afBorrowLegalOrderDo;
+    }
+    
+    /**
+     * 构建 商品借款 
+     * @param goodsAmount
+     * @param type
+     * @param userId
+     * @param orderId
+     * @param poundage
+     * @param borrowId
+     * @param overdueAmount
+     * @param borrowRemark
+     * @param refundRemark
+     * @param rateInfoDo
+     * @return
+     */
+    private JsdBorrowLegalOrderCashDo buildBorrowLegalOrderCashDo(BigDecimal goodsAmount, String type, Long userId,
+                                                                 Long orderId, BigDecimal poundage, Long borrowId, BigDecimal overdueAmount, String borrowRemark,
+                                                                 String refundRemark, JsdResourceDo rateInfoDo) {
+        Integer day = NumberUtil.objToIntDefault(type, 0);
+        String oneDay = "";
+        String twoDay = "";
+        if (null != rateInfoDo) {
+            oneDay = rateInfoDo.getTypeDesc().split(",")[0];
+            twoDay = rateInfoDo.getTypeDesc().split(",")[1];
+        }
+        // 计算手续费和利息
+        String borrowRate = rateInfoDo.getValue3();
+        JSONArray array = JSONObject.parseArray(borrowRate);
+        double interestRate = 0; // 利率
+        double serviceRate = 0; // 手续费率
+        for (int i = 0; i < array.size(); i++) {
+            JSONObject info = array.getJSONObject(i);
+            String consumeTag = info.getString("consumeTag");
+            if (StringUtils.equals("INTEREST_RATE", consumeTag)) {
+                if (StringUtils.equals(oneDay, type)) {
+                    interestRate = info.getDouble("consumeFirstType");
+                } else if (StringUtils.equals(twoDay, type)) {
+                    interestRate = info.getDouble("consumeSecondType");
+                }
+            } else if (StringUtils.equals("SERVICE_RATE", consumeTag)) {
+                if (StringUtils.equals(oneDay, type)) {
+                    serviceRate = info.getDouble("consumeFirstType");
+                } else if (StringUtils.equals(twoDay, type)) {
+                    serviceRate = info.getDouble("consumeSecondType");
+                }
+            }
+        }
+        BigDecimal rateAmount = new BigDecimal(interestRate / 100).multiply(new BigDecimal(day)).multiply(goodsAmount)
+                .divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
 
+        BigDecimal poundageAmount = new BigDecimal(serviceRate / 100).multiply(new BigDecimal(day)).multiply(goodsAmount).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+        JsdBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = new JsdBorrowLegalOrderCashDo();
+        afBorrowLegalOrderCashDo.setAmount(goodsAmount);
+        afBorrowLegalOrderCashDo.setType(type);
+        afBorrowLegalOrderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.APPLYING.getCode());
+        afBorrowLegalOrderCashDo.setUserId(userId);
+        afBorrowLegalOrderCashDo.setPoundageRate(BigDecimal.valueOf(serviceRate));
+        afBorrowLegalOrderCashDo.setInterestRate(BigDecimal.valueOf(interestRate));
+        afBorrowLegalOrderCashDo.setBorrowLegalOrderId(orderId);
+        afBorrowLegalOrderCashDo.setBorrowId(borrowId);
+        afBorrowLegalOrderCashDo.setOverdueAmount(overdueAmount);
+        afBorrowLegalOrderCashDo.setBorrowRemark(borrowRemark);
+        afBorrowLegalOrderCashDo.setRefundRemark(refundRemark);
+        afBorrowLegalOrderCashDo.setInterestAmount(rateAmount);
+        afBorrowLegalOrderCashDo.setPoundageAmount(poundageAmount);
+        afBorrowLegalOrderCashDo.setOverdueStatus(YesNoStatus.NO.getCode());
+        
+        // 获取借款天数
+        Integer planRepayDays = NumberUtil.objToIntDefault(type, 0);
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, planRepayDays - 1);
+        afBorrowLegalOrderCashDo.setPlanRepayDays(planRepayDays);
+        afBorrowLegalOrderCashDo.setGmtPlanRepay(cal.getTime());
+        String cashNo = generatorClusterNo.geBorrowLegalOrderCashNo(new Date());
+        afBorrowLegalOrderCashDo.setCashNo(cashNo);
+        return afBorrowLegalOrderCashDo;
+    }
+
+    private void lock(Long userId) {
+    	String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
+        if (!bizCacheUtil.getLock30Second(lockKey, "1")) {
+        	throw new FanbeiException(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
+        }
+    }
+    private void unLock(Long userId) {
+    	String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
+    	bizCacheUtil.delCache(lockKey);
+    }
+    
     /**
      * 借款时间
      */

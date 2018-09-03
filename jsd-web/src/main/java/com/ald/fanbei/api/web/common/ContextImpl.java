@@ -5,10 +5,7 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 
 public class ContextImpl implements Context {
-
 	private Map<String, Object> dataMap = Maps.newHashMap();
-
-	private Integer appVersion;
 
 	private String userName;
 	
@@ -28,8 +25,6 @@ public class ContextImpl implements Context {
 
 	private String openId;
 
-	private Map<String,Object> systemsMap;
-
 	public String getOpenId() {
 		return openId;
 	}
@@ -38,14 +33,6 @@ public class ContextImpl implements Context {
 		this.openId = openId;
 	}
 
-	@Override
-	public String getIdNumber() {
-		return idNumber;
-	}
-	@Override
-	public void setIdNumber(String idNumber) {
-		this.idNumber = idNumber;
-	}
 
 	@Override
 	public String getRealName() {
@@ -53,16 +40,13 @@ public class ContextImpl implements Context {
 	}
 
 	@Override
-	public void setRealName(String realName) {
-		this.realName = realName;
+	public String getIdNumber() {
+		return idNumber;
 	}
 
+	@Override
 	public String getClientIp() {
 		return clientIp;
-	}
-
-	public void setClientIp(String clientIp) {
-		this.clientIp = clientIp;
 	}
 
 	@Override
@@ -71,74 +55,36 @@ public class ContextImpl implements Context {
 	}
 
 	@Override
-	public void setData(String key, Object value) {
-		dataMap.put(key, value);
-	}
-
-	@Override
-	public void setDataMap(Map<String, Object> dataMap) {
-		this.dataMap = dataMap;
-	}
-
-	@Override
 	public Map<String, Object> getDataMap() {
 		return this.dataMap;
 	}
 
-	public Integer getAppVersion() {
-		return appVersion;
-	}
-
-	public void setAppVersion(Integer appVersion) {
-		this.appVersion = appVersion;
-	}
-
+	@Override
 	public String getUserName() {
 		return userName;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
+	@Override
 	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-
+	@Override
 	public String getMethod() {
 		return method;
 	}
 	
-	
+	@Override
 	public String getId() {
 		return id;
 	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public void setMethod(String method) {
-		this.method = method;
-	}
 	
-	
-	public Map<String, Object> getSystemsMap() {
-		return systemsMap;
-	}
-
-	public void setSystemsMap(Map<String, Object> systemsMap) {
-		this.systemsMap = systemsMap;
-	}
-	
+	@Override
 	public Object getParamEntity() {
 		return paramEntity;
 	}
-
+	
+	@Override
 	public void setParamEntity(Object paramEntity) {
 		this.paramEntity = paramEntity;
 	}
@@ -147,10 +93,8 @@ public class ContextImpl implements Context {
 		this.dataMap = builder.dataMap;
 		this.userId = builder.userId;
 		this.userName = builder.userName;
-		this.appVersion = builder.appVersion;
 		this.method  = builder.method;
 		this.id = builder.id;
-		this.systemsMap  = builder.systemsMap;
 		this.openId  = builder.openId;
 		this.clientIp = builder.clientIp;
 		this.idNumber = builder.idNumber;
@@ -160,8 +104,6 @@ public class ContextImpl implements Context {
 	public static class ContextBuilder {
 
 		private Map<String, Object> dataMap;
-
-		private Integer appVersion;
 
 		private String userName;
 
@@ -176,8 +118,6 @@ public class ContextImpl implements Context {
 		private String clientIp;
 
 		private String realName;
-		
-		private Map<String,Object> systemsMap;
 
 		private String openId;
 
@@ -200,11 +140,6 @@ public class ContextImpl implements Context {
 			return this;
 		}
 
-		public ContextBuilder appVersion(Integer appVersion) {
-			this.appVersion = appVersion;
-			return this;
-		}
-
 		public ContextBuilder userId(Long userId) {
 			this.userId = userId;
 			return this;
@@ -212,11 +147,6 @@ public class ContextImpl implements Context {
 		
 		public ContextBuilder method(String method) {
 			this.method = method;
-			return this;
-		}
-		
-		public ContextBuilder systemsMap(Map<String,Object> systemsMap) {
-			this.systemsMap = systemsMap;
 			return this;
 		}
 		

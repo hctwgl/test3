@@ -14,7 +14,6 @@ import javax.validation.Path;
 import javax.validation.Validation;
 import javax.validation.metadata.ConstraintDescriptor;
 
-import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
@@ -51,8 +50,6 @@ public class JsdValidationInterceptor implements Interceptor, ApplicationContext
 
 	private javax.validation.Validator clsValidator;
 	
-	private ConvertUtilsBean convertUtils;
-	
 	private ResourceBundle resourceBundle ;
 
 	@PostConstruct
@@ -63,13 +60,12 @@ public class JsdValidationInterceptor implements Interceptor, ApplicationContext
 			    		   new PlatformResourceBundleLocator("validmsg")))
 			       .buildValidatorFactory()
 			       .getValidator();
-		convertUtils = new ConvertUtilsBean();
 		resourceBundle = ResourceBundle.getBundle("com.ald.fanbei.api.web.validator.message.check_msg", Locale.CHINA);
 	}
 	
 	@Override
 	public void intercept(Context context) {
-		JsdH5Handle methodHandle = jsdH5HandleFactory.getHandle(reqData.getMethod());
+		JsdH5Handle methodHandle = jsdH5HandleFactory.getHandle(context.getMethod());
 		Class<? extends JsdH5Handle> clazz = methodHandle.getClass();
 
 		Validator[] validators = getValidatorAnnotation(clazz);
@@ -78,13 +74,10 @@ public class JsdValidationInterceptor implements Interceptor, ApplicationContext
 			String beanName = validator.value();
 			Object validatorBean = applicationContext.getBean(beanName);
 			Class<?> validatorBeanClazz = validatorBean.getClass();
-			Object validatorInstanceBean = this.resolveValidatorBean(validatorBeanClazz, reqData);
-			reqData.setParamObj(validatorInstanceBean);
+			Object paramObj = JSON.parseObject(JSON.toJSONString(context.getDataMap()), validatorBeanClazz);
+			context.setParamEntity(paramObj);
 			
-			Set<ConstraintViolation<Object>> validateResults = null;
-			synchronized(this) {
-				validateResults = clsValidator.validate(validatorInstanceBean);
-			}
+			Set<ConstraintViolation<Object>> validateResults = clsValidator.validate(paramObj);
 			for (ConstraintViolation<Object> validateResult : validateResults) {
 				Path propertyPath = validateResult.getPropertyPath();
 				String message = validateResult.getMessage();
@@ -115,9 +108,6 @@ public class JsdValidationInterceptor implements Interceptor, ApplicationContext
 		}
 	}
 	
-	private Object resolveValidatorBean(Class<?> validatorBeanClazz) {
-		return JSON.parseObject(JSON.toJSONString(reqData.getParams()), validatorBeanClazz);
-	}
 	private Validator[] getValidatorAnnotation(Class<?> clazz) {
 		if (clazz.isAnnotationPresent(Validator.class)) {
 			Annotation[] annotations = clazz.getDeclaredAnnotations();
