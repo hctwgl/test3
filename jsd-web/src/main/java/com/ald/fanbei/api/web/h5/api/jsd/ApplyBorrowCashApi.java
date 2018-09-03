@@ -1,33 +1,15 @@
 package com.ald.fanbei.api.web.h5.api.jsd;
 
-import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.bo.jsd.JsdApplyBorrowCashBo;
-import com.ald.fanbei.api.biz.bo.jsd.JsdGoodsInfoBo;
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.OriRateUtil;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
-import com.ald.fanbei.api.biz.util.NumberWordFormat;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.FanbeiContext;
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.web.common.DsedH5Handle;
-import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
-import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.validator.Validator;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -37,13 +19,43 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.bo.jsd.JsdApplyBorrowCashBo;
+import com.ald.fanbei.api.biz.bo.jsd.JsdGoodsInfoBo;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
+import com.ald.fanbei.api.biz.service.JsdResourceService;
+import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
+import com.ald.fanbei.api.biz.service.JsdUserService;
+import com.ald.fanbei.api.biz.third.util.OriRateUtil;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.biz.util.NumberWordFormat;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
+import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.JsdResourceDo;
+import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import com.ald.fanbei.api.web.common.DsedH5Handle;
+import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
+import com.ald.fanbei.api.web.validator.Validator;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 
 /**
  * @author Jiang Rongbo 2017年3月25日下午1:06:18
@@ -55,6 +67,7 @@ import java.util.regex.Pattern;
 public class ApplyBorrowCashApi implements DsedH5Handle {
 
     protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");// 埋点日志
+    
     // [start] 依赖注入
     @Resource
     JsdBorrowCashService jsdBorrowCashService;
@@ -65,6 +78,11 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
     @Resource
     JsdUserService jsdUserService;
     @Resource
+    JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
+    @Resource
+    JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
+    
+    @Resource
     UpsUtil upsUtil;
     @Resource
     NumberWordFormat numberWordFormat;
@@ -73,15 +91,11 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
     @Resource
     TransactionTemplate transactionTemplate;
     @Resource
-    JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
-    @Resource
-    JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
-    @Resource
     OriRateUtil oriRateUtil;
     @Resource
     GeneratorClusterNo generatorClusterNo;
-
     // [end]
+    
     @Override
     public DsedH5HandleResponse process(Context context) {
 
@@ -301,32 +315,36 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
         rateInfo.put("totalRate", totalRate);
         return rateInfo;
     }
-
+    
+    /**
+     * 执行打款
+     * 
+     * @param userId
+     * @param borrowId
+     * @param bankNo
+     * @param jsdBorrowLegalOrderDo
+     * @param jsdBorrowLegalOrderCashDo
+     */
     private void delegatePay(Long userId, Long borrowId, String bankNo,
                              final JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo, final JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo) {
         final JsdBorrowCashDo cashDo = new JsdBorrowCashDo();
-        Date currDate = new Date();
         JsdUserDo afUserDo = jsdUserService.getById(userId);
         final JsdBorrowCashDo afBorrowCashDo = jsdBorrowCashService.getById(borrowId);
         cashDo.setRid(afBorrowCashDo.getRid());
 
         JsdUserBankcardDo card = jsdUserBankcardService.getByBankNo(bankNo);
 
-        List<String> whiteIdsList = new ArrayList<String>();
-        final int currentDay = Integer.parseInt(DateUtil.getNowYearMonthDay());
         // 打款
         UpsDelegatePayRespBo upsResult = upsUtil.jsdDelegatePay(afBorrowCashDo.getArrivalAmount(),
                 afUserDo.getRealName(), card.getBankCardNumber(), userId + "", card.getMobile(),
                 card.getBankName(), card.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
                 "JSD_LOAN", afBorrowCashDo.getRid() + "", afUserDo.getIdNumber());
-//			Integer day = NumberUtil
-//					.objToIntDefault(AfBorrowCashType.findRoleTypeByName(afBorrowCashDo.getType()).getCode(), 7);
         Integer day = borrowTime(afBorrowCashDo.getType());
         Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(cashDo.getGmtArrival());
         Date repaymentDay = DateUtil.addDays(arrivalEnd, day - 1);
         cashDo.setGmtPlanRepayment(repaymentDay);
         if (!upsResult.isSuccess()) {
-            // 大款失败，更新状态
+            // 打款款失败，更新状态
             logger.info("upsResult error:" + FanbeiExceptionCode.BANK_CARD_PAY_ERR);
             cashDo.setStatus(JsdBorrowCashStatus.TRANSEDFAIL.getCode());
             // 关闭订单
@@ -351,8 +369,21 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
         });
     }
 
-
-    public JsdBorrowLegalOrderCashDo buildBorrowLegalOrderCashDo(BigDecimal goodsAmount, String type, Long userId,
+    /**
+     * 构建 商品借款 
+     * @param goodsAmount
+     * @param type
+     * @param userId
+     * @param orderId
+     * @param poundage
+     * @param borrowId
+     * @param overdueAmount
+     * @param borrowRemark
+     * @param refundRemark
+     * @param rateInfoDo
+     * @return
+     */
+    private JsdBorrowLegalOrderCashDo buildBorrowLegalOrderCashDo(BigDecimal goodsAmount, String type, Long userId,
                                                                  Long orderId, BigDecimal poundage, Long borrowId, BigDecimal overdueAmount, String borrowRemark,
                                                                  String refundRemark, JsdResourceDo rateInfoDo) {
         Integer day = NumberUtil.objToIntDefault(type, 0);
@@ -414,8 +445,16 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
         afBorrowLegalOrderCashDo.setCashNo(cashNo);
         return afBorrowLegalOrderCashDo;
     }
-
-    public JsdBorrowLegalOrderDo buildBorrowLegalOrder(BigDecimal goodsAmount, Long userId, Long borrowId,
+    
+    /**
+     * 构建 商品订单
+     * @param goodsAmount
+     * @param userId
+     * @param borrowId
+     * @param goodsName
+     * @return
+     */
+    private JsdBorrowLegalOrderDo buildBorrowLegalOrder(BigDecimal goodsAmount, Long userId, Long borrowId,
                                                        String goodsName) {
         JsdBorrowLegalOrderDo afBorrowLegalOrderDo = new JsdBorrowLegalOrderDo();
         afBorrowLegalOrderDo.setUserId(userId);
@@ -428,7 +467,18 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
         return afBorrowLegalOrderDo;
     }
 
-    public JsdBorrowCashDo buildBorrowCashDo(BigDecimal amount, String type,
+    /**
+     * 构建 主借款
+     * @param amount
+     * @param type
+     * @param jsdUserBankcardDo
+     * @param userId
+     * @param rateInfoDo
+     * @param oriRate
+     * @param productNo
+     * @return
+     */
+    private JsdBorrowCashDo buildBorrowCashDo(BigDecimal amount, String type,
                                              JsdUserBankcardDo jsdUserBankcardDo, Long userId,
                                              JsdResourceDo rateInfoDo, BigDecimal oriRate,String productNo) {
         String oneDay = "";
@@ -437,12 +487,6 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
             oneDay = rateInfoDo.getTypeDesc().split(",")[0];
             twoDay = rateInfoDo.getTypeDesc().split(",")[1];
         }
-/*		List<AfResourceDo> list = afResourceService.selectBorrowHomeConfigByAllTypes();
-		Map<String, Object> rate = getObjectWithResourceDolist(list);
-
-		this.checkSwitch(rate, currentDay);*/
-//		BigDecimal bankRate = new BigDecimal(rate.get("bankRate").toString());
-
         Integer day = NumberUtil.objToIntDefault(type, 0);
         // 计算手续费和利息
         String borrowRate = rateInfoDo.getValue();
@@ -493,55 +537,9 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
     }
 
     /**
-     * 计算最多能计算多少额度 150取100 250.37 取200
-     *
-     * @param usableAmount
-     * @return
-     */
-    private BigDecimal calculateMaxAmount(BigDecimal usableAmount) {
-        // 可使用额度
-        Integer amount = usableAmount.intValue();
-        return new BigDecimal(amount / 100 * 100);
-    }
-
-    /**
-     * 记录埋点相关日志日志
-     *
-     * @param request
-     * @param cashDo
-     * @param requestDataVo
-     * @param context
-     */
-    private void doMaidianLog(HttpServletRequest request, JsdBorrowCashDo cashDo, RequestDataVo requestDataVo,
-                              FanbeiContext context) {
-        try {
-            // 获取可变参数
-            String ext1 = cashDo.getBorrowNo();
-            String ext2 = cashDo.getUserId() + "";
-            String ext3 = cashDo.getAmount() + "";
-            String ext4 = context.getAppVersion() + "";
-            maidianLog.info(com.ald.fanbei.api.common.util.StringUtil.appendStrs("	",
-                    DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT), "	",
-                    com.ald.fanbei.api.common.util.StringUtil.judgeClientDeviceFlag(requestDataVo.getId()), "	rmtIP=",
-                    CommonUtil.getIpAddr(request), "	userName=", context.getUserName(), "	", 0, "	",
-                    request.getRequestURI(), "	", cashDo.getRid() + "", "	",
-                    DateUtil.formatDate(new Date(), DateUtil.MONTH_SHOT_PATTERN), "	", "jsdUserBorrowCashApply", "	", ext1,
-                    "	", ext2, "	", ext3, "	", ext4,
-                    "	reqD=", "appFlag:" + requestDataVo.getId() + ",appVersion:" + context.getAppVersion()
-                            + ",userId=" + cashDo.getUserId() + ",cashAmount:" + cashDo.getAmount(),
-                    "	resD=", "null"));
-        } catch (Exception e) {
-            logger.error("jsdUserBorrowCashApply maidian logger error", e);
-        }
-    }
-
-    /**
      * 借款时间
-     *
-     * @param
-     * @return
      */
-    public int borrowTime(final String type) {
+    private int borrowTime(final String type) {
         Integer day;
         if (isNumeric(type)) {
             day = Integer.parseInt(type);
@@ -553,9 +551,6 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
 
     /**
      * 是否是数字字符串
-     *
-     * @param type
-     * @return
      */
     private boolean isNumeric(String type) {
         Pattern pattern = Pattern.compile("[0-9]*");

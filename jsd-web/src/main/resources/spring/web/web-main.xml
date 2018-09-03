@@ -92,9 +92,7 @@
 				<entry key="/third/xgxy/v1/smsCodeSubmit" value-ref="dsedsmsCodeSubmitApi"/>
 				<entry key="/third/xgxy/v1/getSmsCode" value-ref="dsedResendCodeApi"/>
 				<entry key="/third/xgxy/v1/getProtocolInfo" value-ref="dsedGetLoanProtocolApi"/>
-
 				<entry key="/third/xgxy/v1/getAddressList" value-ref="getUserContactsInfoApi"/>
-
 				<entry key="/third/xgxy/v1/comfirmBorrow" value-ref="dsedApplyLoanApi" />
 				<entry key="/third/xgxy/v1/preFinish" value-ref="dsedLoanAllRepayDoApi" />
 				<entry key="/third/xgxy/v1/repayComfirm" value-ref="dsedLoanRepayDoApi" />
@@ -105,6 +103,7 @@
 				<entry key="/third/xgxy/v1/syncUserInfo" value-ref="dsedSyncUserInfoApi" />
 				
 				
+			    <!-- 极速贷接口 --> 	
 				<entry key="/third/eca/v1/getDelayDetail" value-ref="getRenewalDetailApi" />
 				<entry key="/third/eca/v1/pushDelay" value-ref="jsdConfirmRenewalPayApi" />
 				<entry key="/third/eca/v1/submitMessage" value-ref="confirmSmsApi" />
@@ -112,7 +111,8 @@
 				<entry key="/third/eca/v1/getBorrowBill" value-ref="borrowCashRepaymentBillApi" />
 				<entry key="/third/eca/v1/getRepaymentDetail" value-ref="borrowCashRepaymentDetailApi" />
 				<entry key="/third/eca/v1/pushBorrow" value-ref="applyBorrowCashApi" />
-
+				
+				<entry key="/third/eca/v1/syncUserInfo" value-ref="jsdSyncUserInfoApi" />
 
 			</map>
 		</constructor-arg>

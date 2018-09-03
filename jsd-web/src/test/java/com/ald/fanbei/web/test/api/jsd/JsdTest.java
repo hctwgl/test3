@@ -1,26 +1,18 @@
 package com.ald.fanbei.web.test.api.jsd;
 
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.util.DigestUtil;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.api.biz.arbitration.MD5;
-import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.DsedSignUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.web.test.common.AccountOfTester;
 import com.ald.fanbei.web.test.common.BaseTest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
