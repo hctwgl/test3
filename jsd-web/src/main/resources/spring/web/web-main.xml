@@ -112,7 +112,9 @@
 				<entry key="/third/eca/v1/getBorrowBill" value-ref="borrowCashRepaymentBillApi" />
 				<entry key="/third/eca/v1/getRepaymentDetail" value-ref="borrowCashRepaymentDetailApi" />
 				<entry key="/third/eca/v1/pushBorrow" value-ref="applyBorrowCashApi" />
+				<entry key="/third/eca/v1/bankCardBind" value-ref="jsdApplyBindBankCardMsgApi" />
 
+				<entry key="/third/eca/v1/sendMessage" value-ref="sendSmsCodeApi" />
 
 			</map>
 		</constructor-arg>

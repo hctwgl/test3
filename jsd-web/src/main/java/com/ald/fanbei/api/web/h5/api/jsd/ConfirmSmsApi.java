@@ -73,7 +73,7 @@ public class ConfirmSmsApi implements DsedH5Handle {
 		String busiFlag = ObjectUtils.toString(context.getData("busiFlag"), null);
 		String smsCode = ObjectUtils.toString(context.getData("code"), null);
 		String type = ObjectUtils.toString(context.getData("type"), null);
-		Long timestamp=Long.parseLong(context.getData("timestamp").toString());
+		String timestamp = ObjectUtils.toString(context.getData("timestamp"), null);
 		Long userId=context.getUserId();
 		if (StringUtils.isBlank(busiFlag) || StringUtils.isBlank(smsCode)) {
 			return new DsedH5HandleResponse(3001, FanbeiExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
@@ -110,7 +110,7 @@ public class ConfirmSmsApi implements DsedH5Handle {
 	 				throw new FanbeiException("ups kuaijie not support", FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
 	 		}
  		}else if(SmsCodeType.BIND.getCode().equals(type)){
-			final JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getById(Long.valueOf(busiFlag));
+			final JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getByBindNo(busiFlag);
 			final JsdUserDo userDo=jsdUserService.getById(userId);
 			int res =transactionTemplate.execute(new TransactionCallback<Integer>() {
 				@Override

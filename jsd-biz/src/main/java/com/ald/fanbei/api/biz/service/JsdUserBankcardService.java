@@ -30,5 +30,8 @@ public interface JsdUserBankcardService extends ParentService<JsdUserBankcardDo,
 
     int getUserBankByCardNo(String cardNumber);
 
+    JsdUserBankcardDo getByBindNo(String bindNO);
+
+
 
 }

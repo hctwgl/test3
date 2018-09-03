@@ -289,7 +289,7 @@
     </update>
 
     <insert id="addUserBankcard" parameterType="JsdUserBankcardDo" useGeneratedKeys="true" keyProperty="rid">
-		INSERT INTO jsd_user_bankcard(gmt_create , gmt_modified , user_id , mobile , bank_code , bank_card_number , is_main , bank_name , valid_date,status,safe_code)
+		INSERT INTO jsd_user_bankcard(gmt_create , gmt_modified , user_id , mobile , bank_code , bank_card_number , is_main , bank_name , valid_date,status,safe_code,xgxy_bind_no)
 		VALUES (
     		NOW(),
     		NOW(),
@@ -301,7 +301,8 @@
     		#{bankName},
     	    #{validDate},
     		#{status},
-    	   #{safeCode}
+    	   #{safeCode},
+    	   #{xgxyBindNo}
 
 		)
 	</insert>
@@ -320,4 +321,15 @@
 			status = 'B'
 	</select>
 
+
+    <select id="getByBindNo" resultType="JsdUserBankcardDo">
+		SELECT
+         <include refid="queryFields"/>
+		FROM
+			jsd_user_bankcard
+		WHERE
+			is_delete=0
+		AND
+        xgxy_bind_no = #{bindNo}
+	</select>
 </mapper>
