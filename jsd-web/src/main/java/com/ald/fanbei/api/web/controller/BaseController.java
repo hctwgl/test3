@@ -58,9 +58,9 @@ public abstract class BaseController {
         Context context = null;
         Long stmap = System.currentTimeMillis();
         try {
-            context = parseRequestData(request,data);
-            compareSign(request, context,sign);
-            baseResponse = doProcess(context);
+            context = this.parseRequestData(request, data);
+            this.compareSign(request, context, sign);
+            baseResponse = this.doProcess(context);
             retMsg = JSON.toJSONString(baseResponse);
         } catch (FanbeiException e) {
             baseResponse = buildErrorResult(e, request);
@@ -118,49 +118,15 @@ public abstract class BaseController {
     public abstract JsdH5HandleResponse doProcess(Context context);
 
 
-    private void compareSign(HttpServletRequest request, Context context,String sign) {
+    private void compareSign(HttpServletRequest request, Context context, String sign) {
         Map<String, Object> systemsMap = context.getSystemsMap();
         String md5Value = generateSign(systemsMap, PRIVATE_KEY);
         if (logger.isDebugEnabled())
             logger.info("signStrBefore=" + systemsMap + ",md5Value=" + md5Value + ",sign=" + sign);
-       /* if (!StringUtils.equals(sign, md5Value)) {
+       /* if (!StringUtils.equals(sign, md5Value)) { TODO
             logger.error("signStrBefore=" + systemsMap + ",md5Value=" + md5Value + ",sign=" + sign);
             throw new FanbeiException("sign is error", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
         }*/
-    }
-
-    /**
-     * 通过appSecret加密参数
-     *
-     * @param params
-     * @param appSecret
-     * @return
-     */
-    public static String paramsEncrypt(JSONObject params, String appSecret) {
-        List<String> keys = new ArrayList<String>(params.keySet());
-        Collections.sort(keys);
-        JSONObject obj = new JSONObject(true);
-        for (int i = 0; i < keys.size(); i++) {
-            String key = keys.get(i);
-            String value = params.getString(key);
-            obj.put(key, value);
-        }
-        String result = obj.toString();
-        result = AesUtil.encryptToBase64(result, appSecret);
-        return result;
-    }
-
-    /**
-     * 通过appSecret解密参数
-     *
-     * @param params
-     * @param appSecret
-     * @return
-     */
-    public static JSONObject paramsDecrypt(String params, String appSecret) {
-        params = AesUtil.decryptFromBase64(params, appSecret);
-        JSONObject result = JSONObject.parseObject(params);
-        return result;
     }
 
     /**
@@ -171,7 +137,7 @@ public abstract class BaseController {
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      */
-    public static String generateSign(Map<String,Object> params, String appSecret) throws IllegalArgumentException {
+    private String generateSign(Map<String,Object> params, String appSecret) throws IllegalArgumentException {
         List<String> keys = new ArrayList<String>(params.keySet());
         keys.remove("signCode");
         Collections.sort(keys);
@@ -186,9 +152,10 @@ public abstract class BaseController {
         return params == null ? null : MD5.md5(result.toString());
     }
 
-
+    
+    
     /**
-     * 记录埋点相关日志日志
+     * 记录埋点相关日志
      *
      * @param request
      * @param respData

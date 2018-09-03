@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.third.controller;
+package com.ald.fanbei.api.web.controller.third;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
