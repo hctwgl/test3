@@ -47,12 +47,12 @@ public class JsdApplyBindBankCardMsgApi implements DsedH5Handle {
         String bankNo = ObjectUtils.toString(context.getData("bankNo"), null);
         String bankName = ObjectUtils.toString(context.getData("bankName"), null);
         String bankMobile = ObjectUtils.toString(context.getData("bankMobile"), null);
-        String validDate = ObjectUtils.toString(context.getData("validDate"), "");
-        String safeCode = ObjectUtils.toString(context.getData("safeCode"), "");
+        String bindNo = ObjectUtils.toString(context.getData("bindNo"), "");
         String timestamp = ObjectUtils.toString(context.getData("timestamp"), "");
 
         Long userid=context.getUserId();
         logger.info("jsdApplyBindBankCardMsgApi context=" + JSON.toJSONString(context));
+
         //判断是否已经被绑定
         if (jsdUserBankcardService.getUserBankByCardNo(bankNo) > 0) {
             return new DsedH5HandleResponse(1545, FanbeiExceptionCode.DSED_BANK_BINDED.getDesc());
@@ -63,9 +63,14 @@ public class JsdApplyBindBankCardMsgApi implements DsedH5Handle {
             isMain = YesNoStatus.YES.getCode();
         }
         //创建用户银行卡新加状态
+        JsdUserBankcardDo bankcardDo=jsdUserBankcardService.getByBindNo(bindNo);
         JsdBankDo bank = jsdBankService.getBankByName(bankName);
-        JsdUserBankcardDo userBankcard = buildUserCard(bank.getBankCode(), bankName, bankNo, bankMobile, userid, isMain, validDate, safeCode);
-        jsdUserBankcardService.addUserBankcard(userBankcard);
+        JsdUserBankcardDo userBankcard = buildUserCard(bank.getBankCode(), bankName, bankNo, bankMobile, userid, isMain, bindNo);
+        if(bankcardDo==null){
+            jsdUserBankcardService.addUserBankcard(userBankcard);
+        }else {
+            userBankcard.setRid(bankcardDo.getRid());
+        }
         JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getById(userBankcard.getRid());
         //默认赋值为借记卡
         String cardType = "00";
@@ -80,14 +85,13 @@ public class JsdApplyBindBankCardMsgApi implements DsedH5Handle {
             return new DsedH5HandleResponse(1567, FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
         }
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("busiFlag", userBankcard.getRid());
         map.put("timestamp", timestamp);
         map.put("repaySMS", "Y");
         resp.setData(map);
         return resp;
     }
 
-    private JsdUserBankcardDo buildUserCard(String bankCode, String bankName, String cardNumber, String mobile, Long userId, String isMain, String validDate, String safeCode) {
+    private JsdUserBankcardDo buildUserCard(String bankCode, String bankName, String cardNumber, String mobile, Long userId, String isMain, String bindNo) {
         JsdUserBankcardDo bank = new JsdUserBankcardDo();
         bank.setBankCode(bankCode);
         bank.setBankName(bankName);
@@ -96,8 +100,9 @@ public class JsdApplyBindBankCardMsgApi implements DsedH5Handle {
         bank.setMobile(mobile);
         bank.setStatus(BankcardStatus.NEW.getCode());
         bank.setUserId(userId);
-        bank.setValidDate(validDate);
-        bank.setSafeCode(safeCode);
+        bank.setValidDate("");
+        bank.setSafeCode("");
+        bank.setXgxyBindNo(bindNo);
         return bank;
     }
 }

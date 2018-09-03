@@ -187,6 +187,55 @@ public class JsdTest extends BaseTest {
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
+    @Test
+    public void bankCardBind() {
+        String url = urlBase + "/third/eca/v1/sendMessage";
+        Map<String, String> params = new HashMap<>();
+        params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
+        params.put("type","BIND");
+        params.put("busiFlag","1313619220301");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+
+
+    @Test
+    public void bindBankSms() {
+        String url = urlBase + "/third/eca/v1/bankCardBind";
+        Map<String, String> params = new HashMap<>();
+        params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
+        params.put("bankNo","6228480329222552476");
+        params.put("bankName","农业银行");
+        params.put("bankMobile","13136192203");
+        params.put("bindNo","1313619220301");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+
+    @Test
+    public void bindBankConfirSms() {
+        String url = urlBase + "/third/eca/v1/submitMessage";
+        Map<String, String> params = new HashMap<>();
+        params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
+        params.put("code","888888");
+        params.put("type","BIND");
+        params.put("busiFlag","1313619220301");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+
     /**
      * 生成本地签名
      *

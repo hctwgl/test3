@@ -16,6 +16,9 @@ public class BankCardBindParam {
     @NotNull
     public String bankMobile;
 
+    @NotNull
+    public String bindNo;
+
     public String validDate;
 
     public String safeCode;
