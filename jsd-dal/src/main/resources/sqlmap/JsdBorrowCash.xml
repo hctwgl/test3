@@ -105,7 +105,17 @@
             AND rate_amount = #{rateAmount,jdbcType=VARCHAR}
         </if>
     </sql>
-
+    <select id ="getBorrowCashByStatusNotInFinshAndClosed" resultType="JsdBorrowCashDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        jsd_borrow_cash
+        WHERE
+        is_delete = 0
+        AND
+        user_id = #{userId}
+        and status not in ('CLOSED','FINSH','TRANSEDFAIL');
+    </select>
     
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO jsd_borrow_cash
@@ -418,5 +428,7 @@
         WHERE is_delete = 0 AND borrow_no=#{borrowNo}
         LIMIT 1
     </select>
-
+    <select id="getCurrentLastBorrowNo" resultType="java.lang.String">
+		select borrow_no from jsd_borrow_cash WHERE borrow_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
+	</select>
 </mapper>

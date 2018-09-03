@@ -111,6 +111,7 @@
 				<entry key="/third/eca/v1/pushRepayment" value-ref="jsdBorrowCashRepayApi" />
 				<entry key="/third/eca/v1/getBorrowBill" value-ref="borrowCashRepaymentBillApi" />
 				<entry key="/third/eca/v1/getRepaymentDetail" value-ref="borrowCashRepaymentDetailApi" />
+				<entry key="/third/eca/v1/pushBorrow" value-ref="applyBorrowCashApi" />
 
 
 			</map>

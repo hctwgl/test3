@@ -31,6 +31,7 @@ import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowOrderRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -93,17 +94,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 			throw new FanbeiException("No borrow can renewal", FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		}
 
-		// 最近一次还款记录
-		JsdBorrowCashRepaymentDo lastRepaymentDo = jsdBorrowCashRepaymentService.getLastByBorrowId(borrowCashDo.getRid());
-		if (null != lastRepaymentDo && StringUtils.equals(lastRepaymentDo.getStatus(), "P")) {
-            throw new FanbeiException("There is a repayment is processing", FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING);
-        }
-
-		// 最近一次续期记录
-		JsdBorrowCashRenewalDo lastRenewalDo = jsdBorrowCashRenewalService.getLastJsdRenewalByBorrowId(borrowCashDo.getRid());
-		if (null != lastRenewalDo && StringUtils.equals(lastRenewalDo.getStatus(), "P")) {
-			throw new FanbeiException("There is a renewal is processing", FanbeiExceptionCode.HAVE_A_RENEWAL_PROCESSING);
-        }
+		jsdBorrowCashRenewalService.checkCanRenewal(borrowCashDo);
 
 		// 用户信息
 		JsdUserDo userDo = jsdUserService.getById(paramBo.userId);
@@ -353,7 +344,8 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 	 */
 	private void getRateInfo(JsdRenewalDealBo paramBo) {
 		// 利率配置
-		JsdResourceDo resourceDo = JsdResourceService.getByTypeAngSecType("JSD_CONFIG", "JSD_RATE_INFO");
+		JsdResourceDo rateResource = JsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RATE_INFO.getCode());
+		JsdResourceDo renewalResource = JsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RENEWAL_INFO.getCode());
 
 		//借款手续费率
 		BigDecimal poundageRate = null;
@@ -367,32 +359,44 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		//订单利率
 		BigDecimal orderRate = null;
 
-		if(resourceDo!=null) {
-			String rateStr = resourceDo.getValue();
-			capitalRate = new BigDecimal(resourceDo.getValue1());
-			JSONArray array = JSONObject.parseArray(rateStr);
+		if(rateResource!=null && renewalResource !=null) {
+			capitalRate = new BigDecimal(renewalResource.getValue1());
 
+			String rateStr = rateResource.getValue();
+			JSONArray array = JSONObject.parseArray(rateStr);
 			for (int i = 0; i < array.size(); i++) {
 				JSONObject info = array.getJSONObject(i);
 				String borrowTag = info.getString("borrowTag");
-				if (StringUtils.equals("BORROW_CASH", borrowTag)) {
-					baseBankRate = info.getBigDecimal("interestRate");
-					poundageRate = info.getBigDecimal("poundageRate");
+				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
+					baseBankRate = info.getBigDecimal("borrowFirstType");
 				}
-				if (StringUtils.equals("ORDER_CASH", borrowTag)) {
-					orderRate = info.getBigDecimal("interestRate");
-					orderPoundageRate = info.getBigDecimal("poundageRate");
+				if(StringUtils.equals("SERVICE_RATE", borrowTag)){
+					poundageRate = info.getBigDecimal("borrowFirstType");
 				}
 			}
+			
+			String orderRateStr = rateResource.getValue3();
+			JSONArray orderRateArray = JSONObject.parseArray(orderRateStr);
+			for (int i = 0; i < orderRateArray.size(); i++) {
+				JSONObject info = orderRateArray.getJSONObject(i);
+				String consumeTag = info.getString("consumeTag");
+				if (StringUtils.equals("INTEREST_RATE", consumeTag)) {
+					orderRate = info.getBigDecimal("consumeFirstType");
+				}
+				if(StringUtils.equals("SERVICE_RATE", consumeTag)){
+					orderPoundageRate = info.getBigDecimal("consumeFirstType");
+				}
+			}
+
 		}else {
 			throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
 		}
 
 
-		paramBo.orderPoundageRate = orderPoundageRate;
-		paramBo.orderRate = orderRate;
-		paramBo.cashPoundageRate = poundageRate;
-		paramBo.cashRate = baseBankRate;
+		paramBo.orderPoundageRate = orderPoundageRate.divide(new BigDecimal(100));
+		paramBo.orderRate = orderRate.divide(new BigDecimal(100));
+		paramBo.cashPoundageRate = poundageRate.divide(new BigDecimal(100));
+		paramBo.cashRate = baseBankRate.divide(new BigDecimal(100));
 		paramBo.capitalRate = capitalRate;
 	}
 }

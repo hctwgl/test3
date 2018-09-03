@@ -288,7 +288,9 @@
         <include refid="commonCondition"/> 
         limit 0,1
     </select>
-               
+    <select id="getCurrentLastOrderNo" resultType="java.lang.String">
+		select order_no from jsd_borrow_legal_order WHERE order_no LIKE CONCAT(#{orderNoPre},"%") ORDER BY id DESC LIMIT 1;
+	</select>
     <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo">
         SELECT
         <include refid="queryFields" />

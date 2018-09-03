@@ -5,6 +5,7 @@ public enum  JsdBorrowCashStatus {
     APPLY("申请/未审核", "APPLY"),
     TRANSFERING("打款中", "TRANSEDING"),
     TRANSFERRED("已经打款/待还款", "TRANSED"),
+    TRANSEDFAIL("打款失败", "TRANSEDFAIL"),
     REPAYING("还款中", "REPAYING"),
     FINISHED("已结清", "FINISHED"),
     CLOSED("关闭", "CLOSED");

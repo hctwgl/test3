@@ -11,6 +11,8 @@ import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -38,6 +40,17 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	@Override
 	public JsdBorrowCashDo getByBorrowNo(String borrowNo) {
 		return jsdBorrowCashDao.getByBorrowNo(borrowNo);
+	}
+
+	@Override
+	public boolean isCanBorrowCash(Long userId) {
+		List<JsdBorrowCashDo> notFinishBorrowList = jsdBorrowCashDao.getBorrowCashByStatusNotInFinshAndClosed(userId);
+		return notFinishBorrowList.isEmpty();
+	}
+
+	@Override
+	public String getCurrentLastBorrowNo(String orderNoPre) {
+		return jsdBorrowCashDao.getCurrentLastBorrowNo(orderNoPre);
 	}
 
 

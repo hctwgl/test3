@@ -167,7 +167,7 @@ public class Constants {
 	public static final String CACHEKEY_REAL_AUTH_MOBILE_INFO 				= "real_auth_mobile_info";
 
 	// 查询用户是否结果款，1代表已借款
-	public static final String HAVE_BORROWED = "have_borrowed$";
+	public static final String HAVE_BORROWED = "jsd_have_borrowed$";
 	public static final String BOLUOME_LOGIN_ERROR_TIMES = "boluome_login_error_times$";
 
 	// res type
@@ -289,6 +289,10 @@ public class Constants {
 	public static final String OFFLINE_CACHEKEY_REPAYCASHNO = "dsed_offline_repay_cash_no";
 	public static final String CACHEKEY_REPAYCASHNO = "jsd_repay_cash_no";
 	public static final String CACHEKEY_ORDERNO_LOCK = "jsd_order_lock";
+    public static final String CACHEKEY_BORROWCASHNO_LOCK = "jsd_borrow_cash_no_lock";
+    public static final String CACHEKEY_BORROWCASHNO = "jsd_borrow_cash_no";
+	public static final String JSD_CONFIG = "JSD_CONFIG";
+	public static final String JSD_RATE_INFO = "JSD_RATE_INFO";
 	public static final String CACHEKEY_ORDERNO = "dsed_order";
 	public static final String CACHEKEY_BORROWNO_LOCK = "dsed_borrow_no_lock";
 	public static final String CACHEKEY_BORROWNO = "dsed_borrow_no";
@@ -420,11 +424,11 @@ public class Constants {
 	/** ---------------
 	 * 缓存Key常量区域
 	 * ---------------- */
-	public static final String CACHEKEY_BORROW_DELIVER_MONEY_LOCK = "dsed_bororw_deliver_money_lock";
-	public static final String CACHEKEY_BUILD_BOLUOME_ORDER_LOCK = "dsed_boluome_build_order_lock";
-	public static final String CACHEKEY_APPLY_BORROW_CASH_LOCK = "dsed_apply_borrow_cash_lock";
-	public static final String CACHEKEY_APPLY_STRONG_RISK_LOCK = "dsed_apply_strong_risk_lock";
-	public static final String CACHEKEY_APPLY_BLD_RISK_LOCK = "dsed_apply_bld_risk_lock";
+	public static final String CACHEKEY_BORROW_DELIVER_MONEY_LOCK = "jsd_bororw_deliver_money_lock";
+	public static final String CACHEKEY_BUILD_BOLUOME_ORDER_LOCK = "jsd_boluome_build_order_lock";
+	public static final String CACHEKEY_APPLY_BORROW_CASH_LOCK = "jsd_apply_borrow_cash_lock";
+	public static final String CACHEKEY_APPLY_STRONG_RISK_LOCK = "jsd_apply_strong_risk_lock";
+	public static final String CACHEKEY_APPLY_BLD_RISK_LOCK = "jsd_apply_bld_risk_lock";
 	public static final String CACHEKEY_APPLY_RENEWAL_LOCK = "cachekey_apply_renewal_lock";
 	// 催收系统
 	public static final String CONFKEY_COLLECTION_URL = "dsed.collection.url";

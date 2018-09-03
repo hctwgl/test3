@@ -26,7 +26,18 @@ public class ContextImpl implements Context {
 
 	private String realName;
 
+	private String openId;
+
 	private Map<String,Object> systemsMap;
+
+	public String getOpenId() {
+		return openId;
+	}
+
+	public void setOpenId(String openId) {
+		this.openId = openId;
+	}
+
 	@Override
 	public String getIdNumber() {
 		return idNumber;
@@ -140,6 +151,7 @@ public class ContextImpl implements Context {
 		this.method  = builder.method;
 		this.id = builder.id;
 		this.systemsMap  = builder.systemsMap;
+		this.openId  = builder.openId;
 		this.clientIp = builder.clientIp;
 		this.idNumber = builder.idNumber;
 		this.realName = builder.realName;
@@ -167,6 +179,8 @@ public class ContextImpl implements Context {
 		
 		private Map<String,Object> systemsMap;
 
+		private String openId;
+
 		public Builder dataMap(Map<String, Object> dataMap) {
 			this.dataMap = dataMap;
 			return this;
@@ -178,6 +192,11 @@ public class ContextImpl implements Context {
 
 		public Builder userName(String userName) {
 			this.userName = userName;
+			return this;
+		}
+
+		public Builder openId(String openId) {
+			this.openId = openId;
 			return this;
 		}
 

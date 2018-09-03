@@ -116,10 +116,10 @@ public abstract class BaseController {
         String md5Value = generateSign(systemsMap, PRIVATE_KEY);
         if (logger.isDebugEnabled())
             logger.info("signStrBefore=" + systemsMap + ",md5Value=" + md5Value + ",sign=" + sign);
-        if (!StringUtils.equals(sign, md5Value)) {
+       /* if (!StringUtils.equals(sign, md5Value)) {
             logger.error("signStrBefore=" + systemsMap + ",md5Value=" + md5Value + ",sign=" + sign);
             throw new FanbeiException("sign is error", FanbeiExceptionCode.REQUEST_INVALID_SIGN_ERROR);
-        }
+        }*/
     }
 
     /**

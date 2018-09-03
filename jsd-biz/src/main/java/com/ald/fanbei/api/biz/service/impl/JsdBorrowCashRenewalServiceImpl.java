@@ -22,6 +22,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
@@ -41,16 +42,20 @@ import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
 import com.ald.fanbei.api.dal.dao.JsdUserDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
+import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.biz.bo.KuaijieJsdRenewalPayBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.DsedUpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
+import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.alibaba.fastjson.JSON;
 
@@ -88,6 +93,10 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
     private JsdUserDao jsdUserDao;
     @Resource
     private JsdNoticeRecordService jsdNoticeRecordService;
+    @Resource
+    private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
+    @Resource
+    private JsdResourceService jsdResourceService;
     @Resource
     private XgxyUtil xgxyUtil;
     @Resource
@@ -330,7 +339,7 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		});
 		
 		if(result == 1l){
-			//还款失败，调用西瓜信用通知接口
+			//还款成功，调用西瓜信用通知接口
 			JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByRenewalNo(renewalNo);
 			JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
 			HashMap<String, String> data = new HashMap<String, String>();
@@ -391,6 +400,36 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		}
 		
 		return 1l;
+	}
+	
+	@Override
+	public void checkCanRenewal(JsdBorrowCashDo borrowCashDo) {
+		// 还款记录
+		JsdBorrowCashRepaymentDo cashRepaymentDo = jsdBorrowCashRepaymentService.getLastByBorrowId(borrowCashDo.getRid());
+		if (null != cashRepaymentDo && StringUtils.equals(cashRepaymentDo.getStatus(), JsdBorrowCashRepaymentStatus.PROCESS.getCode())) {
+			throw new FanbeiException("There is a repayment is processing", FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING);
+		}
+		// 续期记录
+		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getLastJsdRenewalByBorrowId(borrowCashDo.getRid());
+		if (null != renewalDo && StringUtils.equals(renewalDo.getStatus(), JsdRenewalDetailStatus.PROCESS.getCode())) {
+			throw new FanbeiException("There is a renewal is processing", FanbeiExceptionCode.HAVE_A_RENEWAL_PROCESSING);
+		}
+		
+		// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
+		JsdResourceDo resource = jsdResourceService.getByTypeAngSecType("JSD_CONFIG", "JSD_RENEWAL_INFO");
+		if(resource==null) throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
+		BigDecimal betweenDuedate = new BigDecimal(resource.getValue2()); // 距还款日天数
+		BigDecimal amountLimit = new BigDecimal(resource.getValue3()); // 最低续期金额
+		logger.info("checkCanRenewal betweenDuedate="+betweenDuedate+"amountLimit="+amountLimit);
+		BigDecimal waitRepayAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumOverdue(), borrowCashDo.getSumRate(), 
+													borrowCashDo.getSumRenewalPoundage(), borrowCashDo.getOverdueAmount(), borrowCashDo.getRateAmount(), 
+													borrowCashDo.getPoundage()).subtract(borrowCashDo.getRepayAmount());
+		long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(new Date(), borrowCashDo.getGmtPlanRepayment());
+		
+		if (new BigDecimal(betweenGmtPlanRepayment).compareTo(betweenDuedate) > 0 && amountLimit.compareTo(waitRepayAmount) >= 0) {
+			throw new FanbeiException(FanbeiExceptionCode.CAN_NOT_RENEWAL_ERROR);
+		}
+		
 	}
 	
 	public static class JsdRenewalDealBo {

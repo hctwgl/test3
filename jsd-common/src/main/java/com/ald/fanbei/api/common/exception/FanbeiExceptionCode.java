@@ -28,6 +28,7 @@ public enum FanbeiExceptionCode {
     UPS_ORDERNO_BUILD_ERROR("UPS_ORDERNO_BUILD_ERROR",1561,"ups order build error","构建订单错误"),
     BORROW_STATS_IS_NOT_TRANSFERRED("BORROW_STATS_IS_NOT_TRANSFERRED",1540,"borrow stats is not transferred","借款正在审核中"),
     LOAN_UPS_DRIECT_FAIL("",2107,"","请求打款实时失败"),
+
     LOAN_CONCURRENT_LIMIT("",2110,"","同一时刻只能发起一笔贷款申请"),
     LOAN_PERIOD_CAN_NOT_REPAY_ERROR("LOAN_PERIOD_CAN_NOT_REPAY_ERROR",2014,"loan period can not repay error","当前借款未到还款时间"),
     LOAN_REPAY_PROCESS_ERROR("LOAN_REPAY_PROCESS_ERROR",2018,"loan repay not exist","您有一笔还款正在处理中，请稍后重试"),
@@ -92,7 +93,9 @@ public enum FanbeiExceptionCode {
     GET_JSD_RATE_ERROR("GET_JSD_RATE_ERROR",6004,"","获取利率失败，请联系客服"),
     RENEWAL_ORDER_NOT_EXIST_ERROR("RENEWAL_ORDER_NOT_EXIST_ERROR",6005,"","无可展期的订单"),
     RENEWAL_NOT_EXIST_ERROR("RENEWAL_NOT_EXIST_ERROR",6006,"","展期信息不存在"),
-
+    CAN_NOT_RENEWAL_ERROR("CAN_NOT_RENEWAL_ERROR",6007,"","您的续期机会已用完"),
+    JSD_BORROW_CASH_STATUS_ERROR("JSD_BORROW_CASH_STATUS_ERROR",2001,"borrow cash amount status","您有一笔未结清账单"),
+    ADD_JSD_BORROW_CASH_INFO_FAIL("ADD_JSD_BORROW_CASH_INFO_FAIL",2011,"add jsd borrow cash info fail","生成借款信息失败"),
     ;
 
 

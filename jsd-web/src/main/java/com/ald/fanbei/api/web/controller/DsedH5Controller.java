@@ -86,7 +86,7 @@ public class DsedH5Controller extends BaseController {
         if (StringUtils.isNotEmpty(data)) {
             String decryptData = AesUtil.decryptFromBase64Third(data, PRIVATE_KEY);
             JSONObject dataInfo = JSONObject.parseObject(decryptData);
-            String openId = (String.valueOf(dataInfo.get("userId")));
+            String openId = (String.valueOf(dataInfo.get("openId")));
             JsdUserDo userDo = jsdUserService.getByOpenId(openId);
             systemsMap = JSON.parseObject(decryptData);
             builder.method(method).systemsMap(systemsMap);
@@ -95,6 +95,7 @@ public class DsedH5Controller extends BaseController {
                 builder.userId(userDo.getRid());
                 builder.idNumber(userDo.getIdNumber());
                 builder.realName(userDo.getRealName());
+                builder.openId(userDo.getOpenId());
             }
         }
 

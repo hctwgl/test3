@@ -30,7 +30,7 @@ public class JsdTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-	String urlBase = "http://localhost:8078";
+	String urlBase = "http://localhost:8080";
 //    String urlBase = "http://192.168.112.40:8080";
     
     String userName = "13165995223";
@@ -92,6 +92,40 @@ public class JsdTest extends BaseTest {
     	
 //    	testH5(url, params, userName, true);
     	
+    }
+
+    /**
+     * 发起贷款申请
+     */
+    @Test
+    public void dsedApplyLoan() {
+        String url = urlBase + "/third/eca/v1/pushBorrow";
+        Map<String, String> params = new HashMap<>();
+        Map<String, String> goodsInfo = new HashMap<>();
+        goodsInfo.put("goodsName", "大礼包");
+        goodsInfo.put("goodsPrice", "100");
+        goodsInfo.put("goodsImage", "http");
+        params.put("prdType", "DSED_LOAN");
+        params.put("amount", 6000 + "");
+        params.put("openId", "EB56E1F0A9383508DB8FD039C7D37BDF");
+        params.put("unit", "3");
+        params.put("borrowNo", "5445456654");
+        params.put("goodsInfo", goodsInfo.toString());
+        params.put("term", "20");
+        params.put("productNo", "22323");
+        params.put("loanRemark", "装修");
+        params.put("repayRemark", "装23修");
+        params.put("goodsName", "c测试");
+        params.put("bankNo", "6228480329222552476");
+        params.put("isTying", "1");
+        params.put("tyingType", "12");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
 

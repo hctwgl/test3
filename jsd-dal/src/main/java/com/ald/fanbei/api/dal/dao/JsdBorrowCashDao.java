@@ -3,6 +3,9 @@ package com.ald.fanbei.api.dal.dao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * 极速贷Dao
  * 
@@ -13,10 +16,18 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
 
+    String getCurrentLastBorrowNo(String orderNoPre);
 
     JsdBorrowCashDo getByBorrowNo(@Param("borrowNo") String borrowNo);
 
-
+    /**
+     * 获取不在finish和closed状态的借款
+     *
+     * @param userId
+     *
+     * @return
+     */
+    List<JsdBorrowCashDo> getBorrowCashByStatusNotInFinshAndClosed(@Param("userId") Long userId);
 
 
 }

@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 
+import java.util.Date;
+
 /**
  * 极速贷Service
  * 
@@ -12,4 +14,12 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
  */
 public interface JsdBorrowLegalOrderService extends ParentService<JsdBorrowLegalOrderDo, Long>{
 
+    /**
+     * 获取当天最近的订单
+     *
+     * @param currentDate
+     * @param
+     * @return
+     */
+    String getCurrentLastOrderNo(Date currentDate);
 }
