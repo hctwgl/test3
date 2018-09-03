@@ -28,6 +28,7 @@ import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -416,7 +417,7 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		}
 		
 		// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
-		JsdResourceDo resource = jsdResourceService.getByTypeAngSecType("JSD_CONFIG", "JSD_RENEWAL_INFO");
+		JsdResourceDo resource = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RENEWAL_INFO.getCode());
 		if(resource==null) throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
 		BigDecimal betweenDuedate = new BigDecimal(resource.getValue2()); // 距还款日天数
 		BigDecimal amountLimit = new BigDecimal(resource.getValue3()); // 最低续期金额
