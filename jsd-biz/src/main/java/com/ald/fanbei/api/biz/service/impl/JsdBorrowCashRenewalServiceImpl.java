@@ -4,14 +4,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
-import org.dbunit.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -52,7 +50,7 @@ import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.biz.bo.KuaijieJsdRenewalPayBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.DsedUpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
@@ -72,7 +70,7 @@ import com.alibaba.fastjson.JSON;
  */
  
 @Service("jsdBorrowCashRenewalService")
-public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbstract implements JsdBorrowCashRenewalService {
+public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbstract implements JsdBorrowCashRenewalService {
 	
     private static final Logger logger = LoggerFactory.getLogger(JsdBorrowCashRenewalServiceImpl.class);
    

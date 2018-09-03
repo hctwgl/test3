@@ -2,7 +2,6 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.bo.KuaijieDsedLoanBo;
 import com.ald.fanbei.api.biz.bo.KuaijieRepayBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.*;
@@ -24,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashRepaymentDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import org.springframework.transaction.TransactionStatus;
@@ -47,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  */
  
 @Service("jsdBorrowCashRepaymentService")
-public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceAbstract implements  JsdBorrowCashRepaymentService {
+public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAbstract implements  JsdBorrowCashRepaymentService {
 	
     private static final Logger logger = LoggerFactory.getLogger(JsdBorrowCashRepaymentServiceImpl.class);
 
@@ -99,18 +97,17 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 		bo.tradeNo = tradeNo;
 		bo.name = name;
 		generateRepayRecords(bo);
-
 		return doRepay(bo,bankPayType);
-	}
+}
 	private Map<String, Object> doRepay(BorrowCashRepayBo bo,String bankChannel) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HashMap bank = jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
-		KuaijieRepayBo bizObject = new KuaijieRepayBo();
+		KuaijieRepayBo bizObject = new KuaijieRepayBo(bo.repaymentDo,bo);
 		if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
-			resultMap = sendKuaiJieSms(bank, bo.tradeNo, bo.amount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(),
+			resultMap = sendKuaiJieSms(bank, bo.repayNo, bo.amount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(),
 					JSON.toJSONString(bizObject), "jsdBorrowCashRepaymentService", Constants.DEFAULT_PAY_PURPOSE,bo.name, PayOrderSource.REPAY_JSD.getCode());
 		} else {// 代扣
-			resultMap = doUpsPay(bankChannel, bank, bo.tradeNo, bo.amount, bo.userId, bo.userDo.getRealName(),
+			resultMap = doUpsPay(bankChannel, bank, bo.repayNo, bo.amount, bo.userId, bo.userDo.getRealName(),
 					bo.userDo.getIdNumber(), "", JSON.toJSONString(bizObject), Constants.DEFAULT_PAY_PURPOSE, bo.name, PayOrderSource.REPAY_JSD.getCode());
 		}
 		return resultMap;
@@ -118,38 +115,44 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 
 	private void generateRepayRecords(BorrowCashRepayBo bo) {
 		Date now = new Date();
-		String tradeNo = bo.tradeNo;
 		String name = bo.name;
 		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(bo.borrowId);
-		bo.borrowOrderId = orderCashDo.getBorrowLegalOrderId();
-		bo.borrowLegalOrderCashId=orderCashDo.getRid();
 		JsdBorrowCashRepaymentDo borrowRepaymentDo = null;
 		JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = null;
-		BigDecimal orderSumAmount = orderCashDo.getAmount()
-				.add(orderCashDo.getOverdueAmount()).add(orderCashDo.getSumRepaidOverdue())
-				.add(orderCashDo.getPoundageAmount()).add(orderCashDo.getSumRepaidPoundage())
-				.add(orderCashDo.getInterestAmount()).add(orderCashDo.getSumRepaidInterest());
-		BigDecimal orderRemainShouldRepayAmount = orderSumAmount.subtract(orderCashDo.getRepaidAmount()); //剩余应还金额
-		BigDecimal borrowRepayAmount = bo.repaymentAmount.subtract(orderRemainShouldRepayAmount);
+		BigDecimal orderSumAmount=BigDecimal.ZERO;
+		BigDecimal orderRemainShouldRepayAmount=BigDecimal.ZERO;
+		if(orderCashDo!=null){
+			bo.borrowOrderId = orderCashDo.getBorrowLegalOrderId();
+			bo.borrowLegalOrderCashId=orderCashDo.getRid();
+			orderSumAmount = orderCashDo.getAmount()
+					.add(orderCashDo.getOverdueAmount()).add(orderCashDo.getSumRepaidOverdue())
+					.add(orderCashDo.getPoundageAmount()).add(orderCashDo.getSumRepaidPoundage())
+					.add(orderCashDo.getInterestAmount()).add(orderCashDo.getSumRepaidInterest());
+			orderRemainShouldRepayAmount = orderSumAmount.subtract(orderCashDo.getRepaidAmount()); //剩余应还金额
+		}
+		BigDecimal borrowRepayAmount = bo.amount.subtract(orderRemainShouldRepayAmount);
 		if(borrowRepayAmount.compareTo(BigDecimal.ZERO) > 0) { //还款额大于订单应还总额，拆分还款
-			borrowRepaymentDo = buildRepayment( borrowRepayAmount, tradeNo, now, borrowRepayAmount,
+			borrowRepaymentDo = buildRepayment( borrowRepayAmount, bo.repayNo, now, borrowRepayAmount,
 					 bo.borrowId,  bo.outTradeNo, name, bo.userId,bo.repayType,bo.bankNo);
 			jsdBorrowCashRepaymentDao.saveRecord(borrowRepaymentDo);
 			bo.repaymentDo=borrowRepaymentDo;
-			if(!JsdBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
-				orderRepaymentDo = buildOrderRepayment(bo, borrowRepayAmount,
-						 orderRemainShouldRepayAmount);
-				jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
-				bo.orderRepaymentDo=orderRepaymentDo;
+			if(orderCashDo!=null){
+				if(!JsdBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
+					orderRepaymentDo = buildOrderRepayment(bo, borrowRepayAmount,
+							orderRemainShouldRepayAmount);
+					jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
+					bo.orderRepaymentDo=orderRepaymentDo;
+				}
 			}
+
 		} else { //还款全部进入订单欠款中
-			orderRepaymentDo = buildOrderRepayment(bo, borrowRepayAmount,
+			orderRepaymentDo = buildOrderRepayment(bo, bo.amount,
 					orderRemainShouldRepayAmount);
 			jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
 		}
 		bo.repaymentDo=borrowRepaymentDo;
 		bo.orderRepaymentDo=orderRepaymentDo;
-		logger.info("Repay.add repayment finish,name="+ name +"tradeNo="+tradeNo+",borrowRepayment="+ JSON.toJSONString(borrowRepaymentDo) + ",legalOrderRepayment="+ JSON.toJSONString(orderRepaymentDo));
+		logger.info("Repay.add repayment finish,name="+ name +"tradeNo="+bo.repayNo+",borrowRepayment="+ JSON.toJSONString(borrowRepaymentDo) + ",legalOrderRepayment="+ JSON.toJSONString(orderRepaymentDo));
 	}
 
 	private JsdBorrowLegalOrderRepaymentDo buildOrderRepayment(BorrowCashRepayBo bo, BigDecimal actualAmountForOrder, BigDecimal repayAmount) {
@@ -160,7 +163,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 		repayment.setRepayAmount(repayAmount);
 		repayment.setActualAmount(actualAmountForOrder);
 		repayment.setName(bo.name);
-		repayment.setTradeNo(bo.tradeNo);
+		repayment.setTradeNo(bo.repayNo);
 		repayment.setStatus(JsdBorrowLegalRepaymentStatus.APPLY.getCode());
 		repayment.setCardNo(bo.bankNo);
 		HashMap bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
@@ -179,14 +182,13 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 		JsdBorrowCashRepaymentDo repay = new JsdBorrowCashRepaymentDo();
 		repay.setActualAmount(actualAmountForBorrow);
 		repay.setBorrowId(borrowId);
-		repay.setTradeNo(TradeNo);
+//		repay.setTradeNo(TradeNo);
 		repay.setRepaymentAmount(repaymentAmount);
 		repay.setRepayNo(repayNo);
 		repay.setGmtCreate(gmtCreate);
 		repay.setStatus(JsdBorrowCashRepaymentStatus.APPLY.getCode());
 		repay.setName(name);
 		repay.setUserId(userId);
-		repay.setTradeNo(repayNo);
 		repay.setCardNumber(cardNo);
 		repay.setType(repayType);
 		HashMap bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(userId,cardNo);
@@ -236,22 +238,28 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 	@Override
 	protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
 		KuaijieRepayBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
-		jsdBorrowCashRepaymentDao.status2Process(payTradeNo, kuaijieRepaymentBo.getRepayment().getRid());// 更新状态
-		return getResultMap(kuaijieRepaymentBo.getBo(), respBo);
+		if(kuaijieRepaymentBo.getRepayment()!=null){
+			jsdBorrowCashRepaymentDao.status2Process(payTradeNo, kuaijieRepaymentBo.getRepayment().getRid());// 更新状态
+		}
+		jsdBorrowLegalOrderRepaymentDao.updateStatus(payTradeNo);
+		return getResultMap(kuaijieRepaymentBo.getBo(), respBo,bankChannel);
 	}
 
-	private Map<String, Object> getResultMap(BorrowCashRepayBo bo, UpsCollectRespBo respBo) {
+	private Map<String, Object> getResultMap(BorrowCashRepayBo bo, UpsCollectRespBo respBo,String bankChannel) {
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("rid", bo.borrowId);
-		data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
-		data.put("gmtCreate", new Date());
-		data.put("status", JsdBorrowCashRepaymentStatus.YES.getCode());
-		data.put("actualAmount", bo.actualAmount);
-		data.put("cardName", bo.cardName);
-		data.put("cardNumber", bo.cardNo);
-		data.put("repayNo", bo.tradeNo);
-		if (respBo != null) {
-			data.put("outTradeNo", respBo.getTradeNo());
+//		data.put("rid", bo.borrowId);
+//		data.put("amount", bo.repaymentAmount.setScale(2, RoundingMode.HALF_UP));
+//		data.put("gmtCreate", new Date());
+//		data.put("status", JsdBorrowCashRepaymentStatus.YES.getCode());
+//		data.put("actualAmount", bo.actualAmount);
+//		data.put("cardName", bo.cardName);
+//		data.put("cardNumber", bo.cardNo);
+//		data.put("repayNo", bo.repayNo);
+//		if (respBo != null) {
+//			data.put("outTradeNo", respBo.getTradeNo());
+//		}
+		if(!BankPayChannel.KUAIJIE.getCode().equals(bankChannel)){
+			data.put("repaySMS", "N");
 		}
 		return data;
 	}
@@ -298,15 +306,17 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 		}
 
 		// 解锁还款
-		unLockRepay(repaymentDo.getUserId());
+		if(repaymentDo!=null){
+			unLockRepay(repaymentDo.getUserId());
+		}
 
 	}
 
 	@Override
-	public void dealRepaymentSucess(String tradeNo, String outTradeNo) {
-		final JsdBorrowCashRepaymentDo repaymentDo = jsdBorrowCashRepaymentDao.getRepaymentByPayTradeNo(tradeNo);
-		final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = jsdBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByTradeNo(tradeNo);
-		dealRepaymentSucess(tradeNo, outTradeNo, repaymentDo, orderRepaymentDo,false,null);
+	public void dealRepaymentSucess(String repayNo, String outTradeNo) {
+		final JsdBorrowCashRepaymentDo repaymentDo = jsdBorrowCashRepaymentDao.getRepaymentByPayTradeNo(repayNo);
+		final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = jsdBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByTradeNo(repayNo);
+		dealRepaymentSucess(repayNo, outTradeNo, repaymentDo, orderRepaymentDo,false,null);
 	}
 
 	public void dealRepaymentSucess(String tradeNo, String outTradeNo, final JsdBorrowCashRepaymentDo repaymentDo, final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, Boolean flag, final String isBalance) {
@@ -325,8 +335,10 @@ public class JsdBorrowCashRepaymentServiceImpl extends DsedUpsPayKuaijieServiceA
 				public Long doInTransaction(TransactionStatus status) {
 					try {
 						dealOrderRepay(repayDealBo, orderRepaymentDo,isBalance);
-						dealBorrowRepay(repayDealBo, repaymentDo,isBalance);
-						dealSum(repayDealBo);
+						if(repaymentDo!=null){
+							dealBorrowRepay(repayDealBo, repaymentDo,isBalance);
+						}
+//						dealSum(repayDealBo);
 						return 1L;
 					} catch (Exception e) {
 						status.setRollbackOnly();

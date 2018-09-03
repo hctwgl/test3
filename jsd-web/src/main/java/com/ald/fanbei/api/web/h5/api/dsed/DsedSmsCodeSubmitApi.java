@@ -15,7 +15,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
-import com.ald.fanbei.api.biz.service.DsedUpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.service.DsedUserBankcardService;
 import com.ald.fanbei.api.biz.service.DsedUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -52,7 +52,7 @@ public class DsedSmsCodeSubmitApi implements DsedH5Handle {
 
 	@Autowired
 	@Qualifier("dsedLoanRepaymentService")
-	DsedUpsPayKuaijieServiceAbstract dsedLoanRepaymentService;
+    JsdUpsPayKuaijieServiceAbstract dsedLoanRepaymentService;
 
 	@Autowired
 	BizCacheUtil bizCacheUtil;

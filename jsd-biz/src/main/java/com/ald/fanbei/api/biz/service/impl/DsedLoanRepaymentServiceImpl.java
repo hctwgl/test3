@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.util.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
@@ -25,7 +24,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
 import com.ald.fanbei.api.biz.bo.KuaijieDsedLoanBo;
 import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.bo.XgxyRepayBo;
@@ -33,7 +31,7 @@ import com.ald.fanbei.api.biz.bo.assetpush.ModifiedBorrowInfoVo;
 import com.ald.fanbei.api.biz.service.DsedLoanPeriodsService;
 import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
 import com.ald.fanbei.api.biz.service.DsedNoticeRecordService;
-import com.ald.fanbei.api.biz.service.DsedUpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.service.DsedUserService;
 import com.ald.fanbei.api.biz.third.util.AssetSideEdspayUtil;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
@@ -60,7 +58,6 @@ import com.ald.fanbei.api.dal.dao.DsedUserBankcardDao;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
-import com.timevale.esign.sdk.tech.service.impl.b;
 
 import net.sf.json.JSONArray;
 
@@ -76,7 +73,7 @@ import net.sf.json.JSONArray;
 
 @SuppressWarnings("rawtypes")
 @Service("dsedLoanRepaymentService")
-public class DsedLoanRepaymentServiceImpl  extends DsedUpsPayKuaijieServiceAbstract implements DsedLoanRepaymentService {
+public class DsedLoanRepaymentServiceImpl  extends JsdUpsPayKuaijieServiceAbstract implements DsedLoanRepaymentService {
 
 	private static final Logger logger = LoggerFactory.getLogger(DsedLoanRepaymentServiceImpl.class);
 

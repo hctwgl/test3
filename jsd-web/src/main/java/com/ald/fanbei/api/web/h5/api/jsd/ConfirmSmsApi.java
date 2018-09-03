@@ -4,7 +4,7 @@
 package com.ald.fanbei.api.web.h5.api.jsd;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
-import com.ald.fanbei.api.biz.service.DsedUpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -15,8 +15,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
-import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
@@ -47,9 +45,9 @@ public class ConfirmSmsApi implements DsedH5Handle {
 
 	@Autowired
 	@Qualifier("jsdBorrowCashRepaymentService")
-	DsedUpsPayKuaijieServiceAbstract jsdBorrowCashRepaymentService;
+	JsdUpsPayKuaijieServiceAbstract jsdBorrowCashRepaymentService;
 	@Qualifier("jsdBorrowCashRenewalService")
-	DsedUpsPayKuaijieServiceAbstract jsdBorrowCashRenewalService;
+	JsdUpsPayKuaijieServiceAbstract jsdBorrowCashRenewalService;
 
 	@Resource
 	private JsdUserBankcardService jsdUserBankcardService;
