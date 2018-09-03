@@ -2,7 +2,6 @@ package com.ald.fanbei.api.web.validator.intercept;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -10,14 +9,12 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.Path;
 import javax.validation.Validation;
 import javax.validation.metadata.ConstraintDescriptor;
 
 import org.apache.commons.beanutils.ConvertUtilsBean;
-import org.apache.commons.beanutils.Converter;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.hibernate.validator.resourceloading.PlatformResourceBundleLocator;
@@ -28,14 +25,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.common.FanbeiContext;
 import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.context.Context;
+import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
-import com.ald.fanbei.api.web.common.RequestDataVo;
-import com.ald.fanbei.api.web.common.impl.JsdH5HandleFactory;
+import com.ald.fanbei.api.web.common.JsdH5HandleFactory;
 import com.ald.fanbei.api.web.validator.Validator;
-import com.ald.fanbei.api.web.validator.constraints.Default;
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 
 /**
@@ -48,7 +43,7 @@ import com.google.common.collect.Lists;
 public class JsdValidationInterceptor implements Interceptor, ApplicationContextAware {
 
 	@Resource
-	private JsdH5HandleFactory dsedH5HandleFactory;
+	private JsdH5HandleFactory jsdH5HandleFactory;
 
 	private ApplicationContext applicationContext;
 
@@ -73,8 +68,8 @@ public class JsdValidationInterceptor implements Interceptor, ApplicationContext
 	}
 	
 	@Override
-	public void intercept(RequestDataVo reqData, FanbeiContext context, HttpServletRequest request) {
-		JsdH5Handle methodHandle = dsedH5HandleFactory.getHandle(reqData.getMethod());
+	public void intercept(Context context) {
+		JsdH5Handle methodHandle = jsdH5HandleFactory.getHandle(reqData.getMethod());
 		Class<? extends JsdH5Handle> clazz = methodHandle.getClass();
 
 		Validator[] validators = getValidatorAnnotation(clazz);
@@ -83,126 +78,46 @@ public class JsdValidationInterceptor implements Interceptor, ApplicationContext
 			String beanName = validator.value();
 			Object validatorBean = applicationContext.getBean(beanName);
 			Class<?> validatorBeanClazz = validatorBean.getClass();
-			try {
-				Object validatorInstanceBean = validatorBeanClazz.newInstance();
-				initializeValidatorBean(validatorInstanceBean, reqData);
-				reqData.setParamObj(validatorInstanceBean);
-				logger.info("initialize validator bean success.");
-				
-				Set<ConstraintViolation<Object>> validateResults = null;
-				synchronized(this) {
-					validateResults = clsValidator.validate(validatorInstanceBean);
-				}
-				for (ConstraintViolation<Object> validateResult : validateResults) {
-					Path propertyPath = validateResult.getPropertyPath();
-					String message = validateResult.getMessage();
-					String paramName = StringUtils.EMPTY;
-					if (propertyPath != null) {
-						paramName = propertyPath.toString();
-					}
-					ConstraintDescriptor<?> cd = validateResult.getConstraintDescriptor();
-					boolean legal = cd.isReportAsSingleViolation();
-					if (!legal) {
-						String transName = StringUtils.EMPTY;
-						try{
-							transName = resourceBundle.getString(paramName);
-						} catch(Exception e) {
-							// ignore error
-						}
-						if(StringUtils.isNotEmpty(transName)) {
-							try {
-								paramName = new String(transName.getBytes("ISO-8859-1"), "UTF-8");
-							} catch (UnsupportedEncodingException e) {
-								e.printStackTrace();
-							}
-						}
-						logger.error(paramName + message);
-						throw new FanbeiException( paramName + message, true);
-					}
-				}
-			} catch (InstantiationException e) {
-				logger.error("instantion bean error ,error info =>{}",e.getMessage());
-			} catch (IllegalAccessException e) {
-				logger.error("illegal access error ,error info =>{}",e.getMessage());
-			}
-		}
-	}
-	
-	
-	
-	
-	
-
-	private void initializeValidatorBean(Object validatorBean, RequestDataVo reqData) {
-		Class<? extends Object> clazz = validatorBean.getClass();
-		Field[] fields = clazz.getDeclaredFields();
-		for (Field field : fields) {
-			String fieldName = field.getName();
-			// 获取请求参数，初始化ValidationBean
-			Object reqParam = reqData.getParams().get(fieldName);
-			if(reqParam == null) {
-				reqParam = getParamDefaultValue(field);
-			}
+			Object validatorInstanceBean = this.resolveValidatorBean(validatorBeanClazz, reqData);
+			reqData.setParamObj(validatorInstanceBean);
 			
-			if (reqParam != null) {
-				field.setAccessible(true);
-				Class<?> fieldType = field.getType();
-				try {
-					Converter converter = convertUtils.lookup(fieldType);
-					Object fieldVal = converter.convert(fieldType, reqParam);
-					field.set(validatorBean, fieldVal);
-				} catch (IllegalArgumentException e) {
-					logger.error("illegal argument error, error info=>{}", e.getMessage());
-				} catch (IllegalAccessException e) {
-					logger.error("illegal access error ,error info=>{}", e.getMessage());
+			Set<ConstraintViolation<Object>> validateResults = null;
+			synchronized(this) {
+				validateResults = clsValidator.validate(validatorInstanceBean);
+			}
+			for (ConstraintViolation<Object> validateResult : validateResults) {
+				Path propertyPath = validateResult.getPropertyPath();
+				String message = validateResult.getMessage();
+				String paramName = StringUtils.EMPTY;
+				if (propertyPath != null) {
+					paramName = propertyPath.toString();
 				}
-			}
-		}
-
-	}
-	
-	
-	
-	private Object getParamDefaultValue(Field field) {
-		Annotation[] annotations = field.getDeclaredAnnotations();
-		for(Annotation annotation : annotations) {
-			if(annotation instanceof Default) {
-				Default defaultAnnotation = (Default)annotation;
-				return defaultAnnotation.value();
-			}
-		}
-		return null;
-	}
-
-	private void initializeValidatorBean(Object validatorBean, Context context) {
-		Class<? extends Object> clazz = validatorBean.getClass();
-		Field[] fields = clazz.getDeclaredFields();
-		for (Field field : fields) {
-			String fieldName = field.getName();
-			// 获取请求参数，初始化ValidationBean
-			Object reqParam = context.getData(fieldName);
-			if(reqParam == null) {
-				reqParam = getParamDefaultValue(field);
-			}
-			if (reqParam != null) {
-				field.setAccessible(true);
-				Class<?> fieldType = field.getType();
-				try {
-					Converter converter = convertUtils.lookup(fieldType);
-					if(!StringUtils.isEmpty(reqParam.toString())){
-						Object fieldVal = converter.convert(fieldType, reqParam);
-						field.set(validatorBean, fieldVal);
+				ConstraintDescriptor<?> cd = validateResult.getConstraintDescriptor();
+				boolean legal = cd.isReportAsSingleViolation();
+				if (!legal) {
+					String transName = StringUtils.EMPTY;
+					try{
+						transName = resourceBundle.getString(paramName);
+					} catch(Exception e) {
+						// ignore error
 					}
-				} catch (IllegalArgumentException e) {
-					logger.error("illegal argument error, error info=>{}", e.getMessage());
-				} catch (IllegalAccessException e) {
-					logger.error("illegal access error ,error info=>{}", e.getMessage());
+					if(StringUtils.isNotEmpty(transName)) {
+						try {
+							paramName = new String(transName.getBytes("ISO-8859-1"), "UTF-8");
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						}
+					}
+					logger.error(paramName + message);
+					throw new FanbeiException( paramName + message, true);
 				}
 			}
 		}
-
 	}
-
+	
+	private Object resolveValidatorBean(Class<?> validatorBeanClazz) {
+		return JSON.parseObject(JSON.toJSONString(reqData.getParams()), validatorBeanClazz);
+	}
 	private Validator[] getValidatorAnnotation(Class<?> clazz) {
 		if (clazz.isAnnotationPresent(Validator.class)) {
 			Annotation[] annotations = clazz.getDeclaredAnnotations();
@@ -222,64 +137,6 @@ public class JsdValidationInterceptor implements Interceptor, ApplicationContext
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
-	}
-
-	@Override
-	public void intercept(Context context) {
-		JsdH5Handle jsdH5Handle = dsedH5HandleFactory.getHandle(context.getMethod());
-		Class<? extends JsdH5Handle> clazz = jsdH5Handle.getClass();
-
-		Validator[] validators = getValidatorAnnotation(clazz);
-		
-		if (validators != null) {
-			Validator validator = validators[0];
-			String beanName = validator.value();
-			Object validatorBean = applicationContext.getBean(beanName);
-			Class<?> validatorBeanClazz = validatorBean.getClass();
-			try {
-				Object validatorInstanceBean = validatorBeanClazz.newInstance();
-				initializeValidatorBean(validatorInstanceBean, context);
-				context.setParamEntity(validatorInstanceBean);
-				logger.info("initialize validator bean success.");
-				
-				Set<ConstraintViolation<Object>> validateResults = null;
-				synchronized(this) {
-					validateResults = clsValidator.validate(validatorInstanceBean);
-				}
-				for (ConstraintViolation<Object> validateResult : validateResults) {
-					Path propertyPath = validateResult.getPropertyPath();
-					String message = validateResult.getMessage();
-					String paramName = StringUtils.EMPTY;
-					if (propertyPath != null) {
-						paramName = propertyPath.toString();
-					}
-					ConstraintDescriptor<?> cd = validateResult.getConstraintDescriptor();
-					boolean legal = cd.isReportAsSingleViolation();
-					if (!legal) {
-						String transName = StringUtils.EMPTY;
-						try{
-							transName = resourceBundle.getString(paramName);
-						} catch(Exception e) {
-							// ignore error
-						}
-						if(StringUtils.isNotEmpty(transName)) {
-							try {
-								paramName = new String(transName.getBytes("ISO-8859-1"), "UTF-8");
-							} catch (UnsupportedEncodingException e) {
-								e.printStackTrace();
-							}
-						}
-						logger.error(paramName + message);
-						throw new FanbeiException( paramName + message, true);
-					}
-				}
-			} catch (InstantiationException e) {
-				logger.error("instantion bean error ,error info =>{}",e.getMessage());
-			} catch (IllegalAccessException e) {
-				logger.error("illegal access error ,error info =>{}",e.getMessage());
-			}
-			
-		}
 	}
 
 }

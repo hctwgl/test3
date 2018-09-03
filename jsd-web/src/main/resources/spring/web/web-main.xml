@@ -108,7 +108,7 @@
 	<bean id="springBeanContextUtil" class="com.ald.fanbei.api.common.util.SpringBeanContextUtil" />
 
 	<!-- 拦截器链 -->
-	<bean id="interceptorChain" class="com.ald.fanbei.api.web.chain.impl.InterceptorChain">
+	<bean id="interceptorChain" class="com.ald.fanbei.api.web.chain.InterceptorChain">
 		<property name="interceptors">
 			<list>
 				<ref bean="jsdValidationInterceptor"/>

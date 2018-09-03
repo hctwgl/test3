@@ -1,25 +1,24 @@
 package com.ald.fanbei.api.common.util;
 
 
-import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Logger;
-
-import java.security.*;
-import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.log4j.Logger;
+
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @author chefeipeng  2018年6月6日下午13:12:27
  * @类描述：ras生成签名和验签的工具类
  * @注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class DsedSignUtil {
+public class JsdSignUtil {
 
-    private static final Logger logger = Logger.getLogger(DsedSignUtil.class);
+    private static final Logger logger = Logger.getLogger(JsdSignUtil.class);
 
 
 
@@ -58,7 +57,7 @@ public class DsedSignUtil {
             obj.put(key, value);
         }
         String result = obj.toString();
-        result = DsedAesUtil.encryptToBase64Third(result, appSecret);
+        result = JsdAesUtil.encryptToBase64Third(result, appSecret);
         return result;
     }
 
@@ -70,7 +69,7 @@ public class DsedSignUtil {
      * @return
      */
     public  static JSONObject paramsDecrypt(String params, String appSecret) {
-        params = DsedAesUtil.decryptFromBase64Third(params, appSecret);
+        params = JsdAesUtil.decryptFromBase64Third(params, appSecret);
         JSONObject result = JSONObject.parseObject(params);
         return result;
     }

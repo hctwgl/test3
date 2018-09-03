@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.common.enums.GenderType;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 

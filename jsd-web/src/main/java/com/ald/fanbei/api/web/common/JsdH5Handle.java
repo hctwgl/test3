@@ -1,7 +1,6 @@
 
 package com.ald.fanbei.api.web.common;
 
-import com.ald.fanbei.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

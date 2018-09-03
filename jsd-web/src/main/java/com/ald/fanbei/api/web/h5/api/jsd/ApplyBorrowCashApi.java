@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
@@ -40,13 +39,13 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
@@ -193,7 +192,6 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
 
     }
     
-    
     public JsdApplyBorrowCashBo resolveParam(Context context) {
     	ApplyBorrowCashParam param = (ApplyBorrowCashParam) context.getParamEntity();
     	
@@ -201,21 +199,19 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         applyCashBo.setOpenId(context.getOpenId());
         applyCashBo.setUserId(context.getUserId());
         applyCashBo.setAmount(param.getAmount());
-        applyCashBo.setBankNo(ObjectUtils.toString(context.getData("bankNo")));
-        applyCashBo.setIsTying(ObjectUtils.toString(context.getData("isTying")));
-        applyCashBo.setBorrowNo(ObjectUtils.toString(context.getData("borrowNo")));
-        applyCashBo.setLoanRemark(ObjectUtils.toString(context.getData("loanRemark")));
-        applyCashBo.setProductNo(ObjectUtils.toString(context.getData("productNo")));
-        applyCashBo.setRepayRemark(ObjectUtils.toString(context.getData("repayRemark")));
-        applyCashBo.setTerm(ObjectUtils.toString(context.getData("term")));
-        applyCashBo.setTyingType(ObjectUtils.toString(context.getData("tyingType")));
-        applyCashBo.setUnit(ObjectUtils.toString(context.getData("unit")));
+        applyCashBo.setBankNo(param.getBankNo());
+        applyCashBo.setIsTying(param.getIsTying());
+        applyCashBo.setBorrowNo(param.getBorrowNo());
+        applyCashBo.setLoanRemark(param.getLoanRemark());
+        applyCashBo.setProductNo(param.getProductNo());
+        applyCashBo.setRepayRemark(param.getRepayRemark());
+        applyCashBo.setTerm(param.getTerm());
+        applyCashBo.setTyingType(param.getTyingType());
+        applyCashBo.setUnit(param.getUnit());
         applyCashBo.setJsdGoodsInfoBo(param.getGoodsInfo());
         
         return applyCashBo;
     }
-
-    ;
 
     private BigDecimal getRiskOriRate(String openId) {
         BigDecimal oriRate = BigDecimal.valueOf(0.001);
@@ -233,13 +229,11 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
     }
 
     private BigDecimal resolveProfit(BigDecimal borrowAmount, String borrowType, BigDecimal oriRate) {
-
         BigDecimal borrowDay = BigDecimal.ZERO;
         borrowDay = BigDecimal.valueOf(Integer.parseInt(borrowType));
 
         // 查询新利率配置
-        JsdResourceDo rateInfoDo = jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG,
-                Constants.JSD_RATE_INFO);
+        JsdResourceDo rateInfoDo = jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG, Constants.JSD_RATE_INFO);
         BigDecimal newRate = null;
         if (rateInfoDo != null) {
             String borrowRate = rateInfoDo.getValue();

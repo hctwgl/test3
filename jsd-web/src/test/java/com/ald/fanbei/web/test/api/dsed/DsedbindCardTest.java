@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.ald.fanbei.api.biz.arbitration.MD5;
 import com.ald.fanbei.api.common.enums.SmsCodeType;
 import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.DsedSignUtil;
+import com.ald.fanbei.api.common.util.JsdSignUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.web.test.common.AccountOfTester;
 import com.ald.fanbei.web.test.common.BaseTest;
@@ -46,7 +46,7 @@ public class DsedbindCardTest extends BaseTest {
         Map<String, String> params = new HashMap<>();
         params.put("userId", "10,12");
 
-        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
@@ -61,7 +61,7 @@ public class DsedbindCardTest extends BaseTest {
         params.put("busiFlag", "3111465291");
         params.put("type", SmsCodeType.BIND.getCode());
         params.put("userId","1C9064925F3AAF85BC663FEB1727DD4B");
-        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
@@ -78,7 +78,7 @@ public class DsedbindCardTest extends BaseTest {
         params.put("code", "122761");
         params.put("type", SmsCodeType.BIND.getCode());
         params.put("userId","1C9064925F3AAF85BC663FEB1727DD4B");
-        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
@@ -94,7 +94,7 @@ public class DsedbindCardTest extends BaseTest {
         params.put("bankNo","6228480329222552476");
         params.put("bankName","农业银行");
         params.put("bankMobile","13136192203");
-        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
@@ -111,7 +111,7 @@ public class DsedbindCardTest extends BaseTest {
         params.put("borrowNo","dk2018071100274300110");
         params.put("bankNo","6214835897082325");
 
-        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));

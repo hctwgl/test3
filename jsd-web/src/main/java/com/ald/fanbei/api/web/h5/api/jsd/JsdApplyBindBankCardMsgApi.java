@@ -1,24 +1,30 @@
 package com.ald.fanbei.api.web.h5.api.jsd;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
-import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.service.JsdBankService;
+import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
+import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.JsdBankDo;
+import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.alibaba.fastjson.JSON;
-import org.apache.commons.lang.ObjectUtils;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author jilong

@@ -5,7 +5,7 @@ import com.ald.fanbei.api.biz.bo.*;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DsedSignUtil;
+import com.ald.fanbei.api.common.util.JsdSignUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static com.ald.fanbei.api.common.util.DsedSignUtil.generateSign;
+import static com.ald.fanbei.api.common.util.JsdSignUtil.generateSign;
 
 @Component("XgxyUtil")
 public class XgxyUtil extends AbstractThird {
@@ -50,7 +50,7 @@ public class XgxyUtil extends AbstractThird {
                 pay.put("reason", payBo.getReason());
             }
             params.put("appId", "edspay");
-            params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
+            params.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackPayResult";
             String reqResult = "";
@@ -92,7 +92,7 @@ public class XgxyUtil extends AbstractThird {
             overdue.put("overdueDays", data.get("overdueDays"));
             overdue.put("curPeriod", data.get("curPeriod"));
             overdue.put("tradeNo", data.get("tradeNo"));
-            params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
+            params.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
             
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackOverdueResult";
@@ -128,7 +128,7 @@ public class XgxyUtil extends AbstractThird {
         try {
             logger.info("dsedRePayNoticeRequest start data = "+data);
             Map<String, String> p = new HashMap<>();
-            p.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+            p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             p.put("appId", "jsdpay");
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackRepayResult";
@@ -165,7 +165,7 @@ public class XgxyUtil extends AbstractThird {
     	try {
     		logger.info("jsdRenewalNoticeRequest start data = "+data);
     		Map<String, String> p = new HashMap<>();
-    		p.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+    		p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
     		p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
     		p.put("appId", "jsdpay");
     		String url = getXgxyUrl() + "/third/eca/v1/delayNotify";
@@ -199,7 +199,7 @@ public class XgxyUtil extends AbstractThird {
             params.put("appId", "edspay");
             Map<String, String> data = new HashMap<>();
             data.put("userId", openId);
-            params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+            params.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/getAddressList";

@@ -29,19 +29,13 @@ public class ApplyBorrowCashParam {
 	@NotNull
 	private String unit;
 	
-	@NotNull
 	private String loanRemark;
-	
-	@NotNull
 	private String repayRemark;
 	
 	@NotNull
 	private String bankNo;
 	
-	@NotNull
 	private String isTying;
-	
-	@NotNull
 	private String tyingType;
 	
 	private JsdGoodsInfoBo goodsInfo;

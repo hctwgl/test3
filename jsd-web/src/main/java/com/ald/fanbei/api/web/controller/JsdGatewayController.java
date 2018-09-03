@@ -23,14 +23,13 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.context.ContextImpl.ContextBuilder;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
-import com.ald.fanbei.api.web.chain.impl.InterceptorChain;
-import com.ald.fanbei.api.web.common.BaseController;
+import com.ald.fanbei.api.web.chain.InterceptorChain;
+import com.ald.fanbei.api.web.common.Context;
+import com.ald.fanbei.api.web.common.ContextImpl.ContextBuilder;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
+import com.ald.fanbei.api.web.common.JsdH5HandleFactory;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
-import com.ald.fanbei.api.web.common.impl.JsdH5HandleFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -41,12 +40,12 @@ import com.alibaba.fastjson.JSONObject;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Controller
-public class JsdH5Controller extends BaseController {
+public class JsdGatewayController extends BaseController {
 	
 	private static String PRIVATE_KEY = ConfigProperties.get(Constants.CONFKEY_XGXY_AES_PASSWORD);
 	
     @Resource
-    JsdH5HandleFactory dsedH5HandleFactory;
+    JsdH5HandleFactory jsdH5HandleFactory;
 
     @Resource
     JsdUserService jsdUserService;
@@ -104,14 +103,15 @@ public class JsdH5Controller extends BaseController {
     @Override
     public JsdH5HandleResponse doProcess(Context context) {
         interceptorChain.execute(context);
-        JsdH5Handle methodHandle = dsedH5HandleFactory.getHandle(context.getMethod());
+        
+        JsdH5Handle methodHandle = jsdH5HandleFactory.getHandle(context.getMethod());
 
         JsdH5HandleResponse handelResult;
         try {
             handelResult = methodHandle.process(context);
             int resultCode = handelResult.getCode();
             if (resultCode != 200) {
-            	// TODO logger.info(context.getId() + " err,Code=" + resultCode);
+//            	logger.error(context.getId() + " err,Code=" + resultCode);
             }
             return handelResult;
         } catch (FanbeiException e) {

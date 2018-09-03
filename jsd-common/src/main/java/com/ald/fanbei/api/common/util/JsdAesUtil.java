@@ -17,9 +17,9 @@ import java.security.SecureRandom;
  *@author 陈金虎 2017年1月16日 下午11:23:44
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class DsedAesUtil {
+public class JsdAesUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(DsedAesUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(JsdAesUtil.class);
 
     /**
      * 加密

@@ -1,26 +1,39 @@
 package com.ald.fanbei.api.web.h5.api.jsd;
 
-import com.ald.fanbei.api.biz.service.*;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
+
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
+import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.BorrowCashRepayBo;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.BorrowCashRepayDoParam;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component("jsdBorrowCashRepayApi")
 @Validator("borrowCashRepayDoParam")

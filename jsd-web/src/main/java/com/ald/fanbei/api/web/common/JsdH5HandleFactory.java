@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.common.impl;
+package com.ald.fanbei.api.web.common;
 
 import java.util.Map;
 
@@ -16,7 +16,7 @@ import com.ald.fanbei.api.web.common.JsdH5Handle;
  *@author 江荣波 2017年1月17日 上午12:32:03
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("dsedH5HandleFactory")
+@Component("jsdH5HandleFactory")
 public class JsdH5HandleFactory {
     @Resource
     Map<String,JsdH5Handle>  h5HandleMap;
