@@ -8,28 +8,64 @@ import javax.validation.constraints.Pattern;
 
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.jsd.JsdGoodsInfoBo;
+
 @Component("applyBorrowCashParam")
 public class ApplyBorrowCashParam {
-
+	@NotNull
+	private String productNo;
+	
+	@NotNull
+	private String borrowNo;
+	
 	@NotNull
 	@DecimalMin("0")
 	private BigDecimal amount;
+	
 	@NotNull
 	@Pattern(regexp = "^[0-9]*[1-9][0-9]*$")
 	private String term;
+	
+	@NotNull
+	private String unit;
+	
 	@NotNull
 	private String loanRemark;
+	
 	@NotNull
 	private String repayRemark;
+	
+	@NotNull
+	private String bankNo;
+	
+	@NotNull
+	private String isTying;
+	
+	@NotNull
+	private String tyingType;
+	
+	private JsdGoodsInfoBo goodsInfo;
 
-	private String goodsName;
+	public String getProductNo() {
+		return productNo;
+	}
 
-	private BigDecimal goodsAmount;
+	public void setProductNo(String productNo) {
+		this.productNo = productNo;
+	}
 
+	public String getBorrowNo() {
+		return borrowNo;
+	}
+
+	public void setBorrowNo(String borrowNo) {
+		this.borrowNo = borrowNo;
+	}
 
 	public BigDecimal getAmount() {
 		return amount;
 	}
+
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
@@ -40,6 +76,14 @@ public class ApplyBorrowCashParam {
 
 	public void setTerm(String term) {
 		this.term = term;
+	}
+
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
 	}
 
 	public String getLoanRemark() {
@@ -58,19 +102,35 @@ public class ApplyBorrowCashParam {
 		this.repayRemark = repayRemark;
 	}
 
-	public String getGoodsName() {
-		return goodsName;
+	public String getBankNo() {
+		return bankNo;
 	}
 
-	public void setGoodsName(String goodsName) {
-		this.goodsName = goodsName;
+	public void setBankNo(String bankNo) {
+		this.bankNo = bankNo;
 	}
 
-	public BigDecimal getGoodsAmount() {
-		return goodsAmount;
+	public String getIsTying() {
+		return isTying;
 	}
 
-	public void setGoodsAmount(BigDecimal goodsAmount) {
-		this.goodsAmount = goodsAmount;
+	public void setIsTying(String isTying) {
+		this.isTying = isTying;
+	}
+
+	public String getTyingType() {
+		return tyingType;
+	}
+
+	public void setTyingType(String tyingType) {
+		this.tyingType = tyingType;
+	}
+
+	public JsdGoodsInfoBo getGoodsInfo() {
+		return goodsInfo;
+	}
+
+	public void setGoodsInfo(JsdGoodsInfoBo goodsInfo) {
+		this.goodsInfo = goodsInfo;
 	}
 }

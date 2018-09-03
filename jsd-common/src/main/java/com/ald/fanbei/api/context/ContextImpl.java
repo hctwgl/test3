@@ -143,7 +143,7 @@ public class ContextImpl implements Context {
 		this.paramEntity = paramEntity;
 	}
 
-	private ContextImpl(Builder builder) {
+	private ContextImpl(ContextBuilder builder) {
 		this.dataMap = builder.dataMap;
 		this.userId = builder.userId;
 		this.userName = builder.userName;
@@ -157,7 +157,7 @@ public class ContextImpl implements Context {
 		this.realName = builder.realName;
 	}
 
-	public static class Builder {
+	public static class ContextBuilder {
 
 		private Map<String, Object> dataMap;
 
@@ -181,55 +181,55 @@ public class ContextImpl implements Context {
 
 		private String openId;
 
-		public Builder dataMap(Map<String, Object> dataMap) {
+		public ContextBuilder dataMap(Map<String, Object> dataMap) {
 			this.dataMap = dataMap;
 			return this;
 		}
-		public Builder realName(String realName) {
+		public ContextBuilder realName(String realName) {
 			this.realName = realName;
 			return this;
 		}
 
-		public Builder userName(String userName) {
+		public ContextBuilder userName(String userName) {
 			this.userName = userName;
 			return this;
 		}
 
-		public Builder openId(String openId) {
+		public ContextBuilder openId(String openId) {
 			this.openId = openId;
 			return this;
 		}
 
-		public Builder appVersion(Integer appVersion) {
+		public ContextBuilder appVersion(Integer appVersion) {
 			this.appVersion = appVersion;
 			return this;
 		}
 
-		public Builder userId(Long userId) {
+		public ContextBuilder userId(Long userId) {
 			this.userId = userId;
 			return this;
 		}
 		
-		public Builder method(String method) {
+		public ContextBuilder method(String method) {
 			this.method = method;
 			return this;
 		}
 		
-		public Builder systemsMap(Map<String,Object> systemsMap) {
+		public ContextBuilder systemsMap(Map<String,Object> systemsMap) {
 			this.systemsMap = systemsMap;
 			return this;
 		}
 		
-		public Builder id(String id) {
+		public ContextBuilder id(String id) {
 			this.id = id;
 			return this;
 		}
 		
-		public Builder clientIp(String clientIp) {
+		public ContextBuilder clientIp(String clientIp) {
 			this.clientIp = clientIp;
 			return this;
 		}
-        public Builder idNumber(String idNumber) {
+        public ContextBuilder idNumber(String idNumber) {
             this.idNumber = idNumber;
             return this;
         }

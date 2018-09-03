@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.bo.jsd;
 
+import java.math.BigDecimal;
+
 public class JsdApplyBorrowCashBo {
 
     private String openId;
@@ -8,7 +10,7 @@ public class JsdApplyBorrowCashBo {
 
     private String borrowNo;
 
-    private String amount;
+    private BigDecimal amount;
 
     private String term;
 
@@ -24,7 +26,7 @@ public class JsdApplyBorrowCashBo {
 
     private String tyingType;
 
-    private JsdGoodsInfoBo JsdApplyBorrowCashBo;
+    private JsdGoodsInfoBo JsdGoodsInfoBo;
 
     private Long userId;
 
@@ -60,11 +62,11 @@ public class JsdApplyBorrowCashBo {
         this.borrowNo = borrowNo;
     }
 
-    public String getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
@@ -124,11 +126,11 @@ public class JsdApplyBorrowCashBo {
         this.tyingType = tyingType;
     }
 
-    public JsdGoodsInfoBo getJsdApplyBorrowCashBo() {
-        return JsdApplyBorrowCashBo;
+    public JsdGoodsInfoBo getJsdGoodsInfoBo() {
+        return JsdGoodsInfoBo;
     }
 
-    public void setJsdApplyBorrowCashBo(JsdGoodsInfoBo jsdApplyBorrowCashBo) {
-        JsdApplyBorrowCashBo = jsdApplyBorrowCashBo;
+    public void setJsdGoodsInfoBo(JsdGoodsInfoBo JsdGoodsInfoBo) {
+    	this.JsdGoodsInfoBo = JsdGoodsInfoBo;
     }
 }

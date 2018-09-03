@@ -12,8 +12,6 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -52,10 +50,10 @@ import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
+import com.ald.fanbei.api.web.validator.bean.ApplyBorrowCashParam;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 
 /**
  * @author Jiang Rongbo 2017年3月25日下午1:06:18
@@ -66,7 +64,6 @@ import com.google.gson.Gson;
 @Validator("applyBorrowCashParam")
 public class ApplyBorrowCashApi implements JsdH5Handle {
 
-    protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");// 埋点日志
     
     // [start] 依赖注入
     @Resource
@@ -98,56 +95,45 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
     
     @Override
     public JsdH5HandleResponse process(Context context) {
-
         JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
-        JsdApplyBorrowCashBo borrowCashBo = getParam(context);
-        if (StringUtils.isBlank(borrowCashBo.getOpenId()) || StringUtils.isBlank(borrowCashBo.getProductNo()) || StringUtils.isBlank(borrowCashBo.getAmount())
-                || StringUtils.isBlank(borrowCashBo.getTerm()) || StringUtils.isBlank(borrowCashBo.getIsTying()) || StringUtils.isBlank(borrowCashBo.getTyingType())
-                ) {
-            return new JsdH5HandleResponse(FanbeiExceptionCode.JSD_PARAMS_ERROR);
-        }
-        BigDecimal goodsAmount = BigDecimal.ZERO;
-        BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(borrowCashBo.getAmount(), BigDecimal.ZERO);
-        BigDecimal oriRate = getRiskOriRate(borrowCashBo.getOpenId());
-        try {
-            BigDecimal profitAmount = getTiedGoodsInfo(borrowAmount, borrowCashBo.getTerm(), oriRate);
-            if (profitAmount != null) {
-                goodsAmount = profitAmount;
-            }
-        } catch (Exception e) {
-            logger.error("get tied goods info error , msg => {}", e.getMessage());
-        }
-        JsdGoodsInfoBo jsdGoodsInfoBo = borrowCashBo.getJsdApplyBorrowCashBo();
-        // 判断用户借款金额是否在后台配置的金额范围内
-        JsdResourceDo rateInfoDo = jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG,
-                Constants.JSD_RATE_INFO);
-
-        JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(borrowCashBo.getBankNo());
-
-        String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + borrowCashBo.getUserId();
-        boolean isGetLock = bizCacheUtil.getLock30Second(lockKey, "1");
-
-        if (!isGetLock) {
+        JsdApplyBorrowCashBo applyCashBo = this.resolveParam(context);
+        
+        String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + context.getUserId();
+        if (!bizCacheUtil.getLock30Second(lockKey, "1")) {
             return new JsdH5HandleResponse(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
         }
-
+        
+        BigDecimal goodsAmount = BigDecimal.ZERO;
+        BigDecimal borrowAmount = applyCashBo.getAmount();
+        BigDecimal oriRate = getRiskOriRate(applyCashBo.getOpenId());
+        
+        BigDecimal profitAmount = this.resolveProfit(borrowAmount, applyCashBo.getTerm(), oriRate);
+        if (profitAmount != null) {
+            goodsAmount = profitAmount;
+        }
+        
+        JsdGoodsInfoBo jsdGoodsInfoBo = applyCashBo.getJsdGoodsInfoBo();
+        
+        // 判断用户借款金额是否在后台配置的金额范围内
+        JsdResourceDo rateInfoDo = jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG, Constants.JSD_RATE_INFO);
+        JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(applyCashBo.getBankNo());
         try {
             // 判断用户是否有借款未完成
-            boolean borrowFlag = jsdBorrowCashService.isCanBorrowCash(borrowCashBo.getUserId());
+            boolean borrowFlag = jsdBorrowCashService.isCanBorrowCash(applyCashBo.getUserId());
             if (!borrowFlag) {
                 return new JsdH5HandleResponse(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
             }
-            final JsdBorrowCashDo jsdBorrowCashDo = buildBorrowCashDo(borrowAmount, borrowCashBo.getTerm(), mainCard,
-                    borrowCashBo.getUserId(), rateInfoDo, oriRate,borrowCashBo.getProductNo());
+            final JsdBorrowCashDo jsdBorrowCashDo = buildBorrowCashDo(borrowAmount, applyCashBo.getTerm(), mainCard,
+                    applyCashBo.getUserId(), rateInfoDo, oriRate,applyCashBo.getProductNo());
 
             // 搭售商品订单
-            final JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = buildBorrowLegalOrder(borrowAmount, borrowCashBo.getUserId(),
+            final JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = buildBorrowLegalOrder(borrowAmount, applyCashBo.getUserId(),
                     0l, jsdGoodsInfoBo.getGoodsName());
 
             // 订单借款
             final JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = buildBorrowLegalOrderCashDo(
-                    goodsAmount, borrowCashBo.getTerm(), borrowCashBo.getUserId(), 0l, BigDecimal.ZERO, 0l, BigDecimal.ZERO, borrowCashBo.getLoanRemark(),
-                    borrowCashBo.getRepayRemark(), rateInfoDo);
+                    goodsAmount, applyCashBo.getTerm(), applyCashBo.getUserId(), 0l, BigDecimal.ZERO, 0l, BigDecimal.ZERO, applyCashBo.getLoanRemark(),
+                    applyCashBo.getRepayRemark(), rateInfoDo);
 
             Long borrowId = transactionTemplate.execute(new TransactionCallback<Long>() {
                 @Override
@@ -169,7 +155,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
                 return new JsdH5HandleResponse(FanbeiExceptionCode.ADD_JSD_BORROW_CASH_INFO_FAIL);
             }
             // 借过款的放入缓存，借钱按钮不需要高亮显示
-            bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED, String.valueOf(borrowCashBo.getUserId()));
+            bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED, String.valueOf(applyCashBo.getUserId()));
             final JsdBorrowCashDo cashDo = new JsdBorrowCashDo();
             cashDo.setRid(borrowId);
             try {
@@ -178,10 +164,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
                 if (StringUtils.isEmpty(cardNo)) {
                     return new JsdH5HandleResponse(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
                 }
-                delegatePay(borrowCashBo.getUserId(), borrowId, borrowCashBo.getBankNo(),
-                        jsdBorrowLegalOrderDo, jsdBorrowLegalOrderCashDo);
-                // 加入借款埋点信息,来自哪个包等
-//                doMaidianLog(request, afBorrowCashDo, requestDataVo, context);
+                delegatePay(applyCashBo.getUserId(), borrowId, applyCashBo.getBankNo(), jsdBorrowLegalOrderDo, jsdBorrowLegalOrderCashDo);
                 return resp;
             } catch (Exception e) {
                 logger.error("apply legal borrow cash  error", e);
@@ -209,26 +192,27 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         }
 
     }
-
-    public JsdApplyBorrowCashBo getParam(Context context) {
-        JsdApplyBorrowCashBo borrowCashBo = new JsdApplyBorrowCashBo();
-        borrowCashBo.setOpenId(context.getOpenId());
-        borrowCashBo.setUserId(context.getUserId());
-        borrowCashBo.setAmount(ObjectUtils.toString(context.getData("amount")));
-        borrowCashBo.setBankNo(ObjectUtils.toString(context.getData("bankNo")));
-        borrowCashBo.setIsTying(ObjectUtils.toString(context.getData("isTying")));
-        borrowCashBo.setBorrowNo(ObjectUtils.toString(context.getData("borrowNo")));
-        borrowCashBo.setLoanRemark(ObjectUtils.toString(context.getData("loanRemark")));
-        borrowCashBo.setProductNo(ObjectUtils.toString(context.getData("productNo")));
-        borrowCashBo.setRepayRemark(ObjectUtils.toString(context.getData("repayRemark")));
-        borrowCashBo.setTerm(ObjectUtils.toString(context.getData("term")));
-        borrowCashBo.setTyingType(ObjectUtils.toString(context.getData("tyingType")));
-        borrowCashBo.setUnit(ObjectUtils.toString(context.getData("unit")));
-        String goodsInfoStr = ObjectUtils.toString(context.getDataMap().get("goodsInfo"), "");
-        Gson gson = new Gson();
-        JsdGoodsInfoBo jsdGoodsInfoBo = gson.fromJson(goodsInfoStr, JsdGoodsInfoBo.class);
-        borrowCashBo.setJsdApplyBorrowCashBo(jsdGoodsInfoBo);
-        return borrowCashBo;
+    
+    
+    public JsdApplyBorrowCashBo resolveParam(Context context) {
+    	ApplyBorrowCashParam param = (ApplyBorrowCashParam) context.getParamEntity();
+    	
+        JsdApplyBorrowCashBo applyCashBo = new JsdApplyBorrowCashBo();
+        applyCashBo.setOpenId(context.getOpenId());
+        applyCashBo.setUserId(context.getUserId());
+        applyCashBo.setAmount(param.getAmount());
+        applyCashBo.setBankNo(ObjectUtils.toString(context.getData("bankNo")));
+        applyCashBo.setIsTying(ObjectUtils.toString(context.getData("isTying")));
+        applyCashBo.setBorrowNo(ObjectUtils.toString(context.getData("borrowNo")));
+        applyCashBo.setLoanRemark(ObjectUtils.toString(context.getData("loanRemark")));
+        applyCashBo.setProductNo(ObjectUtils.toString(context.getData("productNo")));
+        applyCashBo.setRepayRemark(ObjectUtils.toString(context.getData("repayRemark")));
+        applyCashBo.setTerm(ObjectUtils.toString(context.getData("term")));
+        applyCashBo.setTyingType(ObjectUtils.toString(context.getData("tyingType")));
+        applyCashBo.setUnit(ObjectUtils.toString(context.getData("unit")));
+        applyCashBo.setJsdGoodsInfoBo(param.getGoodsInfo());
+        
+        return applyCashBo;
     }
 
     ;
@@ -248,7 +232,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         return oriRate;
     }
 
-    private BigDecimal getTiedGoodsInfo(BigDecimal borrowAmount, String borrowType, BigDecimal oriRate) {
+    private BigDecimal resolveProfit(BigDecimal borrowAmount, String borrowType, BigDecimal oriRate) {
 
         BigDecimal borrowDay = BigDecimal.ZERO;
         borrowDay = BigDecimal.valueOf(Integer.parseInt(borrowType));
@@ -259,7 +243,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         BigDecimal newRate = null;
         if (rateInfoDo != null) {
             String borrowRate = rateInfoDo.getValue();
-            Map<String, Object> rateInfo = getRateInfo(borrowRate, borrowType, "borrow");
+            Map<String, Object> rateInfo = this.getRateInfo(borrowRate, borrowType, "borrow");
             double totalRate = (double) rateInfo.get("totalRate");
             newRate = BigDecimal.valueOf(totalRate / 100);
         } else {

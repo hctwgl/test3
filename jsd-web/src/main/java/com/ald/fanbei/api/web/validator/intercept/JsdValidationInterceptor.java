@@ -62,7 +62,6 @@ public class JsdValidationInterceptor implements Interceptor, ApplicationContext
 
 	@PostConstruct
 	public void init() {
-		
 		clsValidator = Validation.byDefaultProvider()
 			       .configure()
 			       .messageInterpolator(new ResourceBundleMessageInterpolator(

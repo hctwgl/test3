@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +24,7 @@ import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.context.ContextImpl;
+import com.ald.fanbei.api.context.ContextImpl.ContextBuilder;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.web.chain.impl.InterceptorChain;
 import com.ald.fanbei.api.web.common.BaseController;
@@ -34,7 +33,6 @@ import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.ald.fanbei.api.web.common.impl.JsdH5HandleFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Maps;
 
 
 /**
@@ -76,49 +74,32 @@ public class JsdH5Controller extends BaseController {
 
     private Context buildContext(HttpServletRequest request, String data) {
 
-        ContextImpl.Builder builder = new ContextImpl.Builder();
+    	ContextBuilder contextBuilder = new ContextBuilder();
         String method = request.getRequestURI();
-        Map<String, Object> systemsMap = new HashMap<>();
+        Map<String, Object> dataMap = new HashMap<>();
 
-        Map<String, Object> dataMaps = Maps.newHashMap();
         if (StringUtils.isNotEmpty(data)) {
             String decryptData = AesUtil.decryptFromBase64Third(data, PRIVATE_KEY);
             JSONObject dataInfo = JSONObject.parseObject(decryptData);
             String openId = (String.valueOf(dataInfo.get("openId")));
             JsdUserDo userDo = jsdUserService.getByOpenId(openId);
-            systemsMap = JSON.parseObject(decryptData);
-            builder.method(method).systemsMap(systemsMap);
+            dataMap = JSON.parseObject(decryptData);
+            contextBuilder.method(method).systemsMap(dataMap);
             if (userDo != null) {
-            	builder.userName(userDo.getMobile());
-                builder.userId(userDo.getRid());
-                builder.idNumber(userDo.getIdNumber());
-                builder.realName(userDo.getRealName());
-                builder.openId(userDo.getOpenId());
+            	contextBuilder.userName(userDo.getMobile());
+            	contextBuilder.userId(userDo.getRid());
+            	contextBuilder.idNumber(userDo.getIdNumber());
+            	contextBuilder.realName(userDo.getRealName());
+            	contextBuilder.openId(userDo.getOpenId());
             }
         }
 
-        wrapRequest(request, dataMaps);
-        builder.dataMap(systemsMap);
-
-        String clientIp = CommonUtil.getIpAddr(request);
-        builder.clientIp(clientIp);
-        Context context = builder.build();
+        contextBuilder.dataMap(dataMap);
+        contextBuilder.clientIp(CommonUtil.getIpAddr(request));
+        Context context = contextBuilder.build();
         logger.info("BaseController buildContext data = "+data+",context=",JSON.toJSONString(context));
         return context;
     }
-
-    private void wrapRequest(HttpServletRequest request, Map<String, Object> dataMaps) {
-
-        Enumeration<String> paramNames = request.getParameterNames();
-        while (paramNames.hasMoreElements()) {
-            String paramName = paramNames.nextElement();
-            if (!StringUtils.equals("_appInfo", paramName)) {
-                String objVal = request.getParameter(paramName);
-                dataMaps.put(paramName, objVal);
-            }
-        }
-    }
-
 
     @Override
     public JsdH5HandleResponse doProcess(Context context) {
@@ -134,7 +115,7 @@ public class JsdH5Controller extends BaseController {
             }
             return handelResult;
         } catch (FanbeiException e) {
-            logger.error("biz exception, msg=" + e.getMessage() + ", code=" + e.getErrorCode(),e);
+            logger.error("biz exception, msg=" + e.getMessage() + ", code=" + e.getErrorCode(), e);
             throw e;
         } catch (Exception e) {
             logger.error("sys exception", e);
