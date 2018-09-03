@@ -3,8 +3,22 @@
  */
 package com.ald.fanbei.api.web.h5.api.jsd;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
-import com.ald.fanbei.api.biz.service.DsedUpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -15,25 +29,10 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
-import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
-import com.ald.fanbei.api.web.common.DsedH5Handle;
-import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
+import com.ald.fanbei.api.web.common.JsdH5Handle;
+import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 
 /**
  * 
@@ -42,14 +41,14 @@ import java.util.Map;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("confirmSmsApi")
-public class ConfirmSmsApi implements DsedH5Handle {
+public class ConfirmSmsApi implements JsdH5Handle {
 
 
 	@Autowired
 	@Qualifier("jsdBorrowCashRepaymentService")
-	DsedUpsPayKuaijieServiceAbstract jsdBorrowCashRepaymentService;
+	JsdUpsPayKuaijieServiceAbstract jsdBorrowCashRepaymentService;
 	@Qualifier("jsdBorrowCashRenewalService")
-	DsedUpsPayKuaijieServiceAbstract jsdBorrowCashRenewalService;
+	JsdUpsPayKuaijieServiceAbstract jsdBorrowCashRenewalService;
 
 	@Resource
 	private JsdUserBankcardService jsdUserBankcardService;
@@ -67,8 +66,8 @@ public class ConfirmSmsApi implements DsedH5Handle {
     BizCacheUtil bizCacheUtil;
 
     @Override
-    public DsedH5HandleResponse process(Context context) {
-		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
+    public JsdH5HandleResponse process(Context context) {
+		JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
 
 		String busiFlag = ObjectUtils.toString(context.getData("busiFlag"), null);
 		String smsCode = ObjectUtils.toString(context.getData("code"), null);
@@ -76,7 +75,7 @@ public class ConfirmSmsApi implements DsedH5Handle {
 		String timestamp = ObjectUtils.toString(context.getData("timestamp"), null);
 		Long userId=context.getUserId();
 		if (StringUtils.isBlank(busiFlag) || StringUtils.isBlank(smsCode)) {
-			return new DsedH5HandleResponse(3001, FanbeiExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
+			return new JsdH5HandleResponse(3001, FanbeiExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
 		}
 
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -115,7 +114,7 @@ public class ConfirmSmsApi implements DsedH5Handle {
 			int res =transactionTemplate.execute(new TransactionCallback<Integer>() {
 				@Override
 				public Integer doInTransaction(TransactionStatus status) {
-					DsedUserDo userUpdate=new DsedUserDo();
+					JsdUserDo userUpdate=new JsdUserDo();
 					if(StringUtil.isEmpty(userDo.getRealName())){
 						userUpdate.setRid(userDo.getRid());
 						userUpdate.setRealName(userDo.getRealName());
@@ -134,7 +133,7 @@ public class ConfirmSmsApi implements DsedH5Handle {
 			if(res == 1000) {
 				userBankcardDo.setStatus(BankcardStatus.UNBIND.getCode());
 				jsdUserBankcardService.updateUserBankcard(userBankcardDo);
-				return new DsedH5HandleResponse(1556, FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR.getErrorMsg());
+				return new JsdH5HandleResponse(1556, FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR.getErrorMsg());
 			}
 		}
 

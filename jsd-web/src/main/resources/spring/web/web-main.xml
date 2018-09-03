@@ -88,21 +88,6 @@
 	<bean id="h5HandleMap" class="java.util.HashMap">
 		<constructor-arg>
 			<map key-type="java.lang.String">
-				<entry key="/third/xgxy/v1/bankCardBind" value-ref="dsedApplyBindBankCardMsgApi"/>
-				<entry key="/third/xgxy/v1/smsCodeSubmit" value-ref="dsedsmsCodeSubmitApi"/>
-				<entry key="/third/xgxy/v1/getSmsCode" value-ref="dsedResendCodeApi"/>
-				<entry key="/third/xgxy/v1/getProtocolInfo" value-ref="dsedGetLoanProtocolApi"/>
-				<entry key="/third/xgxy/v1/getAddressList" value-ref="getUserContactsInfoApi"/>
-				<entry key="/third/xgxy/v1/comfirmBorrow" value-ref="dsedApplyLoanApi" />
-				<entry key="/third/xgxy/v1/preFinish" value-ref="dsedLoanAllRepayDoApi" />
-				<entry key="/third/xgxy/v1/repayComfirm" value-ref="dsedLoanRepayDoApi" />
-				<entry key="/third/xgxy/v1/getDecreasedAmount" value-ref="getDsedLoanDecreasedAmountApi" />
-				<entry key="/third/xgxy/v1/getBorrowInfo" value-ref="dsedGetLoanInfoApi" />
-				<entry key="/third/xgxy/v1/getRealPeriod" value-ref="dsedLoanTotalPeriodsApi" />
-				<entry key="/third/xgxy/v1/getBorrowFeeDetail" value-ref="dsedLoanDetailApi" />
-				<entry key="/third/xgxy/v1/syncUserInfo" value-ref="dsedSyncUserInfoApi" />
-				
-				
 			    <!-- 极速贷接口 --> 	
 				<entry key="/third/eca/v1/getDelayDetail" value-ref="getRenewalDetailApi" />
 				<entry key="/third/eca/v1/pushDelay" value-ref="jsdConfirmRenewalPayApi" />
@@ -126,7 +111,7 @@
 	<bean id="interceptorChain" class="com.ald.fanbei.api.web.chain.impl.InterceptorChain">
 		<property name="interceptors">
 			<list>
-				<ref bean="dsedValidationInterceptor"/>
+				<ref bean="jsdValidationInterceptor"/>
 			</list>
 		</property>
 	</bean>

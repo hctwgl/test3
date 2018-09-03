@@ -1,18 +1,16 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.HashMap;
+import java.util.List;
+
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
-import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
-
-import java.util.HashMap;
-import java.util.List;
 
 
 /**
@@ -26,9 +24,6 @@ import java.util.List;
  
 @Service("jsdUserBankcardService")
 public class JsdUserBankcardServiceImpl extends ParentServiceImpl<JsdUserBankcardDo, Long> implements JsdUserBankcardService {
-	
-    private static final Logger logger = LoggerFactory.getLogger(JsdUserBankcardServiceImpl.class);
-   
     @Resource
     private JsdUserBankcardDao jsdUserBankcardDao;
 

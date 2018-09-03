@@ -9,8 +9,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.dal.dao.JsdUpsLogDao;
-import com.ald.fanbei.api.dal.domain.JsdUpsLogDo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -45,8 +43,8 @@ import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.DsedUpsLogDao;
-import com.ald.fanbei.api.dal.domain.DsedUpsLogDo;
+import com.ald.fanbei.api.dal.dao.JsdUpsLogDao;
+import com.ald.fanbei.api.dal.domain.JsdUpsLogDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -91,9 +89,6 @@ public class UpsUtil extends AbstractThird {
 
     @Resource
     GeneratorClusterNo generatorClusterNo;
-
-	@Resource
-	DsedUpsLogDao dsedUpsLogDao;
 
 	@Resource
 	JsdUpsLogDao jsdUpsLogDao;

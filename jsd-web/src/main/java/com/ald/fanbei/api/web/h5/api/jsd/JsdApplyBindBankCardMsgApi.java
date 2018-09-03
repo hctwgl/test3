@@ -9,8 +9,8 @@ import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.web.common.DsedH5Handle;
-import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
+import com.ald.fanbei.api.web.common.JsdH5Handle;
+import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.ObjectUtils;
@@ -27,7 +27,7 @@ import java.util.Map;
  */
 @Component("jsdApplyBindBankCardMsgApi")
 @Validator("bankCardBindParam")
-public class JsdApplyBindBankCardMsgApi implements DsedH5Handle {
+public class JsdApplyBindBankCardMsgApi implements JsdH5Handle {
 
     @Resource
     private JsdUserService jsdUserService;
@@ -42,8 +42,8 @@ public class JsdApplyBindBankCardMsgApi implements DsedH5Handle {
     UpsUtil upsUtil;
 
     @Override
-    public DsedH5HandleResponse process(Context context) {
-        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "请求成功");
+    public JsdH5HandleResponse process(Context context) {
+        JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "请求成功");
         String bankNo = ObjectUtils.toString(context.getData("bankNo"), null);
         String bankName = ObjectUtils.toString(context.getData("bankName"), null);
         String bankMobile = ObjectUtils.toString(context.getData("bankMobile"), null);
@@ -55,7 +55,7 @@ public class JsdApplyBindBankCardMsgApi implements DsedH5Handle {
 
         //判断是否已经被绑定
         if (jsdUserBankcardService.getUserBankByCardNo(bankNo) > 0) {
-            return new DsedH5HandleResponse(1545, FanbeiExceptionCode.DSED_BANK_BINDED.getDesc());
+            return new JsdH5HandleResponse(1545, FanbeiExceptionCode.DSED_BANK_BINDED.getDesc());
         }
         //是否是设主卡
         String isMain = YesNoStatus.NO.getCode();
@@ -80,9 +80,9 @@ public class JsdApplyBindBankCardMsgApi implements DsedH5Handle {
                 userBankcardDo.getBankCode(),cardType,userBankcardDo.getValidDate(),userBankcardDo.getSafeCode());
 
         if(!upsResult.isSuccess()){
-            return new DsedH5HandleResponse(1542, FanbeiExceptionCode.AUTH_BINDCARD_ERROR.getDesc());
+            return new JsdH5HandleResponse(1542, FanbeiExceptionCode.AUTH_BINDCARD_ERROR.getDesc());
         }else if(!"10".equals(upsResult.getNeedCode())){
-            return new DsedH5HandleResponse(1567, FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
+            return new JsdH5HandleResponse(1567, FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
         }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("timestamp", timestamp);

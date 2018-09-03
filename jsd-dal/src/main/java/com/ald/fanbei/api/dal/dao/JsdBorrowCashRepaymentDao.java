@@ -1,8 +1,8 @@
 package com.ald.fanbei.api.dal.dao;
 
-import com.ald.fanbei.api.dal.domain.DsedLoanRepaymentDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import org.apache.ibatis.annotations.Param;
+
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 
 /**
  * 极速贷Dao

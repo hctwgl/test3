@@ -1,25 +1,19 @@
 package com.ald.fanbei.api.biz.third.util;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ald.fanbei.api.biz.bo.CollectionDataBo;
-import com.ald.fanbei.api.biz.bo.CollectionSystemReqRespBo;
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.JsdNoticeStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
-
-import javax.annotation.Resource;
 
 /**
  * 
@@ -166,7 +160,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			}
 			logger.info(getUrl() + "/api/ald/collect/v1/third/repayment");
 			logger.info("repaymentAchieve response :" + reqResult);
-			if (StringUtil.equals(reqResult.toUpperCase(), DsedNoticeStatus.SUCCESS.code)) {
+			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 				return true;
 			}
 			return false;

@@ -3,11 +3,9 @@ package com.ald.fanbei.api.dal.dao;
 import java.util.HashMap;
 import java.util.List;
 
-import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
-import org.apache.ibatis.annotations.Param;
 
 /**
  * 极速贷用户银行卡信息Dao

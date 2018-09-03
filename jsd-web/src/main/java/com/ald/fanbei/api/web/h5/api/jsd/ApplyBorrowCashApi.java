@@ -49,8 +49,8 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
-import com.ald.fanbei.api.web.common.DsedH5Handle;
-import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
+import com.ald.fanbei.api.web.common.JsdH5Handle;
+import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -64,7 +64,7 @@ import com.google.gson.Gson;
  */
 @Component("applyBorrowCashApi")
 @Validator("applyBorrowCashParam")
-public class ApplyBorrowCashApi implements DsedH5Handle {
+public class ApplyBorrowCashApi implements JsdH5Handle {
 
     protected final Logger maidianLog = LoggerFactory.getLogger("FBMD_BI");// 埋点日志
     
@@ -97,14 +97,14 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
     // [end]
     
     @Override
-    public DsedH5HandleResponse process(Context context) {
+    public JsdH5HandleResponse process(Context context) {
 
-        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
+        JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
         JsdApplyBorrowCashBo borrowCashBo = getParam(context);
         if (StringUtils.isBlank(borrowCashBo.getOpenId()) || StringUtils.isBlank(borrowCashBo.getProductNo()) || StringUtils.isBlank(borrowCashBo.getAmount())
                 || StringUtils.isBlank(borrowCashBo.getTerm()) || StringUtils.isBlank(borrowCashBo.getIsTying()) || StringUtils.isBlank(borrowCashBo.getTyingType())
                 ) {
-            return new DsedH5HandleResponse(FanbeiExceptionCode.JSD_PARAMS_ERROR);
+            return new JsdH5HandleResponse(FanbeiExceptionCode.JSD_PARAMS_ERROR);
         }
         BigDecimal goodsAmount = BigDecimal.ZERO;
         BigDecimal borrowAmount = NumberUtil.objToBigDecimalDefault(borrowCashBo.getAmount(), BigDecimal.ZERO);
@@ -128,14 +128,14 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
         boolean isGetLock = bizCacheUtil.getLock30Second(lockKey, "1");
 
         if (!isGetLock) {
-            return new DsedH5HandleResponse(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
+            return new JsdH5HandleResponse(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
         }
 
         try {
             // 判断用户是否有借款未完成
             boolean borrowFlag = jsdBorrowCashService.isCanBorrowCash(borrowCashBo.getUserId());
             if (!borrowFlag) {
-                return new DsedH5HandleResponse(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
+                return new JsdH5HandleResponse(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
             }
             final JsdBorrowCashDo jsdBorrowCashDo = buildBorrowCashDo(borrowAmount, borrowCashBo.getTerm(), mainCard,
                     borrowCashBo.getUserId(), rateInfoDo, oriRate,borrowCashBo.getProductNo());
@@ -166,7 +166,7 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
             });
             // 生成借款信息失败
             if (borrowId == null) {
-                return new DsedH5HandleResponse(FanbeiExceptionCode.ADD_JSD_BORROW_CASH_INFO_FAIL);
+                return new JsdH5HandleResponse(FanbeiExceptionCode.ADD_JSD_BORROW_CASH_INFO_FAIL);
             }
             // 借过款的放入缓存，借钱按钮不需要高亮显示
             bizCacheUtil.saveRedistSetOne(Constants.HAVE_BORROWED, String.valueOf(borrowCashBo.getUserId()));
@@ -176,7 +176,7 @@ public class ApplyBorrowCashApi implements DsedH5Handle {
                 String cardNo = mainCard.getBankCardNumber();
                 // 主卡号不能为空
                 if (StringUtils.isEmpty(cardNo)) {
-                    return new DsedH5HandleResponse(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
+                    return new JsdH5HandleResponse(FanbeiExceptionCode.USER_BANKCARD_NOT_EXIST_ERROR);
                 }
                 delegatePay(borrowCashBo.getUserId(), borrowId, borrowCashBo.getBankNo(),
                         jsdBorrowLegalOrderDo, jsdBorrowLegalOrderCashDo);

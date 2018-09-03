@@ -10,8 +10,8 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.web.common.DsedH5Handle;
-import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
+import com.ald.fanbei.api.web.common.JsdH5Handle;
+import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.BorrowCashRepayDoParam;
 import org.apache.commons.lang.StringUtils;
@@ -24,7 +24,7 @@ import java.util.Map;
 
 @Component("jsdBorrowCashRepayApi")
 @Validator("borrowCashRepayDoParam")
-public class JsdBorrowCashRepayApi implements DsedH5Handle {
+public class JsdBorrowCashRepayApi implements JsdH5Handle {
 
     @Resource
     private JsdUserBankcardService jsdUserBankcardService;
@@ -46,8 +46,8 @@ public class JsdBorrowCashRepayApi implements DsedH5Handle {
     @Resource
     private JsdBorrowLegalOrderRepaymentService jsdBorrowLegalOrderRepaymentService;
     @Override
-    public DsedH5HandleResponse process(Context context) {
-        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
+    public JsdH5HandleResponse process(Context context) {
+        JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
         Long userId = context.getUserId();
         JsdUserDo jsdUserDo = jsdUserService.getById(userId);
 

@@ -1,9 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
-import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-
-import java.util.Date;
 
 /**
  * 极速贷Service
@@ -26,6 +23,9 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     boolean isCanBorrowCash(Long userId);
 
     String getCurrentLastBorrowNo(String orderNoPre);
-
+    
+    void dealBorrowSucc(Long cashId, String outTradeNo);
+    
+    void dealBorrowFail(Long cashId, String outTradeNo, String failMsg);
 
 }

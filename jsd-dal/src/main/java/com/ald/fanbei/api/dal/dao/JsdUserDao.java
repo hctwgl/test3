@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.dal.dao;
 
-import com.ald.fanbei.api.dal.domain.DsedUserDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 
 /**
@@ -15,6 +14,6 @@ public interface JsdUserDao extends BaseDao<JsdUserDo, Long> {
 
 	JsdUserDo getByOpenId(String openId);
 
-	int updateUser(DsedUserDo userDo);
+	int updateUser(JsdUserDo userDo);
 
 }

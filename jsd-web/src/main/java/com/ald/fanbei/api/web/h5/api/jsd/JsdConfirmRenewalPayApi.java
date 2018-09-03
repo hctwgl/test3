@@ -47,8 +47,8 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
-import com.ald.fanbei.api.web.common.DsedH5Handle;
-import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
+import com.ald.fanbei.api.web.common.JsdH5Handle;
+import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
@@ -60,7 +60,7 @@ import com.google.gson.Gson;
  * @date 2018年8月22日
  */
 @Component("jsdConfirmRenewalPayApi")
-public class JsdConfirmRenewalPayApi implements DsedH5Handle {
+public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 
 	@Resource
 	JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
@@ -84,7 +84,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 	TransactionTemplate transactionTemplate;
 
 	@Override
-	public DsedH5HandleResponse process(Context context) {
+	public JsdH5HandleResponse process(Context context) {
 		
 		JsdRenewalDealBo paramBo = getParam(context);
 
@@ -145,7 +145,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 
 		Map<String, Object> resultMap = jsdBorrowCashRenewalService.doRenewal(paramBo);
 		
-		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功", resultMap);
+		JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功", resultMap);
         return resp;
 	}
 

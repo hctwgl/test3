@@ -1,11 +1,11 @@
 package com.ald.fanbei.api.web.validator.bean;
 
-import org.springframework.stereotype.Component;
+import java.math.BigDecimal;
 
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
+
+import org.springframework.stereotype.Component;
 
 @Component("borrowCashRepayDoParam")
 public class BorrowCashRepayDoParam {

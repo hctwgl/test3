@@ -4,10 +4,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -15,8 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.service.DsedLoanRepaymentService;
-import com.ald.fanbei.api.biz.service.DsedLoanService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -34,7 +31,7 @@ public class PayRoutController {
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
 
 	@Resource
-	DsedLoanService dsedLoanService;
+	JsdBorrowCashService jsdBorrowCashService;
 
 	@Resource
 	JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
@@ -101,9 +98,9 @@ public class PayRoutController {
 		logger.info("delegatePay callback, params: " + upsResponse);
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代付成功
-				dsedLoanService.dealLoanSucc(result, outTradeNo);
+				jsdBorrowCashService.dealBorrowSucc(result, outTradeNo);
     		} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理失败代付
-				dsedLoanService.dealLoanFail(result, outTradeNo, "");
+    			jsdBorrowCashService.dealBorrowFail(result, outTradeNo, "");
 			}
 			return "SUCCESS";
 		} catch (Exception e) {

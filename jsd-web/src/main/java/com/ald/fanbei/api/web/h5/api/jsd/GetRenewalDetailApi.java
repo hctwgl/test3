@@ -46,8 +46,8 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
-import com.ald.fanbei.api.web.common.DsedH5Handle;
-import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
+import com.ald.fanbei.api.web.common.JsdH5Handle;
+import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.ald.fanbei.api.web.common.RequestDataVo;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -60,7 +60,7 @@ import com.alibaba.fastjson.JSONObject;
  * @date 2018年8月28日
  */
 @Component("getRenewalDetailApi")
-public class GetRenewalDetailApi implements DsedH5Handle {
+public class GetRenewalDetailApi implements JsdH5Handle {
 
     @Resource
     private JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
@@ -76,7 +76,7 @@ public class GetRenewalDetailApi implements DsedH5Handle {
     private JsdResourceService jsdResourceService;
 
 	@Override
-	public DsedH5HandleResponse process(Context context) {
+	public JsdH5HandleResponse process(Context context) {
 		// 借款borrowNo
 		String borrowNo = ObjectUtils.toString(context.getDataMap().get("borrowNo"), "");
 		// 请求时间戳
@@ -95,7 +95,7 @@ public class GetRenewalDetailApi implements DsedH5Handle {
 		data.put("delayInfo", this.getRenewalDetail(borrowCashDo));
 		data.put("timestamp", timestamp);
 		
-		DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功", data);
+		JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功", data);
 
 		return resp;
 	}

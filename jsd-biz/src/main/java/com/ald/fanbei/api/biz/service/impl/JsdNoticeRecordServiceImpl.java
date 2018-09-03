@@ -2,14 +2,12 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
-import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 
 
 
@@ -24,8 +22,6 @@ import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
  
 @Service("jsdNoticeRecordService")
 public class JsdNoticeRecordServiceImpl extends ParentServiceImpl<JsdNoticeRecordDo, Long> implements JsdNoticeRecordService {
-	
-    private static final Logger logger = LoggerFactory.getLogger(JsdNoticeRecordServiceImpl.class);
    
     @Resource
     private JsdNoticeRecordDao jsdNoticeRecordDao;

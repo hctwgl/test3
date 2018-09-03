@@ -1,12 +1,9 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.util.HashMap;
-
-import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
-
-import java.util.HashMap;
 import java.util.List;
+
+import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 
 /**
  * 极速贷用户银行卡信息Service

@@ -1,6 +1,12 @@
 package com.ald.fanbei.api.web.common;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -10,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ald.fanbei.api.biz.arbitration.MD5;
-import com.ald.fanbei.api.biz.service.DsedResourceService;
+import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -21,7 +27,7 @@ import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.web.common.impl.DsedH5HandleFactory;
+import com.ald.fanbei.api.web.common.impl.JsdH5HandleFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -41,13 +47,13 @@ public abstract class BaseController {
     @Resource
     protected TokenCacheUtil tokenCacheUtil;
     @Resource
-    private DsedResourceService dsedResourceService;
+    private JsdResourceService jsdResourceService;
     @Resource
-    private DsedH5HandleFactory dsedH5HandleFactory;
+    private JsdH5HandleFactory jsdH5HandleFactory;
 
     protected String processRequest(HttpServletRequest request,String data,String sign) {
         String retMsg = StringUtils.EMPTY;
-        DsedH5HandleResponse baseResponse = null;
+        JsdH5HandleResponse baseResponse = null;
         Context context = null;
         Long stmap = System.currentTimeMillis();
         try {
@@ -67,25 +73,25 @@ public abstract class BaseController {
         return retMsg;
     }
 
-    protected DsedH5HandleResponse buildErrorResult(FanbeiExceptionCode exceptionCode, HttpServletRequest request) {
-        DsedH5HandleResponse resp;
+    protected JsdH5HandleResponse buildErrorResult(FanbeiExceptionCode exceptionCode, HttpServletRequest request) {
+        JsdH5HandleResponse resp;
         if (exceptionCode == null) {
             exceptionCode = FanbeiExceptionCode.SYSTEM_ERROR;
         }
-        resp = new DsedH5HandleResponse(exceptionCode);
+        resp = new JsdH5HandleResponse(exceptionCode);
         return resp;
     }
 
-    protected DsedH5HandleResponse buildErrorResult(FanbeiException e, HttpServletRequest request) {
+    protected JsdH5HandleResponse buildErrorResult(FanbeiException e, HttpServletRequest request) {
         FanbeiExceptionCode exceptionCode = e.getErrorCode();
-        DsedH5HandleResponse resp;
+        JsdH5HandleResponse resp;
         if (exceptionCode == null) {
             exceptionCode = FanbeiExceptionCode.SYSTEM_ERROR;
         }
         if (e.getDynamicMsg() != null && e.getDynamicMsg()) {
-            resp = new DsedH5HandleResponse(exceptionCode, e.getMessage());
+            resp = new JsdH5HandleResponse(exceptionCode, e.getMessage());
         } else {
-            resp = new DsedH5HandleResponse(exceptionCode);
+            resp = new JsdH5HandleResponse(exceptionCode);
         }
 
         return resp;
@@ -108,7 +114,7 @@ public abstract class BaseController {
      * @param httpServletRequest
      * @return
      */
-    public abstract DsedH5HandleResponse doProcess(Context context);
+    public abstract JsdH5HandleResponse doProcess(Context context);
 
 
     private void compareSign(HttpServletRequest request, Context context,String sign) {
@@ -187,7 +193,7 @@ public abstract class BaseController {
      * @param respData
      * @param exeT
      */
-    protected void doMaidianLog(HttpServletRequest request, DsedH5HandleResponse respData, String... extInfo) {
+    protected void doMaidianLog(HttpServletRequest request, JsdH5HandleResponse respData, String... extInfo) {
         try {
             JSONObject param = new JSONObject();
             Enumeration<String> enu = request.getParameterNames();
@@ -233,7 +239,7 @@ public abstract class BaseController {
      * @param appInfo
      * @param exeT
      */
-    protected void doBiLog(Context context,HttpServletRequest request, DsedH5HandleResponse respData, String appInfo, long exeT,
+    protected void doBiLog(Context context,HttpServletRequest request, JsdH5HandleResponse respData, String appInfo, long exeT,
                          String userName) {
         try {
             JSONObject param = new JSONObject();
@@ -279,7 +285,7 @@ public abstract class BaseController {
      * @param ext4        扩展参数4
      * @param ext5        扩展参数5
      */
-    protected void doLog(String reqData, DsedH5HandleResponse respData, String httpMethod, String rmtIp, String exeT,
+    protected void doLog(String reqData, JsdH5HandleResponse respData, String httpMethod, String rmtIp, String exeT,
                          String inter, String userName, String ext1, String ext2, String ext3, String ext4, String ext5) {
 
     	biLog.info(StringUtil.appendStrs("	", DateUtil.formatDate(new Date(), DateUtil.DATE_TIME_SHORT), "	",

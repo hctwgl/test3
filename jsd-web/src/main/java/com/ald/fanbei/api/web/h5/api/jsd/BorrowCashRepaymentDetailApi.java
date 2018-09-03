@@ -7,8 +7,8 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.web.common.DsedH5Handle;
-import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
+import com.ald.fanbei.api.web.common.JsdH5Handle;
+import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component("borrowCashRepaymentDetailApi")
-public class BorrowCashRepaymentDetailApi implements DsedH5Handle {
+public class BorrowCashRepaymentDetailApi implements JsdH5Handle {
 
 
     @Resource
@@ -28,8 +28,8 @@ public class BorrowCashRepaymentDetailApi implements DsedH5Handle {
     private JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
 
     @Override
-    public DsedH5HandleResponse process(Context context) {
-        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
+    public JsdH5HandleResponse process(Context context) {
+        JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
 
         String borrowNo = ObjectUtils.toString(context.getData("borrowNo"), null);
         String period = ObjectUtils.toString(context.getData("period"), null);

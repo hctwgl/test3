@@ -12,21 +12,21 @@ import com.ald.fanbei.api.common.enums.GenderType;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
-import com.ald.fanbei.api.web.common.DsedH5Handle;
-import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
+import com.ald.fanbei.api.web.common.JsdH5Handle;
+import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 
 /**
  * 同步用户信息
  */
 @Component("jsdSyncUserInfoApi")
-public class SyncUserInfoApi implements DsedH5Handle {
+public class SyncUserInfoApi implements JsdH5Handle {
 
     @Resource
     private JsdUserService jsdUserService;
 
     @Override
-    public DsedH5HandleResponse process(Context context) {
-        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
+    public JsdH5HandleResponse process(Context context) {
+        JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
         Long userId = context.getUserId();
         String realName = String.valueOf(context.getDataMap().get("realName"));
         String openId = String.valueOf(context.getDataMap().get("userId"));

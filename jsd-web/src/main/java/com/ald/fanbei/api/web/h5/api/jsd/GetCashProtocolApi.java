@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.web.common.DsedH5Handle;
-import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
+import com.ald.fanbei.api.web.common.JsdH5Handle;
+import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 
 
@@ -19,14 +19,14 @@ import com.ald.fanbei.api.web.validator.Validator;
  */
 @Component("getCashProtocolApi")
 @Validator("getCashProtocolParam")
-public class GetCashProtocolApi implements DsedH5Handle {
+public class GetCashProtocolApi implements JsdH5Handle {
 
     @Resource
     JsdResourceService jsdResourceService;
 
     @Override
-    public DsedH5HandleResponse process(Context context) {
-        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
+    public JsdH5HandleResponse process(Context context) {
+        JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
         return resp;
     }
 

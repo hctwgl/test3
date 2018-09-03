@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.biz.service;
 
-import com.ald.fanbei.api.dal.domain.DsedNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 
 /**

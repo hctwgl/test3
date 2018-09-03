@@ -1,8 +1,8 @@
 package com.ald.fanbei.api.dal.dao;
 
-import com.ald.fanbei.api.dal.domain.DsedBankDo;
-import com.ald.fanbei.api.dal.domain.JsdBankDo;
 import org.apache.ibatis.annotations.Param;
+
+import com.ald.fanbei.api.dal.domain.JsdBankDo;
 
 /**
  * 极速贷银行卡信息Dao
