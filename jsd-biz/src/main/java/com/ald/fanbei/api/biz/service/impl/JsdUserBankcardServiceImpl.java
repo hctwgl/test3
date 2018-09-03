@@ -61,6 +61,14 @@ public class JsdUserBankcardServiceImpl extends ParentServiceImpl<JsdUserBankcar
 	public int getUserBankByCardNo(String cardNumber) {
 		return jsdUserBankcardDao.getUserBankByCardNo(cardNumber);
 	}
+
+	@Override
+	public JsdUserBankcardDo getByBindNo(String bindNo) {
+
+		return jsdUserBankcardDao.getByBindNo(bindNo);
+
+	}
+
 	@Override
 	public JsdUserBankcardDo getByBankNo(String bankNo) {
 		return jsdUserBankcardDao.getByBankNo(bankNo);

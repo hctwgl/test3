@@ -34,7 +34,7 @@ import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
  * @author chenqiwei 2018年3月29日下午15:58:15
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("quickPaymentResendCodeApi")
+@Component("sendSmsCodeApi")
 public class ResendSmsCodeApi implements DsedH5Handle {
     @Resource
     UpsUtil upsUtil;
@@ -71,7 +71,7 @@ public class ResendSmsCodeApi implements DsedH5Handle {
 	}else if(SmsCodeType.BIND.getCode().equals(type)){
 
 
-		JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getById(Long.valueOf(busiFlag));
+		JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getByBindNo(busiFlag);
 		//默认赋值为借记卡
 		String cardType = "00";
 		JsdUserDo userDo=jsdUserService.getById(userId);
