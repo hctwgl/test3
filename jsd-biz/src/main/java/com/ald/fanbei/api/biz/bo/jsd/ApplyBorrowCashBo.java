@@ -33,7 +33,7 @@ public class ApplyBorrowCashBo {
 		
 	    public String isTying;
 	    public String tyingType;
-	    public JsdGoodsInfoBo jsdGoodsInfoBo;
+	    public JsdGoodsInfoBo goodsInfo;
 	}
     
     public static class JsdGoodsInfoBo {

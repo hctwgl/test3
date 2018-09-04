@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.JsdAesUtil;
 import com.ald.fanbei.api.common.util.JsdSignUtil;
 import com.ald.fanbei.web.test.common.BaseTest;
 import com.alibaba.fastjson.JSON;
@@ -47,9 +48,9 @@ public class JsdBorrowTest extends BaseTest {
         params.put("unit", "DAY");
         params.put("isTying", "Y");
         params.put("tyingType", "SELL");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), AES_KEY);
+        String encryptBase64Str = JsdAesUtil.encryptToBase64Third(JSON.toJSONString(params), AES_KEY);
         Map<String, Object> p = new HashMap<>();
-        p.put("data", data);
+        p.put("data", encryptBase64Str);
         p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         
@@ -81,9 +82,9 @@ public class JsdBorrowTest extends BaseTest {
         goodsInfo.put("goodsImage", "http://img");
         params.put("goodsInfo", goodsInfo);
         
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
+        String encryptBase64Str = JsdAesUtil.encryptToBase64Third(JSON.toJSONString(params), AES_KEY);
         Map<String, String> p = new HashMap<>();
-        p.put("data", data);
+        p.put("data", encryptBase64Str);
         p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         

@@ -174,7 +174,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         afBorrowCashDo.setUserId(bo.userId);
         afBorrowCashDo.setRateAmount(interestAmount);
         afBorrowCashDo.setPoundage(serviceAmount);
-        afBorrowCashDo.setPoundageRate(serviceRateDaily.setScale(2));
+        afBorrowCashDo.setPoundageRate(rateInfo.overdueRate.setScale(2));
         afBorrowCashDo.setRiskDailyRate(riskRateDaily);
         afBorrowCashDo.setProductNo(req.productNo);
         afBorrowCashDo.setTradeNoXgxy(req.borrowNo);
@@ -188,7 +188,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
      * @return
      */
     private JsdBorrowLegalOrderDo buildBorrowLegalOrder(ApplyBorrowCashBo bo) {
-    	JsdGoodsInfoBo goodsBo = bo.req.jsdGoodsInfoBo;
+    	JsdGoodsInfoBo goodsBo = bo.req.goodsInfo;
     	
         JsdBorrowLegalOrderDo afBorrowLegalOrderDo = new JsdBorrowLegalOrderDo();
         afBorrowLegalOrderDo.setUserId(bo.userId);
@@ -206,7 +206,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
      */
     private JsdBorrowLegalOrderCashDo buildBorrowLegalOrderCashDo(ApplyBorrowCashBo bo) {
     	ApplyBorrowCashReq req = bo.req;
-    	JsdGoodsInfoBo goodsBo = req.jsdGoodsInfoBo;
+    	JsdGoodsInfoBo goodsBo = req.goodsInfo;
     	
         JsdBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = new JsdBorrowLegalOrderCashDo();
         afBorrowLegalOrderCashDo.setAmount(new BigDecimal(goodsBo.goodsPrice));

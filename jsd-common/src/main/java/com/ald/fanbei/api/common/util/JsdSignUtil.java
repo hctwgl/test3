@@ -68,7 +68,7 @@ public class JsdSignUtil {
      * @param appSecret
      * @return
      */
-    public  static JSONObject paramsDecrypt(String params, String appSecret) {
+    public static JSONObject paramsDecrypt(String params, String appSecret) {
         params = JsdAesUtil.decryptFromBase64Third(params, appSecret);
         JSONObject result = JSONObject.parseObject(params);
         return result;
