@@ -16,14 +16,18 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowResp;
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyPayBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
+import com.ald.fanbei.api.biz.third.enums.XgxyBorrowStatusNotifyStatus;
 import com.ald.fanbei.api.biz.third.util.OriRateUtil;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
+import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -31,9 +35,12 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
+import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
+import com.alibaba.fastjson.JSON;
 
 
 /**
@@ -56,8 +63,11 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
     @Resource
     JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
-
+    @Resource
+    JsdNoticeRecordDao jsdNoticeRecordDao;
     
+    @Resource
+    XgxyUtil xgxyUtil;
     @Resource
     OriRateUtil oriRateUtil;
     @Resource
@@ -193,36 +203,76 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	@Override
 	public void dealBorrowSucc(Long cashId, String outTradeNo) {
 		JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
-		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getById(cashId);
-		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getById(cashId);
+		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(cashId);
+		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(cashId);
 		
 		Date currDate = new Date(System.currentTimeMillis());
+		Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(currDate);
+        Date repaymentDate = DateUtil.addDays(arrivalEnd, Integer.valueOf(cashDo.getType()) - 1);
 		cashDo.setGmtArrival(currDate);
-		
-        Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(currDate);
-        Date repaymentDay = DateUtil.addDays(arrivalEnd, Integer.valueOf(cashDo.getType()) - 1);
-        cashDo.setGmtPlanRepayment(repaymentDay);
-        
+        cashDo.setGmtPlanRepayment(repaymentDate);
         cashDo.setStatus(JsdBorrowCashStatus.TRANSFERRED.name());
+        cashDo.setTradeNoUps(outTradeNo);
+        
         orderDo.setStatus(JsdBorrowLegalOrderStatus.AWAIT_DELIVER.name());
         orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.name());
         this.transUpdate(cashDo, orderDo, orderCashDo);
         
-        // TODO notice西瓜
+        dsedNoticeRecord(cashDo,"", XgxyBorrowStatusNotifyStatus.SUCCESS.name());
 	}
 
 	@Override
 	public void dealBorrowFail(Long cashId, String outTradeNo, String failMsg) {
-		final JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
+		JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
+		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(cashId);
+		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(cashId);
 		
-        Date cur = new Date();
         cashDo.setStatus(JsdBorrowCashStatus.CLOSED.name());
         cashDo.setRemark("UPS异步打款失败，" + failMsg);
-        cashDo.setGmtModified(cur);
-        cashDo.setGmtClose(cur);
+        cashDo.setGmtClose(new Date());
+        cashDo.setTradeNoUps(outTradeNo);
         
-        // TODO 事务关闭 order 和 orderCash
-        jsdBorrowCashDao.updateById(cashDo);
+        orderDo.setStatus(JsdBorrowLegalOrderStatus.CLOSED.name());
+        orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.CLOSED.name());
+        this.transUpdate(cashDo, orderDo, orderCashDo);
+        
+        dsedNoticeRecord(cashDo, failMsg,  XgxyBorrowStatusNotifyStatus.FAILED.name());
 	}
+	
+	private void dsedNoticeRecord(JsdBorrowCashDo cashDo,String msg, String status) {
+        try {
+            XgxyPayBo xgxyPayBo = buildXgxyPay(cashDo, msg, status);
+            JsdNoticeRecordDo noticeRecordDo = buildDsedNoticeRecord(cashDo,xgxyPayBo);
+            jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+            if(xgxyUtil.payNoticeRequest(xgxyPayBo)){
+                noticeRecordDo.setRid(noticeRecordDo.getRid());
+                noticeRecordDo.setGmtModified(new Date());
+                jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
+            }
+        } catch (Exception e) {
+            logger.error("dsedNoticeRecord, notify user occur error!", e); //通知过程抛出任何异常捕获，不影响主流程
+        }
+    }
+
+    private XgxyPayBo buildXgxyPay(JsdBorrowCashDo cashDo, String msg,String status) {
+        XgxyPayBo  xgxyPayBo = new XgxyPayBo();
+        xgxyPayBo.setTradeNo(cashDo.getTradeNoUps());
+        xgxyPayBo.setBorrowNo(cashDo.getBorrowNo());
+        xgxyPayBo.setReason(msg);
+        xgxyPayBo.setStatus(status);
+        xgxyPayBo.setGmtArrival(cashDo.getGmtArrival());
+        return xgxyPayBo;
+    }
+
+    private JsdNoticeRecordDo buildDsedNoticeRecord(JsdBorrowCashDo cashDo,XgxyPayBo xgxyPayBo) {
+    	JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
+        noticeRecordDo.setUserId(cashDo.getUserId());
+        noticeRecordDo.setRefId(String.valueOf(cashDo.getRid()));
+        noticeRecordDo.setType(JsdNoticeType.PAY.code);
+        noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+        noticeRecordDo.setParams(JSON.toJSONString(xgxyPayBo));
+        return noticeRecordDo;
+    }
+
 
 }

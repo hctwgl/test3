@@ -274,9 +274,6 @@
             <if test="gmtCreate != null and gmtCreate != '' ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtModifed != null and gmtModifed != '' ">        
-                gmt_modifed = NOW(),                
-            </if>
             <if test="userId != null and userId != '' ">        
                 user_id = #{userId,jdbcType=INTEGER},                
             </if>
@@ -350,8 +347,9 @@
                 gmt_last_repayment = #{gmtLastRepayment,jdbcType=TIMESTAMP},                
             </if>
             <if test="gmtFinish != null and gmtFinish != '' ">        
-                gmt_finish = #{gmtFinish,jdbcType=TIMESTAMP}                
+                gmt_finish = #{gmtFinish,jdbcType=TIMESTAMP},                
             </if>
+            gmt_modified = NOW()
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
