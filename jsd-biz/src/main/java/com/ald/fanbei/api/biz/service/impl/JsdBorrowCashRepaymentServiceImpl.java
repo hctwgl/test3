@@ -402,7 +402,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			map.put("borrowNo",borrowCashDo.getBorrowNo());
 			map.put("period","1");
 			map.put("amount", String.valueOf(repaymentDo.getActualAmount()));
-			map.put("type",repaymentDo.getType());
+			map.put("type",JsdRepayType.INITIATIVE.getName());
 			Date now=new Date();
 		    map.put("timestamp", String.valueOf(now.getTime()));
 		    if(JsdBorrowCashStatus.FINISHED.name().equals(borrowCashDo.getStatus())){

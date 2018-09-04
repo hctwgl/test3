@@ -140,7 +140,7 @@ public class XgxyUtil extends AbstractThird {
             p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             p.put("appId", "UJ3331");
             p.put("timestamp",System.currentTimeMillis()+"");
-            String url = "http://192.168.156.103:1112/isp/open/third/eca/v1/borrowStatusNotify";
+            String url = "http://192.168.156.103:1112/isp/open/third/eca/v1/repaymentNotify";
             logger.info("data = " + data +",url = " +url );
             String reqResult = "";
             if (url.contains("https")){
