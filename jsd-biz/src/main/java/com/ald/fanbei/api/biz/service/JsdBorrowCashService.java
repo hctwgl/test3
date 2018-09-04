@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 
 /**
  * 极速贷Service
@@ -20,6 +22,8 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     void checkCanBorrow(Long userId);
 
     String getCurrentLastBorrowNo(String orderNoPre);
+    
+    void transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo);
     
     BigDecimal getRiskOriRate(String openId);
     

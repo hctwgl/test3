@@ -97,9 +97,9 @@ public class PayRoutController {
 		String upsResponse = " merPriv=" + merPriv + ",tradeState=" + tradeState + ",reqExt=" + result + ",outTradeNo=" + outTradeNo;
 		logger.info("delegatePay callback, params: " + upsResponse);
 		try {
-			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代付成功
+			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 打款成功
 				jsdBorrowCashService.dealBorrowSucc(result, outTradeNo);
-    		} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理失败代付
+    		} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 打款失败
     			jsdBorrowCashService.dealBorrowFail(result, outTradeNo, "");
 			}
 			return "SUCCESS";

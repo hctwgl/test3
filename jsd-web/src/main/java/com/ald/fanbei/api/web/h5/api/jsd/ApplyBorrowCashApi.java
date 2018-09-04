@@ -22,7 +22,6 @@ import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
-import com.ald.fanbei.api.biz.third.util.OriRateUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -76,8 +75,6 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
     @Resource
     TransactionTemplate transactionTemplate;
     @Resource
-    OriRateUtil oriRateUtil;
-    @Resource
     GeneratorClusterNo generatorClusterNo;
     // [end]
     
@@ -127,7 +124,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
                     orderDo.setStatus(JsdBorrowLegalOrderStatus.CLOSED.name());
                     orderDo.setClosedDetail("transed fail");
                     orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.CLOSED.name());
-                    this.transUpdate(cashDo, orderDo, orderCashDo);
+                    jsdBorrowCashService.transUpdate(cashDo, orderDo, orderCashDo);
                 }else {
                 	cashDo.setStatus(JsdBorrowCashStatus.TRANSFERING.name());
                 	jsdBorrowCashService.updateById(cashDo);
@@ -140,7 +137,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
                 cashDo.setRemark("Exception when delegatePay!");
                 orderDo.setStatus(JsdBorrowLegalOrderCashStatus.CLOSED.name());// 关闭搭售商品订单
                 orderCashDo.setStatus(JsdBorrowLegalOrderStatus.CLOSED.name());// 关闭搭售商品借款
-                this.transUpdate(cashDo, orderDo, orderCashDo);
+                jsdBorrowCashService.transUpdate(cashDo, orderDo, orderCashDo);
                 
                 throw new FanbeiException(FanbeiExceptionCode.DELEGATEPAY_DIRECT_FAIL);
             }
@@ -225,18 +222,6 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         return afBorrowLegalOrderCashDo;
     }
 
-    private void transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo) {
-    	transactionTemplate.execute(new TransactionCallback<String>() {
-            @Override
-            public String doInTransaction(TransactionStatus ts) {
-                jsdBorrowCashService.updateById(cashDo);
-                jsdBorrowLegalOrderCashService.updateById(orderCashDo);
-                jsdBorrowLegalOrderService.updateById(orderDo);
-                return "success";
-            }
-        });
-    }
-    
     private void lock(Long userId) {
     	String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
         if (!bizCacheUtil.getLock30Second(lockKey, "1")) {

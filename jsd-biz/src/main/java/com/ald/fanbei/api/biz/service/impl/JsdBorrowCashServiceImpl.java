@@ -9,6 +9,9 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
@@ -19,12 +22,18 @@ import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateIn
 import com.ald.fanbei.api.biz.third.util.OriRateUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
+import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 
 
 /**
@@ -43,10 +52,17 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     JsdBorrowCashDao jsdBorrowCashDao;
     @Resource
     JsdResourceService jsdResourceService;
+    @Resource
+    JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
+    @Resource
+    JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
+
     
     @Resource
     OriRateUtil oriRateUtil;
-
+    @Resource
+    TransactionTemplate transactionTemplate;
+    
 	@Override
 	public BaseDao<JsdBorrowCashDo, Long> getDao() {
 		return jsdBorrowCashDao;
@@ -69,6 +85,18 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	public String getCurrentLastBorrowNo(String orderNoPre) {
 		return jsdBorrowCashDao.getCurrentLastBorrowNo(orderNoPre);
 	}
+	
+	public void transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo) {
+    	transactionTemplate.execute(new TransactionCallback<String>() {
+            @Override
+            public String doInTransaction(TransactionStatus ts) {
+            	jsdBorrowCashDao.updateById(cashDo);
+            	jsdBorrowLegalOrderCashDao.updateById(orderCashDo);
+            	jsdBorrowLegalOrderDao.updateById(orderDo);
+                return "success";
+            }
+        });
+    }
 
 	
 	/**
@@ -142,7 +170,9 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	
 	@Override
 	public void dealBorrowSucc(Long cashId, String outTradeNo) {
-		final JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
+		JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
+		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getById(cashId);
+		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getById(cashId);
 		
 		Date currDate = new Date(System.currentTimeMillis());
 		cashDo.setGmtArrival(currDate);
@@ -151,8 +181,12 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         Date repaymentDay = DateUtil.addDays(arrivalEnd, Integer.valueOf(cashDo.getType()) - 1);
         cashDo.setGmtPlanRepayment(repaymentDay);
         
-        // TODO 事务更新 order待发货，orderCash待还
-        jsdBorrowCashDao.updateById(cashDo);
+        cashDo.setStatus(JsdBorrowCashStatus.TRANSFERRED.name());
+        orderDo.setStatus(JsdBorrowLegalOrderStatus.AWAIT_DELIVER.name());
+        orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.name());
+        this.transUpdate(cashDo, orderDo, orderCashDo);
+        
+        // TODO notice西瓜
 	}
 
 	@Override
