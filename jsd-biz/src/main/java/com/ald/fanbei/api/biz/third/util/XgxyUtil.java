@@ -50,7 +50,7 @@ public class XgxyUtil extends AbstractThird {
         	String dataStr = JSON.toJSONString(payBo);
             
             Map<String, Object> params = new HashMap<>();
-            params.put("appId", "edspay");
+            params.put("appId", "UJ3331");
             params.put("data", JsdAesUtil.encryptToBase64Third(dataStr, PRIVATE_KEY));
             params.put("sign", generateSign(JSON.parseObject(dataStr), PRIVATE_KEY));
             String url = getXgxyUrl() + "/isp/open/third/eca/v1/borrowStatusNotify";
@@ -91,7 +91,7 @@ public class XgxyUtil extends AbstractThird {
             overdue.put("tradeNo", data.get("tradeNo"));
             
             Map<String, Object> params = new HashMap<>();
-            params.put("appId", "edspay");
+            params.put("appId", "UJ3331");
             params.put("data", JsdAesUtil.encryptToBase64Third(overdue.toJSONString(), PRIVATE_KEY));
             params.put("sign", generateSign(overdue, PRIVATE_KEY));
             
@@ -236,7 +236,7 @@ public class XgxyUtil extends AbstractThird {
     public String getUserContactsInfo(String openId) {
         try {
             Map<String, Object> params = new HashMap<>();
-            params.put("appId", "edspay");
+            params.put("appId", "UJ3331");
             Map<String, String> data = new HashMap<>();
             data.put("userId", openId);
             params.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
