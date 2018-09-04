@@ -425,7 +425,11 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 													borrowCashDo.getPoundage()).subtract(borrowCashDo.getRepayAmount());
 		long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(new Date(), borrowCashDo.getGmtPlanRepayment());
 		
-		if (new BigDecimal(betweenGmtPlanRepayment).compareTo(betweenDuedate) > 0 && amountLimit.compareTo(waitRepayAmount) >= 0) {
+		/*if (new BigDecimal(betweenGmtPlanRepayment).compareTo(betweenDuedate) > 0 && amountLimit.compareTo(waitRepayAmount) >= 0) {
+			throw new FanbeiException(FanbeiExceptionCode.CAN_NOT_RENEWAL_ERROR);
+		}*/
+		
+		if(amountLimit.compareTo(waitRepayAmount) >= 0){
 			throw new FanbeiException(FanbeiExceptionCode.CAN_NOT_RENEWAL_ERROR);
 		}
 		
@@ -438,13 +442,17 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		public JsdBorrowLegalOrderCashDo legalOrderCashDo;
 		public JsdBorrowLegalOrderDo legalOrderDo;
 		public JsdUserDo userDo; 
-		public Long cardId; 
 		
 		public BigDecimal capitalRate;
 		public BigDecimal cashRate;
 		public BigDecimal cashPoundageRate;
 		public BigDecimal orderRate;
 		public BigDecimal orderPoundageRate;
+		
+		public String bankChannel; 
+		public String bankName;
+		public Integer appVersion;
+		public String renewalNo; // 我方生成的续期编号
 		
 		/*-请求参数->*/
 		public String borrowNo;
@@ -459,15 +467,6 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		public BigDecimal goodsPrice;
 		public Long userId;
 		/*-------<*/
-		
-		public BigDecimal repaymentAmount;
-		public BigDecimal actualAmount; 
-		public BigDecimal capital; 
-		
-		public String bankChannel; 
-		public String bankName;
-		public Integer appVersion;
-		public String renewalNo; // 我方生成的续期编号
 	}
 
 
