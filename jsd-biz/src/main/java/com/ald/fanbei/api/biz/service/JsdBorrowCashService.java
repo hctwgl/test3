@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;

@@ -1,33 +1,31 @@
 package com.ald.fanbei.api.web.task;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
-import com.ald.fanbei.api.biz.third.util.XgxyUtil;
-import com.ald.fanbei.api.biz.util.GetHostIpUtil;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.DsedLoanPeriodStatus;
-import com.ald.fanbei.api.common.enums.DsedNoticeType;
-import com.ald.fanbei.api.common.enums.GenderType;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.DsedContractPdfDao;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.DsedLoanPeriodsDto;
-import com.alibaba.fastjson.JSON;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.*;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashOverdueLogService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.biz.util.GetHostIpUtil;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashOverdueLogDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 
 
 /**

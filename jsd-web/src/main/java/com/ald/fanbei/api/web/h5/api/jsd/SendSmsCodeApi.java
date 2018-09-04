@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.bo.ups.UpsAuthSignRespBo;
 import com.ald.fanbei.api.biz.bo.ups.UpsResendSmsRespBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -25,6 +27,8 @@ import com.ald.fanbei.api.common.enums.SmsCodeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.web.common.Context;
@@ -53,6 +57,10 @@ public class SendSmsCodeApi implements JsdH5Handle {
 	private JsdUserService jsdUserService;
     @Resource
     private JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
+    @Resource
+    private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
+    @Resource
+    private JsdBorrowLegalOrderRepaymentService jsdBorrowLegalOrderRepaymentService;
     
     @Override
     public JsdH5HandleResponse process(Context context) {

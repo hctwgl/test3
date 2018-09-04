@@ -1,25 +1,28 @@
 package com.ald.fanbei.api.biz.third.util;
 
 
-import com.ald.fanbei.api.biz.bo.*;
+import static com.ald.fanbei.api.common.util.JsdSignUtil.generateSign;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyOverdueReqBo;
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyPayBo;
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyPayReqBo;
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyReqBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.JsdSignUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.JsdSignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.springframework.stereotype.Component;
-
-import java.util.*;
-
-import static com.ald.fanbei.api.common.util.JsdSignUtil.generateSign;
 
 @Component("XgxyUtil")
 public class XgxyUtil extends AbstractThird {
@@ -208,7 +211,7 @@ public class XgxyUtil extends AbstractThird {
         try {
             logger.info("bindBackNoticeRequest start data = "+data);
             Map<String, String> p = new HashMap<>();
-            p.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), "9c5dd35d58f8501f"));
+            p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), "9c5dd35d58f8501f"));
             p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),"9c5dd35d58f8501f"));
             p.put("appId", "UJ3331");
             String url = "http://192.168.156.236:1112/isp/open/third/eca/v1/bandBankCardNotify";
@@ -224,7 +227,7 @@ public class XgxyUtil extends AbstractThird {
                 return false;
             }
             XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult, XgxyPayReqBo.class);
-            if (Constants.XGXY_REQ_CODE.equals(rePayRespResult.get("code"))) {
+            if (Constants.XGXY_REQ_CODE_SUCC.equals(rePayRespResult.get("code"))) {
                 return true;
             }
         } catch (Exception e) {
