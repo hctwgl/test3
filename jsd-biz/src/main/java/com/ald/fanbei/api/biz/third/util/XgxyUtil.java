@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.JsdAesUtil;
 import com.ald.fanbei.api.common.util.JsdSignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
@@ -47,17 +48,17 @@ public class XgxyUtil extends AbstractThird {
     public boolean payNoticeRequest(XgxyPayBo payBo) {
 
         try {
-            Map<String, Object> params = new HashMap<>();
-            Map<String, Object> pay = new HashMap<>();
+            JSONObject pay = new JSONObject();
             pay.put("borrowNo", payBo.getBorrowNo());
             pay.put("status", payBo.getStatus());
             pay.put("gmtArrival", payBo.getGmtArrival());
             pay.put("tradeNo", payBo.getTradeNo());
             pay.put("reason", payBo.getReason());
             
+            Map<String, Object> params = new HashMap<>();
             params.put("appId", "edspay");
-            params.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
-            params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
+            params.put("data", JsdAesUtil.encryptToBase64Third(pay.toJSONString(), PRIVATE_KEY));
+            params.put("sign", generateSign(pay, PRIVATE_KEY));
             String url = getXgxyUrl() + "/isp/open/third/eca/v1/borrowStatusNotify";
             String reqResult = "";
             if (url.contains("https")){

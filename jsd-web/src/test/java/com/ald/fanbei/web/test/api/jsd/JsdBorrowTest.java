@@ -91,4 +91,23 @@ public class JsdBorrowTest extends BaseTest {
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
     
+    /**
+     * 发起借钱申请
+     */
+    @Test
+    public void getBorrowStatus() {
+        String url = urlBase + "/third/eca/v1/getBorrowStatus";
+        JSONObject params = new JSONObject();
+        params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
+        params.put("borrowNo", "xgxy202314123090123123");
+        
+        String encryptBase64Str = JsdAesUtil.encryptToBase64Third(JSON.toJSONString(params), AES_KEY);
+        Map<String, String> p = new HashMap<>();
+        p.put("data", encryptBase64Str);
+        p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+    
 }

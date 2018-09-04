@@ -51,6 +51,7 @@ public class GetBorrowStatusApi implements JsdH5Handle {
     	map.put("reason", cashDo.getRemark());
     	map.put("tradeNo", cashDo.getTradeNoUps());
     	
+    	resp.setData(map);
     	return resp;
     }
 }

@@ -101,7 +101,7 @@
 				<entry key="/third/eca/v1/sendMessage" value-ref="sendSmsCodeApi" />
 				
                 <!-- 借钱 -->
-                <entry key="/third/eca/v1/getBorrowStatusApi" value-ref="getBorrowStatusApi" />
+                <entry key="/third/eca/v1/getBorrowStatus" value-ref="getBorrowStatusApi" />
                 <entry key="/third/eca/v1/getBorrowFeeDetail" value-ref="trialBeforeBorrowApi" />
 				<entry key="/third/eca/v1/pushBorrow" value-ref="applyBorrowCashApi" />
                 
