@@ -151,7 +151,7 @@
         SELECT
         <include refid="queryFields" />
         FROM jsd_bank
-        WHERE bank_name=#{name}
+        WHERE bank_code=#{name}
         limit 0,1
     </select>
 

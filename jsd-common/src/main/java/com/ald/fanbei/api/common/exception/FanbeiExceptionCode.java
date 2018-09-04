@@ -13,6 +13,7 @@ public enum FanbeiExceptionCode {
 
     JSD_PARAMS_ERROR("JSD_PARAMS_ERROR", 9999, "params error", "参数错误"),
 
+    JSD_REPAY_REPAY_ERROR("JSD_REPAY_REPAY_ERROR",2018,"loan repayNo is exist","支付编号已存在"),
 
     SYSTEM_ERROR("SYSTEM_ERROR", 9999, "system error", "流量过大系统开小差啦，请尝试重新发起"),
     CALCULATE_SHA_256_ERROR("CALCULATE_SHA_256_ERROR",1009,"cal sha 265 error","系统错误"),

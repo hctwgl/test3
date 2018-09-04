@@ -20,7 +20,7 @@ public class Create {
 		String database = "51fanbei_app";
 
 
-		String tables = "jsd_ups_log";
+		String tables = "jsd_borrow_cash_overdue_log";
 
 		// 配置作者及Domain说明
 		String classAuthor = "yanghailong";

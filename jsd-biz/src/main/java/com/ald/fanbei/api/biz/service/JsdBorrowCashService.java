@@ -4,6 +4,7 @@ import com.ald.fanbei.api.dal.domain.DsedLoanDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 极速贷Service
@@ -28,4 +29,24 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     String getCurrentLastBorrowNo(String orderNoPre);
 
 
+    /**
+     * 获取逾期数据的数量
+     *
+     * @return
+     */
+    int getBorrowCashOverdueCount();
+
+
+    /**
+     * 获取当前的逾期借款
+     *
+     */
+    List<JsdBorrowCashDo> getBorrowCashOverdue(int nowPage, int pageSize);
+
+
+    /**
+     * 获取当前的测试逾期借款
+     *
+     */
+    List<JsdBorrowCashDo> getBorrowCashOverdueByUserIds(String userIds);
 }

@@ -5,6 +5,8 @@ package com.ald.fanbei.api.web.h5.api.jsd;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
 import com.ald.fanbei.api.biz.bo.UpsResendSmsRespBo;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
@@ -16,6 +18,7 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
@@ -54,7 +57,14 @@ public class SendSmsCodeApi implements DsedH5Handle {
 	private JsdUserService jsdUserService;
     @Resource
     private JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
-    
+
+
+    @Resource
+	private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
+
+    @Resource
+	private JsdBorrowLegalOrderRepaymentService jsdBorrowLegalOrderRepaymentService;
+
     @Override
     public DsedH5HandleResponse process(Context context) {
 
@@ -68,6 +78,13 @@ public class SendSmsCodeApi implements DsedH5Handle {
 		return new DsedH5HandleResponse(3001, FanbeiExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
 	}
 	if(SmsCodeType.REPAY.getCode().equals(type)){
+		JsdBorrowCashRepaymentDo repaymentDo=jsdBorrowCashRepaymentService.getByRepayNo(busiFlag);
+		JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByRepayNo(busiFlag);
+		if(repaymentDo!=null){
+			busiFlag=repaymentDo.getJsdRepayNo();
+		}else {
+			busiFlag=legalOrderRepaymentDo.getTradeNo();
+		}
 		String orderNo = generatorClusterNo.getRepaymentNo(new Date(), BankPayChannel.KUAIJIE.getCode());
 		respBo = upsUtil.quickPayResendSms(busiFlag,orderNo);
 		if (!respBo.isSuccess()) {

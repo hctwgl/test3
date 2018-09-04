@@ -92,15 +92,20 @@ import java.math.BigDecimal;
      */
     private String remark;
 
+
     /**
      * 失败原因
      */
+
     private String failMsg;
 
     /**
      * 还款类型
      */
     private String type;
+
+
+    private String jsdRepayNo;
 
 
     /**
@@ -409,5 +414,15 @@ import java.math.BigDecimal;
     public void setType(String type){
       this.type = type;
     }
+
+    public String getJsdRepayNo() {
+        return jsdRepayNo;
+    }
+
+    public void setJsdRepayNo(String jsdRepayNo) {
+        this.jsdRepayNo = jsdRepayNo;
+    }
+
+
 
 }

@@ -68,8 +68,6 @@ public class JsdApplyBindBankCardMsgApi implements DsedH5Handle {
         JsdUserBankcardDo userBankcard = buildUserCard(bank.getBankCode(), bankName, bankNo, bankMobile, userid, isMain, bindNo);
         if(bankcardDo==null){
             jsdUserBankcardService.addUserBankcard(userBankcard);
-        }else {
-            userBankcard.setRid(bankcardDo.getRid());
         }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("timestamp", timestamp);

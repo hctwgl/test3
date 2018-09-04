@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,name,repay_no,repayment_amount,actual_amount,borrow_id,trade_no,status,user_id,card_number,card_name,fail_code,remark,fail_msg,type 
+        id rid,gmt_create,gmt_modified,name,repay_no,repayment_amount,actual_amount,borrow_id,trade_no,status,user_id,card_number,card_name,fail_code,remark,fail_msg,type,jsd_repay_no
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -116,6 +116,9 @@
 	        <if test="type != null">        
 	            type,
 	        </if>
+            <if test="jsdRepayNo != null">
+                jsd_repay_no
+            </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -167,6 +170,9 @@
 		    <if test="type != null" >
 		       #{type,jdbcType=VARCHAR},
 		    </if>
+            <if test="jsdRepayNo != null" >
+                #{jsdRepayNo,jdbcType=VARCHAR},
+            </if>
         </trim>
     </insert>
     
@@ -288,10 +294,10 @@
         WHERE
         is_delete = 0
         AND
-        repay_no=#{repayNo}
+        jsd_repay_no=#{repayNo}
         ORDER BY
         gmt_create DESC
-
+        LIMIT 1
     </select>
 
     <update id="updateRepaymentBorrowCash" parameterType="JsdBorrowCashRepaymentDo">
@@ -340,7 +346,7 @@
         UPDATE jsd_borrow_cash_repayment SET status='P',trade_no=#{tradeNo} WHERE id=#{repaymentId} AND status='A'
     </update>
 
-    <select id="getRepayByTradeNo" resultType="DsedLoanRepaymentDo">
+    <select id="getRepayByTradeNo" resultType="JsdBorrowCashRepaymentDo">
         SELECT
         <include refid="queryFields" />
         FROM
@@ -351,5 +357,18 @@
         trade_no=#{tradeNo}
         ORDER BY
         gmt_create DESC
+    </select>
+    <select id="getByRepayNo" resultType="JsdBorrowCashRepaymentDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        jsd_borrow_cash_repayment
+        WHERE
+        is_delete = 0
+        AND
+        repay_no=#{repayNo}
+        ORDER BY
+        gmt_create DESC
+        LIMIT 1
     </select>
 </mapper>

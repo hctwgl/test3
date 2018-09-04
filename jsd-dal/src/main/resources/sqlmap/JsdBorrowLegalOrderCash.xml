@@ -5,9 +5,8 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modifed,user_id,borrow_id,borrow_legal_order_id,cash_no,type,amount,status,remark,borrow_remark,refund_remark,overdue_day,overdue_status,overdue_amount,sum_repaid_overdue,repaid_amount,poundage_amount,sum_repaid_poundage,interest_amount,sum_repaid_interest,poundage_rate,interest_rate,plan_repay_days,gmt_plan_repay,gmt_close,gmt_last_repayment,gmt_finish 
+        id rid,gmt_create,gmt_modifed,user_id,borrow_id,borrow_legal_order_id,cash_no,type,amount,status,remark,borrow_remark,refund_remark,overdue_day,overdue_status,overdue_amount,sum_repaid_overdue,repaid_amount,poundage_amount,sum_repaid_poundage,interest_amount,sum_repaid_interest,poundage_rate,interest_rate,gmt_plan_repay,gmt_close,gmt_last_repayment,gmt_finish
     </sql>
-    
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
     	WHERE is_delete = 0
@@ -82,9 +81,6 @@
         </if>
         <if test="interestRate != null and interestRate != ''">
             AND interest_rate = #{interestRate,jdbcType=DECIMAL}
-        </if>
-        <if test="planRepayDays != null and planRepayDays != ''">
-            AND plan_repay_days = #{planRepayDays,jdbcType=INTEGER}
         </if>
         <if test="gmtPlanRepay !=null">
             AND gmt_plan_repay = #{gmtPlanRepay,jdbcType=TIMESTAMP}
@@ -172,9 +168,6 @@
 	        </if>
 	        <if test="interestRate != null">        
 	            interest_rate,
-	        </if>
-	        <if test="planRepayDays != null">        
-	            plan_repay_days,
 	        </if>
 	        <if test="gmtPlanRepay != null">        
 	            gmt_plan_repay,
@@ -349,9 +342,6 @@
             </if>
             <if test="interestRate != null and interestRate != '' ">        
                 interest_rate = #{interestRate,jdbcType=DECIMAL},                
-            </if>
-            <if test="planRepayDays != null and planRepayDays != '' ">        
-                plan_repay_days = #{planRepayDays,jdbcType=INTEGER},                
             </if>
             <if test="gmtPlanRepay != null and gmtPlanRepay != '' ">        
                 gmt_plan_repay = #{gmtPlanRepay,jdbcType=TIMESTAMP},                

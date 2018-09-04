@@ -4,10 +4,9 @@
 package com.ald.fanbei.api.web.h5.api.jsd;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthSignValidRespBo;
-import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
-import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
-import com.ald.fanbei.api.biz.service.JsdUserService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.enums.SmsCodeType;
@@ -15,13 +14,12 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.domain.DsedUserDo;
-import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.web.common.DsedH5Handle;
 import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -59,10 +57,19 @@ public class ConfirmSmsApi implements DsedH5Handle {
 	private TransactionTemplate transactionTemplate;
 
 	@Resource
+	private JsdBorrowCashRepaymentService repaymentService;
+
+	@Resource
+	private JsdBorrowLegalOrderRepaymentService jsdBorrowLegalOrderRepaymentService;
+
+	@Resource
 	private UpsUtil upsUtil;
 
     @Autowired
     BizCacheUtil bizCacheUtil;
+
+    @Resource
+	XgxyUtil xgxyUtil;
 
     @Override
     public DsedH5HandleResponse process(Context context) {
@@ -83,6 +90,13 @@ public class ConfirmSmsApi implements DsedH5Handle {
 			if (beanName == null) {
 				// 未获取到缓存数据，支付订单过期
 				throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+			}
+			JsdBorrowCashRepaymentDo repaymentDo=repaymentService.getByRepayNo(busiFlag);
+			JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByRepayNo(busiFlag);
+			if(repaymentDo!=null){
+				busiFlag=repaymentDo.getJsdRepayNo();
+			}else {
+				busiFlag=legalOrderRepaymentDo.getTradeNo();
 			}
 
 			switch (beanName.toString()) {
@@ -134,8 +148,18 @@ public class ConfirmSmsApi implements DsedH5Handle {
 				jsdUserBankcardService.updateUserBankcard(userBankcardDo);
 				return new DsedH5HandleResponse(1556, FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR.getErrorMsg());
 			}
+			HashMap<String,String> cardMap=new HashMap<>();
+			cardMap.put("openId", String.valueOf(userId));
+			cardMap.put("bindNo", busiFlag);
+			if(res==1){
+				cardMap.put("status", "Y");
+			}else {
+				cardMap.put("status", "N");
+				cardMap.put("reason", FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR.getErrorMsg());
+			}
+			cardMap.put("timestamp",System.currentTimeMillis()+"");
+			xgxyUtil.bindBackNoticeRequest(cardMap);
 		}
-
 		resp.setData(map);
 		return resp;
     }
