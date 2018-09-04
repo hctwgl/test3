@@ -450,7 +450,7 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		
 		/*-请求参数->*/
 		public String borrowNo;
-		public String delayNo;
+		public String delayNo; // 西瓜提供的续期编号
 		public String bankNo;
 		public BigDecimal amount;
 		public Long delayDay;
@@ -466,13 +466,10 @@ public class JsdBorrowCashRenewalServiceImpl extends DsedUpsPayKuaijieServiceAbs
 		public BigDecimal actualAmount; 
 		public BigDecimal capital; 
 		
-		public Long goodsId; // 搭售商品id
-		public String deliveryUser; // 收件人
-		public String deliveryPhone; // 收件人号码
-		public String address; // 地址
 		public String bankChannel; 
 		public String bankName;
 		public Integer appVersion;
+		public String renewalNo; // 我方生成的续期编号
 	}
 
 

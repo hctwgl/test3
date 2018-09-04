@@ -150,8 +150,21 @@ import java.math.BigDecimal;
      * 失败原因
      */
     private String failMsg;
+    
+    /**
+     * 续期编号-西瓜提供
+     */
+    private String delayNo;
 
-    public String getFailCode() {
+    public String getDelayNo() {
+		return delayNo;
+	}
+
+	public void setDelayNo(String delayNo) {
+		this.delayNo = delayNo;
+	}
+
+	public String getFailCode() {
     	return failCode;
     }
     

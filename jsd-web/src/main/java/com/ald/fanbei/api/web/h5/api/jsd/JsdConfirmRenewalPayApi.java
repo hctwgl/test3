@@ -25,6 +25,7 @@ import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRenewalServiceImpl.JsdRenewalDealBo;
+import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
@@ -82,6 +83,8 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 	JsdBorrowLegalOrderRepaymentService jsdBorrowLegalOrderRepaymentService;
 	@Resource
 	TransactionTemplate transactionTemplate;
+	@Resource
+	GeneratorClusterNo generatorClusterNo;
 
 	@Override
 	public DsedH5HandleResponse process(Context context) {
@@ -93,7 +96,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		if(borrowCashDo == null || !StringUtil.equals(borrowCashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.getCode())){
 			throw new FanbeiException("No borrow can renewal", FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		}
-
+		paramBo.userId= borrowCashDo.getUserId();
 		jsdBorrowCashRenewalService.checkCanRenewal(borrowCashDo);
 
 		// 用户信息
@@ -200,7 +203,8 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		renewalDo.setNextPoundage(nextPoundage);
 		renewalDo.setCardName(paramBo.bankName);
 		renewalDo.setCardNumber(paramBo.bankNo);
-		renewalDo.setRenewalNo(paramBo.delayNo);
+		renewalDo.setRenewalNo(paramBo.renewalNo);
+		renewalDo.setDelayNo(paramBo.delayNo);
 		renewalDo.setTradeNo("");
 		renewalDo.setRenewalDay(paramBo.delayDay);
 		renewalDo.setPoundageRate(paramBo.cashPoundageRate);
@@ -222,7 +226,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		orderDo.setGmtModified(new Date());
 		orderDo.setUserId(paramBo.userId);
 		orderDo.setBorrowId(paramBo.borrowCashDo.getRid());
-		orderDo.setOrderNo(paramBo.delayNo);
+		orderDo.setOrderNo(paramBo.renewalNo);
 		orderDo.setStatus(JsdBorrowLegalOrderStatus.UNPAID.getCode());
 		orderDo.setPriceAmount(paramBo.goodsPrice);
 		orderDo.setGoodsName(paramBo.goodsName);
@@ -252,7 +256,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		JsdBorrowLegalOrderCashDo orderCashDo = new JsdBorrowLegalOrderCashDo();
 		orderCashDo.setUserId(paramBo.userId);
 		orderCashDo.setBorrowId(borrowCashDo.getRid());
-		orderCashDo.setCashNo(paramBo.delayNo);
+		orderCashDo.setCashNo(paramBo.renewalNo);
 		orderCashDo.setType(renewalDay+"");
 		orderCashDo.setAmount(paramBo.goodsPrice);
 		orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.APPLYING.getCode());
@@ -320,7 +324,7 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		bo.delayDay = NumberUtil.objToLongDefault(context.getDataMap().get("delayDay"), 0l);		// 展期天数
 		bo.isTying = ObjectUtils.toString(context.getDataMap().get("isTying"), "");				// 是否搭售【Y：搭售，N：不搭售】
 		bo.tyingType = ObjectUtils.toString(context.getDataMap().get("tyingType"), "");			// 搭售模式【BEHEAD：砍头，SELL：赊销】（搭售为Y时）
-		bo.userId = context.getUserId();
+		// bo.userId = context.getUserId();
 
 		String goodsInfoStr = ObjectUtils.toString(context.getDataMap().get("goodsInfo"), "");
 		Map<String,String> goodsInfo = new HashMap<String, String>();
@@ -329,6 +333,8 @@ public class JsdConfirmRenewalPayApi implements DsedH5Handle {
 		bo.goodsName = ObjectUtils.toString(goodsInfo.get("goodsName"), "");
 		bo.goodsImage = ObjectUtils.toString(goodsInfo.get("goodsImage"), "");
 		bo.goodsPrice = NumberUtil.objToBigDecimalDefault(goodsInfo.get("goodsPrice"), BigDecimal.ZERO);
+		
+		bo.renewalNo = generatorClusterNo.getJsdRenewalNo();
 		
 		if(StringUtil.equals("N", bo.isTying) && StringUtil.equals("BEHEAD", bo.tyingType)) {
 			throw new FanbeiException(FanbeiExceptionCode.FUNCTIONAL_MAINTENANCE);

@@ -73,8 +73,8 @@ public class JsdTest extends BaseTest {
     	goodsInfo.put("goodsImage", "http");
 
     	Map<String, String> params = new HashMap<>();
-    	params.put("borrowNo", "BO20180829001");
-    	params.put("delayNo", "XJ20180829001");
+    	params.put("borrowNo", "dk2018081010282000095");
+    	params.put("delayNo", "XJ20180903002");
     	params.put("amount", "1000");
     	params.put("delayDay", "10");
     	params.put("bankNo", "6212261202028480466");

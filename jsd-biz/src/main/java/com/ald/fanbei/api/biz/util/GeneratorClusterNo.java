@@ -8,6 +8,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.StringUtil;
+
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
@@ -308,5 +309,18 @@ public class GeneratorClusterNo extends AbstractThird {
 		return TokenCacheUtil.incr(Constants.OFFLINE_CACHEKEY_REPAYCASHNO);
 	}
 
+	/**
+	 * 获取续期支付编号
+	 * 
+	 * @param currDate
+	 * @return
+	 */
+	public String getJsdRenewalNo() {// 订单号规则：6位日期_2位订单类型_5位订单序号
+		Date currDate = new Date();
+		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
+		StringBuffer orderSb = new StringBuffer("xj");
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentBorrowCacheSequenceNum(currDate, "xj")));
+		return orderSb.toString();
+	}
 	
 }

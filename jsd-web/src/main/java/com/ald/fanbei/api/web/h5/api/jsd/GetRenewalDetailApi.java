@@ -149,9 +149,9 @@ public class GetRenewalDetailApi implements DsedH5Handle {
 				.subtract(borrowCashDo.getRepayAmount().add(capital));
 		
 		delayInfo.put("principalAmount", principalAmount+"");	// 展期后剩余借款本金
-		delayInfo.put("deferAmount", renewalPayAmount+"");	// 需支付总金额
-		delayInfo.put("deferDay", allowRenewalDay+"");	// 续期天数
-		delayInfo.put("deferRemark", deferRemark);	// 费用明细	展期金额的相关具体描述（多条说明用英文逗号,用间隔）
+		delayInfo.put("delayAmount", renewalPayAmount+"");	// 需支付总金额
+		delayInfo.put("delayDay", allowRenewalDay+"");	// 续期天数
+		delayInfo.put("delayRemark", deferRemark);	// 费用明细	展期金额的相关具体描述（多条说明用英文逗号,用间隔）
 		this.getRenewalRate(delayInfo);
 		delayInfo.put("totalDiffFee", this.getDiffFee(borrowCashDo, delayInfo));	// 展期后的利润差，西瓜会根据此金额匹配搭售商品 TODO
 		
@@ -191,7 +191,7 @@ public class GetRenewalDetailApi implements DsedH5Handle {
 		BigDecimal interestRate = new BigDecimal(delayInfo.get("interestRate").toString());
 		BigDecimal serviceRate = new BigDecimal(delayInfo.get("serviceRate").toString());
 		BigDecimal renewalAmount = new BigDecimal(delayInfo.get("principalAmount").toString());
-		BigDecimal renewalDay = new BigDecimal(delayInfo.get("deferDay").toString());
+		BigDecimal renewalDay = new BigDecimal(delayInfo.get("delayDay").toString());
 
 		BigDecimal rateAmount = BigDecimalUtil.multiply(renewalAmount, interestRate, renewalDay.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
 		BigDecimal poundage = BigDecimalUtil.multiply(renewalAmount, serviceRate, renewalDay.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
