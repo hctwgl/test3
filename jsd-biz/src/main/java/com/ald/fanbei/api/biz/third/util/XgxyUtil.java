@@ -170,7 +170,8 @@ public class XgxyUtil extends AbstractThird {
     		p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
     		p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
     		p.put("appId", "UJ3331");
-    		String url = getXgxyUrl() + "/third/eca/v1/delayNotify";
+    		String url = getXgxyUrl() + "/isp/open/third/eca/v1/delayNotify";
+//    		String url = "http://192.168.156.103:1112/isp/open/third/eca/v1/delayNotify";
     		logger.info("data = " + data +",url = " +url );
     		String reqResult = "";
     		if (url.contains("https")){

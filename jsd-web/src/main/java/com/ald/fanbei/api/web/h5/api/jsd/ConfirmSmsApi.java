@@ -54,6 +54,7 @@ public class ConfirmSmsApi implements JsdH5Handle {
 	@Autowired
 	@Qualifier("jsdBorrowCashRepaymentService")
 	JsdUpsPayKuaijieServiceAbstract jsdBorrowCashRepaymentService;
+	@Autowired
 	@Qualifier("jsdBorrowCashRenewalService")
 	JsdUpsPayKuaijieServiceAbstract jsdBorrowCashRenewalService;
 

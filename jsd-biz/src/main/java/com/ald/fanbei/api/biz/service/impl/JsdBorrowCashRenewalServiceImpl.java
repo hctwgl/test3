@@ -343,8 +343,8 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 			JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
 			HashMap<String, String> data = new HashMap<String, String>();
 			data.put("borrowNo", borrowCashDo.getBorrowNo());
-			data.put("delayNo", renewalNo);
-			data.put("status", JsdRenewalDetailStatus.YES.name());
+			data.put("delayNo", renewalDo.getDelayNo());
+			data.put("status", "Y");
 			data.put("reason", "");
 			data.put("tradeNo", tradeNo);
 			data.put("timestamp", System.currentTimeMillis()+"");
@@ -380,7 +380,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		HashMap<String, String> data = new HashMap<String, String>();
 		data.put("borrowNo", borrowCashDo.getBorrowNo());
 		data.put("delayNo", renewalNo);
-		data.put("status", JsdRenewalDetailStatus.NO.name());
+		data.put("status", "N");
 		data.put("reason", errorMsg);
 		data.put("tradeNo", tradeNo);
 		data.put("timestamp", System.currentTimeMillis()+"");
