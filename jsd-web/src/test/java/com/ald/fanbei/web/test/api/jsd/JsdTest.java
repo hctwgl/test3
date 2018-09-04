@@ -22,7 +22,7 @@ public class JsdTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-	String urlBase = "http://localhost:8078";
+	String urlBase = "http://localhost:80";
 //    String urlBase = "http://192.168.112.40:8080";
     
     String userName = "13165995223";
@@ -44,6 +44,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> params = new HashMap<>();
         params.put("borrowNo", "dk2018081010282000095");
         params.put("timestamp", System.currentTimeMillis()+"");
+        params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
@@ -54,7 +55,7 @@ public class JsdTest extends BaseTest {
     }
 
     /**
-     * 获取续借详情
+     * 续期
      */
     @Test
     public void doRenewal() {
@@ -65,8 +66,8 @@ public class JsdTest extends BaseTest {
     	goodsInfo.put("goodsImage", "http");
 
     	Map<String, String> params = new HashMap<>();
-    	params.put("borrowNo", "BO20180829001");
-    	params.put("delayNo", "XJ20180829001");
+    	params.put("borrowNo", "dk2018081010282000095");
+    	params.put("delayNo", "XJ20180904003");
     	params.put("amount", "1000");
     	params.put("delayDay", "10");
     	params.put("bankNo", "6212261202028480466");
@@ -74,7 +75,7 @@ public class JsdTest extends BaseTest {
     	params.put("tyingType", "SELL");
     	params.put("goodsInfo", goodsInfo.toString());
     	params.put("timestamp", System.currentTimeMillis()+"");
-    	params.put("userId", "EB56E1F0A9383508DB8FD039C7D37BDF");
+    	params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
     	String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
     	Map<String, String> p = new HashMap<>();
     	p.put("data", data);

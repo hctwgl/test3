@@ -253,9 +253,6 @@
 		    <if test="interestRate != null" >
 		       #{interestRate,jdbcType=DECIMAL},
 		    </if>
-		    <if test="planRepayDays != null" >
-		       #{planRepayDays,jdbcType=INTEGER},
-		    </if>
 		    <if test="gmtPlanRepay != null" >
 		       #{gmtPlanRepay,jdbcType=TIMESTAMP},
 		    </if>
