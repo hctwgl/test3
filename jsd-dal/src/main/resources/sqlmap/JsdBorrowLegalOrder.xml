@@ -212,9 +212,6 @@
             <if test="gmtCreate != null and gmtCreate != '' ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
-                gmt_modified = NOW(),                
-            </if>
             <if test="userId != null and userId != '' ">        
                 user_id = #{userId,jdbcType=INTEGER},                
             </if>
@@ -267,8 +264,9 @@
                 delivery_phone = #{deliveryPhone,jdbcType=VARCHAR},                
             </if>
             <if test="smartAddressScore != null and smartAddressScore != '' ">        
-                smart_address_score = #{smartAddressScore,jdbcType=INTEGER}                
+                smart_address_score = #{smartAddressScore,jdbcType=INTEGER},              
             </if>
+            gmt_modified = NOW()
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
@@ -296,6 +294,16 @@
         <include refid="queryFields" />
         FROM jsd_borrow_legal_order
         <include refid="commonCondition"/>
+    </select>
+    
+    <select id="getLastOrderByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo" >
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order 
+        WHERE is_delete = 0 
+            AND borrow_id = #{borrowId} 
+            AND status != 'CLOSED' 
+        ORDER BY id DESC LIMIT 1
     </select>
     
 </mapper>

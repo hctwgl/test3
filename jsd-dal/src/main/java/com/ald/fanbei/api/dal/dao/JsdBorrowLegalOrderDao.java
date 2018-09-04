@@ -4,6 +4,8 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 
 import java.util.Date;
 
+import org.apache.ibatis.annotations.Param;
+
 /**
  * 极速贷Dao
  * 
@@ -16,4 +18,6 @@ public interface JsdBorrowLegalOrderDao extends BaseDao<JsdBorrowLegalOrderDo, L
 
     String getCurrentLastOrderNo(Date currentDate);
 
+    JsdBorrowLegalOrderDo getLastOrderByBorrowId(@Param("borrowId") Long borrowId);
+    
 }
