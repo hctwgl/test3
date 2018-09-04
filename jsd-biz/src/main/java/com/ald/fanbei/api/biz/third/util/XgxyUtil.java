@@ -94,6 +94,7 @@ public class XgxyUtil extends AbstractThird {
             params.put("appId", "UJ3331");
             params.put("data", JsdAesUtil.encryptToBase64Third(overdue.toJSONString(), PRIVATE_KEY));
             params.put("sign", generateSign(overdue, PRIVATE_KEY));
+            params.put("timestamp",System.currentTimeMillis()+"");
             
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackOverdueResult";
             String reqResult = "";

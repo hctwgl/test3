@@ -9,6 +9,7 @@ public class XgxyPayBo {
     private String status;
     private Date gmtArrival;
     private String reason;
+    private Long timestamp;
 
     public String getBorrowNo() {
         return borrowNo;
@@ -54,5 +55,13 @@ public class XgxyPayBo {
 	 */
 	public void setTradeNo(String tradeNo) {
 		this.tradeNo = tradeNo;
+	}
+
+	public Long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
 	}
 }

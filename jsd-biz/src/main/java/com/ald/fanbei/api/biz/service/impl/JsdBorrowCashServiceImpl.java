@@ -270,6 +270,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         xgxyPayBo.setReason(msg);
         xgxyPayBo.setStatus(status);
         xgxyPayBo.setGmtArrival(cashDo.getGmtArrival());
+        xgxyPayBo.setTimestamp(System.currentTimeMillis());
         return xgxyPayBo;
     }
 
