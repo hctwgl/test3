@@ -4,14 +4,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
-import org.dbunit.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,6 +26,7 @@ import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -50,7 +49,7 @@ import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.biz.bo.KuaijieJsdRenewalPayBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
@@ -416,7 +415,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		}
 		
 		// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
-		JsdResourceDo resource = jsdResourceService.getByTypeAngSecType("JSD_CONFIG", "JSD_RENEWAL_INFO");
+		JsdResourceDo resource = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RENEWAL_INFO.getCode());
 		if(resource==null) throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
 		BigDecimal betweenDuedate = new BigDecimal(resource.getValue2()); // 距还款日天数
 		BigDecimal amountLimit = new BigDecimal(resource.getValue3()); // 最低续期金额
@@ -426,7 +425,11 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 													borrowCashDo.getPoundage()).subtract(borrowCashDo.getRepayAmount());
 		long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(new Date(), borrowCashDo.getGmtPlanRepayment());
 		
-		if (new BigDecimal(betweenGmtPlanRepayment).compareTo(betweenDuedate) > 0 && amountLimit.compareTo(waitRepayAmount) >= 0) {
+		/*if (new BigDecimal(betweenGmtPlanRepayment).compareTo(betweenDuedate) > 0 && amountLimit.compareTo(waitRepayAmount) >= 0) {
+			throw new FanbeiException(FanbeiExceptionCode.CAN_NOT_RENEWAL_ERROR);
+		}*/
+		
+		if(amountLimit.compareTo(waitRepayAmount) >= 0){
 			throw new FanbeiException(FanbeiExceptionCode.CAN_NOT_RENEWAL_ERROR);
 		}
 		
@@ -439,7 +442,6 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		public JsdBorrowLegalOrderCashDo legalOrderCashDo;
 		public JsdBorrowLegalOrderDo legalOrderDo;
 		public JsdUserDo userDo; 
-		public Long cardId; 
 		
 		public BigDecimal capitalRate;
 		public BigDecimal cashRate;
@@ -447,9 +449,14 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		public BigDecimal orderRate;
 		public BigDecimal orderPoundageRate;
 		
+		public String bankChannel; 
+		public String bankName;
+		public Integer appVersion;
+		public String renewalNo; // 我方生成的续期编号
+		
 		/*-请求参数->*/
 		public String borrowNo;
-		public String delayNo;
+		public String delayNo; // 西瓜提供的续期编号
 		public String bankNo;
 		public BigDecimal amount;
 		public Long delayDay;
@@ -460,18 +467,6 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		public BigDecimal goodsPrice;
 		public Long userId;
 		/*-------<*/
-		
-		public BigDecimal repaymentAmount;
-		public BigDecimal actualAmount; 
-		public BigDecimal capital; 
-		
-		public Long goodsId; // 搭售商品id
-		public String deliveryUser; // 收件人
-		public String deliveryPhone; // 收件人号码
-		public String address; // 地址
-		public String bankChannel; 
-		public String bankName;
-		public Integer appVersion;
 	}
 
 
@@ -487,7 +482,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 
 	@Override
 	public JsdBorrowCashRenewalDo getRenewalByDelayNo(String delayNo) {
-		return jsdBorrowCashRenewalDao.getByRenewalNo(delayNo);
+		return jsdBorrowCashRenewalDao.getRenewalByDelayNo(delayNo);
 	}
 	
 }

@@ -1,18 +1,28 @@
 package com.ald.fanbei.web.test.api.jsd;
 
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.SmsCodeType;
+import com.ald.fanbei.api.common.util.DigestUtil;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.api.biz.arbitration.MD5;
-import com.ald.fanbei.api.common.util.JsdSignUtil;
+import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.DsedSignUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.web.test.common.AccountOfTester;
 import com.ald.fanbei.web.test.common.BaseTest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -22,7 +32,7 @@ public class JsdTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-	String urlBase = "http://localhost:8080";
+	String urlBase = "http://localhost:80";
 //    String urlBase = "http://192.168.112.40:8080";
     
     String userName = "13165995223";
@@ -44,7 +54,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> params = new HashMap<>();
         params.put("borrowNo", "dk2018081010282000095");
         params.put("timestamp", System.currentTimeMillis()+"");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
@@ -65,8 +75,8 @@ public class JsdTest extends BaseTest {
     	goodsInfo.put("goodsImage", "http");
 
     	Map<String, String> params = new HashMap<>();
-    	params.put("borrowNo", "BO20180829001");
-    	params.put("delayNo", "XJ20180829001");
+    	params.put("borrowNo", "dk2018081010282000095");
+    	params.put("delayNo", "XJ20180904002");
     	params.put("amount", "1000");
     	params.put("delayDay", "10");
     	params.put("bankNo", "6212261202028480466");
@@ -75,7 +85,7 @@ public class JsdTest extends BaseTest {
     	params.put("goodsInfo", goodsInfo.toString());
     	params.put("timestamp", System.currentTimeMillis()+"");
     	params.put("userId", "EB56E1F0A9383508DB8FD039C7D37BDF");
-    	String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+    	String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
     	Map<String, String> p = new HashMap<>();
     	p.put("data", data);
     	p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
@@ -86,6 +96,23 @@ public class JsdTest extends BaseTest {
     	
     }
 
+    /**
+     * 续借重发短信
+     */
+    @Test
+    public void reSendSms() {
+    	String url = urlBase + "/third/eca/v1/sendMessage";
+    	Map<String, String> params = new HashMap<>();
+    	params.put("busiFlag", "XJ20180904002");
+    	params.put("type", SmsCodeType.DELAY.getCode());
+    	String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+    	Map<String, String> p = new HashMap<>();
+    	p.put("data", data);
+    	p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+    	String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+    	System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+    
     /**
      * 发起贷款申请
      */
@@ -111,7 +138,7 @@ public class JsdTest extends BaseTest {
         params.put("bankNo", "6228480329222552476");
         params.put("isTying", "1");
         params.put("tyingType", "12");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
@@ -121,27 +148,6 @@ public class JsdTest extends BaseTest {
     }
 
 
-    /**
-     * 还款
-     */
-    @Test
-    public void repayLoan() {
-        String url = urlBase + "/third/eca/v1/pushRepayment";
-        Map<String,String> params = new HashMap<>();
-        params.put("amount", 1+"");
-        params.put("period", 1+"");
-        params.put("bankNo", "6228480329222552476");
-        params.put("borrowNo", "BO20180829002");
-        params.put("repayNo", "rn20180829002");
-        params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
-        Map<String, String> p = new HashMap<>();
-        p.put("data", data);
-        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
-
-        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
-    }
 
     /**
      * 还款详情
@@ -154,7 +160,7 @@ public class JsdTest extends BaseTest {
         params.put("period", 1+"");
         params.put("timestamp", System.currentTimeMillis()+"");
         params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
@@ -170,7 +176,7 @@ public class JsdTest extends BaseTest {
         String url = urlBase + "/third/eca/v1/getBorrowBill";
         Map<String,String> params = new HashMap<>();
         params.put("borrowNo", "BO20180829002");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
@@ -180,13 +186,13 @@ public class JsdTest extends BaseTest {
     }
 
     @Test
-    public void bankCardBind() {
+    public void bindBankSms() {
         String url = urlBase + "/third/eca/v1/sendMessage";
         Map<String, String> params = new HashMap<>();
         params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
         params.put("type","BIND");
         params.put("busiFlag","1313619220301");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
@@ -196,7 +202,7 @@ public class JsdTest extends BaseTest {
 
 
     @Test
-    public void bindBankSms() {
+    public void bankCardBind() {
         String url = urlBase + "/third/eca/v1/bankCardBind";
         Map<String, String> params = new HashMap<>();
         params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
@@ -204,13 +210,14 @@ public class JsdTest extends BaseTest {
         params.put("bankName","农业银行");
         params.put("bankMobile","13136192203");
         params.put("bindNo","1313619220301");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
+
 
     @Test
     public void bindBankConfirSms() {
@@ -220,7 +227,61 @@ public class JsdTest extends BaseTest {
         params.put("code","888888");
         params.put("type","BIND");
         params.put("busiFlag","1313619220301");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+
+    /**
+     * 还款
+     */
+    @Test
+    public void repayLoan() {
+        String url = urlBase + "/third/eca/v1/pushRepayment";
+        Map<String,String> params = new HashMap<>();
+        params.put("amount", 0.01+"");
+        params.put("period", 1+"");
+        params.put("bankNo", "6228480329222552476");
+        params.put("borrowNo", "dk2018090221204000156");
+        params.put("repayNo", "hqkj20180830151933123229");
+        params.put("openId","EB56E1F0A9383508DB8FD039C7D37BD1");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+
+
+    @Test
+    public void repayConfiSms() {
+        String url = urlBase + "/third/eca/v1/submitMessage";
+        Map<String, String> params = new HashMap<>();
+        params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
+        params.put("code","770074");
+        params.put("type","REPAY");
+        params.put("busiFlag","hqkj20180830151933123219");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+
+    @Test
+    public void repaySms() {
+        String url = urlBase + "/third/eca/v1/sendMessage";
+        Map<String, String> params = new HashMap<>();
+        params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
+        params.put("type","REPAY");
+        params.put("busiFlag","hqkj20180830151933123019");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "9c5dd35d58f8501f"));

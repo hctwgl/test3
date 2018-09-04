@@ -171,7 +171,7 @@ public class XgxyUtil extends AbstractThird {
     		Map<String, String> p = new HashMap<>();
     		p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
     		p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
-    		p.put("appId", "jsdpay");
+    		p.put("appId", "UJ3331");
     		String url = getXgxyUrl() + "/third/eca/v1/delayNotify";
     		logger.info("data = " + data +",url = " +url );
     		String reqResult = "";
@@ -229,9 +229,20 @@ public class XgxyUtil extends AbstractThird {
 
 
     public static void main(String[] ars) {
-        XgxyUtil xgxyUtil = new XgxyUtil();
-        xgxyUtil.getUserContactsInfo("edspay21");
-
+//        XgxyUtil xgxyUtil = new XgxyUtil();
+//        xgxyUtil.getUserContactsInfo("edspay21");
+    	
+    	HashMap<String, String> data = new HashMap<String, String>();
+		data.put("borrowNo", "dk2018081010282000095");
+		data.put("delayNo", "delay0904UJ3331287500000005");
+		data.put("status", "Y");
+		data.put("reason", "测试");
+		data.put("tradeNo", "123456");
+		data.put("timestamp", System.currentTimeMillis()+"");
+		
+		XgxyUtil xgxyUtil = new XgxyUtil();
+		System.out.println(xgxyUtil.jsdRenewalNoticeRequest(data));
+		
     }
 
 

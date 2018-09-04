@@ -25,6 +25,7 @@ import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRenewalServiceImpl.JsdRenewalDealBo;
+import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
@@ -81,18 +82,21 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 	JsdBorrowLegalOrderRepaymentService jsdBorrowLegalOrderRepaymentService;
 	@Resource
 	TransactionTemplate transactionTemplate;
+	@Resource
+	GeneratorClusterNo generatorClusterNo;
 
 	@Override
 	public JsdH5HandleResponse process(Context context) {
 		
-		JsdRenewalDealBo paramBo = getParam(context);
+		JsdRenewalDealBo paramBo = this.getParam(context);
 
 		// 借款记录
 		JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByBorrowNo(paramBo.borrowNo);
 		if(borrowCashDo == null || !StringUtil.equals(borrowCashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.name())){
 			throw new FanbeiException("No borrow can renewal", FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		}
-
+		paramBo.userId= borrowCashDo.getUserId();
+		// 续期校验
 		jsdBorrowCashRenewalService.checkCanRenewal(borrowCashDo);
 
 		// 用户信息
@@ -100,6 +104,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		if(userDo == null) {
 			throw new FanbeiException("user not exist error", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
 		}
+		// 银行卡信息
 		HashMap<String,Object> map = jsdUserBankcardService.getBankByBankNoAndUserId(paramBo.userId, paramBo.bankNo);
 		paramBo.bankChannel = map.get("bankChannel").toString();
 		paramBo.bankName = map.get("bankName").toString();
@@ -131,16 +136,15 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 					paramBo.renewalDo = renewalDo;
 					paramBo.legalOrderDo = legalOrderDo;
 					paramBo.legalOrderCashDo = legalOrderCashDo;
-
+					logger.info("JsdConfirmRenewal renewalId="+renewalDo.getRid()+",legalOrder="+legalOrderDo.getRid()+",legalOrderCash="+legalOrderCashDo.getRid());
 					return 1l;
 				}catch(Exception e) {
 					status.setRollbackOnly();
-					logger.info("sava record error", e);
+					logger.info("JsdConfirmRenewal sava record error", e);
 					throw e;
 				}
 			}
 		});
-
 
 		Map<String, Object> resultMap = jsdBorrowCashRenewalService.doRenewal(paramBo);
 		
@@ -199,7 +203,8 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		renewalDo.setNextPoundage(nextPoundage);
 		renewalDo.setCardName(paramBo.bankName);
 		renewalDo.setCardNumber(paramBo.bankNo);
-		renewalDo.setRenewalNo(paramBo.delayNo);
+		renewalDo.setRenewalNo(paramBo.renewalNo);
+		renewalDo.setDelayNo(paramBo.delayNo);
 		renewalDo.setTradeNo("");
 		renewalDo.setRenewalDay(paramBo.delayDay);
 		renewalDo.setPoundageRate(paramBo.cashPoundageRate);
@@ -221,7 +226,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		orderDo.setGmtModified(new Date());
 		orderDo.setUserId(paramBo.userId);
 		orderDo.setBorrowId(paramBo.borrowCashDo.getRid());
-		orderDo.setOrderNo(paramBo.delayNo);
+		orderDo.setOrderNo(paramBo.renewalNo);
 		orderDo.setStatus(JsdBorrowLegalOrderStatus.UNPAID.getCode());
 		orderDo.setPriceAmount(paramBo.goodsPrice);
 		orderDo.setGoodsName(paramBo.goodsName);
@@ -251,7 +256,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		JsdBorrowLegalOrderCashDo orderCashDo = new JsdBorrowLegalOrderCashDo();
 		orderCashDo.setUserId(paramBo.userId);
 		orderCashDo.setBorrowId(borrowCashDo.getRid());
-		orderCashDo.setCashNo(paramBo.delayNo);
+		orderCashDo.setCashNo(paramBo.renewalNo);
 		orderCashDo.setType(renewalDay+"");
 		orderCashDo.setAmount(paramBo.goodsPrice);
 		orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.APPLYING.getCode());
@@ -312,28 +317,33 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 	private JsdRenewalDealBo getParam(Context context){
 
 		JsdRenewalDealBo bo = new JsdRenewalDealBo();
-		bo.borrowNo = ObjectUtils.toString(context.getDataMap().get("borrowNo"), "");	// 借款编号
-		bo.delayNo = ObjectUtils.toString(context.getDataMap().get("delayNo"), "");		// 展期编号
-		bo.bankNo = ObjectUtils.toString(context.getDataMap().get("bankNo"), "");		// 银行卡号
-		bo.amount = NumberUtil.objToBigDecimalDefault(context.getDataMap().get("amount"),BigDecimal.ZERO);	// 金额
-		bo.delayDay = NumberUtil.objToLongDefault(context.getDataMap().get("delayDay"), 0l);		// 展期天数
-		bo.isTying = ObjectUtils.toString(context.getDataMap().get("isTying"), "");				// 是否搭售【Y：搭售，N：不搭售】
-		bo.tyingType = ObjectUtils.toString(context.getDataMap().get("tyingType"), "");			// 搭售模式【BEHEAD：砍头，SELL：赊销】（搭售为Y时）
-		bo.userId = context.getUserId();
-
-		String goodsInfoStr = ObjectUtils.toString(context.getDataMap().get("goodsInfo"), "");
-		Map<String,String> goodsInfo = new HashMap<String, String>();
-		Gson gson = new Gson();
-		goodsInfo = gson.fromJson(goodsInfoStr, goodsInfo.getClass());
-		bo.goodsName = ObjectUtils.toString(goodsInfo.get("goodsName"), "");
-		bo.goodsImage = ObjectUtils.toString(goodsInfo.get("goodsImage"), "");
-		bo.goodsPrice = NumberUtil.objToBigDecimalDefault(goodsInfo.get("goodsPrice"), BigDecimal.ZERO);
+		try {
+			bo.borrowNo = ObjectUtils.toString(context.getDataMap().get("borrowNo"), "");	// 借款编号
+			bo.delayNo = ObjectUtils.toString(context.getDataMap().get("delayNo"), "");		// 展期编号
+			bo.bankNo = ObjectUtils.toString(context.getDataMap().get("bankNo"), "");		// 银行卡号
+			bo.amount = NumberUtil.objToBigDecimalDefault(context.getDataMap().get("amount"),BigDecimal.ZERO);	// 金额
+			bo.delayDay = NumberUtil.objToLongDefault(context.getDataMap().get("delayDay"), 0l);		// 展期天数
+			bo.isTying = ObjectUtils.toString(context.getDataMap().get("isTying"), "");				// 是否搭售【Y：搭售，N：不搭售】
+			bo.tyingType = ObjectUtils.toString(context.getDataMap().get("tyingType"), "");			// 搭售模式【BEHEAD：砍头，SELL：赊销】（搭售为Y时）
+			// bo.userId = context.getUserId();
+	
+			String goodsInfoStr = ObjectUtils.toString(context.getDataMap().get("goodsInfo"), "");
+			Map<String,String> goodsInfo = new HashMap<String, String>();
+			Gson gson = new Gson();
+			goodsInfo = gson.fromJson(goodsInfoStr, goodsInfo.getClass());
+			bo.goodsName = ObjectUtils.toString(goodsInfo.get("goodsName"), "");
+			bo.goodsImage = ObjectUtils.toString(goodsInfo.get("goodsImage"), "");
+			bo.goodsPrice = NumberUtil.objToBigDecimalDefault(goodsInfo.get("goodsPrice"), BigDecimal.ZERO);
+			
+			bo.renewalNo = generatorClusterNo.getJsdRenewalNo();
+		} catch (Exception e) {
+			throw new FanbeiException(FanbeiExceptionCode.JSD_PARAMS_ERROR);
+		}
 		
 		if(StringUtil.equals("N", bo.isTying) && StringUtil.equals("BEHEAD", bo.tyingType)) {
 			throw new FanbeiException(FanbeiExceptionCode.FUNCTIONAL_MAINTENANCE);
 		}
-
-		getRateInfo(bo);
+		this.getRateInfo(bo);
 
 		return bo;
 	}

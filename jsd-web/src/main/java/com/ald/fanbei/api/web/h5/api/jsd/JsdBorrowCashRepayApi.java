@@ -67,14 +67,9 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
         BorrowCashRepayBo bo = this.extractAndCheck(context, userId);
         bo.userDo = jsdUserDo;
         bo.remoteIp = context.getClientIp();
-        this.jsdBorrowCashRepaymentService.repay(bo,bo.payType);
+        jsdBorrowCashRepaymentService.repay(bo,bo.payType);
 
         Map<String, Object> hashMap = new HashMap<String, Object>();
-        String repaySMS="N";
-        if(BankPayChannel.KUAIJIE.getCode().equals(bo.payType)){
-            repaySMS="Y";
-        }
-        hashMap.put("repaySMS",repaySMS);
         resp.setData(hashMap);
         return resp;
     }
