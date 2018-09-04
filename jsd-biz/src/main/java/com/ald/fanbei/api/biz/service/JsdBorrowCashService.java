@@ -1,5 +1,8 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
+
+import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 
 /**
@@ -14,15 +17,13 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     JsdBorrowCashDo getByBorrowNo(String borrowNo);
 
-    /**
-     * 是否可借款
-     *
-     * @param openId
-     * @return
-     */
     boolean isCanBorrowCash(Long userId);
 
     String getCurrentLastBorrowNo(String orderNoPre);
+    
+    BigDecimal getRiskOriRate(String openId);
+    
+    void resolve(TrialBeforeBorrowBo bo);
     
     void dealBorrowSucc(Long cashId, String outTradeNo);
     

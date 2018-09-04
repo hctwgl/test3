@@ -33,7 +33,7 @@ public class OriRateUtil extends AbstractThird {
     }
 
     /**
-     * 打款通知请求
+     * 获取风控分层利率
      *
      * @param
      * @return

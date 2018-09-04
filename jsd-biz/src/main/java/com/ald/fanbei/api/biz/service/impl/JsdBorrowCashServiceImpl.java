@@ -1,17 +1,26 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
+import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.Req;
+import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.Resp;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.third.util.OriRateUtil;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.JsdResourceDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 
 
@@ -26,8 +35,14 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
  
 @Service("jsdBorrowCashService")
 public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo, Long> implements JsdBorrowCashService {
+    
+	@Resource
+    JsdBorrowCashDao jsdBorrowCashDao;
     @Resource
-    private JsdBorrowCashDao jsdBorrowCashDao;
+    JsdResourceDao jsdResourceDao;
+    
+    @Resource
+    OriRateUtil oriRateUtil;
 
 	@Override
 	public BaseDao<JsdBorrowCashDo, Long> getDao() {
@@ -50,6 +65,79 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 		return jsdBorrowCashDao.getCurrentLastBorrowNo(orderNoPre);
 	}
 
+	
+	/**
+     * 获取风控分层利率
+     * @param openId
+     * @return
+     */
+	public BigDecimal getRiskOriRate(String openId) {
+        BigDecimal oriRate = BigDecimal.valueOf(0.001);
+
+        try {
+            String poundageRate = oriRateUtil.getOriRateNoticeRequest(openId);
+            if(StringUtils.isBlank(poundageRate)) {
+                poundageRate = "0.001";
+            }
+            oriRate = new BigDecimal(poundageRate);
+        } catch (Exception e) {
+            logger.info(openId + "从西瓜信用获取分层用户额度失败：" + e);
+        }
+        return oriRate;
+    }
+	
+	/**
+	 * 解析各项利息费用
+	 * @param borrowAmount
+	 * @param borrowType
+	 * @param oriRate
+	 * @return
+	 */
+	public void resolve(TrialBeforeBorrowBo bo) {
+		Req req = bo.req;
+		
+		BigDecimal oriRateDaily = this.getRiskOriRate(req.openId);
+		BigDecimal borrowAmount = new BigDecimal(req.amount);
+		BigDecimal borrowDay = new BigDecimal(req.term);
+
+        // 查询新利率配置 TODO
+//        JsdResourceDo rateInfoDo = jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG, Constants.JSD_RATE_INFO);
+//        if (rateInfoDo != null) {
+//            String borrowRate = rateInfoDo.getValue();
+//            Map<String, Object> rateInfo = this.getRateInfo(borrowRate, borrowType, "borrow");
+//            double totalRate = (double) rateInfo.get("totalRate");
+//            newRate = BigDecimal.valueOf(totalRate / 100);
+//        } else {
+		
+        BigDecimal legalInterestRate = BigDecimal.ZERO;
+        BigDecimal legalServiceRate = BigDecimal.valueOf(0.36);
+        BigDecimal overdueRate = BigDecimal.valueOf(0.36);
+        
+        BigDecimal totalProfit = oriRateDaily.multiply(borrowAmount).multiply(borrowDay);;
+        BigDecimal legalProfit = legalServiceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowAmount).multiply(borrowDay);
+        
+        BigDecimal orderCashService = BigDecimal.valueOf(10);
+        BigDecimal finalDiffProfit = totalProfit.subtract(legalProfit).subtract(orderCashService);
+        if (finalDiffProfit.compareTo(BigDecimal.ZERO) <= 0) {
+        	finalDiffProfit = BigDecimal.ZERO;
+        }
+        
+        Resp resp = bo.resp;
+        resp.totalAmount = borrowAmount.add(totalProfit).toString();
+        resp.arrivalAmount = borrowAmount.toString();
+        resp.interestRate = legalInterestRate.toString();
+        resp.interestAmount = BigDecimal.ZERO.toString();// TODO
+        resp.serviceRate = legalServiceRate.toString();
+        resp.serviceAmount = legalProfit.toString();
+        resp.overdueRate = overdueRate.toString();
+        resp.billAmount = new BigDecimal[]{borrowAmount};
+        resp.remark = "本金" + borrowAmount + "元,总利息" + legalProfit + "元";
+        resp.totalDiffFee = finalDiffProfit.toString();
+        resp.sellInterestFee = BigDecimal.ZERO.toString();
+        resp.sellServiceFee = orderCashService.toString();
+    }
+	
+	
 	@Override
 	public void dealBorrowSucc(Long cashId, String outTradeNo) {
 		final JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
