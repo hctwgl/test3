@@ -74,17 +74,19 @@ public class LoanOverDueJob {
                 }else {
                     logger.info("borrowCashDueJob run start,time=" + new Date());
                     if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
-                        List<JsdBorrowCashDo> borrowCashDos=borrowCashService.getBorrowCashOverdueByUserIds(userIds);
-                        //计算逾期
-                        this.calcuOverdueRecords(borrowCashDos);
-                        //TODO 通知催收逾期人员通讯录
-                    }else if(Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)){
                         for(int i = 0; i < totalPageNum; i++){
                             List<JsdBorrowCashDo> borrowCashDos=borrowCashService.getBorrowCashOverdue(totalPageNum*i,pageSize);
                             //计算逾期
                             this.calcuOverdueRecords(borrowCashDos);
                             //TODO 通知催收逾期人员通讯录
                         }
+
+                    }else if(Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)){
+                        List<JsdBorrowCashDo> borrowCashDos=borrowCashService.getBorrowCashOverdueByUserIds(userIds);
+                        //计算逾期
+                        this.calcuOverdueRecords(borrowCashDos);
+                        //TODO 通知催收逾期人员通讯录
+
                     }
 
 

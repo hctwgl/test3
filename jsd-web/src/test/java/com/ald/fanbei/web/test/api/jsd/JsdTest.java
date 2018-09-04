@@ -22,7 +22,7 @@ public class JsdTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-	String urlBase = "http://localhost:80";
+	String urlBase = "http://localhost:8078";
 //    String urlBase = "http://192.168.112.40:8080";
     
     String userName = "13165995223";
@@ -220,7 +220,7 @@ public class JsdTest extends BaseTest {
         params.put("period", 1+"");
         params.put("bankNo", "6228480329222552476");
         params.put("borrowNo", "dk2018090221204000156");
-        params.put("repayNo", "hqkj20180830151933123240");
+        params.put("repayNo", "hqkj20180830151933123241");
         params.put("openId","EB56E1F0A9383508DB8FD039C7D37BD1");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
@@ -237,9 +237,9 @@ public class JsdTest extends BaseTest {
         String url = urlBase + "/third/eca/v1/submitMessage";
         Map<String, String> params = new HashMap<>();
         params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
-        params.put("code","418378");
+        params.put("code","046842");
         params.put("type","REPAY");
-        params.put("busiFlag","hqkj20180830151933123219");
+        params.put("busiFlag","hqkj20180830151933123241");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
