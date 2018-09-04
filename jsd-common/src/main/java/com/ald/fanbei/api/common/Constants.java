@@ -12,7 +12,7 @@ public class Constants {
 
 
 	public static final String CACHEKEY_REPAYCASHNO_LOCK = "fbapi_repay_cash_no_lock";
-	public static final String XGXY_REQ_CODE = "200";
+	public static final String XGXY_REQ_CODE_SUCC = "200";
 
 	public static final long SECOND_OF_TEN_MINITS = 10 * 60l;
 	public static final long SECOND_OF_ONE_MINITS = 60l;

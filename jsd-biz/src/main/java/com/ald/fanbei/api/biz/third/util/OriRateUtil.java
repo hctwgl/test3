@@ -59,7 +59,7 @@ public class OriRateUtil extends AbstractThird {
                 return null;
             }
             ResponseMessage responseMessage = JSONObject.parseObject(reqResult, ResponseMessage.class);
-            if (Constants.XGXY_REQ_CODE.equals(responseMessage.getCode().toString())) {
+            if (Constants.XGXY_REQ_CODE_SUCC.equals(responseMessage.getCode().toString())) {
                 return responseMessage.getData();
             }
         } catch (Exception e) {

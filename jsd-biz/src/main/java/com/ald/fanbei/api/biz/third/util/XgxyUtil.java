@@ -45,14 +45,14 @@ public class XgxyUtil extends AbstractThird {
             pay.put("status", payBo.getStatus());
             if ("PAYSUCCESS".equals(payBo.getStatus())) {
                 pay.put("gmtArrival", payBo.getGmtArrival());
-                pay.put("tradeNo", payBo.getTrade());
+                pay.put("tradeNo", payBo.getTradeNo());
             } else {
                 pay.put("reason", payBo.getReason());
             }
             params.put("appId", "edspay");
             params.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
-            String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackPayResult";
+            String url = getXgxyUrl() + "/isp/open/third/eca/v1/borrowStatusNotify";
             String reqResult = "";
             if (url.contains("https")){
                 reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(params));
@@ -64,7 +64,7 @@ public class XgxyUtil extends AbstractThird {
                 return false;
             }
             XgxyPayReqBo payRespResult = JSONObject.parseObject(reqResult, XgxyPayReqBo.class);
-            if (Constants.XGXY_REQ_CODE.equals(payRespResult.get("code"))) {
+            if (Constants.XGXY_REQ_CODE_SUCC.equals(payRespResult.get("code"))) {
                 return true;
             }
         } catch (Exception e) {
@@ -107,7 +107,7 @@ public class XgxyUtil extends AbstractThird {
                 return false;
             }
             XgxyOverdueReqBo overdueReqBo1 = JSONObject.parseObject(reqResult, XgxyOverdueReqBo.class);
-            if (Constants.XGXY_REQ_CODE.equals(overdueReqBo1.get("code"))) {
+            if (Constants.XGXY_REQ_CODE_SUCC.equals(overdueReqBo1.get("code"))) {
                 return true;
             }
         } catch (Exception e) {
@@ -144,7 +144,7 @@ public class XgxyUtil extends AbstractThird {
                 return false;
             }
             XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult, XgxyPayReqBo.class);
-            if (Constants.XGXY_REQ_CODE.equals(rePayRespResult.get("code"))) {
+            if (Constants.XGXY_REQ_CODE_SUCC.equals(rePayRespResult.get("code"))) {
                 return true;
             }
         } catch (Exception e) {
@@ -181,7 +181,7 @@ public class XgxyUtil extends AbstractThird {
     			return false;
     		}
     		XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult, XgxyPayReqBo.class);
-    		if (Constants.XGXY_REQ_CODE.equals(rePayRespResult.get("code"))) {
+    		if (Constants.XGXY_REQ_CODE_SUCC.equals(rePayRespResult.get("code"))) {
     			return true;
     		}
     	} catch (Exception e) {
@@ -214,7 +214,7 @@ public class XgxyUtil extends AbstractThird {
                 return "";
             }
             XgxyReqBo reqBo = JSONObject.parseObject(reqResult, XgxyReqBo.class);
-            if (Constants.XGXY_REQ_CODE.equals(reqBo.get("code"))) {
+            if (Constants.XGXY_REQ_CODE_SUCC.equals(reqBo.get("code"))) {
                 return (String) reqBo.get("data");
             }
         } catch (Exception e) {
