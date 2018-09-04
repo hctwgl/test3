@@ -93,7 +93,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		if(borrowCashDo == null || !StringUtil.equals(borrowCashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.name())){
 			throw new FanbeiException("No borrow can renewal", FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		}
-		paramBo.userId= borrowCashDo.getUserId();
+		
 		// 续期校验
 		jsdBorrowCashRenewalService.checkCanRenewal(borrowCashDo);
 
@@ -322,7 +322,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 			bo.delayDay = NumberUtil.objToLongDefault(context.getDataMap().get("delayDay"), 0l);		// 展期天数
 			bo.isTying = ObjectUtils.toString(context.getDataMap().get("isTying"), "");				// 是否搭售【Y：搭售，N：不搭售】
 			bo.tyingType = ObjectUtils.toString(context.getDataMap().get("tyingType"), "");			// 搭售模式【BEHEAD：砍头，SELL：赊销】（搭售为Y时）
-			 bo.userId = context.getUserId();
+			bo.userId = context.getUserId();
 	
 			String goodsInfoStr = ObjectUtils.toString(context.getDataMap().get("goodsInfo"), "");
 			Map<String,String> goodsInfo = new HashMap<String, String>();
