@@ -128,7 +128,7 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 												 String idNumber, String payBizObject, String beanName, String purpose, String remark, String merPriv) {
 		// 申请发送支付确认短信
  		UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.quickPay(payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(),
-				bank.get("bankCode").toString(), bank.get("bankCardNumber").toString(), idNumber, purpose, remark, "02", merPriv, "desd_loan",
+				bank.get("bankCode").toString(), bank.get("bankCardNumber").toString(), idNumber, purpose, remark, "02", merPriv, "jsd_loan",
 				bank.get("safeCode").toString(), bank.get("validDate").toString());
 
 		// 处理支付结果
@@ -142,7 +142,7 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 			// 添加数据到redis缓存
 			UpsCollectBo upsCollectBo = new UpsCollectBo(bank, payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(),
 					bank.get("bankCardNumber").toString(), idNumber, Constants.DEFAULT_PAY_PURPOSE, remark, "02", merPriv, BankPayChannel.KUAIJIE.getCode(),
-					"desd_loan");
+					"jsd_loan");
 			// 支付请求对应的处理bean
 			bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + payTradeNo, beanName, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
 			// 支付请求数据

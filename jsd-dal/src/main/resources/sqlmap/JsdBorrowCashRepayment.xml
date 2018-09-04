@@ -352,7 +352,7 @@
         UPDATE jsd_borrow_cash_repayment SET status='P',trade_no=#{tradeNo} WHERE id=#{repaymentId} AND status='A'
     </update>
 
-    <select id="getRepayByTradeNo" resultType="DsedLoanRepaymentDo">
+    <select id="getRepayByTradeNo" resultType="JsdBorrowCashRepaymentDo">
         SELECT
         <include refid="queryFields" />
         FROM

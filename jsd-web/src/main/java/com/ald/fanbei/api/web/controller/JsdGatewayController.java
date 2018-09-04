@@ -62,7 +62,6 @@ public class JsdGatewayController {
     JsdUserService jsdUserService;
     @Resource
     JsdResourceService jsdResourceService;
-    
     @Resource
     JsdH5HandleFactory jsdH5HandleFactory;
     @Resource

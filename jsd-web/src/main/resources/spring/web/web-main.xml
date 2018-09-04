@@ -20,7 +20,7 @@
 	<context:component-scan base-package="com.ald.fanbei.api.biz.third.util" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.controller" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.h5.api" />
-	<context:component-scan base-package="com.ald.fanbei.api.web.common.impl" />
+	<context:component-scan base-package="com.ald.fanbei.api.web.common" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.util" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.service" />
 	<context:component-scan base-package="com.ald.fanbei.api.web.h5.controller" />
@@ -37,7 +37,6 @@
 		<property name="configLocation" value="classpath:props/velocity.properties">
 		</property>
 	</bean>
-	<bean  class="com.ald.fanbei.api.web.application.SpringInit" />
 	<bean id="viewResolver"
 		class="org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver"
 		p:cache="true" p:suffix=".vm" p:layoutUrl="layout/default.vm"
@@ -92,13 +91,16 @@
 				<entry key="/third/eca/v1/getDelayDetail" value-ref="getRenewalDetailApi" />
 				<entry key="/third/eca/v1/pushDelay" value-ref="jsdConfirmRenewalPayApi" />
 				<entry key="/third/eca/v1/submitMessage" value-ref="confirmSmsApi" />
-				<entry key="/third/eca/v1/pushRepayment" value-ref="jsdBorrowCashRepayApi" />
 				<entry key="/third/eca/v1/getBorrowBill" value-ref="borrowCashRepaymentBillApi" />
 				<entry key="/third/eca/v1/getRepaymentDetail" value-ref="borrowCashRepaymentDetailApi" />
-				<entry key="/third/eca/v1/pushBorrow" value-ref="applyBorrowCashApi" />
+				<entry key="/third/eca/v1/pushRepayment" value-ref="jsdBorrowCashRepayApi" />
 				<entry key="/third/eca/v1/bankCardBind" value-ref="jsdApplyBindBankCardMsgApi" />
 				<entry key="/third/eca/v1/sendMessage" value-ref="sendSmsCodeApi" />
 				
+                <!-- 借钱 -->
+                <entry key="/third/eca/v1/getBorrowFeeDetail" value-ref="trialBeforeBorrowApi" />
+				<entry key="/third/eca/v1/pushBorrow" value-ref="applyBorrowCashApi" />
+                
 				<entry key="/third/eca/v1/syncUserInfo" value-ref="jsdSyncUserInfoApi" />
 
 			</map>
