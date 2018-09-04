@@ -9,6 +9,7 @@ public class KuaijieRepayBo {
 
     public KuaijieRepayBo() {
 
+
     }
 
     public KuaijieRepayBo(JsdBorrowCashRepaymentDo repayment, BorrowCashRepayBo bo) {

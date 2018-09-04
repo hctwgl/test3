@@ -23,7 +23,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 
 @Service
-public abstract class DsedUpsPayKuaijieServiceAbstract extends BaseService {
+public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 
 	@Autowired
 	protected BizCacheUtil bizCacheUtil;

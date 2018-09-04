@@ -56,11 +56,10 @@ public class DsedResendCodeApi implements DsedH5Handle {
 
 		if(StringUtil.equals(SmsCodeType.REPAY.getCode(),type)){
 			if (StringUtils.isBlank(busiFlag)) {
-				return new DsedH5HandleResponse(9999, "参数错误");
+				return new DsedH5HandleResponse(8009, "参数错误");
 			}
 			String orderNo = generatorClusterNo.getLoanNo(new Date());
 			UpsResendSmsRespBo respBo = upsUtil.quickPayResendSms(busiFlag,orderNo);
-
 			if (!respBo.isSuccess()) {
 				throw new FanbeiException(respBo.getRespDesc());
 			}

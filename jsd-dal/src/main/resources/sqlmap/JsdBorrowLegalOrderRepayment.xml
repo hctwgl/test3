@@ -279,15 +279,6 @@
         <if test="tradeNoZfb != null">
             ,trade_no_zfb=#{tradeNoZfb}
         </if>
-        <if test="userCouponId != null">
-            ,user_coupon_id=#{userCouponId}
-        </if>
-        <if test="couponAmount != null">
-            ,coupon_amount=#{couponAmount}
-        </if>
-        <if test="rebateAmount != null">
-            ,rebate_amount=#{rebateAmount}
-        </if>
         <if test="status != null">
             ,status=#{status}
         </if>
@@ -310,7 +301,12 @@
         limit 0,1
 	</select>
 
+    <update id="updateStatus" parameterType="java.lang.String" >
+        UPDATE jsd_borrow_legal_order_repayment SET gmt_modified = NOW(),
 
+        status='P'
+        WHERE trade_no=#{tradeNo}
+    </update>
     <select id="getLastByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo">
         SELECT
          <include refid="queryFields" />

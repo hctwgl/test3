@@ -71,19 +71,6 @@ public class JsdApplyBindBankCardMsgApi implements DsedH5Handle {
         }else {
             userBankcard.setRid(bankcardDo.getRid());
         }
-        JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getById(userBankcard.getRid());
-        //默认赋值为借记卡
-        String cardType = "00";
-        JsdUserDo userDo=jsdUserService.getById(userid);
-        //调用ups
-        UpsAuthSignRespBo upsResult = upsUtil.authSign(userid.toString(), userDo.getRealName(), userBankcardDo.getMobile(), userDo.getIdNumber(), userBankcardDo.getBankCardNumber(), "02",
-                userBankcardDo.getBankCode(),cardType,userBankcardDo.getValidDate(),userBankcardDo.getSafeCode());
-
-        if(!upsResult.isSuccess()){
-            return new DsedH5HandleResponse(1542, FanbeiExceptionCode.AUTH_BINDCARD_ERROR.getDesc());
-        }else if(!"10".equals(upsResult.getNeedCode())){
-            return new DsedH5HandleResponse(1567, FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
-        }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("timestamp", timestamp);
         map.put("repaySMS", "Y");

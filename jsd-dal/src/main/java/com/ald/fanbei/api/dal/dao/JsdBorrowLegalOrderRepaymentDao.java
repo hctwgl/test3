@@ -29,4 +29,6 @@ public interface JsdBorrowLegalOrderRepaymentDao extends BaseDao<JsdBorrowLegalO
 
 
 	JsdBorrowLegalOrderRepaymentDo getNewOrderRepaymentByBorrowId(Long borrowId);
+
+	int updateStatus(@Param("tradeNo")String tradeNo);
 }

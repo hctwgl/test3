@@ -4,7 +4,6 @@ import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 
 import java.util.Map;
-
 /**
  * 极速贷Service
  * 

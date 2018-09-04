@@ -288,7 +288,7 @@
         WHERE
         is_delete = 0
         AND
-        trade_no=#{payTradeNo}
+        repay_no=#{repayNo}
         ORDER BY
         gmt_create DESC
 
@@ -312,20 +312,8 @@
         <if test="borrowId != null">
             ,borrow_id=#{borrowId}
         </if>
-        <if test="payTradeNo != null">
-            ,pay_trade_no=#{payTradeNo}
-        </if>
         <if test="tradeNo != null">
             ,trade_no=#{tradeNo}
-        </if>
-        <if test="userCouponId != null">
-            ,user_coupon_id=#{userCouponId}
-        </if>
-        <if test="couponAmount != null">
-            ,coupon_amount=#{couponAmount}
-        </if>
-        <if test="rebateAmount != null">
-            ,rebate_amount=#{rebateAmount}
         </if>
         <if test="status != null">
             ,status=#{status}
