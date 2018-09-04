@@ -174,7 +174,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         afBorrowCashDo.setUserId(bo.userId);
         afBorrowCashDo.setRateAmount(interestAmount);
         afBorrowCashDo.setPoundage(serviceAmount);
-        afBorrowCashDo.setPoundageRate(rateInfo.overdueRate.setScale(2));
+        afBorrowCashDo.setPoundageRate(rateInfo.overdueRate.setScale(2, RoundingMode.CEILING));
         afBorrowCashDo.setRiskDailyRate(riskRateDaily);
         afBorrowCashDo.setProductNo(req.productNo);
         afBorrowCashDo.setTradeNoXgxy(req.borrowNo);

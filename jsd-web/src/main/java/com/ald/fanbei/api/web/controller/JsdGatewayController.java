@@ -236,8 +236,8 @@ public class JsdGatewayController {
             String ext4 = "";
             String ext5 = "";
 
-            this.doLog(JSON.toJSONString(context.getDataMap()), respData, request.getMethod(), CommonUtil.getIpAddr(request), String.valueOf(exeT),
-                    request.getRequestURI(), context.getUserName(), ext1, ext2, ext3, ext4, ext5);
+            this.doLog(context != null ? JSON.toJSONString(context.getDataMap()):"", respData, request.getMethod(), CommonUtil.getIpAddr(request), String.valueOf(exeT),
+                    request.getRequestURI(), context != null ? context.getUserName():"", ext1, ext2, ext3, ext4, ext5);
         } catch (Exception e) {
             logger.error("do log exception", e);
         }

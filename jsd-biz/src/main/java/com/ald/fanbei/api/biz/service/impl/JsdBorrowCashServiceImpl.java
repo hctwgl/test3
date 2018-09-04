@@ -110,10 +110,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         BigDecimal legalServiceRate = rateInfo.serviceRate;
         BigDecimal overdueRate = rateInfo.overdueRate;
         
-        BigDecimal interestAmount = legalInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowAmount).multiply(borrowDay).setScale(2);
-        BigDecimal serviceAmount = legalServiceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowAmount).multiply(borrowDay).setScale(2);
+        BigDecimal interestAmount = legalInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowAmount).multiply(borrowDay).setScale(2, RoundingMode.CEILING);
+        BigDecimal serviceAmount = legalServiceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowAmount).multiply(borrowDay).setScale(2, RoundingMode.CEILING);
         
-        BigDecimal totalProfit = oriRateDaily.multiply(borrowAmount).multiply(borrowDay).setScale(2);
+        BigDecimal totalProfit = oriRateDaily.multiply(borrowAmount).multiply(borrowDay).setScale(2, RoundingMode.CEILING);
         BigDecimal legalProfit = interestAmount.add(serviceAmount);
         
         BigDecimal orderCashService = BigDecimal.valueOf(10);
