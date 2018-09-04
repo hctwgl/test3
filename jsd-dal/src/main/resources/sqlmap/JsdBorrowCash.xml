@@ -454,7 +454,7 @@
 		SELECT
 			count(*)
 		FROM
-			jsd_borrow_cash b where b.is_delete=0 and b.gmt_plan_repayment <![CDATA[   <  ]]> #{nowTime}  and status ='TRANSED'
+			jsd_borrow_cash b where b.is_delete=0 and b.gmt_plan_repayment <![CDATA[   <  ]]> #{nowTime}  and status ='TRANSFERRED'
 	</select>
 
     <select id="getBorrowCashOverduePaging" resultType="JsdBorrowCashDo">
@@ -462,7 +462,7 @@
         <include refid="queryFields"/>
         FROM
         jsd_borrow_cash b where b.is_delete=0 and b.gmt_plan_repayment <![CDATA[   <  ]]> #{nowTime}
-        and status='TRANSED' limit #{beginIndex}, #{pageSize}
+        and status='TRANSFERRED' limit #{beginIndex}, #{pageSize}
     </select>
 
 
@@ -471,7 +471,7 @@
 			count(*)
 		FROM
 			af_borrow_cash b where b.is_delete=0
-			and  status ='TRANSED' and b.gmt_plan_repayment <![CDATA[   <  ]]> #{nowTime} and user_id in (${userIds})
+			and  status ='TRANSFERRED' and b.gmt_plan_repayment <![CDATA[   <  ]]> #{nowTime} and user_id in (${userIds})
 	</select>
 
 </mapper>

@@ -45,6 +45,14 @@ public class JsdResourceServiceImpl extends ParentServiceImpl<JsdResourceDo, Lon
         JSONObject rateInfoHolder = JSONObject.parseObject(rateInfoDo.getValue());
         return rateInfoHolder.getJSONObject(borrowType).toJavaObject(ResourceRateInfoBo.class);
     }
+	
+	@Override
+	public ResourceRateInfoBo getOrderRateInfo(String borrowType) {
+		JsdResourceDo rateInfoDo = jsdResourceDao.getByTypeAngSecType(Constants.JSD_CONFIG, Constants.JSD_RATE_INFO);
+		JSONObject rateInfoHolder = JSONObject.parseObject(rateInfoDo.getValue3());
+		return rateInfoHolder.getJSONObject(borrowType).toJavaObject(ResourceRateInfoBo.class);
+	}
+	
 	public static class ResourceRateInfoBo {
 		public BigDecimal interestRate;
 		public BigDecimal serviceRate;

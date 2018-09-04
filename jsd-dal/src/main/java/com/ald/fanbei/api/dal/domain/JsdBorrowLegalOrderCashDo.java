@@ -137,10 +137,6 @@ import java.math.BigDecimal;
      */
     private BigDecimal interestRate;
 
-    /**
-     * 
-     */
-    private Integer planRepayDays;
 
     /**
      * 应还日期
@@ -578,23 +574,6 @@ import java.math.BigDecimal;
       this.interestRate = interestRate;
     }
 
-    /**
-     * 获取
-     *
-     * @return 
-     */
-    public Integer getPlanRepayDays(){
-      return planRepayDays;
-    }
-
-    /**
-     * 设置
-     * 
-     * @param planRepayDays 要设置的
-     */
-    public void setPlanRepayDays(Integer planRepayDays){
-      this.planRepayDays = planRepayDays;
-    }
 
     /**
      * 获取应还日期

@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
@@ -17,6 +16,7 @@ import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
+import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -30,7 +30,6 @@ import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 
 /**  
@@ -142,28 +141,12 @@ public class GetRenewalDetailApi implements JsdH5Handle {
 	
 	
 	private void getRenewalRate(Map<String, Object> delayInfo) {
-		JsdResourceDo rateResource = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RATE_INFO.getCode());
-		if(rateResource==null) throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
 		
+		ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(delayInfo.get("delayDay").toString());
 		//借款手续费率
-		BigDecimal poundageRate = null;
+		delayInfo.put("interestRate", rateInfo.serviceRate);
 		//借款利率
-		BigDecimal baseBankRate = null;
-		
-		String rateStr = rateResource.getValue();
-		JSONArray array = JSONObject.parseArray(rateStr);
-		for (int i = 0; i < array.size(); i++) {
-			JSONObject info = array.getJSONObject(i);
-			String borrowTag = info.getString("borrowTag");
-			if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-				baseBankRate = info.getBigDecimal("borrowFirstType");
-			}
-			if(StringUtils.equals("SERVICE_RATE", borrowTag)){
-				poundageRate = info.getBigDecimal("borrowFirstType");
-			}
-		}
-		delayInfo.put("interestRate", baseBankRate.divide(new BigDecimal(100)));
-		delayInfo.put("serviceRate", poundageRate.divide(new BigDecimal(100)));
+		delayInfo.put("serviceRate", rateInfo.interestRate);
 	}
 	
 	private BigDecimal getDiffFee(JsdBorrowCashDo borrowCashDo, Map<String, Object> delayInfo) {

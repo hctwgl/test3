@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -25,6 +24,7 @@ import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRenewalServiceImpl.JsdRenewalDealBo;
+import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
@@ -49,8 +49,6 @@ import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 
 /**  
@@ -267,7 +265,6 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		orderCashDo.setRepaidAmount(BigDecimal.ZERO);
 		orderCashDo.setOverdueAmount(BigDecimal.ZERO);
 		orderCashDo.setSumRepaidPoundage(BigDecimal.ZERO);
-		orderCashDo.setPlanRepayDays(renewalDay);
 		orderCashDo.setPoundageAmount(paramBo.goodsPrice.multiply(paramBo.orderPoundageRate).multiply(new BigDecimal(renewalDay)).divide(new BigDecimal(Constants.ONE_YEAY_DAYS) ,2 , RoundingMode.HALF_UP));
 		orderCashDo.setInterestAmount(paramBo.goodsPrice.multiply(paramBo.orderRate).multiply(new BigDecimal(renewalDay)).divide(new BigDecimal(Constants.ONE_YEAY_DAYS) ,2 , RoundingMode.HALF_UP));
 		orderCashDo.setPoundageRate(paramBo.orderPoundageRate.multiply(new BigDecimal(100)));
@@ -325,7 +322,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 			bo.delayDay = NumberUtil.objToLongDefault(context.getDataMap().get("delayDay"), 0l);		// 展期天数
 			bo.isTying = ObjectUtils.toString(context.getDataMap().get("isTying"), "");				// 是否搭售【Y：搭售，N：不搭售】
 			bo.tyingType = ObjectUtils.toString(context.getDataMap().get("tyingType"), "");			// 搭售模式【BEHEAD：砍头，SELL：赊销】（搭售为Y时）
-			// bo.userId = context.getUserId();
+			 bo.userId = context.getUserId();
 	
 			String goodsInfoStr = ObjectUtils.toString(context.getDataMap().get("goodsInfo"), "");
 			Map<String,String> goodsInfo = new HashMap<String, String>();
@@ -353,59 +350,22 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 	 */
 	private void getRateInfo(JsdRenewalDealBo paramBo) {
 		// 利率配置
-		JsdResourceDo rateResource = JsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RATE_INFO.getCode());
+		ResourceRateInfoBo borrowRateInfo = JsdResourceService.getRateInfo(paramBo.delayDay.toString());
+		ResourceRateInfoBo orderRateInfo = JsdResourceService.getOrderRateInfo(paramBo.delayDay.toString());
+		
 		JsdResourceDo renewalResource = JsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RENEWAL_INFO.getCode());
+		if(renewalResource ==null) 
+			throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
 
 		//借款手续费率
-		BigDecimal poundageRate = null;
+		paramBo.cashPoundageRate = borrowRateInfo.serviceRate;
 		//借款利率
-		BigDecimal baseBankRate = null;
+		paramBo.cashRate = borrowRateInfo.interestRate;
 		//需还本金比例
-		BigDecimal capitalRate = null;
-
+		paramBo.capitalRate = new BigDecimal(renewalResource.getValue1());
 		//订单手续费率
-		BigDecimal orderPoundageRate = null;
+		paramBo.orderPoundageRate = orderRateInfo.serviceRate;
 		//订单利率
-		BigDecimal orderRate = null;
-
-		if(rateResource!=null && renewalResource !=null) {
-			capitalRate = new BigDecimal(renewalResource.getValue1());
-
-			String rateStr = rateResource.getValue();
-			JSONArray array = JSONObject.parseArray(rateStr);
-			for (int i = 0; i < array.size(); i++) {
-				JSONObject info = array.getJSONObject(i);
-				String borrowTag = info.getString("borrowTag");
-				if (StringUtils.equals("INTEREST_RATE", borrowTag)) {
-					baseBankRate = info.getBigDecimal("borrowFirstType");
-				}
-				if(StringUtils.equals("SERVICE_RATE", borrowTag)){
-					poundageRate = info.getBigDecimal("borrowFirstType");
-				}
-			}
-			
-			String orderRateStr = rateResource.getValue3();
-			JSONArray orderRateArray = JSONObject.parseArray(orderRateStr);
-			for (int i = 0; i < orderRateArray.size(); i++) {
-				JSONObject info = orderRateArray.getJSONObject(i);
-				String consumeTag = info.getString("consumeTag");
-				if (StringUtils.equals("INTEREST_RATE", consumeTag)) {
-					orderRate = info.getBigDecimal("consumeFirstType");
-				}
-				if(StringUtils.equals("SERVICE_RATE", consumeTag)){
-					orderPoundageRate = info.getBigDecimal("consumeFirstType");
-				}
-			}
-
-		}else {
-			throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
-		}
-
-
-		paramBo.orderPoundageRate = orderPoundageRate.divide(new BigDecimal(100));
-		paramBo.orderRate = orderRate.divide(new BigDecimal(100));
-		paramBo.cashPoundageRate = poundageRate.divide(new BigDecimal(100));
-		paramBo.cashRate = baseBankRate.divide(new BigDecimal(100));
-		paramBo.capitalRate = capitalRate;
+		paramBo.orderRate = orderRateInfo.interestRate;
 	}
 }

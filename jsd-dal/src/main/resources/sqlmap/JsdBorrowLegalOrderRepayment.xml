@@ -110,6 +110,9 @@
 	        <if test="gmtModified != null">        
 	            gmt_modified,
 	        </if>
+            <if test="repayNo != null">
+                repay_no,
+            </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -158,6 +161,9 @@
 		    <if test="gmtModified != null" >
 		       #{gmtModified,jdbcType=TIMESTAMP},
 		    </if>
+            <if test="repayNo != null" >
+                #{repayNo,jdbcType=TIMESTAMP},
+            </if>
         </trim>
     </insert>
     

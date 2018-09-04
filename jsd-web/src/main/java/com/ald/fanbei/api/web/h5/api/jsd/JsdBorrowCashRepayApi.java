@@ -100,10 +100,11 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
     }
 
     private void checkFrom(BorrowCashRepayBo bo) {
-      JsdBorrowCashRepaymentDo cashRepaymentDo=  jsdBorrowCashRepaymentService.getByRepayNo(bo.repayNo);
-      if(cashRepaymentDo!=null){
+        JsdBorrowCashRepaymentDo cashRepaymentDo=jsdBorrowCashRepaymentService.getByRepayNo(bo.repayNo);
+        JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByRepayNo(bo.repayNo);
+       if(cashRepaymentDo!=null&&legalOrderRepaymentDo!=null){
           throw new FanbeiException(FanbeiExceptionCode.JSD_REPAY_REPAY_ERROR);
-      }
+       }
       JsdBorrowCashDo cashDo= jsdBorrowCashService.getByBorrowNo(bo.borrowNo);
       bo.borrowId=cashDo.getRid();
       if(cashDo  == null ){
