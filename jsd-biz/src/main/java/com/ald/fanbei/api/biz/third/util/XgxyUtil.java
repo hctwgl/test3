@@ -19,6 +19,7 @@ import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.JsdAesUtil;
 import com.ald.fanbei.api.common.util.JsdSignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
@@ -45,19 +46,13 @@ public class XgxyUtil extends AbstractThird {
      * @return
      */
     public boolean payNoticeRequest(XgxyPayBo payBo) {
-
         try {
-            Map<String, Object> params = new HashMap<>();
-            Map<String, Object> pay = new HashMap<>();
-            pay.put("borrowNo", payBo.getBorrowNo());
-            pay.put("status", payBo.getStatus());
-            pay.put("gmtArrival", payBo.getGmtArrival());
-            pay.put("tradeNo", payBo.getTradeNo());
-            pay.put("reason", payBo.getReason());
+        	String dataStr = JSON.toJSONString(payBo);
             
+            Map<String, Object> params = new HashMap<>();
             params.put("appId", "edspay");
-            params.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
-            params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
+            params.put("data", JsdAesUtil.encryptToBase64Third(dataStr, PRIVATE_KEY));
+            params.put("sign", generateSign(JSON.parseObject(dataStr), PRIVATE_KEY));
             String url = getXgxyUrl() + "/isp/open/third/eca/v1/borrowStatusNotify";
             String reqResult = "";
             if (url.contains("https")){
@@ -65,7 +60,7 @@ public class XgxyUtil extends AbstractThird {
             }else {
                 reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(params));
             }
-            logThird(reqResult, url, pay);
+            logThird(reqResult, url, payBo);
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
@@ -78,9 +73,7 @@ public class XgxyUtil extends AbstractThird {
         }
 
         return false;
-
     }
-
 
     /**
      * 逾期通知请求
@@ -91,15 +84,16 @@ public class XgxyUtil extends AbstractThird {
     public boolean overDueNoticeRequest(Map<String,String> data) {
         try {
             logger.info("overDueNoticeRequest to xgxy request start");
-            Map<String, Object> params = new HashMap<>();
-            params.put("appId", "edspay");
-            Map<String, String> overdue = new HashMap<>();
+            JSONObject overdue = new JSONObject();
             overdue.put("borrowNo", data.get("borrowNo"));
             overdue.put("overdueDays", data.get("overdueDays"));
             overdue.put("period", data.get("curPeriod"));
             overdue.put("tradeNo", data.get("tradeNo"));
-            params.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
-            params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
+            
+            Map<String, Object> params = new HashMap<>();
+            params.put("appId", "edspay");
+            params.put("data", JsdAesUtil.encryptToBase64Third(overdue.toJSONString(), PRIVATE_KEY));
+            params.put("sign", generateSign(overdue, PRIVATE_KEY));
             
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackOverdueResult";
             String reqResult = "";
@@ -134,8 +128,8 @@ public class XgxyUtil extends AbstractThird {
         try {
             logger.info("dsedRePayNoticeRequest start data = "+data);
             Map<String, String> p = new HashMap<>();
-            p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
-            p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
+            p.put("data", JsdAesUtil.encryptToBase64Third(JSON.toJSONString(data), PRIVATE_KEY));
+            p.put("sign", generateSign(JSON.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             p.put("appId", "UJ3331");
             p.put("timestamp",System.currentTimeMillis()+"");
             String url = "http://192.168.156.103:1112/isp/open/third/eca/v1/repaymentNotify";
