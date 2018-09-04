@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
+import com.ald.fanbei.api.biz.bo.ups.UpsAuthSignRespBo;
 import com.ald.fanbei.api.biz.service.JsdBankService;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;

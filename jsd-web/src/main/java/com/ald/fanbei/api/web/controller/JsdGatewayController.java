@@ -127,8 +127,8 @@ public class JsdGatewayController {
     }
 
     public JsdH5HandleResponse doProcess(Context context) {
-        interceptorChain.execute(context);
         try {
+        	interceptorChain.execute(context);
         	JsdH5Handle methodHandle = jsdH5HandleFactory.getHandle(context.getMethod());
             return methodHandle.process(context);
         } catch (FanbeiException e) {

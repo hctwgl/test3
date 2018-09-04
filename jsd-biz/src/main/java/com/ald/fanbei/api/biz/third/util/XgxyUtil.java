@@ -2,6 +2,10 @@ package com.ald.fanbei.api.biz.third.util;
 
 
 import com.ald.fanbei.api.biz.bo.*;
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyOverdueReqBo;
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyPayBo;
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyPayReqBo;
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyReqBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.ConfigProperties;

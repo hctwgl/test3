@@ -11,8 +11,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
-import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.Req;
-import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.Resp;
+import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
+import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowResp;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.third.util.OriRateUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -93,7 +93,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	 * @return
 	 */
 	public void resolve(TrialBeforeBorrowBo bo) {
-		Req req = bo.req;
+		TrialBeforeBorrowReq req = bo.req;
 		
 		BigDecimal oriRateDaily = this.getRiskOriRate(req.openId);
 		BigDecimal borrowAmount = new BigDecimal(req.amount);
@@ -121,7 +121,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         	finalDiffProfit = BigDecimal.ZERO;
         }
         
-        Resp resp = bo.resp;
+        TrialBeforeBorrowResp resp = new TrialBeforeBorrowResp();
         resp.totalAmount = borrowAmount.add(totalProfit).toString();
         resp.arrivalAmount = borrowAmount.toString();
         resp.interestRate = legalInterestRate.toString();
@@ -134,6 +134,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         resp.totalDiffFee = finalDiffProfit.toString();
         resp.sellInterestFee = BigDecimal.ZERO.toString();
         resp.sellServiceFee = orderCashService.toString();
+        
+        bo.resp = resp;
     }
 	
 	

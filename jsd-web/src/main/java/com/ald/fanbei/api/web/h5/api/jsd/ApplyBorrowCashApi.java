@@ -16,9 +16,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.ald.fanbei.api.biz.bo.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.bo.jsd.JsdApplyBorrowCashBo;
-import com.ald.fanbei.api.biz.bo.jsd.JsdGoodsInfoBo;
+import com.ald.fanbei.api.biz.bo.jsd.ApplyBorrowCashBo;
+import com.ald.fanbei.api.biz.bo.jsd.ApplyBorrowCashBo.JsdGoodsInfoBo;
+import com.ald.fanbei.api.biz.bo.ups.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
@@ -64,7 +64,6 @@ import com.google.common.collect.Maps;
 @Validator("applyBorrowCashParam")
 public class ApplyBorrowCashApi implements JsdH5Handle {
 
-    
     // [start] 依赖注入
     @Resource
     JsdBorrowCashService jsdBorrowCashService;
@@ -98,11 +97,11 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
     	this.lock(context.getUserId());
     	
         JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
-        JsdApplyBorrowCashBo applyCashBo = this.resolveParam(context);
+        ApplyBorrowCashBo applyCashBo = this.resolveParam(context);
         
         BigDecimal goodsAmount = BigDecimal.ZERO;
         BigDecimal borrowAmount = applyCashBo.getAmount();
-        BigDecimal oriRate = getRiskOriRate(applyCashBo.getOpenId());
+        BigDecimal oriRate = jsdBorrowCashService.getRiskOriRate(applyCashBo.getOpenId());
         
         BigDecimal profitAmount = this.resolveProfit(borrowAmount, applyCashBo.getTerm(), oriRate);
         if (profitAmount != null) {
@@ -176,10 +175,10 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
 
     }
     
-    public JsdApplyBorrowCashBo resolveParam(Context context) {
+    public ApplyBorrowCashBo resolveParam(Context context) {
     	ApplyBorrowCashParam param = (ApplyBorrowCashParam) context.getParamEntity();
     	
-        JsdApplyBorrowCashBo applyCashBo = new JsdApplyBorrowCashBo();
+        ApplyBorrowCashBo applyCashBo = new ApplyBorrowCashBo();
         applyCashBo.setOpenId(context.getOpenId());
         applyCashBo.setUserId(context.getUserId());
         
@@ -196,21 +195,6 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         applyCashBo.setJsdGoodsInfoBo(param.getGoodsInfo());
         
         return applyCashBo;
-    }
-
-    private BigDecimal getRiskOriRate(String openId) {
-        BigDecimal oriRate = BigDecimal.valueOf(0.001);
-
-        try {
-            String poundageRate = oriRateUtil.getOriRateNoticeRequest(openId);
-            if(StringUtils.isBlank(poundageRate)) {
-                poundageRate = "0.001";
-            }
-            oriRate = new BigDecimal(poundageRate);
-        } catch (Exception e) {
-            logger.info(openId + "从西瓜信用获取分层用户额度失败：" + e);
-        }
-        return oriRate;
     }
 
     private BigDecimal resolveProfit(BigDecimal borrowAmount, String borrowType, BigDecimal oriRate) {

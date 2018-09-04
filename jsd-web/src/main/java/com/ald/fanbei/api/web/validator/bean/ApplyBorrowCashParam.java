@@ -8,7 +8,7 @@ import javax.validation.constraints.Pattern;
 
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.jsd.JsdGoodsInfoBo;
+import com.ald.fanbei.api.biz.bo.jsd.ApplyBorrowCashBo.JsdGoodsInfoBo;
 
 @Component("applyBorrowCashParam")
 public class ApplyBorrowCashParam {

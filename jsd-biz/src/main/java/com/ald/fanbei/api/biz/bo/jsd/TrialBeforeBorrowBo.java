@@ -2,22 +2,33 @@ package com.ald.fanbei.api.biz.bo.jsd;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.NotNull;
+
+import org.springframework.stereotype.Component;
+
 public class TrialBeforeBorrowBo {
 	
-	public Req req = new Req();
-	public Resp resp = new Resp();
+	public TrialBeforeBorrowReq req;
+	public TrialBeforeBorrowResp resp;
 	
-	public static class Req{
-		public String openId; 	
+	@Component("trialBeforeBorrowReq")
+	public static class TrialBeforeBorrowReq{
+		@NotNull
+		public String openId;
+		@NotNull
 		public String productNo;
+		@NotNull
 		public String amount; 	
+		@NotNull
 		public String term;		
-		public String unit; 	
+		@NotNull
+		public String unit;
+		
 		public String isTying;	
 		public String tyingType;
 	}
 	
-	public static class Resp {
+	public static class TrialBeforeBorrowResp {
 		public String totalAmount; 	
 		public String arrivalAmount;
 		public String interestRate; 	

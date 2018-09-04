@@ -12,8 +12,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
-import com.ald.fanbei.api.biz.bo.UpsResendSmsRespBo;
+import com.ald.fanbei.api.biz.bo.ups.UpsAuthSignRespBo;
+import com.ald.fanbei.api.biz.bo.ups.UpsResendSmsRespBo;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
