@@ -150,7 +150,7 @@ public class JsdTest extends BaseTest {
         String url = urlBase + "/third/eca/v1/getBorrowBill";
         Map<String,String> params = new HashMap<>();
         params.put("borrowNo", "BO20180829002");
-        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
@@ -241,8 +241,6 @@ public class JsdTest extends BaseTest {
         params.put("type","REPAY");
         params.put("busiFlag","hqkj20180830151933123219");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
-        params.put("busiFlag","hqkj20180830151933123240");
-        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
