@@ -32,6 +32,6 @@ public interface JsdBorrowLegalOrderRepaymentDao extends BaseDao<JsdBorrowLegalO
 
 	int updateStatus(@Param("tradeNo")String tradeNo);
 
-    JsdBorrowLegalOrderRepaymentDo getByRepayNo(@Param("repayNo") String repayNo);
+    JsdBorrowLegalOrderRepaymentDo getByRepayNo(@Param("repayNo") String VARCHAR);
 
 }

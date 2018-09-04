@@ -138,7 +138,7 @@ public class XgxyUtil extends AbstractThird {
             Map<String, String> p = new HashMap<>();
             p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
-            p.put("appId", "jsdpay");
+            p.put("appId", "UJ3331");
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackRepayResult";
             logger.info("data = " + data +",url = " +url );
             String reqResult = "";

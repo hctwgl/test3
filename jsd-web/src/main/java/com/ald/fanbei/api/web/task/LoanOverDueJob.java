@@ -58,14 +58,14 @@ public class LoanOverDueJob {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0/5 * * * * ?")
     public void laonDueJob(){
         try{
         	String curHostIp = getHostIpUtil.getIpAddress();
         	logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
             String userIds = "";
             String envType = ConfigProperties.get(Constants.CONF_KEY_INVELOMENT_TYPE);
-            if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)){
+//            if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)){
         		int pageSize = 200;
                 int totalRecord = borrowCashService.getBorrowCashOverdueCount();
                 int totalPageNum = (totalRecord + pageSize - 1) / pageSize;
@@ -90,7 +90,7 @@ public class LoanOverDueJob {
 
                 }
                 logger.info("borrowCashDueJob run end,time=" + new Date());
-        	}
+//        	}
         } catch (Exception e){
             logger.error("borrowCashDueJob  error, case=",e);
         }
@@ -133,7 +133,7 @@ public class LoanOverDueJob {
    }
 
    Map<String,String> buildOvardue(){
-  return null;
+        return null;
    }
    private JsdBorrowCashOverdueLogDo buildLoanOverdueLog(Long borrowId,BigDecimal currentAmount,BigDecimal interest,Long userId){
        JsdBorrowCashOverdueLogDo overdueLog = new JsdBorrowCashOverdueLogDo();

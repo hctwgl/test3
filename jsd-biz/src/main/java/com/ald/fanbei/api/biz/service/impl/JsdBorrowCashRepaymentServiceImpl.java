@@ -358,7 +358,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				@Override
 				public Long doInTransaction(TransactionStatus status) {
 					try {
-						dealOrderRepay(repayDealBo, orderRepaymentDo,isBalance);
+						if(orderRepaymentDo!=null){
+							dealOrderRepay(repayDealBo, orderRepaymentDo,isBalance);
+						}
 						if(repaymentDo!=null){
 							dealBorrowRepay(repayDealBo, repaymentDo,isBalance);
 						}
@@ -374,32 +376,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			if (resultValue == 1L) {
 				try {
-					repaymentDo.setStatus(JsdBorrowCashRepaymentStatus.YES.name());
-					//还款成功，调用西瓜信用通知接口
-					JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
-					noticeRecordDo.setUserId(repaymentDo.getUserId());
-					noticeRecordDo.setRefId(String.valueOf(repaymentDo.getRid()));
-					noticeRecordDo.setType(getStatus(repaymentDo.getBorrowId()));
-					noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 					HashMap data = buildData(repaymentDo);
-					noticeRecordDo.setParams(JSON.toJSONString(data));
-					jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
-					try {
-//						if(!flag){
-//							//app逾期还款通知催收
-//							nofityRisk(loanRepayDealBo,repaymentDo);
-//						}
-//						//催收逾期还款
-//						collectRisk(loanRepayDealBo.loanPeriodsDoList,repaymentDo,loanRepayDealBo.loanDo.getRid());
-					}catch (Exception e){
-						e.printStackTrace();
-					}
 					logger.info("dealRepaymentSucess data cfp "+JSON.toJSONString(data));
-					if(xgxyUtil.dsedRePayNoticeRequest(data)){
-						noticeRecordDo.setRid(noticeRecordDo.getRid());
-						noticeRecordDo.setGmtModified(new Date());
-						jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
-					}
+					xgxyUtil.dsedRePayNoticeRequest(data);
 				}
 				catch (Exception e){
 					logger.error("notice eca fail error=",e);

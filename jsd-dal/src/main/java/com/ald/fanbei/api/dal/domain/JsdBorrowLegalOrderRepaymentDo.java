@@ -97,6 +97,9 @@ import java.math.BigDecimal;
     private Date gmtModified;
 
 
+    private String repayNo;
+
+
 
     /**
      * 获取主键Id
@@ -386,5 +389,11 @@ import java.math.BigDecimal;
       this.gmtModified = gmtModified;
     }
 
+    public String getRepayNo() {
+        return repayNo;
+    }
 
+    public void setRepayNo(String repayNo) {
+        this.repayNo = repayNo;
+    }
 }

@@ -130,7 +130,7 @@ public class JsdTest extends BaseTest {
     public void repayLoanDetail() {
         String url = urlBase + "/third/eca/v1/getRepaymentDetail";
         Map<String,String> params = new HashMap<>();
-        params.put("borrowNo", "BO20180829002");
+        params.put("borrowNo", "dk2018090221204000156");
         params.put("period", 1+"");
         params.put("timestamp", System.currentTimeMillis()+"");
         params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
@@ -150,7 +150,7 @@ public class JsdTest extends BaseTest {
         String url = urlBase + "/third/eca/v1/getBorrowBill";
         Map<String,String> params = new HashMap<>();
         params.put("borrowNo", "BO20180829002");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
@@ -220,7 +220,7 @@ public class JsdTest extends BaseTest {
         params.put("period", 1+"");
         params.put("bankNo", "6228480329222552476");
         params.put("borrowNo", "dk2018090221204000156");
-        params.put("repayNo", "hqkj20180830151933123232");
+        params.put("repayNo", "hqkj20180830151933123240");
         params.put("openId","EB56E1F0A9383508DB8FD039C7D37BD1");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
@@ -237,10 +237,12 @@ public class JsdTest extends BaseTest {
         String url = urlBase + "/third/eca/v1/submitMessage";
         Map<String, String> params = new HashMap<>();
         params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
-        params.put("code","770074");
+        params.put("code","418378");
         params.put("type","REPAY");
         params.put("busiFlag","hqkj20180830151933123219");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        params.put("busiFlag","hqkj20180830151933123240");
+        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "9c5dd35d58f8501f"));

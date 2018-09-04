@@ -88,6 +88,13 @@ public class ConfirmSmsApi implements JsdH5Handle {
 		String type = ObjectUtils.toString(context.getData("type"), null);
 		String timestamp = ObjectUtils.toString(context.getData("timestamp"), null);
 		Long userId=context.getUserId();
+		JsdBorrowCashRepaymentDo repaymentDo=repaymentService.getByRepayNo(busiFlag);
+		JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByRepayNo(busiFlag);
+		if(repaymentDo!=null){
+			busiFlag=repaymentDo.getJsdRepayNo();
+		}else {
+			busiFlag=legalOrderRepaymentDo.getTradeNo();
+		}
 		if (StringUtils.isBlank(busiFlag) || StringUtils.isBlank(smsCode)) {
 			return new JsdH5HandleResponse(3001, FanbeiExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
 		}
@@ -98,13 +105,6 @@ public class ConfirmSmsApi implements JsdH5Handle {
 			if (beanName == null) {
 				// 未获取到缓存数据，支付订单过期
 				throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
-			}
-			JsdBorrowCashRepaymentDo repaymentDo=repaymentService.getByRepayNo(busiFlag);
-			JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByRepayNo(busiFlag);
-			if(repaymentDo!=null){
-				busiFlag=repaymentDo.getJsdRepayNo();
-			}else {
-				busiFlag=legalOrderRepaymentDo.getTradeNo();
 			}
 
 			switch (beanName.toString()) {
