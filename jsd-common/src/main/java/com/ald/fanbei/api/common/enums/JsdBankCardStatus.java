@@ -1,8 +1,5 @@
 package com.ald.fanbei.api.common.enums;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public enum  JsdBankCardStatus {
 
     NEW("N", "新建状态"),

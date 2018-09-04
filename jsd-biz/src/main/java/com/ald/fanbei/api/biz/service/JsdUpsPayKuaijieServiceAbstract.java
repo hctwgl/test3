@@ -4,13 +4,12 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.ald.fanbei.api.common.enums.DsedLoanRepaymentStatus;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ald.fanbei.api.biz.bo.UpsCollectBo;
-import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.bo.ups.UpsCollectBo;
+import com.ald.fanbei.api.biz.bo.ups.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -30,7 +29,7 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 	@Autowired
 	protected UpsUtil upsUtil;
 	@Autowired
-	protected DsedResourceService dsedResourceService;
+	protected JsdResourceService jsdResourceService;
 
 	protected abstract void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo);
 

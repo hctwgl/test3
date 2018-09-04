@@ -1,38 +1,57 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.bo.KuaijieRepayBo;
-import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.XgxyUtil;
-import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
-import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
-import com.ald.fanbei.api.dal.dao.JsdBorrowCashRepaymentDao;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import com.ald.fanbei.api.biz.bo.KuaijieRepayBo;
+import com.ald.fanbei.api.biz.bo.ups.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BankPayChannel;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
+import com.ald.fanbei.api.common.enums.JsdNoticeType;
+import com.ald.fanbei.api.common.enums.JsdRepayType;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.JsdBorrowCashRepaymentDao;
+import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
+import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderRepaymentDao;
+import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
+import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
+import com.ald.fanbei.api.dal.dao.JsdUserDao;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
+import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import com.alibaba.fastjson.JSON;
 
 
 /**
@@ -350,7 +369,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			if (resultValue == 1L) {
 				try {
-					repaymentDo.setStatus(DsedLoanRepaymentStatus.SUCC.name());
+					repaymentDo.setStatus(JsdBorrowCashRepaymentStatus.YES.name());
 					//还款成功，调用西瓜信用通知接口
 					JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
 					noticeRecordDo.setUserId(repaymentDo.getUserId());
@@ -402,7 +421,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			map.put("type",repaymentDo.getType());
 			Date now=new Date();
 		    map.put("timestamp", String.valueOf(now.getTime()));
-		    if(JsdBorrowCashStatus.FINISHED.getCode().equals(borrowCashDo.getStatus())){
+		    if(JsdBorrowCashStatus.FINISHED.name().equals(borrowCashDo.getStatus())){
 				map.put("isFinish",YesNoStatus.YES.getCode());
 			}else {
 				map.put("isFinish",YesNoStatus.NO.getCode());
@@ -415,13 +434,13 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		if(borrowCashDo!=null){
 			if(StringUtil.equals(borrowCashDo.getOverdueStatus(), YesNoStatus.YES.getCode())){
 				if(StringUtil.equals(borrowCashDo.getType(), JsdRepayType.COLLECT.getName())){
-					return DsedNoticeType.XGXY_COLLECT.code;
+					return JsdNoticeType.XGXY_COLLECT.code;
 				}else {
-					return DsedNoticeType.XGXY_OVERDUEREPAY.code;
+					return JsdNoticeType.XGXY_OVERDUEREPAY.code;
 				}
 			}
 		}
-		return DsedNoticeType.REPAY.code;
+		return JsdNoticeType.REPAY.code;
 	}
 	private void dealSum(RepayDealBo repayDealBo){
 		JsdBorrowLegalOrderCashDo orderCashDo = repayDealBo.orderCashDo;
@@ -536,10 +555,10 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		cashDo.setRepayAmount(allRepayAmount);
 		cashDo.setType(JsdRepayType.ONLINE.getCode());
 		if (sumAmount.compareTo(allRepayAmount) <= 0) {
-			cashDo.setStatus(JsdBorrowCashStatus.FINISHED.getCode());
+			cashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
 			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
 		}else if (YesNoStatus.YES.getCode().equals(isBalance)){//线下还款平账
-			cashDo.setStatus(JsdBorrowCashStatus.FINISHED.getCode());
+			cashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
 			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
 		}
 	}
@@ -593,7 +612,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.FINISHED.getCode());
 			orderCashDo.setGmtFinish(now);
 		}else if (YesNoStatus.YES.getCode().equals(isBalance)){//线下还款平账
-			orderCashDo.setStatus(JsdBorrowCashStatus.FINISHED.getCode());
+			orderCashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
 			orderCashDo.setGmtFinish(now);
 		} else {
 			orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.PART_REPAID.getCode());

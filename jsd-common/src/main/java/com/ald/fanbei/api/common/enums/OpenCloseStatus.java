@@ -1,11 +1,5 @@
 package com.ald.fanbei.api.common.enums;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
-
 /**
  * 
  *@类描述：支付类型枚举

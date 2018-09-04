@@ -4,8 +4,17 @@
  */
 package com.ald.fanbei.api.web.h5.api.jsd;
 
-import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
-import com.ald.fanbei.api.biz.bo.UpsResendSmsRespBo;
+import java.util.Date;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.ald.fanbei.api.biz.bo.ups.UpsAuthSignRespBo;
+import com.ald.fanbei.api.biz.bo.ups.UpsResendSmsRespBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
@@ -15,23 +24,12 @@ import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.SmsCodeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.context.Context;
-import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
-import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
-import com.ald.fanbei.api.web.common.DsedH5Handle;
-import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-
-import java.util.Date;
+import com.ald.fanbei.api.web.common.Context;
+import com.ald.fanbei.api.web.common.JsdH5Handle;
+import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 
 /**
  * 
@@ -40,7 +38,7 @@ import java.util.Date;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component("sendSmsCodeApi")
-public class SendSmsCodeApi implements DsedH5Handle {
+public class SendSmsCodeApi implements JsdH5Handle {
     @Resource
     UpsUtil upsUtil;
 
@@ -57,16 +55,16 @@ public class SendSmsCodeApi implements DsedH5Handle {
     private JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
     
     @Override
-    public DsedH5HandleResponse process(Context context) {
+    public JsdH5HandleResponse process(Context context) {
 
-	DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
+    	JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
 	String busiFlag = ObjectUtils.toString(context.getData("busiFlag"), null);
 	String type = ObjectUtils.toString(context.getData("type"), null);
 	Long userId=context.getUserId();
 	UpsResendSmsRespBo respBo=null;
 
 	if (StringUtils.isBlank(busiFlag)) {
-		return new DsedH5HandleResponse(3001, FanbeiExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
+		return new JsdH5HandleResponse(3001, FanbeiExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
 	}
 	if(SmsCodeType.REPAY.getCode().equals(type)){
 		String orderNo = generatorClusterNo.getRepaymentNo(new Date(), BankPayChannel.KUAIJIE.getCode());
@@ -87,9 +85,9 @@ public class SendSmsCodeApi implements DsedH5Handle {
 				userBankcardDo.getBankCode(),cardType,userBankcardDo.getValidDate(),userBankcardDo.getSafeCode());
 
 		if(!upsResult.isSuccess()){
-			return new DsedH5HandleResponse(1542, FanbeiExceptionCode.AUTH_BINDCARD_ERROR.getDesc());
+			return new JsdH5HandleResponse(1542, FanbeiExceptionCode.AUTH_BINDCARD_ERROR.getDesc());
 		}else if(!"10".equals(upsResult.getNeedCode())){
-			return new DsedH5HandleResponse(1567, FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
+			return new JsdH5HandleResponse(1567, FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
 		}
 	}else if(SmsCodeType.DELAY.getCode().equals(type)){
 		String orderNo = generatorClusterNo.getJsdRenewalNo();

@@ -18,6 +18,14 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.KuaijieJsdRenewalPayBo;
+import com.ald.fanbei.api.biz.bo.ups.UpsCollectRespBo;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
+import com.ald.fanbei.api.biz.service.JsdResourceService;
+import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
@@ -48,14 +56,6 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
-import com.ald.fanbei.api.biz.bo.KuaijieJsdRenewalPayBo;
-import com.ald.fanbei.api.biz.bo.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
-import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
-import com.ald.fanbei.api.biz.service.JsdResourceService;
-import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.alibaba.fastjson.JSON;
 
 
