@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +54,8 @@ public class LoanOverDueJob {
     private JsdBorrowCashOverdueLogService jsdBorrowCashOverdueLogService;
     @Resource
     private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
+    @Resource
+    private JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
 
     @Resource
     GetHostIpUtil getHostIpUtil;
@@ -123,10 +127,21 @@ public class LoanOverDueJob {
                 jsdBorrowCashDo.setOverdueDay(jsdBorrowCashDo.getOverdueDay()+1);
                 jsdBorrowCashDo.setOverdueStatus("Y");
                 borrowCashService.updateById(jsdBorrowCashDo);
+                JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(jsdBorrowCashDo.getRid());
+                if(borrowLegalOrderCashDo!=null){
+                    BigDecimal orderAmount = BigDecimalUtil.add(borrowLegalOrderCashDo.getAmount(), borrowLegalOrderCashDo.getSumRepaidInterest(), borrowLegalOrderCashDo.getSumRepaidPoundage()).subtract(borrowLegalOrderCashDo.getRepaidAmount());// 当前本金
+                    BigDecimal oldOverdueorderAmount = borrowLegalOrderCashDo.getOverdueAmount();//当前逾期
+                    BigDecimal newOverdueorderAmount = orderAmount.multiply(jsdBorrowCashDo.getOverdueRate().divide(new BigDecimal(360),6,BigDecimal.ROUND_HALF_UP)).setScale(2,BigDecimal.ROUND_HALF_UP);
+                    borrowLegalOrderCashDo.setOverdueStatus("Y");
+                    borrowLegalOrderCashDo.setOverdueDay((short) (borrowLegalOrderCashDo.getOverdueDay()+1));
+                    borrowLegalOrderCashDo.setOverdueAmount(oldOverdueorderAmount.add(newOverdueorderAmount));
+                    borrowLegalOrderCashDo.setRid(borrowLegalOrderCashDo.getRid());
+                    jsdBorrowLegalOrderCashService.updateById(borrowLegalOrderCashDo);
+                }
                 //新增逾期日志
                 jsdBorrowCashOverdueLogService.saveRecord(buildLoanOverdueLog(jsdBorrowCashDo.getRid(), currentAmount, newOverdueAmount, jsdBorrowCashDo.getUserId()));
                 //TODO 发送补偿通知到西瓜信用
-//                xgxyUtil.overDueNoticeRequest(map);
+                xgxyUtil.overDueNoticeRequest(borrowLegalOrderCashDo(jsdBorrowCashDo,borrowLegalOrderCashDo));
             } catch (Exception e) {
                 logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId="+jsdBorrowCashDo.getRid());
             }
@@ -134,7 +149,7 @@ public class LoanOverDueJob {
 
    }
 
-   Map<String,String> buildOvardue(){
+   Map<String,String> borrowLegalOrderCashDo(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo){
         return null;
    }
    private JsdBorrowCashOverdueLogDo buildLoanOverdueLog(Long borrowId,BigDecimal currentAmount,BigDecimal interest,Long userId){

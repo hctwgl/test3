@@ -88,6 +88,8 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
 	        ApplyBorrowCashReq req = bo.req = (ApplyBorrowCashReq)context.getParamEntity();
 	        bo.userId = context.getUserId();
         	
+	        jsdBorrowCashService.checkCanBorrow(context.getUserId());
+	        
         	BigDecimal oriRate = jsdBorrowCashService.getRiskOriRate(req.openId);
             JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(req.bankNo);
            
@@ -112,35 +114,26 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
                 }
             });
             
-            try {
-                UpsDelegatePayRespBo upsResult = upsUtil.jsdDelegatePay(req.amount, context.getRealName(), 
-                        mainCard.getBankCardNumber(), context.getUserId().toString(), mainCard.getMobile(),
-                        mainCard.getBankName(), mainCard.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
-                        "JSD_LOAN", cashDo.getRid().toString(), context.getIdNumber());
-                
-                if (!upsResult.isSuccess()) {
-                    cashDo.setStatus(JsdBorrowCashStatus.CLOSED.name());
-                    cashDo.setRemark("UPS实时打款失败");
-                    orderDo.setStatus(JsdBorrowLegalOrderStatus.CLOSED.name());
-                    orderDo.setClosedDetail("transed fail");
-                    orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.CLOSED.name());
-                    jsdBorrowCashService.transUpdate(cashDo, orderDo, orderCashDo);
-                }else {
-                	cashDo.setStatus(JsdBorrowCashStatus.TRANSFERING.name());
-                	jsdBorrowCashService.updateById(cashDo);
+            new Thread() { public void run() {
+            	try {
+                    UpsDelegatePayRespBo upsResult = upsUtil.jsdDelegatePay(req.amount, context.getRealName(), 
+                            mainCard.getBankCardNumber(), context.getUserId().toString(), mainCard.getMobile(),
+                            mainCard.getBankName(), mainCard.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
+                            "JSD_LOAN", cashDo.getRid().toString(), context.getIdNumber());
+                    cashDo.setTradeNoUps(upsResult.getOrderNo());
+                    
+                    if (!upsResult.isSuccess()) {
+                    	jsdBorrowCashService.dealBorrowFail(cashDo, orderDo, orderCashDo, "UPS打款实时反馈失败");
+                    }else {
+                    	cashDo.setStatus(JsdBorrowCashStatus.TRANSFERING.name());
+                    	jsdBorrowCashService.updateById(cashDo);
+                    }
+                } catch (Exception e) {
+                	jsdBorrowCashService.dealBorrowFail(cashDo, orderDo, orderCashDo, "UPS打款时发生异常");
                 }
-            	
-                return resp;
-            } catch (Exception e) {
-                logger.error("apply legal borrow cash  error", e);
-                cashDo.setStatus(JsdBorrowCashStatus.CLOSED.name());// 关闭借款
-                cashDo.setRemark("Exception when delegatePay!");
-                orderDo.setStatus(JsdBorrowLegalOrderCashStatus.CLOSED.name());// 关闭搭售商品订单
-                orderCashDo.setStatus(JsdBorrowLegalOrderStatus.CLOSED.name());// 关闭搭售商品借款
-                jsdBorrowCashService.transUpdate(cashDo, orderDo, orderCashDo);
-                
-                throw new FanbeiException(FanbeiExceptionCode.DELEGATEPAY_DIRECT_FAIL);
-            }
+            }}.start();
+            
+            return resp;
         } finally {
             this.unLock(context.getUserId());
         }

@@ -19,6 +19,8 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Long>{
 
     JsdBorrowCashDo getByBorrowNo(String borrowNo);
+    
+    JsdBorrowCashDo getByTradeNoXgxy(String tradeNoXgxy);
 
     void checkCanBorrow(Long userId);
 
@@ -33,6 +35,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     void dealBorrowSucc(Long cashId, String outTradeNo);
     
     void dealBorrowFail(Long cashId, String outTradeNo, String failMsg);
+    void dealBorrowFail(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderDo orderDo, JsdBorrowLegalOrderCashDo orderCashDo, String failMsg);
 
     /**
      * 获取逾期数据的数量

@@ -122,7 +122,7 @@ public class JsdGatewayController {
         contextBuilder.dataMap(dataMap);
         contextBuilder.clientIp(CommonUtil.getIpAddr(request));
         Context context = contextBuilder.build();
-        logger.info("buildContext success, ori data = "+data+", final context=" + JSON.toJSONString(context));
+        logger.debug("buildContext success, ori data = "+data+", final context=" + JSON.toJSONString(context));
         return context;
     }
 

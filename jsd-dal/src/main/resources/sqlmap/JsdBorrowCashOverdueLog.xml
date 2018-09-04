@@ -116,7 +116,7 @@
         <include refid="commonCondition"/>
     </select>
 
-    <select id="getLoanOverDueLogByNow" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashOverdueLogDo">
+    <select id="getBorrowCashOverDueLogByNow" resultType="java.lang.Integer">
         SELECT
         count(*)
         FROM jsd_borrow_cash_overdue_log

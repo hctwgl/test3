@@ -20,7 +20,7 @@ import com.ald.fanbei.api.biz.bo.xgxy.XgxyPayBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
-import com.ald.fanbei.api.biz.third.enums.XgxyBorrowStatusNotifyStatus;
+import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
 import com.ald.fanbei.api.biz.third.util.OriRateUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -81,6 +81,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	@Override
 	public JsdBorrowCashDo getByBorrowNo(String borrowNo) {
 		return jsdBorrowCashDao.getByBorrowNo(borrowNo);
+	}
+	@Override
+	public JsdBorrowCashDo getByTradeNoXgxy(String tradeNoXgxy) {
+		return jsdBorrowCashDao.getByTradeNoXgxy(tradeNoXgxy);
 	}
 
 	@Override
@@ -218,7 +222,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.name());
         this.transUpdate(cashDo, orderDo, orderCashDo);
         
-        dsedNoticeRecord(cashDo,"", XgxyBorrowStatusNotifyStatus.SUCCESS.name());
+        jsdNoticeRecord(cashDo,"", XgxyBorrowNotifyStatus.SUCCESS.name());
 	}
 
 	@Override
@@ -226,23 +230,28 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 		JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
 		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(cashId);
 		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(cashId);
+		cashDo.setTradeNoUps(outTradeNo);
 		
+		dealBorrowFail(cashDo, orderDo, orderCashDo, failMsg);
+	}
+	
+	@Override
+	public void dealBorrowFail(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderDo orderDo, JsdBorrowLegalOrderCashDo orderCashDo, String failMsg) {
         cashDo.setStatus(JsdBorrowCashStatus.CLOSED.name());
-        cashDo.setRemark("UPS异步打款失败，" + failMsg);
+        cashDo.setRemark(failMsg);
         cashDo.setGmtClose(new Date());
-        cashDo.setTradeNoUps(outTradeNo);
         
         orderDo.setStatus(JsdBorrowLegalOrderStatus.CLOSED.name());
         orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.CLOSED.name());
         this.transUpdate(cashDo, orderDo, orderCashDo);
         
-        dsedNoticeRecord(cashDo, failMsg,  XgxyBorrowStatusNotifyStatus.FAILED.name());
+        jsdNoticeRecord(cashDo, failMsg,  XgxyBorrowNotifyStatus.FAILED.name());
 	}
 	
-	private void dsedNoticeRecord(JsdBorrowCashDo cashDo,String msg, String status) {
+	private void jsdNoticeRecord(JsdBorrowCashDo cashDo,String msg, String status) {
         try {
             XgxyPayBo xgxyPayBo = buildXgxyPay(cashDo, msg, status);
-            JsdNoticeRecordDo noticeRecordDo = buildDsedNoticeRecord(cashDo,xgxyPayBo);
+            JsdNoticeRecordDo noticeRecordDo = buildJsdNoticeRecord(cashDo, xgxyPayBo);
             jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
             if(xgxyUtil.payNoticeRequest(xgxyPayBo)){
                 noticeRecordDo.setRid(noticeRecordDo.getRid());
@@ -257,14 +266,14 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     private XgxyPayBo buildXgxyPay(JsdBorrowCashDo cashDo, String msg,String status) {
         XgxyPayBo  xgxyPayBo = new XgxyPayBo();
         xgxyPayBo.setTradeNo(cashDo.getTradeNoUps());
-        xgxyPayBo.setBorrowNo(cashDo.getBorrowNo());
+        xgxyPayBo.setBorrowNo(cashDo.getTradeNoXgxy());
         xgxyPayBo.setReason(msg);
         xgxyPayBo.setStatus(status);
         xgxyPayBo.setGmtArrival(cashDo.getGmtArrival());
         return xgxyPayBo;
     }
 
-    private JsdNoticeRecordDo buildDsedNoticeRecord(JsdBorrowCashDo cashDo,XgxyPayBo xgxyPayBo) {
+    private JsdNoticeRecordDo buildJsdNoticeRecord(JsdBorrowCashDo cashDo,XgxyPayBo xgxyPayBo) {
     	JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
         noticeRecordDo.setUserId(cashDo.getUserId());
         noticeRecordDo.setRefId(String.valueOf(cashDo.getRid()));
@@ -273,6 +282,5 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         noticeRecordDo.setParams(JSON.toJSONString(xgxyPayBo));
         return noticeRecordDo;
     }
-
 
 }
