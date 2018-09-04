@@ -120,7 +120,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
                 return new JsdH5HandleResponse(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
             }
             // 主借款
-            final JsdBorrowCashDo jsdBorrowCashDo = buildBorrowCashDo(borrowAmount, applyCashBo.getTerm(), mainCard, applyCashBo.getUserId(), rateInfoDo, oriRate,applyCashBo.getProductNo());
+            final JsdBorrowCashDo jsdBorrowCashDo = buildBorrowCashDo(borrowAmount, applyCashBo.getTerm(), mainCard, applyCashBo.getUserId(), rateInfoDo, oriRate, applyCashBo.getProductNo());
 
             // 搭售商品订单
             final JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = buildBorrowLegalOrder(borrowAmount, applyCashBo.getUserId(), 0l, jsdGoodsInfoBo.getGoodsName());

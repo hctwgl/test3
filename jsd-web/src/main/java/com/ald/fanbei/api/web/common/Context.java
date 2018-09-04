@@ -1,13 +1,13 @@
 package com.ald.fanbei.api.web.common;
 
-import java.util.Map;
+import com.alibaba.fastjson.JSONObject;
 /**
  * Http请求Context
  */
 public interface Context {
 	public Object getData(String key);
 
-	public Map<String, Object> getDataMap();
+	public JSONObject getDataMap();
 
 	public String getUserName();
 

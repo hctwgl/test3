@@ -1,11 +1,9 @@
 package com.ald.fanbei.api.web.common;
 
-import java.util.Map;
-
-import com.google.common.collect.Maps;
+import com.alibaba.fastjson.JSONObject;
 
 public class ContextImpl implements Context {
-	private Map<String, Object> dataMap = Maps.newHashMap();
+	private JSONObject dataMap;
 
 	private String userName;
 	
@@ -55,7 +53,7 @@ public class ContextImpl implements Context {
 	}
 
 	@Override
-	public Map<String, Object> getDataMap() {
+	public JSONObject getDataMap() {
 		return this.dataMap;
 	}
 
@@ -103,7 +101,7 @@ public class ContextImpl implements Context {
 
 	public static class ContextBuilder {
 
-		private Map<String, Object> dataMap;
+		private JSONObject dataMap;
 
 		private String userName;
 
@@ -121,7 +119,7 @@ public class ContextImpl implements Context {
 
 		private String openId;
 
-		public ContextBuilder dataMap(Map<String, Object> dataMap) {
+		public ContextBuilder dataMap(JSONObject dataMap) {
 			this.dataMap = dataMap;
 			return this;
 		}

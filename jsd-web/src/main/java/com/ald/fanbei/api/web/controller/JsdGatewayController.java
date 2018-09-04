@@ -1,13 +1,8 @@
 package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.arbitration.MD5;
 import com.ald.fanbei.api.biz.bo.jsd.JsdParam;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
@@ -34,6 +28,7 @@ import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.JsdSignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.web.chain.InterceptorChain;
@@ -100,7 +95,7 @@ public class JsdGatewayController {
     private Context buildContext(HttpServletRequest request, String data) {
     	ContextBuilder contextBuilder = new ContextBuilder();
         String method = request.getRequestURI();
-        Map<String, Object> dataMap = new HashMap<>();
+        JSONObject dataMap = new JSONObject();
 
         if (StringUtils.isNotEmpty(data)) {
             String decryptData = AesUtil.decryptFromBase64Third(data, PRIVATE_KEY);
@@ -170,8 +165,8 @@ public class JsdGatewayController {
     }
 
     private void checkSign(Context context, String sign) {
-        Map<String, Object> dataMap = context.getDataMap();
-        String md5Value = generateSign(dataMap, PRIVATE_KEY);
+    	JSONObject dataMap = context.getDataMap();
+        String md5Value = JsdSignUtil.generateSign(dataMap, PRIVATE_KEY);
         if (logger.isDebugEnabled())
             logger.info("signStrBefore=" + dataMap + ",md5Value=" + md5Value + ",sign=" + sign);
         /* if (!StringUtils.equals(sign, md5Value)) { TODO 取消注释
@@ -180,31 +175,6 @@ public class JsdGatewayController {
         }*/
     }
 
-    /**
-     * 生成本地签名
-     *
-     * @param params
-     * @return
-     * @throws IllegalAccessException
-     * @throws IllegalArgumentException
-     */
-    private String generateSign(Map<String,Object> params, String appSecret) throws IllegalArgumentException {
-        List<String> keys = new ArrayList<String>(params.keySet());
-        keys.remove("signCode");
-        Collections.sort(keys);
-        StringBuffer result = null;
-        for (int i = 0; i < keys.size(); i++) {
-            String key = keys.get(i);
-            if (i == 0) result = new StringBuffer();
-            else result.append("&");
-            result.append(key).append("=").append(params.get(key));
-        }
-        result.append("&appSecret=" + appSecret);
-        return params == null ? null : MD5.md5(result.toString());
-    }
-
-    
-    
     /**
      * 记录埋点相关日志
      *

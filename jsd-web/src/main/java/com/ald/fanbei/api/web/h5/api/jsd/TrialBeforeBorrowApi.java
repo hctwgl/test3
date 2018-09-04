@@ -17,12 +17,8 @@ import com.alibaba.fastjson.JSON;
  */
 @Component("trialBeforeBorrowApi")
 public class TrialBeforeBorrowApi implements JsdH5Handle {
-
-    
-    // [start] 依赖注入
     @Resource
     JsdBorrowCashService jsdBorrowCashService;
-    // [end]
     
     @Override
     public JsdH5HandleResponse process(Context context) {

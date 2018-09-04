@@ -72,12 +72,11 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
      * @return
      */
 	public BigDecimal getRiskOriRate(String openId) {
-        BigDecimal oriRate = BigDecimal.valueOf(0.001);
-
+        BigDecimal oriRate = BigDecimal.valueOf(0.003);
         try {
             String poundageRate = oriRateUtil.getOriRateNoticeRequest(openId);
             if(StringUtils.isBlank(poundageRate)) {
-                poundageRate = "0.001";
+                poundageRate = "0.003";
             }
             oriRate = new BigDecimal(poundageRate);
         } catch (Exception e) {
@@ -113,8 +112,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         BigDecimal legalServiceRate = BigDecimal.valueOf(0.36);
         BigDecimal overdueRate = BigDecimal.valueOf(0.36);
         
-        BigDecimal totalProfit = oriRateDaily.multiply(borrowAmount).multiply(borrowDay);;
-        BigDecimal legalProfit = legalServiceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowAmount).multiply(borrowDay);
+        BigDecimal totalProfit = oriRateDaily.multiply(borrowAmount).multiply(borrowDay).setScale(2);
+        BigDecimal legalProfit = legalServiceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowAmount).multiply(borrowDay).setScale(2);
         
         BigDecimal orderCashService = BigDecimal.valueOf(10);
         BigDecimal finalDiffProfit = totalProfit.subtract(legalProfit).subtract(orderCashService);
