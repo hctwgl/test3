@@ -483,7 +483,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 
 	@Override
 	public JsdBorrowCashRenewalDo getRenewalByDelayNo(String delayNo) {
-		return jsdBorrowCashRenewalDao.getByRenewalNo(delayNo);
+		return jsdBorrowCashRenewalDao.getRenewalByDelayNo(delayNo);
 	}
 	
 }

@@ -342,13 +342,13 @@
                 overdue_status = #{overdueStatus,jdbcType=VARCHAR},                
             </if>
             <if test="gmtPlanRepayment != null and gmtPlanRepayment != '' ">        
-                gmt_plan_repayment = #{gmtPlanRepayment,jdbcType=TIMESTAMP}                
+                gmt_plan_repayment = #{gmtPlanRepayment,jdbcType=TIMESTAMP},                
             </if>
             <if test="failCode != null and failCode != '' ">        
-                fail_code = #{failCode,jdbcType=VARCHAR}                
+                fail_code = #{failCode,jdbcType=VARCHAR},                
             </if>
             <if test="failMsg != null and failMsg != '' ">        
-                fail_msg = #{failMsg,jdbcType=VARCHAR}                
+                fail_msg = #{failMsg,jdbcType=VARCHAR},                
             </if>
             <if test="delayNo != null and delayNo != '' ">        
                 delay_no = #{delayNo,jdbcType=VARCHAR}                
@@ -392,7 +392,14 @@
     <select id="getByRenewalNo" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
    		select 
 			<include refid="queryFields"/> 
-		from jsd_borrow_cash_renewal WHERE is_delete=0 and renewalNo=#{renewalNo}
+		from jsd_borrow_cash_renewal WHERE is_delete=0 and renewal_no=#{renewalNo}
+		LIMIT 1 
+    </select>
+    
+    <select id="getRenewalByDelayNo" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
+   		select 
+			<include refid="queryFields"/> 
+		from jsd_borrow_cash_renewal WHERE is_delete=0 and delay_no=#{delayNo}
 		LIMIT 1 
     </select>
     

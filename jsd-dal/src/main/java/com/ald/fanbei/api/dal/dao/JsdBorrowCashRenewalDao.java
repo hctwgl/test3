@@ -16,6 +16,8 @@ public interface JsdBorrowCashRenewalDao extends BaseDao<JsdBorrowCashRenewalDo,
 
 	JsdBorrowCashRenewalDo getByRenewalNo(String renewalNo);
 
+	JsdBorrowCashRenewalDo getRenewalByDelayNo(String delayNo);
+
     
 
 }

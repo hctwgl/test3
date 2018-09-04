@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,borrow_no,user_id,type,amount,status,remark,card_number,card_name,overdue_status,overdue_day,arrival_amount,poundage,repay_principle,repay_amount,overdue_amount,sum_rate,sum_overdue,sum_renewal_poundage,renewal_num,poundage_rate,risk_daily_rate,gmt_plan_repayment,gmt_arrival,gmt_close,gmt_create,gmt_modified,finish_date,rd_before_overdue_status,version,rate_amount
+        id rid,borrow_no,user_id,type,amount,status,remark,card_number,card_name,overdue_status,overdue_day,arrival_amount,poundage,repay_principle,repay_amount,overdue_amount,sum_rate,sum_overdue,sum_renewal_poundage,renewal_num,poundage_rate,risk_daily_rate,gmt_plan_repayment,gmt_arrival,gmt_close,gmt_create,gmt_modified,finish_date,version,rate_amount
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -94,9 +94,6 @@
         </if>
         <if test="finishDate != null and finishDate != ''">
             AND finish_date = #{finishDate,jdbcType=VARCHAR}
-        </if>
-        <if test="rdBeforeOverdueStatus != null and rdBeforeOverdueStatus != ''">
-            AND rd_before_overdue_status = #{rdBeforeOverdueStatus,jdbcType=VARCHAR}
         </if>
         <if test="version != null and version != ''">
             AND version = #{version,jdbcType=VARCHAR}
@@ -200,9 +197,6 @@
 	        </if>
 	        <if test="finishDate != null">        
 	            finish_date,
-	        </if>
-	        <if test="rdBeforeOverdueStatus != null">        
-	            rd_before_overdue_status,
 	        </if>
 	        <if test="version != null">        
 	            version,
@@ -387,9 +381,6 @@
             </if>
             <if test="finishDate != null and finishDate != '' ">        
                 finish_date = #{finishDate,jdbcType=VARCHAR},                
-            </if>
-            <if test="rdBeforeOverdueStatus != null and rdBeforeOverdueStatus != '' ">        
-                rd_before_overdue_status = #{rdBeforeOverdueStatus,jdbcType=VARCHAR},                
             </if>
             <if test="version != null and version != '' ">        
                 version = #{version,jdbcType=VARCHAR}                
