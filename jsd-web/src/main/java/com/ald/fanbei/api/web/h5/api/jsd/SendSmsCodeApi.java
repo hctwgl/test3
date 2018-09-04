@@ -5,6 +5,7 @@ package com.ald.fanbei.api.web.h5.api.jsd;
 
 import com.ald.fanbei.api.biz.bo.UpsAuthSignRespBo;
 import com.ald.fanbei.api.biz.bo.UpsResendSmsRespBo;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
@@ -16,16 +17,19 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.context.Context;
 import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
 import com.ald.fanbei.api.dal.domain.DsedUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.web.common.DsedH5Handle;
 import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+
 import java.util.Date;
 
 /**
@@ -48,6 +52,8 @@ public class SendSmsCodeApi implements DsedH5Handle {
 
     @Resource
 	private JsdUserService jsdUserService;
+    @Resource
+    private JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
     
     @Override
     public DsedH5HandleResponse process(Context context) {
@@ -85,8 +91,9 @@ public class SendSmsCodeApi implements DsedH5Handle {
 			return new DsedH5HandleResponse(1567, FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
 		}
 	}else if(SmsCodeType.DELAY.getCode().equals(type)){
-		String orderNo = generatorClusterNo.getRepaymentNo(new Date(), BankPayChannel.KUAIJIE.getCode());
-		respBo = upsUtil.quickPayResendSms(busiFlag,orderNo);
+		String orderNo = generatorClusterNo.getJsdRenewalNo();
+		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalService.getRenewalByDelayNo(busiFlag);
+		respBo = upsUtil.quickPayResendSms(renewalDo.getRenewalNo(),orderNo);
 		if (!respBo.isSuccess()) {
 			throw new FanbeiException(respBo.getRespDesc());
 		}

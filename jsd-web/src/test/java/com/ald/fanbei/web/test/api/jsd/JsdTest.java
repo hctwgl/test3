@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
+import com.ald.fanbei.api.common.enums.SmsCodeType;
 import com.ald.fanbei.api.common.util.DigestUtil;
 
 import org.junit.Before;
@@ -30,7 +32,7 @@ public class JsdTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-	String urlBase = "http://localhost:8080";
+	String urlBase = "http://localhost:80";
 //    String urlBase = "http://192.168.112.40:8080";
     
     String userName = "13165995223";
@@ -74,7 +76,7 @@ public class JsdTest extends BaseTest {
 
     	Map<String, String> params = new HashMap<>();
     	params.put("borrowNo", "dk2018081010282000095");
-    	params.put("delayNo", "XJ20180903002");
+    	params.put("delayNo", "XJ20180904002");
     	params.put("amount", "1000");
     	params.put("delayDay", "10");
     	params.put("bankNo", "6212261202028480466");
@@ -94,6 +96,23 @@ public class JsdTest extends BaseTest {
     	
     }
 
+    /**
+     * 续借重发短信
+     */
+    @Test
+    public void reSendSms() {
+    	String url = urlBase + "/third/eca/v1/sendMessage";
+    	Map<String, String> params = new HashMap<>();
+    	params.put("busiFlag", "XJ20180904002");
+    	params.put("type", SmsCodeType.DELAY.getCode());
+    	String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+    	Map<String, String> p = new HashMap<>();
+    	p.put("data", data);
+    	p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+    	String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+    	System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+    
     /**
      * 发起贷款申请
      */
