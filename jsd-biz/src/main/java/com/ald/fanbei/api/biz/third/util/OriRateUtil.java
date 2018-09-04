@@ -54,7 +54,7 @@ public class OriRateUtil extends AbstractThird {
             }else {
                 reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(params));
             }
-            logThird(reqResult, url, JSON.toJSONString(pay));
+            logThird(reqResult, url, pay);
             if (StringUtil.isBlank(reqResult)) {
                 return null;
             }

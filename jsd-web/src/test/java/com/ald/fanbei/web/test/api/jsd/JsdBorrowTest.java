@@ -110,4 +110,14 @@ public class JsdBorrowTest extends BaseTest {
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
     
+    public static void main(String[] args) {
+    	String src = "{\"reason\":\"\",\"borrowNo\":\"xgxy202314123090123123\",\"status\":\"FAILED\"}";
+    	
+    	String res = JsdAesUtil.encryptToBase64Third(src, AES_KEY);
+    	System.out.println(res);
+    	
+    	System.out.println(JsdAesUtil.decryptFromBase64Third("Cu2lW6Hb6LX+8wjBDbe4XnI+pxCswrH5p9kuXUd8RoBsGWbx7CWJ5jqFByiP/C1KvibQFI1v+w8BrQOGfhLwowp6XXQzcKWwecdhcx74tog=", AES_KEY));
+	}
+
+    
 }
