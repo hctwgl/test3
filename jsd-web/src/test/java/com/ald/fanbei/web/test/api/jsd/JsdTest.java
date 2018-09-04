@@ -11,8 +11,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.ald.fanbei.api.biz.arbitration.MD5;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.JsdSignUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.web.test.common.BaseTest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -22,7 +24,7 @@ public class JsdTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-	String urlBase = "http://localhost:8078";
+	String urlBase = "http://localhost:80";
 //    String urlBase = "http://192.168.112.40:8080";
     
     String userName = "13165995223";
@@ -85,6 +87,25 @@ public class JsdTest extends BaseTest {
     	
 //    	testH5(url, params, userName, true);
     	
+    }
+    
+    /**
+     * 续期回调
+     */
+    @Test
+    public void renewawlUpsCallBack() {
+        
+        String url = urlBase + "/third/ups/collect?";
+		String orderNo = "xj2018090421105600022";
+		String merPriv = PayOrderSource.RENEW_JSD.getCode();
+		String tradeNo = "csxj123456";
+		String tradeState = "00";
+		
+		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
+		url += reqStr;
+		Map<String,String> params = new HashMap<>();
+		
+		testApi(url, params, userName ,true);
     }
 
     /**
