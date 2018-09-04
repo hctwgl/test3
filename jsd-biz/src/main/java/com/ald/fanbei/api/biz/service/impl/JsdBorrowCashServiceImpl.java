@@ -14,6 +14,8 @@ import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowResp;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.service.JsdResourceService;
+import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.ald.fanbei.api.biz.third.util.OriRateUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
@@ -22,7 +24,6 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
-import com.ald.fanbei.api.dal.dao.JsdResourceDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 
 
@@ -41,7 +42,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	@Resource
     JsdBorrowCashDao jsdBorrowCashDao;
     @Resource
-    JsdResourceDao jsdResourceDao;
+    JsdResourceService jsdResourceService;
     
     @Resource
     OriRateUtil oriRateUtil;
@@ -103,21 +104,17 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 		BigDecimal borrowAmount = new BigDecimal(req.amount);
 		BigDecimal borrowDay = new BigDecimal(req.term);
 
-        // 查询新利率配置 TODO
-//        JsdResourceDo rateInfoDo = jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG, Constants.JSD_RATE_INFO);
-//        if (rateInfoDo != null) {
-//            String borrowRate = rateInfoDo.getValue();
-//            Map<String, Object> rateInfo = this.getRateInfo(borrowRate, borrowType, "borrow");
-//            double totalRate = (double) rateInfo.get("totalRate");
-//            newRate = BigDecimal.valueOf(totalRate / 100);
-//        } else {
+		ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(req.term);
 		
-        BigDecimal legalInterestRate = BigDecimal.ZERO;
-        BigDecimal legalServiceRate = BigDecimal.valueOf(0.36);
-        BigDecimal overdueRate = BigDecimal.valueOf(0.36);
+        BigDecimal legalInterestRate = rateInfo.interestRate;
+        BigDecimal legalServiceRate = rateInfo.serviceRate;
+        BigDecimal overdueRate = rateInfo.overdueRate;
+        
+        BigDecimal interestAmount = legalInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowAmount).multiply(borrowDay).setScale(2);
+        BigDecimal serviceAmount = legalServiceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowAmount).multiply(borrowDay).setScale(2);
         
         BigDecimal totalProfit = oriRateDaily.multiply(borrowAmount).multiply(borrowDay).setScale(2);
-        BigDecimal legalProfit = legalServiceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowAmount).multiply(borrowDay).setScale(2);
+        BigDecimal legalProfit = interestAmount.add(serviceAmount);
         
         BigDecimal orderCashService = BigDecimal.valueOf(10);
         BigDecimal finalDiffProfit = totalProfit.subtract(legalProfit).subtract(orderCashService);
@@ -129,9 +126,9 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         resp.totalAmount = borrowAmount.add(totalProfit).toString();
         resp.arrivalAmount = borrowAmount.toString();
         resp.interestRate = legalInterestRate.toString();
-        resp.interestAmount = BigDecimal.ZERO.toString();// TODO
+        resp.interestAmount = interestAmount.toString();
         resp.serviceRate = legalServiceRate.toString();
-        resp.serviceAmount = legalProfit.toString();
+        resp.serviceAmount = serviceAmount.toString();
         resp.overdueRate = overdueRate.toString();
         resp.billAmount = new BigDecimal[]{borrowAmount};
         resp.remark = "本金" + borrowAmount + "元,总利息" + legalProfit + "元";

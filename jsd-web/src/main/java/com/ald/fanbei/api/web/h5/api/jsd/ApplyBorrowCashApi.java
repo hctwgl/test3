@@ -21,6 +21,7 @@ import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
+import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.ald.fanbei.api.biz.third.util.OriRateUtil;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -93,8 +94,8 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         	BigDecimal oriRate = jsdBorrowCashService.getRiskOriRate(req.openId);
             JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(req.bankNo);
            
-            final JsdBorrowCashDo cashDo = buildBorrowCashDo(bo, mainCard, oriRate); 	// 主借款
-            final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(bo);					// 搭售商品订单
+            final JsdBorrowCashDo cashDo = buildBorrowCashDo(bo, mainCard, oriRate); 		// 主借款
+            final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(bo);				// 搭售商品订单
             final JsdBorrowLegalOrderCashDo orderCashDo = buildBorrowLegalOrderCashDo(bo);	// 订单借款
 
             transactionTemplate.execute(new TransactionCallback<Long>() {
@@ -155,24 +156,25 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
     private JsdBorrowCashDo buildBorrowCashDo(ApplyBorrowCashBo bo, JsdUserBankcardDo mainCard, BigDecimal riskRateDaily) {
     	ApplyBorrowCashReq req = bo.req;
     	
-        BigDecimal legalInterestRateDaily = BigDecimal.ZERO;
-        BigDecimal legalServiceRateDaily = BigDecimal.valueOf(0.36).divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+    	ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(req.term);
+    	
+        BigDecimal interestRateDaily = rateInfo.interestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+        BigDecimal serviceRateDaily = rateInfo.serviceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
         
-        BigDecimal legalServiceAmount = req.amount.multiply(legalServiceRateDaily).multiply(new BigDecimal(req.term));
-        BigDecimal legalInterestAmount = req.amount.multiply(legalInterestRateDaily).multiply(new BigDecimal(req.term));
+        BigDecimal serviceAmount = req.amount.multiply(serviceRateDaily).multiply(new BigDecimal(req.term));
+        BigDecimal interestAmount = req.amount.multiply(interestRateDaily).multiply(new BigDecimal(req.term));
         
         JsdBorrowCashDo afBorrowCashDo = new JsdBorrowCashDo();
         afBorrowCashDo.setAmount(req.amount);
+        afBorrowCashDo.setArrivalAmount(req.amount);// 到账金额和借款金额相同
         afBorrowCashDo.setCardName(mainCard.getBankName());
         afBorrowCashDo.setCardNumber(mainCard.getBankCardNumber());
         afBorrowCashDo.setType(req.term);
         afBorrowCashDo.setStatus(JsdBorrowCashStatus.APPLY.name());
         afBorrowCashDo.setUserId(bo.userId);
-        afBorrowCashDo.setRateAmount(legalInterestAmount);
-        afBorrowCashDo.setPoundage(legalServiceAmount);
-        // 到账金额和借款金额相同
-        afBorrowCashDo.setArrivalAmount(req.amount);
-        afBorrowCashDo.setPoundageRate(legalServiceRateDaily.setScale(2));
+        afBorrowCashDo.setRateAmount(interestAmount);
+        afBorrowCashDo.setPoundage(serviceAmount);
+        afBorrowCashDo.setPoundageRate(serviceRateDaily.setScale(2));
         afBorrowCashDo.setRiskDailyRate(riskRateDaily);
         afBorrowCashDo.setProductNo(req.productNo);
         afBorrowCashDo.setTradeNoXgxy(req.borrowNo);
