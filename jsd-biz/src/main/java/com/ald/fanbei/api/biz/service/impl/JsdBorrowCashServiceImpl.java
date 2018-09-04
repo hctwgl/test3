@@ -251,7 +251,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	private void jsdNoticeRecord(JsdBorrowCashDo cashDo,String msg, String status) {
         try {
             XgxyPayBo xgxyPayBo = buildXgxyPay(cashDo, msg, status);
-            JsdNoticeRecordDo noticeRecordDo = buildJsdNoticeRecord(cashDo,xgxyPayBo);
+            JsdNoticeRecordDo noticeRecordDo = buildJsdNoticeRecord(cashDo, xgxyPayBo);
             jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
             if(xgxyUtil.payNoticeRequest(xgxyPayBo)){
                 noticeRecordDo.setRid(noticeRecordDo.getRid());
@@ -266,7 +266,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     private XgxyPayBo buildXgxyPay(JsdBorrowCashDo cashDo, String msg,String status) {
         XgxyPayBo  xgxyPayBo = new XgxyPayBo();
         xgxyPayBo.setTradeNo(cashDo.getTradeNoUps());
-        xgxyPayBo.setBorrowNo(cashDo.getBorrowNo());
+        xgxyPayBo.setBorrowNo(cashDo.getTradeNoXgxy());
         xgxyPayBo.setReason(msg);
         xgxyPayBo.setStatus(status);
         xgxyPayBo.setGmtArrival(cashDo.getGmtArrival());

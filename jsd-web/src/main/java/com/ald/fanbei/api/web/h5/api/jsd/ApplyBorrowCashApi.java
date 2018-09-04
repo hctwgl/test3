@@ -88,6 +88,8 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
 	        ApplyBorrowCashReq req = bo.req = (ApplyBorrowCashReq)context.getParamEntity();
 	        bo.userId = context.getUserId();
         	
+	        jsdBorrowCashService.checkCanBorrow(context.getUserId());
+	        
         	BigDecimal oriRate = jsdBorrowCashService.getRiskOriRate(req.openId);
             JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(req.bankNo);
            

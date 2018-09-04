@@ -213,7 +213,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		    			JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(renewalDo.getBorrowId());
 		    			if(JsdBorrowLegalOrderCashStatus.APPLYING.getCode().equals(orderCashDo.getStatus())){
 		    				orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.CLOSED.getCode());
-		    				orderCashDo.setGmtModifed(now);
+		    				orderCashDo.setGmtModified(now);
 		    			}
 		    			// 关闭新增订单
 		    			JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getById(orderCashDo.getBorrowLegalOrderId());
@@ -286,7 +286,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 					
 					// 更新本次 订单借款状态
 					orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.getCode());//待还款
-					orderCashDo.setGmtModifed(new Date());
+					orderCashDo.setGmtModified(new Date());
 					jsdBorrowLegalOrderCashDao.updateById(orderCashDo);
 					
 					// 更新本次 订单状态为待发货
