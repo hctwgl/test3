@@ -29,5 +29,21 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      */
     List<JsdBorrowCashDo> getBorrowCashByStatusNotInFinshAndClosed(@Param("userId") Long userId);
 
+    /**
+     * 获取当前逾期数据的数量
+     * @param nowTime
+     * @return
+     */
+    int getBorrowCashOverdueCount(@Param("nowTime") Date nowTime);
+
+
+    /**
+     * 分页获取某个时间点的逾期借款
+     *
+     * */
+    List<JsdBorrowCashDo> getBorrowCashOverduePaging(@Param("nowTime") Date nowTime, @Param("beginIndex") int beginIndex, @Param("pageSize") int pageSize);
+
+    List<JsdBorrowCashDo> getBorrowCashOverduePaging(@Param("nowTime") Date nowTime, @Param("userIds") String userIds);
+
 
 }

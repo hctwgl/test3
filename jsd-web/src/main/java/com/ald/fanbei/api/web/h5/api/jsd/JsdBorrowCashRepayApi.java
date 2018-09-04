@@ -67,9 +67,7 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
         BorrowCashRepayBo bo = this.extractAndCheck(context, userId);
         bo.userDo = jsdUserDo;
         bo.remoteIp = context.getClientIp();
-        jsdBorrowCashRepaymentService.repay(bo,bo.payType);
-
-        Map<String, Object> hashMap = new HashMap<String, Object>();
+        Map<String, Object> hashMap=jsdBorrowCashRepaymentService.repay(bo,bo.payType);
         resp.setData(hashMap);
         return resp;
     }
@@ -102,6 +100,10 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
     }
 
     private void checkFrom(BorrowCashRepayBo bo) {
+      JsdBorrowCashRepaymentDo cashRepaymentDo=  jsdBorrowCashRepaymentService.getByRepayNo(bo.repayNo);
+      if(cashRepaymentDo!=null){
+          throw new FanbeiException(FanbeiExceptionCode.JSD_REPAY_REPAY_ERROR);
+      }
       JsdBorrowCashDo cashDo= jsdBorrowCashService.getByBorrowNo(bo.borrowNo);
       bo.borrowId=cashDo.getRid();
       if(cashDo  == null ){
@@ -114,7 +116,7 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
       JsdBorrowCashRepaymentDo repaymentDo= jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(cashDo.getRid());
       if(repaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(repaymentDo.getStatus())) {
             throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
-        }
+      }
       JsdBorrowLegalOrderRepaymentDo orderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getLastByBorrowId(cashDo.getRid());
       if(orderRepaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(orderRepaymentDo.getStatus())) {
            throw new FanbeiException(FanbeiExceptionCode.LEGAL_REPAY_PROCESS_ERROR);

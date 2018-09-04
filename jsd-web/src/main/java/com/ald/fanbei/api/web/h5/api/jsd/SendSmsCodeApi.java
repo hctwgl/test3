@@ -67,6 +67,13 @@ public class SendSmsCodeApi implements JsdH5Handle {
 		return new JsdH5HandleResponse(3001, FanbeiExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
 	}
 	if(SmsCodeType.REPAY.getCode().equals(type)){
+		JsdBorrowCashRepaymentDo repaymentDo=jsdBorrowCashRepaymentService.getByRepayNo(busiFlag);
+		JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByRepayNo(busiFlag);
+		if(repaymentDo!=null){
+			busiFlag=repaymentDo.getJsdRepayNo();
+		}else {
+			busiFlag=legalOrderRepaymentDo.getTradeNo();
+		}
 		String orderNo = generatorClusterNo.getRepaymentNo(new Date(), BankPayChannel.KUAIJIE.getCode());
 		respBo = upsUtil.quickPayResendSms(busiFlag,orderNo);
 		if (!respBo.isSuccess()) {

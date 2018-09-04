@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 public class Constants {
 
 
+
+
 	public static final String CACHEKEY_REPAYCASHNO_LOCK = "fbapi_repay_cash_no_lock";
 	public static final String XGXY_REQ_CODE_SUCC = "200";
 

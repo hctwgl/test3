@@ -60,10 +60,19 @@ public class ConfirmSmsApi implements JsdH5Handle {
 	private TransactionTemplate transactionTemplate;
 
 	@Resource
+	private JsdBorrowCashRepaymentService repaymentService;
+
+	@Resource
+	private JsdBorrowLegalOrderRepaymentService jsdBorrowLegalOrderRepaymentService;
+
+	@Resource
 	private UpsUtil upsUtil;
 
     @Autowired
     BizCacheUtil bizCacheUtil;
+
+    @Resource
+	XgxyUtil xgxyUtil;
 
     @Override
     public JsdH5HandleResponse process(Context context) {
@@ -84,6 +93,13 @@ public class ConfirmSmsApi implements JsdH5Handle {
 			if (beanName == null) {
 				// 未获取到缓存数据，支付订单过期
 				throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+			}
+			JsdBorrowCashRepaymentDo repaymentDo=repaymentService.getByRepayNo(busiFlag);
+			JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByRepayNo(busiFlag);
+			if(repaymentDo!=null){
+				busiFlag=repaymentDo.getJsdRepayNo();
+			}else {
+				busiFlag=legalOrderRepaymentDo.getTradeNo();
 			}
 
 			switch (beanName.toString()) {
@@ -135,8 +151,18 @@ public class ConfirmSmsApi implements JsdH5Handle {
 				jsdUserBankcardService.updateUserBankcard(userBankcardDo);
 				return new JsdH5HandleResponse(1556, FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR.getErrorMsg());
 			}
+			HashMap<String,String> cardMap=new HashMap<>();
+			cardMap.put("openId", String.valueOf(userId));
+			cardMap.put("bindNo", busiFlag);
+			if(res==1){
+				cardMap.put("status", "Y");
+			}else {
+				cardMap.put("status", "N");
+				cardMap.put("reason", FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR.getErrorMsg());
+			}
+			cardMap.put("timestamp",System.currentTimeMillis()+"");
+			xgxyUtil.bindBackNoticeRequest(cardMap);
 		}
-
 		resp.setData(map);
 		return resp;
     }

@@ -8,6 +8,7 @@ import com.ald.fanbei.api.biz.bo.xgxy.XgxyPayReqBo;
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyReqBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.JsdSignUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
@@ -94,7 +95,7 @@ public class XgxyUtil extends AbstractThird {
             Map<String, String> overdue = new HashMap<>();
             overdue.put("borrowNo", data.get("borrowNo"));
             overdue.put("overdueDays", data.get("overdueDays"));
-            overdue.put("curPeriod", data.get("curPeriod"));
+            overdue.put("period", data.get("curPeriod"));
             overdue.put("tradeNo", data.get("tradeNo"));
             params.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(overdue)), PRIVATE_KEY));
@@ -197,6 +198,45 @@ public class XgxyUtil extends AbstractThird {
     }
 
 
+    /**
+     * 绑卡通知
+     *
+     * @param data
+     * @return
+     */
+    public boolean bindBackNoticeRequest(HashMap<String, String> data) {
+        try {
+            logger.info("bindBackNoticeRequest start data = "+data);
+            Map<String, String> p = new HashMap<>();
+            p.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), "9c5dd35d58f8501f"));
+            p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),"9c5dd35d58f8501f"));
+            p.put("appId", "UJ3331");
+            String url = "http://192.168.156.236:1112/isp/open/third/eca/v1/bandBankCardNotify";
+            logger.info("data = " + data +",url = " +url );
+            String reqResult = "";
+            if (url.contains("https")){
+                reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(p));
+            }else {
+                reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+            }
+            logThird(reqResult, url, JSON.toJSONString(data));
+            if (StringUtil.isBlank(reqResult)) {
+                return false;
+            }
+            XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult, XgxyPayReqBo.class);
+            if (Constants.XGXY_REQ_CODE.equals(rePayRespResult.get("code"))) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.info("rePayNoticeRequest request fail", e);
+        }
+
+        return false;
+
+    }
+
+
+
     public String getUserContactsInfo(String openId) {
         try {
             Map<String, Object> params = new HashMap<>();
@@ -231,17 +271,13 @@ public class XgxyUtil extends AbstractThird {
     public static void main(String[] ars) {
 //        XgxyUtil xgxyUtil = new XgxyUtil();
 //        xgxyUtil.getUserContactsInfo("edspay21");
-    	
-    	HashMap<String, String> data = new HashMap<String, String>();
-		data.put("borrowNo", "dk2018081010282000095");
-		data.put("delayNo", "delay0904UJ3331287500000005");
-		data.put("status", "Y");
-		data.put("reason", "测试");
-		data.put("tradeNo", "123456");
-		data.put("timestamp", System.currentTimeMillis()+"");
-		
+        HashMap<String,String> cardMap=new HashMap<>();
+        cardMap.put("openId", "EB56E1F0A9383508DB8FD039C7D37BD1");
+        cardMap.put("bindNo", "bank0904eca291900000012");
+        cardMap.put("status", "Y");
+        cardMap.put("timestamp",System.currentTimeMillis()+"");
 		XgxyUtil xgxyUtil = new XgxyUtil();
-		System.out.println(xgxyUtil.jsdRenewalNoticeRequest(data));
+		System.out.println(xgxyUtil.bindBackNoticeRequest(cardMap));
 		
     }
 

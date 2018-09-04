@@ -86,6 +86,28 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 		return jsdBorrowCashDao.getCurrentLastBorrowNo(orderNoPre);
 	}
 	
+	@Override
+	public int getBorrowCashOverdueCount() {
+		Date date = new Date(System.currentTimeMillis());
+		Date bengin = DateUtil.getStartOfDate(date);
+		return jsdBorrowCashDao.getBorrowCashOverdueCount(bengin);
+	}
+
+	@Override
+	public List<JsdBorrowCashDo> getBorrowCashOverdue(int nowPage, int pageSize) {
+		Date date = new Date(System.currentTimeMillis());
+		Date bengin = DateUtil.getStartOfDate(date);
+		return jsdBorrowCashDao.getBorrowCashOverduePaging(bengin, nowPage, pageSize);
+	}
+
+	@Override
+	public List<JsdBorrowCashDo> getBorrowCashOverdueByUserIds(String userIds) {
+		Date date = new Date(System.currentTimeMillis());
+		Date bengin = DateUtil.getStartOfDate(date);
+		return jsdBorrowCashDao.getBorrowCashOverduePaging(bengin, userIds);
+	}
+	
+	
 	public void transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo) {
     	transactionTemplate.execute(new TransactionCallback<String>() {
             @Override

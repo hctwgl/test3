@@ -80,6 +80,8 @@ import java.math.BigDecimal;
      */
     private Long overdueDay;
 
+    private BigDecimal overdueRate;
+
     /**
      * 到账金额
      */
@@ -228,8 +230,17 @@ import java.math.BigDecimal;
       this.borrowNo = borrowNo;
     }
 
+    public BigDecimal getOverdueRate() {
+        return overdueRate;
+    }
+
+    public void setOverdueRate(BigDecimal overdueRate) {
+        this.overdueRate = overdueRate;
+    }
+
     /**
      * 获取用户id
+
      *
      * @return 用户id
      */

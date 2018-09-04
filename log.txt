@@ -1,0 +1,21 @@
+[2018-09-04 15:18:25] [ERROR] - Http post error!
+java.io.IOException: Server returned HTTP response code: 500 for URL: http://192.168.156.236:1112/isp/open/third/eca/v1/bandBankCardNotify
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1876)
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1474)
+	at com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(HttpUtil.java:320)
+	at com.ald.fanbei.api.biz.third.util.XgxyUtil.bindBackNoticeRequest(XgxyUtil.java:218)
+	at com.ald.fanbei.api.biz.third.util.XgxyUtil.main(XgxyUtil.java:278)
+[2018-09-04 15:18:45] [ERROR] - Http post error!
+java.io.IOException: Server returned HTTP response code: 500 for URL: http://192.168.156.236:1112/isp/open/third/eca/v1/bandBankCardNotify
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1876)
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1474)
+	at com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(HttpUtil.java:320)
+	at com.ald.fanbei.api.biz.third.util.XgxyUtil.bindBackNoticeRequest(XgxyUtil.java:218)
+	at com.ald.fanbei.api.biz.third.util.XgxyUtil.main(XgxyUtil.java:278)
+[2018-09-04 15:19:04] [ERROR] - Http post error!
+java.io.IOException: Server returned HTTP response code: 500 for URL: http://192.168.156.236:1112/isp/open/third/eca/v1/bandBankCardNotify
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1876)
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1474)
+	at com.ald.fanbei.api.common.util.HttpUtil.doHttpPostJsonParam(HttpUtil.java:320)
+	at com.ald.fanbei.api.biz.third.util.XgxyUtil.bindBackNoticeRequest(XgxyUtil.java:218)
+	at com.ald.fanbei.api.biz.third.util.XgxyUtil.main(XgxyUtil.java:278)
