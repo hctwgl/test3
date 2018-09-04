@@ -404,7 +404,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			map.put("type",repaymentDo.getType());
 			Date now=new Date();
 		    map.put("timestamp", String.valueOf(now.getTime()));
-		    if(JsdBorrowCashStatus.FINISHED.getCode().equals(borrowCashDo.getStatus())){
+		    if(JsdBorrowCashStatus.FINISHED.name().equals(borrowCashDo.getStatus())){
 				map.put("isFinish",YesNoStatus.YES.getCode());
 			}else {
 				map.put("isFinish",YesNoStatus.NO.getCode());
@@ -538,10 +538,10 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		cashDo.setRepayAmount(allRepayAmount);
 		cashDo.setType(JsdRepayType.ONLINE.getCode());
 		if (sumAmount.compareTo(allRepayAmount) <= 0) {
-			cashDo.setStatus(JsdBorrowCashStatus.FINISHED.getCode());
+			cashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
 			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
 		}else if (YesNoStatus.YES.getCode().equals(isBalance)){//线下还款平账
-			cashDo.setStatus(JsdBorrowCashStatus.FINISHED.getCode());
+			cashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
 			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
 		}
 	}
@@ -595,7 +595,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.FINISHED.getCode());
 			orderCashDo.setGmtFinish(now);
 		}else if (YesNoStatus.YES.getCode().equals(isBalance)){//线下还款平账
-			orderCashDo.setStatus(JsdBorrowCashStatus.FINISHED.getCode());
+			orderCashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
 			orderCashDo.setGmtFinish(now);
 		} else {
 			orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.PART_REPAID.getCode());

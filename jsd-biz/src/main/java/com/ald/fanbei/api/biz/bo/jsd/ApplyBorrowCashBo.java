@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 public class ApplyBorrowCashBo {
 
+	public Long userId;
     public ApplyBorrowCashReq req;
 	
 	@Component("applyBorrowCashReq")

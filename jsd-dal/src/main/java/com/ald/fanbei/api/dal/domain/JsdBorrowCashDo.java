@@ -25,6 +25,15 @@ import java.math.BigDecimal;
      * 借款编号
      */
     private String borrowNo;
+    
+    /**
+     * UPS打款流水号
+     */
+    private String tradeNoUps;
+    /**
+     * 西瓜申请流水号
+     */
+    private String tradeNoXgxy;
 
     /**
      * 用户id
@@ -732,5 +741,21 @@ import java.math.BigDecimal;
     public void setVersion(String version){
       this.version = version;
     }
+
+	public String getTradeNoUps() {
+		return tradeNoUps;
+	}
+
+	public void setTradeNoUps(String tradeNoUps) {
+		this.tradeNoUps = tradeNoUps;
+	}
+
+	public String getTradeNoXgxy() {
+		return tradeNoXgxy;
+	}
+
+	public void setTradeNoXgxy(String tradeNoXgxy) {
+		this.tradeNoXgxy = tradeNoXgxy;
+	}
 
 }

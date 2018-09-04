@@ -89,7 +89,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 
 		// 借款记录
 		JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByBorrowNo(paramBo.borrowNo);
-		if(borrowCashDo == null || !StringUtil.equals(borrowCashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.getCode())){
+		if(borrowCashDo == null || !StringUtil.equals(borrowCashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.name())){
 			throw new FanbeiException("No borrow can renewal", FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		}
 

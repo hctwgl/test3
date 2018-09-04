@@ -17,7 +17,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     JsdBorrowCashDo getByBorrowNo(String borrowNo);
 
-    boolean isCanBorrowCash(Long userId);
+    void checkCanBorrow(Long userId);
 
     String getCurrentLastBorrowNo(String orderNoPre);
     

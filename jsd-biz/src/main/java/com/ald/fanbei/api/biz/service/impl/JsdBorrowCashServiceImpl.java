@@ -17,6 +17,8 @@ import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.third.util.OriRateUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
+import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
@@ -55,9 +57,11 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	}
 
 	@Override
-	public boolean isCanBorrowCash(Long userId) {
+	public void checkCanBorrow(Long userId) {
 		List<JsdBorrowCashDo> notFinishBorrowList = jsdBorrowCashDao.getBorrowCashByStatusNotInFinshAndClosed(userId);
-		return notFinishBorrowList.isEmpty();
+		if(!notFinishBorrowList.isEmpty()) {
+			throw new FanbeiException(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
+		}
 	}
 
 	@Override
@@ -159,8 +163,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 		final JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
 		
         Date cur = new Date();
-        cashDo.setStatus(JsdBorrowCashStatus.CLOSED.code);
-        cashDo.setRemark("UPS打款失败，" + failMsg);
+        cashDo.setStatus(JsdBorrowCashStatus.CLOSED.name());
+        cashDo.setRemark("UPS异步打款失败，" + failMsg);
         cashDo.setGmtModified(cur);
         cashDo.setGmtClose(cur);
         
