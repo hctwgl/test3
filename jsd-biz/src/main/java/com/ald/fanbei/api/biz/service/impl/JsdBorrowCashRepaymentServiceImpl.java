@@ -401,7 +401,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	}
 	private void noticeXgxyRepayResult(JsdBorrowCashRepaymentDo repaymentDo){
 		HashMap data = buildData(repaymentDo);
-		logger.info("dealRepaymentSucess data cfp "+JSON.toJSONString(data));
+		logger.info("noticeXgxyRepayResult data cfp "+JSON.toJSONString(data));
 		xgxyUtil.dsedRePayNoticeRequest(data);
 	}
 	private HashMap buildData(JsdBorrowCashRepaymentDo repaymentDo){
