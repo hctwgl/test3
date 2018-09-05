@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.ups.UpsAuthSignRespBo;
+import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -67,11 +69,22 @@ public class JsdApplyBindBankCardMsgApi implements JsdH5Handle {
             isMain = YesNoStatus.YES.getCode();
         }
         //创建用户银行卡新加状态
-        JsdUserBankcardDo bankcardDo=jsdUserBankcardService.getByBindNo(bindNo);
+        JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getByBindNo(bindNo);
         JsdBankDo bank = jsdBankService.getBankByName(bankName);
         JsdUserBankcardDo userBankcard = buildUserCard(bank.getBankCode(), bankName, bankNo, bankMobile, userid, isMain, bindNo);
-        if(bankcardDo==null){
+        if(userBankcardDo==null){
             jsdUserBankcardService.addUserBankcard(userBankcard);
+        }
+        //默认赋值为借记卡
+        String cardType = "00";
+        JsdUserDo userDo=jsdUserService.getById(userid);
+        //调用ups
+        UpsAuthSignRespBo upsResult = upsUtil.authSign(userid.toString(), userDo.getRealName(), userBankcard.getMobile(), userDo.getIdNumber(), userBankcard.getBankCardNumber(), "02",
+                userBankcard.getBankCode(),cardType,userBankcard.getValidDate(),userBankcard.getSafeCode());
+        if(!upsResult.isSuccess()){
+            return new JsdH5HandleResponse(1542, FanbeiExceptionCode.AUTH_BINDCARD_ERROR.getDesc());
+        }else if(!"10".equals(upsResult.getNeedCode())){
+            return new JsdH5HandleResponse(1567, FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
         }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("timestamp", timestamp);

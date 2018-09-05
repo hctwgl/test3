@@ -327,6 +327,13 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		// 解锁还款
 		if(repaymentDo!=null){
 			unLockRepay(repaymentDo.getUserId());
+			try {
+				noticeXgxyRepayResult(repaymentDo,YesNoStatus.NO.getCode());
+			}
+			catch (Exception e){
+				logger.error("notice eca fail error=",e);
+			}
+
 		}
 
 	}
@@ -376,9 +383,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			if (resultValue == 1L) {
 				try {
-					HashMap data = buildData(repaymentDo);
-					logger.info("dealRepaymentSucess data cfp "+JSON.toJSONString(data));
-					xgxyUtil.dsedRePayNoticeRequest(data);
+					if(repaymentDo!=null){
+						noticeXgxyRepayResult(repaymentDo,YesNoStatus.YES.getCode());
+					}
 				}
 				catch (Exception e){
 					logger.error("notice eca fail error=",e);
@@ -392,12 +399,16 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			unLockRepay(repaymentDo.getUserId());
 		}
 	}
-
-	private HashMap buildData(JsdBorrowCashRepaymentDo repaymentDo){
+	private void noticeXgxyRepayResult(JsdBorrowCashRepaymentDo repaymentDo,String status){
+		HashMap data = buildData(repaymentDo,status);
+		logger.info("noticeXgxyRepayResult data cfp "+JSON.toJSONString(data));
+		xgxyUtil.dsedRePayNoticeRequest(data);
+	}
+	private HashMap buildData(JsdBorrowCashRepaymentDo repaymentDo,String status){
 		    HashMap<String,String> map=new HashMap<>();
 		    JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(repaymentDo.getBorrowId());
 		    map.put("repayNo",repaymentDo.getRepayNo());
-			map.put("status",YesNoStatus.YES.getCode());
+			map.put("status",status);
 			map.put("tradeNo",repaymentDo.getTradeNo());
 			map.put("borrowNo",borrowCashDo.getBorrowNo());
 			map.put("period","1");

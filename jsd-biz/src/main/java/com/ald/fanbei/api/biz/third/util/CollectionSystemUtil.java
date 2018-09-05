@@ -43,7 +43,7 @@ public class CollectionSystemUtil extends AbstractThird {
 	}
 
 	/**
-	 * 都市e贷主动还款通知催收平台
+	 * 极速贷逾期通知催收平台
 	 * @return
 	 */
 	public boolean noticeCollect(List<Map<String,String>>  data) {
