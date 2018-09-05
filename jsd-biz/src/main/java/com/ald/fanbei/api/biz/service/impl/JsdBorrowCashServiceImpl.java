@@ -187,7 +187,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         }
         
         TrialBeforeBorrowResp resp = new TrialBeforeBorrowResp();
-        resp.totalAmount = borrowAmount.add(totalProfit).toString();
+        resp.totalAmount = borrowAmount.add(legalProfit).add(orderCashService).add(new BigDecimal(req.goodsPrice)).toString();
         resp.arrivalAmount = borrowAmount.toString();
         resp.interestRate = legalInterestRate.toString();
         resp.interestAmount = interestAmount.toString();
