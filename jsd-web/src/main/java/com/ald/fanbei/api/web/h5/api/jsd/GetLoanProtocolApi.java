@@ -18,15 +18,14 @@ import com.ald.fanbei.api.common.enums.ProtocolType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.dal.domain.DsedLoanDo;
-import com.ald.fanbei.api.dal.domain.DsedResourceDo;
-import com.ald.fanbei.api.dal.domain.DsedUserDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdResourceDo;
+import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.web.common.Context;
-import com.ald.fanbei.api.web.common.DsedH5HandleResponse;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
+import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.GetLoanProtocolParam;
-import com.ald.fanbei.api.web.vo.DsedPrococolVo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -43,43 +42,42 @@ public class GetLoanProtocolApi implements JsdH5Handle {
 	@Resource
     JsdBorrowCashService jsdBorrowCashService;
     @Resource
-    JsdResourceService dsedResourceService;
+    JsdResourceService jsdResourceService;
     @Resource
-    JsdUserService dsedUserService;
+    JsdUserService jsdUserService;
 
     private static String notifyHost = null;
     
     @Override
-    public DsedH5HandleResponse process(Context context) {
-        DsedH5HandleResponse resp = new DsedH5HandleResponse(200, "成功");
+    public JsdH5HandleResponse process(Context context) {
+    	JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
      // 获取客户端请求参数
         GetLoanProtocolParam param = (GetLoanProtocolParam) context.getParamEntity();
         
-        String uid, amount, nper, loanRemark;
+        String uid, amount, nper, loanRemark = "tmp";
         if(StringUtils.isNotBlank(param.bizNo)) {
         	if(ProtocolType.BORROW.name().equals(param.type)) {
-        		DsedLoanDo loanDo = dsedLoanService.getByXgxyBorrowNo(param.bizNo);
-        		if(loanDo == null) {
+        		JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(param.bizNo);
+        		if(cashDo == null) {
         			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
         		}
-        		uid = loanDo.getUserId().toString();
-        		amount = loanDo.getAmount().toString();
-                nper = loanDo.getPeriods().toString();
-                loanRemark = loanDo.getLoanRemark();
+        		uid = cashDo.getUserId().toString();
+        		amount = cashDo.getAmount().toString();
+                nper = "1";
         	}else {
         		logger.warn("Don't support " + param.type + " protocol yet!");
-        		throw new FanbeiException(FanbeiExceptionCode.LOAN_PROTOCOL_NOT_SUPPORT_YET);
+        		throw new FanbeiException(FanbeiExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
         	}
         }else if(StringUtils.isNotBlank(param.previewParam)){
         	String previewParam = param.previewParam;
             JSONObject jsonObject = JSON.parseObject(previewParam);
             String openId = jsonObject.get("openId").toString();
-            DsedUserDo dsedUserDo = dsedUserService.getByOpenId(openId);
-            if(dsedUserDo == null) {
+            JsdUserDo jsdUserDo = jsdUserService.getByOpenId(openId);
+            if(jsdUserDo == null) {
             	throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             }
             
-            uid = dsedUserDo.getRid().toString();
+            uid = jsdUserDo.getRid().toString();
             amount = jsonObject.get("amount").toString();
             nper = jsonObject.get("nper").toString();
             loanRemark = jsonObject.get("loanRemark").toString();
@@ -87,29 +85,29 @@ public class GetLoanProtocolApi implements JsdH5Handle {
         	throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_ERROR);
         }
         
-        List<DsedResourceDo> dsedResourceDoList = dsedResourceService.getConfigByTypes("DSED_AGREEMENT");
-        List<DsedPrococolVo> dsedPrococolVoList = new ArrayList<>();
-        for (DsedResourceDo afResourceDo : dsedResourceDoList) {
-            DsedPrococolVo dsedPrococolVo = new DsedPrococolVo();
+        List<JsdResourceDo> jsdResourceDoList = jsdResourceService.listByType("DSED_AGREEMENT");
+        List<JsdPrococolVo> jsdPrococolVoList = new ArrayList<>();
+        for (JsdResourceDo afResourceDo : jsdResourceDoList) {
+        	JsdPrococolVo jsdPrococolVo = new JsdPrococolVo();
             if ("DSED_PLATFORM_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())) {//平台服务协议
-                dsedPrococolVo.setProtocolName("平台服务协议");
-                dsedPrococolVo.setProtocolUrl(getNotifyHost()+"/dsed-web/h5/dsedLoanPlatformServiceProtocol?userId=" + uid +
+                jsdPrococolVo.setProtocolName("平台服务协议");
+                jsdPrococolVo.setProtocolUrl(getNotifyHost()+"/dsed-web/h5/dsedLoanPlatformServiceProtocol?userId=" + uid +
                         "&nper=" + nper + "&loanId=" + param.bizNo + "&amount=" + amount + "&totalServiceFee=" + BigDecimal.ZERO);
             } else if ("DSED_LOAN_CONTRACT".equals(afResourceDo.getSecType())) {//借钱协议
-                dsedPrococolVo.setProtocolName("借钱协议");
-                dsedPrococolVo.setProtocolUrl(getNotifyHost()+"/dsed-web/h5/loanProtocol?userId=" + uid +
+                jsdPrococolVo.setProtocolName("借钱协议");
+                jsdPrococolVo.setProtocolUrl(getNotifyHost()+"/dsed-web/h5/loanProtocol?userId=" + uid +
                         "&amount=" + amount + "&nper=" + nper + "&loanId=" + param.bizNo + "&loanRemark=" + loanRemark +
                         "&repayRemark=" + "");
             } else if ("DIGITAL_CERTIFICATE_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())) {//数字证书
-                dsedPrococolVo.setProtocolName("数字证书");
-                dsedPrococolVo.setProtocolUrl(getNotifyHost()+"/dsed-web/app/numProtocol?userId=" + uid);
+                jsdPrococolVo.setProtocolName("数字证书");
+                jsdPrococolVo.setProtocolUrl(getNotifyHost()+"/dsed-web/app/numProtocol?userId=" + uid);
             } else if ("LETTER_OF_RISK".equals(afResourceDo.getSecType())) {//风险提示协议
-                dsedPrococolVo.setProtocolName("风险提示协议");
-                dsedPrococolVo.setProtocolUrl(getNotifyHost()+"/app/sys/riskWarning");
+                jsdPrococolVo.setProtocolName("风险提示协议");
+                jsdPrococolVo.setProtocolUrl(getNotifyHost()+"/app/sys/riskWarning");
             }
-            dsedPrococolVoList.add(dsedPrococolVo);
+            jsdPrococolVoList.add(jsdPrococolVo);
         }
-        resp.setData(dsedPrococolVoList);
+        resp.setData(jsdPrococolVoList);
         return resp;
     }
     
@@ -120,5 +118,22 @@ public class GetLoanProtocolApi implements JsdH5Handle {
         }
         return notifyHost;
     }
-
+    
+    public static class JsdPrococolVo{
+    	private String protocolName;
+    	private String protocolUrl;
+    	
+		public String getProtocolName() {
+			return protocolName;
+		}
+		public void setProtocolName(String protocolName) {
+			this.protocolName = protocolName;
+		}
+		public String getProtocolUrl() {
+			return protocolUrl;
+		}
+		public void setProtocolUrl(String protocolUrl) {
+			this.protocolUrl = protocolUrl;
+		}
+    }
 }

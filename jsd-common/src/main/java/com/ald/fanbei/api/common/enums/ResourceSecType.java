@@ -8,7 +8,7 @@ package com.ald.fanbei.api.common.enums;
  * @author suweili 2017年2月22日上午10:46:14
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public enum AfResourceSecType {
+public enum ResourceSecType {
 		ResourceValue1MainImage("MAIN_IMAGE", "主图"),
 		ResourceValue1OtherImage("OTHER_IMAGE", "副图"),
 		
@@ -123,7 +123,7 @@ public enum AfResourceSecType {
 	 	private String code;
 		private String name;
 	
-		AfResourceSecType(String code, String name) {
+		ResourceSecType(String code, String name) {
 			this.code = code;
 			this.name = name;
 		}
