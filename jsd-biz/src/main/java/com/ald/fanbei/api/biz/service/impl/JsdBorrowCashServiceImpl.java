@@ -114,7 +114,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	public List<JsdBorrowCashDo> getBorrowCashOverdueByUserIds(String userIds) {
 		Date date = new Date(System.currentTimeMillis());
 		Date bengin = DateUtil.getStartOfDate(date);
-		return jsdBorrowCashDao.getBorrowCashOverduePaging(bengin, userIds);
+		return jsdBorrowCashDao.getBorrowCashOverdueByUserIds(bengin, userIds);
 	}
 	
 	

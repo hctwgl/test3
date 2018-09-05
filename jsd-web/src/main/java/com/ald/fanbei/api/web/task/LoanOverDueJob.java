@@ -62,14 +62,12 @@ public class LoanOverDueJob {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
 
-    @Scheduled(cron = "0/5 * * * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void laonDueJob(){
         try{
         	String curHostIp = getHostIpUtil.getIpAddress();
         	logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-            String userIds = "";
-            String envType = ConfigProperties.get(Constants.CONF_KEY_INVELOMENT_TYPE);
-//            if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)){
+            if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)){
         		int pageSize = 200;
                 int totalRecord = borrowCashService.getBorrowCashOverdueCount();
                 int totalPageNum = (totalRecord + pageSize - 1) / pageSize;
@@ -77,26 +75,14 @@ public class LoanOverDueJob {
                     logger.info("borrowCashDueJob run finished,Loan Due size is 0.time=" + new Date());
                 }else {
                     logger.info("borrowCashDueJob run start,time=" + new Date());
-                    if (Constants.INVELOMENT_TYPE_ONLINE.equals(envType) || Constants.INVELOMENT_TYPE_TEST.equals(envType)) {
-                        for(int i = 0; i < totalPageNum; i++){
-                            List<JsdBorrowCashDo> borrowCashDos=borrowCashService.getBorrowCashOverdue(totalPageNum*i,pageSize);
-                            //计算逾期
-                            this.calcuOverdueRecords(borrowCashDos);
-                            //TODO 通知催收逾期人员通讯录
-                        }
-
-                    }else if(Constants.INVELOMENT_TYPE_PRE_ENV.equals(envType)){
-                        List<JsdBorrowCashDo> borrowCashDos=borrowCashService.getBorrowCashOverdueByUserIds(userIds);
+                    for(int i = 0; i < totalPageNum; i++){
+                        List<JsdBorrowCashDo> borrowCashDos=borrowCashService.getBorrowCashOverdue(totalPageNum*i,pageSize);
                         //计算逾期
-                        this.calcuOverdueRecords(borrowCashDos);
-                        //TODO 通知催收逾期人员通讯录
-
+                        this.dealOverdueRecords(borrowCashDos);
                     }
-
-
                 }
                 logger.info("borrowCashDueJob run end,time=" + new Date());
-//        	}
+        	}
         } catch (Exception e){
             logger.error("borrowCashDueJob  error, case=",e);
         }
@@ -106,7 +92,7 @@ public class LoanOverDueJob {
      *
      * @param
      */
-   void calcuOverdueRecords(List<JsdBorrowCashDo> jsdBorrowCashDos){
+   void dealOverdueRecords(List<JsdBorrowCashDo> jsdBorrowCashDos){
         for(JsdBorrowCashDo jsdBorrowCashDo:jsdBorrowCashDos){
             try {
                 logger.info("calcuOverdueRecords do borrowCashDueJob, borrowCashId="+jsdBorrowCashDo.getRid());
@@ -137,21 +123,28 @@ public class LoanOverDueJob {
                     borrowLegalOrderCashDo.setOverdueAmount(oldOverdueorderAmount.add(newOverdueorderAmount));
                     borrowLegalOrderCashDo.setRid(borrowLegalOrderCashDo.getRid());
                     jsdBorrowLegalOrderCashService.updateById(borrowLegalOrderCashDo);
+                    jsdBorrowCashOverdueLogService.saveRecord(buildLoanOverdueLog(borrowLegalOrderCashDo.getRid(),orderAmount,newOverdueorderAmount,borrowLegalOrderCashDo.getUserId()));
                 }
                 //新增逾期日志
                 jsdBorrowCashOverdueLogService.saveRecord(buildLoanOverdueLog(jsdBorrowCashDo.getRid(), currentAmount, newOverdueAmount, jsdBorrowCashDo.getUserId()));
                 //TODO 发送补偿通知到西瓜信用
-                xgxyUtil.overDueNoticeRequest(borrowLegalOrderCashDo(jsdBorrowCashDo,borrowLegalOrderCashDo));
+               // xgxyUtil.overDueNoticeRequest(buildBorrowLegalOrderCashDo(jsdBorrowCashDo,borrowLegalOrderCashDo));
             } catch (Exception e) {
                 logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId="+jsdBorrowCashDo.getRid());
             }
+            //TODO 通知催收逾期人员通讯录
+            //collectionSystemUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
         }
 
    }
 
-   Map<String,String> borrowLegalOrderCashDo(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo){
+    Map<String,String> buildBorrowLegalOrderCashDo(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo){
         return null;
-   }
+    }
+
+    List<Map<String,String>> buildOverdueContactsDo(List<JsdBorrowCashDo> jsdBorrowCashDos){
+        return null;
+     }
    private JsdBorrowCashOverdueLogDo buildLoanOverdueLog(Long borrowId,BigDecimal currentAmount,BigDecimal interest,Long userId){
        JsdBorrowCashOverdueLogDo overdueLog = new JsdBorrowCashOverdueLogDo();
        overdueLog.setBorrowId(borrowId);
