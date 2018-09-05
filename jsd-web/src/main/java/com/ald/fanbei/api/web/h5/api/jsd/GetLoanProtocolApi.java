@@ -35,7 +35,7 @@ import com.alibaba.fastjson.JSONObject;
  * @类描述：获取协议列表接口
  * @注意：本内容仅限于浙江阿拉丁电子商务股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-@Component("dsedGetLoanProtocolApi")
+@Component("getLoanProtocolApi")
 @Validator("getLoanProtocolParam")
 public class GetLoanProtocolApi implements JsdH5Handle {
 
