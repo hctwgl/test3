@@ -209,7 +209,7 @@ public class XgxyUtil extends AbstractThird {
             p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             p.put("appId", "UJ3331");
-            String url = "http://192.168.156.236:1112/isp/open/third/eca/v1/bandBankCardNotify";
+            String url = getXgxyUrl()+"/isp/open/third/eca/v1/bandBankCardNotify";
             logger.info("data = " + data +",url = " +url );
             String reqResult = "";
             if (url.contains("https")){
