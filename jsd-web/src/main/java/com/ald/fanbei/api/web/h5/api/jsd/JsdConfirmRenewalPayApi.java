@@ -110,7 +110,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		paramBo.userDo = userDo;
 		paramBo.borrowCashDo = borrowCashDo;
 
-		transactionTemplate.execute(new TransactionCallback<Long>() {
+		long result = transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
@@ -144,10 +144,13 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 			}
 		});
 
-		Map<String, Object> resultMap = jsdBorrowCashRenewalService.doRenewal(paramBo);
-		
-		JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功", resultMap);
-        return resp;
+		if(result == 1l){
+			Map<String, Object> resultMap = jsdBorrowCashRenewalService.doRenewal(paramBo);
+			JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功", resultMap);
+			return resp;
+		}else {
+			throw new FanbeiException("JsdConfirmRenewal error", FanbeiExceptionCode.RENEWAL_FAIL_ERROR);
+		}
 	}
 
 
