@@ -34,7 +34,7 @@ public class SecurityLoanOverDueJob {
     private LoanOverDueJob loanOverDueJob;
 
 
-    @Scheduled(cron = "* 0/5 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void laonDueJob(){
         try{
             String userIds=SecurityReaderUtil.getProperties();
