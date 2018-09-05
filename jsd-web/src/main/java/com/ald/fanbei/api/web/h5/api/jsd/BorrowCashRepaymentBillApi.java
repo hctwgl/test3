@@ -31,7 +31,7 @@ public class BorrowCashRepaymentBillApi implements JsdH5Handle {
     public JsdH5HandleResponse process(Context context) {
         JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
         String borrowNo = ObjectUtils.toString(context.getData("borrowNo"), null);
-        JsdBorrowCashDo cashDo=jsdBorrowCashService.getByBorrowNo(borrowNo);
+        JsdBorrowCashDo cashDo=jsdBorrowCashService.getByTradeNoXgxy(borrowNo);
         JsdBorrowLegalOrderCashDo orderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(cashDo.getRid());
         Map<String, Object> map = buildBorrowBill(cashDo,orderCashDo);
         resp.setData(map);

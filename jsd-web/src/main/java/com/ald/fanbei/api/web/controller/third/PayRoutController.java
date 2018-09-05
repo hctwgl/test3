@@ -100,7 +100,7 @@ public class PayRoutController {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 打款成功
 				jsdBorrowCashService.dealBorrowSucc(result, outTradeNo);
     		} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 打款失败
-    			jsdBorrowCashService.dealBorrowFail(result, outTradeNo, "");
+    			jsdBorrowCashService.dealBorrowFail(result, outTradeNo, "UPS打款异步反馈失败");
 			}
 			return "SUCCESS";
 		} catch (Exception e) {

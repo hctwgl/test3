@@ -47,14 +47,14 @@ public class OriRateUtil extends AbstractThird {
             params.put("appId", "edspay");
             params.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
-            String url = getXgxyUrl() + "/open/third/eca/v1/getlayeredRate";
+            String url = getXgxyUrl() + "/isp/open/third/eca/v1/getlayeredRate";
             String reqResult = "";
             if (url.contains("https")){
                 reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(params));
             }else {
                 reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(params));
             }
-            logThird(reqResult, url, JSON.toJSONString(pay));
+            logThird(reqResult, url, pay);
             if (StringUtil.isBlank(reqResult)) {
                 return null;
             }

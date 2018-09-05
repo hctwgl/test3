@@ -30,7 +30,7 @@ import java.math.BigDecimal;
     /**
      * 
      */
-    private Date gmtModifed;
+    private Date gmtModified;
 
     /**
      * 
@@ -194,24 +194,6 @@ import java.math.BigDecimal;
      */
     public void setGmtCreate(Date gmtCreate){
       this.gmtCreate = gmtCreate;
-    }
-
-    /**
-     * 获取
-     *
-     * @return 
-     */
-    public Date getGmtModifed(){
-      return gmtModifed;
-    }
-
-    /**
-     * 设置
-     * 
-     * @param gmtModifed 要设置的
-     */
-    public void setGmtModifed(Date gmtModifed){
-      this.gmtModifed = gmtModifed;
     }
 
     /**
@@ -664,5 +646,13 @@ import java.math.BigDecimal;
     public void setGmtFinish(Date gmtFinish){
       this.gmtFinish = gmtFinish;
     }
+
+	public Date getGmtModified() {
+		return gmtModified;
+	}
+
+	public void setGmtModified(Date gmtModified) {
+		this.gmtModified = gmtModified;
+	}
 
 }

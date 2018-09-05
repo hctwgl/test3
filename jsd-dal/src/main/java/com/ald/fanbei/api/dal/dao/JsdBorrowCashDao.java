@@ -20,6 +20,8 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
 
     JsdBorrowCashDo getByBorrowNo(@Param("borrowNo") String borrowNo);
 
+    JsdBorrowCashDo getByTradeNoXgxy(@Param("tradeNoXgxy") String tradeNoXgxy);
+    
     /**
      * 获取不在finish和closed状态的借款
      *

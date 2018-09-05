@@ -16,8 +16,8 @@
         <if test="gmtCreate !=null">
             AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
         </if>
-        <if test="gmtModifed !=null">
-            AND gmt_modified = #{gmtModifed,jdbcType=TIMESTAMP}
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
         <if test="userId != null and userId != ''">
             AND user_id = #{userId,jdbcType=INTEGER}
@@ -103,8 +103,8 @@
 	        <if test="gmtCreate != null">        
 	            gmt_create,
 	        </if>
-	        <if test="gmtModifed != null">
-                gmt_modified,
+	        <if test="gmtModified != null">        
+	            gmt_modified,
 	        </if>
 	        <if test="userId != null">        
 	            user_id,
@@ -187,8 +187,8 @@
 		    <if test="gmtCreate != null" >
 		       #{gmtCreate,jdbcType=TIMESTAMP},
 		    </if>
-		    <if test="gmtModifed != null" >
-		       #{gmtModifed,jdbcType=TIMESTAMP},
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
 		    </if>
 		    <if test="userId != null" >
 		       #{userId,jdbcType=INTEGER},
