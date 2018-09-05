@@ -2,8 +2,12 @@ package com.ald.fanbei.api.web.task;
 
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.util.GetHostIpUtil;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.SecurityReaderUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -33,14 +37,22 @@ public class SecurityLoanOverDueJob {
     @Resource
     private LoanOverDueJob loanOverDueJob;
 
+    @Resource
+    GetHostIpUtil getHostIpUtil;
 
-    @Scheduled(cron = "0 0/5 * * * ?")
+    private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
+
+    @Scheduled(cron = "0/5 * * * * ?")
     public void laonDueJob(){
-        try{
-            String userIds=SecurityReaderUtil.getProperties();
-            List<JsdBorrowCashDo> borrowCashDo=borrowCashService.getBorrowCashOverdueByUserIds(userIds.substring(0,userIds.length()-1));
-            loanOverDueJob.dealOverdueRecords(borrowCashDo);
-            logger.info("securityLoanOverDueJob run end,time=" + new Date());
+        String curHostIp = getHostIpUtil.getIpAddress();
+        logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
+         try{
+                if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)) {
+                    String userIds = SecurityReaderUtil.getProperties();
+                    List<JsdBorrowCashDo> borrowCashDo = borrowCashService.getBorrowCashOverdueByUserIds(userIds.substring(0, userIds.length() - 1));
+                    loanOverDueJob.dealOverdueRecords(borrowCashDo);
+                    logger.info("securityLoanOverDueJob run end,time=" + new Date());
+                }
         } catch (Exception e){
             logger.error("securityLoanOverDueJob  error, case=",e);
         }

@@ -19,7 +19,7 @@ public interface JsdBorrowLegalOrderCashService extends ParentService<JsdBorrowL
 	JsdBorrowLegalOrderCashDo getLastOrderCashByBorrowId(Long borrowId);
 
 
-    JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(@Param("borrowId")Long borrowId);
+    JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(Long borrowId);
     /**
      * 计算剩余应还的金额
      * @param cashDo
@@ -27,4 +27,9 @@ public interface JsdBorrowLegalOrderCashService extends ParentService<JsdBorrowL
      * @return
      */
     BigDecimal calculateLegalRestAmount(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderCashDo orderCashDo);
+
+
+    JsdBorrowLegalOrderCashDo getOverdueBorrowLegalOrderCashByBorrowId(Long borrowId);
+
+
 }

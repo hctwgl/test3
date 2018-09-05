@@ -3,6 +3,7 @@ package com.ald.fanbei.api.biz.service.impl;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 
 /**
@@ -61,6 +63,13 @@ public class JsdBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<JsdBor
 					.subtract(orderCashDo.getRepaidAmount());
 		}
 		return restAmount;
+	}
+
+	@Override
+	public JsdBorrowLegalOrderCashDo getOverdueBorrowLegalOrderCashByBorrowId(Long borrowId) {
+		Date now=new Date(System.currentTimeMillis());
+        Date bengin = DateUtil.getStartOfDate(now);
+		return jsdBorrowLegalOrderCashDao.getOverdueBorrowLegalOrderCashByBorrowId(borrowId,bengin);
 	}
 
 	@Override

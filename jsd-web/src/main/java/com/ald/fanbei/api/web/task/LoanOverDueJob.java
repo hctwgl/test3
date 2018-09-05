@@ -113,7 +113,7 @@ public class LoanOverDueJob {
                 jsdBorrowCashDo.setOverdueDay(jsdBorrowCashDo.getOverdueDay()+1);
                 jsdBorrowCashDo.setOverdueStatus("Y");
                 borrowCashService.updateById(jsdBorrowCashDo);
-                JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(jsdBorrowCashDo.getRid());
+                JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo=jsdBorrowLegalOrderCashService.getOverdueBorrowLegalOrderCashByBorrowId(jsdBorrowCashDo.getRid());
                 if(borrowLegalOrderCashDo!=null){
                     BigDecimal orderAmount = BigDecimalUtil.add(borrowLegalOrderCashDo.getAmount(), borrowLegalOrderCashDo.getSumRepaidInterest(), borrowLegalOrderCashDo.getSumRepaidPoundage()).subtract(borrowLegalOrderCashDo.getRepaidAmount());// 当前本金
                     BigDecimal oldOverdueorderAmount = borrowLegalOrderCashDo.getOverdueAmount();//当前逾期
@@ -130,7 +130,7 @@ public class LoanOverDueJob {
                 //TODO 发送补偿通知到西瓜信用
                // xgxyUtil.overDueNoticeRequest(buildBorrowLegalOrderCashDo(jsdBorrowCashDo,borrowLegalOrderCashDo));
             } catch (Exception e) {
-                logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId="+jsdBorrowCashDo.getRid());
+                logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId="+jsdBorrowCashDo.getRid(),e);
             }
             //TODO 通知催收逾期人员通讯录
             //collectionSystemUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));

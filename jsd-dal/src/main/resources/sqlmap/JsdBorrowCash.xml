@@ -468,9 +468,9 @@
 
     <select id="getBorrowCashOverdueByUserIds" resultType="JsdBorrowCashDo">
 		SELECT
-          <include refid="queryFields"/>
+         <include refid="queryFields"/>
 		FROM
-             jsd_borrow_cash b where b.is_delete=0
+            jsd_borrow_cash b where b.is_delete=0
 			and  status ='TRANSFERRED' and b.gmt_plan_repayment <![CDATA[   <  ]]> #{nowTime} and user_id in (${userIds})
 	</select>
 
