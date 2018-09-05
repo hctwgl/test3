@@ -1,8 +1,8 @@
 package com.ald.fanbei.api.dal.domain;
 
-import com.ald.fanbei.api.common.AbstractSerial;
 import java.util.Date;
-import java.math.BigDecimal;
+
+import com.ald.fanbei.api.common.AbstractSerial;
 
 /**
  * 极速贷用户信息实体

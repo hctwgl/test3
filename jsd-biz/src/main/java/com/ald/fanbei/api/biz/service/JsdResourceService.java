@@ -1,5 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
+
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 
@@ -14,6 +16,8 @@ import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 public interface JsdResourceService extends ParentService<JsdResourceDo, Long>{
 
 	JsdResourceDo getByTypeAngSecType(String type, String secType);
+	
+	List<JsdResourceDo> listByType(String type);
 	
 	ResourceRateInfoBo getRateInfo(String borrowType);
 

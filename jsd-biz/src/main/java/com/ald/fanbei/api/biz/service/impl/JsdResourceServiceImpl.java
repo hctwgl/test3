@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -57,6 +58,11 @@ public class JsdResourceServiceImpl extends ParentServiceImpl<JsdResourceDo, Lon
 		public BigDecimal interestRate;
 		public BigDecimal serviceRate;
 		public BigDecimal overdueRate;
+	}
+
+	@Override
+	public List<JsdResourceDo> listByType(String type) {
+		return jsdResourceDao.listByType(type);
 	}
 	
 }

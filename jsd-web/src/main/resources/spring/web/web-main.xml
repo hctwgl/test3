@@ -104,9 +104,11 @@
                 <entry key="/third/eca/v1/getBorrowStatus" value-ref="getBorrowStatusApi" />
                 <entry key="/third/eca/v1/getBorrowFeeDetail" value-ref="trialBeforeBorrowApi" />
 				<entry key="/third/eca/v1/pushBorrow" value-ref="applyBorrowCashApi" />
+				
+				<!-- 协议 -->
+				<entry key="/third/eca/v1/getProtocolInfo" value-ref="getLoanProtocolApi" />
                 
 				<entry key="/third/eca/v1/syncUserInfo" value-ref="jsdSyncUserInfoApi" />
-
 			</map>
 		</constructor-arg>
 	</bean>
