@@ -65,16 +65,60 @@ public class JsdGatewayController {
     @Resource
     InterceptorChain interceptorChain;
 
+    /**
+     * 忽略处理openId的逻辑，适用于同步用户信息，注册，登陆的接口
+     * @param param
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping(value = {"/third/eca/v1/syncUserInfo"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String handleIgnoreOpenId(@RequestBody JsdParam param, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
+        response.setContentType("application/json;charset=utf-8");
+        
+        JsdH5HandleResponse baseResponse;
+        Context context = null;
+        Long stmap = System.currentTimeMillis();
+        try {
+        	ContextBuilder contextBuilder = new ContextBuilder();
+            JSONObject dataMap = new JSONObject();
+            String data = param.getData();
+            
+            if (StringUtils.isNotEmpty(data)) dataMap = JSON.parseObject(AesUtil.decryptFromBase64Third(data, PRIVATE_KEY));
+            
+            contextBuilder.method(request.getRequestURI());
+            contextBuilder.dataMap(dataMap);
+            contextBuilder.clientIp(CommonUtil.getIpAddr(request));
+            context = contextBuilder.build();
+            logger.debug("buildContext success, ori data = "+data+", final context=" + JSON.toJSONString(context));
+        	
+            this.checkSign(context, param.getSign());
+            baseResponse = this.doProcess(context);
+        } catch (FanbeiException e) {
+            baseResponse = buildErrorResult(e, request);
+        } catch (Exception e) {
+            baseResponse = buildErrorResult(FanbeiExceptionCode.SYSTEM_ERROR, request);
+        }
+        
+        doBiLog(context, request, baseResponse, System.currentTimeMillis() - stmap);
+        return JSON.toJSONString(baseResponse);
+    }
+    
+    /**
+     * 此路径匹配的所有接口要求必须携带openId
+     */
     @RequestMapping(value = {"/third/xgxy/v1/**","/third/eca/v1/**"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     @ResponseBody
-    public String h5Request(@RequestBody JsdParam param, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public String handle(@RequestBody JsdParam param, HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
         response.setContentType("application/json;charset=utf-8");
         
         return this.processRequest(request, param.getData(), param.getSign());
     }
 
-    
     private String processRequest(HttpServletRequest request, String data, String sign) {
         JsdH5HandleResponse baseResponse;
         Context context = null;

@@ -13,8 +13,8 @@ import org.junit.Test;
 import com.ald.fanbei.api.biz.arbitration.MD5;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.JsdAesUtil;
 import com.ald.fanbei.api.common.util.JsdSignUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.web.test.common.BaseTest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -24,10 +24,11 @@ public class JsdTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-	String urlBase = "http://localhost:80";
+	String urlBase = "http://localhost:8078";
 //    String urlBase = "http://192.168.112.40:8080";
     
     String userName = "13165995223";
+    private static final String AES_KEY = "9c5dd35d58f8501f";
 
     /**
      * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -37,6 +38,27 @@ public class JsdTest extends BaseTest {
         super.init(userName);
     }
 
+    /**
+     * 同步用户信息
+     */
+    @Test
+    public void syncUserInfo() {
+    	String url = urlBase + "/third/eca/v1/syncUserInfo";
+    	JSONObject params = new JSONObject();
+        params.put("userId", "36C91DFB07EB236DF28CC32187EDA223");
+        params.put("realName", "朱江丰");
+        params.put("idNumber", "320324198911057031");
+        params.put("bankMobile", "15968196088");
+        String data = JsdAesUtil.encryptToBase64Third(JSON.toJSONString(params), AES_KEY);
+        
+        Map<String, String> p = new HashMap<>();
+        p.put("data", data);
+        p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+    
     /**
      * 获取续借详情
      */
