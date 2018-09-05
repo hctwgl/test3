@@ -79,8 +79,8 @@ public class JsdApplyBindBankCardMsgApi implements JsdH5Handle {
         String cardType = "00";
         JsdUserDo userDo=jsdUserService.getById(userid);
         //调用ups
-        UpsAuthSignRespBo upsResult = upsUtil.authSign(userid.toString(), userDo.getRealName(), userBankcardDo.getMobile(), userDo.getIdNumber(), userBankcardDo.getBankCardNumber(), "02",
-                userBankcardDo.getBankCode(),cardType,userBankcardDo.getValidDate(),userBankcardDo.getSafeCode());
+        UpsAuthSignRespBo upsResult = upsUtil.authSign(userid.toString(), userDo.getRealName(), userBankcard.getMobile(), userDo.getIdNumber(), userBankcard.getBankCardNumber(), "02",
+                userBankcard.getBankCode(),cardType,userBankcard.getValidDate(),userBankcard.getSafeCode());
         if(!upsResult.isSuccess()){
             return new JsdH5HandleResponse(1542, FanbeiExceptionCode.AUTH_BINDCARD_ERROR.getDesc());
         }else if(!"10".equals(upsResult.getNeedCode())){
