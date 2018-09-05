@@ -156,17 +156,24 @@ public class GetRenewalDetailApi implements JsdH5Handle {
 		BigDecimal renewalAmount = new BigDecimal(delayInfo.get("principalAmount").toString());
 		BigDecimal renewalDay = new BigDecimal(delayInfo.get("delayDay").toString());
 
+		// 借款利息手续费
 		BigDecimal rateAmount = BigDecimalUtil.multiply(renewalAmount, interestRate, renewalDay.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
 		BigDecimal poundage = BigDecimalUtil.multiply(renewalAmount, serviceRate, renewalDay.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
+		
+		// 订单手续费
+		 BigDecimal orderCashService = BigDecimal.valueOf(10);
 		
 		// 用户分层利率
 		BigDecimal riskDailyRate = borrowCashDo.getRiskDailyRate();
 		// 总利润
 		BigDecimal totalDiffFee = BigDecimalUtil.multiply(renewalAmount, renewalDay, riskDailyRate);
 		
-		BigDecimal diffFee = totalDiffFee.subtract(rateAmount).subtract(poundage);
+		BigDecimal finalDiffProfit = totalDiffFee.subtract(rateAmount).subtract(poundage).subtract(orderCashService);
+		if (finalDiffProfit.compareTo(BigDecimal.ZERO) <= 0) {
+        	finalDiffProfit = BigDecimal.ZERO;
+        }
 		
-		return diffFee;
+		return finalDiffProfit;
 	}
 }
 
