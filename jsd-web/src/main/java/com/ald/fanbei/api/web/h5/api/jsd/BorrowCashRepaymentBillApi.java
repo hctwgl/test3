@@ -11,9 +11,13 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
@@ -27,6 +31,8 @@ public class BorrowCashRepaymentBillApi implements JsdH5Handle {
 
     @Resource
     private JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
+    @Resource
+    private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
     @Override
     public JsdH5HandleResponse process(Context context) {
         JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
@@ -50,7 +56,20 @@ public class BorrowCashRepaymentBillApi implements JsdH5Handle {
         map.put("unrepayGoodsSellAmount",unrepayGoodsSellAmount);
         List<Map<String,Object>>  borrowBillDetails=new ArrayList<>();
         Map<String,Object> borrowBillDetail=new HashMap<>();
-        borrowBillDetail.put("status",cashDo.getStatus());
+        
+        String status = "AWAIT_REPAY";	// 待还款
+        if(cashDo.getRepayAmount().compareTo(BigDecimal.ZERO) > 0){
+        	status = "PART_REPAY";		// 部分还款
+        	if(JsdBorrowCashStatus.FINISHED.equals(cashDo.getStatus())) {
+        		status = "FINISHED";	// 已还清	
+        	}
+        }
+        JsdBorrowCashRepaymentDo repaymentDo = jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(cashDo.getRid());
+        if(repaymentDo!=null && JsdBorrowCashRepaymentStatus.PROCESS.equals(repaymentDo.getStatus())){
+        	status = "REPAYING";	// 还款中
+        }
+        borrowBillDetail.put("status",status);
+
         borrowBillDetail.put("overdueStatus",cashDo.getOverdueStatus());
         borrowBillDetail.put("totalPeriod","1");
         borrowBillDetail.put("period","1");
@@ -66,7 +85,7 @@ public class BorrowCashRepaymentBillApi implements JsdH5Handle {
         borrowBillDetail.put("repaidAmount",cashDo.getRepayAmount());
         BigDecimal unrepayAmount=BigDecimal.ZERO;
         unrepayAmount=unrepayAmount.add(cashDo.getAmount()).add(cashDo.getOverdueAmount()).add(cashDo.getPoundage()).add(cashDo.getRateAmount()).add(cashDo.getSumOverdue())
-                .add(cashDo.getSumRate()).add(cashDo.getSumRenewalPoundage()).subtract(cashDo.getRepayAmount());
+        		.add(cashDo.getSumRate()).add(cashDo.getSumRenewalPoundage()).subtract(cashDo.getRepayAmount());
         borrowBillDetail.put("unrepayAmount", unrepayAmount);
         borrowBillDetail.put("unrepayInterestAmount", cashDo.getRateAmount());
         borrowBillDetail.put("unrepayOverdueAmount", cashDo.getOverdueAmount());
