@@ -85,7 +85,7 @@ public class BorrowCashRepaymentBillApi implements JsdH5Handle {
         borrowBillDetail.put("repaidAmount",cashDo.getRepayAmount());
         BigDecimal unrepayAmount=BigDecimal.ZERO;
         unrepayAmount=unrepayAmount.add(cashDo.getAmount()).add(cashDo.getOverdueAmount()).add(cashDo.getPoundage()).add(cashDo.getRateAmount()).add(cashDo.getSumOverdue())
-        		.add(cashDo.getSumRate()).add(cashDo.getSumRenewalPoundage()).subtract(cashDo.getRepayAmount());
+        		.add(cashDo.getSumRate()).add(cashDo.getSumRenewalPoundage()).add(unrepayGoodsAmount).add(unrepayGoodsSellAmount).subtract(cashDo.getRepayAmount());
         borrowBillDetail.put("unrepayAmount", unrepayAmount);
         borrowBillDetail.put("unrepayInterestAmount", cashDo.getRateAmount());
         borrowBillDetail.put("unrepayOverdueAmount", cashDo.getOverdueAmount());
