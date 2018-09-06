@@ -32,6 +32,7 @@ import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
+import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.ResourceType;
@@ -389,7 +390,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
 		noticeRecordDo.setUserId(renewalDo.getUserId());
 		noticeRecordDo.setRefId(String.valueOf(renewalDo.getRid()));
-		noticeRecordDo.setType(PayOrderSource.RENEW_JSD.getCode());
+		noticeRecordDo.setType(JsdNoticeType.RENEW.code);
 		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 		noticeRecordDo.setParams(JSON.toJSONString(data));
 		jsdNoticeRecordService.addNoticeRecord(noticeRecordDo);
