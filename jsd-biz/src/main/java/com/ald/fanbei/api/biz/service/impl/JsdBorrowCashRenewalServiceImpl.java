@@ -32,7 +32,6 @@ import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
-import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.ResourceType;
@@ -183,6 +182,9 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		}
 	}
 
+	/**
+	 * 修改状态
+	 */
 	private long dealChangStatus(final String renewalNo, final String tradeNo, final String status, final Long renewalId, final String errorCode, final String errorMsg) {
 		
 		return transactionTemplate.execute(new TransactionCallback<Long>() {
@@ -236,6 +238,9 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		});
 	}
 	
+	/**
+	 * 续期成功
+	 */
 	@Override
 	public long dealJsdRenewalSucess(final String renewalNo, final String tradeNo) {
 		
@@ -339,49 +344,44 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		});
 		
 		if(result == 1l){
-			//还款成功，调用西瓜信用通知接口
+			//续期成功，调用西瓜信用通知接口
 			JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByRenewalNo(renewalNo);
-			JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
-			HashMap<String, String> data = new HashMap<String, String>();
-			data.put("borrowNo", borrowCashDo.getBorrowNo());
-			data.put("delayNo", renewalDo.getDelayNo());
-			data.put("status", "Y");
-			data.put("reason", "");
-			data.put("tradeNo", tradeNo);
-			data.put("timestamp", System.currentTimeMillis()+"");
-			
-			JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
-			noticeRecordDo.setUserId(renewalDo.getUserId());
-			noticeRecordDo.setRefId(String.valueOf(renewalDo.getRid()));
-			noticeRecordDo.setType(JsdNoticeType.RENEW.code);
-			noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
-			noticeRecordDo.setParams(JSON.toJSONString(data));
-			jsdNoticeRecordService.addNoticeRecord(noticeRecordDo);
-			if (xgxyUtil.jsdRenewalNoticeRequest(data)) {
-				noticeRecordDo.setRid(noticeRecordDo.getRid());
-				noticeRecordDo.setGmtModified(new Date());
-				jsdNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
-			}
+			notifyXgxyRenewalResult("Y", tradeNo, "", renewalDo);
 		}
 		
 		return result;
 	}
 	
+	/**
+	 * 续期失败
+	 */
 	@Override
 	public long dealJsdRenewalFail(String renewalNo, String tradeNo, boolean isNeedMsgNotice, String errorCode, String errorMsg) {
 		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByRenewalNo(renewalNo);
-		if(JsdRenewalDetailStatus.YES.name().equals(renewalDo.getStatus())){
+		if(JsdRenewalDetailStatus.NO.name().equals(renewalDo.getStatus())){
 			return 0l;
 		}
 		
-		dealChangStatus(renewalNo, tradeNo, JsdRenewalDetailStatus.NO.name(), renewalDo.getRid(), errorCode, errorMsg);
+		long result = dealChangStatus(renewalNo, tradeNo, JsdRenewalDetailStatus.NO.name(), renewalDo.getRid(), errorCode, errorMsg);
 		
+		if(result == 1l){
+			//续期失败，调用西瓜信用通知接口
+			notifyXgxyRenewalResult("N", tradeNo, errorMsg, renewalDo);
+		}
+		
+		return 1l;
+	}
+
+	/**
+	 * 通知西瓜 续期结果
+	 */
+	private void notifyXgxyRenewalResult(String status, String tradeNo, String errorMsg, JsdBorrowCashRenewalDo renewalDo) {
 		//还款失败，调用西瓜信用通知接口
 		JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
 		HashMap<String, String> data = new HashMap<String, String>();
-		data.put("borrowNo", borrowCashDo.getBorrowNo());
-		data.put("delayNo", renewalNo);
-		data.put("status", "N");
+		data.put("borrowNo", borrowCashDo.getTradeNoXgxy());
+		data.put("delayNo", renewalDo.getDelayNo());
+		data.put("status", status);
 		data.put("reason", errorMsg);
 		data.put("tradeNo", tradeNo);
 		data.put("timestamp", System.currentTimeMillis()+"");
@@ -389,7 +389,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
 		noticeRecordDo.setUserId(renewalDo.getUserId());
 		noticeRecordDo.setRefId(String.valueOf(renewalDo.getRid()));
-		noticeRecordDo.setType(JsdNoticeType.RENEW.code);
+		noticeRecordDo.setType(PayOrderSource.RENEW_JSD.getCode());
 		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 		noticeRecordDo.setParams(JSON.toJSONString(data));
 		jsdNoticeRecordService.addNoticeRecord(noticeRecordDo);
@@ -398,10 +398,11 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 			noticeRecordDo.setGmtModified(new Date());
 			jsdNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
 		}
-		
-		return 1l;
 	}
 	
+	/**
+	 * 续期校验
+	 */
 	@Override
 	public void checkCanRenewal(JsdBorrowCashDo borrowCashDo) {
 		// 还款记录
@@ -456,7 +457,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		public String renewalNo; // 我方生成的续期编号
 		
 		/*-请求参数->*/
-		public String borrowNo;
+		public String borrowNo;	// 对应借款表 trade_no_xgxy
 		public String delayNo; // 西瓜提供的续期编号
 		public String bankNo;
 		public BigDecimal amount;

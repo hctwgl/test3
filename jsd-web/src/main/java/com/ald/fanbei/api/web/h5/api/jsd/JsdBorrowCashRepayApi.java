@@ -105,7 +105,7 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
        if(cashRepaymentDo!=null&&legalOrderRepaymentDo!=null){
           throw new FanbeiException(FanbeiExceptionCode.JSD_REPAY_REPAY_ERROR);
        }
-      JsdBorrowCashDo cashDo= jsdBorrowCashService.getByBorrowNo(bo.borrowNo);
+      JsdBorrowCashDo cashDo= jsdBorrowCashService.getByTradeNoXgxy(bo.borrowNo);
       bo.borrowId=cashDo.getRid();
       if(cashDo  == null ){
             throw new FanbeiException("borrow cash not exist",FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
