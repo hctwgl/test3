@@ -278,7 +278,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     	JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
         noticeRecordDo.setUserId(cashDo.getUserId());
         noticeRecordDo.setRefId(String.valueOf(cashDo.getRid()));
-        noticeRecordDo.setType(JsdNoticeType.PAY.code);
+        noticeRecordDo.setType(JsdNoticeType.DELEGATEPAY.code);
         noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
         noticeRecordDo.setParams(JSON.toJSONString(xgxyPayBo));
         return noticeRecordDo;

@@ -30,7 +30,6 @@ import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdNoticeType;
-import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -49,7 +48,6 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
-import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
 
@@ -120,7 +118,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 }
 	private Map<String, Object> doRepay(BorrowCashRepayBo bo,String bankChannel) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
-		HashMap bank = jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
+		HashMap<String, Object> bank = jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
 		KuaijieRepayBo bizObject = new KuaijieRepayBo(bo.repaymentDo,bo);
 		if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 			resultMap = sendKuaiJieSms(bank, bo.tradeNo, bo.amount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(),
@@ -185,7 +183,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		repayment.setTradeNo(bo.repayNo);
 		repayment.setStatus(JsdBorrowLegalRepaymentStatus.APPLY.getCode());
 		repayment.setCardNo(bo.bankNo);
-		HashMap bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
+		HashMap<?, ?> bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
         repayment.setCardName((String) bank.get("bankChannel"));
 		Date now = new Date();
 		repayment.setGmtCreate(now);
@@ -210,7 +208,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		repay.setCardNumber(cardNo);
 		repay.setType(repayType);
 		repay.setJsdRepayNo(TradeNo);
-		HashMap bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(userId,cardNo);
+		HashMap<?, ?> bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(userId,cardNo);
 		repay.setCardName((String) bank.get("bankName"));
 		return repay;
 	}
@@ -400,11 +398,11 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		}
 	}
 	private void noticeXgxyRepayResult(JsdBorrowCashRepaymentDo repaymentDo,String status){
-		HashMap data = buildData(repaymentDo,status);
+		HashMap<String, String> data = buildData(repaymentDo,status);
 		logger.info("noticeXgxyRepayResult data cfp "+JSON.toJSONString(data));
 		xgxyUtil.dsedRePayNoticeRequest(data);
 	}
-	private HashMap buildData(JsdBorrowCashRepaymentDo repaymentDo,String status){
+	private HashMap<String, String> buildData(JsdBorrowCashRepaymentDo repaymentDo,String status){
 		    HashMap<String,String> map=new HashMap<>();
 		    JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(repaymentDo.getBorrowId());
 		    map.put("repayNo",repaymentDo.getRepayNo());
@@ -413,7 +411,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			map.put("borrowNo",borrowCashDo.getBorrowNo());
 			map.put("period","1");
 			map.put("amount", String.valueOf(repaymentDo.getActualAmount()));
-			map.put("type",JsdRepayType.INITIATIVE.getName());
+			map.put("type",JsdNoticeType.REPAY.code);
 			Date now=new Date();
 		    map.put("timestamp", String.valueOf(now.getTime()));
 		    if(JsdBorrowCashStatus.FINISHED.name().equals(borrowCashDo.getStatus())){
@@ -422,40 +420,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				map.put("isFinish",YesNoStatus.NO.getCode());
 			}
             return map;
-	}
-
-	public String getStatus (Long borrowId){
-		JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(borrowId);
-		if(borrowCashDo!=null){
-			if(StringUtil.equals(borrowCashDo.getOverdueStatus(), YesNoStatus.YES.getCode())){
-				if(StringUtil.equals(borrowCashDo.getType(), JsdRepayType.COLLECT.getName())){
-					return JsdNoticeType.XGXY_COLLECT.code;
-				}else {
-					return JsdNoticeType.XGXY_OVERDUEREPAY.code;
-				}
-			}
-		}
-		return JsdNoticeType.REPAY.code;
-	}
-	private void dealSum(RepayDealBo repayDealBo){
-		JsdBorrowLegalOrderCashDo orderCashDo = repayDealBo.orderCashDo;
-		JsdBorrowCashDo cashDo = repayDealBo.cashDo;
-
-		repayDealBo.sumBorrowAmount = repayDealBo.sumBorrowAmount.add(orderCashDo.getAmount());
-		repayDealBo.sumRepaidAmount = repayDealBo.sumRepaidAmount.add(orderCashDo.getRepaidAmount());
-		repayDealBo.sumInterest = repayDealBo.sumInterest.add(orderCashDo.getInterestAmount()).add(orderCashDo.getSumRepaidInterest());
-		repayDealBo.sumPoundage = repayDealBo.sumPoundage.add(orderCashDo.getPoundageAmount()).add(orderCashDo.getSumRepaidPoundage());
-		repayDealBo.sumOverdueAmount = repayDealBo.sumOverdueAmount.add(orderCashDo.getOverdueAmount()).add(orderCashDo.getSumRepaidOverdue());
-		repayDealBo.sumIncome = repayDealBo.sumIncome.add(repayDealBo.sumPoundage).add(repayDealBo.sumOverdueAmount).add(repayDealBo.sumInterest);
-
-		repayDealBo.sumBorrowAmount = repayDealBo.sumBorrowAmount.add(cashDo.getAmount());
-		repayDealBo.sumRepaidAmount = repayDealBo.sumRepaidAmount.add(cashDo.getRepayAmount());
-		repayDealBo.sumInterest = repayDealBo.sumInterest.add(cashDo.getRateAmount()).add(cashDo.getSumRate());
-		repayDealBo.sumPoundage = repayDealBo.sumPoundage.add(cashDo.getPoundage()).add(cashDo.getSumRenewalPoundage());
-		repayDealBo.sumOverdueAmount = repayDealBo.sumOverdueAmount.add(cashDo.getOverdueAmount()).add(cashDo.getSumOverdue());
-		repayDealBo.sumIncome = repayDealBo.sumIncome.add(repayDealBo.sumPoundage).add(repayDealBo.sumOverdueAmount).add(repayDealBo.sumInterest);
-
-		repayDealBo.sumAmount = repayDealBo.sumBorrowAmount.add(repayDealBo.sumIncome);
 	}
 
 	/**
@@ -548,7 +512,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				cashDo.getPoundage(), cashDo.getSumRenewalPoundage());
 		BigDecimal allRepayAmount = cashDo.getRepayAmount().add(repaymentDo.getRepaymentAmount());
 		cashDo.setRepayAmount(allRepayAmount);
-		cashDo.setType(JsdRepayType.ONLINE.getCode());
 		if (sumAmount.compareTo(allRepayAmount) <= 0) {
 			cashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
 			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));

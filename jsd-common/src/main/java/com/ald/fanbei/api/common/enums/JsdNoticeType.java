@@ -2,8 +2,9 @@ package com.ald.fanbei.api.common.enums;
 
 public enum  JsdNoticeType {
 
-    PAY("打款", "PAY"),
+	DELEGATEPAY("打款", "DELEGATEPAY"),
     REPAY("还款", "REPAY"),
+    RENEW("续期", "RENEW"),
     OVERDUE("逾期", "OVERDUE"),
     COLLECT("催收逾期还款推送催收", "COLLECT"),
     XGXY_COLLECT("催收逾期还款推送西瓜", "XGXY_COLLECT"),
