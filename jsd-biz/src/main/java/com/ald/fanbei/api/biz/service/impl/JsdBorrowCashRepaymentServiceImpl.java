@@ -30,6 +30,7 @@ import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdNoticeType;
+import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -411,7 +412,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			map.put("borrowNo",borrowCashDo.getTradeNoXgxy());
 			map.put("period","1");
 			map.put("amount", String.valueOf(repaymentDo.getActualAmount()));
-			map.put("type",JsdNoticeType.REPAY.code);
+			map.put("type",JsdRepayType.INITIATIVE.getName());
 			Date now=new Date();
 		    map.put("timestamp", String.valueOf(now.getTime()));
 		    if(JsdBorrowCashStatus.FINISHED.name().equals(borrowCashDo.getStatus())){
