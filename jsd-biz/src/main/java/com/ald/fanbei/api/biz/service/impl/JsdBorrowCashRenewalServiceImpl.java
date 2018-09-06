@@ -379,7 +379,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		//还款失败，调用西瓜信用通知接口
 		JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
 		HashMap<String, String> data = new HashMap<String, String>();
-		data.put("borrowNo", borrowCashDo.getBorrowNo());
+		data.put("borrowNo", borrowCashDo.getTradeNoXgxy());
 		data.put("delayNo", renewalDo.getDelayNo());
 		data.put("status", status);
 		data.put("reason", errorMsg);
