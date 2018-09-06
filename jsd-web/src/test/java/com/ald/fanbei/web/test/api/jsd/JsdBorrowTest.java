@@ -19,8 +19,8 @@ public class JsdBorrowTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-//	String urlBase = "http://localhost:8078";
-    String urlBase = "http://192.168.106.191:8280";
+	String urlBase = "http://localhost:8078";
+//    String urlBase = "http://192.168.106.191:8280";
     
     String userName = "13165995223";
     
@@ -48,6 +48,7 @@ public class JsdBorrowTest extends BaseTest {
         params.put("unit", "DAY");
         params.put("isTying", "Y");
         params.put("tyingType", "SELL");
+        params.put("goodsPrice", "500.00");
         String encryptBase64Str = JsdAesUtil.encryptToBase64Third(JSON.toJSONString(params), AES_KEY);
         Map<String, Object> p = new HashMap<>();
         p.put("data", encryptBase64Str);
@@ -92,7 +93,7 @@ public class JsdBorrowTest extends BaseTest {
     }
     
     /**
-     * 发起借钱申请
+     * 查询借款状态
      */
     @Test
     public void getBorrowStatus() {
@@ -109,6 +110,29 @@ public class JsdBorrowTest extends BaseTest {
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
+    
+    /**
+     * 查询借款状态
+     */
+    @Test
+    public void getProfit() {
+        String url = urlBase + "/third/eca/v1/getProfit";
+        JSONObject params = new JSONObject();
+        params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
+        params.put("type", "BORROW");
+        params.put("amount", "5000.00");
+        params.put("term", "20");
+        params.put("unit", "DAY");
+        
+        String encryptBase64Str = JsdAesUtil.encryptToBase64Third(JSON.toJSONString(params), AES_KEY);
+        Map<String, String> p = new HashMap<>();
+        p.put("data", encryptBase64Str);
+        p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+    
     
     public static void main(String[] args) {
     	String src = "{\"reason\":\"\",\"borrowNo\":\"xgxy202314123090123123\",\"status\":\"FAILED\"}";
