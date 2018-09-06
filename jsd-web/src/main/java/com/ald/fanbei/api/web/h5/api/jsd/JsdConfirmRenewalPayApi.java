@@ -89,7 +89,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		JsdRenewalDealBo paramBo = this.getParam(context);
 
 		// 借款记录
-		JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByBorrowNo(paramBo.borrowNo);
+		JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(paramBo.borrowNo);
 		if(borrowCashDo == null || !StringUtil.equals(borrowCashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.name())){
 			throw new FanbeiException("No borrow can renewal", FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		}
@@ -322,7 +322,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 
 		JsdRenewalDealBo bo = new JsdRenewalDealBo();
 		try {
-			bo.borrowNo = ObjectUtils.toString(context.getDataMap().get("borrowNo"), "");	// 借款编号
+			bo.borrowNo = ObjectUtils.toString(context.getDataMap().get("borrowNo"), "");	// 借款编号，对应借款表 trade_no_xgxy
 			bo.delayNo = ObjectUtils.toString(context.getDataMap().get("delayNo"), "");		// 展期编号
 			bo.bankNo = ObjectUtils.toString(context.getDataMap().get("bankNo"), "");		// 银行卡号
 			bo.amount = NumberUtil.objToBigDecimalDefault(context.getDataMap().get("amount"),BigDecimal.ZERO);	// 金额

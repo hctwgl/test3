@@ -56,13 +56,13 @@ public class GetRenewalDetailApi implements JsdH5Handle {
 
 	@Override
 	public JsdH5HandleResponse process(Context context) {
-		// 借款borrowNo
-		String borrowNo = ObjectUtils.toString(context.getDataMap().get("borrowNo"), "");
+		// 西瓜借款borrowNo
+		String tradeNoXgxy = ObjectUtils.toString(context.getDataMap().get("borrowNo"), "");
 		// 请求时间戳
 		String timestamp = ObjectUtils.toString(context.getDataMap().get("timestamp"), "");
 		
 		// 借款记录
-		JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByBorrowNo(borrowNo);
+		JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
 		if (borrowCashDo == null) {
 			throw new FanbeiException("borrowCash is not exist", FanbeiExceptionCode.SYSTEM_ERROR);
 		}

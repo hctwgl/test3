@@ -455,7 +455,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		public String renewalNo; // 我方生成的续期编号
 		
 		/*-请求参数->*/
-		public String borrowNo;
+		public String borrowNo;	// 对应借款表 trade_no_xgxy
 		public String delayNo; // 西瓜提供的续期编号
 		public String bankNo;
 		public BigDecimal amount;
