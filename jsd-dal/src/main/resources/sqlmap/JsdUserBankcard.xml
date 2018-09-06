@@ -24,34 +24,34 @@
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
-        <if test="userId != null and userId != ''">
+        <if test="userId != null">
             AND user_id = #{userId,jdbcType=INTEGER}
         </if>
-        <if test="mobile != null and mobile != ''">
+        <if test="mobile != null">
             AND mobile = #{mobile,jdbcType=VARCHAR}
         </if>
-        <if test="bankCode != null and bankCode != ''">
+        <if test="bankCode != null">
             AND bank_code = #{bankCode,jdbcType=VARCHAR}
         </if>
-        <if test="bankCardNumber != null and bankCardNumber != ''">
+        <if test="bankCardNumber != null">
             AND bank_card_number = #{bankCardNumber,jdbcType=VARCHAR}
         </if>
-        <if test="isMain != null and isMain != ''">
+        <if test="isMain != null">
             AND is_main = #{isMain,jdbcType=VARCHAR}
         </if>
-        <if test="bankName != null and bankName != ''">
+        <if test="bankName != null">
             AND bank_name = #{bankName,jdbcType=VARCHAR}
         </if>
-        <if test="status != null and status != ''">
+        <if test="status != null">
             AND status = #{status,jdbcType=VARCHAR}
         </if>
-        <if test="validDate != null and validDate != ''">
+        <if test="validDate != null">
             AND valid_date = #{validDate,jdbcType=VARCHAR}
         </if>
-        <if test="safeCode != null and safeCode != ''">
+        <if test="safeCode != null">
             AND safe_code = #{safeCode,jdbcType=VARCHAR}
         </if>
-        <if test="xgxyBindNo != null and xgxyBindNo != ''">
+        <if test="xgxyBindNo != null">
             AND xgxy_bind_no = #{xgxyBindNo,jdbcType=VARCHAR}
         </if>
     </sql>
@@ -141,40 +141,40 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdUserBankcardDo">
         UPDATE jsd_user_bankcard
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
+            <if test="gmtCreate != null ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
+            <if test="gmtModified != null ">        
                 gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
             </if>
-            <if test="userId != null and userId != '' ">        
+            <if test="userId != null ">        
                 user_id = #{userId,jdbcType=INTEGER},                
             </if>
-            <if test="mobile != null and mobile != '' ">        
+            <if test="mobile != null ">        
                 mobile = #{mobile,jdbcType=VARCHAR},                
             </if>
-            <if test="bankCode != null and bankCode != '' ">        
+            <if test="bankCode != null ">        
                 bank_code = #{bankCode,jdbcType=VARCHAR},                
             </if>
-            <if test="bankCardNumber != null and bankCardNumber != '' ">        
+            <if test="bankCardNumber != null ">        
                 bank_card_number = #{bankCardNumber,jdbcType=VARCHAR},                
             </if>
-            <if test="isMain != null and isMain != '' ">        
+            <if test="isMain != null ">        
                 is_main = #{isMain,jdbcType=VARCHAR},                
             </if>
-            <if test="bankName != null and bankName != '' ">        
+            <if test="bankName != null ">        
                 bank_name = #{bankName,jdbcType=VARCHAR},                
             </if>
-            <if test="status != null and status != '' ">        
+            <if test="status != null ">        
                 status = #{status,jdbcType=VARCHAR},                
             </if>
-            <if test="validDate != null and validDate != '' ">        
+            <if test="validDate != null ">        
                 valid_date = #{validDate,jdbcType=VARCHAR},                
             </if>
-            <if test="safeCode != null and safeCode != '' ">        
+            <if test="safeCode != null ">        
                 safe_code = #{safeCode,jdbcType=VARCHAR},                
             </if>
-            <if test="xgxyBindNo != null and xgxyBindNo != '' ">        
+            <if test="xgxyBindNo != null ">        
                 xgxy_bind_no = #{xgxyBindNo,jdbcType=VARCHAR}                
             </if>
         </set>    

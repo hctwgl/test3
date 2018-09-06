@@ -14,7 +14,7 @@
         <if test="rid !=null">
             AND id  = #{rid,jdbcType=INTEGER}
         </if>
-        <if test="orderId != null and orderId != ''">
+        <if test="orderId != null">
             AND order_id = #{orderId,jdbcType=INTEGER}
         </if>
         <if test="gmtCreate !=null">
@@ -23,19 +23,19 @@
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
-        <if test="shipperCode != null and shipperCode != ''">
+        <if test="shipperCode != null">
             AND shipper_code = #{shipperCode,jdbcType=VARCHAR}
         </if>
-        <if test="shipperName != null and shipperName != ''">
+        <if test="shipperName != null">
             AND shipper_name = #{shipperName,jdbcType=VARCHAR}
         </if>
-        <if test="logisticCode != null and logisticCode != ''">
+        <if test="logisticCode != null">
             AND logistic_code = #{logisticCode,jdbcType=VARCHAR}
         </if>
-        <if test="traces != null and traces != ''">
+        <if test="traces != null">
             AND traces = #{traces,jdbcType=VARCHAR}
         </if>
-        <if test="state != null and state != ''">
+        <if test="state != null">
             AND state = #{state,jdbcType=INTEGER}
         </if>
     </sql>
@@ -101,28 +101,28 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderLogisticsDo">
         UPDATE jsd_borrow_legal_order_logistics
           <set>
-            <if test="orderId != null and orderId != '' ">        
+            <if test="orderId != null ">        
                 order_id = #{orderId,jdbcType=INTEGER},                
             </if>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
+            <if test="gmtCreate != null ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
+            <if test="gmtModified != null ">        
                 gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
             </if>
-            <if test="shipperCode != null and shipperCode != '' ">        
+            <if test="shipperCode != null ">        
                 shipper_code = #{shipperCode,jdbcType=VARCHAR},                
             </if>
-            <if test="shipperName != null and shipperName != '' ">        
+            <if test="shipperName != null ">        
                 shipper_name = #{shipperName,jdbcType=VARCHAR},                
             </if>
-            <if test="logisticCode != null and logisticCode != '' ">        
+            <if test="logisticCode != null ">        
                 logistic_code = #{logisticCode,jdbcType=VARCHAR},                
             </if>
-            <if test="traces != null and traces != '' ">        
+            <if test="traces != null ">        
                 traces = #{traces,jdbcType=VARCHAR},                
             </if>
-            <if test="state != null and state != '' ">        
+            <if test="state != null ">        
                 state = #{state,jdbcType=INTEGER}                
             </if>
         </set>    

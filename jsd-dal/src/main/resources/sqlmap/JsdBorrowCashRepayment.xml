@@ -20,46 +20,46 @@
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
-        <if test="name != null and name != ''">
+        <if test="name != null">
             AND name = #{name,jdbcType=VARCHAR}
         </if>
-        <if test="repayNo != null and repayNo != ''">
+        <if test="repayNo != null">
             AND repay_no = #{repayNo,jdbcType=VARCHAR}
         </if>
-        <if test="repaymentAmount != null and repaymentAmount != ''">
+        <if test="repaymentAmount != null">
             AND repayment_amount = #{repaymentAmount,jdbcType=DECIMAL}
         </if>
-        <if test="actualAmount != null and actualAmount != ''">
+        <if test="actualAmount != null">
             AND actual_amount = #{actualAmount,jdbcType=DECIMAL}
         </if>
-        <if test="borrowId != null and borrowId != ''">
+        <if test="borrowId != null">
             AND borrow_id = #{borrowId,jdbcType=INTEGER}
         </if>
-        <if test="tradeNo != null and tradeNo != ''">
+        <if test="tradeNo != null">
             AND trade_no = #{tradeNo,jdbcType=VARCHAR}
         </if>
-        <if test="status != null and status != ''">
+        <if test="status != null">
             AND status = #{status,jdbcType=VARCHAR}
         </if>
-        <if test="userId != null and userId != ''">
+        <if test="userId != null">
             AND user_id = #{userId,jdbcType=INTEGER}
         </if>
-        <if test="cardNumber != null and cardNumber != ''">
+        <if test="cardNumber != null">
             AND card_number = #{cardNumber,jdbcType=VARCHAR}
         </if>
-        <if test="cardName != null and cardName != ''">
+        <if test="cardName != null">
             AND card_name = #{cardName,jdbcType=VARCHAR}
         </if>
-        <if test="failCode != null and failCode != ''">
+        <if test="failCode != null">
             AND fail_code = #{failCode,jdbcType=VARCHAR}
         </if>
-        <if test="remark != null and remark != ''">
+        <if test="remark != null">
             AND remark = #{remark,jdbcType=VARCHAR}
         </if>
-        <if test="failMsg != null and failMsg != ''">
+        <if test="failMsg != null">
             AND fail_msg = #{failMsg,jdbcType=VARCHAR}
         </if>
-        <if test="type != null and type != ''">
+        <if test="type != null">
             AND type = #{type,jdbcType=VARCHAR}
         </if>
     </sql>
@@ -179,52 +179,52 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo">
         UPDATE jsd_borrow_cash_repayment
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
+            <if test="gmtCreate != null ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
+            <if test="gmtModified != null ">        
                 gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
             </if>
-            <if test="name != null and name != '' ">        
+            <if test="name != null ">        
                 name = #{name,jdbcType=VARCHAR},                
             </if>
-            <if test="repayNo != null and repayNo != '' ">        
+            <if test="repayNo != null ">        
                 repay_no = #{repayNo,jdbcType=VARCHAR},                
             </if>
-            <if test="repaymentAmount != null and repaymentAmount != '' ">        
+            <if test="repaymentAmount != null ">        
                 repayment_amount = #{repaymentAmount,jdbcType=DECIMAL},                
             </if>
-            <if test="actualAmount != null and actualAmount != '' ">        
+            <if test="actualAmount != null ">        
                 actual_amount = #{actualAmount,jdbcType=DECIMAL},                
             </if>
-            <if test="borrowId != null and borrowId != '' ">        
+            <if test="borrowId != null ">        
                 borrow_id = #{borrowId,jdbcType=INTEGER},                
             </if>
-            <if test="tradeNo != null and tradeNo != '' ">        
+            <if test="tradeNo != null ">        
                 trade_no = #{tradeNo,jdbcType=VARCHAR},                
             </if>
-            <if test="status != null and status != '' ">        
+            <if test="status != null ">        
                 status = #{status,jdbcType=VARCHAR},                
             </if>
-            <if test="userId != null and userId != '' ">        
+            <if test="userId != null ">        
                 user_id = #{userId,jdbcType=INTEGER},                
             </if>
-            <if test="cardNumber != null and cardNumber != '' ">        
+            <if test="cardNumber != null ">        
                 card_number = #{cardNumber,jdbcType=VARCHAR},                
             </if>
-            <if test="cardName != null and cardName != '' ">        
+            <if test="cardName != null ">        
                 card_name = #{cardName,jdbcType=VARCHAR},                
             </if>
-            <if test="failCode != null and failCode != '' ">        
+            <if test="failCode != null ">        
                 fail_code = #{failCode,jdbcType=VARCHAR},                
             </if>
-            <if test="remark != null and remark != '' ">        
+            <if test="remark != null ">        
                 remark = #{remark,jdbcType=VARCHAR},                
             </if>
-            <if test="failMsg != null and failMsg != '' ">        
+            <if test="failMsg != null ">        
                 fail_msg = #{failMsg,jdbcType=VARCHAR},                
             </if>
-            <if test="type != null and type != '' ">        
+            <if test="type != null ">        
                 type = #{type,jdbcType=VARCHAR}                
             </if>
         </set>    

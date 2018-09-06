@@ -17,16 +17,16 @@
         <if test="gmtCreate !=null">
             AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
         </if>
-        <if test="userId != null and userId != ''">
+        <if test="userId != null">
             AND user_id = #{userId,jdbcType=INTEGER}
         </if>
-        <if test="borrowLegalOrderCashId != null and borrowLegalOrderCashId != ''">
+        <if test="borrowLegalOrderCashId != null">
             AND borrow_legal_order_cash_id = #{borrowLegalOrderCashId,jdbcType=INTEGER}
         </if>
-        <if test="interest != null and interest != ''">
+        <if test="interest != null">
             AND interest = #{interest,jdbcType=DECIMAL}
         </if>
-        <if test="currentAmount != null and currentAmount != ''">
+        <if test="currentAmount != null">
             AND current_amount = #{currentAmount,jdbcType=DECIMAL}
         </if>
     </sql>
@@ -74,19 +74,19 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderOverdueDo">
         UPDATE jsd_borrow_legal_order_overdue
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
+            <if test="gmtCreate != null ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="userId != null and userId != '' ">        
+            <if test="userId != null ">        
                 user_id = #{userId,jdbcType=INTEGER},                
             </if>
-            <if test="borrowLegalOrderCashId != null and borrowLegalOrderCashId != '' ">        
+            <if test="borrowLegalOrderCashId != null ">        
                 borrow_legal_order_cash_id = #{borrowLegalOrderCashId,jdbcType=INTEGER},                
             </if>
-            <if test="interest != null and interest != '' ">        
+            <if test="interest != null ">        
                 interest = #{interest,jdbcType=DECIMAL},                
             </if>
-            <if test="currentAmount != null and currentAmount != '' ">        
+            <if test="currentAmount != null ">        
                 current_amount = #{currentAmount,jdbcType=DECIMAL}                
             </if>
         </set>    

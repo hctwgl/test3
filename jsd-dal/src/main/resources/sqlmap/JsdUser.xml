@@ -20,73 +20,73 @@
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
-        <if test="userName != null and userName != ''">
+        <if test="userName != null">
             AND user_name = #{userName,jdbcType=VARCHAR}
         </if>
-        <if test="password != null and password != ''">
+        <if test="password != null">
             AND password = #{password,jdbcType=VARCHAR}
         </if>
-        <if test="salt != null and salt != ''">
+        <if test="salt != null">
             AND salt = #{salt,jdbcType=VARCHAR}
         </if>
-        <if test="gender != null and gender != ''">
+        <if test="gender != null">
             AND gender = #{gender,jdbcType=VARCHAR}
         </if>
-        <if test="nick != null and nick != ''">
+        <if test="nick != null">
             AND nick = #{nick,jdbcType=VARCHAR}
         </if>
-        <if test="avatar != null and avatar != ''">
+        <if test="avatar != null">
             AND avatar = #{avatar,jdbcType=VARCHAR}
         </if>
-        <if test="realName != null and realName != ''">
+        <if test="realName != null">
             AND real_name = #{realName,jdbcType=VARCHAR}
         </if>
-        <if test="mobile != null and mobile != ''">
+        <if test="mobile != null">
             AND mobile = #{mobile,jdbcType=VARCHAR}
         </if>
-        <if test="email != null and email != ''">
+        <if test="email != null">
             AND email = #{email,jdbcType=VARCHAR}
         </if>
-        <if test="birthday != null and birthday != ''">
+        <if test="birthday != null">
             AND birthday = #{birthday,jdbcType=VARCHAR}
         </if>
-        <if test="province != null and province != ''">
+        <if test="province != null">
             AND province = #{province,jdbcType=VARCHAR}
         </if>
-        <if test="city != null and city != ''">
+        <if test="city != null">
             AND city = #{city,jdbcType=VARCHAR}
         </if>
-        <if test="county != null and county != ''">
+        <if test="county != null">
             AND county = #{county,jdbcType=VARCHAR}
         </if>
-        <if test="address != null and address != ''">
+        <if test="address != null">
             AND address = #{address,jdbcType=VARCHAR}
         </if>
-        <if test="recommendId != null and recommendId != ''">
+        <if test="recommendId != null">
             AND recommend_id = #{recommendId,jdbcType=INTEGER}
         </if>
-        <if test="failCount != null and failCount != ''">
+        <if test="failCount != null">
             AND fail_count = #{failCount,jdbcType=INTEGER}
         </if>
-        <if test="recommendCode != null and recommendCode != ''">
+        <if test="recommendCode != null">
             AND recommend_code = #{recommendCode,jdbcType=VARCHAR}
         </if>
-        <if test="status != null and status != ''">
+        <if test="status != null">
             AND status = #{status,jdbcType=VARCHAR}
         </if>
-        <if test="registerChannelId != null and registerChannelId != ''">
+        <if test="registerChannelId != null">
             AND register_channel_id = #{registerChannelId,jdbcType=VARCHAR}
         </if>
-        <if test="registerChannelPointId != null and registerChannelPointId != ''">
+        <if test="registerChannelPointId != null">
             AND register_channel_point_id = #{registerChannelPointId,jdbcType=VARCHAR}
         </if>
-        <if test="majiabaoName != null and majiabaoName != ''">
+        <if test="majiabaoName != null">
             AND majiabao_name = #{majiabaoName,jdbcType=VARCHAR}
         </if>
-        <if test="openId != null and openId != ''">
+        <if test="openId != null">
             AND open_id = #{openId,jdbcType=VARCHAR}
         </if>
-        <if test="idNumber != null and idNumber != ''">
+        <if test="idNumber != null">
             AND id_number = #{idNumber,jdbcType=VARCHAR}
         </if>
     </sql>
@@ -254,77 +254,77 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdUserDo">
         UPDATE jsd_user
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
+            <if test="gmtCreate != null ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
               gmt_modified = NOW(),
-            <if test="userName != null and userName != '' ">        
+            <if test="userName != null ">        
                 user_name = #{userName,jdbcType=VARCHAR},                
             </if>
-            <if test="password != null and password != '' ">        
+            <if test="password != null ">        
                 password = #{password,jdbcType=VARCHAR},                
             </if>
-            <if test="salt != null and salt != '' ">        
+            <if test="salt != null ">        
                 salt = #{salt,jdbcType=VARCHAR},                
             </if>
-            <if test="gender != null and gender != '' ">        
+            <if test="gender != null ">        
                 gender = #{gender,jdbcType=VARCHAR},                
             </if>
-            <if test="nick != null and nick != '' ">        
+            <if test="nick != null ">        
                 nick = #{nick,jdbcType=VARCHAR},                
             </if>
-            <if test="avatar != null and avatar != '' ">        
+            <if test="avatar != null ">        
                 avatar = #{avatar,jdbcType=VARCHAR},                
             </if>
-            <if test="realName != null and realName != '' ">        
+            <if test="realName != null ">        
                 real_name = #{realName,jdbcType=VARCHAR},                
             </if>
-            <if test="mobile != null and mobile != '' ">        
+            <if test="mobile != null ">        
                 mobile = #{mobile,jdbcType=VARCHAR},                
             </if>
-            <if test="email != null and email != '' ">        
+            <if test="email != null ">        
                 email = #{email,jdbcType=VARCHAR},                
             </if>
-            <if test="birthday != null and birthday != '' ">        
+            <if test="birthday != null ">        
                 birthday = #{birthday,jdbcType=VARCHAR},                
             </if>
-            <if test="province != null and province != '' ">        
+            <if test="province != null ">        
                 province = #{province,jdbcType=VARCHAR},                
             </if>
-            <if test="city != null and city != '' ">        
+            <if test="city != null ">        
                 city = #{city,jdbcType=VARCHAR},                
             </if>
-            <if test="county != null and county != '' ">        
+            <if test="county != null ">        
                 county = #{county,jdbcType=VARCHAR},                
             </if>
-            <if test="address != null and address != '' ">        
+            <if test="address != null ">        
                 address = #{address,jdbcType=VARCHAR},                
             </if>
-            <if test="recommendId != null and recommendId != '' ">        
+            <if test="recommendId != null ">        
                 recommend_id = #{recommendId,jdbcType=INTEGER},                
             </if>
-            <if test="failCount != null and failCount != '' ">        
+            <if test="failCount != null ">        
                 fail_count = #{failCount,jdbcType=INTEGER},                
             </if>
-            <if test="recommendCode != null and recommendCode != '' ">        
+            <if test="recommendCode != null ">        
                 recommend_code = #{recommendCode,jdbcType=VARCHAR},                
             </if>
-            <if test="status != null and status != '' ">        
+            <if test="status != null ">        
                 status = #{status,jdbcType=VARCHAR},                
             </if>
-            <if test="registerChannelId != null and registerChannelId != '' ">        
+            <if test="registerChannelId != null ">        
                 register_channel_id = #{registerChannelId,jdbcType=VARCHAR},                
             </if>
-            <if test="registerChannelPointId != null and registerChannelPointId != '' ">        
+            <if test="registerChannelPointId != null ">        
                 register_channel_point_id = #{registerChannelPointId,jdbcType=VARCHAR},                
             </if>
-            <if test="majiabaoName != null and majiabaoName != '' ">        
+            <if test="majiabaoName != null ">        
                 majiabao_name = #{majiabaoName,jdbcType=VARCHAR},                
             </if>
-            <if test="openId != null and openId != '' ">        
+            <if test="openId != null ">        
                 open_id = #{openId,jdbcType=VARCHAR},                
             </if>
-            <if test="idNumber != null and idNumber != '' ">        
+            <if test="idNumber != null ">        
                 id_number = #{idNumber,jdbcType=VARCHAR}                
             </if>
         </set>    

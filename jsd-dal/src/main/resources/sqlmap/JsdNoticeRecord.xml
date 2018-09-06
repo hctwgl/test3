@@ -20,22 +20,22 @@
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
-        <if test="userId != null and userId != ''">
+        <if test="userId != null">
             AND user_id = #{userId,jdbcType=INTEGER}
         </if>
-        <if test="type != null and type != ''">
+        <if test="type != null">
             AND type = #{type,jdbcType=VARCHAR}
         </if>
-        <if test="refId != null and refId != ''">
+        <if test="refId != null">
             AND ref_id = #{refId,jdbcType=VARCHAR}
         </if>
-        <if test="status != null and status != ''">
+        <if test="status != null">
             AND status = #{status,jdbcType=VARCHAR}
         </if>
-        <if test="times != null and times != ''">
+        <if test="times != null">
             AND times = #{times,jdbcType=VARCHAR}
         </if>
-        <if test="params != null and params != ''">
+        <if test="params != null">
             AND params = #{params,jdbcType=VARCHAR}
         </if>
     </sql>
@@ -101,28 +101,28 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo">
         UPDATE jsd_notice_record
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
+            <if test="gmtCreate != null ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
+            <if test="gmtModified != null ">        
                 gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
             </if>
-            <if test="userId != null and userId != '' ">        
+            <if test="userId != null ">        
                 user_id = #{userId,jdbcType=INTEGER},                
             </if>
-            <if test="type != null and type != '' ">        
+            <if test="type != null ">        
                 type = #{type,jdbcType=VARCHAR},                
             </if>
-            <if test="refId != null and refId != '' ">        
+            <if test="refId != null ">        
                 ref_id = #{refId,jdbcType=VARCHAR},                
             </if>
-            <if test="status != null and status != '' ">        
+            <if test="status != null ">        
                 status = #{status,jdbcType=VARCHAR},                
             </if>
-            <if test="times != null and times != '' ">        
+            <if test="times != null ">        
                 times = #{times,jdbcType=VARCHAR},                
             </if>
-            <if test="params != null and params != '' ">        
+            <if test="params != null ">        
                 params = #{params,jdbcType=VARCHAR}                
             </if>
         </set>    
@@ -167,7 +167,7 @@
         <set>
             gmt_modified = now(),
             status = 'SUCCESS',
-            <if test="times != null and times != '' ">
+            <if test="times != null ">
                 times = #{times,jdbcType=VARCHAR}
             </if>
         </set>
@@ -178,10 +178,10 @@
         UPDATE jsd_notice_record
         <set>
             gmt_modified = now(),
-            <if test="times != null and times != '' ">
+            <if test="times != null ">
                 times = #{times,jdbcType=VARCHAR},
             </if>
-            <if test="params != null and params != '' ">
+            <if test="params != null ">
                 params = #{params}
             </if>
         </set>

@@ -14,43 +14,43 @@
         <if test="rid !=null">
             AND id  = #{rid,jdbcType=INTEGER}
         </if>
-        <if test="userId != null and userId != ''">
+        <if test="userId != null">
             AND user_id = #{userId,jdbcType=INTEGER}
         </if>
-        <if test="borrowId != null and borrowId != ''">
+        <if test="borrowId != null">
             AND borrow_id = #{borrowId,jdbcType=INTEGER}
         </if>
-        <if test="borrowLegalOrderCashId != null and borrowLegalOrderCashId != ''">
+        <if test="borrowLegalOrderCashId != null">
             AND borrow_legal_order_cash_id = #{borrowLegalOrderCashId,jdbcType=INTEGER}
         </if>
-        <if test="repayAmount != null and repayAmount != ''">
+        <if test="repayAmount != null">
             AND repay_amount = #{repayAmount,jdbcType=DECIMAL}
         </if>
-        <if test="actualAmount != null and actualAmount != ''">
+        <if test="actualAmount != null">
             AND actual_amount = #{actualAmount,jdbcType=DECIMAL}
         </if>
-        <if test="name != null and name != ''">
+        <if test="name != null">
             AND name = #{name,jdbcType=VARCHAR}
         </if>
-        <if test="tradeNo != null and tradeNo != ''">
+        <if test="tradeNo != null">
             AND trade_no = #{tradeNo,jdbcType=VARCHAR}
         </if>
-        <if test="tradeNoUps != null and tradeNoUps != ''">
+        <if test="tradeNoUps != null">
             AND trade_no_ups = #{tradeNoUps,jdbcType=VARCHAR}
         </if>
-        <if test="tradeNoWx != null and tradeNoWx != ''">
+        <if test="tradeNoWx != null">
             AND trade_no_wx = #{tradeNoWx,jdbcType=VARCHAR}
         </if>
-        <if test="tradeNoZfb != null and tradeNoZfb != ''">
+        <if test="tradeNoZfb != null">
             AND trade_no_zfb = #{tradeNoZfb,jdbcType=VARCHAR}
         </if>
-        <if test="status != null and status != ''">
+        <if test="status != null">
             AND status = #{status,jdbcType=VARCHAR}
         </if>
-        <if test="cardName != null and cardName != ''">
+        <if test="cardName != null">
             AND card_name = #{cardName,jdbcType=VARCHAR}
         </if>
-        <if test="cardNo != null and cardNo != ''">
+        <if test="cardNo != null">
             AND card_no = #{cardNo,jdbcType=VARCHAR}
         </if>
         <if test="gmtCreate !=null">
@@ -170,49 +170,49 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo">
         UPDATE jsd_borrow_legal_order_repayment
           <set>
-            <if test="userId != null and userId != '' ">        
+            <if test="userId != null ">        
                 user_id = #{userId,jdbcType=INTEGER},                
             </if>
-            <if test="borrowId != null and borrowId != '' ">        
+            <if test="borrowId != null ">        
                 borrow_id = #{borrowId,jdbcType=INTEGER},                
             </if>
-            <if test="borrowLegalOrderCashId != null and borrowLegalOrderCashId != '' ">        
+            <if test="borrowLegalOrderCashId != null ">        
                 borrow_legal_order_cash_id = #{borrowLegalOrderCashId,jdbcType=INTEGER},                
             </if>
-            <if test="repayAmount != null and repayAmount != '' ">        
+            <if test="repayAmount != null ">        
                 repay_amount = #{repayAmount,jdbcType=DECIMAL},                
             </if>
-            <if test="actualAmount != null and actualAmount != '' ">        
+            <if test="actualAmount != null ">        
                 actual_amount = #{actualAmount,jdbcType=DECIMAL},                
             </if>
-            <if test="name != null and name != '' ">        
+            <if test="name != null ">        
                 name = #{name,jdbcType=VARCHAR},                
             </if>
-            <if test="tradeNo != null and tradeNo != '' ">        
+            <if test="tradeNo != null ">        
                 trade_no = #{tradeNo,jdbcType=VARCHAR},                
             </if>
-            <if test="tradeNoUps != null and tradeNoUps != '' ">        
+            <if test="tradeNoUps != null ">        
                 trade_no_ups = #{tradeNoUps,jdbcType=VARCHAR},                
             </if>
-            <if test="tradeNoWx != null and tradeNoWx != '' ">        
+            <if test="tradeNoWx != null ">        
                 trade_no_wx = #{tradeNoWx,jdbcType=VARCHAR},                
             </if>
-            <if test="tradeNoZfb != null and tradeNoZfb != '' ">        
+            <if test="tradeNoZfb != null ">        
                 trade_no_zfb = #{tradeNoZfb,jdbcType=VARCHAR},                
             </if>
-            <if test="status != null and status != '' ">        
+            <if test="status != null ">        
                 status = #{status,jdbcType=VARCHAR},                
             </if>
-            <if test="cardName != null and cardName != '' ">        
+            <if test="cardName != null ">        
                 card_name = #{cardName,jdbcType=VARCHAR},                
             </if>
-            <if test="cardNo != null and cardNo != '' ">        
+            <if test="cardNo != null ">        
                 card_no = #{cardNo,jdbcType=VARCHAR},                
             </if>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
+            <if test="gmtCreate != null ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
+            <if test="gmtModified != null ">        
                 gmt_modified = NOW(),                
             </if>
         </set>    

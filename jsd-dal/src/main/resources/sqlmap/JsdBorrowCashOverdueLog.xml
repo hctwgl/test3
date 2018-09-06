@@ -17,16 +17,16 @@
         <if test="gmtCreate !=null">
             AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
         </if>
-        <if test="userId != null and userId != ''">
+        <if test="userId != null">
             AND user_id = #{userId,jdbcType=INTEGER}
         </if>
-        <if test="borrowId != null and borrowId != ''">
+        <if test="borrowId != null">
             AND borrow_id = #{borrowId,jdbcType=INTEGER}
         </if>
-        <if test="interest != null and interest != ''">
+        <if test="interest != null">
             AND interest = #{interest,jdbcType=DECIMAL}
         </if>
-        <if test="currentAmount != null and currentAmount != ''">
+        <if test="currentAmount != null">
             AND current_amount = #{currentAmount,jdbcType=DECIMAL}
         </if>
     </sql>
@@ -74,19 +74,19 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashOverdueLogDo">
         UPDATE jsd_borrow_cash_overdue_log
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
+            <if test="gmtCreate != null ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="userId != null and userId != '' ">        
+            <if test="userId != null ">        
                 user_id = #{userId,jdbcType=INTEGER},                
             </if>
-            <if test="borrowId != null and borrowId != '' ">        
+            <if test="borrowId != null ">        
                 borrow_id = #{borrowId,jdbcType=INTEGER},                
             </if>
-            <if test="interest != null and interest != '' ">        
+            <if test="interest != null ">        
                 interest = #{interest,jdbcType=DECIMAL},                
             </if>
-            <if test="currentAmount != null and currentAmount != '' ">        
+            <if test="currentAmount != null ">        
                 current_amount = #{currentAmount,jdbcType=DECIMAL}                
             </if>
         </set>    

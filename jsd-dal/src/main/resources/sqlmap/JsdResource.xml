@@ -20,55 +20,55 @@
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
-        <if test="creator != null and creator != ''">
+        <if test="creator != null">
             AND creator = #{creator,jdbcType=VARCHAR}
         </if>
-        <if test="modifier != null and modifier != ''">
+        <if test="modifier != null">
             AND modifier = #{modifier,jdbcType=VARCHAR}
         </if>
-        <if test="dataType != null and dataType != ''">
+        <if test="dataType != null">
             AND data_type = #{dataType,jdbcType=VARCHAR}
         </if>
-        <if test="type != null and type != ''">
+        <if test="type != null">
             AND type = #{type,jdbcType=VARCHAR}
         </if>
-        <if test="typeDesc != null and typeDesc != ''">
+        <if test="typeDesc != null">
             AND type_desc = #{typeDesc,jdbcType=VARCHAR}
         </if>
-        <if test="name != null and name != ''">
+        <if test="name != null">
             AND name = #{name,jdbcType=VARCHAR}
         </if>
-        <if test="value != null and value != ''">
+        <if test="value != null">
             AND value = #{value,jdbcType=VARCHAR}
         </if>
-        <if test="description != null and description != ''">
+        <if test="description != null">
             AND description = #{description,jdbcType=VARCHAR}
         </if>
-        <if test="secType != null and secType != ''">
+        <if test="secType != null">
             AND sec_type = #{secType,jdbcType=VARCHAR}
         </if>
-        <if test="value1 != null and value1 != ''">
+        <if test="value1 != null">
             AND value_1 = #{value1,jdbcType=VARCHAR}
         </if>
-        <if test="value2 != null and value2 != ''">
+        <if test="value2 != null">
             AND value_2 = #{value2,jdbcType=VARCHAR}
         </if>
-        <if test="value3 != null and value3 != ''">
+        <if test="value3 != null">
             AND value_3 = #{value3,jdbcType=VARCHAR}
         </if>
-        <if test="value4 != null and value4 != ''">
+        <if test="value4 != null">
             AND value_4 = #{value4,jdbcType=VARCHAR}
         </if>
-        <if test="value5 != null and value5 != ''">
+        <if test="value5 != null">
             AND value_5 = #{value5,jdbcType=VARCHAR}
         </if>
-        <if test="pic1 != null and pic1 != ''">
+        <if test="pic1 != null">
             AND pic1 = #{pic1,jdbcType=VARCHAR}
         </if>
-        <if test="pic2 != null and pic2 != ''">
+        <if test="pic2 != null">
             AND pic2 = #{pic2,jdbcType=VARCHAR}
         </if>
-        <if test="sort != null and sort != ''">
+        <if test="sort != null">
             AND sort = #{sort,jdbcType=INTEGER}
         </if>
         <if test="effectiveStartTime !=null">
@@ -77,10 +77,10 @@
         <if test="effectiveEndTime !=null">
             AND effective_end_time = #{effectiveEndTime,jdbcType=TIMESTAMP}
         </if>
-        <if test="isEnable != null and isEnable != ''">
+        <if test="isEnable != null">
             AND is_enable = #{isEnable,jdbcType=INTEGER}
         </if>
-        <if test="env != null and env != ''">
+        <if test="env != null">
             AND env = #{env,jdbcType=VARCHAR}
         </if>
     </sql>
@@ -236,73 +236,73 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdResourceDo">
         UPDATE jsd_resource
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
+            <if test="gmtCreate != null ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtModified != null and gmtModified != '' ">        
+            <if test="gmtModified != null ">        
                 gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
             </if>
-            <if test="creator != null and creator != '' ">        
+            <if test="creator != null ">        
                 creator = #{creator,jdbcType=VARCHAR},                
             </if>
-            <if test="modifier != null and modifier != '' ">        
+            <if test="modifier != null ">        
                 modifier = #{modifier,jdbcType=VARCHAR},                
             </if>
-            <if test="dataType != null and dataType != '' ">        
+            <if test="dataType != null ">        
                 data_type = #{dataType,jdbcType=VARCHAR},                
             </if>
-            <if test="type != null and type != '' ">        
+            <if test="type != null ">        
                 type = #{type,jdbcType=VARCHAR},                
             </if>
-            <if test="typeDesc != null and typeDesc != '' ">        
+            <if test="typeDesc != null ">        
                 type_desc = #{typeDesc,jdbcType=VARCHAR},                
             </if>
-            <if test="name != null and name != '' ">        
+            <if test="name != null ">        
                 name = #{name,jdbcType=VARCHAR},                
             </if>
-            <if test="value != null and value != '' ">        
+            <if test="value != null ">        
                 value = #{value,jdbcType=VARCHAR},                
             </if>
-            <if test="description != null and description != '' ">        
+            <if test="description != null ">        
                 description = #{description,jdbcType=VARCHAR},                
             </if>
-            <if test="secType != null and secType != '' ">        
+            <if test="secType != null ">        
                 sec_type = #{secType,jdbcType=VARCHAR},                
             </if>
-            <if test="value1 != null and value1 != '' ">        
+            <if test="value1 != null ">        
                 value_1 = #{value1,jdbcType=VARCHAR},                
             </if>
-            <if test="value2 != null and value2 != '' ">        
+            <if test="value2 != null ">        
                 value_2 = #{value2,jdbcType=VARCHAR},                
             </if>
-            <if test="value3 != null and value3 != '' ">        
+            <if test="value3 != null ">        
                 value_3 = #{value3,jdbcType=VARCHAR},                
             </if>
-            <if test="value4 != null and value4 != '' ">        
+            <if test="value4 != null ">        
                 value_4 = #{value4,jdbcType=VARCHAR},                
             </if>
-            <if test="value5 != null and value5 != '' ">        
+            <if test="value5 != null ">        
                 value_5 = #{value5,jdbcType=VARCHAR},                
             </if>
-            <if test="pic1 != null and pic1 != '' ">        
+            <if test="pic1 != null ">        
                 pic1 = #{pic1,jdbcType=VARCHAR},                
             </if>
-            <if test="pic2 != null and pic2 != '' ">        
+            <if test="pic2 != null ">        
                 pic2 = #{pic2,jdbcType=VARCHAR},                
             </if>
-            <if test="sort != null and sort != '' ">        
+            <if test="sort != null ">        
                 sort = #{sort,jdbcType=INTEGER},                
             </if>
-            <if test="effectiveStartTime != null and effectiveStartTime != '' ">        
+            <if test="effectiveStartTime != null ">        
                 effective_start_time = #{effectiveStartTime,jdbcType=TIMESTAMP},                
             </if>
-            <if test="effectiveEndTime != null and effectiveEndTime != '' ">        
+            <if test="effectiveEndTime != null ">        
                 effective_end_time = #{effectiveEndTime,jdbcType=TIMESTAMP},                
             </if>
-            <if test="isEnable != null and isEnable != '' ">        
+            <if test="isEnable != null ">        
                 is_enable = #{isEnable,jdbcType=INTEGER},                
             </if>
-            <if test="env != null and env != '' ">        
+            <if test="env != null ">        
                 env = #{env,jdbcType=VARCHAR}                
             </if>
         </set>    

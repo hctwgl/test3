@@ -17,31 +17,31 @@
         <if test="gmtCreate !=null">
             AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
         </if>
-        <if test="userId != null and userId != ''">
+        <if test="userId != null">
             AND user_id = #{userId,jdbcType=INTEGER}
         </if>
-        <if test="bankCardNumber != null and bankCardNumber != ''">
+        <if test="bankCardNumber != null">
             AND bank_card_number = #{bankCardNumber,jdbcType=VARCHAR}
         </if>
-        <if test="bankCode != null and bankCode != ''">
+        <if test="bankCode != null">
             AND bank_code = #{bankCode,jdbcType=VARCHAR}
         </if>
-        <if test="name != null and name != ''">
+        <if test="name != null">
             AND name = #{name,jdbcType=VARCHAR}
         </if>
-        <if test="orderNo != null and orderNo != ''">
+        <if test="orderNo != null">
             AND order_no = #{orderNo,jdbcType=VARCHAR}
         </if>
-        <if test="type != null and type != ''">
+        <if test="type != null">
             AND type = #{type,jdbcType=VARCHAR}
         </if>
-        <if test="refId != null and refId != ''">
+        <if test="refId != null">
             AND ref_id = #{refId,jdbcType=VARCHAR}
         </if>
-        <if test="status != null and status != ''">
+        <if test="status != null">
             AND status = #{status,jdbcType=VARCHAR}
         </if>
-        <if test="amount != null and amount != ''">
+        <if test="amount != null">
             AND amount = #{amount,jdbcType=DECIMAL}
         </if>
     </sql>
@@ -115,34 +115,34 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdUpsLogDo">
         UPDATE jsd_ups_log
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
+            <if test="gmtCreate != null ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="userId != null and userId != '' ">        
+            <if test="userId != null ">        
                 user_id = #{userId,jdbcType=INTEGER},                
             </if>
-            <if test="bankCardNumber != null and bankCardNumber != '' ">        
+            <if test="bankCardNumber != null ">        
                 bank_card_number = #{bankCardNumber,jdbcType=VARCHAR},                
             </if>
-            <if test="bankCode != null and bankCode != '' ">        
+            <if test="bankCode != null ">        
                 bank_code = #{bankCode,jdbcType=VARCHAR},                
             </if>
-            <if test="name != null and name != '' ">        
+            <if test="name != null ">        
                 name = #{name,jdbcType=VARCHAR},                
             </if>
-            <if test="orderNo != null and orderNo != '' ">        
+            <if test="orderNo != null ">        
                 order_no = #{orderNo,jdbcType=VARCHAR},                
             </if>
-            <if test="type != null and type != '' ">        
+            <if test="type != null ">        
                 type = #{type,jdbcType=VARCHAR},                
             </if>
-            <if test="refId != null and refId != '' ">        
+            <if test="refId != null ">        
                 ref_id = #{refId,jdbcType=VARCHAR},                
             </if>
-            <if test="status != null and status != '' ">        
+            <if test="status != null ">        
                 status = #{status,jdbcType=VARCHAR},                
             </if>
-            <if test="amount != null and amount != '' ">        
+            <if test="amount != null ">        
                 amount = #{amount,jdbcType=DECIMAL}                
             </if>
         </set>    

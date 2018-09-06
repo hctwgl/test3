@@ -20,22 +20,22 @@
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
-        <if test="userId != null and userId != ''">
+        <if test="userId != null">
             AND user_id = #{userId,jdbcType=INTEGER}
         </if>
-        <if test="borrowId != null and borrowId != ''">
+        <if test="borrowId != null">
             AND borrow_id = #{borrowId,jdbcType=INTEGER}
         </if>
-        <if test="orderNo != null and orderNo != ''">
+        <if test="orderNo != null">
             AND order_no = #{orderNo,jdbcType=VARCHAR}
         </if>
-        <if test="status != null and status != ''">
+        <if test="status != null">
             AND status = #{status,jdbcType=VARCHAR}
         </if>
-        <if test="goodsId != null and goodsId != ''">
+        <if test="goodsId != null">
             AND goods_id = #{goodsId,jdbcType=INTEGER}
         </if>
-        <if test="priceAmount != null and priceAmount != ''">
+        <if test="priceAmount != null">
             AND price_amount = #{priceAmount,jdbcType=DECIMAL}
         </if>
         <if test="gmtDeliver !=null">
@@ -47,31 +47,31 @@
         <if test="gmtClosed !=null">
             AND gmt_closed = #{gmtClosed,jdbcType=TIMESTAMP}
         </if>
-        <if test="closedDetail != null and closedDetail != ''">
+        <if test="closedDetail != null">
             AND closed_detail = #{closedDetail,jdbcType=VARCHAR}
         </if>
-        <if test="address != null and address != ''">
+        <if test="address != null">
             AND address = #{address,jdbcType=VARCHAR}
         </if>
-        <if test="goodsName != null and goodsName != ''">
+        <if test="goodsName != null">
             AND goods_name = #{goodsName,jdbcType=VARCHAR}
         </if>
-        <if test="logisticsInfo != null and logisticsInfo != ''">
+        <if test="logisticsInfo != null">
             AND logistics_info = #{logisticsInfo,jdbcType=VARCHAR}
         </if>
-        <if test="logisticsCompany != null and logisticsCompany != ''">
+        <if test="logisticsCompany != null">
             AND logistics_company = #{logisticsCompany,jdbcType=VARCHAR}
         </if>
-        <if test="logisticsNo != null and logisticsNo != ''">
+        <if test="logisticsNo != null">
             AND logistics_no = #{logisticsNo,jdbcType=VARCHAR}
         </if>
-        <if test="deliveryUser != null and deliveryUser != ''">
+        <if test="deliveryUser != null">
             AND delivery_user = #{deliveryUser,jdbcType=VARCHAR}
         </if>
-        <if test="deliveryPhone != null and deliveryPhone != ''">
+        <if test="deliveryPhone != null">
             AND delivery_phone = #{deliveryPhone,jdbcType=VARCHAR}
         </if>
-        <if test="smartAddressScore != null and smartAddressScore != ''">
+        <if test="smartAddressScore != null">
             AND smart_address_score = #{smartAddressScore,jdbcType=INTEGER}
         </if>
     </sql>
@@ -209,61 +209,61 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo">
         UPDATE jsd_borrow_legal_order
           <set>
-            <if test="gmtCreate != null and gmtCreate != '' ">        
+            <if test="gmtCreate != null ">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="userId != null and userId != '' ">        
+            <if test="userId != null ">        
                 user_id = #{userId,jdbcType=INTEGER},                
             </if>
-            <if test="borrowId != null and borrowId != '' ">        
+            <if test="borrowId != null ">        
                 borrow_id = #{borrowId,jdbcType=INTEGER},                
             </if>
-            <if test="orderNo != null and orderNo != '' ">        
+            <if test="orderNo != null ">        
                 order_no = #{orderNo,jdbcType=VARCHAR},                
             </if>
-            <if test="status != null and status != '' ">        
+            <if test="status != null ">        
                 status = #{status,jdbcType=VARCHAR},                
             </if>
-            <if test="goodsId != null and goodsId != '' ">        
+            <if test="goodsId != null ">        
                 goods_id = #{goodsId,jdbcType=INTEGER},                
             </if>
-            <if test="priceAmount != null and priceAmount != '' ">        
+            <if test="priceAmount != null ">        
                 price_amount = #{priceAmount,jdbcType=DECIMAL},                
             </if>
-            <if test="gmtDeliver != null and gmtDeliver != '' ">        
+            <if test="gmtDeliver != null ">        
                 gmt_deliver = #{gmtDeliver,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtConfirmReceived != null and gmtConfirmReceived != '' ">        
+            <if test="gmtConfirmReceived != null ">        
                 gmt_confirm_received = #{gmtConfirmReceived,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtClosed != null and gmtClosed != '' ">        
+            <if test="gmtClosed != null ">        
                 gmt_closed = #{gmtClosed,jdbcType=TIMESTAMP},                
             </if>
-            <if test="closedDetail != null and closedDetail != '' ">        
+            <if test="closedDetail != null ">        
                 closed_detail = #{closedDetail,jdbcType=VARCHAR},                
             </if>
-            <if test="address != null and address != '' ">        
+            <if test="address != null ">        
                 address = #{address,jdbcType=VARCHAR},                
             </if>
-            <if test="goodsName != null and goodsName != '' ">        
+            <if test="goodsName != null ">        
                 goods_name = #{goodsName,jdbcType=VARCHAR},                
             </if>
-            <if test="logisticsInfo != null and logisticsInfo != '' ">        
+            <if test="logisticsInfo != null ">        
                 logistics_info = #{logisticsInfo,jdbcType=VARCHAR},                
             </if>
-            <if test="logisticsCompany != null and logisticsCompany != '' ">        
+            <if test="logisticsCompany != null ">        
                 logistics_company = #{logisticsCompany,jdbcType=VARCHAR},                
             </if>
-            <if test="logisticsNo != null and logisticsNo != '' ">        
+            <if test="logisticsNo != null ">        
                 logistics_no = #{logisticsNo,jdbcType=VARCHAR},                
             </if>
-            <if test="deliveryUser != null and deliveryUser != '' ">        
+            <if test="deliveryUser != null ">        
                 delivery_user = #{deliveryUser,jdbcType=VARCHAR},                
             </if>
-            <if test="deliveryPhone != null and deliveryPhone != '' ">        
+            <if test="deliveryPhone != null ">        
                 delivery_phone = #{deliveryPhone,jdbcType=VARCHAR},                
             </if>
-            <if test="smartAddressScore != null and smartAddressScore != '' ">        
+            <if test="smartAddressScore != null ">        
                 smart_address_score = #{smartAddressScore,jdbcType=INTEGER},              
             </if>
             gmt_modified = NOW()
