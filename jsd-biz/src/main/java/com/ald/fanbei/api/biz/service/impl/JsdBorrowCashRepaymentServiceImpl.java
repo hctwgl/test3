@@ -410,7 +410,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		    map.put("repayNo",repaymentDo.getRepayNo());
 			map.put("status",status);
 			map.put("tradeNo",repaymentDo.getTradeNo());
-			map.put("borrowNo",borrowCashDo.getBorrowNo());
+			map.put("borrowNo",borrowCashDo.getTradeNoXgxy());
 			map.put("period","1");
 			map.put("amount", String.valueOf(repaymentDo.getActualAmount()));
 			map.put("type",JsdRepayType.INITIATIVE.getName());
