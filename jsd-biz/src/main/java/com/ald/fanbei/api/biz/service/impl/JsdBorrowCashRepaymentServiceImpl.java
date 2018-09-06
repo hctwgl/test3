@@ -180,9 +180,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		repayment.setUserId(bo.userId);
 		repayment.setBorrowLegalOrderCashId(bo.borrowLegalOrderCashId);
 		repayment.setRepayAmount(repayAmount);
-		repayment.setActualAmount(actualAmountForOrder);
+		repayment.setActualAmount(repayAmount);
 		repayment.setName(bo.name);
-		repayment.setTradeNo(bo.repayNo);
+		repayment.setTradeNo(bo.tradeNo);
 		repayment.setStatus(JsdBorrowLegalRepaymentStatus.APPLY.getCode());
 		repayment.setCardNo(bo.bankNo);
 		HashMap bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
