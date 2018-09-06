@@ -8,8 +8,8 @@ import java.io.InputStreamReader;
 public class SecurityReaderUtil {
 
     public static String  getProperties(){
-        InputStream ins = ClassLoader.getSystemResourceAsStream("props/security.properties");
         try {
+        	InputStream ins = SecurityReaderUtil.class.getClassLoader().getResourceAsStream("props/security.properties");
             InputStreamReader isr=new InputStreamReader (ins);
             BufferedReader br = new BufferedReader(isr);
             String text="";

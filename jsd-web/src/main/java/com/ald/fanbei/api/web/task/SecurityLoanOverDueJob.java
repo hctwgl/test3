@@ -29,8 +29,6 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 public class SecurityLoanOverDueJob {
     Logger logger = LoggerFactory.getLogger(SecurityLoanOverDueJob.class);
 
-
-
     @Resource
     private JsdBorrowCashService borrowCashService;
 
