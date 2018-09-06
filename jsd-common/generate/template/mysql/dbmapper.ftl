@@ -21,7 +21,7 @@
             AND ${column.typeName} = #${leftBraces}${column.columnName},jdbcType=${column.jdbcType}${rightBraces}
         </if>
         <#else >
-        <if test="${column.columnName} != null and ${column.columnName} != ''">
+        <if test="${column.columnName} != null">
             AND ${column.typeName} = #${leftBraces}${column.columnName},jdbcType=${column.jdbcType}${rightBraces}
         </if>
         </#if >
@@ -61,7 +61,7 @@
             <#if column.columnName == "id">
             <#elseif column.columnName == "isDelete">
             <#else >
-            <if test="${column.columnName} != null and ${column.columnName} != '' ">        
+            <if test="${column.columnName} != null">        
                 ${column.typeName} = #${leftBraces}${column.columnName},jdbcType=${column.jdbcType}${rightBraces}<#if column_index+1 != listSize>,<#else></#if>
                 
             </if>
