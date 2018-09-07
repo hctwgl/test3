@@ -140,18 +140,17 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
      * @param openId
      * @return
      */
-	public BigDecimal getRiskOriRate(String openId) {
-        BigDecimal oriRate = BigDecimal.valueOf(0.003);
+	public BigDecimal getRiskDailyRate(String openId) {
+        BigDecimal oriRateDaily = BigDecimal.valueOf(0.005); // TODO 数据库配置利率
         try {
-            String poundageRate = oriRateUtil.getOriRateNoticeRequest(openId);
-            if(StringUtils.isBlank(poundageRate)) {
-                poundageRate = "0.003";
+            String riskRate = oriRateUtil.getOriRateNoticeRequest(openId); //风控返回的数据为日利率，并除以1000
+            if( StringUtils.isNotBlank(riskRate) ) {
+            	oriRateDaily = new BigDecimal(riskRate).divide(BigDecimal.valueOf(1000), 6, RoundingMode.CEILING);
             }
-            oriRate = new BigDecimal(poundageRate);
         } catch (Exception e) {
-            logger.info(openId + "从西瓜信用获取分层用户额度失败：" + e);
+            logger.error(openId + ",从西瓜信用获取分层用户额度失败：" + e.getMessage(), e);
         }
-        return oriRate;
+        return oriRateDaily;
     }
 	
 	/**
@@ -164,7 +163,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	public void resolve(TrialBeforeBorrowBo bo) {
 		TrialBeforeBorrowReq req = bo.req;
 		
-		BigDecimal oriRateDaily = this.getRiskOriRate(req.openId);
+		BigDecimal oriRateDaily = this.getRiskDailyRate(req.openId);
 		BigDecimal borrowAmount = new BigDecimal(req.amount);
 		BigDecimal borrowDay = new BigDecimal(req.term);
 

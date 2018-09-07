@@ -28,7 +28,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     
     void transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo);
     
-    BigDecimal getRiskOriRate(String openId);
+    BigDecimal getRiskDailyRate(String openId);
     
     void resolve(TrialBeforeBorrowBo bo);
     

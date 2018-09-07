@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.jsd.ResponseMessage;
+import com.ald.fanbei.api.biz.bo.jsd.ResponseXgxy;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -44,6 +44,7 @@ public class OriRateUtil extends AbstractThird {
             Map<String, Object> params = new HashMap<>();
             Map<String, Object> pay = new HashMap<>();
             pay.put("openId", openId);
+            pay.put("timestamp",System.currentTimeMillis()+"");
             params.put("appId", XgxyUtil.APPID);
             params.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
@@ -58,9 +59,10 @@ public class OriRateUtil extends AbstractThird {
             if (StringUtil.isBlank(reqResult)) {
                 return null;
             }
-            ResponseMessage responseMessage = JSONObject.parseObject(reqResult, ResponseMessage.class);
-            if (Constants.XGXY_REQ_CODE_SUCC.equals(responseMessage.getCode().toString())) {
-                return responseMessage.getData();
+            ResponseXgxy responseXgxy = JSONObject.parseObject(reqResult, ResponseXgxy.class);
+            if (Constants.XGXY_REQ_CODE_SUCC.equals(responseXgxy.getCode().toString())) {
+            	JSONObject dataObj = JSON.parseObject(responseXgxy.getData());
+                return dataObj.getString("interestNewRate");
             }
         } catch (Exception e) {
             logger.info("rePayNoticeRequest request fail", e);
