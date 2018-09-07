@@ -168,7 +168,8 @@ public class GetRenewalDetailApi implements JsdH5Handle {
 		// 总利润
 		BigDecimal totalDiffFee = BigDecimalUtil.multiply(renewalAmount, renewalDay, riskDailyRate);
 		
-		BigDecimal finalDiffProfit = totalDiffFee.subtract(rateAmount).subtract(poundage).subtract(orderCashService);
+//		BigDecimal finalDiffProfit = totalDiffFee.subtract(rateAmount).subtract(poundage).subtract(orderCashService);
+		BigDecimal finalDiffProfit = totalDiffFee.subtract(rateAmount).subtract(poundage);
 		if (finalDiffProfit.compareTo(BigDecimal.ZERO) <= 0) {
         	finalDiffProfit = BigDecimal.ZERO;
         }
