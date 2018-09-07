@@ -60,7 +60,7 @@ public class BorrowCashRepaymentBillApi implements JsdH5Handle {
         String status = "AWAIT_REPAY";	// 待还款
         if(cashDo.getRepayAmount().compareTo(BigDecimal.ZERO) > 0){
         	status = "PART_REPAY";		// 部分还款
-        	if(JsdBorrowCashStatus.FINISHED.equals(cashDo.getStatus())) {
+        	if(JsdBorrowCashStatus.FINISHED.name().equals(cashDo.getStatus())) {
         		status = "FINISHED";	// 已还清	
         	}
         }
