@@ -31,17 +31,55 @@ public class TrialBeforeBorrowBo {
 	}
 	
 	public static class TrialBeforeBorrowResp {
-		public String totalAmount; 	
+		/**
+		 * 用户总应还金额
+		 */
+		public String totalAmount;
+		
+		/**
+		 * 借款实借金额
+		 */
+		public String borrowAmount;
+		
+		/**
+		 * 借款到账到账金额
+		 */
 		public String arrivalAmount;
-		public String interestRate; 	
-		public String interestAmount;		
-		public String serviceRate; 	
-		public String serviceAmount;	
-		public String overdueRate; 	
+		/**
+		 * 借款利息利率
+		 */
+		public String interestRate;
+		/**
+		 * 借款利息
+		 */
+		public String interestAmount;
+		/**
+		 * 借款服务费利率
+		 */
+		public String serviceRate;
+		/**
+		 * 借款服务费
+		 */
+		public String serviceAmount;
+		/**
+		 * 借款逾期费率
+		 */
+		public String overdueRate;
+		
 		public BigDecimal[] billAmount;
-		public String remark; 	
-		public String totalDiffFee;		
-		public String sellServiceFee; 	
-		public String sellInterestFee;	
+		public String remark;
+		
+		/**
+		 * 利润差 又称 商品金额，会已10取整
+		 */
+		public String totalDiffFee;
+		/**
+		 * 商品服务费
+		 */
+		public String sellServiceFee;
+		/**
+		 * 商品利息
+		 */
+		public String sellInterestFee;
 	}
 }

@@ -30,6 +30,7 @@ import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
@@ -163,41 +164,57 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	public void resolve(TrialBeforeBorrowBo bo) {
 		TrialBeforeBorrowReq req = bo.req;
 		
-		BigDecimal oriRateDaily = this.getRiskDailyRate(req.openId);
-		BigDecimal borrowAmount = new BigDecimal(req.amount);
+		BigDecimal riskDailyRate = this.getRiskDailyRate(req.openId);
+		BigDecimal titularBorrowAmount = new BigDecimal(req.amount); // 并非真实借款额
+		
 		BigDecimal borrowDay = new BigDecimal(req.term);
 
-		ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(req.term);
+		ResourceRateInfoBo borrowRateInfo = jsdResourceService.getRateInfo(req.term);
 		
-        BigDecimal legalInterestRate = rateInfo.interestRate;
-        BigDecimal legalServiceRate = rateInfo.serviceRate;
-        BigDecimal overdueRate = rateInfo.overdueRate;
+        BigDecimal borrowInterestRate = borrowRateInfo.interestRate;
+        BigDecimal borrowServiceRate = borrowRateInfo.serviceRate;
+        BigDecimal borrowOverdueRate = borrowRateInfo.overdueRate;
         
-        BigDecimal interestAmount = legalInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowAmount).multiply(borrowDay).setScale(2, RoundingMode.CEILING);
-        BigDecimal serviceAmount = legalServiceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowAmount).multiply(borrowDay).setScale(2, RoundingMode.CEILING);
+        // 借款 利息 与 服务费 乘法表达式可复用左侧
+        BigDecimal borrowinterestLeft = borrowInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowDay);
+        BigDecimal borrowServiceLeft = borrowServiceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowDay);
         
-        BigDecimal totalProfit = oriRateDaily.multiply(borrowAmount).multiply(borrowDay).setScale(2, RoundingMode.CEILING);
-        BigDecimal legalProfit = interestAmount.add(serviceAmount);
+        BigDecimal titularInterestAmount = borrowinterestLeft.multiply(titularBorrowAmount).setScale(2, RoundingMode.CEILING);
+        BigDecimal titularServiceAmount = borrowServiceLeft.multiply(titularBorrowAmount).setScale(2, RoundingMode.CEILING);
+        BigDecimal totalProfit = riskDailyRate.multiply(titularBorrowAmount).multiply(borrowDay).setScale(2, RoundingMode.CEILING);
         
-        BigDecimal orderCashService = BigDecimal.valueOf(10);
-        BigDecimal finalDiffProfit = totalProfit.subtract(legalProfit).subtract(orderCashService);
+        BigDecimal finalDiffProfit = totalProfit.subtract(titularInterestAmount).subtract(titularServiceAmount);
         if (finalDiffProfit.compareTo(BigDecimal.ZERO) <= 0) {
         	finalDiffProfit = BigDecimal.ZERO;
         }
         
+//        finalDiffProfit = TODO 已10取整 
+        BigDecimal actualOrderAmount = finalDiffProfit;									//最终商品价格
+        BigDecimal actualBorrowAmount = titularBorrowAmount.subtract(actualOrderAmount);//真实借款额
         TrialBeforeBorrowResp resp = new TrialBeforeBorrowResp();
-        resp.totalAmount = borrowAmount.add(legalProfit).add(orderCashService).add( StringUtils.isBlank(req.goodsPrice) ? totalProfit:new BigDecimal(req.goodsPrice) ).toString();
-        resp.arrivalAmount = borrowAmount.toString();
-        resp.interestRate = legalInterestRate.toString();
-        resp.interestAmount = interestAmount.toString();
-        resp.serviceRate = legalServiceRate.toString();
-        resp.serviceAmount = serviceAmount.toString();
-        resp.overdueRate = overdueRate.toString();
-        resp.billAmount = new BigDecimal[]{borrowAmount};
-        resp.remark = "本金" + borrowAmount + "元,总利息" + legalProfit + "元";
+        
+        //处理借款相关利息
+        BigDecimal actualBorrowInterestAmount = borrowinterestLeft.multiply(actualBorrowAmount).setScale(2, RoundingMode.CEILING);
+        BigDecimal actualBorrowServiceAmount = borrowServiceLeft.multiply(actualBorrowAmount).setScale(2, RoundingMode.CEILING);
+        resp.arrivalAmount = actualBorrowAmount.toString();
+        resp.interestRate = borrowInterestRate.toString();
+        resp.interestAmount = actualBorrowInterestAmount.toString();
+        resp.serviceRate = borrowServiceRate.toString();
+        resp.serviceAmount = actualBorrowServiceAmount.toString();
+        resp.overdueRate = borrowOverdueRate.toString();
+        resp.billAmount = new BigDecimal[]{actualBorrowAmount};
+        resp.remark = "本金" + actualBorrowAmount + "元,总利息" + actualBorrowInterestAmount.add(actualBorrowServiceAmount) + "元";
+        
+        //处理搭售商品相关利息
+        ResourceRateInfoBo orderRateInfo = jsdResourceService.getOrderRateInfo(req.term);
+        BigDecimal actualOrderInterestAmount = orderRateInfo.interestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowDay).multiply(actualOrderAmount);
+        BigDecimal actualOrderServiceAmount = orderRateInfo.serviceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowDay).multiply(actualOrderAmount);
         resp.totalDiffFee = finalDiffProfit.toString();
-        resp.sellInterestFee = BigDecimal.ZERO.toString();
-        resp.sellServiceFee = orderCashService.toString();
+        resp.sellInterestFee = actualOrderInterestAmount.toString();
+        resp.sellServiceFee = actualOrderServiceAmount.toString();
+        
+        resp.totalAmount = BigDecimalUtil.add(actualBorrowAmount, actualBorrowInterestAmount, actualBorrowServiceAmount, 
+        			actualOrderAmount, actualOrderInterestAmount, actualOrderServiceAmount).toString();
         
         bo.resp = resp;
     }
