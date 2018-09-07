@@ -268,11 +268,10 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 					// 借款记录
 					JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
 					// 上期订单借款
-					JsdBorrowLegalOrderCashDo lastOrderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(borrowCashDo.getRid());
+					JsdBorrowLegalOrderCashDo lastOrderCashDo = jsdBorrowLegalOrderCashDao.getPreviousOrderCashByBorrowId(borrowCashDo.getRid());
 					
 					
-					if(lastOrderCashDo.getStatus().equals(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.getCode()) 
-							|| lastOrderCashDo.getStatus().equals(JsdBorrowLegalOrderCashStatus.PART_REPAID.getCode())){
+					if(lastOrderCashDo!=null){
 						// 更新上期订单借款记录为FINISHED
 						lastOrderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.FINISHED.getCode());
 						lastOrderCashDo.setSumRepaidPoundage(lastOrderCashDo.getSumRepaidPoundage().add(lastOrderCashDo.getPoundageAmount()));
