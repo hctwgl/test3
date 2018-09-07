@@ -44,7 +44,7 @@ public class OriRateUtil extends AbstractThird {
             Map<String, Object> params = new HashMap<>();
             Map<String, Object> pay = new HashMap<>();
             pay.put("openId", openId);
-            params.put("appId", "edspay");
+            params.put("appId", XgxyUtil.APPID);
             params.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(pay)), PRIVATE_KEY));
             String url = getXgxyUrl() + "/isp/open/third/eca/v1/getlayeredRate";
