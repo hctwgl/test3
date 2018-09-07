@@ -220,6 +220,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         
         orderDo.setStatus(JsdBorrowLegalOrderStatus.AWAIT_DELIVER.name());
         orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.name());
+        orderCashDo.setGmtPlanRepay(repaymentDate);
         this.transUpdate(cashDo, orderDo, orderCashDo);
         
         jsdNoticeRecord(cashDo,"", XgxyBorrowNotifyStatus.SUCCESS.name());
