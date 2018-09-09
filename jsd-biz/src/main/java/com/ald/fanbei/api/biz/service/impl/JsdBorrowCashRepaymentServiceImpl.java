@@ -411,7 +411,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 		noticeRecordDo.setParams(JSON.toJSONString(data));
 		jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
-		if (xgxyUtil.jsdRenewalNoticeRequest(data)) {
+		if (xgxyUtil.dsedRePayNoticeRequest(data)) {
 			noticeRecordDo.setRid(noticeRecordDo.getRid());
 			noticeRecordDo.setGmtModified(new Date());
 			jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
