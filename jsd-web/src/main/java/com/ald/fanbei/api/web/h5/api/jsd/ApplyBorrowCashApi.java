@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.h5.api.jsd;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -11,9 +10,11 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.ald.fanbei.api.biz.bo.jsd.ApplyBorrowCashBo;
 import com.ald.fanbei.api.biz.bo.jsd.ApplyBorrowCashBo.ApplyBorrowCashReq;
 import com.ald.fanbei.api.biz.bo.jsd.ApplyBorrowCashBo.JsdGoodsInfoBo;
+import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
+import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
+import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowResp;
 import com.ald.fanbei.api.biz.bo.ups.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
@@ -21,7 +22,6 @@ import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
-import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
@@ -44,7 +44,7 @@ import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 
 /**
- * @author Jiang Rongbo 2017年3月25日下午1:06:18
+ * @author GSQ 2017年3月25日下午1:06:18
  * @类描述：申请借钱
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
@@ -83,19 +83,21 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
     	this.lock(context.getUserId());
     	try {
 	        JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
-	        
-	        ApplyBorrowCashBo bo = new ApplyBorrowCashBo();
-	        ApplyBorrowCashReq req = bo.req = (ApplyBorrowCashReq)context.getParamEntity();
-	        bo.userId = context.getUserId();
+	        ApplyBorrowCashReq cashReq = (ApplyBorrowCashReq)context.getParamEntity();
         	
 	        jsdBorrowCashService.checkCanBorrow(context.getUserId());
 	        
-        	BigDecimal oriRate = jsdBorrowCashService.getRiskOriRate(req.openId);
-            JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(req.bankNo);
+            JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(cashReq.bankNo);
            
-            final JsdBorrowCashDo cashDo = buildBorrowCashDo(bo, mainCard, oriRate); 		// 主借款
-            final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(bo);				// 搭售商品订单
-            final JsdBorrowLegalOrderCashDo orderCashDo = buildBorrowLegalOrderCashDo(bo);	// 订单借款
+            TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
+	    	trialBo.req = new TrialBeforeBorrowReq(cashReq.openId, cashReq.amount, cashReq.term, cashReq.unit);
+			trialBo.userId = context.getUserId();
+			trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(cashReq.openId);
+        	jsdBorrowCashService.resolve(trialBo);
+	    	
+            final JsdBorrowCashDo cashDo = buildBorrowCashDo(cashReq, mainCard, trialBo); 				// 主借款
+            final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(cashReq, context.getUserId());	// 搭售商品订单
+            final JsdBorrowLegalOrderCashDo orderCashDo = buildBorrowLegalOrderCashDo(cashReq, trialBo);// 订单借款
 
             transactionTemplate.execute(new TransactionCallback<Long>() {
                 @Override
@@ -116,7 +118,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
             
             new Thread() { public void run() {
             	try {
-                    UpsDelegatePayRespBo upsResult = upsUtil.jsdDelegatePay(req.amount, context.getRealName(), 
+                    UpsDelegatePayRespBo upsResult = upsUtil.jsdDelegatePay(cashDo.getArrivalAmount(), context.getRealName(), 
                             mainCard.getBankCardNumber(), context.getUserId().toString(), mainCard.getMobile(),
                             mainCard.getBankName(), mainCard.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
                             "JSD_LOAN", cashDo.getRid().toString(), context.getIdNumber());
@@ -143,31 +145,25 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
      * 构建 主借款
      * @return
      */
-    private JsdBorrowCashDo buildBorrowCashDo(ApplyBorrowCashBo bo, JsdUserBankcardDo mainCard, BigDecimal riskRateDaily) {
-    	ApplyBorrowCashReq req = bo.req;
+    private JsdBorrowCashDo buildBorrowCashDo(ApplyBorrowCashReq cashReq, JsdUserBankcardDo mainCard, TrialBeforeBorrowBo trialBo) {
+    	TrialBeforeBorrowReq trialReq = trialBo.req;
+    	TrialBeforeBorrowResp trialResp = trialBo.resp;
     	
-    	ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(req.term);
-    	
-        BigDecimal interestRateDaily = rateInfo.interestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-        BigDecimal serviceRateDaily = rateInfo.serviceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
-        
-        BigDecimal serviceAmount = req.amount.multiply(serviceRateDaily).multiply(new BigDecimal(req.term));
-        BigDecimal interestAmount = req.amount.multiply(interestRateDaily).multiply(new BigDecimal(req.term));
-        
         JsdBorrowCashDo afBorrowCashDo = new JsdBorrowCashDo();
-        afBorrowCashDo.setAmount(req.amount);
-        afBorrowCashDo.setArrivalAmount(req.amount);// 到账金额和借款金额相同
+        afBorrowCashDo.setAmount(new BigDecimal( trialResp.borrowAmount) );
+        afBorrowCashDo.setArrivalAmount(new BigDecimal( trialResp.arrivalAmount ));// 到账金额和借款金额相同
         afBorrowCashDo.setCardName(mainCard.getBankName());
         afBorrowCashDo.setCardNumber(mainCard.getBankCardNumber());
-        afBorrowCashDo.setType(req.term);
+        afBorrowCashDo.setType(trialReq.term);
         afBorrowCashDo.setStatus(JsdBorrowCashStatus.APPLY.name());
-        afBorrowCashDo.setUserId(bo.userId);
-        afBorrowCashDo.setRateAmount(interestAmount);
-        afBorrowCashDo.setPoundage(serviceAmount);
-        afBorrowCashDo.setPoundageRate(rateInfo.overdueRate.setScale(2, RoundingMode.CEILING));
-        afBorrowCashDo.setRiskDailyRate(riskRateDaily);
-        afBorrowCashDo.setProductNo(req.productNo);
-        afBorrowCashDo.setTradeNoXgxy(req.borrowNo);
+        afBorrowCashDo.setUserId(trialBo.userId);
+        afBorrowCashDo.setRateAmount(new BigDecimal(trialResp.interestAmount));
+        afBorrowCashDo.setPoundage(new BigDecimal(trialResp.serviceAmount));
+        afBorrowCashDo.setPoundageRate(new BigDecimal(trialResp.serviceRate));
+        afBorrowCashDo.setInterestRate(new BigDecimal(trialResp.interestRate));
+        afBorrowCashDo.setRiskDailyRate(trialBo.riskDailyRate);
+        afBorrowCashDo.setProductNo(trialReq.productNo);
+        afBorrowCashDo.setTradeNoXgxy(cashReq.borrowNo);
         afBorrowCashDo.setBorrowNo(generatorClusterNo.getLoanNo(new Date()));
         afBorrowCashDo.setRepayPrinciple(BigDecimal.ZERO);
         return afBorrowCashDo;
@@ -177,11 +173,11 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
      * 构建 商品订单
      * @return
      */
-    private JsdBorrowLegalOrderDo buildBorrowLegalOrder(ApplyBorrowCashBo bo) {
-    	JsdGoodsInfoBo goodsBo = bo.req.goodsInfo;
+    private JsdBorrowLegalOrderDo buildBorrowLegalOrder(ApplyBorrowCashReq cashReq, Long userId) {
+    	JsdGoodsInfoBo goodsBo = cashReq.goodsInfo;
     	
         JsdBorrowLegalOrderDo afBorrowLegalOrderDo = new JsdBorrowLegalOrderDo();
-        afBorrowLegalOrderDo.setUserId(bo.userId);
+        afBorrowLegalOrderDo.setUserId(userId);
         afBorrowLegalOrderDo.setPriceAmount(new BigDecimal(goodsBo.goodsPrice));
         afBorrowLegalOrderDo.setGoodsName(goodsBo.goodsName);
         afBorrowLegalOrderDo.setStatus(JsdBorrowLegalOrderStatus.UNPAID.getCode());
@@ -194,21 +190,20 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
      * 构建 商品借款 
      * @return
      */
-    private JsdBorrowLegalOrderCashDo buildBorrowLegalOrderCashDo(ApplyBorrowCashBo bo) {
-    	ApplyBorrowCashReq req = bo.req;
-    	JsdGoodsInfoBo goodsBo = req.goodsInfo;
+    private JsdBorrowLegalOrderCashDo buildBorrowLegalOrderCashDo(ApplyBorrowCashReq cashReq, TrialBeforeBorrowBo trialBo) {
+    	TrialBeforeBorrowResp resp = trialBo.resp;
     	
         JsdBorrowLegalOrderCashDo afBorrowLegalOrderCashDo = new JsdBorrowLegalOrderCashDo();
-        afBorrowLegalOrderCashDo.setAmount(new BigDecimal(goodsBo.goodsPrice));
-        afBorrowLegalOrderCashDo.setType(req.term);
+        afBorrowLegalOrderCashDo.setAmount(new BigDecimal(resp.totalDiffFee));
+        afBorrowLegalOrderCashDo.setType(cashReq.term);
         afBorrowLegalOrderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.APPLYING.getCode());
-        afBorrowLegalOrderCashDo.setUserId(bo.userId);
-        afBorrowLegalOrderCashDo.setPoundageRate(BigDecimal.ZERO);
-        afBorrowLegalOrderCashDo.setInterestRate(BigDecimal.ZERO);
-        afBorrowLegalOrderCashDo.setBorrowRemark(req.loanRemark);
-        afBorrowLegalOrderCashDo.setRefundRemark(req.repayRemark);
-        afBorrowLegalOrderCashDo.setInterestAmount(BigDecimal.ZERO);
-        afBorrowLegalOrderCashDo.setPoundageAmount(new BigDecimal(10));
+        afBorrowLegalOrderCashDo.setUserId(trialBo.userId);
+        afBorrowLegalOrderCashDo.setPoundageRate(resp.sellServiceRate);
+        afBorrowLegalOrderCashDo.setInterestRate(resp.sellInterestRate);
+        afBorrowLegalOrderCashDo.setBorrowRemark(cashReq.loanRemark);
+        afBorrowLegalOrderCashDo.setRefundRemark(cashReq.repayRemark);
+        afBorrowLegalOrderCashDo.setInterestAmount(new BigDecimal(resp.sellInterestFee));
+        afBorrowLegalOrderCashDo.setPoundageAmount(new BigDecimal(resp.sellServiceFee));
         afBorrowLegalOrderCashDo.setOverdueAmount(BigDecimal.ZERO);
         afBorrowLegalOrderCashDo.setOverdueStatus(YesNoStatus.NO.getCode());
         afBorrowLegalOrderCashDo.setCashNo(generatorClusterNo.geBorrowLegalOrderCashNo(new Date()));

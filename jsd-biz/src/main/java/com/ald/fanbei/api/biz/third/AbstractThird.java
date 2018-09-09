@@ -30,8 +30,8 @@ public abstract class AbstractThird {
 	protected void logThird(Object resp, String methodName, Object... param) {
 		StringBuffer sb = new StringBuffer();
 		for (Object item : param) {
-			sb = sb.append("|").append(JSON.toJSONString(item));
+			sb = sb.append(JSON.toJSONString(item)).append("|");
 		}
-		logger.info(StringUtil.appendStrs(" methodName=", methodName, ";	params=", sb.toString().replaceAll("\n", ""), ";	resp=", resp == null ? "" : resp));
+		logger.info(StringUtil.appendStrs("methodName=", methodName, "; params=", sb.toString().replaceAll("\n", ""), "; resp=", resp == null ? "" : resp));
 	}
 }

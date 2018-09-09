@@ -35,6 +35,28 @@ public class JsdBorrowTest extends BaseTest {
     }
 
     /**
+     * 查询借款状态
+     */
+    @Test
+    public void getProfit() {
+        String url = urlBase + "/third/eca/v1/getProfit";
+        JSONObject params = new JSONObject();
+        params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
+        params.put("type", "BORROW");
+        params.put("amount", "5000.00");
+        params.put("term", "20");
+        params.put("unit", "DAY");
+        
+        String encryptBase64Str = JsdAesUtil.encryptToBase64Third(JSON.toJSONString(params), AES_KEY);
+        Map<String, String> p = new HashMap<>();
+        p.put("data", encryptBase64Str);
+        p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+    
+    /**
      * 获取续借详情
      */
     @Test
@@ -48,7 +70,6 @@ public class JsdBorrowTest extends BaseTest {
         params.put("unit", "DAY");
         params.put("isTying", "Y");
         params.put("tyingType", "SELL");
-        params.put("goodsPrice", "500.00");
         String encryptBase64Str = JsdAesUtil.encryptToBase64Third(JSON.toJSONString(params), AES_KEY);
         Map<String, Object> p = new HashMap<>();
         p.put("data", encryptBase64Str);
@@ -67,7 +88,7 @@ public class JsdBorrowTest extends BaseTest {
         JSONObject params = new JSONObject();
         params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
         params.put("productNo", "2");
-        params.put("borrowNo", "xgxy202314123090123123");
+        params.put("borrowNo", "xgxy202314123090187954");
         params.put("amount", "5000");
         params.put("term", "10");
         params.put("unit", "DAY");
@@ -110,29 +131,6 @@ public class JsdBorrowTest extends BaseTest {
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
-    
-    /**
-     * 查询借款状态
-     */
-    @Test
-    public void getProfit() {
-        String url = urlBase + "/third/eca/v1/getProfit";
-        JSONObject params = new JSONObject();
-        params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
-        params.put("type", "BORROW");
-        params.put("amount", "5000.00");
-        params.put("term", "20");
-        params.put("unit", "DAY");
-        
-        String encryptBase64Str = JsdAesUtil.encryptToBase64Third(JSON.toJSONString(params), AES_KEY);
-        Map<String, String> p = new HashMap<>();
-        p.put("data", encryptBase64Str);
-        p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
-        
-        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
-    }
-    
     
     public static void main(String[] args) {
     	String src = "{\"reason\":\"\",\"borrowNo\":\"xgxy202314123090123123\",\"status\":\"FAILED\"}";

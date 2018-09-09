@@ -2,7 +2,7 @@ package com.ald.fanbei.api.biz.bo.jsd;
 
 import java.io.Serializable;
 
-public class ResponseMessage implements Serializable {
+public class ResponseXgxy implements Serializable {
 
 	private static final long serialVersionUID = -7947422672590193046L;
 
@@ -10,9 +10,9 @@ public class ResponseMessage implements Serializable {
 	private String message;
 	private String data;
 
-	public ResponseMessage() {}
+	public ResponseXgxy() {}
 
-	public ResponseMessage(Integer code, String message, String data) {
+	public ResponseXgxy(Integer code, String message, String data) {
 		this.code = code;
 		this.message = message;
 		this.data = data;

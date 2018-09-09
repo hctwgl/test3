@@ -22,6 +22,11 @@ import java.math.BigDecimal;
     private Long rid;
     
     /**
+     * 用户id
+     */
+    private Long userId;
+    
+    /**
      * 借款编号
      */
     private String borrowNo;
@@ -34,14 +39,16 @@ import java.math.BigDecimal;
      * 西瓜申请流水号
      */
     private String tradeNoXgxy;
-
+    
     /**
-     * 用户id
+     * 借款类型:v1:赊账,v2:搭售
      */
-    private Long userId;
+    private String version;
+    
+    private String productNo;
 
     /**
-     * 借款天数
+     * 借款天数 10天 20天 7天 14天
      */
     private String type;
 
@@ -49,16 +56,16 @@ import java.math.BigDecimal;
      * 申请金额
      */
     private BigDecimal amount;
+    
+    /**
+     * 到账金额
+     */
+    private BigDecimal arrivalAmount;
 
     /**
      * 借款状态【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINSH:已结清】
      */
     private String status;
-
-    /**
-     * 备注
-     */
-    private String remark;
 
     /**
      * 卡号或者支付宝账号
@@ -79,13 +86,6 @@ import java.math.BigDecimal;
      * 逾期天数
      */
     private Long overdueDay;
-
-    private BigDecimal overdueRate;
-
-    /**
-     * 到账金额
-     */
-    private BigDecimal arrivalAmount;
 
     /**
      * 手续费
@@ -134,15 +134,37 @@ import java.math.BigDecimal;
     private Long renewalNum;
 
     /**
-     * 借钱手续费率（日）
+     * 借钱利息费率（年化）
+     */
+    private BigDecimal interestRate;
+    
+    /**
+     * 借钱手续费率（年化）
      */
     private BigDecimal poundageRate;
-
+    
+    /**
+     * 借款逾期费率（年化）
+     */
+    private BigDecimal overdueRate;
+    
     /**
      * 用户分层日利率
      */
     private BigDecimal riskDailyRate;
 
+    private String borrowRemark;
+    private String repayRemark;
+    /**
+     * 备注
+     */
+    private String remark;
+    
+    /**
+     * 订单为FINSH时记录该时间
+     */
+    private String finishDate;
+    
     /**
      * 预计还款时间
      */
@@ -158,33 +180,9 @@ import java.math.BigDecimal;
      */
     private Date gmtClose;
 
-    /**
-     * 
-     */
     private Date gmtCreate;
 
-    /**
-     * 
-     */
     private Date gmtModified;
-
-
-    /**
-     * 订单为FINSH时记录该时间
-     */
-    private String finishDate;
-
-    /**
-     * 续借前的逾期状态
-     */
-    private String rdBeforeOverdueStatus;
-
-    /**
-     * 借款类型:v1:赊账,v2:搭售
-     */
-    private String version;
-
-    private String productNo;
 
     public String getProductNo() {
         return productNo;
@@ -718,24 +716,6 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取续借前的逾期状态
-     *
-     * @return 续借前的逾期状态
-     */
-    public String getRdBeforeOverdueStatus(){
-      return rdBeforeOverdueStatus;
-    }
-
-    /**
-     * 设置续借前的逾期状态
-     * 
-     * @param rdBeforeOverdueStatus 要设置的续借前的逾期状态
-     */
-    public void setRdBeforeOverdueStatus(String rdBeforeOverdueStatus){
-      this.rdBeforeOverdueStatus = rdBeforeOverdueStatus;
-    }
-
-    /**
      * 获取借款类型:v1:赊账,v2:搭售
      *
      * @return 借款类型:v1:赊账,v2:搭售
@@ -767,6 +747,30 @@ import java.math.BigDecimal;
 
 	public void setTradeNoXgxy(String tradeNoXgxy) {
 		this.tradeNoXgxy = tradeNoXgxy;
+	}
+
+	public BigDecimal getInterestRate() {
+		return interestRate;
+	}
+
+	public void setInterestRate(BigDecimal interestRate) {
+		this.interestRate = interestRate;
+	}
+
+	public String getBorrowRemark() {
+		return borrowRemark;
+	}
+
+	public void setBorrowRemark(String borrowRemark) {
+		this.borrowRemark = borrowRemark;
+	}
+
+	public String getRepayRemark() {
+		return repayRemark;
+	}
+
+	public void setRepayRemark(String repayRemark) {
+		this.repayRemark = repayRemark;
 	}
 
 }

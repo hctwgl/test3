@@ -128,14 +128,19 @@ import java.math.BigDecimal;
     private BigDecimal sumRepaidInterest;
 
     /**
-     * 手续费费率
+     * 手续费费率（年化）
      */
     private BigDecimal poundageRate;
 
     /**
-     * 利率
+     * 利息利率（年化）
      */
     private BigDecimal interestRate;
+    
+    /**
+     * 逾期利率（年化）
+     */
+    private BigDecimal overdueRate;
 
 
     /**
@@ -653,6 +658,14 @@ import java.math.BigDecimal;
 
 	public void setGmtModified(Date gmtModified) {
 		this.gmtModified = gmtModified;
+	}
+
+	public BigDecimal getOverdueRate() {
+		return overdueRate;
+	}
+
+	public void setOverdueRate(BigDecimal overdueRate) {
+		this.overdueRate = overdueRate;
 	}
 
 }

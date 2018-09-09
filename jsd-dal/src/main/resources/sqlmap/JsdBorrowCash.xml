@@ -303,9 +303,6 @@
 		    <if test="finishDate != null" >
 		       #{finishDate,jdbcType=VARCHAR},
 		    </if>
-		    <if test="rdBeforeOverdueStatus != null" >
-		       #{rdBeforeOverdueStatus,jdbcType=VARCHAR},
-		    </if>
 		    <if test="version != null" >
 		       #{version,jdbcType=VARCHAR},
 		    </if>

@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.bo.jsd;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ public class ApplyBorrowCashBo {
 		@NotNull
 		public String borrowNo;
 		@NotNull
+		@DecimalMin("0")
 		public BigDecimal amount;
 		@NotNull
 		public String term;
