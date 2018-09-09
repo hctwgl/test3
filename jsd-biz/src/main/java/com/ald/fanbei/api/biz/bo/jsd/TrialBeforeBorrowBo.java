@@ -32,8 +32,6 @@ public class TrialBeforeBorrowBo {
 		public String term;		
 		@NotNull
 		public String unit;
-		@NotNull
-		public String goodsPrice;
 		
 		public String isTying;	
 		public String tyingType;

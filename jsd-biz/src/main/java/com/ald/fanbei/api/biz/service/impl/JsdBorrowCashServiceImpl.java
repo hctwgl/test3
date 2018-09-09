@@ -142,16 +142,22 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
      * @return
      */
 	public BigDecimal getRiskDailyRate(String openId) {
-        BigDecimal oriRateDaily = BigDecimal.valueOf(0.005); // TODO 数据库配置利率
+        BigDecimal riskRateDaily = BigDecimal.valueOf(0.005); // TODO 数据库配置利率
         try {
             String riskRate = oriRateUtil.getOriRateNoticeRequest(openId); //风控返回的数据为日利率，并除以1000
             if( StringUtils.isNotBlank(riskRate) ) {
-            	oriRateDaily = new BigDecimal(riskRate).divide(BigDecimal.valueOf(1000), 6, RoundingMode.CEILING);
+            	if(BigDecimal.ZERO.compareTo(new BigDecimal(riskRate)) == 0) {
+            		logger.error("openId=" + openId + ", riskRate from xgxy is 0.00 !");
+            	}else {
+            		riskRateDaily = new BigDecimal(riskRate).divide(BigDecimal.valueOf(1000), 6, RoundingMode.CEILING);
+            	}
+            }else {
+            	logger.error("openId=" + openId + ", riskRate from xgxy is null!");
             }
         } catch (Exception e) {
-            logger.error(openId + ",从西瓜信用获取分层用户额度失败：" + e.getMessage(), e);
+            logger.error("openId=" + openId + ", occur exception when getRiskDailyRate, msg=" + e.getMessage(), e);
         }
-        return oriRateDaily;
+        return riskRateDaily;
     }
 	
 	/**
@@ -194,6 +200,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         //处理借款相关利息
         BigDecimal actualBorrowInterestAmount = borrowinterestLeft.multiply(actualBorrowAmount).setScale(2, RoundingMode.CEILING);
         BigDecimal actualBorrowServiceAmount = borrowServiceLeft.multiply(actualBorrowAmount).setScale(2, RoundingMode.CEILING);
+        resp.borrowAmount = actualBorrowAmount.toString();
         resp.arrivalAmount = actualBorrowAmount.toString();
         resp.interestRate = borrowInterestRate.toString();
         resp.interestAmount = actualBorrowInterestAmount.toString();
@@ -208,8 +215,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         BigDecimal orderInterestRate = orderRateInfo.interestRate;
         BigDecimal orderServiceRate = orderRateInfo.serviceRate;
         BigDecimal orderOverdueRate = orderRateInfo.overdueRate;
-        BigDecimal actualOrderInterestAmount = orderInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowDay).multiply(actualOrderAmount);
-        BigDecimal actualOrderServiceAmount = orderServiceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowDay).multiply(actualOrderAmount);
+        BigDecimal actualOrderInterestAmount = orderInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowDay).multiply(actualOrderAmount).setScale(2, RoundingMode.CEILING);
+        BigDecimal actualOrderServiceAmount = orderServiceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowDay).multiply(actualOrderAmount).setScale(2, RoundingMode.CEILING);
         resp.totalDiffFee = finalDiffProfit.toString();
         resp.sellInterestFee = actualOrderInterestAmount.toString();
         resp.sellInterestRate = orderInterestRate;
