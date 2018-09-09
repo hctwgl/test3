@@ -229,10 +229,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         			actualOrderAmount, actualOrderInterestAmount, actualOrderServiceAmount).toString();
         
         // 1、借款费用【借款利息金额+借款服务费金额】元，其中借款利息【借款利息金额】元，借款服务费【借款服务费金额】元。2、商品费用【分期利息金额+分期服务费金额】元，其中分期利息【分期利息金额】元，分期服务费【分期服务费金额】元。
-        resp.remark = "1、借款费用【" + BigDecimalUtil.add(actualBorrowInterestAmount, actualBorrowServiceAmount) + "】元，"
-        			+ "其中借款利息【" + actualBorrowInterestAmount + "】元，借款服务费【" + actualBorrowServiceAmount + "】元。"
-        			+ "2、商品费用【" + BigDecimalUtil.add(actualOrderInterestAmount, actualOrderServiceAmount) + "】元，"
-					+ "其中分期利息【" + actualOrderInterestAmount + "】元，分期服务费【"+ actualOrderServiceAmount +"】元。";
+        resp.remark = "1、借款费用" + BigDecimalUtil.add(actualBorrowInterestAmount, actualBorrowServiceAmount) + "元，"
+        			+ "其中借款利息" + actualBorrowInterestAmount + "元，借款服务费" + actualBorrowServiceAmount + "元。"
+        			+ "2、商品费用" + BigDecimalUtil.add(actualOrderInterestAmount, actualOrderServiceAmount) + "元，"
+					+ "其中分期利息" + actualOrderInterestAmount + "元，分期服务费"+ actualOrderServiceAmount +"元。";
         
         bo.resp = resp;
     }
