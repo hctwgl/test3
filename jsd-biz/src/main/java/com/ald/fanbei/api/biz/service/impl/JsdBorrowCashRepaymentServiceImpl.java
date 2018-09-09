@@ -29,6 +29,7 @@ import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
+import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -48,6 +49,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
 
@@ -326,7 +328,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		if(repaymentDo!=null){
 			unLockRepay(repaymentDo.getUserId());
 			try {
-				noticeXgxyRepayResult(repaymentDo,YesNoStatus.NO.getCode());
+				noticeXgxyRepayResult(repaymentDo,YesNoStatus.NO.getCode(),errorMsg);
 			}
 			catch (Exception e){
 				logger.error("notice eca fail error=",e);
@@ -382,7 +384,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			if (resultValue == 1L) {
 				try {
 					if(repaymentDo!=null){
-						noticeXgxyRepayResult(repaymentDo,YesNoStatus.YES.getCode());
+						noticeXgxyRepayResult(repaymentDo,YesNoStatus.YES.getCode(),"");
 					}
 				}
 				catch (Exception e){
@@ -397,12 +399,25 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			unLockRepay(repaymentDo.getUserId());
 		}
 	}
-	private void noticeXgxyRepayResult(JsdBorrowCashRepaymentDo repaymentDo,String status){
-		HashMap<String, String> data = buildData(repaymentDo,status);
+	private void noticeXgxyRepayResult(JsdBorrowCashRepaymentDo repaymentDo,String status,String errorMsg){
+		HashMap<String, String> data = buildData(repaymentDo,status,errorMsg);
 		logger.info("noticeXgxyRepayResult data cfp "+JSON.toJSONString(data));
-		xgxyUtil.dsedRePayNoticeRequest(data);
+		
+		// 通知记录
+		JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
+		noticeRecordDo.setUserId(repaymentDo.getUserId());
+		noticeRecordDo.setRefId(String.valueOf(repaymentDo.getRid()));
+		noticeRecordDo.setType(JsdNoticeType.REPAY.code);
+		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+		noticeRecordDo.setParams(JSON.toJSONString(data));
+		jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+		if (xgxyUtil.jsdRenewalNoticeRequest(data)) {
+			noticeRecordDo.setRid(noticeRecordDo.getRid());
+			noticeRecordDo.setGmtModified(new Date());
+			jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
+		}
 	}
-	private HashMap<String, String> buildData(JsdBorrowCashRepaymentDo repaymentDo,String status){
+	private HashMap<String, String> buildData(JsdBorrowCashRepaymentDo repaymentDo,String status,String errorMsg){
 		    HashMap<String,String> map=new HashMap<>();
 		    JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(repaymentDo.getBorrowId());
 		    map.put("repayNo",repaymentDo.getRepayNo());
@@ -412,6 +427,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			map.put("period","1");
 			map.put("amount", String.valueOf(repaymentDo.getActualAmount()));
 			map.put("type",JsdRepayType.INITIATIVE.getName());
+			map.put("reason",errorMsg);
 			Date now=new Date();
 		    map.put("timestamp", String.valueOf(now.getTime()));
 		    if(JsdBorrowCashStatus.FINISHED.name().equals(borrowCashDo.getStatus())){
