@@ -29,7 +29,6 @@ import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
-import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.YesNoStatus;

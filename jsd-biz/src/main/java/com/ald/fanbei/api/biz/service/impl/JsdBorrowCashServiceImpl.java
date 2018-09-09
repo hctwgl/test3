@@ -234,6 +234,12 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	@Override
 	public void dealBorrowSucc(Long cashId, String outTradeNo) {
 		JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
+		if(cashDo == null) {
+			throw new FanbeiException("dealBorrowSucc, can't find refer borrowCash by id=" + cashId);
+		}
+		logger.info("dealBorrowSucc, borrowCashId="+ cashId + ", borrowNo=" + cashDo.getBorrowNo()
+			+ ", tradeNoXgxy=" + cashDo.getTradeNoXgxy() + ", tradeNoUps=" + cashDo.getTradeNoUps());
+		
 		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(cashId);
 		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(cashId);
 		
@@ -256,6 +262,12 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	@Override
 	public void dealBorrowFail(Long cashId, String outTradeNo, String failMsg) {
 		JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
+		if(cashDo == null) {
+			throw new FanbeiException("dealBorrowFail, can't find refer borrowCash by id=" + cashId);
+		}
+		logger.info("dealBorrowFail, borrowCashId="+ cashId + ", borrowNo=" + cashDo.getBorrowNo()
+			+ ", tradeNoXgxy=" + cashDo.getTradeNoXgxy() + ", tradeNoUps=" + cashDo.getTradeNoUps());
+		
 		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(cashId);
 		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(cashId);
 		cashDo.setTradeNoUps(outTradeNo);

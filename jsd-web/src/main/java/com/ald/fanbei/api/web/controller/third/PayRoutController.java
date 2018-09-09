@@ -94,8 +94,7 @@ public class PayRoutController {
 		String merPriv = request.getParameter("merPriv");
 		String tradeState = request.getParameter("tradeState");
 		long result = NumberUtil.objToLongDefault(request.getParameter("reqExt"), 0);
-		String upsResponse = " merPriv=" + merPriv + ",tradeState=" + tradeState + ",reqExt=" + result + ",outTradeNo=" + outTradeNo;
-		logger.info("delegatePay callback, params: " + upsResponse);
+		logger.info("delegatePay callback, from ups params: " + " merPriv=" + merPriv + ",tradeState=" + tradeState + ",reqExt=" + result + ",outTradeNo=" + outTradeNo);
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 打款成功
 				jsdBorrowCashService.dealBorrowSucc(result, outTradeNo);
@@ -130,7 +129,7 @@ public class PayRoutController {
 		String respDesc = StringUtil.null2Str(request.getParameter("respDesc"));
 		String tradeDesc = StringUtil.null2Str(request.getParameter("tradeDesc"));
 
-		logger.info("collect callback, params: merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc
+		logger.info("collect callback, from ups params: merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc
 				+ ",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo + ",respCode=" + respCode + ",respDesc="
 				+ respDesc);
 		try {
