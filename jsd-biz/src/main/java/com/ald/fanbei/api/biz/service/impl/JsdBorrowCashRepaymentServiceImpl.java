@@ -723,7 +723,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 		public String bankNo;//都市e贷 银行卡卡号
 
-		public int period;//都市e贷 借款当前期数
+		public String period;//都市e贷 借款当前期数
 
 		public BigDecimal amount ; //都市e贷 还款金额
 
