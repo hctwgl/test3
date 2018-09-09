@@ -244,7 +244,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 	 */
 	@Override
 	public long dealJsdRenewalSucess(final String renewalNo, final String tradeNo) {
-		
+		logger.info("dealJsdRenewalSucess renewalNo="+renewalNo+", tradeNo="+tradeNo);
 		final String key = renewalNo + "_success_repayCash_renewal";
 		long count = redisTemplate.opsForValue().increment(key, 1);
 		redisTemplate.expire(key, 30, TimeUnit.SECONDS);
@@ -258,6 +258,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 				try {
 					// 本次续借
 					JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByRenewalNo(renewalNo);
+					logger.info("dealJsdRenewalSucess delayNo="+renewalDo.getDelayNo());
 					if(JsdRenewalDetailStatus.YES.getCode().equals(renewalDo.getStatus())) return 0l;
 					// 本次订单
 					JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(renewalDo.getBorrowId());
@@ -358,6 +359,8 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 	@Override
 	public long dealJsdRenewalFail(String renewalNo, String tradeNo, boolean isNeedMsgNotice, String errorCode, String errorMsg) {
 		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByRenewalNo(renewalNo);
+		logger.info("dealJsdRenewalSucess renewalNo="+renewalNo+", tradeNo="+tradeNo+", delayNo="+renewalDo.getDelayNo()+
+				", isNeedMsgNotice="+isNeedMsgNotice+", errorCode="+errorCode+", errorMsg="+errorMsg);
 		if(JsdRenewalDetailStatus.NO.name().equals(renewalDo.getStatus())){
 			return 0l;
 		}
