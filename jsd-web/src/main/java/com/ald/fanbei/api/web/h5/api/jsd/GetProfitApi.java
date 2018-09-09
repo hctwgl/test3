@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.h5.api.jsd;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,16 +30,15 @@ public class GetProfitApi implements JsdH5Handle {
     	JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
     	
     	TrialBeforeBorrowBo bo = new TrialBeforeBorrowBo();
-    	TrialBeforeBorrowReq req = bo.req = new TrialBeforeBorrowReq();
+    	bo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(context.getOpenId());
+    	bo.userId = context.getUserId();
     	
     	JSONObject dataMap = context.getDataMap();
-    	
     	String type = dataMap.getString("type");
     	if("BORROW".equals(type)) {
-    		req.openId = dataMap.getString("openId");
-        	req.amount = dataMap.getString("amount");
-        	req.term = dataMap.getString("term");
-        	req.unit = dataMap.getString("unit");
+    		bo.req = new TrialBeforeBorrowReq(context.getOpenId(), new BigDecimal(dataMap.getString("amount")),
+    				dataMap.getString("term"), dataMap.getString("unit"));
+    		
         	jsdBorrowCashService.resolve(bo);
         	
         	Map<String,Object> respData = new HashMap<>();

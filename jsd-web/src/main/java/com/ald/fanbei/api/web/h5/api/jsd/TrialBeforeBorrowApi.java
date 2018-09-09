@@ -28,6 +28,9 @@ public class TrialBeforeBorrowApi implements JsdH5Handle {
     	
     	TrialBeforeBorrowBo bo = new TrialBeforeBorrowBo();
     	bo.req = (TrialBeforeBorrowReq)context.getParamEntity();
+    	bo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(context.getOpenId());
+    	bo.userId = context.getUserId();
+    	
     	jsdBorrowCashService.resolve(bo);
     	resp.setData(bo.resp);
     	

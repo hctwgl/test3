@@ -2,14 +2,22 @@ package com.ald.fanbei.api.biz.bo.jsd;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * @author zhujiangfeng
+ *	试算参数类
+ */
 public class TrialBeforeBorrowBo {
 	
 	public TrialBeforeBorrowReq req;
 	public TrialBeforeBorrowResp resp;
+	
+	public BigDecimal riskDailyRate; 
+	public Long userId;
 	
 	@Component("trialBeforeBorrowReq")
 	public static class TrialBeforeBorrowReq{
@@ -18,7 +26,8 @@ public class TrialBeforeBorrowBo {
 		@NotNull
 		public String productNo;
 		@NotNull
-		public String amount; 	
+		@DecimalMin("0")
+		public BigDecimal amount; 	
 		@NotNull
 		public String term;		
 		@NotNull
@@ -28,6 +37,18 @@ public class TrialBeforeBorrowBo {
 		
 		public String isTying;	
 		public String tyingType;
+		
+		public TrialBeforeBorrowReq() {}
+		
+		/**
+		 * 基本入参
+		 */
+		public TrialBeforeBorrowReq(String openId, BigDecimal amount, String term, String unit) {
+			this.openId = openId;
+			this.amount = amount;
+			this.term = term;
+			this.unit = unit;
+		}
 	}
 	
 	public static class TrialBeforeBorrowResp {
@@ -78,8 +99,20 @@ public class TrialBeforeBorrowBo {
 		 */
 		public String sellServiceFee;
 		/**
+		 * 商品服务费率
+		 */
+		public BigDecimal sellServiceRate;
+		/**
 		 * 商品利息
 		 */
 		public String sellInterestFee;
+		/**
+		 * 商品利息费率
+		 */
+		public BigDecimal sellInterestRate;
+		/**
+		 * 商品逾期费率
+		 */
+		public BigDecimal sellOverdueRate;
 	}
 }
