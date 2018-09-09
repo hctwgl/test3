@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
+
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -14,7 +15,9 @@ import java.util.Date;
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface JsdBorrowLegalOrderCashDao extends BaseDao<JsdBorrowLegalOrderCashDo, Long> {
-
+	/**
+	 * 本次商品
+	 */
 	JsdBorrowLegalOrderCashDo getLastOrderCashByBorrowId(Long borrowId);
 
 
@@ -22,4 +25,9 @@ public interface JsdBorrowLegalOrderCashDao extends BaseDao<JsdBorrowLegalOrderC
     JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(@Param("borrowId")Long borrowId);
 
     JsdBorrowLegalOrderCashDo getOverdueBorrowLegalOrderCashByBorrowId(@Param("borrowId")Long borrowId, @Param("nowTime") Date nowTime);
+
+	/**
+	 * 上一笔商品
+	 */
+	JsdBorrowLegalOrderCashDo getPreviousOrderCashByBorrowId(Long rid);
 }
