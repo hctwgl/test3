@@ -6,7 +6,7 @@ public enum JsdRepayType {
     WITHHOLD( "代扣还款","WITHHOLD"),
     INITIATIVE( "主动还款","INITIATIVE"),
     OFFLINE( "线下还款","OFFLINE"),
-    COLLECT( "催收逾期还款","COLLECT");
+    COLLECTION( "催收逾期还款","COLLECTION");
 
     private String code;
     private String name;
