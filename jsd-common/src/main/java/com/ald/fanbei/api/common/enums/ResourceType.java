@@ -79,6 +79,7 @@ public enum ResourceType {
 	JSD_RATE_INFO("JSD_RATE_INFO", "极速贷利率配置"),
 	JSD_RENEWAL_INFO("JSD_RENEWAL_INFO", "极速贷续期配置"),
 	
+	OVERDUE("OVERDUE", "逾期配置"),
 	;
 
 

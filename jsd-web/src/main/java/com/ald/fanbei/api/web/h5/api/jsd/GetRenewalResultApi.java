@@ -48,11 +48,10 @@ public class GetRenewalResultApi implements JsdH5Handle {
 	@Override
 	public JsdH5HandleResponse process(Context context) {
 		
-		String borrowNo = ObjectUtils.toString(context.getDataMap().get("borrowNo"), ""); // 借款编号
 		String delayNo = ObjectUtils.toString(context.getDataMap().get("delayNo"), ""); // 续期编号
 		String timestamp = ObjectUtils.toString(context.getDataMap().get("timestamp"), ""); // 请求时间戳
 		
-		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalService.getRenewalByDelayNo(delayNo);
+		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalService.getByTradeNoXgxy(delayNo);
 		if(renewalDo == null) throw new FanbeiException(FanbeiExceptionCode.RENEWAL_NOT_EXIST_ERROR);
 		
 		String status = renewalDo.getStatus();

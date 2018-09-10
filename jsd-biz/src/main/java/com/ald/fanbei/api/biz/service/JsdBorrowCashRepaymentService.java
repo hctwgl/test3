@@ -31,6 +31,6 @@ public interface JsdBorrowCashRepaymentService{
 
     void dealRepaymentSucess(String tradeNo, String outTradeNo);
 
-    JsdBorrowCashRepaymentDo  getByRepayNo(String repayNo);
+    JsdBorrowCashRepaymentDo  getByTradeNoXgxy(String tradeNoXgxy);
 
 }

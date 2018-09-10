@@ -1,21 +1,19 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import javax.annotation.Resource;
-
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
-
 import java.math.BigDecimal;
 import java.util.Date;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 
 
 /**
@@ -29,9 +27,6 @@ import java.util.Date;
  
 @Service("jsdBorrowLegalOrderCashService")
 public class JsdBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<JsdBorrowLegalOrderCashDo, Long> implements JsdBorrowLegalOrderCashService {
-	
-    private static final Logger logger = LoggerFactory.getLogger(JsdBorrowLegalOrderCashServiceImpl.class);
-   
     @Resource
     private JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
 
@@ -50,9 +45,9 @@ public class JsdBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<JsdBor
 		BigDecimal restAmount = BigDecimal.ZERO;
 		if(cashDo != null) {
 			restAmount = BigDecimalUtil.add(restAmount, cashDo.getAmount(),
-					cashDo.getOverdueAmount(), cashDo.getSumOverdue(),
-					cashDo.getRateAmount(),cashDo.getSumRate(),
-					cashDo.getPoundage(),cashDo.getSumRenewalPoundage())
+					cashDo.getOverdueAmount(), cashDo.getSumRepaidOverdue(),
+					cashDo.getInterestAmount(),cashDo.getSumRepaidInterest(),
+					cashDo.getPoundageAmount(),cashDo.getSumRepaidPoundage())
 					.subtract(cashDo.getRepayAmount());
 		}
 		if(orderCashDo != null) {

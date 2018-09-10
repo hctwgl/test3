@@ -167,9 +167,9 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 				lastOrderCashDo.getSumRepaidInterest(),lastOrderCashDo.getSumRepaidOverdue(),lastOrderCashDo.getSumRepaidPoundage()).subtract(lastOrderCashDo.getRepaidAmount());
 
 		// 上期借款手续费
-		BigDecimal poundage = borrowCashDo.getPoundage();
+		BigDecimal poundage = borrowCashDo.getPoundageAmount();
 		// 上期借款利息
-		BigDecimal rateAmount = borrowCashDo.getRateAmount();
+		BigDecimal rateAmount = borrowCashDo.getInterestAmount();
 		// 上期借款逾期费
 		BigDecimal overdueAmount = borrowCashDo.getOverdueAmount();
 
@@ -177,7 +177,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		BigDecimal capital = BigDecimalUtil.multiply(borrowCashDo.getAmount(), paramBo.capitalRate);
 
 		// 总金额
-		BigDecimal allAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumOverdue(), borrowCashDo.getSumRate(), borrowCashDo.getSumRenewalPoundage());
+		BigDecimal allAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidOverdue(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage());
 		// 续期金额 = 总金额 - 借款已还金额 - 续借需要支付本金
 		BigDecimal renewalAmount = BigDecimalUtil.subtract(allAmount, borrowCashDo.getRepayAmount()).subtract(capital);
 
@@ -195,8 +195,8 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		renewalDo.setStatus(JsdRenewalDetailStatus.APPLY.getCode());
 		renewalDo.setRemark(borrowCashDo.getRemark());
 		renewalDo.setRenewalAmount(renewalAmount);
-		renewalDo.setPriorInterest(borrowCashDo.getRateAmount());
-		renewalDo.setPriorPoundage(borrowCashDo.getPoundage());
+		renewalDo.setPriorInterest(borrowCashDo.getInterestAmount());
+		renewalDo.setPriorPoundage(borrowCashDo.getPoundageAmount());
 		renewalDo.setPriorOverdue(borrowCashDo.getOverdueAmount());
 		renewalDo.setCapital(capital);
 		renewalDo.setActualAmount(actualAmount);
@@ -204,9 +204,8 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		renewalDo.setNextPoundage(nextPoundage);
 		renewalDo.setCardName(paramBo.bankName);
 		renewalDo.setCardNumber(paramBo.bankNo);
-		renewalDo.setRenewalNo(paramBo.renewalNo);
-		renewalDo.setDelayNo(paramBo.delayNo);
-		renewalDo.setTradeNo("");
+		renewalDo.setTradeNo(paramBo.renewalNo);
+		renewalDo.setTradeNoXgxy(paramBo.delayNo);
 		renewalDo.setRenewalDay(paramBo.delayDay);
 		renewalDo.setPoundageRate(paramBo.cashPoundageRate);
 		renewalDo.setBaseBankRate(paramBo.cashRate);
@@ -273,6 +272,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		orderCashDo.setInterestAmount(paramBo.goodsPrice.multiply(paramBo.orderRate).multiply(new BigDecimal(renewalDay)).divide(new BigDecimal(Constants.ONE_YEAY_DAYS) ,2 , RoundingMode.HALF_UP));
 		orderCashDo.setPoundageRate(paramBo.orderPoundageRate);
 		orderCashDo.setInterestRate(paramBo.orderRate);
+		orderCashDo.setOverdueRate(paramBo.orderOverdueRate);
 //		orderCashDo.setPoundageAmount(BigDecimal.TEN);
 //		orderCashDo.setInterestAmount(BigDecimal.ZERO);
 //		orderCashDo.setPoundageRate(BigDecimal.ZERO);
@@ -320,6 +320,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 	/**
 	 * 请求参数
 	 */
+	@SuppressWarnings("unchecked")
 	private JsdRenewalDealBo getParam(Context context){
 
 		JsdRenewalDealBo bo = new JsdRenewalDealBo();
@@ -370,11 +371,14 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		paramBo.cashPoundageRate = borrowRateInfo.serviceRate;
 		//借款利率
 		paramBo.cashRate = borrowRateInfo.interestRate;
+		paramBo.cashOverdueRate = borrowRateInfo.overdueRate;
+		
 		//需还本金比例
 		paramBo.capitalRate = new BigDecimal(renewalResource.getValue1());
 		//订单手续费率
 		paramBo.orderPoundageRate = orderRateInfo.serviceRate;
 		//订单利率
 		paramBo.orderRate = orderRateInfo.interestRate;
+		paramBo.orderOverdueRate = orderRateInfo.overdueRate;
 	}
 }

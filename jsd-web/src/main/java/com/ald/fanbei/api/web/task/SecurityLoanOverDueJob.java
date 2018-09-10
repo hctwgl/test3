@@ -13,11 +13,14 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.ResourceSecType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.SecurityReaderUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 
 
 /**
@@ -31,6 +34,9 @@ public class SecurityLoanOverDueJob {
 
     @Resource
     private JsdBorrowCashService borrowCashService;
+    
+    @Resource
+    private JsdResourceService jsdResourceService;
 
     @Resource
     private LoanOverDueJob loanOverDueJob;
@@ -40,13 +46,14 @@ public class SecurityLoanOverDueJob {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
 
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 0/1 * * * ?")
     public void laonDueJob(){
         String curHostIp = getHostIpUtil.getIpAddress();
         logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
         try{
             if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)) {
-                String userIds = SecurityReaderUtil.getProperties();
+            	JsdResourceDo resDo = jsdResourceService.getByTypeAngSecType(ResourceType.OVERDUE.getCode(), ResourceSecType.OVERDUE_JOB_INTERNAL_UIDS.getCode());
+            	String userIds = resDo.getValue();
                 List<JsdBorrowCashDo> borrowCashDo = borrowCashService.getBorrowCashOverdueByUserIds(userIds.substring(0, userIds.length() - 1));
                 loanOverDueJob.dealOverdueRecords(borrowCashDo);
                 logger.info("securityLoanOverDueJob run end,time=" + new Date());

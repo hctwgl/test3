@@ -157,10 +157,11 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         afBorrowCashDo.setType(trialReq.term);
         afBorrowCashDo.setStatus(JsdBorrowCashStatus.APPLY.name());
         afBorrowCashDo.setUserId(trialBo.userId);
-        afBorrowCashDo.setRateAmount(new BigDecimal(trialResp.interestAmount));
-        afBorrowCashDo.setPoundage(new BigDecimal(trialResp.serviceAmount));
+        afBorrowCashDo.setInterestAmount(new BigDecimal(trialResp.interestAmount));
+        afBorrowCashDo.setPoundageAmount(new BigDecimal(trialResp.serviceAmount));
         afBorrowCashDo.setPoundageRate(new BigDecimal(trialResp.serviceRate));
         afBorrowCashDo.setInterestRate(new BigDecimal(trialResp.interestRate));
+        afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueRate));
         afBorrowCashDo.setRiskDailyRate(trialBo.riskDailyRate);
         afBorrowCashDo.setProductNo(trialReq.productNo);
         afBorrowCashDo.setTradeNoXgxy(cashReq.borrowNo);
@@ -200,6 +201,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         afBorrowLegalOrderCashDo.setUserId(trialBo.userId);
         afBorrowLegalOrderCashDo.setPoundageRate(resp.sellServiceRate);
         afBorrowLegalOrderCashDo.setInterestRate(resp.sellInterestRate);
+        afBorrowLegalOrderCashDo.setOverdueRate(resp.sellOverdueRate);
         afBorrowLegalOrderCashDo.setBorrowRemark(cashReq.loanRemark);
         afBorrowLegalOrderCashDo.setRefundRemark(cashReq.repayRemark);
         afBorrowLegalOrderCashDo.setInterestAmount(new BigDecimal(resp.sellInterestFee));

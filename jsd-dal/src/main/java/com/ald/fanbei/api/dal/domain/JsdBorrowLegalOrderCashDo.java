@@ -5,11 +5,11 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 /**
- * 极速贷实体
+ * 实体
  * 
  * @author yanghailong
  * @version 1.0.0 初始化
- * @date 2018-08-22 16:18:07
+ * @date 2018-09-10 13:22:35
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class JsdBorrowLegalOrderCashDo extends AbstractSerial {
@@ -21,17 +21,6 @@ import java.math.BigDecimal;
      */
     private Long rid;
     
-
-    /**
-     * 创建时间
-     */
-    private Date gmtCreate;
-
-    /**
-     * 
-     */
-    private Date gmtModified;
-
     /**
      * 
      */
@@ -61,6 +50,11 @@ import java.math.BigDecimal;
      * 借款金额
      */
     private BigDecimal amount;
+
+    /**
+     * 已还款金额
+     */
+    private BigDecimal repaidAmount;
 
     /**
      * 借款状态【APPLYING:审核中，AWAIT_REPAY:待还款,PART_REPAID: 部分还款, FINISHED:已经结清,CLOSED:借款关闭】
@@ -98,24 +92,9 @@ import java.math.BigDecimal;
     private BigDecimal overdueAmount;
 
     /**
-     * 累计已还逾期额
-     */
-    private BigDecimal sumRepaidOverdue;
-
-    /**
-     * 已还款金额
-     */
-    private BigDecimal repaidAmount;
-
-    /**
      * 手续费
      */
     private BigDecimal poundageAmount;
-
-    /**
-     * 累计已还手续费
-     */
-    private BigDecimal sumRepaidPoundage;
 
     /**
      * 利息费
@@ -123,25 +102,34 @@ import java.math.BigDecimal;
     private BigDecimal interestAmount;
 
     /**
+     * 累计已还手续费
+     */
+    private BigDecimal sumRepaidPoundage;
+
+    /**
      * 累计已还利息费
      */
     private BigDecimal sumRepaidInterest;
 
     /**
-     * 手续费费率（年化）
+     * 累计已还逾期额
+     */
+    private BigDecimal sumRepaidOverdue;
+
+    /**
+     * 手续费费率
      */
     private BigDecimal poundageRate;
 
     /**
-     * 利息利率（年化）
+     * 利率
      */
     private BigDecimal interestRate;
-    
+
     /**
-     * 逾期利率（年化）
+     * 
      */
     private BigDecimal overdueRate;
-
 
     /**
      * 应还日期
@@ -163,6 +151,17 @@ import java.math.BigDecimal;
      */
     private Date gmtFinish;
 
+    /**
+     * 创建时间
+     */
+    private Date gmtCreate;
+
+    /**
+     * 
+     */
+    private Date gmtModified;
+
+
 
     /**
      * 获取主键Id
@@ -182,25 +181,6 @@ import java.math.BigDecimal;
       this.rid = rid;
     }
     
-
-    /**
-     * 获取创建时间
-     *
-     * @return 创建时间
-     */
-    public Date getGmtCreate(){
-      return gmtCreate;
-    }
-
-    /**
-     * 设置创建时间
-     * 
-     * @param gmtCreate 要设置的创建时间
-     */
-    public void setGmtCreate(Date gmtCreate){
-      this.gmtCreate = gmtCreate;
-    }
-
     /**
      * 获取
      *
@@ -307,6 +287,24 @@ import java.math.BigDecimal;
      */
     public void setAmount(BigDecimal amount){
       this.amount = amount;
+    }
+
+    /**
+     * 获取已还款金额
+     *
+     * @return 已还款金额
+     */
+    public BigDecimal getRepaidAmount(){
+      return repaidAmount;
+    }
+
+    /**
+     * 设置已还款金额
+     * 
+     * @param repaidAmount 要设置的已还款金额
+     */
+    public void setRepaidAmount(BigDecimal repaidAmount){
+      this.repaidAmount = repaidAmount;
     }
 
     /**
@@ -436,42 +434,6 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取累计已还逾期额
-     *
-     * @return 累计已还逾期额
-     */
-    public BigDecimal getSumRepaidOverdue(){
-      return sumRepaidOverdue;
-    }
-
-    /**
-     * 设置累计已还逾期额
-     * 
-     * @param sumRepaidOverdue 要设置的累计已还逾期额
-     */
-    public void setSumRepaidOverdue(BigDecimal sumRepaidOverdue){
-      this.sumRepaidOverdue = sumRepaidOverdue;
-    }
-
-    /**
-     * 获取已还款金额
-     *
-     * @return 已还款金额
-     */
-    public BigDecimal getRepaidAmount(){
-      return repaidAmount;
-    }
-
-    /**
-     * 设置已还款金额
-     * 
-     * @param repaidAmount 要设置的已还款金额
-     */
-    public void setRepaidAmount(BigDecimal repaidAmount){
-      this.repaidAmount = repaidAmount;
-    }
-
-    /**
      * 获取手续费
      *
      * @return 手续费
@@ -487,24 +449,6 @@ import java.math.BigDecimal;
      */
     public void setPoundageAmount(BigDecimal poundageAmount){
       this.poundageAmount = poundageAmount;
-    }
-
-    /**
-     * 获取累计已还手续费
-     *
-     * @return 累计已还手续费
-     */
-    public BigDecimal getSumRepaidPoundage(){
-      return sumRepaidPoundage;
-    }
-
-    /**
-     * 设置累计已还手续费
-     * 
-     * @param sumRepaidPoundage 要设置的累计已还手续费
-     */
-    public void setSumRepaidPoundage(BigDecimal sumRepaidPoundage){
-      this.sumRepaidPoundage = sumRepaidPoundage;
     }
 
     /**
@@ -526,6 +470,24 @@ import java.math.BigDecimal;
     }
 
     /**
+     * 获取累计已还手续费
+     *
+     * @return 累计已还手续费
+     */
+    public BigDecimal getSumRepaidPoundage(){
+      return sumRepaidPoundage;
+    }
+
+    /**
+     * 设置累计已还手续费
+     * 
+     * @param sumRepaidPoundage 要设置的累计已还手续费
+     */
+    public void setSumRepaidPoundage(BigDecimal sumRepaidPoundage){
+      this.sumRepaidPoundage = sumRepaidPoundage;
+    }
+
+    /**
      * 获取累计已还利息费
      *
      * @return 累计已还利息费
@@ -541,6 +503,24 @@ import java.math.BigDecimal;
      */
     public void setSumRepaidInterest(BigDecimal sumRepaidInterest){
       this.sumRepaidInterest = sumRepaidInterest;
+    }
+
+    /**
+     * 获取累计已还逾期额
+     *
+     * @return 累计已还逾期额
+     */
+    public BigDecimal getSumRepaidOverdue(){
+      return sumRepaidOverdue;
+    }
+
+    /**
+     * 设置累计已还逾期额
+     * 
+     * @param sumRepaidOverdue 要设置的累计已还逾期额
+     */
+    public void setSumRepaidOverdue(BigDecimal sumRepaidOverdue){
+      this.sumRepaidOverdue = sumRepaidOverdue;
     }
 
     /**
@@ -579,6 +559,23 @@ import java.math.BigDecimal;
       this.interestRate = interestRate;
     }
 
+    /**
+     * 获取
+     *
+     * @return 
+     */
+    public BigDecimal getOverdueRate(){
+      return overdueRate;
+    }
+
+    /**
+     * 设置
+     * 
+     * @param overdueRate 要设置的
+     */
+    public void setOverdueRate(BigDecimal overdueRate){
+      this.overdueRate = overdueRate;
+    }
 
     /**
      * 获取应还日期
@@ -652,20 +649,41 @@ import java.math.BigDecimal;
       this.gmtFinish = gmtFinish;
     }
 
-	public Date getGmtModified() {
-		return gmtModified;
-	}
+    /**
+     * 获取创建时间
+     *
+     * @return 创建时间
+     */
+    public Date getGmtCreate(){
+      return gmtCreate;
+    }
 
-	public void setGmtModified(Date gmtModified) {
-		this.gmtModified = gmtModified;
-	}
+    /**
+     * 设置创建时间
+     * 
+     * @param gmtCreate 要设置的创建时间
+     */
+    public void setGmtCreate(Date gmtCreate){
+      this.gmtCreate = gmtCreate;
+    }
 
-	public BigDecimal getOverdueRate() {
-		return overdueRate;
-	}
+    /**
+     * 获取
+     *
+     * @return 
+     */
+    public Date getGmtModified(){
+      return gmtModified;
+    }
 
-	public void setOverdueRate(BigDecimal overdueRate) {
-		this.overdueRate = overdueRate;
-	}
+    /**
+     * 设置
+     * 
+     * @param gmtModified 要设置的
+     */
+    public void setGmtModified(Date gmtModified){
+      this.gmtModified = gmtModified;
+    }
+
 
 }

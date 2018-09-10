@@ -75,10 +75,10 @@ public class SendSmsCodeApi implements JsdH5Handle {
 		return new JsdH5HandleResponse(3001, FanbeiExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
 	}
 	if(SmsCodeType.REPAY.getCode().equals(type)){
-		JsdBorrowCashRepaymentDo repaymentDo=jsdBorrowCashRepaymentService.getByRepayNo(busiFlag);
-		JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByRepayNo(busiFlag);
+		JsdBorrowCashRepaymentDo repaymentDo=jsdBorrowCashRepaymentService.getByTradeNoXgxy(busiFlag);
+		JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByTradeNoXgxy(busiFlag);
 		if(repaymentDo!=null){
-			busiFlag=repaymentDo.getJsdRepayNo();
+			busiFlag=repaymentDo.getTradeNo();
 		}else {
 			busiFlag=legalOrderRepaymentDo.getTradeNo();
 		}
@@ -106,8 +106,8 @@ public class SendSmsCodeApi implements JsdH5Handle {
 		}
 	}else if(SmsCodeType.DELAY.getCode().equals(type)){
 		String orderNo = generatorClusterNo.getJsdRenewalNo();
-		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalService.getRenewalByDelayNo(busiFlag);
-		respBo = upsUtil.quickPayResendSms(renewalDo.getRenewalNo(),orderNo);
+		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalService.getByTradeNoXgxy(busiFlag);
+		respBo = upsUtil.quickPayResendSms(renewalDo.getTradeNo(),orderNo);
 		if (!respBo.isSuccess()) {
 			throw new FanbeiException(respBo.getRespDesc());
 		}

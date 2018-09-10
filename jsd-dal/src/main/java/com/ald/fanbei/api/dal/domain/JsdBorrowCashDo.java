@@ -5,11 +5,11 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 /**
- * 极速贷实体
+ * 实体
  * 
  * @author yanghailong
  * @version 1.0.0 初始化
- * @date 2018-08-22 16:18:06
+ * @date 2018-09-10 13:22:35
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class JsdBorrowCashDo extends AbstractSerial {
@@ -21,51 +21,66 @@ import java.math.BigDecimal;
      */
     private Long rid;
     
+
     /**
-     * 用户id
+     * 
      */
-    private Long userId;
-    
+    private Date gmtCreate;
+
+    /**
+     * 
+     */
+    private Date gmtModified;
+
+    /**
+     * 该值为西瓜信用为机构产品生成的一个id，标识机构产品，对接时将会告知机构
+     */
+    private String productNo;
+
     /**
      * 借款编号
      */
     private String borrowNo;
-    
-    /**
-     * UPS打款流水号
-     */
-    private String tradeNoUps;
-    /**
-     * 西瓜申请流水号
-     */
-    private String tradeNoXgxy;
-    
-    /**
-     * 借款类型:v1:赊账,v2:搭售
-     */
-    private String version;
-    
-    private String productNo;
 
     /**
-     * 借款天数 10天 20天 7天 14天
+     * 
+     */
+    private String tradeNoXgxy;
+
+    /**
+     * 
+     */
+    private String tradeNoUps;
+
+    /**
+     * 用户id
+     */
+    private Long userId;
+
+    /**
+     * 借款天数
      */
     private String type;
 
     /**
-     * 申请金额
+     * 借款类型:v1:赊账,v2:搭售
      */
-    private BigDecimal amount;
-    
-    /**
-     * 到账金额
-     */
-    private BigDecimal arrivalAmount;
+    private String version;
 
     /**
      * 借款状态【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINSH:已结清】
      */
     private String status;
+
+    /**
+     * 申请金额
+     */
+    private BigDecimal amount;
+
+    /**
+     * 到账金额
+     */
+    private BigDecimal arrivalAmount;
 
     /**
      * 卡号或者支付宝账号
@@ -88,16 +103,21 @@ import java.math.BigDecimal;
     private Long overdueDay;
 
     /**
+     * 逾期费
+     */
+    private BigDecimal overdueAmount;
+
+    /**
      * 手续费
      */
-    private BigDecimal poundage;
+    private BigDecimal poundageAmount;
+
     /**
      * 利息
      */
-    private BigDecimal rateAmount;
+    private BigDecimal interestAmount;
 
-
-	/**
+    /**
      * 已还本金
      */
     private BigDecimal repayPrinciple;
@@ -108,25 +128,19 @@ import java.math.BigDecimal;
     private BigDecimal repayAmount;
 
     /**
-     * 逾期费
-     */
-    private BigDecimal overdueAmount;
-
-
-    /**
      * 累计利息
      */
-    private BigDecimal sumRate;
-
-    /**
-     * 累计逾期金
-     */
-    private BigDecimal sumOverdue;
+    private BigDecimal sumRepaidInterest;
 
     /**
      * 累计续期手续费
      */
-    private BigDecimal sumRenewalPoundage;
+    private BigDecimal sumRepaidPoundage;
+
+    /**
+     * 累计逾期金
+     */
+    private BigDecimal sumRepaidOverdue;
 
     /**
      * 累计续期次数
@@ -134,37 +148,25 @@ import java.math.BigDecimal;
     private Long renewalNum;
 
     /**
-     * 借钱利息费率（年化）
+     * 
      */
     private BigDecimal interestRate;
-    
+
     /**
-     * 借钱手续费率（年化）
+     * 借钱手续费率（日）
      */
     private BigDecimal poundageRate;
-    
+
     /**
-     * 借款逾期费率（年化）
+     * 
      */
     private BigDecimal overdueRate;
-    
+
     /**
      * 用户分层日利率
      */
     private BigDecimal riskDailyRate;
 
-    private String borrowRemark;
-    private String repayRemark;
-    /**
-     * 备注
-     */
-    private String remark;
-    
-    /**
-     * 订单为FINSH时记录该时间
-     */
-    private String finishDate;
-    
     /**
      * 预计还款时间
      */
@@ -180,17 +182,16 @@ import java.math.BigDecimal;
      */
     private Date gmtClose;
 
-    private Date gmtCreate;
+    /**
+     * 订单为FINSH时记录该时间
+     */
+    private String finishDate;
 
-    private Date gmtModified;
+    /**
+     * 备注
+     */
+    private String remark;
 
-    public String getProductNo() {
-        return productNo;
-    }
-
-    public void setProductNo(String productNo) {
-        this.productNo = productNo;
-    }
 
     /**
      * 获取主键Id
@@ -210,6 +211,61 @@ import java.math.BigDecimal;
       this.rid = rid;
     }
     
+
+    /**
+     * 获取
+     *
+     * @return 
+     */
+    public Date getGmtCreate(){
+      return gmtCreate;
+    }
+
+    /**
+     * 设置
+     * 
+     * @param gmtCreate 要设置的
+     */
+    public void setGmtCreate(Date gmtCreate){
+      this.gmtCreate = gmtCreate;
+    }
+
+    /**
+     * 获取
+     *
+     * @return 
+     */
+    public Date getGmtModified(){
+      return gmtModified;
+    }
+
+    /**
+     * 设置
+     * 
+     * @param gmtModified 要设置的
+     */
+    public void setGmtModified(Date gmtModified){
+      this.gmtModified = gmtModified;
+    }
+
+    /**
+     * 获取该值为西瓜信用为机构产品生成的一个id，标识机构产品，对接时将会告知机构
+     *
+     * @return 该值为西瓜信用为机构产品生成的一个id，标识机构产品，对接时将会告知机构
+     */
+    public String getProductNo(){
+      return productNo;
+    }
+
+    /**
+     * 设置该值为西瓜信用为机构产品生成的一个id，标识机构产品，对接时将会告知机构
+     * 
+     * @param productNo 要设置的该值为西瓜信用为机构产品生成的一个id，标识机构产品，对接时将会告知机构
+     */
+    public void setProductNo(String productNo){
+      this.productNo = productNo;
+    }
+
     /**
      * 获取借款编号
      *
@@ -228,17 +284,44 @@ import java.math.BigDecimal;
       this.borrowNo = borrowNo;
     }
 
-    public BigDecimal getOverdueRate() {
-        return overdueRate;
+    /**
+     * 获取
+     *
+     * @return 
+     */
+    public String getTradeNoXgxy(){
+      return tradeNoXgxy;
     }
 
-    public void setOverdueRate(BigDecimal overdueRate) {
-        this.overdueRate = overdueRate;
+    /**
+     * 设置
+     * 
+     * @param tradeNoXgxy 要设置的
+     */
+    public void setTradeNoXgxy(String tradeNoXgxy){
+      this.tradeNoXgxy = tradeNoXgxy;
+    }
+
+    /**
+     * 获取
+     *
+     * @return 
+     */
+    public String getTradeNoUps(){
+      return tradeNoUps;
+    }
+
+    /**
+     * 设置
+     * 
+     * @param tradeNoUps 要设置的
+     */
+    public void setTradeNoUps(String tradeNoUps){
+      this.tradeNoUps = tradeNoUps;
     }
 
     /**
      * 获取用户id
-
      *
      * @return 用户id
      */
@@ -274,21 +357,21 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取申请金额
+     * 获取借款类型:v1:赊账,v2:搭售
      *
-     * @return 申请金额
+     * @return 借款类型:v1:赊账,v2:搭售
      */
-    public BigDecimal getAmount(){
-      return amount;
+    public String getVersion(){
+      return version;
     }
 
     /**
-     * 设置申请金额
+     * 设置借款类型:v1:赊账,v2:搭售
      * 
-     * @param amount 要设置的申请金额
+     * @param version 要设置的借款类型:v1:赊账,v2:搭售
      */
-    public void setAmount(BigDecimal amount){
-      this.amount = amount;
+    public void setVersion(String version){
+      this.version = version;
     }
 
     /**
@@ -309,31 +392,40 @@ import java.math.BigDecimal;
       this.status = status;
     }
 
-   public BigDecimal getRateAmount() {
-      return rateAmount;
-   }
-
-   public void setRateAmount(BigDecimal rateAmount) {
-      this.rateAmount = rateAmount;
-   }
-
-   /**
-     * 获取备注
-
+    /**
+     * 获取申请金额
      *
-     * @return 备注
+     * @return 申请金额
      */
-    public String getRemark(){
-      return remark;
+    public BigDecimal getAmount(){
+      return amount;
     }
 
     /**
-     * 设置备注
+     * 设置申请金额
      * 
-     * @param remark 要设置的备注
+     * @param amount 要设置的申请金额
      */
-    public void setRemark(String remark){
-      this.remark = remark;
+    public void setAmount(BigDecimal amount){
+      this.amount = amount;
+    }
+
+    /**
+     * 获取到账金额
+     *
+     * @return 到账金额
+     */
+    public BigDecimal getArrivalAmount(){
+      return arrivalAmount;
+    }
+
+    /**
+     * 设置到账金额
+     * 
+     * @param arrivalAmount 要设置的到账金额
+     */
+    public void setArrivalAmount(BigDecimal arrivalAmount){
+      this.arrivalAmount = arrivalAmount;
     }
 
     /**
@@ -409,21 +501,21 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取到账金额
+     * 获取逾期费
      *
-     * @return 到账金额
+     * @return 逾期费
      */
-    public BigDecimal getArrivalAmount(){
-      return arrivalAmount;
+    public BigDecimal getOverdueAmount(){
+      return overdueAmount;
     }
 
     /**
-     * 设置到账金额
+     * 设置逾期费
      * 
-     * @param arrivalAmount 要设置的到账金额
+     * @param overdueAmount 要设置的逾期费
      */
-    public void setArrivalAmount(BigDecimal arrivalAmount){
-      this.arrivalAmount = arrivalAmount;
+    public void setOverdueAmount(BigDecimal overdueAmount){
+      this.overdueAmount = overdueAmount;
     }
 
     /**
@@ -431,17 +523,35 @@ import java.math.BigDecimal;
      *
      * @return 手续费
      */
-    public BigDecimal getPoundage(){
-      return poundage;
+    public BigDecimal getPoundageAmount(){
+      return poundageAmount;
     }
 
     /**
      * 设置手续费
      * 
-     * @param poundage 要设置的手续费
+     * @param poundageAmount 要设置的手续费
      */
-    public void setPoundage(BigDecimal poundage){
-      this.poundage = poundage;
+    public void setPoundageAmount(BigDecimal poundageAmount){
+      this.poundageAmount = poundageAmount;
+    }
+
+    /**
+     * 获取利息
+     *
+     * @return 利息
+     */
+    public BigDecimal getInterestAmount(){
+      return interestAmount;
+    }
+
+    /**
+     * 设置利息
+     * 
+     * @param interestAmount 要设置的利息
+     */
+    public void setInterestAmount(BigDecimal interestAmount){
+      this.interestAmount = interestAmount;
     }
 
     /**
@@ -481,57 +591,21 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取逾期费
-     *
-     * @return 逾期费
-     */
-    public BigDecimal getOverdueAmount(){
-      return overdueAmount;
-    }
-
-    /**
-     * 设置逾期费
-     * 
-     * @param overdueAmount 要设置的逾期费
-     */
-    public void setOverdueAmount(BigDecimal overdueAmount){
-      this.overdueAmount = overdueAmount;
-    }
-
-    /**
      * 获取累计利息
      *
      * @return 累计利息
      */
-    public BigDecimal getSumRate(){
-      return sumRate;
+    public BigDecimal getSumRepaidInterest(){
+      return sumRepaidInterest;
     }
 
     /**
      * 设置累计利息
      * 
-     * @param sumRate 要设置的累计利息
+     * @param sumRepaidInterest 要设置的累计利息
      */
-    public void setSumRate(BigDecimal sumRate){
-      this.sumRate = sumRate;
-    }
-
-    /**
-     * 获取累计逾期金
-     *
-     * @return 累计逾期金
-     */
-    public BigDecimal getSumOverdue(){
-      return sumOverdue;
-    }
-
-    /**
-     * 设置累计逾期金
-     * 
-     * @param sumOverdue 要设置的累计逾期金
-     */
-    public void setSumOverdue(BigDecimal sumOverdue){
-      this.sumOverdue = sumOverdue;
+    public void setSumRepaidInterest(BigDecimal sumRepaidInterest){
+      this.sumRepaidInterest = sumRepaidInterest;
     }
 
     /**
@@ -539,17 +613,35 @@ import java.math.BigDecimal;
      *
      * @return 累计续期手续费
      */
-    public BigDecimal getSumRenewalPoundage(){
-      return sumRenewalPoundage;
+    public BigDecimal getSumRepaidPoundage(){
+      return sumRepaidPoundage;
     }
 
     /**
      * 设置累计续期手续费
      * 
-     * @param sumRenewalPoundage 要设置的累计续期手续费
+     * @param sumRepaidPoundage 要设置的累计续期手续费
      */
-    public void setSumRenewalPoundage(BigDecimal sumRenewalPoundage){
-      this.sumRenewalPoundage = sumRenewalPoundage;
+    public void setSumRepaidPoundage(BigDecimal sumRepaidPoundage){
+      this.sumRepaidPoundage = sumRepaidPoundage;
+    }
+
+    /**
+     * 获取累计逾期金
+     *
+     * @return 累计逾期金
+     */
+    public BigDecimal getSumRepaidOverdue(){
+      return sumRepaidOverdue;
+    }
+
+    /**
+     * 设置累计逾期金
+     * 
+     * @param sumRepaidOverdue 要设置的累计逾期金
+     */
+    public void setSumRepaidOverdue(BigDecimal sumRepaidOverdue){
+      this.sumRepaidOverdue = sumRepaidOverdue;
     }
 
     /**
@@ -571,6 +663,24 @@ import java.math.BigDecimal;
     }
 
     /**
+     * 获取
+     *
+     * @return 
+     */
+    public BigDecimal getInterestRate(){
+      return interestRate;
+    }
+
+    /**
+     * 设置
+     * 
+     * @param interestRate 要设置的
+     */
+    public void setInterestRate(BigDecimal interestRate){
+      this.interestRate = interestRate;
+    }
+
+    /**
      * 获取借钱手续费率（日）
      *
      * @return 借钱手续费率（日）
@@ -586,6 +696,24 @@ import java.math.BigDecimal;
      */
     public void setPoundageRate(BigDecimal poundageRate){
       this.poundageRate = poundageRate;
+    }
+
+    /**
+     * 获取
+     *
+     * @return 
+     */
+    public BigDecimal getOverdueRate(){
+      return overdueRate;
+    }
+
+    /**
+     * 设置
+     * 
+     * @param overdueRate 要设置的
+     */
+    public void setOverdueRate(BigDecimal overdueRate){
+      this.overdueRate = overdueRate;
     }
 
     /**
@@ -661,43 +789,6 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取
-     *
-     * @return 
-     */
-    public Date getGmtCreate(){
-      return gmtCreate;
-    }
-
-    /**
-     * 设置
-     * 
-     * @param gmtCreate 要设置的
-     */
-    public void setGmtCreate(Date gmtCreate){
-      this.gmtCreate = gmtCreate;
-    }
-
-    /**
-     * 获取
-     *
-     * @return 
-     */
-    public Date getGmtModified(){
-      return gmtModified;
-    }
-
-    /**
-     * 设置
-     * 
-     * @param gmtModified 要设置的
-     */
-    public void setGmtModified(Date gmtModified){
-      this.gmtModified = gmtModified;
-    }
-
-
-    /**
      * 获取订单为FINSH时记录该时间
      *
      * @return 订单为FINSH时记录该时间
@@ -716,61 +807,21 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取借款类型:v1:赊账,v2:搭售
+     * 获取备注
      *
-     * @return 借款类型:v1:赊账,v2:搭售
+     * @return 备注
      */
-    public String getVersion(){
-      return version;
+    public String getRemark(){
+      return remark;
     }
 
     /**
-     * 设置借款类型:v1:赊账,v2:搭售
+     * 设置备注
      * 
-     * @param version 要设置的借款类型:v1:赊账,v2:搭售
+     * @param remark 要设置的备注
      */
-    public void setVersion(String version){
-      this.version = version;
+    public void setRemark(String remark){
+      this.remark = remark;
     }
-
-	public String getTradeNoUps() {
-		return tradeNoUps;
-	}
-
-	public void setTradeNoUps(String tradeNoUps) {
-		this.tradeNoUps = tradeNoUps;
-	}
-
-	public String getTradeNoXgxy() {
-		return tradeNoXgxy;
-	}
-
-	public void setTradeNoXgxy(String tradeNoXgxy) {
-		this.tradeNoXgxy = tradeNoXgxy;
-	}
-
-	public BigDecimal getInterestRate() {
-		return interestRate;
-	}
-
-	public void setInterestRate(BigDecimal interestRate) {
-		this.interestRate = interestRate;
-	}
-
-	public String getBorrowRemark() {
-		return borrowRemark;
-	}
-
-	public void setBorrowRemark(String borrowRemark) {
-		this.borrowRemark = borrowRemark;
-	}
-
-	public String getRepayRemark() {
-		return repayRemark;
-	}
-
-	public void setRepayRemark(String repayRemark) {
-		this.repayRemark = repayRemark;
-	}
 
 }

@@ -149,7 +149,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
             	if(BigDecimal.ZERO.compareTo(new BigDecimal(riskRate)) == 0) {
             		logger.error("openId=" + openId + ", riskRate from xgxy is 0.00 !");
             	}else {
-            		riskRateDaily = new BigDecimal(riskRate).divide(BigDecimal.valueOf(1000), 6, RoundingMode.CEILING);
+            		riskRateDaily = new BigDecimal(riskRate).divide(BigDecimal.valueOf(1000), 6, RoundingMode.HALF_UP);
             	}
             }else {
             	logger.error("openId=" + openId + ", riskRate from xgxy is null!");
@@ -198,16 +198,16 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         TrialBeforeBorrowResp resp = new TrialBeforeBorrowResp();
         
         //处理借款相关利息
-        BigDecimal actualBorrowInterestAmount = borrowinterestLeft.multiply(actualBorrowAmount).setScale(2, RoundingMode.CEILING);
+        BigDecimal actualBorrowInterestAmount = borrowinterestLeft.multiply(actualBorrowAmount).setScale(2, RoundingMode.HALF_UP);
         BigDecimal actualBorrowServiceAmount = borrowISLeft.multiply(actualBorrowAmount).setScale(2, RoundingMode.DOWN).subtract(actualBorrowInterestAmount);
-        resp.borrowAmount = actualBorrowAmount.setScale(2, RoundingMode.CEILING).toString();
-        resp.arrivalAmount = actualBorrowAmount.setScale(2, RoundingMode.CEILING).toString();
-        resp.interestRate = borrowInterestRate.setScale(2, RoundingMode.CEILING).toString();
+        resp.borrowAmount = actualBorrowAmount.setScale(2, RoundingMode.HALF_UP).toString();
+        resp.arrivalAmount = actualBorrowAmount.setScale(2, RoundingMode.HALF_UP).toString();
+        resp.interestRate = borrowInterestRate.setScale(2, RoundingMode.HALF_UP).toString();
         resp.interestAmount = actualBorrowInterestAmount.toString();
-        resp.serviceRate = borrowRateInfo.serviceRate.setScale(2, RoundingMode.CEILING).toString();
+        resp.serviceRate = borrowRateInfo.serviceRate.setScale(2, RoundingMode.HALF_UP).toString();
         resp.serviceAmount = actualBorrowServiceAmount.toString();
-        resp.overdueRate = borrowOverdueRate.setScale(2, RoundingMode.CEILING).toString();
-        resp.billAmount = new BigDecimal[]{actualBorrowAmount.setScale(2, RoundingMode.CEILING)};
+        resp.overdueRate = borrowOverdueRate.setScale(2, RoundingMode.HALF_UP).toString();
+        resp.billAmount = new BigDecimal[]{actualBorrowAmount.setScale(2, RoundingMode.HALF_UP)};
         
         //处理搭售商品相关利息
         ResourceRateInfoBo orderRateInfo = jsdResourceService.getOrderRateInfo(req.term);
@@ -215,15 +215,15 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         BigDecimal orderISRate = orderRateInfo.interestRate.add(orderRateInfo.serviceRate);
         BigDecimal orderOverdueRate = orderRateInfo.overdueRate;
         BigDecimal actualOrderInterestAmount = orderInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP)
-        			.multiply(borrowDay).multiply(actualOrderAmount).setScale(2, RoundingMode.CEILING);
+        			.multiply(borrowDay).multiply(actualOrderAmount).setScale(2, RoundingMode.HALF_UP);
         BigDecimal actualOrderServiceAmount = orderISRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP)
         			.multiply(borrowDay).multiply(actualOrderAmount).setScale(2, RoundingMode.DOWN).subtract(actualOrderInterestAmount);
         resp.totalDiffFee = actualOrderAmount.toPlainString();
         resp.sellInterestFee = actualOrderInterestAmount.toString();
-        resp.sellInterestRate = orderInterestRate.setScale(2, RoundingMode.CEILING);
+        resp.sellInterestRate = orderInterestRate.setScale(2, RoundingMode.HALF_UP);
         resp.sellServiceFee = actualOrderServiceAmount.toString();
-        resp.sellServiceRate = orderRateInfo.serviceRate.setScale(2, RoundingMode.CEILING);
-        resp.sellOverdueRate = orderOverdueRate.setScale(2, RoundingMode.CEILING);
+        resp.sellServiceRate = orderRateInfo.serviceRate.setScale(2, RoundingMode.HALF_UP);
+        resp.sellOverdueRate = orderOverdueRate.setScale(2, RoundingMode.HALF_UP);
         
         resp.totalAmount = BigDecimalUtil.add(actualBorrowAmount, actualBorrowInterestAmount, actualBorrowServiceAmount, 
         			actualOrderAmount, actualOrderInterestAmount, actualOrderServiceAmount).toString();
