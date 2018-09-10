@@ -397,7 +397,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 		HashMap<String, String> data = null;
 		if(repaymentDo!=null){
-			data = buildData(repaymentDo.getRepayNo(),repaymentDo.getTradeNo(),repaymentDo.getBorrowId(),repaymentDo.getActualAmount(),status,errorMsg);
+			data = buildData(repaymentDo.getTradeNoXgxy(),repaymentDo.getTradeNoUps(),repaymentDo.getBorrowId(),repaymentDo.getActualAmount(),status,errorMsg);
 		}else {
 			data = buildData(orderRepaymentDo.getRepayNo(),orderRepaymentDo.getTradeNoUps(),orderRepaymentDo.getBorrowId(),orderRepaymentDo.getActualAmount(),status,errorMsg);
 		}
@@ -417,12 +417,12 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
 		}
 	}
-	private HashMap<String, String> buildData(String repayNo,String tradeNo,Long borrowId,BigDecimal actualAmount, String status,String errorMsg){
+	private HashMap<String, String> buildData(String tradeNoXgxy,String tradeNoUps,Long borrowId,BigDecimal actualAmount, String status,String errorMsg){
 		    HashMap<String,String> map=new HashMap<>();
 		    JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(borrowId);
-		    map.put("repayNo",repayNo);
+		    map.put("repayNo",tradeNoXgxy);
 			map.put("status",status);
-			map.put("tradeNo",tradeNo);
+			map.put("tradeNo",tradeNoUps);
 			map.put("borrowNo",borrowCashDo.getTradeNoXgxy());
 			map.put("period","1");
 			map.put("amount", String.valueOf(actualAmount));
