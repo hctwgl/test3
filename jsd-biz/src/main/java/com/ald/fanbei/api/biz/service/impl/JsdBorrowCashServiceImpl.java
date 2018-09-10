@@ -141,6 +141,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
      * @param openId
      * @return
      */
+	@Override
 	public BigDecimal getRiskDailyRate(String openId) {
         BigDecimal riskRateDaily = BigDecimal.valueOf(0.005); // TODO 数据库配置利率
         try {
@@ -159,6 +160,24 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         }
         return riskRateDaily;
     }
+	
+	@Override
+	public BigDecimal calcuTotalAmount(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderCashDo orderCashDo) {
+		BigDecimal cashTotalAmount = BigDecimalUtil.add(cashDo.getAmount(), cashDo.getInterestAmount(), cashDo.getPoundageAmount(), cashDo.getOverdueAmount(),
+				  	cashDo.getSumRepaidInterest(), cashDo.getSumRepaidPoundage(), cashDo.getSumRepaidOverdue());
+		BigDecimal orderTotalAmount = BigDecimal.ZERO;
+		if(orderCashDo != null) {
+			orderTotalAmount = BigDecimalUtil.add(orderCashDo.getAmount(), orderCashDo.getInterestAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getOverdueAmount(),
+					orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue());
+		}
+		return cashTotalAmount.add(orderTotalAmount);
+	}
+	
+	@Override
+	public BigDecimal calcuUnrepayAmount(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderCashDo orderCashDo) {
+		BigDecimal totalAmount = this.calcuTotalAmount(cashDo, orderCashDo);
+		return totalAmount.subtract(cashDo.getRepayAmount()).subtract(orderCashDo.getRepaidAmount());
+	}
 	
 	/**
 	 * 解析各项利息费用

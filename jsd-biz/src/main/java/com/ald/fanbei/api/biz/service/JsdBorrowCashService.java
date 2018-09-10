@@ -30,6 +30,22 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     
     BigDecimal getRiskDailyRate(String openId);
     
+    /**
+     * 计算账单总应还额
+     * @param cashDo
+     * @param orderCashDo
+     * @return
+     */
+    BigDecimal calcuTotalAmount(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderCashDo orderCashDo);
+    
+    /**
+     * 计算未还总金额
+     * @param cashDo
+     * @param orderCashDo
+     * @return
+     */
+    BigDecimal calcuUnrepayAmount(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderCashDo orderCashDo);
+    
     void resolve(TrialBeforeBorrowBo bo);
     
     void dealBorrowSucc(Long cashId, String outTradeNo);
