@@ -676,7 +676,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			repayment.setFailCode(code);
 			repayment.setFailMsg(msg);
 		}
-		return jsdBorrowCashRepaymentDao.updateRepaymentBorrowCash(repayment);
+		return jsdBorrowCashRepaymentDao.updateById(repayment);
 	}
 	private long changOrderRepaymentStatus(String outTradeNo, String status, Long rid) {
 		JsdBorrowLegalOrderRepaymentDo repayment = new JsdBorrowLegalOrderRepaymentDo();
