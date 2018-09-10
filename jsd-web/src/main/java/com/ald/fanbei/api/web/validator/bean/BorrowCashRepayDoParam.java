@@ -23,8 +23,8 @@ public class BorrowCashRepayDoParam {
 	public String repayNo;
 
 	@NotNull
-	@DecimalMin("0")
-	public int period;
+	//@DecimalMin("0")
+	public String period;
 
 
 	public String timestamp;
