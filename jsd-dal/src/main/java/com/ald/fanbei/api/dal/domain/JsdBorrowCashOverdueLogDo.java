@@ -21,7 +21,11 @@ import java.math.BigDecimal;
      */
     private Long rid;
     
-
+    /**
+     * 日志类型
+     */
+    private String type;
+    
     /**
      * 
      */
@@ -156,5 +160,13 @@ import java.math.BigDecimal;
     public void setCurrentAmount(BigDecimal currentAmount){
       this.currentAmount = currentAmount;
     }
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 
 }
