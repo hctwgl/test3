@@ -26,10 +26,6 @@ public interface JsdBorrowCashRepaymentDao extends BaseDao<JsdBorrowCashRepaymen
 
     JsdBorrowCashRepaymentDo getLastRepaymentBorrowCashByBorrowId(@Param("borrowId") Long borrowId);
 
-
-    JsdBorrowCashRepaymentDo getRepaymentByPayTradeNo(@Param("repayNo")String repayNo);
-
-
     /**
      * 更新记录
      *

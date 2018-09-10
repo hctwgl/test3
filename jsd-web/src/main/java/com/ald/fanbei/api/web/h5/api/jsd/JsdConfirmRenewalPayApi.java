@@ -273,6 +273,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		orderCashDo.setInterestAmount(paramBo.goodsPrice.multiply(paramBo.orderRate).multiply(new BigDecimal(renewalDay)).divide(new BigDecimal(Constants.ONE_YEAY_DAYS) ,2 , RoundingMode.HALF_UP));
 		orderCashDo.setPoundageRate(paramBo.orderPoundageRate);
 		orderCashDo.setInterestRate(paramBo.orderRate);
+		orderCashDo.setOverdueRate(paramBo.orderOverdueRate);
 //		orderCashDo.setPoundageAmount(BigDecimal.TEN);
 //		orderCashDo.setInterestAmount(BigDecimal.ZERO);
 //		orderCashDo.setPoundageRate(BigDecimal.ZERO);
