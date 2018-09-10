@@ -7,12 +7,12 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.util.NumberUtil;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
-import com.ald.fanbei.api.biz.service.JsdResourceService;
-import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.ProtocolType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -53,61 +53,62 @@ public class GetLoanProtocolApi implements JsdH5Handle {
     	JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
      // 获取客户端请求参数
         GetLoanProtocolParam param = (GetLoanProtocolParam) context.getParamEntity();
-        
-        String uid, amount, nper, loanRemark = "tmp";
+        JsdPrococolVo jsdPrococolVo = new JsdPrococolVo();
+        if(StringUtils.isBlank(param.previewParam)){
+            throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_ERROR);
+        }
+        JSONObject jsonObject = JSONObject.parseObject(param.previewParam);
+        String loanRemark = "tmp";
+        String openId = ObjectUtils.toString(jsonObject.get("openId"), "").toString();
+        String dayType = ObjectUtils.toString(jsonObject.get("type"), "").toString();
+        Long borrowId = NumberUtil.objToLongDefault(jsonObject.get("borrowId"), 0l);
+        Long renewalId = NumberUtil.objToLongDefault(jsonObject.get("renewalId"), 0l);
+        int renewalDay = NumberUtil.objToIntDefault(jsonObject.get("renewalDay"), 0);
+        String nper = ObjectUtils.toString(jsonObject.get("nper"), "");
+        BigDecimal renewalAmount = NumberUtil.objToBigDecimalDefault(jsonObject.get("renewalAmount"), BigDecimal.ZERO);
+        String borrowAmount = ObjectUtils.toString(jsonObject.get("borrowAmount"), "");
+        BigDecimal poundage = NumberUtil.objToBigDecimalDefault(jsonObject.get("poundage"), BigDecimal.ZERO);
+
         if(StringUtils.isNotBlank(param.bizNo)) {
         	if(ProtocolType.BORROW.name().equals(param.type)) {
         		JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(param.bizNo);
         		if(cashDo == null) {
         			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
         		}
-        		uid = cashDo.getUserId().toString();
-        		amount = cashDo.getAmount().toString();
+                borrowAmount = cashDo.getAmount().toString();
                 nper = "1";
-        	}else {
+                borrowId = cashDo.getRid();
+        	}else if (ProtocolType.TYING.name().equals(param.type)){
+
+            }else if (ProtocolType.AUTH.name().equals(param.type)){
+
+            }else {
         		logger.warn("Don't support " + param.type + " protocol yet!");
         		throw new FanbeiException(FanbeiExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
         	}
-        }else if(StringUtils.isNotBlank(param.previewParam)){
-        	String previewParam = param.previewParam;
-            JSONObject jsonObject = JSON.parseObject(previewParam);
-            String openId = jsonObject.get("openId").toString();
-            JsdUserDo jsdUserDo = jsdUserService.getByOpenId(openId);
-            if(jsdUserDo == null) {
-            	throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-            }
-            
-            uid = jsdUserDo.getRid().toString();
-            amount = jsonObject.get("amount").toString();
-            nper = jsonObject.get("nper").toString();
-            loanRemark = jsonObject.get("loanRemark").toString();
-        }else {
-        	throw new FanbeiException(FanbeiExceptionCode.REQUEST_PARAM_ERROR);
         }
+
         
-        List<JsdResourceDo> jsdResourceDoList = jsdResourceService.listByType("DSED_AGREEMENT");
-        List<JsdPrococolVo> jsdPrococolVoList = new ArrayList<>();
-        for (JsdResourceDo afResourceDo : jsdResourceDoList) {
-        	JsdPrococolVo jsdPrococolVo = new JsdPrococolVo();
-            if ("DSED_PLATFORM_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())) {//平台服务协议
-                jsdPrococolVo.setProtocolName("平台服务协议");
-                jsdPrococolVo.setProtocolUrl(getNotifyHost()+"/dsed-web/h5/dsedLoanPlatformServiceProtocol?userId=" + uid +
-                        "&nper=" + nper + "&loanId=" + param.bizNo + "&amount=" + amount + "&totalServiceFee=" + BigDecimal.ZERO);
-            } else if ("DSED_LOAN_CONTRACT".equals(afResourceDo.getSecType())) {//借钱协议
-                jsdPrococolVo.setProtocolName("借钱协议");
-                jsdPrococolVo.setProtocolUrl(getNotifyHost()+"/dsed-web/h5/loanProtocol?userId=" + uid +
-                        "&amount=" + amount + "&nper=" + nper + "&loanId=" + param.bizNo + "&loanRemark=" + loanRemark +
-                        "&repayRemark=" + "");
-            } else if ("DIGITAL_CERTIFICATE_SERVICE_PROTOCOL".equals(afResourceDo.getSecType())) {//数字证书
-                jsdPrococolVo.setProtocolName("数字证书");
-                jsdPrococolVo.setProtocolUrl(getNotifyHost()+"/dsed-web/app/numProtocol?userId=" + uid);
-            } else if ("LETTER_OF_RISK".equals(afResourceDo.getSecType())) {//风险提示协议
-                jsdPrococolVo.setProtocolName("风险提示协议");
-                jsdPrococolVo.setProtocolUrl(getNotifyHost()+"/app/sys/riskWarning");
-            }
-            jsdPrococolVoList.add(jsdPrococolVo);
+        if ("PROTOCOL_BORROW_PLATFORM".equals(param.type)) {//平台服务协议
+            jsdPrococolVo.setProtocolName("平台服务协议");
+            jsdPrococolVo.setProtocolUrl(getNotifyHost()+"/jsd-web/h5/platformServiceProtocol?openId=" + openId +
+                    "&nper=" + nper + "&loanNo=" + param.bizNo + "&borrowAmount=" + borrowAmount + "&totalServiceFee=" + BigDecimal.ZERO);
+        } else if ("PROTOCOL_BORROW_CASH".equals(param.type)) {//借钱协议
+            jsdPrococolVo.setProtocolName("借钱协议");
+            jsdPrococolVo.setProtocolUrl(getNotifyHost()+"/jsd-web/h5/loanProtocol?openId=" + openId +
+                    "&borrowAmount=" + borrowAmount + "&nper=" + nper + "&borrowId=" + borrowId + "&loanRemark=" + loanRemark +
+                    "&repayRemark=" + "");
+        } else if ("PROTOCOL_BORROW_DIGITAL CERTIFICATE".equals(param.type)) {//数字证书
+            jsdPrococolVo.setProtocolName("数字证书");
+            jsdPrococolVo.setProtocolUrl(getNotifyHost()+"/jsd-web/app/numProtocol?openId=" + openId);
+        } else if ("PROTOCOL_BORROW_RISK_NOTICE".equals(param.type)) {//风险提示协议
+            jsdPrococolVo.setProtocolName("风险提示协议");
+            jsdPrococolVo.setProtocolUrl(getNotifyHost()+"/app/sys/riskWarning");
+        } else if ("PROTOCOL_BORROW_ORDER".equals(param.type)) {//风险提示协议
+            jsdPrococolVo.setProtocolName("分期协议");
+            jsdPrococolVo.setProtocolUrl(getNotifyHost()+"/jsd-web/h5/loanProtocol");
         }
-        resp.setData(jsdPrococolVoList);
+        resp.setData(jsdPrococolVo);
         return resp;
     }
     

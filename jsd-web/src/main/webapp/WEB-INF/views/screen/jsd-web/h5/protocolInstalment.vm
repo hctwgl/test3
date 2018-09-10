@@ -82,7 +82,7 @@
         <tr>
             <td>借款用途</td>
             <td>个人消费</td>
-        </tr>z
+        </tr>
         <tr>
             <td>手续费率（年化）</td>
             <td>#if($!{poundageRate})$!{poundageRate}%#end</td>

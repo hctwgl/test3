@@ -22,6 +22,4 @@ public interface JsdBorrowLegalOrderService extends ParentService<JsdBorrowLegal
      * @return
      */
     String getCurrentLastOrderNo(Date currentDate);
-
-    JsdBorrowLegalOrderDo getBorrowLegalOrderById(Long id);
 }
