@@ -106,10 +106,10 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
           throw new FanbeiException(FanbeiExceptionCode.JSD_REPAY_REPAY_ERROR);
        }
       JsdBorrowCashDo cashDo= jsdBorrowCashService.getByTradeNoXgxy(bo.borrowNo);
-      bo.borrowId=cashDo.getRid();
       if(cashDo  == null ){
-            throw new FanbeiException("borrow cash not exist",FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
+    	  throw new FanbeiException("borrow cash not exist",FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
       }
+      bo.borrowId=cashDo.getRid();
       if(!StringUtils.equals(cashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.name())){
             throw new FanbeiException("borrow stats is not transfered",FanbeiExceptionCode.BORROW_STATS_IS_NOT_TRANSFERRED);
       }
