@@ -66,10 +66,10 @@ public class JsdTest extends BaseTest {
     public void getRenewalDetailInfo() {
     	String url = urlBase + "/third/eca/v1/getDelayDetail";
         Map<String, String> params = new HashMap<>();
-        params.put("borrowNo", "dk2018081010282000095");
+        params.put("borrowNo", "loan0909eca645000000018");
         params.put("timestamp", System.currentTimeMillis()+"");
-        params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        params.put("openId", "BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
@@ -131,42 +131,6 @@ public class JsdTest extends BaseTest {
     }
 
     /**
-     * 发起贷款申请
-     */
-    @Test
-    public void dsedApplyLoan() {
-        String url = urlBase + "/third/eca/v1/pushBorrow";
-        Map<String, String> params = new HashMap<>();
-        Map<String, String> goodsInfo = new HashMap<>();
-        goodsInfo.put("goodsName", "大礼包");
-        goodsInfo.put("goodsPrice", "100");
-        goodsInfo.put("goodsImage", "http");
-        params.put("prdType", "DSED_LOAN");
-        params.put("amount", 6000 + "");
-        params.put("openId", "EB56E1F0A9383508DB8FD039C7D37BDF");
-        params.put("unit", "3");
-        params.put("borrowNo", "5445456654");
-        params.put("goodsInfo", goodsInfo.toString());
-        params.put("term", "20");
-        params.put("productNo", "22323");
-        params.put("loanRemark", "装修");
-        params.put("repayRemark", "装23修");
-        params.put("goodsName", "c测试");
-        params.put("bankNo", "6228480329222552476");
-        params.put("isTying", "1");
-        params.put("tyingType", "12");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
-        Map<String, String> p = new HashMap<>();
-        p.put("data", data);
-        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
-
-        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
-    }
-
-
-
-    /**
      * 还款详情
      */
     @Test
@@ -176,7 +140,7 @@ public class JsdTest extends BaseTest {
         params.put("borrowNo", "dk2018090221204000156");
         params.put("period", 1+"");
         params.put("timestamp", System.currentTimeMillis()+"");
-        params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
+        params.put("openId","EB56E1F0A9383508DB8FD039C7D37BD1");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
@@ -192,7 +156,8 @@ public class JsdTest extends BaseTest {
     public void repayLoanBill() {
         String url = urlBase + "/third/eca/v1/getBorrowBill";
         Map<String,String> params = new HashMap<>();
-        params.put("borrowNo", "BO20180829002");
+        params.put("borrowNo", "loan0909eca645000000019");
+        params.put("openId","EB56E1F0A9383508DB8FD039C7D37BD1");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);

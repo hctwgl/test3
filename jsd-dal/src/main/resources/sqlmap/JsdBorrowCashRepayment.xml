@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,name,trade_no,trade_no_xgxy,trade_no_ups,repayment_amount,actual_amount,borrow_id,status,user_id,card_number,card_name,fail_code,remark,fail_msg,type,gmt_create,gmt_modified,
+        id rid,name,trade_no,trade_no_xgxy,trade_no_ups,repayment_amount,actual_amount,borrow_id,status,user_id,card_number,card_name,fail_code,remark,fail_msg,type,gmt_create,gmt_modified
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -287,7 +287,7 @@
     	SELECT
 			<include refid="queryFields" />
 		FROM jsd_borrow_cash_repayment
-		WHERE is_delete = 0 AND borrow_id =	#{borrowId}
+		WHERE is_delete = 0 AND borrow_id =	#{borrowId} 
 		ORDER BY gmt_create DESC
         LIMIT 1
     </select>
