@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
@@ -102,7 +103,8 @@ public class LoanOverDueJob {
                 BigDecimal currentAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getSumOverdue(),jsdBorrowCashDo.getSumRate(), jsdBorrowCashDo.getSumRenewalPoundage()).subtract(jsdBorrowCashDo.getRepayAmount());// 当前本金
                 JsdBorrowCashRepaymentDo borrowCashRepaymentDo=jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(jsdBorrowCashDo.getRid());
                 if(borrowCashRepaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(borrowCashRepaymentDo.getStatus())) {
-                    currentAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getOverdueAmount(), jsdBorrowCashDo.getRateAmount(), jsdBorrowCashDo.getPoundage(), jsdBorrowCashDo.getSumRate(), jsdBorrowCashDo.getSumOverdue(), jsdBorrowCashDo.getSumRenewalPoundage()).subtract(jsdBorrowCashDo.getRepayAmount()).subtract(borrowCashRepaymentDo.getRepaymentAmount());// 当前本金
+                    currentAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getOverdueAmount(), jsdBorrowCashDo.getRateAmount(), jsdBorrowCashDo.getPoundage(), jsdBorrowCashDo.getSumRate(), jsdBorrowCashDo.getSumOverdue(), jsdBorrowCashDo.getSumRenewalPoundage())
+                    			.subtract(jsdBorrowCashDo.getRepayAmount()).subtract(borrowCashRepaymentDo.getRepaymentAmount());// 当前本金
                 }
                 if (currentAmount.compareTo(BigDecimal.ZERO) == 0) {
                     continue;
@@ -111,14 +113,14 @@ public class LoanOverDueJob {
                 BigDecimal newOverdueAmount = currentAmount.multiply(jsdBorrowCashDo.getOverdueRate().divide(new BigDecimal(360),6,BigDecimal.ROUND_HALF_UP)).setScale(2,BigDecimal.ROUND_HALF_UP);
                 jsdBorrowCashDo.setOverdueAmount(oldOverdueAmount.add(newOverdueAmount));
                 jsdBorrowCashDo.setOverdueDay(jsdBorrowCashDo.getOverdueDay()+1);
-                jsdBorrowCashDo.setOverdueStatus("Y");
+                jsdBorrowCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
                 borrowCashService.updateById(jsdBorrowCashDo);
                 JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo=jsdBorrowLegalOrderCashService.getOverdueBorrowLegalOrderCashByBorrowId(jsdBorrowCashDo.getRid());
                 if(borrowLegalOrderCashDo!=null){
                     BigDecimal orderAmount = BigDecimalUtil.add(borrowLegalOrderCashDo.getAmount(), borrowLegalOrderCashDo.getSumRepaidInterest(), borrowLegalOrderCashDo.getSumRepaidPoundage()).subtract(borrowLegalOrderCashDo.getRepaidAmount());// 当前本金
                     BigDecimal oldOverdueorderAmount = borrowLegalOrderCashDo.getOverdueAmount();//当前逾期
                     BigDecimal newOverdueorderAmount = orderAmount.multiply(jsdBorrowCashDo.getOverdueRate().divide(new BigDecimal(360),6,BigDecimal.ROUND_HALF_UP)).setScale(2,BigDecimal.ROUND_HALF_UP);
-                    borrowLegalOrderCashDo.setOverdueStatus("Y");
+                    borrowLegalOrderCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
                     borrowLegalOrderCashDo.setOverdueDay((short) (borrowLegalOrderCashDo.getOverdueDay()+1));
                     borrowLegalOrderCashDo.setOverdueAmount(oldOverdueorderAmount.add(newOverdueorderAmount));
                     borrowLegalOrderCashDo.setRid(borrowLegalOrderCashDo.getRid());

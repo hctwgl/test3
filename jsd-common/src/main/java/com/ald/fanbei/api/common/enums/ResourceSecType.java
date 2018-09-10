@@ -118,7 +118,9 @@ public enum ResourceSecType {
 
 		// 天天拆红包配置
 		OPEN_REDPACKET_DEVELOPER_CONFIG("DEVELOPER_CONFIG", "开发人员配置项"),
-		OPEN_REDPACKET_OPERATOR_CONFIG("OPERATOR_CONFIG", "运营人员配置项");
+		OPEN_REDPACKET_OPERATOR_CONFIG("OPERATOR_CONFIG", "运营人员配置项"),
+	
+		OVERDUE_JOB_INTERNAL_UIDS("OVERDUE_JOB_INTERNAL_UIDS", "公司内部专用定时器用户名单");
 
 	 	private String code;
 		private String name;
