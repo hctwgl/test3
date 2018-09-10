@@ -26,7 +26,7 @@ public interface JsdBorrowCashRenewalService {
 
 	int saveRecord(JsdBorrowCashRenewalDo renewalDo);
 
-	JsdBorrowCashRenewalDo getRenewalByDelayNo(String delayNo);
+	JsdBorrowCashRenewalDo getByTradeNoXgxy(String tradeNoXgxy);
 	
 	public void checkCanRenewal(JsdBorrowCashDo borrowCashDo);
 

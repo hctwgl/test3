@@ -2,13 +2,12 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderRepaymentService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderRepaymentDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
-import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderRepaymentService;
 
 
 
@@ -23,9 +22,6 @@ import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderRepaymentService;
  
 @Service("jsdBorrowLegalOrderRepaymentService")
 public class JsdBorrowLegalOrderRepaymentServiceImpl extends ParentServiceImpl<JsdBorrowLegalOrderRepaymentDo, Long> implements JsdBorrowLegalOrderRepaymentService {
-	
-    private static final Logger logger = LoggerFactory.getLogger(JsdBorrowLegalOrderRepaymentServiceImpl.class);
-   
     @Resource
     private JsdBorrowLegalOrderRepaymentDao jsdBorrowLegalOrderRepaymentDao;
 
@@ -40,7 +36,7 @@ public class JsdBorrowLegalOrderRepaymentServiceImpl extends ParentServiceImpl<J
 	}
 
 	@Override
-	public JsdBorrowLegalOrderRepaymentDo getByRepayNo(String repayNo) {
-		return jsdBorrowLegalOrderRepaymentDao.getByRepayNo(repayNo);
+	public JsdBorrowLegalOrderRepaymentDo getByTradeNoXgxy(String tradeNoXgxy) {
+		return jsdBorrowLegalOrderRepaymentDao.getByTradeNoXgxy(tradeNoXgxy);
 	}
 }

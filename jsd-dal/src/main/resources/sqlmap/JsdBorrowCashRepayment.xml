@@ -352,7 +352,7 @@
         UPDATE jsd_borrow_cash_repayment SET status='P',trade_no=#{tradeNo} WHERE id=#{repaymentId} AND status='A'
     </update>
 
-    <select id="getRepayByTradeNo" resultType="JsdBorrowCashRepaymentDo">
+    <select id="getByTradeNo" resultType="JsdBorrowCashRepaymentDo">
         SELECT
         <include refid="queryFields" />
         FROM
@@ -364,7 +364,7 @@
         ORDER BY
         gmt_create DESC
     </select>
-    <select id="getByRepayNo" resultType="JsdBorrowCashRepaymentDo">
+    <select id="getByTradeNoXgxy" resultType="JsdBorrowCashRepaymentDo">
         SELECT
         <include refid="queryFields" />
         FROM
@@ -372,7 +372,7 @@
         WHERE
         is_delete = 0
         AND
-        repay_no=#{repayNo}
+        trade_no_xgxy=#{tradeNoXgxy}
         ORDER BY
         gmt_create DESC
         LIMIT 1

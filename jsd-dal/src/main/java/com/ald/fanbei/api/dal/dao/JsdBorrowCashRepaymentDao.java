@@ -47,9 +47,9 @@ public interface JsdBorrowCashRepaymentDao extends BaseDao<JsdBorrowCashRepaymen
     int status2Process(@Param("tradeNo") String tradeNo, @Param("repaymentId") Long repaymentId);
 
 
-    JsdBorrowCashRepaymentDo getRepayByTradeNo(@Param("tradeNo") String tradeNo);
+    JsdBorrowCashRepaymentDo getByTradeNo(@Param("tradeNo") String tradeNo);
 
-    JsdBorrowCashRepaymentDo getByRepayNo(@Param("repayNo")String repayNo);
+    JsdBorrowCashRepaymentDo getByTradeNoXgxy(@Param("tradeNoXgxy")String tradeNoXgxy);
 
 
 

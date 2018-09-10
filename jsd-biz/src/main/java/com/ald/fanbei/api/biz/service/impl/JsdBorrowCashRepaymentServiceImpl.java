@@ -346,8 +346,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	}
 
 	@Override
-	public JsdBorrowCashRepaymentDo getByRepayNo(String repayNo) {
-		return jsdBorrowCashRepaymentDao.getByRepayNo(repayNo);
+	public JsdBorrowCashRepaymentDo getByTradeNoXgxy(String tradeNoXgxy) {
+		return jsdBorrowCashRepaymentDao.getByTradeNoXgxy(tradeNoXgxy);
 	}
 
 	public void dealRepaymentSucess(String tradeNo, String outTradeNo, final JsdBorrowCashRepaymentDo repaymentDo, final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, Boolean flag, final String isBalance) {

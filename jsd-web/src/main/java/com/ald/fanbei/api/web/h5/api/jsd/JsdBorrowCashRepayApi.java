@@ -17,7 +17,6 @@ import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.BorrowCashRepayBo;
-import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
@@ -100,8 +99,8 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
     }
 
     private void checkFrom(BorrowCashRepayBo bo) {
-        JsdBorrowCashRepaymentDo cashRepaymentDo=jsdBorrowCashRepaymentService.getByRepayNo(bo.repayNo);
-        JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByRepayNo(bo.repayNo);
+        JsdBorrowCashRepaymentDo cashRepaymentDo=jsdBorrowCashRepaymentService.getByTradeNoXgxy(bo.repayNo);
+        JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByTradeNoXgxy(bo.repayNo);
        if(cashRepaymentDo!=null&&legalOrderRepaymentDo!=null){
           throw new FanbeiException(FanbeiExceptionCode.JSD_REPAY_REPAY_ERROR);
        }

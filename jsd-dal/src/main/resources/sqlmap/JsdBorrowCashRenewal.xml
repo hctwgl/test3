@@ -389,17 +389,17 @@
 		LIMIT 1 
     </select>
     
-    <select id="getByRenewalNo" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
+    <select id="getByTradeNo" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
    		select 
 			<include refid="queryFields"/> 
-		from jsd_borrow_cash_renewal WHERE is_delete=0 and renewal_no=#{renewalNo}
+		from jsd_borrow_cash_renewal WHERE is_delete=0 and trade_no=#{tradeNo}
 		LIMIT 1 
     </select>
     
-    <select id="getRenewalByDelayNo" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
+    <select id="getByTradeNoXgxy" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
    		select 
 			<include refid="queryFields"/> 
-		from jsd_borrow_cash_renewal WHERE is_delete=0 and delay_no=#{delayNo}
+		from jsd_borrow_cash_renewal WHERE is_delete=0 and trade_no_xgxy=#{tradeNoXgxy}
 		LIMIT 1 
     </select>
     

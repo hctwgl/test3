@@ -92,8 +92,8 @@ public class ConfirmSmsApi implements JsdH5Handle {
 		String smsCode = ObjectUtils.toString(context.getData("code"), null);
 		String type = ObjectUtils.toString(context.getData("type"), null);
 		Long userId=context.getUserId();
-		JsdBorrowCashRepaymentDo repaymentDo=repaymentService.getByRepayNo(busiFlag);
-		JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByRepayNo(busiFlag);
+		JsdBorrowCashRepaymentDo repaymentDo=repaymentService.getByTradeNoXgxy(busiFlag);
+		JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByTradeNoXgxy(busiFlag);
 		
 		if (StringUtils.isBlank(busiFlag) || StringUtils.isBlank(smsCode)) {
 			return new JsdH5HandleResponse(3001, FanbeiExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
@@ -121,7 +121,7 @@ public class ConfirmSmsApi implements JsdH5Handle {
 			}
 			
 		}else if(SmsCodeType.DELAY.getCode().equals(type)){
-			JsdBorrowCashRenewalDo renewalDo = renewalService.getRenewalByDelayNo(busiFlag);
+			JsdBorrowCashRenewalDo renewalDo = renewalService.getByTradeNoXgxy(busiFlag);
  			Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + renewalDo.getTradeNo());
  			if (beanName == null) {
  				// 未获取到缓存数据，支付订单过期

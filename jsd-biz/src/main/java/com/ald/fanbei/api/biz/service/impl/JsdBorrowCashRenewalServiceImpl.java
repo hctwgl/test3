@@ -243,8 +243,8 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 	 * 续期成功
 	 */
 	@Override
-	public long dealJsdRenewalSucess(final String renewalNo, final String tradeNo) {
-		logger.info("dealJsdRenewalSucess renewalNo="+renewalNo+", tradeNo="+tradeNo);
+	public long dealJsdRenewalSucess(final String renewalNo, final String tradeNoOut) {
+		logger.info("dealJsdRenewalSucess renewalNo="+renewalNo+", tradeNoOut="+tradeNoOut);
 		final String key = renewalNo + "_success_repayCash_renewal";
 		long count = redisTemplate.opsForValue().increment(key, 1);
 		redisTemplate.expire(key, 30, TimeUnit.SECONDS);
@@ -257,7 +257,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 			public Long doInTransaction(TransactionStatus t) {
 				try {
 					// 本次续借
-					JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByRenewalNo(renewalNo);
+					JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
 					logger.info("dealJsdRenewalSucess delayNo="+renewalDo.getTradeNoXgxy());
 					if(JsdRenewalDetailStatus.YES.getCode().equals(renewalDo.getStatus())) return 0l;
 					// 本次订单
@@ -286,7 +286,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 			
 						// 更新本次 订单还款记录为已结清（对应上期订单）
 						orderRepaymentDo.setStatus(JsdBorrowLegalRepaymentStatus.YES.getCode());
-						orderRepaymentDo.setTradeNoUps(tradeNo);
+						orderRepaymentDo.setTradeNoUps(tradeNoOut);
 						orderRepaymentDo.setActualAmount(orderRepaymentDo.getRepayAmount());
 						jsdBorrowLegalOrderRepaymentDao.updateById(orderRepaymentDo);
 					}
@@ -303,7 +303,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 					
 					// 更新本次 续期成功
 					renewalDo.setStatus(JsdRenewalDetailStatus.YES.getCode());
-					renewalDo.setTradeNo(tradeNo);
+					renewalDo.setTradeNoUps(tradeNoOut);
 					renewalDo.setGmtModified(new Date());
 					jsdBorrowCashRenewalDao.updateById(renewalDo);
 					
@@ -346,8 +346,8 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		
 		if(result == 1l){
 			//续期成功，调用西瓜信用通知接口
-			JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByRenewalNo(renewalNo);
-			notifyXgxyRenewalResult("Y", tradeNo, "", renewalDo);
+			JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
+			notifyXgxyRenewalResult("Y", tradeNoOut, "", renewalDo);
 		}
 		
 		return result;
@@ -358,7 +358,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 	 */
 	@Override
 	public long dealJsdRenewalFail(String renewalNo, String tradeNo, boolean isNeedMsgNotice, String errorCode, String errorMsg) {
-		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByRenewalNo(renewalNo);
+		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
 		logger.info("dealJsdRenewalSucess renewalNo="+renewalNo+", tradeNo="+tradeNo+", delayNo="+renewalDo.getTradeNoXgxy()+
 				", isNeedMsgNotice="+isNeedMsgNotice+", errorCode="+errorCode+", errorMsg="+errorMsg);
 		if(JsdRenewalDetailStatus.NO.name().equals(renewalDo.getStatus())){
@@ -428,7 +428,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		BigDecimal waitRepayAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidOverdue(), borrowCashDo.getSumRepaidInterest(), 
 													borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getOverdueAmount(), borrowCashDo.getInterestAmount(), 
 													borrowCashDo.getPoundageAmount()).subtract(borrowCashDo.getRepayAmount());
-		long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(new Date(), borrowCashDo.getGmtPlanRepayment());
+//		long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(new Date(), borrowCashDo.getGmtPlanRepayment());
 		
 		/*if (new BigDecimal(betweenGmtPlanRepayment).compareTo(betweenDuedate) > 0 && amountLimit.compareTo(waitRepayAmount) >= 0) {
 			throw new FanbeiException(FanbeiExceptionCode.CAN_NOT_RENEWAL_ERROR);
@@ -486,8 +486,8 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 	}
 
 	@Override
-	public JsdBorrowCashRenewalDo getRenewalByDelayNo(String delayNo) {
-		return jsdBorrowCashRenewalDao.getRenewalByDelayNo(delayNo);
+	public JsdBorrowCashRenewalDo getByTradeNoXgxy(String tradeNoXgxy) {
+		return jsdBorrowCashRenewalDao.getByTradeNoXgxy(tradeNoXgxy);
 	}
 	
 }

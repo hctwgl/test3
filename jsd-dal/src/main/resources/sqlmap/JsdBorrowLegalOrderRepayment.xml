@@ -308,9 +308,7 @@
 	</select>
 
     <update id="updateStatus" parameterType="java.lang.String" >
-        UPDATE jsd_borrow_legal_order_repayment SET gmt_modified = NOW(),
-
-        status='P'
+        UPDATE jsd_borrow_legal_order_repayment SET gmt_modified = NOW(), status='P'
         WHERE trade_no=#{tradeNo}
     </update>
     <select id="getLastByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo">
@@ -323,7 +321,7 @@
         ORDER BY gmt_create DESC
         LIMIT 1
     </select>
-    <select id="getByRepayNo" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo">
+    <select id="getByTradeNoXgxy" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo">
         SELECT
         <include refid="queryFields" />
         FROM
