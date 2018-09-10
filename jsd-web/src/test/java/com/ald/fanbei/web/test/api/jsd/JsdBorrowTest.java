@@ -19,8 +19,8 @@ public class JsdBorrowTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-	String urlBase = "http://localhost:8078";
-//    String urlBase = "http://192.168.106.191:8280";
+//	String urlBase = "http://localhost:8078";
+    String urlBase = "http://192.168.106.191:8280";
     
     String userName = "13165995223";
     
@@ -88,7 +88,7 @@ public class JsdBorrowTest extends BaseTest {
         JSONObject params = new JSONObject();
         params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
         params.put("productNo", "2");
-        params.put("borrowNo", "xgxy2023141230901563452");
+        params.put("borrowNo", "xgxy20231412309067676867");
         params.put("amount", "5000");
         params.put("term", "10");
         params.put("unit", "DAY");

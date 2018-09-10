@@ -206,7 +206,6 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		renewalDo.setCardNumber(paramBo.bankNo);
 		renewalDo.setTradeNo(paramBo.renewalNo);
 		renewalDo.setTradeNoXgxy(paramBo.delayNo);
-		renewalDo.setTradeNo("");
 		renewalDo.setRenewalDay(paramBo.delayDay);
 		renewalDo.setPoundageRate(paramBo.cashPoundageRate);
 		renewalDo.setBaseBankRate(paramBo.cashRate);
