@@ -69,6 +69,7 @@ public class BorrowCashRepaymentBillApi implements JsdH5Handle {
         borrowBillDetail.put("status", status);
 
         borrowBillDetail.put("overdueStatus", cashDo.getOverdueStatus());
+        borrowBillDetail.put("overdueDays", cashDo.getOverdueDay());
         borrowBillDetail.put("totalPeriod","1");
         borrowBillDetail.put("period","1");
         borrowBillDetail.put("amount", cashDo.getAmount().add(orderCashDo.getAmount()));
