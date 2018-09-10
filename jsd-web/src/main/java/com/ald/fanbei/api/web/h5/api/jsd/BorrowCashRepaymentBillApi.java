@@ -75,21 +75,21 @@ public class BorrowCashRepaymentBillApi implements JsdH5Handle {
         borrowBillDetail.put("period","1");
         borrowBillDetail.put("amount", cashDo.getAmount());
         BigDecimal totalAmount=BigDecimal.ZERO;
-        totalAmount=totalAmount.add(cashDo.getAmount()).add(cashDo.getOverdueAmount()).add(cashDo.getPoundage()).add(cashDo.getRateAmount()).add(cashDo.getSumOverdue())
-                .add(cashDo.getSumRate()).add(cashDo.getSumRenewalPoundage());
+        totalAmount=totalAmount.add(cashDo.getAmount()).add(cashDo.getOverdueAmount()).add(cashDo.getPoundageAmount()).add(cashDo.getInterestAmount()).add(cashDo.getSumRepaidOverdue())
+                .add(cashDo.getSumRepaidInterest()).add(cashDo.getSumRepaidPoundage());
         borrowBillDetail.put("totalAmount",totalAmount);
-        borrowBillDetail.put("interestAmount", cashDo.getRateAmount().add(cashDo.getSumRate()));
-        borrowBillDetail.put("serviceAmount", cashDo.getPoundage().add(cashDo.getSumRenewalPoundage()));
-        borrowBillDetail.put("overdueAmount",cashDo.getOverdueAmount().add(cashDo.getSumOverdue()));
+        borrowBillDetail.put("interestAmount", cashDo.getInterestAmount().add(cashDo.getSumRepaidInterest()));
+        borrowBillDetail.put("serviceAmount", cashDo.getPoundageAmount().add(cashDo.getSumRepaidPoundage()));
+        borrowBillDetail.put("overdueAmount",cashDo.getOverdueAmount().add(cashDo.getSumRepaidOverdue()));
         borrowBillDetail.put("gmtPlanRepay", cashDo.getGmtPlanRepayment());
         borrowBillDetail.put("repaidAmount",cashDo.getRepayAmount());
         BigDecimal unrepayAmount=BigDecimal.ZERO;
-        unrepayAmount=unrepayAmount.add(cashDo.getAmount()).add(cashDo.getOverdueAmount()).add(cashDo.getPoundage()).add(cashDo.getRateAmount()).add(cashDo.getSumOverdue())
-        		.add(cashDo.getSumRate()).add(cashDo.getSumRenewalPoundage()).add(unrepayGoodsAmount).add(unrepayGoodsSellAmount).subtract(cashDo.getRepayAmount());
+        unrepayAmount=unrepayAmount.add(cashDo.getAmount()).add(cashDo.getOverdueAmount()).add(cashDo.getPoundageAmount()).add(cashDo.getInterestAmount()).add(cashDo.getSumRepaidOverdue())
+        		.add(cashDo.getSumRepaidInterest()).add(cashDo.getSumRepaidPoundage()).add(unrepayGoodsAmount).add(unrepayGoodsSellAmount).subtract(cashDo.getRepayAmount());
         borrowBillDetail.put("unrepayAmount", unrepayAmount);
-        borrowBillDetail.put("unrepayInterestAmount", cashDo.getRateAmount());
+        borrowBillDetail.put("unrepayInterestAmount", cashDo.getInterestAmount());
         borrowBillDetail.put("unrepayOverdueAmount", cashDo.getOverdueAmount());
-        borrowBillDetail.put("unrepayServiceAmount", cashDo.getPoundage());
+        borrowBillDetail.put("unrepayServiceAmount", cashDo.getPoundageAmount());
         borrowBillDetails.add(borrowBillDetail);
         map.put("borrowBillDetails",borrowBillDetails);
         return map;

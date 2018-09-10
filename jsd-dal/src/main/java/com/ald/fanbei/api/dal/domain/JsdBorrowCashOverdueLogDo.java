@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * 
  * @author yanghailong
  * @version 1.0.0 初始化
- * @date 2018-09-04 11:10:19
+ * @date 2018-09-10 13:22:35
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class JsdBorrowCashOverdueLogDo extends AbstractSerial {
@@ -21,15 +21,11 @@ import java.math.BigDecimal;
      */
     private Long rid;
     
+
     /**
-     * 日志类型
+     * CASH-现金贷借款，ORDER_CASH-搭售的商品借款
      */
     private String type;
-    
-    /**
-     * 
-     */
-    private Date gmtCreate;
 
     /**
      * 用户id
@@ -50,6 +46,11 @@ import java.math.BigDecimal;
      * 当时应还款金额
      */
     private BigDecimal currentAmount;
+
+    /**
+     * 
+     */
+    private Date gmtCreate;
 
 
     /**
@@ -72,21 +73,21 @@ import java.math.BigDecimal;
     
 
     /**
-     * 获取
+     * 获取CASH-现金贷借款，ORDER_CASH-搭售的商品借款
      *
-     * @return 
+     * @return CASH-现金贷借款，ORDER_CASH-搭售的商品借款
      */
-    public Date getGmtCreate(){
-      return gmtCreate;
+    public String getType(){
+      return type;
     }
 
     /**
-     * 设置
+     * 设置CASH-现金贷借款，ORDER_CASH-搭售的商品借款
      * 
-     * @param gmtCreate 要设置的
+     * @param type 要设置的CASH-现金贷借款，ORDER_CASH-搭售的商品借款
      */
-    public void setGmtCreate(Date gmtCreate){
-      this.gmtCreate = gmtCreate;
+    public void setType(String type){
+      this.type = type;
     }
 
     /**
@@ -161,12 +162,22 @@ import java.math.BigDecimal;
       this.currentAmount = currentAmount;
     }
 
-	public String getType() {
-		return type;
-	}
+    /**
+     * 获取
+     *
+     * @return 
+     */
+    public Date getGmtCreate(){
+      return gmtCreate;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    /**
+     * 设置
+     * 
+     * @param gmtCreate 要设置的
+     */
+    public void setGmtCreate(Date gmtCreate){
+      this.gmtCreate = gmtCreate;
+    }
 
 }

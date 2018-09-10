@@ -5,11 +5,11 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 /**
- * 极速贷实体
+ * 实体
  * 
  * @author yanghailong
  * @version 1.0.0 初始化
- * @date 2018-08-22 16:18:06
+ * @date 2018-09-10 13:22:35
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class JsdBorrowCashRepaymentDo extends AbstractSerial {
@@ -21,26 +21,25 @@ import java.math.BigDecimal;
      */
     private Long rid;
     
-
-    /**
-     * 创建时间
-     */
-    private Date gmtCreate;
-
-    /**
-     * 最后修改时间
-     */
-    private Date gmtModified;
-
     /**
      * 还款名称
      */
     private String name;
 
     /**
-     * 还款编号 hkYYYYMMDDHHMMSSXXXX
+     * 极速贷交易流水（我方生成）
      */
-    private String repayNo;
+    private String tradeNo;
+
+    /**
+     * 还款编号（西瓜提供）
+     */
+    private String tradeNoXgxy;
+
+    /**
+     * 第三方的交易流水号（UPS提供）
+     */
+    private String tradeNoUps;
 
     /**
      * 还款金额
@@ -48,7 +47,7 @@ import java.math.BigDecimal;
     private BigDecimal repaymentAmount;
 
     /**
-     * 实际支付金额
+     * 实际支付金额(赊销：包含本金和商品)
      */
     private BigDecimal actualAmount;
 
@@ -56,11 +55,6 @@ import java.math.BigDecimal;
      * 借钱id
      */
     private Long borrowId;
-
-    /**
-     * 第三方的交易流水号
-     */
-    private String tradeNo;
 
     /**
      * 还款状态【’A’-新建状态,'Y'-还款成功, N：”还款失败”,'P':处理中】
@@ -92,11 +86,9 @@ import java.math.BigDecimal;
      */
     private String remark;
 
-
     /**
      * 失败原因
      */
-
     private String failMsg;
 
     /**
@@ -104,8 +96,16 @@ import java.math.BigDecimal;
      */
     private String type;
 
+    /**
+     * 创建时间
+     */
+    private Date gmtCreate;
 
-    private String jsdRepayNo;
+    /**
+     * 最后修改时间
+     */
+    private Date gmtModified;
+
 
 
     /**
@@ -126,43 +126,6 @@ import java.math.BigDecimal;
       this.rid = rid;
     }
     
-
-    /**
-     * 获取创建时间
-     *
-     * @return 创建时间
-     */
-    public Date getGmtCreate(){
-      return gmtCreate;
-    }
-
-    /**
-     * 设置创建时间
-     * 
-     * @param gmtCreate 要设置的创建时间
-     */
-    public void setGmtCreate(Date gmtCreate){
-      this.gmtCreate = gmtCreate;
-    }
-
-    /**
-     * 获取最后修改时间
-     *
-     * @return 最后修改时间
-     */
-    public Date getGmtModified(){
-      return gmtModified;
-    }
-
-    /**
-     * 设置最后修改时间
-     * 
-     * @param gmtModified 要设置的最后修改时间
-     */
-    public void setGmtModified(Date gmtModified){
-      this.gmtModified = gmtModified;
-    }
-
     /**
      * 获取还款名称
      *
@@ -182,21 +145,57 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取还款编号 hkYYYYMMDDHHMMSSXXXX
+     * 获取极速贷交易流水（我方生成）
      *
-     * @return 还款编号 hkYYYYMMDDHHMMSSXXXX
+     * @return 极速贷交易流水（我方生成）
      */
-    public String getRepayNo(){
-      return repayNo;
+    public String getTradeNo(){
+      return tradeNo;
     }
 
     /**
-     * 设置还款编号 hkYYYYMMDDHHMMSSXXXX
+     * 设置极速贷交易流水（我方生成）
      * 
-     * @param repayNo 要设置的还款编号 hkYYYYMMDDHHMMSSXXXX
+     * @param tradeNo 要设置的极速贷交易流水（我方生成）
      */
-    public void setRepayNo(String repayNo){
-      this.repayNo = repayNo;
+    public void setTradeNo(String tradeNo){
+      this.tradeNo = tradeNo;
+    }
+
+    /**
+     * 获取还款编号（西瓜提供）
+     *
+     * @return 还款编号（西瓜提供）
+     */
+    public String getTradeNoXgxy(){
+      return tradeNoXgxy;
+    }
+
+    /**
+     * 设置还款编号（西瓜提供）
+     * 
+     * @param tradeNoXgxy 要设置的还款编号（西瓜提供）
+     */
+    public void setTradeNoXgxy(String tradeNoXgxy){
+      this.tradeNoXgxy = tradeNoXgxy;
+    }
+
+    /**
+     * 获取第三方的交易流水号（UPS提供）
+     *
+     * @return 第三方的交易流水号（UPS提供）
+     */
+    public String getTradeNoUps(){
+      return tradeNoUps;
+    }
+
+    /**
+     * 设置第三方的交易流水号（UPS提供）
+     * 
+     * @param tradeNoUps 要设置的第三方的交易流水号（UPS提供）
+     */
+    public void setTradeNoUps(String tradeNoUps){
+      this.tradeNoUps = tradeNoUps;
     }
 
     /**
@@ -218,18 +217,18 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取实际支付金额
+     * 获取实际支付金额(赊销：包含本金和商品)
      *
-     * @return 实际支付金额
+     * @return 实际支付金额(赊销：包含本金和商品)
      */
     public BigDecimal getActualAmount(){
       return actualAmount;
     }
 
     /**
-     * 设置实际支付金额
+     * 设置实际支付金额(赊销：包含本金和商品)
      * 
-     * @param actualAmount 要设置的实际支付金额
+     * @param actualAmount 要设置的实际支付金额(赊销：包含本金和商品)
      */
     public void setActualAmount(BigDecimal actualAmount){
       this.actualAmount = actualAmount;
@@ -251,24 +250,6 @@ import java.math.BigDecimal;
      */
     public void setBorrowId(Long borrowId){
       this.borrowId = borrowId;
-    }
-
-    /**
-     * 获取第三方的交易流水号
-     *
-     * @return 第三方的交易流水号
-     */
-    public String getTradeNo(){
-      return tradeNo;
-    }
-
-    /**
-     * 设置第三方的交易流水号
-     * 
-     * @param tradeNo 要设置的第三方的交易流水号
-     */
-    public void setTradeNo(String tradeNo){
-      this.tradeNo = tradeNo;
     }
 
     /**
@@ -415,14 +396,41 @@ import java.math.BigDecimal;
       this.type = type;
     }
 
-    public String getJsdRepayNo() {
-        return jsdRepayNo;
+    /**
+     * 获取创建时间
+     *
+     * @return 创建时间
+     */
+    public Date getGmtCreate(){
+      return gmtCreate;
     }
 
-    public void setJsdRepayNo(String jsdRepayNo) {
-        this.jsdRepayNo = jsdRepayNo;
+    /**
+     * 设置创建时间
+     * 
+     * @param gmtCreate 要设置的创建时间
+     */
+    public void setGmtCreate(Date gmtCreate){
+      this.gmtCreate = gmtCreate;
     }
 
+    /**
+     * 获取最后修改时间
+     *
+     * @return 最后修改时间
+     */
+    public Date getGmtModified(){
+      return gmtModified;
+    }
+
+    /**
+     * 设置最后修改时间
+     * 
+     * @param gmtModified 要设置的最后修改时间
+     */
+    public void setGmtModified(Date gmtModified){
+      this.gmtModified = gmtModified;
+    }
 
 
 }

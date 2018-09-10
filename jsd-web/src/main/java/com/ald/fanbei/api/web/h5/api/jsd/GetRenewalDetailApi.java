@@ -108,9 +108,9 @@ public class GetRenewalDetailApi implements JsdH5Handle {
 				orderCashDo.getSumRepaidPoundage()).subtract(orderCashDo.getRepaidAmount());
 		
 		// 上期总利息
-		BigDecimal rateAmount = BigDecimalUtil.add(borrowCashDo.getRateAmount(),orderCashDo.getInterestAmount());
+		BigDecimal rateAmount = BigDecimalUtil.add(borrowCashDo.getInterestAmount(),orderCashDo.getInterestAmount());
 		// 上期总手续费
-		BigDecimal poundage = BigDecimalUtil.add(borrowCashDo.getPoundage(),orderCashDo.getPoundageAmount());
+		BigDecimal poundage = BigDecimalUtil.add(borrowCashDo.getPoundageAmount(),orderCashDo.getPoundageAmount());
 		// 上期总逾期费
 		BigDecimal overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(),orderCashDo.getOverdueAmount());
 		
@@ -123,8 +123,8 @@ public class GetRenewalDetailApi implements JsdH5Handle {
 							 "元,本金还款部分"+capital+
 							 "元,上期商品价格"+waitOrderAmount+"元";
 		
-		BigDecimal principalAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumOverdue(), 
-				borrowCashDo.getSumRate(), borrowCashDo.getSumRenewalPoundage())
+		BigDecimal principalAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidOverdue(), 
+				borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage())
 				.subtract(borrowCashDo.getRepayAmount().add(capital));
 		
 		delayInfo.put("principalAmount", principalAmount+"");	// 展期后剩余借款本金
@@ -159,9 +159,6 @@ public class GetRenewalDetailApi implements JsdH5Handle {
 		// 借款利息手续费
 		BigDecimal rateAmount = BigDecimalUtil.multiply(renewalAmount, interestRate, renewalDay.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
 		BigDecimal poundage = BigDecimalUtil.multiply(renewalAmount, serviceRate, renewalDay.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
-		
-		// 订单手续费
-		 BigDecimal orderCashService = BigDecimal.valueOf(10);
 		
 		// 用户分层利率
 		BigDecimal riskDailyRate = borrowCashDo.getRiskDailyRate();

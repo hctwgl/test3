@@ -5,11 +5,11 @@ import java.util.Date;
 import java.math.BigDecimal;
 
 /**
- * 极速贷续期实体
+ * 实体
  * 
  * @author yanghailong
  * @version 1.0.0 初始化
- * @date 2018-08-22 16:18:06
+ * @date 2018-09-10 13:22:35
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class JsdBorrowCashRenewalDo extends AbstractSerial {
@@ -21,17 +21,6 @@ import java.math.BigDecimal;
      */
     private Long rid;
     
-
-    /**
-     * 申请时间
-     */
-    private Date gmtCreate;
-
-    /**
-     * 
-     */
-    private Date gmtModified;
-
     /**
      * 借款ID
      */
@@ -103,14 +92,19 @@ import java.math.BigDecimal;
     private String cardNumber;
 
     /**
-     * 续期编号，平台提供给三方支付的交易流水号
-     */
-    private String renewalNo;
-
-    /**
-     * 第三方的交易流水号
+     * 续期编号（我方生成）
      */
     private String tradeNo;
+
+    /**
+     * 续期编号（西瓜提供）
+     */
+    private String tradeNoXgxy;
+
+    /**
+     * 第三方的交易流水号（UPS提供）
+     */
+    private String tradeNoUps;
 
     /**
      * 续期天数
@@ -141,45 +135,28 @@ import java.math.BigDecimal;
      * 原预计还款时间
      */
     private Date gmtPlanRepayment;
+
     /**
      * 失败码
      */
     private String failCode;
-    
-	/**
+
+    /**
      * 失败原因
      */
     private String failMsg;
-    
+
     /**
-     * 续期编号-西瓜提供
+     * 申请时间
      */
-    private String delayNo;
+    private Date gmtCreate;
 
-    public String getDelayNo() {
-		return delayNo;
-	}
+    /**
+     * 
+     */
+    private Date gmtModified;
 
-	public void setDelayNo(String delayNo) {
-		this.delayNo = delayNo;
-	}
 
-	public String getFailCode() {
-    	return failCode;
-    }
-    
-    public void setFailCode(String failCode) {
-    	this.failCode = failCode;
-    }
-    
-    public String getFailMsg() {
-    	return failMsg;
-    }
-    
-    public void setFailMsg(String failMsg) {
-    	this.failMsg = failMsg;
-    }
-    
 
     /**
      * 获取主键Id
@@ -199,43 +176,6 @@ import java.math.BigDecimal;
       this.rid = rid;
     }
     
-
-    /**
-     * 获取申请时间
-     *
-     * @return 申请时间
-     */
-    public Date getGmtCreate(){
-      return gmtCreate;
-    }
-
-    /**
-     * 设置申请时间
-     * 
-     * @param gmtCreate 要设置的申请时间
-     */
-    public void setGmtCreate(Date gmtCreate){
-      this.gmtCreate = gmtCreate;
-    }
-
-    /**
-     * 获取
-     *
-     * @return 
-     */
-    public Date getGmtModified(){
-      return gmtModified;
-    }
-
-    /**
-     * 设置
-     * 
-     * @param gmtModified 要设置的
-     */
-    public void setGmtModified(Date gmtModified){
-      this.gmtModified = gmtModified;
-    }
-
     /**
      * 获取借款ID
      *
@@ -489,39 +429,57 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取平台提供给三方支付的交易流水号
+     * 获取续期编号（我方生成）
      *
-     * @return 平台提供给三方支付的交易流水号
-     */
-    public String getRenewalNo(){
-      return renewalNo;
-    }
-
-    /**
-     * 设置平台提供给三方支付的交易流水号
-     * 
-     * @param payTradeNo 要设置的平台提供给三方支付的交易流水号
-     */
-    public void setRenewalNo(String renewalNo){
-      this.renewalNo = renewalNo;
-    }
-
-    /**
-     * 获取第三方的交易流水号
-     *
-     * @return 第三方的交易流水号
+     * @return 续期编号（我方生成）
      */
     public String getTradeNo(){
       return tradeNo;
     }
 
     /**
-     * 设置第三方的交易流水号
+     * 设置续期编号（我方生成）
      * 
-     * @param tradeNo 要设置的第三方的交易流水号
+     * @param tradeNo 要设置的续期编号（我方生成）
      */
     public void setTradeNo(String tradeNo){
       this.tradeNo = tradeNo;
+    }
+
+    /**
+     * 获取续期编号（西瓜提供）
+     *
+     * @return 续期编号（西瓜提供）
+     */
+    public String getTradeNoXgxy(){
+      return tradeNoXgxy;
+    }
+
+    /**
+     * 设置续期编号（西瓜提供）
+     * 
+     * @param tradeNoXgxy 要设置的续期编号（西瓜提供）
+     */
+    public void setTradeNoXgxy(String tradeNoXgxy){
+      this.tradeNoXgxy = tradeNoXgxy;
+    }
+
+    /**
+     * 获取第三方的交易流水号（UPS提供）
+     *
+     * @return 第三方的交易流水号（UPS提供）
+     */
+    public String getTradeNoUps(){
+      return tradeNoUps;
+    }
+
+    /**
+     * 设置第三方的交易流水号（UPS提供）
+     * 
+     * @param tradeNoUps 要设置的第三方的交易流水号（UPS提供）
+     */
+    public void setTradeNoUps(String tradeNoUps){
+      this.tradeNoUps = tradeNoUps;
     }
 
     /**
@@ -631,5 +589,78 @@ import java.math.BigDecimal;
     public void setGmtPlanRepayment(Date gmtPlanRepayment){
       this.gmtPlanRepayment = gmtPlanRepayment;
     }
+
+    /**
+     * 获取失败码
+     *
+     * @return 失败码
+     */
+    public String getFailCode(){
+      return failCode;
+    }
+
+    /**
+     * 设置失败码
+     * 
+     * @param failCode 要设置的失败码
+     */
+    public void setFailCode(String failCode){
+      this.failCode = failCode;
+    }
+
+    /**
+     * 获取失败原因
+     *
+     * @return 失败原因
+     */
+    public String getFailMsg(){
+      return failMsg;
+    }
+
+    /**
+     * 设置失败原因
+     * 
+     * @param failMsg 要设置的失败原因
+     */
+    public void setFailMsg(String failMsg){
+      this.failMsg = failMsg;
+    }
+
+    /**
+     * 获取申请时间
+     *
+     * @return 申请时间
+     */
+    public Date getGmtCreate(){
+      return gmtCreate;
+    }
+
+    /**
+     * 设置申请时间
+     * 
+     * @param gmtCreate 要设置的申请时间
+     */
+    public void setGmtCreate(Date gmtCreate){
+      this.gmtCreate = gmtCreate;
+    }
+
+    /**
+     * 获取
+     *
+     * @return 
+     */
+    public Date getGmtModified(){
+      return gmtModified;
+    }
+
+    /**
+     * 设置
+     * 
+     * @param gmtModified 要设置的
+     */
+    public void setGmtModified(Date gmtModified){
+      this.gmtModified = gmtModified;
+    }
+
 
 }

@@ -91,7 +91,6 @@ public class ConfirmSmsApi implements JsdH5Handle {
 		String busiFlag = ObjectUtils.toString(context.getData("busiFlag"), null);
 		String smsCode = ObjectUtils.toString(context.getData("code"), null);
 		String type = ObjectUtils.toString(context.getData("type"), null);
-		String timestamp = ObjectUtils.toString(context.getData("timestamp"), null);
 		Long userId=context.getUserId();
 		JsdBorrowCashRepaymentDo repaymentDo=repaymentService.getByRepayNo(busiFlag);
 		JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByRepayNo(busiFlag);
@@ -103,7 +102,7 @@ public class ConfirmSmsApi implements JsdH5Handle {
 		Map<String, Object> map = new HashMap<String, Object>();
  		if(SmsCodeType.REPAY.getCode().equals(type)){
  			if(repaymentDo!=null){
- 				busiFlag=repaymentDo.getJsdRepayNo();
+ 				busiFlag=repaymentDo.getTradeNo();
  			}else {
  				busiFlag=legalOrderRepaymentDo.getTradeNo();
  			}
@@ -123,7 +122,7 @@ public class ConfirmSmsApi implements JsdH5Handle {
 			
 		}else if(SmsCodeType.DELAY.getCode().equals(type)){
 			JsdBorrowCashRenewalDo renewalDo = renewalService.getRenewalByDelayNo(busiFlag);
- 			Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + renewalDo.getRenewalNo());
+ 			Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + renewalDo.getTradeNo());
  			if (beanName == null) {
  				// 未获取到缓存数据，支付订单过期
  				throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
@@ -131,7 +130,7 @@ public class ConfirmSmsApi implements JsdH5Handle {
  			
  			switch (beanName.toString()) {
 	 			case "jsdBorrowCashRenewalService":
-	 				map = jsdBorrowCashRenewalService.doUpsPay(renewalDo.getRenewalNo(), smsCode);
+	 				map = jsdBorrowCashRenewalService.doUpsPay(renewalDo.getTradeNo(), smsCode);
 	 				break;
 	 			default:
 	 				throw new FanbeiException("ups kuaijie not support", FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);

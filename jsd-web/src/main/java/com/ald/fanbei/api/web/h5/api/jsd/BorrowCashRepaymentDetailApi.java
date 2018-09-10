@@ -34,7 +34,6 @@ public class BorrowCashRepaymentDetailApi implements JsdH5Handle {
         JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
 
         String borrowNo = ObjectUtils.toString(context.getData("borrowNo"), null);
-        String period = ObjectUtils.toString(context.getData("period"), null);
         Long timestamp = Long.valueOf(context.getData("timestamp").toString());
         JsdBorrowCashDo cashDo=jsdBorrowCashService.getByTradeNoXgxy(borrowNo);
         if(cashDo==null){
@@ -61,9 +60,9 @@ public class BorrowCashRepaymentDetailApi implements JsdH5Handle {
         bo.orderAmount=BigDecimal.ZERO;
         bo.orderPoundage=BigDecimal.ZERO;
 
-        bo.cashAmount=bo.cashAmount.add(cashDo.getAmount()).add(cashDo.getOverdueAmount()).add(cashDo.getPoundage()).add(cashDo.getRateAmount()).add(cashDo.getSumOverdue())
-                .add(cashDo.getSumRate()).add(cashDo.getSumRenewalPoundage()).subtract(cashDo.getRepayAmount());
-        bo.cashPoundage=bo.cashPoundage.add(cashDo.getOverdueAmount()).add(cashDo.getPoundage()).add(cashDo.getRateAmount());
+        bo.cashAmount=bo.cashAmount.add(cashDo.getAmount()).add(cashDo.getOverdueAmount()).add(cashDo.getPoundageAmount()).add(cashDo.getInterestAmount()).add(cashDo.getSumRepaidOverdue())
+                .add(cashDo.getSumRepaidInterest()).add(cashDo.getSumRepaidPoundage()).subtract(cashDo.getRepayAmount());
+        bo.cashPoundage=bo.cashPoundage.add(cashDo.getOverdueAmount()).add(cashDo.getPoundageAmount()).add(cashDo.getInterestAmount());
         bo.principle=bo.principle.add(cashDo.getAmount()).subtract(cashDo.getRepayPrinciple());
         if(orderCashDo!=null){
             bo.amount=bo.cashAmount.add(orderCashDo.getAmount()).add(orderCashDo.getOverdueAmount()).add(orderCashDo.getPoundageAmount()).add(orderCashDo.getInterestAmount())

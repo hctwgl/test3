@@ -5,20 +5,32 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,borrow_no,trade_no_ups,trade_no_xgxy,user_id,type,amount,status,remark,card_number,card_name,overdue_status,overdue_day,arrival_amount,
-        poundage,repay_principle,repay_amount,overdue_amount,overdue_rate,sum_rate,sum_overdue,sum_renewal_poundage,renewal_num,
-        poundage_rate,risk_daily_rate,gmt_plan_repayment,gmt_arrival,gmt_close,gmt_create,gmt_modified,finish_date,version,
-        rate_amount
+        id rid,gmt_create,gmt_modified,product_no,borrow_no,trade_no_xgxy,trade_no_ups,user_id,type,version,status,amount,arrival_amount,card_number,card_name,overdue_status,overdue_day,overdue_amount,poundage_amount,interest_amount,repay_principle,repay_amount,sum_repaid_interest,sum_repaid_poundage,sum_repaid_overdue,renewal_num,interest_rate,poundage_rate,overdue_rate,risk_daily_rate,gmt_plan_repayment,gmt_arrival,gmt_close,finish_date,remark 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
-    	WHERE is_delete = 0
+        WHERE is_delete = 0
         <if test="rid !=null">
             AND id  = #{rid,jdbcType=INTEGER}
         </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="productNo != null">
+            AND product_no = #{productNo,jdbcType=VARCHAR}
+        </if>
         <if test="borrowNo != null">
             AND borrow_no = #{borrowNo,jdbcType=VARCHAR}
+        </if>
+        <if test="tradeNoXgxy != null">
+            AND trade_no_xgxy = #{tradeNoXgxy,jdbcType=VARCHAR}
+        </if>
+        <if test="tradeNoUps != null">
+            AND trade_no_ups = #{tradeNoUps,jdbcType=VARCHAR}
         </if>
         <if test="userId != null">
             AND user_id = #{userId,jdbcType=INTEGER}
@@ -26,14 +38,17 @@
         <if test="type != null">
             AND type = #{type,jdbcType=VARCHAR}
         </if>
-        <if test="amount != null">
-            AND amount = #{amount,jdbcType=DECIMAL}
+        <if test="version != null">
+            AND version = #{version,jdbcType=VARCHAR}
         </if>
         <if test="status != null">
             AND status = #{status,jdbcType=VARCHAR}
         </if>
-        <if test="remark != null">
-            AND remark = #{remark,jdbcType=VARCHAR}
+        <if test="amount != null">
+            AND amount = #{amount,jdbcType=DECIMAL}
+        </if>
+        <if test="arrivalAmount != null">
+            AND arrival_amount = #{arrivalAmount,jdbcType=DECIMAL}
         </if>
         <if test="cardNumber != null">
             AND card_number = #{cardNumber,jdbcType=VARCHAR}
@@ -47,11 +62,14 @@
         <if test="overdueDay != null">
             AND overdue_day = #{overdueDay,jdbcType=INTEGER}
         </if>
-        <if test="arrivalAmount != null">
-            AND arrival_amount = #{arrivalAmount,jdbcType=DECIMAL}
+        <if test="overdueAmount != null">
+            AND overdue_amount = #{overdueAmount,jdbcType=DECIMAL}
         </if>
-        <if test="poundage != null">
-            AND poundage = #{poundage,jdbcType=DECIMAL}
+        <if test="poundageAmount != null">
+            AND poundage_amount = #{poundageAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="interestAmount != null">
+            AND interest_amount = #{interestAmount,jdbcType=DECIMAL}
         </if>
         <if test="repayPrinciple != null">
             AND repay_principle = #{repayPrinciple,jdbcType=DECIMAL}
@@ -59,23 +77,26 @@
         <if test="repayAmount != null">
             AND repay_amount = #{repayAmount,jdbcType=DECIMAL}
         </if>
-        <if test="overdueAmount != null">
-            AND overdue_amount = #{overdueAmount,jdbcType=DECIMAL}
+        <if test="sumRepaidInterest != null">
+            AND sum_repaid_interest = #{sumRepaidInterest,jdbcType=DECIMAL}
         </if>
-        <if test="sumRate != null">
-            AND sum_rate = #{sumRate,jdbcType=DECIMAL}
+        <if test="sumRepaidPoundage != null">
+            AND sum_repaid_poundage = #{sumRepaidPoundage,jdbcType=DECIMAL}
         </if>
-        <if test="sumOverdue != null">
-            AND sum_overdue = #{sumOverdue,jdbcType=DECIMAL}
-        </if>
-        <if test="sumRenewalPoundage != null">
-            AND sum_renewal_poundage = #{sumRenewalPoundage,jdbcType=DECIMAL}
+        <if test="sumRepaidOverdue != null">
+            AND sum_repaid_overdue = #{sumRepaidOverdue,jdbcType=DECIMAL}
         </if>
         <if test="renewalNum != null">
             AND renewal_num = #{renewalNum,jdbcType=INTEGER}
         </if>
+        <if test="interestRate != null">
+            AND interest_rate = #{interestRate,jdbcType=DECIMAL}
+        </if>
         <if test="poundageRate != null">
             AND poundage_rate = #{poundageRate,jdbcType=DECIMAL}
+        </if>
+        <if test="overdueRate != null">
+            AND overdue_rate = #{overdueRate,jdbcType=DECIMAL}
         </if>
         <if test="riskDailyRate != null">
             AND risk_daily_rate = #{riskDailyRate,jdbcType=DECIMAL}
@@ -89,320 +110,333 @@
         <if test="gmtClose !=null">
             AND gmt_close = #{gmtClose,jdbcType=TIMESTAMP}
         </if>
-        <if test="gmtCreate !=null">
-            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
-        </if>
-        <if test="gmtModified !=null">
-            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
-        </if>
         <if test="finishDate != null">
             AND finish_date = #{finishDate,jdbcType=VARCHAR}
         </if>
-        <if test="version != null">
-            AND version = #{version,jdbcType=VARCHAR}
-        </if>
-        <if test="rateAmount != null">
-            AND rate_amount = #{rateAmount,jdbcType=VARCHAR}
+        <if test="remark != null">
+            AND remark = #{remark,jdbcType=VARCHAR}
         </if>
     </sql>
-    <select id ="getBorrowCashByStatusNotInFinshAndClosed" resultType="JsdBorrowCashDo">
-        SELECT
-        <include refid="queryFields" />
-        FROM
-        jsd_borrow_cash
-        WHERE
-        is_delete = 0
-        AND
-        user_id = #{userId}
-        and status not in ('CLOSED','FINISHED','TRANSEDFAIL');
-    </select>
+
     
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO jsd_borrow_cash
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="borrowNo != null">        
-	            borrow_no,
-	        </if>
-	        <if test="tradeNoUps != null">        
-                trade_no_ups,
+            <if test="gmtCreate != null">        
+                gmt_create,
+            </if>
+            <if test="gmtModified != null">        
+                gmt_modified,
+            </if>
+            <if test="productNo != null">        
+                product_no,
+            </if>
+            <if test="borrowNo != null">        
+                borrow_no,
             </if>
             <if test="tradeNoXgxy != null">        
                 trade_no_xgxy,
             </if>
-	        <if test="userId != null">        
-	            user_id,
-	        </if>
-	        <if test="type != null">        
-	            type,
-	        </if>
-	        <if test="amount != null">        
-	            amount,
-	        </if>
-	        <if test="status != null">        
-	            status,
-	        </if>
-	        <if test="remark != null">        
-	            remark,
-	        </if>
-	        <if test="cardNumber != null">        
-	            card_number,
-	        </if>
-	        <if test="cardName != null">        
-	            card_name,
-	        </if>
-	        <if test="overdueStatus != null">        
-	            overdue_status,
-	        </if>
-	        <if test="overdueDay != null">        
-	            overdue_day,
-	        </if>
-	        <if test="arrivalAmount != null">        
-	            arrival_amount,
-	        </if>
-	        <if test="poundage != null">        
-	            poundage,
-	        </if>
-	        <if test="repayPrinciple != null">        
-	            repay_principle,
-	        </if>
-	        <if test="repayAmount != null">        
-	            repay_amount,
-	        </if>
-	        <if test="overdueAmount != null">        
-	            overdue_amount,
-	        </if>
-	        <if test="sumRate != null">        
-	            sum_rate,
-	        </if>
-	        <if test="sumOverdue != null">        
-	            sum_overdue,
-	        </if>
-	        <if test="sumRenewalPoundage != null">        
-	            sum_renewal_poundage,
-	        </if>
-	        <if test="renewalNum != null">        
-	            renewal_num,
-	        </if>
-	        <if test="poundageRate != null">        
-	            poundage_rate,
-	        </if>
-	        <if test="riskDailyRate != null">        
-	            risk_daily_rate,
-	        </if>
-	        <if test="gmtPlanRepayment != null">        
-	            gmt_plan_repayment,
-	        </if>
-	        <if test="gmtArrival != null">        
-	            gmt_arrival,
-	        </if>
-	        <if test="gmtClose != null">        
-	            gmt_close,
-	        </if>
-	        <if test="gmtCreate != null">        
-	            gmt_create,
-	        </if>
-	        <if test="gmtModified != null">        
-	            gmt_modified,
-	        </if>
-	        <if test="finishDate != null">        
-	            finish_date,
-	        </if>
-	        <if test="version != null">        
-	            version,
-	        </if>
-	        <if test="rateAmount != null">
-	            rate_amount,
-	        </if>
+            <if test="tradeNoUps != null">        
+                trade_no_ups,
+            </if>
+            <if test="userId != null">        
+                user_id,
+            </if>
+            <if test="type != null">        
+                type,
+            </if>
+            <if test="version != null">        
+                version,
+            </if>
+            <if test="status != null">        
+                status,
+            </if>
+            <if test="amount != null">        
+                amount,
+            </if>
+            <if test="arrivalAmount != null">        
+                arrival_amount,
+            </if>
+            <if test="cardNumber != null">        
+                card_number,
+            </if>
+            <if test="cardName != null">        
+                card_name,
+            </if>
+            <if test="overdueStatus != null">        
+                overdue_status,
+            </if>
+            <if test="overdueDay != null">        
+                overdue_day,
+            </if>
+            <if test="overdueAmount != null">        
+                overdue_amount,
+            </if>
+            <if test="poundageAmount != null">        
+                poundage_amount,
+            </if>
+            <if test="interestAmount != null">        
+                interest_amount,
+            </if>
+            <if test="repayPrinciple != null">        
+                repay_principle,
+            </if>
+            <if test="repayAmount != null">        
+                repay_amount,
+            </if>
+            <if test="sumRepaidInterest != null">        
+                sum_repaid_interest,
+            </if>
+            <if test="sumRepaidPoundage != null">        
+                sum_repaid_poundage,
+            </if>
+            <if test="sumRepaidOverdue != null">        
+                sum_repaid_overdue,
+            </if>
+            <if test="renewalNum != null">        
+                renewal_num,
+            </if>
+            <if test="interestRate != null">        
+                interest_rate,
+            </if>
+            <if test="poundageRate != null">        
+                poundage_rate,
+            </if>
+            <if test="overdueRate != null">        
+                overdue_rate,
+            </if>
+            <if test="riskDailyRate != null">        
+                risk_daily_rate,
+            </if>
+            <if test="gmtPlanRepayment != null">        
+                gmt_plan_repayment,
+            </if>
+            <if test="gmtArrival != null">        
+                gmt_arrival,
+            </if>
+            <if test="gmtClose != null">        
+                gmt_close,
+            </if>
+            <if test="finishDate != null">        
+                finish_date,
+            </if>
+            <if test="remark != null">        
+                remark,
+            </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="borrowNo != null" >
-		       #{borrowNo,jdbcType=VARCHAR},
-		    </if>
-		    <if test="tradeNoUps != null">        
-                #{tradeNoUps,jdbcType=VARCHAR},
+            <if test="gmtCreate != null" >
+               #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
-            <if test="tradeNoXgxy != null">        
-                #{tradeNoXgxy,jdbcType=VARCHAR},
+            <if test="gmtModified != null" >
+               #{gmtModified,jdbcType=TIMESTAMP},
             </if>
-		    <if test="userId != null" >
-		       #{userId,jdbcType=INTEGER},
-		    </if>
-		    <if test="type != null" >
-		       #{type,jdbcType=VARCHAR},
-		    </if>
-		    <if test="amount != null" >
-		       #{amount,jdbcType=DECIMAL},
-		    </if>
-		    <if test="status != null" >
-		       #{status,jdbcType=VARCHAR},
-		    </if>
-		    <if test="remark != null" >
-		       #{remark,jdbcType=VARCHAR},
-		    </if>
-		    <if test="cardNumber != null" >
-		       #{cardNumber,jdbcType=VARCHAR},
-		    </if>
-		    <if test="cardName != null" >
-		       #{cardName,jdbcType=VARCHAR},
-		    </if>
-		    <if test="overdueStatus != null" >
-		       #{overdueStatus,jdbcType=VARCHAR},
-		    </if>
-		    <if test="overdueDay != null" >
-		       #{overdueDay,jdbcType=INTEGER},
-		    </if>
-		    <if test="arrivalAmount != null" >
-		       #{arrivalAmount,jdbcType=DECIMAL},
-		    </if>
-		    <if test="poundage != null" >
-		       #{poundage,jdbcType=DECIMAL},
-		    </if>
-		    <if test="repayPrinciple != null" >
-		       #{repayPrinciple,jdbcType=DECIMAL},
-		    </if>
-		    <if test="repayAmount != null" >
-		       #{repayAmount,jdbcType=DECIMAL},
-		    </if>
-		    <if test="overdueAmount != null" >
-		       #{overdueAmount,jdbcType=DECIMAL},
-		    </if>
-		    <if test="sumRate != null" >
-		       #{sumRate,jdbcType=DECIMAL},
-		    </if>
-		    <if test="sumOverdue != null" >
-		       #{sumOverdue,jdbcType=DECIMAL},
-		    </if>
-		    <if test="sumRenewalPoundage != null" >
-		       #{sumRenewalPoundage,jdbcType=DECIMAL},
-		    </if>
-		    <if test="renewalNum != null" >
-		       #{renewalNum,jdbcType=INTEGER},
-		    </if>
-		    <if test="poundageRate != null" >
-		       #{poundageRate,jdbcType=DECIMAL},
-		    </if>
-		    <if test="riskDailyRate != null" >
-		       #{riskDailyRate,jdbcType=DECIMAL},
-		    </if>
-		    <if test="gmtPlanRepayment != null" >
-		       #{gmtPlanRepayment,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtArrival != null" >
-		       #{gmtArrival,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtClose != null" >
-		       #{gmtClose,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="finishDate != null" >
-		       #{finishDate,jdbcType=VARCHAR},
-		    </if>
-		    <if test="version != null" >
-		       #{version,jdbcType=VARCHAR},
-		    </if>
-		    <if test="rateAmount != null" >
-		       #{rateAmount,jdbcType=VARCHAR},
-		    </if>
+            <if test="productNo != null" >
+               #{productNo,jdbcType=VARCHAR},
+            </if>
+            <if test="borrowNo != null" >
+               #{borrowNo,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeNoXgxy != null" >
+               #{tradeNoXgxy,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeNoUps != null" >
+               #{tradeNoUps,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null" >
+               #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="type != null" >
+               #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="version != null" >
+               #{version,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+               #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="amount != null" >
+               #{amount,jdbcType=DECIMAL},
+            </if>
+            <if test="arrivalAmount != null" >
+               #{arrivalAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="cardNumber != null" >
+               #{cardNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="cardName != null" >
+               #{cardName,jdbcType=VARCHAR},
+            </if>
+            <if test="overdueStatus != null" >
+               #{overdueStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="overdueDay != null" >
+               #{overdueDay,jdbcType=INTEGER},
+            </if>
+            <if test="overdueAmount != null" >
+               #{overdueAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="poundageAmount != null" >
+               #{poundageAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="interestAmount != null" >
+               #{interestAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="repayPrinciple != null" >
+               #{repayPrinciple,jdbcType=DECIMAL},
+            </if>
+            <if test="repayAmount != null" >
+               #{repayAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="sumRepaidInterest != null" >
+               #{sumRepaidInterest,jdbcType=DECIMAL},
+            </if>
+            <if test="sumRepaidPoundage != null" >
+               #{sumRepaidPoundage,jdbcType=DECIMAL},
+            </if>
+            <if test="sumRepaidOverdue != null" >
+               #{sumRepaidOverdue,jdbcType=DECIMAL},
+            </if>
+            <if test="renewalNum != null" >
+               #{renewalNum,jdbcType=INTEGER},
+            </if>
+            <if test="interestRate != null" >
+               #{interestRate,jdbcType=DECIMAL},
+            </if>
+            <if test="poundageRate != null" >
+               #{poundageRate,jdbcType=DECIMAL},
+            </if>
+            <if test="overdueRate != null" >
+               #{overdueRate,jdbcType=DECIMAL},
+            </if>
+            <if test="riskDailyRate != null" >
+               #{riskDailyRate,jdbcType=DECIMAL},
+            </if>
+            <if test="gmtPlanRepayment != null" >
+               #{gmtPlanRepayment,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtArrival != null" >
+               #{gmtArrival,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtClose != null" >
+               #{gmtClose,jdbcType=TIMESTAMP},
+            </if>
+            <if test="finishDate != null" >
+               #{finishDate,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null" >
+               #{remark,jdbcType=VARCHAR},
+            </if>
         </trim>
     </insert>
     
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
         UPDATE jsd_borrow_cash
           <set>
-            <if test="borrowNo != null ">        
+            <if test="gmtCreate != null">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="gmtModified != null">        
+                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
+            </if>
+            <if test="productNo != null">        
+                product_no = #{productNo,jdbcType=VARCHAR},                
+            </if>
+            <if test="borrowNo != null">        
                 borrow_no = #{borrowNo,jdbcType=VARCHAR},                
             </if>
-            <if test="tradeNoUps != null ">        
-                trade_no_ups = #{tradeNoUps,jdbcType=VARCHAR},
+            <if test="tradeNoXgxy != null">        
+                trade_no_xgxy = #{tradeNoXgxy,jdbcType=VARCHAR},                
             </if>
-            <if test="tradeNoXgxy != null ">        
-                trade_no_xgxy = #{tradeNoXgxy,jdbcType=VARCHAR},
+            <if test="tradeNoUps != null">        
+                trade_no_ups = #{tradeNoUps,jdbcType=VARCHAR},                
             </if>
-            <if test="userId != null ">        
+            <if test="userId != null">        
                 user_id = #{userId,jdbcType=INTEGER},                
             </if>
-            <if test="type != null ">        
+            <if test="type != null">        
                 type = #{type,jdbcType=VARCHAR},                
             </if>
-            <if test="amount != null ">        
-                amount = #{amount,jdbcType=DECIMAL},                
+            <if test="version != null">        
+                version = #{version,jdbcType=VARCHAR},                
             </if>
-            <if test="status != null ">        
+            <if test="status != null">        
                 status = #{status,jdbcType=VARCHAR},                
             </if>
-            <if test="remark != null ">        
-                remark = #{remark,jdbcType=VARCHAR},                
+            <if test="amount != null">        
+                amount = #{amount,jdbcType=DECIMAL},                
             </if>
-            <if test="cardNumber != null ">        
-                card_number = #{cardNumber,jdbcType=VARCHAR},                
-            </if>
-            <if test="cardName != null ">        
-                card_name = #{cardName,jdbcType=VARCHAR},                
-            </if>
-            <if test="overdueStatus != null ">        
-                overdue_status = #{overdueStatus,jdbcType=VARCHAR},                
-            </if>
-            <if test="overdueDay != null ">        
-                overdue_day = #{overdueDay,jdbcType=INTEGER},                
-            </if>
-            <if test="arrivalAmount != null ">        
+            <if test="arrivalAmount != null">        
                 arrival_amount = #{arrivalAmount,jdbcType=DECIMAL},                
             </if>
-            <if test="poundage != null ">        
-                poundage = #{poundage,jdbcType=DECIMAL},                
+            <if test="cardNumber != null">        
+                card_number = #{cardNumber,jdbcType=VARCHAR},                
             </if>
-            <if test="rateAmount != null ">        
-                rate_amount = #{rateAmount,jdbcType=DECIMAL},                
+            <if test="cardName != null">        
+                card_name = #{cardName,jdbcType=VARCHAR},                
             </if>
-            <if test="repayPrinciple != null ">        
-                repay_principle = #{repayPrinciple,jdbcType=DECIMAL},                
+            <if test="overdueStatus != null">        
+                overdue_status = #{overdueStatus,jdbcType=VARCHAR},                
             </if>
-            <if test="repayAmount != null ">        
-                repay_amount = #{repayAmount,jdbcType=DECIMAL},                
+            <if test="overdueDay != null">        
+                overdue_day = #{overdueDay,jdbcType=INTEGER},                
             </if>
-            <if test="overdueAmount != null ">        
+            <if test="overdueAmount != null">        
                 overdue_amount = #{overdueAmount,jdbcType=DECIMAL},                
             </if>
-            <if test="sumRate != null ">        
-                sum_rate = #{sumRate,jdbcType=DECIMAL},                
+            <if test="poundageAmount != null">        
+                poundage_amount = #{poundageAmount,jdbcType=DECIMAL},                
             </if>
-            <if test="sumOverdue != null ">        
-                sum_overdue = #{sumOverdue,jdbcType=DECIMAL},                
+            <if test="interestAmount != null">        
+                interest_amount = #{interestAmount,jdbcType=DECIMAL},                
             </if>
-            <if test="sumRenewalPoundage != null ">        
-                sum_renewal_poundage = #{sumRenewalPoundage,jdbcType=DECIMAL},                
+            <if test="repayPrinciple != null">        
+                repay_principle = #{repayPrinciple,jdbcType=DECIMAL},                
             </if>
-            <if test="renewalNum != null ">        
+            <if test="repayAmount != null">        
+                repay_amount = #{repayAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="sumRepaidInterest != null">        
+                sum_repaid_interest = #{sumRepaidInterest,jdbcType=DECIMAL},                
+            </if>
+            <if test="sumRepaidPoundage != null">        
+                sum_repaid_poundage = #{sumRepaidPoundage,jdbcType=DECIMAL},                
+            </if>
+            <if test="sumRepaidOverdue != null">        
+                sum_repaid_overdue = #{sumRepaidOverdue,jdbcType=DECIMAL},                
+            </if>
+            <if test="renewalNum != null">        
                 renewal_num = #{renewalNum,jdbcType=INTEGER},                
             </if>
-            <if test="poundageRate != null ">        
+            <if test="interestRate != null">        
+                interest_rate = #{interestRate,jdbcType=DECIMAL},                
+            </if>
+            <if test="poundageRate != null">        
                 poundage_rate = #{poundageRate,jdbcType=DECIMAL},                
             </if>
-            <if test="riskDailyRate != null ">        
+            <if test="overdueRate != null">        
+                overdue_rate = #{overdueRate,jdbcType=DECIMAL},                
+            </if>
+            <if test="riskDailyRate != null">        
                 risk_daily_rate = #{riskDailyRate,jdbcType=DECIMAL},                
             </if>
-            <if test="gmtPlanRepayment != null ">        
+            <if test="gmtPlanRepayment != null">        
                 gmt_plan_repayment = #{gmtPlanRepayment,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtArrival != null ">        
+            <if test="gmtArrival != null">        
                 gmt_arrival = #{gmtArrival,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtClose != null ">        
+            <if test="gmtClose != null">        
                 gmt_close = #{gmtClose,jdbcType=TIMESTAMP},                
             </if>
-            <if test="finishDate != null ">        
+            <if test="finishDate != null">        
                 finish_date = #{finishDate,jdbcType=VARCHAR},                
             </if>
-            <if test="version != null ">        
-                version = #{version,jdbcType=VARCHAR},          
+            <if test="remark != null">        
+                remark = #{remark,jdbcType=VARCHAR}                
             </if>
-            gmt_modified = NOW()
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
@@ -465,6 +499,17 @@
         and status='TRANSFERRED' limit #{beginIndex}, #{pageSize}
     </select>
 
+    <select id ="getBorrowCashByStatusNotInFinshAndClosed" resultType="JsdBorrowCashDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        jsd_borrow_cash
+        WHERE
+        is_delete = 0
+        AND
+        user_id = #{userId}
+        and status not in ('CLOSED','FINISHED','TRANSEDFAIL');
+    </select>
 
     <select id="getBorrowCashOverdueByUserIds" resultType="JsdBorrowCashDo">
 		SELECT

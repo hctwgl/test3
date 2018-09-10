@@ -195,21 +195,21 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		return repayment;
 	}
 
-	private JsdBorrowCashRepaymentDo buildRepayment( BigDecimal repaymentAmount, String repayNo, Date gmtCreate,
+	private JsdBorrowCashRepaymentDo buildRepayment( BigDecimal repaymentAmount, String tradeNoXgxy, Date gmtCreate,
 												   BigDecimal actualAmountForBorrow,
 												   Long borrowId,  String TradeNo, String name, Long userId,String repayType,String cardNo) {
 		JsdBorrowCashRepaymentDo repay = new JsdBorrowCashRepaymentDo();
 		repay.setActualAmount(actualAmountForBorrow);
 		repay.setBorrowId(borrowId);
 		repay.setRepaymentAmount(repaymentAmount);
-		repay.setRepayNo(repayNo);
+		repay.setTradeNoXgxy(tradeNoXgxy);
 		repay.setGmtCreate(gmtCreate);
 		repay.setStatus(JsdBorrowCashRepaymentStatus.APPLY.getCode());
 		repay.setName(name);
 		repay.setUserId(userId);
 		repay.setCardNumber(cardNo);
 		repay.setType(repayType);
-		repay.setJsdRepayNo(TradeNo);
+		repay.setTradeNo(TradeNo);
 		HashMap<?, ?> bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(userId,cardNo);
 		repay.setCardName((String) bank.get("bankName"));
 		return repay;
@@ -420,7 +420,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	private HashMap<String, String> buildData(JsdBorrowCashRepaymentDo repaymentDo,String status,String errorMsg){
 		    HashMap<String,String> map=new HashMap<>();
 		    JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(repaymentDo.getBorrowId());
-		    map.put("repayNo",repaymentDo.getRepayNo());
+		    map.put("repayNo",repaymentDo.getTradeNoXgxy());
 			map.put("status",status);
 			map.put("tradeNo",repaymentDo.getTradeNo());
 			map.put("borrowNo",borrowCashDo.getTradeNoXgxy());
@@ -480,11 +480,11 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		BigDecimal overdueAmount = afBorrowCashDo.getOverdueAmount();
 
 		if (repayAmount.compareTo(overdueAmount) > 0) {
-			afBorrowCashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), overdueAmount));
+			afBorrowCashDo.setSumRepaidOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumRepaidOverdue(), overdueAmount));
 			afBorrowCashDo.setOverdueAmount(BigDecimal.ZERO);
 			repayDealBo.curRepayAmoutStub = repayAmount.subtract(overdueAmount);
 		} else {
-			afBorrowCashDo.setSumOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumOverdue(), repayAmount));
+			afBorrowCashDo.setSumRepaidOverdue(BigDecimalUtil.add(afBorrowCashDo.getSumRepaidOverdue(), repayAmount));
 			afBorrowCashDo.setOverdueAmount(overdueAmount.subtract(repayAmount));
 			repayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 		}
@@ -493,15 +493,15 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		if(repayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
 
 		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
-		BigDecimal poundageAmount = afBorrowCashDo.getPoundage();
+		BigDecimal poundageAmount = afBorrowCashDo.getPoundageAmount();
 
 		if (repayAmount.compareTo(poundageAmount) > 0) {
-			afBorrowCashDo.setSumRenewalPoundage(BigDecimalUtil.add(afBorrowCashDo.getSumRenewalPoundage(), poundageAmount));
-			afBorrowCashDo.setPoundage(BigDecimal.ZERO);
+			afBorrowCashDo.setSumRepaidPoundage(BigDecimalUtil.add(afBorrowCashDo.getSumRepaidPoundage(), poundageAmount));
+			afBorrowCashDo.setPoundageAmount(BigDecimal.ZERO);
 			repayDealBo.curRepayAmoutStub = repayAmount.subtract(poundageAmount);
 		} else {
-			afBorrowCashDo.setSumRenewalPoundage(BigDecimalUtil.add(afBorrowCashDo.getSumRenewalPoundage(), repayAmount));
-			afBorrowCashDo.setPoundage(poundageAmount.subtract(repayAmount));
+			afBorrowCashDo.setSumRepaidPoundage(BigDecimalUtil.add(afBorrowCashDo.getSumRepaidPoundage(), repayAmount));
+			afBorrowCashDo.setPoundageAmount(poundageAmount.subtract(repayAmount));
 			repayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 		}
 	}
@@ -509,23 +509,23 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		if(repayDealBo.curRepayAmoutStub.compareTo(BigDecimal.ZERO) == 0) return;
 
 		BigDecimal repayAmount = repayDealBo.curRepayAmoutStub;
-		BigDecimal rateAmount = afBorrowCashDo.getRateAmount();
+		BigDecimal rateAmount = afBorrowCashDo.getInterestAmount();
 
 		if (repayAmount.compareTo(rateAmount) > 0) {
-			afBorrowCashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), rateAmount));
-			afBorrowCashDo.setRateAmount(BigDecimal.ZERO);
+			afBorrowCashDo.setSumRepaidInterest(BigDecimalUtil.add(afBorrowCashDo.getSumRepaidInterest(), rateAmount));
+			afBorrowCashDo.setInterestAmount(BigDecimal.ZERO);
 			repayDealBo.curRepayAmoutStub = repayAmount.subtract(rateAmount);
 		} else {
-			afBorrowCashDo.setSumRate(BigDecimalUtil.add(afBorrowCashDo.getSumRate(), repayAmount));
-			afBorrowCashDo.setRateAmount(rateAmount.subtract(repayAmount));
+			afBorrowCashDo.setSumRepaidInterest(BigDecimalUtil.add(afBorrowCashDo.getSumRepaidInterest(), repayAmount));
+			afBorrowCashDo.setInterestAmount(rateAmount.subtract(repayAmount));
 			repayDealBo.curRepayAmoutStub = BigDecimal.ZERO;
 		}
 	}
 	private void dealBorrowRepayIfFinish(RepayDealBo repayDealBo, JsdBorrowCashRepaymentDo repaymentDo, JsdBorrowCashDo cashDo,String isBalance) {
 		BigDecimal sumAmount = BigDecimalUtil.add(cashDo.getAmount(),
-				cashDo.getOverdueAmount(), cashDo.getSumOverdue(),
-				cashDo.getRateAmount(), cashDo.getSumRate(),
-				cashDo.getPoundage(), cashDo.getSumRenewalPoundage());
+				cashDo.getOverdueAmount(), cashDo.getSumRepaidOverdue(),
+				cashDo.getInterestAmount(), cashDo.getSumRepaidInterest(),
+				cashDo.getPoundageAmount(), cashDo.getSumRepaidPoundage());
 		BigDecimal allRepayAmount = cashDo.getRepayAmount().add(repaymentDo.getRepaymentAmount());
 		cashDo.setRepayAmount(allRepayAmount);
 		if (sumAmount.compareTo(allRepayAmount) <= 0) {

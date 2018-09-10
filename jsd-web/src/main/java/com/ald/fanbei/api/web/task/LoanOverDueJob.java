@@ -101,10 +101,10 @@ public class LoanOverDueJob {
                 	logger.warn("calcuOverdueRecords, ignore have dealed borrowCashId "+jsdBorrowCashDo.getRid());
                     continue;
                 }
-                BigDecimal currentAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getSumOverdue(),jsdBorrowCashDo.getSumRate(), jsdBorrowCashDo.getSumRenewalPoundage()).subtract(jsdBorrowCashDo.getRepayAmount());// 当前本金
+                BigDecimal currentAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getSumRepaidOverdue(),jsdBorrowCashDo.getSumRepaidInterest(), jsdBorrowCashDo.getSumRepaidPoundage()).subtract(jsdBorrowCashDo.getRepayAmount());// 当前本金
                 JsdBorrowCashRepaymentDo borrowCashRepaymentDo=jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(jsdBorrowCashDo.getRid());
                 if(borrowCashRepaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(borrowCashRepaymentDo.getStatus())) {
-                    currentAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getOverdueAmount(), jsdBorrowCashDo.getRateAmount(), jsdBorrowCashDo.getPoundage(), jsdBorrowCashDo.getSumRate(), jsdBorrowCashDo.getSumOverdue(), jsdBorrowCashDo.getSumRenewalPoundage())
+                    currentAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getOverdueAmount(), jsdBorrowCashDo.getInterestAmount(), jsdBorrowCashDo.getPoundageAmount(), jsdBorrowCashDo.getSumRepaidInterest(), jsdBorrowCashDo.getSumRepaidOverdue(), jsdBorrowCashDo.getSumRepaidPoundage())
                     			.subtract(jsdBorrowCashDo.getRepayAmount()).subtract(borrowCashRepaymentDo.getRepaymentAmount());// 当前本金
                 }
                 if (currentAmount.compareTo(BigDecimal.ZERO) == 0) {

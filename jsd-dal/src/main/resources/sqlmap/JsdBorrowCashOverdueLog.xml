@@ -5,17 +5,17 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,user_id,borrow_id,interest,current_amount 
+        id rid,type,user_id,borrow_id,interest,current_amount,gmt_create 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
-    	WHERE is_delete = 0
+        WHERE is_delete = 0
         <if test="rid !=null">
             AND id  = #{rid,jdbcType=INTEGER}
         </if>
-        <if test="gmtCreate !=null">
-            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        <if test="type != null">
+            AND type = #{type,jdbcType=VARCHAR}
         </if>
         <if test="userId != null">
             AND user_id = #{userId,jdbcType=INTEGER}
@@ -29,65 +29,77 @@
         <if test="currentAmount != null">
             AND current_amount = #{currentAmount,jdbcType=DECIMAL}
         </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
     </sql>
 
     
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashOverdueLogDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO jsd_borrow_cash_overdue_log
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="gmtCreate != null">        
-	            gmt_create,
-	        </if>
-	        <if test="userId != null">        
-	            user_id,
-	        </if>
-	        <if test="borrowId != null">        
-	            borrow_id,
-	        </if>
-	        <if test="interest != null">        
-	            interest,
-	        </if>
-	        <if test="currentAmount != null">        
-	            current_amount,
-	        </if>
+            <if test="type != null">        
+                type,
+            </if>
+            <if test="userId != null">        
+                user_id,
+            </if>
+            <if test="borrowId != null">        
+                borrow_id,
+            </if>
+            <if test="interest != null">        
+                interest,
+            </if>
+            <if test="currentAmount != null">        
+                current_amount,
+            </if>
+            <if test="gmtCreate != null">        
+                gmt_create,
+            </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
-		    </if>
-		    <if test="userId != null" >
-		       #{userId,jdbcType=INTEGER},
-		    </if>
-		    <if test="borrowId != null" >
-		       #{borrowId,jdbcType=INTEGER},
-		    </if>
-		    <if test="interest != null" >
-		       #{interest,jdbcType=DECIMAL},
-		    </if>
-		    <if test="currentAmount != null" >
-		       #{currentAmount,jdbcType=DECIMAL},
-		    </if>
+            <if test="type != null" >
+               #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null" >
+               #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="borrowId != null" >
+               #{borrowId,jdbcType=INTEGER},
+            </if>
+            <if test="interest != null" >
+               #{interest,jdbcType=DECIMAL},
+            </if>
+            <if test="currentAmount != null" >
+               #{currentAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="gmtCreate != null" >
+               #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
         </trim>
     </insert>
     
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashOverdueLogDo">
         UPDATE jsd_borrow_cash_overdue_log
           <set>
-            <if test="gmtCreate != null ">        
-                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            <if test="type != null">        
+                type = #{type,jdbcType=VARCHAR},                
             </if>
-            <if test="userId != null ">        
+            <if test="userId != null">        
                 user_id = #{userId,jdbcType=INTEGER},                
             </if>
-            <if test="borrowId != null ">        
+            <if test="borrowId != null">        
                 borrow_id = #{borrowId,jdbcType=INTEGER},                
             </if>
-            <if test="interest != null ">        
+            <if test="interest != null">        
                 interest = #{interest,jdbcType=DECIMAL},                
             </if>
-            <if test="currentAmount != null ">        
-                current_amount = #{currentAmount,jdbcType=DECIMAL}                
+            <if test="currentAmount != null">        
+                current_amount = #{currentAmount,jdbcType=DECIMAL},                
+            </if>
+            <if test="gmtCreate != null">        
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}                
             </if>
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}

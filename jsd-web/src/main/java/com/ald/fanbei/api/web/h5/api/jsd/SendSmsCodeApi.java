@@ -78,7 +78,7 @@ public class SendSmsCodeApi implements JsdH5Handle {
 		JsdBorrowCashRepaymentDo repaymentDo=jsdBorrowCashRepaymentService.getByRepayNo(busiFlag);
 		JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByRepayNo(busiFlag);
 		if(repaymentDo!=null){
-			busiFlag=repaymentDo.getJsdRepayNo();
+			busiFlag=repaymentDo.getTradeNo();
 		}else {
 			busiFlag=legalOrderRepaymentDo.getTradeNo();
 		}
@@ -107,7 +107,7 @@ public class SendSmsCodeApi implements JsdH5Handle {
 	}else if(SmsCodeType.DELAY.getCode().equals(type)){
 		String orderNo = generatorClusterNo.getJsdRenewalNo();
 		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalService.getRenewalByDelayNo(busiFlag);
-		respBo = upsUtil.quickPayResendSms(renewalDo.getRenewalNo(),orderNo);
+		respBo = upsUtil.quickPayResendSms(renewalDo.getTradeNo(),orderNo);
 		if (!respBo.isSuccess()) {
 			throw new FanbeiException(respBo.getRespDesc());
 		}
