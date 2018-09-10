@@ -371,11 +371,14 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		paramBo.cashPoundageRate = borrowRateInfo.serviceRate;
 		//借款利率
 		paramBo.cashRate = borrowRateInfo.interestRate;
+		paramBo.cashOverdueRate = borrowRateInfo.overdueRate;
+		
 		//需还本金比例
 		paramBo.capitalRate = new BigDecimal(renewalResource.getValue1());
 		//订单手续费率
 		paramBo.orderPoundageRate = orderRateInfo.serviceRate;
 		//订单利率
 		paramBo.orderRate = orderRateInfo.interestRate;
+		paramBo.orderOverdueRate = orderRateInfo.overdueRate;
 	}
 }
