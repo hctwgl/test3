@@ -327,7 +327,7 @@
         FROM
         jsd_borrow_legal_order_repayment
         WHERE
-        is_delete = 0  AND repay_no= #{repayNo}
+        is_delete = 0  AND repay_no= #{tradeNoXgxy}
         ORDER BY gmt_create DESC
         LIMIT 1
     </select>

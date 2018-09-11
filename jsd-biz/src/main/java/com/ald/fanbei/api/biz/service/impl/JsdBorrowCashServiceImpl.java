@@ -16,7 +16,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowResp;
-import com.ald.fanbei.api.biz.bo.xgxy.XgxyPayBo;
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
@@ -141,6 +141,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
      * @param openId
      * @return
      */
+	@Override
 	public BigDecimal getRiskDailyRate(String openId) {
         BigDecimal riskRateDaily = BigDecimal.valueOf(0.005); // TODO 数据库配置利率
         try {
@@ -159,6 +160,24 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         }
         return riskRateDaily;
     }
+	
+	@Override
+	public BigDecimal calcuTotalAmount(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderCashDo orderCashDo) {
+		BigDecimal cashTotalAmount = BigDecimalUtil.add(cashDo.getAmount(), cashDo.getInterestAmount(), cashDo.getPoundageAmount(), cashDo.getOverdueAmount(),
+				  	cashDo.getSumRepaidInterest(), cashDo.getSumRepaidPoundage(), cashDo.getSumRepaidOverdue());
+		BigDecimal orderTotalAmount = BigDecimal.ZERO;
+		if(orderCashDo != null) {
+			orderTotalAmount = BigDecimalUtil.add(orderCashDo.getAmount(), orderCashDo.getInterestAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getOverdueAmount(),
+					orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue());
+		}
+		return cashTotalAmount.add(orderTotalAmount);
+	}
+	
+	@Override
+	public BigDecimal calcuUnrepayAmount(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderCashDo orderCashDo) {
+		BigDecimal totalAmount = this.calcuTotalAmount(cashDo, orderCashDo);
+		return totalAmount.subtract(cashDo.getRepayAmount()).subtract(orderCashDo.getRepaidAmount());
+	}
 	
 	/**
 	 * 解析各项利息费用
@@ -297,10 +316,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	
 	private void jsdNoticeRecord(JsdBorrowCashDo cashDo,String msg, String status) {
         try {
-            XgxyPayBo xgxyPayBo = buildXgxyPay(cashDo, msg, status);
+        	XgxyBorrowNoticeBo xgxyPayBo = buildXgxyPay(cashDo, msg, status);
             JsdNoticeRecordDo noticeRecordDo = buildJsdNoticeRecord(cashDo, xgxyPayBo);
             jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
-            if(xgxyUtil.payNoticeRequest(xgxyPayBo)){
+            if(xgxyUtil.borrowNoticeRequest(xgxyPayBo)){
                 noticeRecordDo.setRid(noticeRecordDo.getRid());
                 noticeRecordDo.setGmtModified(new Date());
                 jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
@@ -310,8 +329,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         }
     }
 
-    private XgxyPayBo buildXgxyPay(JsdBorrowCashDo cashDo, String msg,String status) {
-        XgxyPayBo  xgxyPayBo = new XgxyPayBo();
+    private XgxyBorrowNoticeBo buildXgxyPay(JsdBorrowCashDo cashDo, String msg,String status) {
+    	XgxyBorrowNoticeBo  xgxyPayBo = new XgxyBorrowNoticeBo();
         xgxyPayBo.setTradeNo(cashDo.getTradeNoUps());
         xgxyPayBo.setBorrowNo(cashDo.getTradeNoXgxy());
         xgxyPayBo.setReason(msg);
@@ -321,7 +340,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         return xgxyPayBo;
     }
 
-    private JsdNoticeRecordDo buildJsdNoticeRecord(JsdBorrowCashDo cashDo,XgxyPayBo xgxyPayBo) {
+    private JsdNoticeRecordDo buildJsdNoticeRecord(JsdBorrowCashDo cashDo, XgxyBorrowNoticeBo xgxyPayBo) {
     	JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
         noticeRecordDo.setUserId(cashDo.getUserId());
         noticeRecordDo.setRefId(String.valueOf(cashDo.getRid()));

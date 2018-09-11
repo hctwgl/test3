@@ -451,8 +451,11 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		public BigDecimal capitalRate;
 		public BigDecimal cashRate;
 		public BigDecimal cashPoundageRate;
+		public BigDecimal cashOverdueRate;
+		
 		public BigDecimal orderRate;
 		public BigDecimal orderPoundageRate;
+		public BigDecimal orderOverdueRate;
 		
 		public String bankChannel; 
 		public String bankName;

@@ -11,8 +11,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.xgxy.XgxyOverdueReqBo;
-import com.ald.fanbei.api.biz.bo.xgxy.XgxyPayBo;
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyPayReqBo;
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyReqBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
@@ -29,7 +28,7 @@ import com.alibaba.fastjson.JSONObject;
 public class XgxyUtil extends AbstractThird {
     private static String PRIVATE_KEY = ConfigProperties.get(Constants.CONFKEY_XGXY_AES_PASSWORD);
 
-    public final static String APPID = "UJ3331";
+    public final static String APPID = "speedloan";
     private static String url = null;
 
     private static String getXgxyUrl() {
@@ -46,9 +45,9 @@ public class XgxyUtil extends AbstractThird {
      * @param
      * @return
      */
-    public boolean payNoticeRequest(XgxyPayBo payBo) {
+    public boolean borrowNoticeRequest(XgxyBorrowNoticeBo borrowNoticeBo) {
         try {
-        	String dataStr = JSON.toJSONString(payBo);
+        	String dataStr = JSON.toJSONString(borrowNoticeBo);
             
             Map<String, Object> params = new HashMap<>();
             params.put("appId", APPID);
@@ -61,7 +60,7 @@ public class XgxyUtil extends AbstractThird {
             }else {
                 reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(params));
             }
-            logThird(reqResult, url, payBo);
+            logThird(reqResult, url, borrowNoticeBo);
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
@@ -75,50 +74,6 @@ public class XgxyUtil extends AbstractThird {
 
         return false;
     }
-
-    /**
-     * 逾期通知请求
-     *
-     * @param data
-     * @return
-     */
-    public boolean overDueNoticeRequest(Map<String,String> data) {
-        try {
-            logger.info("overDueNoticeRequest to xgxy request start");
-            JSONObject overdue = new JSONObject();
-            overdue.put("borrowNo", data.get("borrowNo"));
-            overdue.put("overdueDays", data.get("overdueDays"));
-            overdue.put("period", data.get("curPeriod"));
-            overdue.put("tradeNo", data.get("tradeNo"));
-            
-            Map<String, Object> params = new HashMap<>();
-            params.put("appId", APPID);
-            params.put("data", JsdAesUtil.encryptToBase64Third(overdue.toJSONString(), PRIVATE_KEY));
-            params.put("sign", generateSign(overdue, PRIVATE_KEY));
-            params.put("timestamp",System.currentTimeMillis()+"");
-            
-            String url = getXgxyUrl() + "/isp/open/third/edspay/v1/giveBackOverdueResult";
-            String reqResult = "";
-            if (url.contains("https")){
-                reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(params));
-            }else {
-                reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(params));
-            }
-            logThird(reqResult, url, overdue);
-            if (StringUtil.isBlank(reqResult)) {
-                return false;
-            }
-            XgxyOverdueReqBo overdueReqBo1 = JSONObject.parseObject(reqResult, XgxyOverdueReqBo.class);
-            if (Constants.XGXY_REQ_CODE_SUCC.equals(overdueReqBo1.get("code"))) {
-                return true;
-            }
-        } catch (Exception e) {
-            logger.info("overDueNoticeRequest to xgxy request fail", e);
-        }
-        return false;
-
-    }
-
 
     /**
      * 还款通知请求
