@@ -110,7 +110,7 @@ public class H5ProtocolController {
         	jsdBorrowCashService.resolve(trialBo);
         	
         	amountLower = new BigDecimal(trialBo.resp.borrowAmount);
-        	ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(trialBo.req.term);
+        	ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(trialBo.req.nepr);
         	interestRate = rateInfo.interestRate;
         	serviceRate = rateInfo.serviceRate;
         	overdueRate = rateInfo.overdueRate;
@@ -176,7 +176,7 @@ public class H5ProtocolController {
         	jsdBorrowCashService.resolve(trialBo);
         	
         	amountLower = new BigDecimal(trialBo.resp.totalDiffFee);
-        	ResourceRateInfoBo rateInfo = jsdResourceService.getOrderRateInfo(trialBo.req.term);
+        	ResourceRateInfoBo rateInfo = jsdResourceService.getOrderRateInfo(trialBo.req.nepr);
         	interestRate = rateInfo.interestRate;
         	serviceRate = rateInfo.serviceRate;
         	overdueRate = rateInfo.overdueRate;
