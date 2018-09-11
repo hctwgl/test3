@@ -19,8 +19,8 @@ public class JsdBorrowTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-//	String urlBase = "http://localhost:8078";
-    String urlBase = "http://192.168.106.191:8280";
+	String urlBase = "http://localhost:8078";
+//    String urlBase = "http://192.168.106.191:8280";
     
     String userName = "13165995223";
     
@@ -133,18 +133,17 @@ public class JsdBorrowTest extends BaseTest {
     }
     
     /**
-     * 获取续借详情
+     * 获取借款协议
      */
     @Test
     public void getBorrowProtocol() {
     	String url = urlBase + "/third/eca/v1/getProtocolInfo";
     	JSONObject params = new JSONObject();
         params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
-        params.put("bizNo", "xgxy202314123090123123");
+//        params.put("bizNo", "loan0911eca645000000012");
         params.put("type", "BORROW");
     	
     	JSONObject previewParams = new JSONObject();
-    	previewParams.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
     	previewParams.put("productNo", "2");
     	previewParams.put("amount", "5000");
     	previewParams.put("term", "10");

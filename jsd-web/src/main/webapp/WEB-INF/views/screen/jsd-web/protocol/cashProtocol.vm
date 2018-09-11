@@ -48,7 +48,7 @@
     <p>
         甲方（借款人）：$!{realName}<br> 身份证号码：$!{idNumber}
         <br> 手机号码：$!{mobile}
-        <br> 乙方（出借人）：${yfCompany}
+        <br> 乙方（出借人）：相关明细详见本协议后附表
         <br> 丙方：${bfCompany}
         <br> 丁方：${dfCompany}
         <br><br>

@@ -77,7 +77,7 @@ public class GetLoanProtocolApi implements JsdH5Handle {
         	protocolVo.setProtocolName(resdo.getName());
         	String urlPrefix = getNotifyHost()+resdo.getValue();
 			try {
-				String urlParams = "?openId=" + openId  + "&tradeNoXgxy=" + tradeNoXgxy + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
+				String urlParams = "?openId=" + openId  + "&tradeNoXgxy=" + (tradeNoXgxy == null?"":tradeNoXgxy) + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
 				protocolVo.setProtocolUrl(urlPrefix + urlParams);
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();

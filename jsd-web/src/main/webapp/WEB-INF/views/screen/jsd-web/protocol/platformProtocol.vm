@@ -32,7 +32,7 @@
     <h2>平台服务协议</h2>
     <p>
         <span style="position: relative;right:.1rem">协议编号：$!{borrowNo}</span><br>
-        甲方：杭州绿游网络科技有限公司<br>
+        甲方：$!{jfCompany}<br>
         乙方（借款人）： $!{realName}<br>
       联系电话： $!{mobile}<br>
       电子邮箱： $!{email}<br><br>
@@ -76,10 +76,10 @@
         （4）出借人认为乙方发生了可能对甲方或出借人的权利或利益造成损害的任何其他情形。<br><br>
 
         <span>四、费用</span><br>
-        4.1乙方借款利率为{{changeRate($!{interestRate})}}，借款本金、借款利息及借款手续费采用等额本息的形式分期进行还款。<br>
-        4.2借款手续费：包括但不限于借款咨询、居间撮合、个人信用审核、通道服务、还款提醒以及支付给第三方的服务费等。乙方借款手续费率为{{changeRate($!{serviceRate})}}。<br>
-        4.3乙方本次借款手续费为$!{totalServiceFee}元。<br>
-        4.4乙方借款逾期费率为{{changeRate($!{overdueRate})}}，逾期费用按日收取，每日逾期费用=每日逾期本金 x（逾期费率/360）<br>
+        4.1乙方借款利率为$!{interestRate}，借款本金、借款利息及借款手续费采用等额本息的形式分期进行还款。<br>
+        4.2借款手续费：包括但不限于借款咨询、居间撮合、个人信用审核、通道服务、还款提醒以及支付给第三方的服务费等。乙方借款手续费率为$!{serviceRate}。<br>
+        4.3乙方本次借款手续费为$!{serviceAmount}元。<br>
+        4.4乙方借款逾期费率为$!{overdueRate}，逾期费用按日收取，每日逾期费用=每日逾期本金 x（逾期费率/360）<br>
         4.5其他甲方及出借人授权的第三方可能发生的，且须由乙方承担的费用，包括但不限于：<br>
         （1）因债权转让发生的税费；<br>
         （2）仲裁过程中支出的费用，包括仲裁机构收取的费用等；<br>
@@ -147,33 +147,5 @@
         签署时间：$!{time}<br><br>
     </p>
 </div>
-<script type="text/javascript">
-    new Vue({
-      el:'.fenqiServiceProtocol',
-      methods:{
-        changeRate: function(num){ // 利率截取最后两位小数
-          var rate=num;
-          rate = (rate*100).toFixed(2);   //截取小数点后2位
-          // rate = parseFloat(rate);
-          if(rate){
-            return rate+'%';
-          }else{
-            return '';
-          }
-        },
-        changePrincipal: function(principalNum){ // 本金金额保留二位小数
-          principalNum = parseFloat(principalNum);
-          principalNum = principalNum.toFixed(2);     //截取小数点后2位
-          return principalNum;
-        },
-        changeRateType: function(principalNum){ // 按年化取利率
-            principalNum = parseFloat(principalNum);
-            principalNum = principalNum/360;     //按年化取利率360
-            principalNum = principalNum.toFixed(2);     //截取小数点后2位
-            return principalNum;
-        }
-      }
-    });
-</script>
 </body>
 </html>

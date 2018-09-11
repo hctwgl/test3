@@ -48,10 +48,10 @@
         <br> 联系电话: $!{mobile}<br> 电子邮箱：$!{email}
         <br>
         <br><br>
-    <p>乙方（出借人）： 金泰嘉鼎（深圳）资产管理有限公司</p>
-    <p>丙方：杭州绿游网络科技有限公司</p>
+    <p>乙方（出借人）： $!{yfCompany}</p>
+    <p>丙方： $!{bfCompany}</p>
     <p>鉴于:</p>
-    <p>1、甲方系居住在中华人民共和国境内、符合中华人民共和国法律规定的具有完全民事权利能力和民事行为能力，能独立行使和承担本协议项下权利义务的自然人，是丙方旗下的APP及网站平台（以下统称为“爱上街”）的注册用户，有借款需求，并充分知晓民间借贷行为可能存在的各类风险。</p>
+    <p>1、甲方系居住在中华人民共和国境内、符合中华人民共和国法律规定的具有完全民事权利能力和民事行为能力，能独立行使和承担本协议项下权利义务的自然人，是丙方旗下的APP及网站平台的注册用户，有借款需求，并充分知晓民间借贷行为可能存在的各类风险。</p>
     <p>2、乙方系注册地在中华人民共和国境内，依法成立并有效存续的一家有限公司，并充分知晓民间借贷行为可能存在的各种风险。</p>
     <p>3、丙方系注册地在中华人民共和国境内，依法成立并有效存续的一家<span class="text_decor">有限责任公司</span>，为甲、乙双方提供信息中介撮合服务，丙方有权收取<span class="text_decor">相关服务费用</span>。</p>
     <br>
@@ -69,23 +69,23 @@
         </tr>
         <tr>
             <td>借款利率（年化）</td>
-            <td>$!{yearRate}%</td>
+            <td>$!{interestRate}%</td>
         </tr>
         <tr>
             <td>借款期限</td>
-            <td>#if($!{gmtStart})$dateUtil.formatDate($!{gmtStart},"yyyy-MM-dd") 至 $dateUtil.formatDate($!{gmtEnd},"yyyy-MM-dd")#end</td>
+            <td>$!{gmtStart} 至 $!{gmtEnd}</td>
         </tr>
         <tr>
             <td>还款日</td>
-            <td>#if($!{instalmentRepayDay})$dateUtil.formatDate($!{instalmentRepayDay},"yyyy-MM-dd")#end</td>
+            <td>$!{gmtPlanRepayment}</td>
         </tr>
         <tr>
             <td>借款用途</td>
-            <td>个人消费</td>
+            <td>$!{loanRemark}</td>
         </tr>
         <tr>
             <td>手续费率（年化）</td>
-            <td>#if($!{poundageRate})$!{poundageRate}%#end</td>
+            <td>$!{serviceRate}</td>
         </tr>
 
     </table>
@@ -120,7 +120,7 @@
     <span>五、逾期还款</span><br>
     <p>1、如果甲方未按照本合同约定履行还款义务，应立即偿还拖欠款项，并按本条规定向乙方支付违约金，乙方有权要求甲方立即偿还拖欠款项和逾期费用。</p>
     <p>2、甲方逾期还款的，自还款日后第1日起支付逾期费用。</p>
-    <p>3、甲方借款逾期费率为#if($!{overdueRate})$!{overdueRate}%#end，逾期费用按日收取，每日逾期费用=每日逾期本金×逾期费率</p>
+    <p>3、甲方借款逾期费率为#if($!{overdueRateDaily})$!{overdueRateDaily}%#end，逾期费用按日收取，每日逾期费用=每日逾期本金×逾期费率</p>
     <p>4、还款顺序：甲方同意按下列顺序清偿债务：（1）乙方实现债权的费用；（2）逾期费用；（3）利息；（4）本金：（5）手续费。乙方有权根据甲方实际还款情况变更上述顺序。</p>
 
     <br>
@@ -177,36 +177,8 @@
     <p>甲方：#if($!{personUserSeal})<img style="max-width: 1.5rem" src="$!{personUserSeal}">#end</p>
     <p>乙方：#if($!{secondSeal})<img style="max-width: 2.5rem" src="$!{secondSeal}">#end</p>
     <p>丙方：#if($!{CompanyUserSeal})<img style="max-width: 2.5rem" src="$!{CompanyUserSeal}">#end</p>
-    <p>签署时间：#if($!{instalmentGmtCreate})$dateUtil.formatDate($!{instalmentGmtCreate},"yyyy-MM-dd")#end</p>
+    <p>签署时间：$!{gmtSign}</p>
 
 </div>
 </body>
-<script type="text/javascript">
-    new Vue({
-        el:'.fenqiServiceProtocol',
-        methods:{
-            changeRate: function(num){ // 利率截取最后两位小数
-                var rate=num;
-                rate = rate*100;   //截取小数点后4位
-                // rate = parseFloat(rate);
-                rate = rate+'%';
-                return rate;
-            },
-            changePrincipal: function(principalNum){ // 本金金额保留二位小数
-
-                principalNum = parseFloat(principalNum);
-                principalNum = principalNum.toFixed(2);     //截取小数点后2位
-                return principalNum;
-            },
-            changeDailyRate: function(dailyRate){ // 日利率/365
-
-                dailyRate = dailyRate/360; // 日利率
-                dailyRate = (dailyRate*100).toFixed(4);   //截取小数点后4位
-                dailyRate = parseFloat(dailyRate);
-                dailyRate = dailyRate+'%';
-                return dailyRate;
-            }
-        }
-    });
-</script>
 </html>

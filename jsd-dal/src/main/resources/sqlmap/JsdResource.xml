@@ -340,4 +340,11 @@
         LIMIT 0,1
     </select>
     
+    <select id="listByType" resultType="com.ald.fanbei.api.dal.domain.JsdResourceDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_resource
+        WHERE is_delete = 0 AND type=#{type} AND is_enable=0
+    </select>
+    
 </mapper>
