@@ -3,11 +3,16 @@
  */
 package com.ald.fanbei.api.web.h5.api.jsd;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.JsdNoticeType;
+import com.ald.fanbei.api.common.util.JsonUtil;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +23,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.ups.UpsAuthSignValidRespBo;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
-import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderRepaymentService;
-import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
-import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
-import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -32,11 +31,6 @@ import com.ald.fanbei.api.common.enums.SmsCodeType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
-import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
@@ -74,6 +68,9 @@ public class ConfirmSmsApi implements JsdH5Handle {
 
 	@Resource
 	private JsdBorrowLegalOrderRepaymentService jsdBorrowLegalOrderRepaymentService;
+
+	@Resource
+	private JsdNoticeRecordService jsdNoticeRecordService;
 
 	@Resource
 	private UpsUtil upsUtil;
@@ -162,6 +159,7 @@ public class ConfirmSmsApi implements JsdH5Handle {
 				jsdUserBankcardService.updateUserBankcard(userBankcardDo);
 				return new JsdH5HandleResponse(1556, FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR.getErrorMsg());
 			}
+
 			HashMap<String,String> cardMap=new HashMap<>();
 			cardMap.put("openId", String.valueOf(userId));
 			cardMap.put("bindNo", busiFlag);
@@ -172,7 +170,16 @@ public class ConfirmSmsApi implements JsdH5Handle {
 				cardMap.put("reason", FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR.getErrorMsg());
 			}
 			cardMap.put("timestamp",System.currentTimeMillis()+"");
-			xgxyUtil.bindBackNoticeRequest(cardMap);
+			JsdNoticeRecordDo jsdNoticeRecordDo=new JsdNoticeRecordDo();
+			jsdNoticeRecordDo.setParams(JsonUtil.toJSONString(cardMap));
+			jsdNoticeRecordDo.setType(JsdNoticeType.BIND.code);
+			jsdNoticeRecordDo.setUserId(userDo.getRid());
+			jsdNoticeRecordService.addNoticeRecord(jsdNoticeRecordDo);
+			if(xgxyUtil.bindBackNoticeRequest(cardMap)){
+				jsdNoticeRecordDo.setRid(jsdNoticeRecordDo.getRid());
+				jsdNoticeRecordDo.setGmtModified(new Date());
+				jsdNoticeRecordService.updateNoticeRecordStatus(jsdNoticeRecordDo);
+			}
 		}
 		resp.setData(map);
 		return resp;
