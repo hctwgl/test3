@@ -395,8 +395,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 					boolean orderResult = DateUtil.afterDay(repayDealBo.orderCashDo.getGmtLastRepayment(),new Date());
                     if(orderResult || cashResult) {
                         nofityRisk(repayDealBo,repaymentDo,orderRepaymentDo,flag);
-                    }				}
-				catch (Exception e){
+                    }
+				} catch (Exception e){
 					logger.error("notice eca fail error=",e);
 				}
 			}
@@ -456,113 +456,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	private void nofityRisk(RepayDealBo repayDealBo,JsdBorrowCashRepaymentDo repaymentDo,JsdBorrowLegalOrderRepaymentDo orderRepaymentDo,boolean flag) {
 		try{
 			List<HashMap<String,String>> list = new ArrayList<>();
-			Long borrowId = 0l;
-			if(repaymentDo!=null){
-				borrowId = repaymentDo.getBorrowId();
-			}else if(orderRepaymentDo!=null){
-				borrowId = orderRepaymentDo.getBorrowId();
-			}
-			//--------------------start  催收上报接口需要参数---------------------------
-			//搭售商品信息
-			JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(borrowId);
-			Map<String, String> orderData = new HashMap<String, String>();
-			if(jsdBorrowLegalOrder != null){
-				orderData.put("goodsName",jsdBorrowLegalOrder.getGoodsName());//商品名称
-				orderData.put("goodsPrice",String.valueOf(jsdBorrowLegalOrder.getPriceAmount()));//商品价格
-				orderData.put("orderStatus",jsdBorrowLegalOrder.getStatus());//订单状态
-				orderData.put("expressNo",jsdBorrowLegalOrder.getLogisticsNo());//快递单号
-				orderData.put("expressCompany",jsdBorrowLegalOrder.getLogisticsCompany());//物流公司
-				orderData.put("consigneeName",jsdBorrowLegalOrder.getDeliveryUser());//收货人姓名
-				orderData.put("consigneePhone",jsdBorrowLegalOrder.getDeliveryPhone());//收货人手机号码
-				orderData.put("consigneeAddress",jsdBorrowLegalOrder.getAddress());//收货地址
-				orderData.put("deliveryTime",DateUtil.formatDateTime(jsdBorrowLegalOrder.getGmtDeliver()));//发货时间
-				orderData.put("gmtConfirmReceived",DateUtil.formatDateTime(jsdBorrowLegalOrder.getGmtConfirmReceived()));//确定收货时间
-				orderData.put("logisticsInfo",jsdBorrowLegalOrder.getLogisticsInfo());//物流信息
-			}
-			//用户信息
-			Map<String, String> userData = new HashMap<String, String>();
-			JsdUserDo userDo=jsdUserDao.getById(repaymentDo.getUserId());
-			if(userDo != null){
-				userData.put("realName",userDo.getRealName());//姓名
-				userData.put("userName",userDo.getUserName());//账号
-				userData.put("idNumber",userDo.getIdNumber());//身份证号码
-				userData.put("phoneNumber",userDo.getMobile());//电话号码
-				userData.put("address",userDo.getAddress());//户籍地址
-				String gender = userDo.getGender();
-				if(StringUtil.equals(gender, GenderType.M.getCode())){
-					gender = GenderType.M.getName();
-				}else if(StringUtil.equals(gender,GenderType.F.getCode())){
-					gender = GenderType.F.getName();
-				}else {
-					gender = GenderType.U.getName();
-				}
-				userData.put("gender",gender);//性别(非必填)
-				userData.put("birthday",userDo.getBirthday());//生日(非必填)
-				userData.put("workAddress","");//工作单位(非必填)
-				userData.put("workPost","");//工作岗位(非必填)
-				userData.put("income","");//税前收入(非必填)
-				userData.put("workTelephone","");//单位联系方式(非必填)
-				userData.put("marry","");//婚恋情况(非必填)
-			}
-			//案件信息
-			Map<String, String> caseData = new HashMap<String, String>();
 			JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(repaymentDo.getBorrowId());
 			JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(cashDo.getRid());
-			BigDecimal repayAmount = BigDecimal.ZERO;
-			BigDecimal residueAmount = BigDecimal.ZERO;//应还金额
-			BigDecimal currentAmount = BigDecimal.ZERO;//应还本金
-			BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
-			//应还本金
-			currentAmount = cashDo.getAmount().subtract(cashDo.getRepayPrinciple());
-			currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
-			//应还金额
-			residueAmount = BigDecimalUtil.add(cashDo.getAmount(), cashDo.getOverdueAmount(), cashDo.getPoundageAmount(), cashDo.getInterestRate()).subtract(cashDo.getRepayPrinciple());
-			residueAmount = BigDecimalUtil.add(residueAmount, orderCashDo.getAmount(), orderCashDo.getOverdueAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getInterestAmount()).subtract(orderCashDo.getRepaidAmount());
-			//逾期金额
-			overdueAmount = BigDecimalUtil.add(cashDo.getOverdueAmount(), orderCashDo.getOverdueAmount());
-			repayAmount = orderRepaymentDo.getRepayAmount().add(repaymentDo.getRepaymentAmount());
-			//催收金额
-			BigDecimal collectAmount = BigDecimalUtil.add(cashDo.getAmount(),cashDo.getOverdueAmount(),cashDo.getInterestRate(),cashDo.getPoundageAmount(),cashDo.getSumRepaidInterest(),cashDo.getSumRepaidOverdue(),cashDo.getSumRepaidPoundage());
-			collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
-			//借款费用
-			BigDecimal borrowCash = BigDecimalUtil.add(cashDo.getInterestAmount(),cashDo.getPoundageAmount(),cashDo.getSumRepaidPoundage(),cashDo.getSumRepaidInterest(),orderCashDo.getPoundageAmount(),orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getSumRepaidInterest());
-			caseData.put("companyId","");//案件公司id
-			caseData.put("productId","");//产品id
-			caseData.put("caseName","");//案件名称
-			caseData.put("caseType","");//案件类型
-			caseData.put("caseAmount",String.valueOf(BigDecimalUtil.add(cashDo.getAmount(),orderCashDo.getAmount())));//委案本金
-			caseData.put("collectAmount",String.valueOf(collectAmount));//催收金额
-			caseData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
-			caseData.put("","");//不可减免金额
-			caseData.put("residueAmount","residueAmount");//剩余应还
-			caseData.put("currentAmount",String.valueOf(currentAmount));//委案未还金额
-			caseData.put("overdueDay",String.valueOf(cashDo.getOverdueDay()));//逾期天数
-			caseData.put("dataId",String.valueOf(orderCashDo.getRid()));//源数据id
-			caseData.put("planRepaymenTime",DateUtil.formatDateTime(cashDo.getGmtPlanRepayment()));//计划还款时间
-			caseData.put("overdueAmount",String.valueOf(overdueAmount));//逾期金额
-			//借款详情
-			Map<String, String> borrowData = new HashMap<String, String>();
-			borrowData.put("borrowNo",cashDo.getBorrowNo());//借款编号
-			borrowData.put("borrowStatus",cashDo.getStatus());//借款状态
-			borrowData.put("borrowCycle",cashDo.getType());//借款周期
-			borrowData.put("cardNumber",cashDo.getCardNumber());//收款账号
-			borrowData.put("borrowAddress","");//借款地址
-			borrowData.put("longitude","");//借款经度
-			borrowData.put("latitude","");//借款纬度
-			borrowData.put("borrowTime",DateUtil.formatDateTime(cashDo.getGmtCreate()));//借款时间
-			borrowData.put("planTime",DateUtil.formatDateTime(cashDo.getGmtPlanRepayment()));//到期时间
-			borrowData.put("overdueDay",String.valueOf(cashDo.getOverdueDay()));//逾期天数
-			borrowData.put("borrowAmount",String.valueOf(BigDecimalUtil.add(cashDo.getAmount(),orderCashDo.getAmount())));//借款金额
-			borrowData.put("accountAmount",String.valueOf(cashDo.getAmount()));//到账金额
-			borrowData.put("borrowCash",String.valueOf(borrowCash));//借款费用(手续费加利息)
-			borrowData.put("overdueFee",String.valueOf(overdueAmount));//逾期费用
-			borrowData.put("repaymentAmount",String.valueOf(repayAmount));//累计已还
-			borrowData.put("collectAmount",String.valueOf(residueAmount));//剩余应还
-			borrowData.put("appName","");//借款app
-			borrowData.put("contractPdfUrl","");
-			borrowData.put("payTime",DateUtil.formatDateTime(cashDo.getGmtArrival()));//打款时间
-			//--------------------end  催收上报接口需要参数-----------------------------
-
+			BigDecimal repayAmount = orderRepaymentDo.getRepayAmount().add(repaymentDo.getRepaymentAmount());
 			//--------------------start  催收还款接口需要参数---------------------------
 			JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
 			Map<String, String> repayData = new HashMap<String, String>();
@@ -602,8 +498,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				noticeRecordDo.setGmtModified(new Date());
 				jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
 			}
-
-
 		}catch (Exception e) {
 			logger.error("向催收平台同步还款信息失败", e);
 		}

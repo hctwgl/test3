@@ -10,10 +10,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
-import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -46,6 +43,9 @@ public class CuiShouUtils {
 
     @Resource
     JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
+
+    @Resource
+    JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
 
     @Resource
     JsdUserService jsdUserService;
@@ -173,7 +173,7 @@ public class CuiShouUtils {
     }
 
 
-    void  collectionPush(JsdBorrowCashDo borrowCashDo,JsdBorrowLegalOrderCashDo orderCashDo){
+    public void  collectionPush(JsdBorrowCashDo borrowCashDo,JsdBorrowLegalOrderCashDo orderCashDo){
         List<Map<String,String>>  data = new ArrayList<>();
         //--------------------start  催收上报接口需要参数---------------------------
         Long borrowId = borrowCashDo.getRid();
@@ -244,7 +244,6 @@ public class CuiShouUtils {
         buildData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
         buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
         buildData.put("currentAmount",String.valueOf(currentAmount));//委案未还金额
-        buildData.put("overdueDay",String.valueOf(borrowCashDo.getOverdueDay()));//逾期天数
         buildData.put("dataId",String.valueOf(orderCashDo.getRid()));//源数据id
         buildData.put("planRepaymenTime",DateUtil.formatDateTime(borrowCashDo.getGmtPlanRepayment()));//计划还款时间
         buildData.put("overdueAmount",String.valueOf(overdueAmount));//逾期金额
@@ -264,7 +263,22 @@ public class CuiShouUtils {
         buildData.put("appName","jsd");//借款app
         buildData.put("contractPdfUrl","");
         buildData.put("payTime",DateUtil.formatDateTime(borrowCashDo.getGmtArrival()));//打款时间
-//        buildData.put("token",token);
+        buildData.put("type","");
+        //续期信息
+        List<Map<String, String>> arrayList = new ArrayList<>();
+        List<JsdBorrowCashRenewalDo> list = jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(borrowCashDo.getRid());
+        for (JsdBorrowCashRenewalDo renewalDo : list){
+            Map<String, String> renewalData = new HashMap<String, String>();
+            renewalData.put("tradeNo",renewalDo.getTradeNo());//续期编号
+            renewalData.put("renewalAmount",String.valueOf(renewalDo.getRenewalAmount()));//续期本金
+            renewalData.put("renewalRepayAmount",String.valueOf(renewalDo.getCapital()));//本期已还本金（
+            renewalData.put("priorFee",String.valueOf(BigDecimalUtil.add(renewalDo.getPriorOverdue(),renewalDo.getPriorInterest(),renewalDo.getPriorPoundage())));//上期费用
+            renewalData.put("renewalPoundage",String.valueOf(renewalDo.getNextPoundage()));//续期手续费
+            renewalData.put("renewalStatus",renewalDo.getStatus());//状态
+            renewalData.put("renewalTime",DateUtil.formatDateTime(renewalDo.getGmtCreate()));//续期时间
+            arrayList.add(renewalData);
+        }
+        buildData.put("renewalData",JSON.toJSONString(arrayList));
         //--------------------end  催收上报接口需要参数---------------------------
         data.add(buildData);
         collectionSystemUtil.noticeCollect(data);

@@ -2,6 +2,8 @@ package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 
+import java.util.List;
+
 /**
  * 极速贷续期Dao
  * 
@@ -18,6 +20,6 @@ public interface JsdBorrowCashRenewalDao extends BaseDao<JsdBorrowCashRenewalDo,
 
 	JsdBorrowCashRenewalDo getByTradeNoXgxy(String tardeNoXgxy);
 
-    
+	List<JsdBorrowCashRenewalDo> getJsdRenewalByBorrowId(Long borrowId);
 
 }

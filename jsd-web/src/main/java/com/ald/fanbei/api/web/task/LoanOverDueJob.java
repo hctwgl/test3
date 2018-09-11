@@ -75,6 +75,8 @@ public class LoanOverDueJob {
     @Resource
     JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
     @Resource
+    JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
+    @Resource
     GetHostIpUtil getHostIpUtil;
 
     private static String token = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjMyODQxfQ.NPLQiwpOsS1FPnCaIal2X9AaRk3R_fRFkCFfbRbNvIQ";
@@ -156,7 +158,7 @@ public class LoanOverDueJob {
             }
             
             //TODO 通知催收逾期人员通讯录
-            //collectionSystemUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
+//            collectionSystemUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
         }
    }
 
@@ -233,7 +235,6 @@ public class LoanOverDueJob {
             buildData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
             buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
             buildData.put("currentAmount",String.valueOf(currentAmount));//委案未还金额
-            buildData.put("overdueDay",String.valueOf(borrowCashDo.getOverdueDay()));//逾期天数
             buildData.put("dataId",String.valueOf(orderCashDo.getRid()));//源数据id
             buildData.put("planRepaymenTime",DateUtil.formatDateTime(borrowCashDo.getGmtPlanRepayment()));//计划还款时间
             buildData.put("overdueAmount",String.valueOf(overdueAmount));//逾期金额
@@ -253,7 +254,21 @@ public class LoanOverDueJob {
             buildData.put("appName","jsd");//借款app
             buildData.put("contractPdfUrl","");
             buildData.put("payTime",DateUtil.formatDateTime(borrowCashDo.getGmtArrival()));//打款时间
-            buildData.put("token",token);
+            buildData.put("type","");
+            List<Map<String, String>> arrayList = new ArrayList<>();
+            List<JsdBorrowCashRenewalDo> renewalList = jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(borrowCashDo.getRid());
+            for (JsdBorrowCashRenewalDo renewalDo : renewalList){
+                Map<String, String> renewalData = new HashMap<String, String>();
+                renewalData.put("tradeNo",renewalDo.getTradeNo());//续期编号
+                renewalData.put("renewalAmount",String.valueOf(renewalDo.getRenewalAmount()));//续期本金
+                renewalData.put("renewalRepayAmount",String.valueOf(renewalDo.getCapital()));//本期已还本金（
+                renewalData.put("priorFee",String.valueOf(BigDecimalUtil.add(renewalDo.getPriorOverdue(),renewalDo.getPriorInterest(),renewalDo.getPriorPoundage())));//上期费用
+                renewalData.put("renewalPoundage",String.valueOf(renewalDo.getNextPoundage()));//续期手续费
+                renewalData.put("renewalStatus",renewalDo.getStatus());//状态
+                renewalData.put("renewalTime",DateUtil.formatDateTime(renewalDo.getGmtCreate()));//续期时间
+                arrayList.add(renewalData);
+            }
+            buildData.put("renewalData",JSON.toJSONString(arrayList));
             //--------------------end  催收上报接口需要参数---------------------------
             data.add(buildData);
         }

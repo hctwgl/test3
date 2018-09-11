@@ -402,5 +402,13 @@
 		from jsd_borrow_cash_renewal WHERE is_delete=0 and trade_no_xgxy=#{tradeNoXgxy}
 		LIMIT 1 
     </select>
+
+    <select id="getJsdRenewalByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
+        select
+        <include refid="queryFields"/>
+        from jsd_borrow_cash_renewal
+        WHERE is_delete = 0 AND borrow_id=#{borrowId}
+        ORDER BY gmt_create DESC
+    </select>
     
 </mapper>

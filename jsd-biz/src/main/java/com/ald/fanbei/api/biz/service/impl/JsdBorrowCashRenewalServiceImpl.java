@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -348,6 +349,11 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 			//续期成功，调用西瓜信用通知接口
 			JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
 			notifyXgxyRenewalResult("Y", tradeNoOut, "", renewalDo);
+			boolean flag = true;
+			if(flag){
+
+			}
+
 		}
 		
 		return result;
@@ -402,7 +408,12 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 			jsdNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
 		}
 	}
-	
+
+	private void notifyCollectRenewalResult(String status, String tradeNo, String errorMsg, JsdBorrowCashRenewalDo renewalDo) {
+
+	}
+
+
 	/**
 	 * 续期校验
 	 */
@@ -492,5 +503,10 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 	public JsdBorrowCashRenewalDo getByTradeNoXgxy(String tradeNoXgxy) {
 		return jsdBorrowCashRenewalDao.getByTradeNoXgxy(tradeNoXgxy);
 	}
-	
+
+	@Override
+	public List<JsdBorrowCashRenewalDo> getJsdRenewalByBorrowId(Long borrowId) {
+		return jsdBorrowCashRenewalDao.getJsdRenewalByBorrowId(borrowId);
+	}
+
 }

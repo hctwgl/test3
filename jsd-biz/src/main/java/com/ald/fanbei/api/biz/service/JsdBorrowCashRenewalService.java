@@ -31,6 +31,6 @@ public interface JsdBorrowCashRenewalService {
 	
 	public void checkCanRenewal(JsdBorrowCashDo borrowCashDo);
 
-
+	List<JsdBorrowCashRenewalDo> getJsdRenewalByBorrowId(Long borrowId);
 
 }
