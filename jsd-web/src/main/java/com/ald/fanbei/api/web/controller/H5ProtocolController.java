@@ -116,9 +116,9 @@ public class H5ProtocolController {
         	overdueRate = rateInfo.overdueRate;
         }
         
-        model.put("interestRate", interestRate);
-        model.put("serviceRate", serviceRate);
-        model.put("overdueRate", overdueRate);
+        model.put("interestRate", interestRate.setScale(2));
+        model.put("serviceRate", serviceRate.setScale(2));
+        model.put("overdueRate", overdueRate.setScale(2));
         model.put("idNumber", userDo.getIdNumber());
         model.put("realName", userDo.getRealName());
         model.put("email", userDo.getEmail());//电子邮箱
@@ -182,11 +182,11 @@ public class H5ProtocolController {
         	overdueRate = rateInfo.overdueRate;
         }
         
-        model.put("interestRate", interestRate);
-        model.put("serviceRate", serviceRate);
+        model.put("interestRate", interestRate.setScale(2));
+        model.put("serviceRate", serviceRate.setScale(2));
         model.put("overdueRateDaily", overdueRate
         			.multiply(new BigDecimal(100))
-        			.divide( new BigDecimal(Constants.ONE_YEAY_DAYS)) );
+        			.divide( new BigDecimal(Constants.ONE_YEAY_DAYS)).setScale(2) );
         model.put("idNumber", userDo.getIdNumber());
         model.put("realName", userDo.getRealName());
         model.put("email", userDo.getEmail());//电子邮箱
@@ -225,9 +225,9 @@ public class H5ProtocolController {
         	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
         	
         	model.put("borrowNo", cashDo.getBorrowNo());
-        	model.put("interestRate", cashDo.getInterestRate());
-            model.put("serviceRate", cashDo.getPoundageRate());
-            model.put("overdueRate", cashDo.getOverdueRate());
+        	model.put("interestRate", cashDo.getInterestRate().setScale(2));
+            model.put("serviceRate", cashDo.getPoundageRate().setScale(2));
+            model.put("overdueRate", cashDo.getOverdueRate().setScale(2));
             model.put("serviceAmount", cashDo.getPoundageAmount());
         }else{
         	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();

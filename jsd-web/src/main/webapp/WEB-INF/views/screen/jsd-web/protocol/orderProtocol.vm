@@ -69,7 +69,7 @@
         </tr>
         <tr>
             <td>借款利率（年化）</td>
-            <td>$!{interestRate}%</td>
+            <td>$!{interestRate}</td>
         </tr>
         <tr>
             <td>借款期限</td>
