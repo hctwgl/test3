@@ -1,8 +1,11 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 
+import java.util.List;
 import java.util.Map;
 /**
  * 极速贷Service
@@ -32,5 +35,17 @@ public interface JsdBorrowCashRepaymentService{
     void dealRepaymentSucess(String tradeNo, String outTradeNo);
 
     JsdBorrowCashRepaymentDo  getByTradeNoXgxy(String tradeNoXgxy);
+
+    /**
+     * jsd 线下还款
+     * @param totalAmount
+     * @param repaymentNo
+     * @param userId
+     * @param type
+     * @param repayTime
+     * @param orderNo
+     */
+    void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, String type, String repayTime, String orderNo);
+
 
 }

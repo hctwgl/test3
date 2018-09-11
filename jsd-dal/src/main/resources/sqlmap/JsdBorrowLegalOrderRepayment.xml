@@ -331,4 +331,16 @@
         ORDER BY gmt_create DESC
         LIMIT 1
     </select>
+
+    <select id="getByTradeNoOut" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        jsd_borrow_legal_order_repayment
+        WHERE
+        is_delete = 0  AND trade_no_ups= #{tradeNoUps}
+        ORDER BY gmt_create DESC
+        LIMIT 1
+    </select>
+
 </mapper>

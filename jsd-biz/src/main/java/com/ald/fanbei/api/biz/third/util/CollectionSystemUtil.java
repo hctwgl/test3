@@ -24,7 +24,7 @@ import com.alibaba.fastjson.JSON;
 @Component("collectionSystemUtil")
 public class CollectionSystemUtil extends AbstractThird {
 
-	private static String url = null;
+	private static String url = "http://192.168.156.40:8080";
 
 	private static String getUrl() {
 		if (url == null) {
@@ -49,11 +49,10 @@ public class CollectionSystemUtil extends AbstractThird {
 	public boolean noticeCollect(List<Map<String,String>>  data) {
 		try {
 			Map<String,String>  params=new HashMap<>();
-			params.put("orderNo",getOrderNo("XGXY"));
+			params.put("orderNo",getOrderNo("JSD"));
 			params.put("info",JSON.toJSONString(data));
-			params.put("companyId","");
-			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
-			logger.info("dsed overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getUrl());
+			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjMyODQxfQ.NPLQiwpOsS1FPnCaIal2X9AaRk3R_fRFkCFfbRbNvIQ");
+			logger.info("jsd overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getUrl());
 			String url = getUrl() + "/api/ald/collect/v1/third/import";
 			String reqResult = "";
 			if (url.contains("https")){
@@ -144,21 +143,20 @@ public class CollectionSystemUtil extends AbstractThird {
 
 
 	/**
-	 * 都市e贷主动还款通知催收平台
+	 * jsd主动还款通知催收平台
 	 * @param reqBo
 	 * @return
 	 */
 	public boolean consumerRepayment(Map<String, String> reqBo) {
 		// APP还款类型写3 , 线下还款写4
 		try {
-			String url = getUrl() + "/api/ald/collect/v1/third/repayment";
+			String url = getUrl() + "/report/thirdRepayment";
 			String reqResult = "";
 			if (url.contains("https")){
 				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(reqBo));
 			}else {
 				reqResult = HttpUtil.post(url, reqBo);
 			}
-			logger.info(getUrl() + "/api/ald/collect/v1/third/repayment");
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 				return true;
