@@ -106,6 +106,7 @@ public class H5ProtocolController {
             	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
             	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
             	trialBo.req.openId = openId;
+            	trialBo.req.term = trialBo.req.nepr;
             	trialBo.userId = userDo.getRid();
             	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
             	jsdBorrowCashService.resolve(trialBo);
@@ -176,6 +177,7 @@ public class H5ProtocolController {
             	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
             	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
             	trialBo.req.openId = openId;
+            	trialBo.req.term = trialBo.req.nepr;
             	trialBo.userId = userDo.getRid();
             	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
             	jsdBorrowCashService.resolve(trialBo);
@@ -242,6 +244,7 @@ public class H5ProtocolController {
 	        	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
 	        	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
 	        	trialBo.req.openId = openId;
+	        	trialBo.req.term = trialBo.req.nepr;
 	        	trialBo.userId = userDo.getRid();
 	        	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
 	        	jsdBorrowCashService.resolve(trialBo);
