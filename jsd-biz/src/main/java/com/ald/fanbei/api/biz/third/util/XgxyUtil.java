@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ald.fanbei.api.biz.bo.xgxy.XgxyRepayNoticeBo;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
@@ -85,14 +84,11 @@ public class XgxyUtil extends AbstractThird {
      */
     public boolean repayNoticeRequest(HashMap<String, String> data) {
         try {
-            logger.info("jsdRepayNoticeRequest start data = "+data);
             Map<String, String> p = new HashMap<>();
             p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             p.put("appId", APPID);
             String url = getXgxyUrl() + "/isp/open/third/eca/v1/repaymentNotify";
-//    		String url = "http://192.168.156.103:1112/isp/open/third/eca/v1/delayNotify";
-            logger.info("data = " + data +",url = " +url );
             String reqResult = "";
             if (url.contains("https")){
                 reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(p));
@@ -123,14 +119,11 @@ public class XgxyUtil extends AbstractThird {
      */
     public boolean jsdRenewalNoticeRequest(HashMap<String, String> data) {
     	try {
-    		logger.info("jsdRenewalNoticeRequest start data = "+data);
     		Map<String, String> p = new HashMap<>();
     		p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
     		p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
     		p.put("appId", APPID);
     		String url = getXgxyUrl() + "/isp/open/third/eca/v1/delayNotify";
-//    		String url = "http://192.168.156.103:1112/isp/open/third/eca/v1/delayNotify";
-    		logger.info("data = " + data +",url = " +url );
     		String reqResult = "";
     		if (url.contains("https")){
     			reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(p));
@@ -162,13 +155,11 @@ public class XgxyUtil extends AbstractThird {
      */
     public boolean bindBackNoticeRequest(HashMap<String, String> data) {
         try {
-            logger.info("bindBackNoticeRequest start data = "+data);
             Map<String, String> p = new HashMap<>();
             p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             p.put("appId", APPID);
             String url = getXgxyUrl()+"/isp/open/third/eca/v1/bandBankCardNotify";
-            logger.info("data = " + data +",url = " +url );
             String reqResult = "";
             if (url.contains("https")){
                 reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(p));

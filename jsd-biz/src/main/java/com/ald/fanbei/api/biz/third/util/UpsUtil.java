@@ -160,12 +160,9 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setBankCode(bankCode);
 		reqBo.setPurpose(purpose);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/delegatePay");
-		logger.info("cfp String sign= "+createLinkString(reqBo));
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		try {
-//			afUpsLogDao.addUpsLog(buildUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
 			jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
-			logger.info("ups url="+getUpsUrl());
 			String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 			logThird(reqResult, "jsdDelegatePay", reqBo);
 			if(StringUtil.isBlank(reqResult)){
@@ -199,7 +196,6 @@ public class UpsUtil extends AbstractThird {
 	 * @param clientType 客户端类型
 	 */
 	public UpsQueryTradeRespBo queryTrade(String tradeType,String tradeNo,String clientType){
-//		String orderNo = "qt"+tradeNo.substring(tradeNo.length()-15,tradeNo.length()) + System.currentTimeMillis();
 		String orderNo = getOrderNo("qtra", tradeNo.substring(tradeNo.length()-4,tradeNo.length()));
 		UpsQueryTradeReqBo reqBo = new UpsQueryTradeReqBo();
 		setPubParam(reqBo,"queryTrade",orderNo,clientType);
@@ -256,7 +252,6 @@ public class UpsUtil extends AbstractThird {
 		}
 		
 		UpsAuthSignRespBo authSignResp = JSONObject.parseObject(reqResult,UpsAuthSignRespBo.class);
-		logThird(authSignResp, "authSign", reqBo);
 		/**
 		 * 关于交易状态（tradeState）
 			部分成功：
@@ -280,7 +275,6 @@ public class UpsUtil extends AbstractThird {
 	 * @param clientType
 	 */
 	public UpsAuthSignValidRespBo authSignValid(String userNo,String cardNo,String verifyCode,String clientType){
-//		String orderNo = "asvd"+tradeNo.substring(tradeNo.length()-15,tradeNo.length()) + System.currentTimeMillis();
 		String orderNo = getOrderNo("asva", cardNo.substring(cardNo.length()-4,cardNo.length()));
 		UpsAuthSignValidReqBo reqBo = new UpsAuthSignValidReqBo();
 		setPubParam(reqBo,"authSignValid",orderNo,clientType);
@@ -291,14 +285,11 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		jsdUpsLogDao.saveRecord(buildDsedUpsLog("", cardNo, "authSignValid", orderNo, verifyCode, "smsCode", userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
-		logger.info("upsUtil authSignValid reqResult ="+reqResult+",reqBo="+JSON.toJSONString(reqBo));
 		logThird(reqResult, "authSignValid", reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
 		}
 		UpsAuthSignValidRespBo authSignResp = JSONObject.parseObject(reqResult,UpsAuthSignValidRespBo.class);
-		logger.info("upsUtil authSignValid authSignResp ="+authSignResp);
-		logThird(authSignResp, "authSignValid", reqBo);
 		if(authSignResp != null && authSignResp.getTradeState()!=null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
 			authSignResp.setSuccess(true);
 			return authSignResp;
@@ -364,8 +355,6 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setRemark(remark.trim());
 		reqBo.setReturnUrl("");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
-//		reqBo.setNotifyUrl("http://192.168.156.45:80/third/ups/collect");
-		logger.info("bank collecnotifyUrl = "+ getNotifyHost() + "/third/ups/collect");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 			jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "collect", orderNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
@@ -414,13 +403,11 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setProductName(productName);
 		reqBo.setExpiredTime(String.valueOf( KUAIJIE_EXPIRE_MINITES));		
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
-//		reqBo.setNotifyUrl("http://192.168.117.188:8089/third/ups/collect");
 		reqBo.setCvv2(safeCode);
 		reqBo.setValidDate(validDate);
 		reqBo.setSmsFlag("1");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "quickPay", orderNo, "", merPriv, userNo));
-//		String reqResult = HttpUtil.post("http://192.168.96.44:8080/ups/main.html", reqBo);
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "quickPay", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -450,7 +437,6 @@ public class UpsUtil extends AbstractThird {
         	    setPubParam(reqBo, "quickPayResendCode", orderNo, upsCollectBo.getClientType());
         	    reqBo.setOldOrderNo(payTradeNo);
         	    reqBo.setTradeType("pay_order");
-        	    logger.info("bank quickPayResendCode = " + getNotifyHost() + "/third/ups/quickPayResendCode");
         	    reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 				jsdUpsLogDao.saveRecord(buildDsedUpsLog(upsCollectBo.getBankCode(), upsCollectBo.getCardNo(), "quickPayResendCode", payTradeNo, "", upsCollectBo.getMerPriv(), upsCollectBo.getUserNo()));
         	    String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
