@@ -24,11 +24,11 @@ public class JsdTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-	String urlBase = "http://localhost:8078";
+	String urlBase = "http://localhost:81";
 //    String urlBase = "http://192.168.112.40:8080";
     
     String userName = "13165995223";
-    private static final String AES_KEY = "baac7fc54a2a7e75";
+    private static final String AES_KEY = "9c5dd35d58f8501f";
 
     /**
      * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -224,12 +224,12 @@ public class JsdTest extends BaseTest {
     public void repayLoan() {
         String url = urlBase + "/third/eca/v1/pushRepayment";
         Map<String,String> params = new HashMap<>();
-        params.put("amount", 500+"");
+        params.put("amount", 95.6+"");
         params.put("period", 1+"");
-        params.put("bankNo", "6217856200009628392");
-        params.put("borrowNo", "loan0910eca645000000017");
-        params.put("repayNo", "repayEca12312314123156575");
-        params.put("openId","BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
+        params.put("bankNo", "6216696200001039000");
+        params.put("borrowNo", "loan0910eca267900000037");
+        params.put("repayNo", "repay0911eca267900000042");
+        params.put("openId","9FF6EC836C741458429C7398AC0E2F26");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
