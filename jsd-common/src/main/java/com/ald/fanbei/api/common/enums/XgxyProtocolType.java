@@ -3,7 +3,7 @@ package com.ald.fanbei.api.common.enums;
 /**
  * 与西瓜约定的协议类型
  */
-public enum  ProtocolType {
+public enum  XgxyProtocolType {
 	AUTH("数据授权类合同"),
     BINDCARD("绑卡类合同"),
     BORROW("借款类合同"),
@@ -12,7 +12,7 @@ public enum  ProtocolType {
 
     public String desz;
 
-    ProtocolType(String desz) {
+    XgxyProtocolType(String desz) {
         this.desz = desz;
     }
 
