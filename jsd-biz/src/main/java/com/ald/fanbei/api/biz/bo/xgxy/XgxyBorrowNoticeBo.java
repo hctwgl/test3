@@ -11,6 +11,7 @@ public class XgxyBorrowNoticeBo {
     private String reason;
     private Long timestamp;
 
+
     public static XgxyBorrowNoticeBo gen(String borrowNo, String status, String reason) {
     	XgxyBorrowNoticeBo bo = new XgxyBorrowNoticeBo();
     	bo.borrowNo = borrowNo;
