@@ -132,14 +132,35 @@ public class JsdBorrowTest extends BaseTest {
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
     
-    public static void main(String[] args) {
-    	String src = "{\"reason\":\"\",\"borrowNo\":\"xgxy202314123090123123\",\"status\":\"FAILED\"}";
+    /**
+     * 获取续借详情
+     */
+    @Test
+    public void getBorrowProtocol() {
+    	String url = urlBase + "/third/eca/v1/getProtocolInfo";
+    	JSONObject params = new JSONObject();
+        params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
+        params.put("bizNo", "xgxy202314123090123123");
+        params.put("type", "BORROW");
     	
-    	String res = JsdAesUtil.encryptToBase64Third(src, AES_KEY);
-    	System.out.println(res);
+    	JSONObject previewParams = new JSONObject();
+    	previewParams.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
+    	previewParams.put("productNo", "2");
+    	previewParams.put("amount", "5000");
+    	previewParams.put("term", "10");
+    	previewParams.put("unit", "DAY");
+    	previewParams.put("isTying", "Y");
+    	previewParams.put("tyingType", "SELL");
     	
-    	System.out.println(JsdAesUtil.decryptFromBase64Third("Cu2lW6Hb6LX+8wjBDbe4XnI+pxCswrH5p9kuXUd8RoBsGWbx7CWJ5jqFByiP/C1KvibQFI1v+w8BrQOGfhLwowp6XXQzcKWwecdhcx74tog=", AES_KEY));
-	}
-
+    	params.put("previewParam", previewParams.toString());
+    	
+        String encryptBase64Str = JsdAesUtil.encryptToBase64Third(JSON.toJSONString(params), AES_KEY);
+        Map<String, Object> p = new HashMap<>();
+        p.put("data", encryptBase64Str);
+        p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
     
 }
