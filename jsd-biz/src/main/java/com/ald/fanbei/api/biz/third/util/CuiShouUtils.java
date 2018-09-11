@@ -174,12 +174,32 @@ public class CuiShouUtils {
 
 
     public void  collectionPush(JsdBorrowCashDo borrowCashDo,JsdBorrowLegalOrderCashDo orderCashDo){
+        List<JsdBorrowLegalOrderCashDo> orderList =  jsdBorrowLegalOrderCashService.getBorrowOrderCashsByBorrowId(orderCashDo.getBorrowId());
+        Map<String, String> buildData = new HashMap<String, String>();
+        int count = 0;
+        for (int i=0;i<orderList.size();i++){
+            if(StringUtil.equals(String.valueOf(orderList.get(i).getRid()),String.valueOf(orderCashDo.getRid()))){
+                count = i;
+                break;
+            }
+        }
+        if(count>0){
+            List<JsdBorrowCashRenewalDo> renewalList =  jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(orderCashDo.getBorrowId());
+            buildData.put("overdueDay",String.valueOf(renewalList.get(count-1).getOverdueDay()));
+            buildData.put("borrowTime",DateUtil.formatDateTime(renewalList.get(count).getGmtCreate()));//借款时间
+        }else {
+            buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(borrowCashDo.getGmtPlanRepayment(),new Date())));//逾期天数
+            buildData.put("borrowTime",DateUtil.formatDateTime(borrowCashDo.getGmtCreate()));//借款时间
+        }
+
+
+
         List<Map<String,String>>  data = new ArrayList<>();
         //--------------------start  催收上报接口需要参数---------------------------
         Long borrowId = borrowCashDo.getRid();
         //搭售商品信息
         JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(borrowId);
-        Map<String, String> buildData = new HashMap<String, String>();
+
         if(jsdBorrowLegalOrder != null){
             buildData.put("goodsName",jsdBorrowLegalOrder.getGoodsName());//商品名称
             buildData.put("goodsPrice",String.valueOf(jsdBorrowLegalOrder.getPriceAmount()));//商品价格
@@ -217,6 +237,21 @@ public class CuiShouUtils {
             buildData.put("workTelephone","");//单位联系方式(非必填)
             buildData.put("marry","");//婚恋情况(非必填)
         }
+        //续期信息
+        List<Map<String, String>> arrayList = new ArrayList<>();
+        List<JsdBorrowCashRenewalDo> list = jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(borrowCashDo.getRid());
+        for (JsdBorrowCashRenewalDo renewalDo : list){
+            Map<String, String> renewalData = new HashMap<String, String>();
+            renewalData.put("tradeNo",renewalDo.getTradeNo());//续期编号
+            renewalData.put("renewalAmount",String.valueOf(renewalDo.getRenewalAmount()));//续期本金
+            renewalData.put("renewalRepayAmount",String.valueOf(renewalDo.getCapital()));//本期已还本金（
+            renewalData.put("priorFee",String.valueOf(BigDecimalUtil.add(renewalDo.getPriorOverdue(),renewalDo.getPriorInterest(),renewalDo.getPriorPoundage())));//上期费用
+            renewalData.put("renewalPoundage",String.valueOf(renewalDo.getNextPoundage()));//续期手续费
+            renewalData.put("renewalStatus",renewalDo.getStatus());//状态
+            renewalData.put("renewalTime",DateUtil.formatDateTime(renewalDo.getGmtCreate()));//续期时间
+            arrayList.add(renewalData);
+        }
+        buildData.put("renewalData",JSON.toJSONString(arrayList));
         //案件信息
         BigDecimal repayAmount = BigDecimal.ZERO;
         BigDecimal residueAmount = BigDecimal.ZERO;//应还金额
@@ -255,8 +290,6 @@ public class CuiShouUtils {
         buildData.put("borrowAddress","");//借款地址
         buildData.put("longitude","");//借款经度
         buildData.put("latitude","");//借款纬度
-        buildData.put("borrowTime",DateUtil.formatDateTime(borrowCashDo.getGmtCreate()));//借款时间
-        buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(borrowCashDo.getGmtPlanRepayment(),new Date())));//逾期天数
         buildData.put("borrowAmount",String.valueOf(BigDecimalUtil.add(borrowCashDo.getAmount(),orderCashDo.getAmount())));//借款金额(委案金额)
         buildData.put("accountAmount",String.valueOf(borrowCashDo.getAmount()));//到账金额
         buildData.put("borrowCash",String.valueOf(borrowCash));//借款费用(手续费加利息)
@@ -264,21 +297,7 @@ public class CuiShouUtils {
         buildData.put("contractPdfUrl","");
         buildData.put("payTime",DateUtil.formatDateTime(borrowCashDo.getGmtArrival()));//打款时间
         buildData.put("type","");
-        //续期信息
-        List<Map<String, String>> arrayList = new ArrayList<>();
-        List<JsdBorrowCashRenewalDo> list = jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(borrowCashDo.getRid());
-        for (JsdBorrowCashRenewalDo renewalDo : list){
-            Map<String, String> renewalData = new HashMap<String, String>();
-            renewalData.put("tradeNo",renewalDo.getTradeNo());//续期编号
-            renewalData.put("renewalAmount",String.valueOf(renewalDo.getRenewalAmount()));//续期本金
-            renewalData.put("renewalRepayAmount",String.valueOf(renewalDo.getCapital()));//本期已还本金（
-            renewalData.put("priorFee",String.valueOf(BigDecimalUtil.add(renewalDo.getPriorOverdue(),renewalDo.getPriorInterest(),renewalDo.getPriorPoundage())));//上期费用
-            renewalData.put("renewalPoundage",String.valueOf(renewalDo.getNextPoundage()));//续期手续费
-            renewalData.put("renewalStatus",renewalDo.getStatus());//状态
-            renewalData.put("renewalTime",DateUtil.formatDateTime(renewalDo.getGmtCreate()));//续期时间
-            arrayList.add(renewalData);
-        }
-        buildData.put("renewalData",JSON.toJSONString(arrayList));
+
         //--------------------end  催收上报接口需要参数---------------------------
         data.add(buildData);
         collectionSystemUtil.noticeCollect(data);

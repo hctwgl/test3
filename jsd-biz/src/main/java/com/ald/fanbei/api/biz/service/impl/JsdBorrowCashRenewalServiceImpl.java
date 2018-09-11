@@ -10,6 +10,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
+import com.ald.fanbei.api.dal.dao.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,11 +24,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.KuaijieJsdRenewalPayBo;
 import com.ald.fanbei.api.biz.bo.ups.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
-import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
-import com.ald.fanbei.api.biz.service.JsdResourceService;
-import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
@@ -42,13 +40,6 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowCashRenewalDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderRepaymentDao;
-import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
-import com.ald.fanbei.api.dal.dao.JsdUserDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
@@ -93,6 +84,8 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
     @Resource
     private JsdUserDao jsdUserDao;
     @Resource
+	JsdNoticeRecordDao jsdNoticeRecordDao;
+    @Resource
     private JsdNoticeRecordService jsdNoticeRecordService;
     @Resource
     private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
@@ -100,6 +93,8 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
     private JsdResourceService jsdResourceService;
     @Resource
     private XgxyUtil xgxyUtil;
+    @Resource
+	CollectionSystemUtil collectionSystemUtil;
     @Resource
     private RedisTemplate<String, ?> redisTemplate;
 
@@ -348,10 +343,23 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		if(result == 1l){
 			//续期成功，调用西瓜信用通知接口
 			JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
+			List<JsdBorrowLegalOrderCashDo> list = jsdBorrowLegalOrderCashDao.getBorrowOrderCashsByBorrowId(renewalDo.getBorrowId());
 			notifyXgxyRenewalResult("Y", tradeNoOut, "", renewalDo);
-			boolean flag = true;
-			if(flag){
-
+			if(renewalDo.getOverdueDay()>0){
+				Map<String, String> repayData = new HashMap<String, String>();
+				repayData.put("dataId",String.valueOf(list.get(1).getRid()));
+				JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
+				noticeRecordDo.setType(JsdNoticeType.RENEW.code);
+				noticeRecordDo.setUserId(renewalDo.getUserId());
+				noticeRecordDo.setRefId(String.valueOf(renewalDo.getRid()));
+				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+				noticeRecordDo.setParams(JSON.toJSONString(repayData));
+				jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+				if(collectionSystemUtil.collectRenewal(repayData)){
+					noticeRecordDo.setRid(noticeRecordDo.getRid());
+					noticeRecordDo.setGmtModified(new Date());
+					jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
+				}
 			}
 
 		}

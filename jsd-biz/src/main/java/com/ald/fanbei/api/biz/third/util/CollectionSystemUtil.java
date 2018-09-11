@@ -168,26 +168,39 @@ public class CollectionSystemUtil extends AbstractThird {
 		}
 	}
 
+
 	/**
-	 * 将map转换成url
-	 *
-	 * @param map
+	 * jsd续期成功通知催收平台
+	 * @param reqBo
 	 * @return
 	 */
-	public String getUrlParamsByMap(Map<String, String> map) {
-		if (map == null) {
-			return "";
+	public boolean collectRenewal(Map<String, String> reqBo) {
+		// APP还款类型写3 , 线下还款写4
+		try {
+			Map<String, String> params = new HashMap<>();
+			params.put("info",JSON.toJSONString(reqBo));
+			params.put("orderNo",getOrderNo("JSD"));
+			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
+			String url = getUrl() + "/api/ald/collect/v1/third/renewal";
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(reqBo));
+			}else {
+				reqResult = HttpUtil.post(url, reqBo);
+			}
+			logger.info("collectRenewal response :" + reqResult);
+			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			logger.error("consumerRepayment error:", e);
+			throw new FanbeiException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
 		}
-		StringBuffer sb = new StringBuffer();
-		for (Map.Entry<String, String> entry : map.entrySet()) {
-			sb.append(entry.getKey() + "=" + entry.getValue());
-			sb.append("&");
-		}
-		String s = sb.toString();
-		if (s.endsWith("&")) {
-			s = org.apache.commons.lang.StringUtils.substringBeforeLast(s, "&");
-		}
-		return s;
 	}
+
+
+
+
 
 }

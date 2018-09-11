@@ -5,6 +5,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 极速贷订单借款Dao
@@ -30,4 +31,7 @@ public interface JsdBorrowLegalOrderCashDao extends BaseDao<JsdBorrowLegalOrderC
 	 * 上一笔商品
 	 */
 	JsdBorrowLegalOrderCashDo getPreviousOrderCashByBorrowId(Long rid);
+
+	List<JsdBorrowLegalOrderCashDo> getBorrowOrderCashsByBorrowId(@Param("borrowId")Long borrowId);
+
 }
