@@ -401,9 +401,6 @@
         borrow_id = #{borrowId}
         AND
         is_delete = 0
-        AND
-        status
-        IN ('AWAIT_REPAY','PART_REPAID')
         ORDER BY id DESC
         LIMIT 1
     </select>
