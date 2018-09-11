@@ -64,8 +64,6 @@ public class LoanOverDueJob {
     @Resource
     private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
     @Resource
-    private JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
-    @Resource
     private JsdNoticeRecordService jsdNoticeRecordService;
 
     JsdUserService jsdUserService;
@@ -177,15 +175,7 @@ public class LoanOverDueJob {
        return noticeRecordDo;
    }
 
-   private JsdBorrowCashOverdueLogDo buildLoanOverdueLog(Long borrowId, BigDecimal currentAmount, BigDecimal interest, Long userId, String type){
-       JsdBorrowCashOverdueLogDo overdueLog = new JsdBorrowCashOverdueLogDo();
-       overdueLog.setBorrowId(borrowId);
-       overdueLog.setCurrentAmount(currentAmount);
-       overdueLog.setInterest(interest);
-       overdueLog.setUserId(userId);
-       overdueLog.setType(type);
-       return overdueLog;
-   }
+
     void  collectionPush(List<JsdBorrowCashDo> list){
         List<Map<String,String>>  data = new ArrayList<>();
         for(JsdBorrowCashDo borrowCashDo : list){
