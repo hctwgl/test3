@@ -6,6 +6,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.util.JsonUtil;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +16,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashOverdueLogService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
-import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
@@ -27,10 +26,6 @@ import com.ald.fanbei.api.common.enums.OverdueLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashOverdueLogDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 
 
 /**
@@ -59,6 +54,8 @@ public class LoanOverDueJob {
     private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
     @Resource
     private JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
+    @Resource
+    private JsdNoticeRecordService jsdNoticeRecordService;
 
     @Resource
     GetHostIpUtil getHostIpUtil;
@@ -131,7 +128,13 @@ public class LoanOverDueJob {
                 }
                 //新增逾期日志
                 jsdBorrowCashOverdueLogService.saveRecord(buildLoanOverdueLog(jsdBorrowCashDo.getRid(), currentAmount, newOverdueAmount, jsdBorrowCashDo.getUserId(), OverdueLogType.CASH.name()));
-                xgxyUtil.borrowNoticeRequest(XgxyBorrowNoticeBo.gen(jsdBorrowCashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.OVERDUE.name(), "逾期"));
+                JsdNoticeRecordDo jsdNoticeRecordDo=buildNoticeRecord(jsdBorrowCashDo,XgxyBorrowNoticeBo.gen(jsdBorrowCashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.OVERDUE.name(), "逾期"));
+                jsdNoticeRecordService.addNoticeRecord(jsdNoticeRecordDo);
+                if(xgxyUtil.borrowNoticeRequest(XgxyBorrowNoticeBo.gen(jsdBorrowCashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.OVERDUE.name(), "逾期"))){
+                    JsdNoticeRecordDo noticeRecordDo=new JsdNoticeRecordDo();
+                    noticeRecordDo.setRid(jsdNoticeRecordDo.getRid());
+                    jsdNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
+                }
             } catch (Exception e) {
                 logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId="+jsdBorrowCashDo.getRid(),e);
             }
@@ -139,6 +142,16 @@ public class LoanOverDueJob {
             //TODO 通知催收逾期人员通讯录
             //collectionSystemUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
         }
+   }
+
+
+   private JsdNoticeRecordDo buildNoticeRecord(JsdBorrowCashDo jsdBorrowCashDo,XgxyBorrowNoticeBo noticeBo){
+       JsdNoticeRecordDo noticeRecordDo=new JsdNoticeRecordDo();
+       noticeRecordDo.setUserId(jsdBorrowCashDo.getUserId());
+       noticeRecordDo.setType(XgxyBorrowNotifyStatus.OVERDUE.name());
+       noticeRecordDo.setRefId(String.valueOf(jsdBorrowCashDo.getRid()));
+       noticeRecordDo.setParams(JsonUtil.toJSONString(noticeBo));
+       return noticeRecordDo;
    }
 
    private JsdBorrowCashOverdueLogDo buildLoanOverdueLog(Long borrowId, BigDecimal currentAmount, BigDecimal interest, Long userId, String type){

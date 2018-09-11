@@ -209,11 +209,15 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		renewalDo.setRenewalDay(paramBo.delayDay);
 		renewalDo.setPoundageRate(paramBo.cashPoundageRate);
 		renewalDo.setBaseBankRate(paramBo.cashRate);
-		renewalDo.setOverdueDay(borrowCashDo.getOverdueDay().intValue());
-		renewalDo.setOverdueStatus(borrowCashDo.getOverdueStatus());
 		renewalDo.setGmtPlanRepayment(borrowCashDo.getGmtPlanRepayment());
 		renewalDo.setGmtCreate(new Date());
 		renewalDo.setGmtModified(new Date());
+
+		Date curr = DateUtil.getStartOfDate(new Date(System.currentTimeMillis()));
+		Integer overdueday = NumberUtil.objToInteger(DateUtil.getNumberOfDayBetween(curr, borrowCashDo.getGmtPlanRepayment()));
+		if(overdueday<0) overdueday=0;
+		renewalDo.setOverdueDay(overdueday);
+		renewalDo.setOverdueStatus(curr.after(borrowCashDo.getGmtPlanRepayment())?"Y":"N");
 		
 		return renewalDo;
 	}
