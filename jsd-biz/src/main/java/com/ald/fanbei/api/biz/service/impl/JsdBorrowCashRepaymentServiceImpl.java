@@ -405,8 +405,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		
 		// 通知记录
 		JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
-		noticeRecordDo.setUserId(repaymentDo.getUserId());
-		noticeRecordDo.setRefId(String.valueOf(repaymentDo.getRid()));
+		noticeRecordDo.setUserId(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
+		noticeRecordDo.setRefId(String.valueOf(repaymentDo!=null?repaymentDo.getRid():orderRepaymentDo.getRid()));
 		noticeRecordDo.setType(JsdNoticeType.REPAY.code);
 		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 		noticeRecordDo.setParams(JSON.toJSONString(data));
