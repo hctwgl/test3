@@ -28,7 +28,7 @@ public class JsdTest extends BaseTest {
 //    String urlBase = "http://192.168.112.40:8080";
     
     String userName = "13165995223";
-    private static final String AES_KEY = "9c5dd35d58f8501f";
+    private static final String AES_KEY = "baac7fc54a2a7e75";
 
     /**
      * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -72,7 +72,7 @@ public class JsdTest extends BaseTest {
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
-        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        p.put("sign", generateSign(params, AES_KEY));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
@@ -100,10 +100,10 @@ public class JsdTest extends BaseTest {
     	params.put("goodsInfo", goodsInfo.toString());
     	params.put("timestamp", System.currentTimeMillis()+"");
     	params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
-    	String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+    	String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
     	Map<String, String> p = new HashMap<>();
     	p.put("data", data);
-    	p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+    	p.put("sign", generateSign(params, AES_KEY));
     	String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
     	System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     	
@@ -141,10 +141,10 @@ public class JsdTest extends BaseTest {
         params.put("period", 1+"");
         params.put("timestamp", System.currentTimeMillis()+"");
         params.put("openId","EB56E1F0A9383508DB8FD039C7D37BD1");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
-        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        p.put("sign", generateSign(params, AES_KEY));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
@@ -158,10 +158,10 @@ public class JsdTest extends BaseTest {
         Map<String,String> params = new HashMap<>();
         params.put("borrowNo", "loan0909eca645000000019");
         params.put("openId","EB56E1F0A9383508DB8FD039C7D37BD1");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
-        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        p.put("sign", generateSign(params, AES_KEY));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
@@ -174,10 +174,10 @@ public class JsdTest extends BaseTest {
         params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
         params.put("type","BIND");
         params.put("busiFlag","1313619220301");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
-        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        p.put("sign", generateSign(params, AES_KEY));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -192,10 +192,10 @@ public class JsdTest extends BaseTest {
         params.put("bankName","ABC");
         params.put("bankMobile","13136192203");
         params.put("bindNo","1313619220302");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
-        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        p.put("sign", generateSign(params, AES_KEY));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -209,10 +209,10 @@ public class JsdTest extends BaseTest {
         params.put("code","888888");
         params.put("type","BIND");
         params.put("busiFlag","1313619220301");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
-        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        p.put("sign", generateSign(params, AES_KEY));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -230,10 +230,10 @@ public class JsdTest extends BaseTest {
         params.put("borrowNo", "loan0910eca645000000017");
         params.put("repayNo", "repayEca12312314123156575");
         params.put("openId","BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
-        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        p.put("sign", generateSign(params, AES_KEY));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
@@ -248,10 +248,10 @@ public class JsdTest extends BaseTest {
         params.put("code","046842");
         params.put("type","REPAY");
         params.put("busiFlag","hqkj20180830151933123241");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
-        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        p.put("sign", generateSign(params, AES_KEY));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -263,10 +263,10 @@ public class JsdTest extends BaseTest {
         params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
         params.put("type","REPAY");
         params.put("busiFlag","hqkj20180830151933123019");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"9c5dd35d58f8501f");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
-        p.put("sign", generateSign(params, "9c5dd35d58f8501f"));
+        p.put("sign", generateSign(params, AES_KEY));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }

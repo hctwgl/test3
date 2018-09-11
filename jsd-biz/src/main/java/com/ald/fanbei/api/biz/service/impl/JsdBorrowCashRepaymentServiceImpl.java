@@ -102,22 +102,28 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 	@Override
 	public Map<String, Object> repay(BorrowCashRepayBo bo, String bankPayType) {
+		try {
 
-		if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
-			lockRepay(bo.userId);
-		}
+			if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
+				lockRepay(bo.userId);
+			}
 
-		Date now = new Date();
-		String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
-		if(StringUtil.equals("sysJob",bo.remoteIp)){
-			name = Constants.BORROW_REPAYMENT_NAME_AUTO;
+			Date now = new Date();
+			String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
+			if(StringUtil.equals("sysJob",bo.remoteIp)){
+				name = Constants.BORROW_REPAYMENT_NAME_AUTO;
+			}
+			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now,bankPayType);
+			bo.tradeNo = tradeNo;
+			bo.name = name;
+			generateRepayRecords(bo);
+			return doRepay(bo,bankPayType);
+		}catch (Exception e) {
+			unLockRepay(bo.userId);
+			logger.info("repay method error", e);
 		}
-		String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now,bankPayType);
-		bo.tradeNo = tradeNo;
-		bo.name = name;
-		generateRepayRecords(bo);
-		return doRepay(bo,bankPayType);
-}
+		return null;
+     }
 	private Map<String, Object> doRepay(BorrowCashRepayBo bo,String bankChannel) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HashMap<String, Object> bank = jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
@@ -307,29 +313,30 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	public void dealRepaymentFail(String tradeNo, String outTradeNo,boolean isNeedMsgNotice,String code,String errorMsg) {
 		final JsdBorrowCashRepaymentDo repaymentDo = jsdBorrowCashRepaymentDao.getByTradeNo(tradeNo);
 		final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = jsdBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByTradeNo(tradeNo);
-		logger.info("dealRepaymentFail process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo
-				+ ",isNeedMsgNotice=" + isNeedMsgNotice + ",errorMsg=" + errorMsg
-				+ ",borrowRepayment=" + JSON.toJSONString(repaymentDo) + ", orderRepayment=" + JSON.toJSONString(orderRepaymentDo));
-
-		if ((repaymentDo != null && YesNoStatus.YES.getCode().equals(repaymentDo.getStatus()) ) // 检查交易流水 对应记录数据库中是否已经处理
-				|| (orderRepaymentDo != null && YesNoStatus.YES.getCode().equals(orderRepaymentDo.getStatus()) )) {
-			return;
-		}
-
-		if(repaymentDo != null) {
-			changBorrowRepaymentStatus(outTradeNo, JsdBorrowCashRepaymentStatus.NO.getCode(), repaymentDo.getRid(),code,errorMsg);
-		}
-		if(orderRepaymentDo != null) {
-			changOrderRepaymentStatus(outTradeNo, JsdBorrowLegalRepaymentStatus.NO.getCode(), orderRepaymentDo.getRid());
-		}
-
-		// 解锁还款
-		unLockRepay(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
 		try {
+			logger.info("dealRepaymentFail process begin, tradeNo=" + tradeNo + ",outTradeNo=" + outTradeNo
+					+ ",isNeedMsgNotice=" + isNeedMsgNotice + ",errorMsg=" + errorMsg
+					+ ",borrowRepayment=" + JSON.toJSONString(repaymentDo) + ", orderRepayment=" + JSON.toJSONString(orderRepaymentDo));
+
+			if ((repaymentDo != null && YesNoStatus.YES.getCode().equals(repaymentDo.getStatus()) ) // 检查交易流水 对应记录数据库中是否已经处理
+					|| (orderRepaymentDo != null && YesNoStatus.YES.getCode().equals(orderRepaymentDo.getStatus()) )) {
+				return;
+			}
+
+			if(repaymentDo != null) {
+				changBorrowRepaymentStatus(outTradeNo, JsdBorrowCashRepaymentStatus.NO.getCode(), repaymentDo.getRid(),code,errorMsg);
+			}
+			if(orderRepaymentDo != null) {
+				changOrderRepaymentStatus(outTradeNo, JsdBorrowLegalRepaymentStatus.NO.getCode(), orderRepaymentDo.getRid());
+			}
+
 			noticeXgxyRepayResult(repaymentDo,orderRepaymentDo,YesNoStatus.NO.getCode(),errorMsg);
 		}
 		catch (Exception e){
 			logger.error("notice eca fail error=",e);
+		}finally {
+			// 解锁还款
+			unLockRepay(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
 		}
 
 	}
