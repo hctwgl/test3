@@ -291,62 +291,6 @@
 		ORDER BY gmt_create DESC
         LIMIT 1
     </select>
-    <select id="getRepaymentByPayTradeNo"
-            resultType="JsdBorrowCashRepaymentDo">
-        SELECT
-        <include refid="queryFields" />
-        FROM
-        jsd_borrow_cash_repayment
-        WHERE
-        is_delete = 0
-        AND
-        jsd_repay_no=#{repayNo}
-        ORDER BY
-        gmt_create DESC
-        LIMIT 1
-    </select>
-
-    <update id="updateRepaymentBorrowCash" parameterType="JsdBorrowCashRepaymentDo">
-        UPDATE jsd_borrow_cash_repayment SET gmt_modified = NOW()
-
-        <if test="name != null">
-            ,name=#{name}
-        </if>
-        <if test="repayNo != null">
-            ,repay_no=#{repayNo}
-        </if>
-        <if test="repaymentAmount != null">
-            ,repayment_amount=#{repaymentAmount}
-        </if>
-        <if test="actualAmount != null">
-            ,actual_amount=#{actualAmount}
-        </if>
-        <if test="borrowId != null">
-            ,borrow_id=#{borrowId}
-        </if>
-        <if test="tradeNo != null">
-            ,trade_no=#{tradeNo}
-        </if>
-        <if test="status != null">
-            ,status=#{status}
-        </if>
-        <if test="userId != null">
-            ,user_id=#{userId}
-        </if>
-        <if test="cardNumber != null">
-            ,card_number=#{cardNumber}
-        </if>
-        <if test="cardName != null">
-            ,card_name=#{cardName}
-        </if>
-        <if test="failCode != null">
-            ,fail_code=#{failCode}
-        </if>
-        <if test="failMsg != null">
-            ,fail_msg=#{failMsg}
-        </if>
-        WHERE id = #{rid}
-    </update>
 
     <update id="status2Process">
         UPDATE jsd_borrow_cash_repayment SET status='P',trade_no=#{tradeNo} WHERE id=#{repaymentId} AND status='A'

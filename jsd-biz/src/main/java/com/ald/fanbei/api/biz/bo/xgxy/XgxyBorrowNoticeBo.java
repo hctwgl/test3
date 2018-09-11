@@ -2,7 +2,7 @@ package com.ald.fanbei.api.biz.bo.xgxy;
 
 import java.util.Date;
 
-public class XgxyPayBo {
+public class XgxyBorrowNoticeBo {
 
     private String tradeNo;
     private String borrowNo;
@@ -11,6 +11,15 @@ public class XgxyPayBo {
     private String reason;
     private Long timestamp;
 
+    public static XgxyBorrowNoticeBo gen(String borrowNo, String status, String reason) {
+    	XgxyBorrowNoticeBo bo = new XgxyBorrowNoticeBo();
+    	bo.borrowNo = borrowNo;
+    	bo.status = status;
+    	bo.reason = reason;
+    	bo.timestamp = System.currentTimeMillis();
+    	return bo;
+    }
+    
     public String getBorrowNo() {
         return borrowNo;
     }
