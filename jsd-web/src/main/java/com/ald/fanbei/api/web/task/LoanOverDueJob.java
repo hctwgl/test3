@@ -185,7 +185,10 @@ public class LoanOverDueJob {
 
     void  collectionPush(List<JsdBorrowCashDo> list){
         List<Map<String,String>>  data = new ArrayList<>();
+        Map<String,String>  param = new HashMap<>();
         for(JsdBorrowCashDo borrowCashDo : list){
+            param.put("borrowNo",borrowCashDo.getBorrowNo());
+            HashMap<String,String> map = xgxyUtil.borrowNoticeRequest(param);
             //--------------------start  催收上报接口需要参数---------------------------
             Long borrowId = borrowCashDo.getRid();
             //搭售商品信息

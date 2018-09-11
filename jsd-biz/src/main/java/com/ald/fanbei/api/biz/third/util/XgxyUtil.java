@@ -3,12 +3,10 @@ package com.ald.fanbei.api.biz.third.util;
 
 import static com.ald.fanbei.api.common.util.JsdSignUtil.generateSign;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyOverdueReqBo;
+import com.ald.fanbei.api.common.util.*;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
@@ -16,11 +14,6 @@ import com.ald.fanbei.api.biz.bo.xgxy.XgxyPayReqBo;
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyReqBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.common.util.HttpUtil;
-import com.ald.fanbei.api.common.util.JsdAesUtil;
-import com.ald.fanbei.api.common.util.JsdSignUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -219,6 +212,43 @@ public class XgxyUtil extends AbstractThird {
             logger.info("overDueNoticeRequest request fail", e);
         }
         return "";
+    }
+
+
+    /**
+     * 获取借款信息
+     *
+     * @param data
+     * @return
+     */
+    public HashMap<String,String> borrowNoticeRequest(Map<String,String> data) {
+        HashMap<String,String> param = new HashMap<>();
+        try {
+            logger.info("borrowNoticeRequest to xgxy request start");
+            data.put("timestamp",String.valueOf(new Date().getTime()));
+            Map<String, Object> params = new HashMap<>();
+            params.put("appId", APPID);
+            params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+            params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+            String url = getXgxyUrl() + "/isp/open/third/eca/v1/borrowOrder";
+            String reqResult = "";
+            if (url.contains("https")){
+                reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(params));
+            }else {
+                reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(params));
+            }
+            logThird(reqResult, url, JSON.toJSONString(data));
+            if (StringUtil.isBlank(reqResult)) {
+                return param;
+            }
+            XgxyOverdueReqBo overdueReqBo1 = JSONObject.parseObject(reqResult, XgxyOverdueReqBo.class);
+            if (Constants.XGXY_REQ_CODE_SUCC.equals(overdueReqBo1.get("code"))) {
+                return param;
+            }
+        } catch (Exception e) {
+            logger.info("bindBankNoticeRequest to xgxy request fail", e);
+        }
+        return param;
     }
 
 
