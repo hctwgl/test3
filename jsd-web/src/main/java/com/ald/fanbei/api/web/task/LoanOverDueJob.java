@@ -12,10 +12,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashOverdueLogService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
@@ -129,11 +131,11 @@ public class LoanOverDueJob {
                 }
                 //新增逾期日志
                 jsdBorrowCashOverdueLogService.saveRecord(buildLoanOverdueLog(jsdBorrowCashDo.getRid(), currentAmount, newOverdueAmount, jsdBorrowCashDo.getUserId(), OverdueLogType.CASH.name()));
-                //TODO 发送补偿通知到西瓜信用
-               // xgxyUtil.overDueNoticeRequest(buildBorrowLegalOrderCashDo(jsdBorrowCashDo,borrowLegalOrderCashDo));
+                xgxyUtil.borrowNoticeRequest(XgxyBorrowNoticeBo.gen(jsdBorrowCashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.OVERDUE.name(), "逾期"));
             } catch (Exception e) {
                 logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId="+jsdBorrowCashDo.getRid(),e);
             }
+            
             //TODO 通知催收逾期人员通讯录
             //collectionSystemUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
         }

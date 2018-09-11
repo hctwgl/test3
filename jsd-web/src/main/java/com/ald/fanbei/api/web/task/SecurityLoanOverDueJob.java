@@ -46,7 +46,7 @@ public class SecurityLoanOverDueJob {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0/2 * * * ?")
     public void laonDueJob(){
         String curHostIp = getHostIpUtil.getIpAddress();
         logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);

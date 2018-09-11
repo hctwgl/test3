@@ -16,7 +16,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowResp;
-import com.ald.fanbei.api.biz.bo.xgxy.XgxyPayBo;
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
@@ -316,10 +316,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	
 	private void jsdNoticeRecord(JsdBorrowCashDo cashDo,String msg, String status) {
         try {
-            XgxyPayBo xgxyPayBo = buildXgxyPay(cashDo, msg, status);
+        	XgxyBorrowNoticeBo xgxyPayBo = buildXgxyPay(cashDo, msg, status);
             JsdNoticeRecordDo noticeRecordDo = buildJsdNoticeRecord(cashDo, xgxyPayBo);
             jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
-            if(xgxyUtil.payNoticeRequest(xgxyPayBo)){
+            if(xgxyUtil.borrowNoticeRequest(xgxyPayBo)){
                 noticeRecordDo.setRid(noticeRecordDo.getRid());
                 noticeRecordDo.setGmtModified(new Date());
                 jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
@@ -329,8 +329,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         }
     }
 
-    private XgxyPayBo buildXgxyPay(JsdBorrowCashDo cashDo, String msg,String status) {
-        XgxyPayBo  xgxyPayBo = new XgxyPayBo();
+    private XgxyBorrowNoticeBo buildXgxyPay(JsdBorrowCashDo cashDo, String msg,String status) {
+    	XgxyBorrowNoticeBo  xgxyPayBo = new XgxyBorrowNoticeBo();
         xgxyPayBo.setTradeNo(cashDo.getTradeNoUps());
         xgxyPayBo.setBorrowNo(cashDo.getTradeNoXgxy());
         xgxyPayBo.setReason(msg);
@@ -340,7 +340,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         return xgxyPayBo;
     }
 
-    private JsdNoticeRecordDo buildJsdNoticeRecord(JsdBorrowCashDo cashDo,XgxyPayBo xgxyPayBo) {
+    private JsdNoticeRecordDo buildJsdNoticeRecord(JsdBorrowCashDo cashDo, XgxyBorrowNoticeBo xgxyPayBo) {
     	JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
         noticeRecordDo.setUserId(cashDo.getUserId());
         noticeRecordDo.setRefId(String.valueOf(cashDo.getRid()));
