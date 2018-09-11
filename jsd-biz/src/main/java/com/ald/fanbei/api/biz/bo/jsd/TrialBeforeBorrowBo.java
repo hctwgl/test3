@@ -39,7 +39,7 @@ public class TrialBeforeBorrowBo {
 		/**
 		 * 兼容字段，对应term
 		 */
-		public String nepr;
+		public String nper;
 		
 		public TrialBeforeBorrowReq() {}
 		

@@ -140,13 +140,13 @@ public class JsdBorrowTest extends BaseTest {
     	String url = urlBase + "/third/eca/v1/getProtocolInfo";
     	JSONObject params = new JSONObject();
         params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
-        params.put("bizNo", "loan0911eca645000000012");
+//        params.put("bizNo", "loan0911eca645000000012");
         params.put("type", "BORROW");
     	
     	JSONObject previewParams = new JSONObject();
     	previewParams.put("productNo", "2");
     	previewParams.put("amount", "5000");
-    	previewParams.put("term", "10");
+    	previewParams.put("nepr", 10);
     	previewParams.put("unit", "DAY");
     	previewParams.put("isTying", "Y");
     	previewParams.put("tyingType", "SELL");

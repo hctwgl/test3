@@ -106,13 +106,13 @@ public class H5ProtocolController {
             	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
             	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
             	trialBo.req.openId = openId;
-            	trialBo.req.term = trialBo.req.nepr;
+            	trialBo.req.term = trialBo.req.nper;
             	trialBo.userId = userDo.getRid();
             	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
             	jsdBorrowCashService.resolve(trialBo);
             	
             	amountLower = new BigDecimal(trialBo.resp.borrowAmount);
-            	ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(trialBo.req.nepr);
+            	ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(trialBo.req.nper);
             	interestRate = rateInfo.interestRate;
             	serviceRate = rateInfo.serviceRate;
             	overdueRate = rateInfo.overdueRate;
@@ -177,13 +177,13 @@ public class H5ProtocolController {
             	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
             	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
             	trialBo.req.openId = openId;
-            	trialBo.req.term = trialBo.req.nepr;
+            	trialBo.req.term = trialBo.req.nper;
             	trialBo.userId = userDo.getRid();
             	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
             	jsdBorrowCashService.resolve(trialBo);
             	
             	amountLower = new BigDecimal(trialBo.resp.totalDiffFee);
-            	ResourceRateInfoBo rateInfo = jsdResourceService.getOrderRateInfo(trialBo.req.nepr);
+            	ResourceRateInfoBo rateInfo = jsdResourceService.getOrderRateInfo(trialBo.req.nper);
             	interestRate = rateInfo.interestRate;
             	serviceRate = rateInfo.serviceRate;
             	overdueRate = rateInfo.overdueRate;
@@ -244,9 +244,9 @@ public class H5ProtocolController {
 	        	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
 	        	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
 	        	trialBo.req.openId = openId;
-	        	trialBo.req.term = trialBo.req.nepr;
+	        	trialBo.req.term = trialBo.req.nper;
 	        	trialBo.userId = userDo.getRid();
-	        	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
+	        	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(trialBo.req.nper);
 	        	jsdBorrowCashService.resolve(trialBo);
 	        	
 	        	TrialBeforeBorrowResp resp = trialBo.resp;
