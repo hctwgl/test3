@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyRepayNoticeBo;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
@@ -75,21 +76,22 @@ public class XgxyUtil extends AbstractThird {
         return false;
     }
 
+
     /**
      * 还款通知请求
      *
-     * @param data
+     * @param
      * @return
      */
-    public boolean dsedRePayNoticeRequest(HashMap<String, String> data) {
+    public boolean repayNoticeRequest(HashMap<String, String> data) {
         try {
-            logger.info("dsedRePayNoticeRequest start data = "+data);
+            logger.info("jsdRepayNoticeRequest start data = "+data);
             Map<String, String> p = new HashMap<>();
-            p.put("data", JsdAesUtil.encryptToBase64Third(JSON.toJSONString(data), PRIVATE_KEY));
-            p.put("sign", generateSign(JSON.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+            p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+            p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             p.put("appId", APPID);
-            p.put("timestamp",System.currentTimeMillis()+"");
-            String url = getXgxyUrl()+"/isp/open/third/eca/v1/repaymentNotify";
+            String url = getXgxyUrl() + "/isp/open/third/eca/v1/repaymentNotify";
+//    		String url = "http://192.168.156.103:1112/isp/open/third/eca/v1/delayNotify";
             logger.info("data = " + data +",url = " +url );
             String reqResult = "";
             if (url.contains("https")){
@@ -106,7 +108,7 @@ public class XgxyUtil extends AbstractThird {
                 return true;
             }
         } catch (Exception e) {
-            logger.info("rePayNoticeRequest request fail", e);
+            logger.info("renewalNoticeRequest request fail", e);
         }
 
         return false;
