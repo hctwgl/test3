@@ -1,13 +1,13 @@
 package com.ald.fanbei.api.web.h5.api.jsd;
 
 
-import java.math.BigDecimal;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
@@ -20,14 +20,12 @@ import com.ald.fanbei.api.common.enums.XgxyProtocolType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.GetLoanProtocolParam;
-import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -52,58 +50,61 @@ public class GetLoanProtocolApi implements JsdH5Handle {
     public JsdH5HandleResponse process(Context context) {
     	JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
         GetLoanProtocolParam param = (GetLoanProtocolParam) context.getParamEntity();
-
-        if(StringUtils.isNotBlank(param.bizNo)) { //根据业务流水号获取对应协议
-        	if(XgxyProtocolType.BORROW.name().equals(param.type)) {
-        		JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(param.bizNo);
-        		if(cashDo == null) {
-        			throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
-        		}
-        	}else if (XgxyProtocolType.TYING.name().equals(param.type)){
-
-            }else if (XgxyProtocolType.AUTH.name().equals(param.type)){
-
-            }else {
-        		logger.warn("Don't support " + param.type + " protocol yet!");
-        		throw new FanbeiException(FanbeiExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
-        	}
-        }else if(XgxyProtocolType.BORROW.name().equals(param.type)){//否则为预览借款协议，只支持BORROW类型
-        	JSONObject previewObj = JSONObject.parseObject(param.previewParam);
+        List<JsdProctocolVo> protocolVos = new ArrayList<>();;
+    	if(XgxyProtocolType.BORROW.name().equals(param.type)) {
+			protocolVos = getBorrowProtocols(param.openId, param.bizNo, param.previewParam);
+    	}else if (XgxyProtocolType.TYING.name().equals(param.type)){
+    		protocolVos = getOrderProtocols(param.openId, param.bizNo, param.previewParam);
+        }else if (XgxyProtocolType.AUTH.name().equals(param.type)){
         	
         }else {
-    		throw new FanbeiException(FanbeiExceptionCode.JSD_PARAMS_ERROR);
-        }
-        
-        resp.setData(jsdPrococolVo);
+    		logger.warn("Don't support " + param.type + " protocol yet!");
+    		throw new FanbeiException(FanbeiExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
+    	}
+        resp.setData(protocolVos);
         return resp;
     }
     
-    private List<JsdProctocolVo> getBorrowProtocols(){
+    private List<JsdProctocolVo> getBorrowProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
     	List<JsdResourceDo> ress = jsdResourceService.listByType(ResourceType.PROTOCOL_BORROW.getCode());
     	List<JsdProctocolVo> protocolVos = new ArrayList<>();
     	for(JsdResourceDo resdo: ress) {
+    		if( ResourceSecType.PROTOCOL_BORROW_ORDER.name().equals(resdo.getSecType())) {
+    			continue;
+    		}
+    		
     		JsdProctocolVo protocolVo = new JsdProctocolVo();
-            if ( ResourceSecType.PROTOCOL_BORROW_ORDER.name().equals(resdo.getSecType())) {//分期服务协议
-            	protocolVo.setProtocolName(resdo.getName());
-            	protocolVo.setProtocolUrl(getNotifyHost()+"/jsd-web/h5/platformServiceProtocol?openId=" + openId +
-                        "&nper=" + nper + "&loanNo=" + param.bizNo + "&borrowAmount=" + borrowAmount + "&totalServiceFee=" + BigDecimal.ZERO);
-            } else if (ResourceSecType.PROTOCOL_BORROW_CASH.name().equals(param.type)) {//借钱协议
-            	protocolVo.setProtocolName("借钱协议");
-                protocolVo.setProtocolUrl(getNotifyHost()+"/jsd-web/h5/loanProtocol?openId=" + openId +
-                        "&borrowAmount=" + borrowAmount + "&nper=" + nper + "&borrowId=" + borrowId + "&loanRemark=" + loanRemark +
-                        "&repayRemark=" + "");
-            } else if ("PROTOCOL_BORROW_DIGITAL CERTIFICATE".equals(param.type)) {//数字证书
-            	protocolVo.setProtocolName("数字证书");
-            	protocolVo.setProtocolUrl(getNotifyHost()+"/jsd-web/app/numProtocol?openId=" + openId);
-            } else if ("PROTOCOL_BORROW_RISK_NOTICE".equals(param.type)) {//风险提示协议
-            	protocolVo.setProtocolName("风险提示协议");
-            	protocolVo.setProtocolUrl(getNotifyHost()+"/app/sys/riskWarning");
-            }
+        	protocolVo.setProtocolName(resdo.getName());
+        	String urlPrefix = getNotifyHost()+resdo.getValue();
+			try {
+				String urlParams = "?openId=" + openId  + "&tradeNoXgxy=" + tradeNoXgxy + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
+				protocolVo.setProtocolUrl(urlPrefix + urlParams);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+        	
             protocolVos.add(protocolVo);
     	}
     	return protocolVos;
     }
     
+    private List<JsdProctocolVo> getOrderProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
+    	JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_ORDER.name());
+    	List<JsdProctocolVo> protocolVos = new ArrayList<>();
+    		
+		JsdProctocolVo protocolVo = new JsdProctocolVo();
+    	protocolVo.setProtocolName(resdo.getName());
+    	String urlPrefix = getNotifyHost()+resdo.getValue();
+		try {
+			String urlParams = "?openId=" + openId  + "&tradeNoXgxy=" + tradeNoXgxy + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
+			protocolVo.setProtocolUrl(urlPrefix + urlParams);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+    	
+        protocolVos.add(protocolVo);
+    	return protocolVos;
+    }
     
     private String getNotifyHost(){
         if(notifyHost==null){
