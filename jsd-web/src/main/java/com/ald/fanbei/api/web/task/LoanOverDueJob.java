@@ -8,6 +8,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.CuiShouUtils;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.biz.service.*;
@@ -99,7 +100,13 @@ public class LoanOverDueJob {
                         //计算逾期
                         this.dealOverdueRecords(borrowCashDos);
                         //通知催收逾期人员通讯录
-                        collectionPush(borrowCashDos);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                collectionPush(borrowCashDos);
+                            }
+                        }).start();
+
                     }
                 }
                 logger.info("borrowCashDueJob run end,time=" + new Date());
