@@ -8,18 +8,12 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.util.CuiShouUtils;
 import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.enums.GenderType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
-import com.ald.fanbei.api.dal.dao.JsdUserDao;
-import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -56,7 +50,8 @@ public class LoanOverDueJob {
 
     @Resource
     private CollectionSystemUtil collectionSystemUtil;
-
+    @Resource
+    JsdUserContactsService jsdUserContactsService;
     @Resource
     private JsdBorrowCashService borrowCashService;
 
@@ -166,9 +161,9 @@ public class LoanOverDueJob {
             } catch (Exception e) {
                 logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId="+jsdBorrowCashDo.getRid(),e);
             }
-            
+            addUserContancts(jsdBorrowCashDo.getUserId());
             //TODO 通知催收逾期人员通讯录
-            //collectionSystemUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
+//            collectionSystemUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
         }
    }
 
@@ -181,6 +176,22 @@ public class LoanOverDueJob {
        noticeRecordDo.setParams(JsonUtil.toJSONString(noticeBo));
        return noticeRecordDo;
    }
+
+    void addUserContancts(Long userId){
+        JsdUserDo userDo = jsdUserService.getById(userId);
+        String contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
+        if(StringUtils.isNotBlank(contacts)){
+            List<JsdUserContactsDo> userContactsDo= jsdUserContactsService.getUserContactsByUserId(String.valueOf(userId));
+            JsdUserContactsDo contactsDo=new JsdUserContactsDo();
+            contactsDo.setUserId(String.valueOf(userId));
+            contactsDo.setContactsMobile(contacts);
+            if(userContactsDo.size()==0){
+                jsdUserContactsService.saveRecord(contactsDo);
+            }else {
+                jsdUserContactsService.updateByUserId(contactsDo);
+            }
+        }
+    }
 
 
     void  collectionPush(List<JsdBorrowCashDo> list){
@@ -306,7 +317,7 @@ public class LoanOverDueJob {
 
     List<Map<String,String>> buildOverdueContactsDo(List<JsdBorrowCashDo> jsdBorrowCashDos){
         return null;
-     }
+    }
 
     private JsdBorrowCashOverdueLogDo buildLoanOverdueLog(Long borrowId, BigDecimal currentAmount, BigDecimal interest, Long userId, String type){
         JsdBorrowCashOverdueLogDo overdueLog = new JsdBorrowCashOverdueLogDo();
