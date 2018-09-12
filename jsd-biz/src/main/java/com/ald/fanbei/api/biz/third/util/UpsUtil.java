@@ -63,7 +63,7 @@ public class UpsUtil extends AbstractThird {
 	
 	private static String SYS_KEY = "02";
 	private static String TRADE_STATUE_SUCC = "00";
-	private static String DSED = "JSD";
+	private static String USER_PREFFIX = "JSD";
 
 	private static String TRADE_STATUE_PART_SUCC = "01"; // 部分成功 
 	private static String TRADE_STATUE_ALREADY__SUCC = "02"; // 已经成功
@@ -153,7 +153,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setAmount(amount.toString());
 		reqBo.setRealName(realName);
 		reqBo.setCardNo(cardNo);
-		reqBo.setUserNo(userNo);
+		reqBo.setUserNo(USER_PREFFIX + userNo);
 		reqBo.setCertNo(idNumber);
 		reqBo.setPhone(phone);
 		reqBo.setBankName(bankName);
@@ -231,7 +231,7 @@ public class UpsUtil extends AbstractThird {
 		String orderNo = getOrderNo("sign", mobile.substring(mobile.length()-4,mobile.length()));
 		UpsAuthSignReqBo reqBo = new UpsAuthSignReqBo();
 		setPubParam(reqBo,"authSign",orderNo,clientType);
-		reqBo.setUserNo(DSED+userNo);
+		reqBo.setUserNo(USER_PREFFIX+userNo);
 		reqBo.setBankCode(bankCode);
 		reqBo.setRealName(realName);
 		reqBo.setPhone(mobile);
@@ -278,7 +278,7 @@ public class UpsUtil extends AbstractThird {
 		String orderNo = getOrderNo("asva", cardNo.substring(cardNo.length()-4,cardNo.length()));
 		UpsAuthSignValidReqBo reqBo = new UpsAuthSignValidReqBo();
 		setPubParam(reqBo,"authSignValid",orderNo,clientType);
-		reqBo.setUserNo(DSED+userNo);
+		reqBo.setUserNo(USER_PREFFIX+userNo);
 		reqBo.setCardNo(cardNo);
 		reqBo.setSmsCode(verifyCode);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignValidNotify");
@@ -344,7 +344,7 @@ public class UpsUtil extends AbstractThird {
 		setPubParam(reqBo,"collect",orderNo,clientType);
 		reqBo.setMerPriv(merPriv);
 		reqBo.setAmount(amount.toString());
-		reqBo.setUserNo(userNo);
+		reqBo.setUserNo(USER_PREFFIX + userNo);
 		reqBo.setRealName(realName);
 		reqBo.setPhone(phone);
 		reqBo.setBankCode(bankCode);
@@ -394,7 +394,7 @@ public class UpsUtil extends AbstractThird {
 		setPubParam(reqBo,"quickPay",orderNo,clientType);
 		reqBo.setMerPriv(merPriv);
 		reqBo.setAmount(amount.toString());
-		reqBo.setUserNo(userNo);
+		reqBo.setUserNo(USER_PREFFIX + userNo);
 		reqBo.setPhone(phone);
 		reqBo.setRealName(realName);
 		reqBo.setCardNo(cardNo);
@@ -492,7 +492,7 @@ public class UpsUtil extends AbstractThird {
 		String orderNo = getOrderNo("sire", phone.substring(phone.length()-4,phone.length()));
 		UpsSignReleaseReqBo reqBo = new UpsSignReleaseReqBo();
 		setPubParam(reqBo,"signRelease",orderNo,clientType);
-		reqBo.setUserNo(userNo);
+		reqBo.setUserNo(USER_PREFFIX + userNo);
 		reqBo.setBankCode(bankCode);
 		reqBo.setRealName(realName);
 		reqBo.setPhone(phone);
