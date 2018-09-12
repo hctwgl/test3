@@ -45,7 +45,7 @@
 <body>
 <div class="main">
     <h2>借款协议</h2>
-    <p class="test_right">协议编号：$!{loanNo}</p>
+    <p class="test_right">协议编号：$!{borrowNo}</p>
     <p>
         甲方（借款人）：$!{realName}<br> 身份证号码：$!{idNumber}
         <br> 手机号码：$!{mobile}
