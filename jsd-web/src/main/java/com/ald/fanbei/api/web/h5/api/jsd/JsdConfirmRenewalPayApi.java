@@ -348,6 +348,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 			
 			bo.renewalNo = generatorClusterNo.getJsdRenewalNo();
 		} catch (Exception e) {
+			logger.error("jsd renewal params error",e);
 			throw new FanbeiException(FanbeiExceptionCode.JSD_PARAMS_ERROR);
 		}
 		
