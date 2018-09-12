@@ -17,6 +17,11 @@
             border-collapse: collapse;
         }
 
+        h2 {
+            text-align: center;
+            font-size: 100px;
+        }
+
         .text_decor {
             text-decoration: underline
         }
