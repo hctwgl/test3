@@ -19,6 +19,7 @@
 
         h2 {
             text-align: center;
+            font-size: .50rem;
         }
 
         .text_decor {

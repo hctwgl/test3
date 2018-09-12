@@ -61,10 +61,10 @@ public class UpsUtil extends AbstractThird {
 	private static String url = null;
 	private static String notifyHost = null;
 	
-	private static String SYS_KEY = "02";
-	private static String TRADE_STATUE_SUCC = "00";
+	private static String SYS_KEY = "02JSD";
 	private static String USER_PREFFIX = "JSD";
 
+	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_PART_SUCC = "01"; // 部分成功 
 	private static String TRADE_STATUE_ALREADY__SUCC = "02"; // 已经成功
 	
