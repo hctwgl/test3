@@ -349,7 +349,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 				Map<String, String> repayData = new HashMap<String, String>();
 				repayData.put("dataId",String.valueOf(list.get(1).getRid()));
 				JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
-				noticeRecordDo.setType(JsdNoticeType.RENEW.code);
+				noticeRecordDo.setType(JsdNoticeType.COLLECT_RENEW.code);
 				noticeRecordDo.setUserId(renewalDo.getUserId());
 				noticeRecordDo.setRefId(String.valueOf(renewalDo.getRid()));
 				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);

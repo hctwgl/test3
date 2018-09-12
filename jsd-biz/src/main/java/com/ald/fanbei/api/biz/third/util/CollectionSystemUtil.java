@@ -24,7 +24,7 @@ import com.alibaba.fastjson.JSON;
 @Component("collectionSystemUtil")
 public class CollectionSystemUtil extends AbstractThird {
 
-	private static String url = "http://192.168.156.40:8080";
+	private static String url = null;
 
 	private static String getUrl() {
 		if (url == null) {
@@ -151,7 +151,8 @@ public class CollectionSystemUtil extends AbstractThird {
 	public boolean consumerRepayment(Map<String, String> reqBo) {
 		// APP还款类型写3 , 线下还款写4
 		try {
-			String url = getUrl() + "/report/thirdRepayment";
+//			String url = getUrl() + "/report/thirdRepayment";
+			String url = "http:///report/thirdRepayment";
 			String reqResult = "";
 			if (url.contains("https")){
 				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(reqBo));
@@ -183,6 +184,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("orderNo",getOrderNo("JSD"));
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo");
 			String url = getUrl() + "/api/ald/collect/v1/third/renewal";
+//			String url = getUrl() + "/api/ald/collect/v1/third/renewal";
 			String reqResult = "";
 			if (url.contains("https")){
 				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(reqBo));
