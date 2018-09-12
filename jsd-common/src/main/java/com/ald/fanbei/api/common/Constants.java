@@ -290,6 +290,7 @@ public class Constants {
 
 	public static final String OFFLINE_CACHEKEY_REPAYCASHNO = "dsed_offline_repay_cash_no";
 	public static final String CACHEKEY_REPAYCASHNO = "jsd_repay_cash_no";
+	public static final String CACHEKEY_RENEWALCASHNO = "jsd_renewal_cash_no";
 	public static final String CACHEKEY_ORDERNO_LOCK = "jsd_order_lock";
     public static final String CACHEKEY_BORROWCASHNO_LOCK = "jsd_borrow_cash_no_lock";
     public static final String CACHEKEY_BORROWCASHNO = "jsd_borrow_cash_no";
