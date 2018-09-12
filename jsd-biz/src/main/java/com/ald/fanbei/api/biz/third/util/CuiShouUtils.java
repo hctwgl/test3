@@ -221,6 +221,7 @@ public class CuiShouUtils {
         //用户信息
         JsdUserDo userDo= jsdUserService.getById(jsdBorrowLegalOrder.getUserId());
         if(userDo != null){
+            buildData.put("userId",String.valueOf(userDo.getRid()));//userId
             buildData.put("realName",userDo.getRealName());//姓名
             buildData.put("userName",userDo.getUserName());//账号
             buildData.put("idNumber",userDo.getIdNumber());//身份证号码

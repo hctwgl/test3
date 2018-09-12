@@ -117,6 +117,7 @@ public class LoanOverDueJob {
      */
    void dealOverdueRecords(List<JsdBorrowCashDo> jsdBorrowCashDos){
         for(JsdBorrowCashDo jsdBorrowCashDo:jsdBorrowCashDos){
+            addUserContancts(jsdBorrowCashDo.getUserId());
             try {
                 logger.info("calcuOverdueRecords do borrowCashDueJob, borrowCashId="+jsdBorrowCashDo.getRid());
                 if(jsdBorrowCashOverdueLogService.getBorrowCashOverDueLogByNow(String.valueOf(jsdBorrowCashDo.getRid()))>0){
@@ -155,7 +156,7 @@ public class LoanOverDueJob {
             } catch (Exception e) {
                 logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId="+jsdBorrowCashDo.getRid(),e);
             }
-            addUserContancts(jsdBorrowCashDo.getUserId());
+
             //TODO 通知催收逾期人员通讯录
 //            collectionSystemUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
         }
@@ -216,6 +217,7 @@ public class LoanOverDueJob {
             //用户信息
             JsdUserDo userDo= jsdUserService.getById(jsdBorrowLegalOrder.getUserId());
             if(userDo != null){
+                buildData.put("userId",String.valueOf(userDo.getRid()));//userId
                 buildData.put("realName",userDo.getRealName());//姓名
                 buildData.put("userName",userDo.getUserName());//账号
                 buildData.put("idNumber",userDo.getIdNumber());//身份证号码
