@@ -82,7 +82,7 @@ public class SendSmsCodeApi implements JsdH5Handle {
 		}else {
 			busiFlag=legalOrderRepaymentDo.getTradeNo();
 		}
-		String orderNo = generatorClusterNo.getRepaymentNo(new Date(), BankPayChannel.KUAIJIE.getCode());
+		String orderNo = generatorClusterNo.getRepaymentBorrowCashNo(BankPayChannel.KUAIJIE.getCode());
 		respBo = upsUtil.quickPayResendSms(busiFlag,orderNo);
 		if (!respBo.isSuccess()) {
 			throw new FanbeiException(respBo.getRespDesc());

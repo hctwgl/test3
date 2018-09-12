@@ -401,7 +401,7 @@
         borrow_id = #{borrowId}
         AND
         is_delete = 0
-        ORDER BY id DESC
+        ORDER BY gmt_create DESC
         LIMIT 1
     </select>
     
