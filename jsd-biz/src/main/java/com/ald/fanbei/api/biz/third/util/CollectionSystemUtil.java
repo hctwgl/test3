@@ -152,7 +152,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		// APP还款类型写3 , 线下还款写4
 		try {
 //			String url = getUrl() + "/report/thirdRepayment";
-			String url = "http:///report/thirdRepayment";
+			String url = "http://192.168.152.21:8003/report/thirdRepayment";
 			String reqResult = "";
 			if (url.contains("https")){
 				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(reqBo));
