@@ -227,7 +227,6 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         resp.serviceRate = borrowRateInfo.serviceRate.setScale(2, RoundingMode.HALF_UP).toString();
         resp.serviceAmount = actualBorrowServiceAmount.toString();
         resp.overdueRate = borrowOverdueRate.setScale(2, RoundingMode.HALF_UP).toString();
-        resp.billAmount = new BigDecimal[]{actualBorrowAmount.setScale(2, RoundingMode.HALF_UP)};
         
         //处理搭售商品相关利息
         ResourceRateInfoBo orderRateInfo = jsdResourceService.getOrderRateInfo(req.term);
@@ -245,8 +244,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         resp.sellServiceRate = orderRateInfo.serviceRate.setScale(2, RoundingMode.HALF_UP);
         resp.sellOverdueRate = orderOverdueRate.setScale(2, RoundingMode.HALF_UP);
         
-        resp.totalAmount = BigDecimalUtil.add(actualBorrowAmount, actualBorrowInterestAmount, actualBorrowServiceAmount, 
-        			actualOrderAmount, actualOrderInterestAmount, actualOrderServiceAmount).toString();
+        BigDecimal totalAmount = BigDecimalUtil.add(actualBorrowAmount, actualBorrowInterestAmount, actualBorrowServiceAmount, 
+    			actualOrderAmount, actualOrderInterestAmount, actualOrderServiceAmount);
+        resp.totalAmount = totalAmount.toString();
+        resp.billAmount = new BigDecimal[]{totalAmount.setScale(2, RoundingMode.HALF_UP)};
         
         // 1、借款费用【借款利息金额+借款服务费金额】元，其中借款利息【借款利息金额】元，借款服务费【借款服务费金额】元。2、商品费用【分期利息金额+分期服务费金额】元，其中分期利息【分期利息金额】元，分期服务费【分期服务费金额】元。
         resp.remark = "1、借款费用" + BigDecimalUtil.add(actualBorrowInterestAmount, actualBorrowServiceAmount) + "元，"

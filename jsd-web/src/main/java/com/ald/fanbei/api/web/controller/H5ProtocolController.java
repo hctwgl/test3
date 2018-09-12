@@ -72,61 +72,66 @@ public class H5ProtocolController {
      */
     @RequestMapping(value = {"cashProtocol"}, method = RequestMethod.GET)
     public void cashProtocol(HttpServletRequest request, ModelMap model){
-    	String openId = request.getParameter("openId");
-    	String preview = request.getParameter("preview");
-    	String tradeNoXgxy = request.getParameter("tradeNoXgxy");
+    	try {
+    		String openId = request.getParameter("openId");
+        	String preview = request.getParameter("preview");
+        	String tradeNoXgxy = request.getParameter("tradeNoXgxy");
 
-        JsdUserDo userDo = jsdUserService.getByOpenId(openId);
-        if (userDo == null) {
-            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-        }
-        
-        JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_CASH.name());
-        model.put("yfCompany", resdo.getValue1());
-        model.put("bfCompany", resdo.getValue2());
-        model.put("dfCompany", resdo.getValue3());
-        
-        
-        BigDecimal amountLower, interestRate, serviceRate, overdueRate;
-        if(StringUtils.isNotBlank(tradeNoXgxy)) {
-        	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
-        	
-        	amountLower = cashDo.getAmount();
-        	interestRate = cashDo.getInterestRate();
-        	serviceRate = cashDo.getPoundageRate();
-        	overdueRate = cashDo.getOverdueRate();
-        	
-        	model.put("gmtStart", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-            model.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-            model.put("gmtPlanRepayment", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-            model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-        }else{
-        	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
-        	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
-        	trialBo.req.openId = openId;
-        	trialBo.userId = userDo.getRid();
-        	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
-        	jsdBorrowCashService.resolve(trialBo);
-        	
-        	amountLower = new BigDecimal(trialBo.resp.borrowAmount);
-        	ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(trialBo.req.nepr);
-        	interestRate = rateInfo.interestRate;
-        	serviceRate = rateInfo.serviceRate;
-        	overdueRate = rateInfo.overdueRate;
-        }
-        
-        model.put("interestRate", interestRate.setScale(2));
-        model.put("serviceRate", serviceRate.setScale(2));
-        model.put("overdueRate", overdueRate.setScale(2));
-        model.put("idNumber", userDo.getIdNumber());
-        model.put("realName", userDo.getRealName());
-        model.put("email", userDo.getEmail());//电子邮箱
-        model.put("mobile", userDo.getMobile());// 联系电话
-        model.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
-        model.put("amountLower", amountLower);
-        
-        logger.info(JSON.toJSONString(model));
+            JsdUserDo userDo = jsdUserService.getByOpenId(openId);
+            if (userDo == null) {
+                logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+                throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            }
+            
+            JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_CASH.name());
+            model.put("yfCompany", resdo.getValue1());
+            model.put("bfCompany", resdo.getValue2());
+            model.put("dfCompany", resdo.getValue3());
+            
+            
+            BigDecimal amountLower, interestRate, serviceRate, overdueRate;
+            if(StringUtils.isNotBlank(tradeNoXgxy)) {
+            	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
+            	
+            	amountLower = cashDo.getAmount();
+            	interestRate = cashDo.getInterestRate();
+            	serviceRate = cashDo.getPoundageRate();
+            	overdueRate = cashDo.getOverdueRate();
+            	
+            	model.put("gmtStart", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+                model.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+                model.put("gmtPlanRepayment", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+                model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+            }else{
+            	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
+            	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
+            	trialBo.req.openId = openId;
+            	trialBo.req.term = trialBo.req.nper;
+            	trialBo.userId = userDo.getRid();
+            	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
+            	jsdBorrowCashService.resolve(trialBo);
+            	
+            	amountLower = new BigDecimal(trialBo.resp.borrowAmount);
+            	ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(trialBo.req.nper);
+            	interestRate = rateInfo.interestRate;
+            	serviceRate = rateInfo.serviceRate;
+            	overdueRate = rateInfo.overdueRate;
+            }
+            
+            model.put("interestRate", interestRate.setScale(2));
+            model.put("serviceRate", serviceRate.setScale(2));
+            model.put("overdueRate", overdueRate.setScale(2));
+            model.put("idNumber", userDo.getIdNumber());
+            model.put("realName", userDo.getRealName());
+            model.put("email", userDo.getEmail());//电子邮箱
+            model.put("mobile", userDo.getMobile());// 联系电话
+            model.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
+            model.put("amountLower", amountLower);
+            
+            logger.info("cashProtocol, params=" + JSON.toJSONString(model));
+    	}catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
     }
     
     /**
@@ -138,65 +143,70 @@ public class H5ProtocolController {
      */
     @RequestMapping(value = {"orderProtocol"}, method = RequestMethod.GET)
     public void orderProtocol(HttpServletRequest request, ModelMap model){
-    	String openId = request.getParameter("openId");
-    	String preview = request.getParameter("preview");
-    	String tradeNoXgxy = request.getParameter("tradeNoXgxy");
+    	try {
+    		String openId = request.getParameter("openId");
+        	String preview = request.getParameter("preview");
+        	String tradeNoXgxy = request.getParameter("tradeNoXgxy");
 
-        JsdUserDo userDo = jsdUserService.getByOpenId(openId);
-        if (userDo == null) {
-            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-        }
-        
-        JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_ORDER.name());
-        model.put("yfCompany", resdo.getValue1());
-        model.put("bfCompany", resdo.getValue2());
-        
-        
-        BigDecimal amountLower, interestRate, serviceRate, overdueRate;
-        if(StringUtils.isNotBlank(tradeNoXgxy)) {
-        	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
-        	JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashService.getLastOrderCashByBorrowId(cashDo.getRid());
-        	
-        	amountLower = orderCashDo.getAmount();
-        	interestRate = orderCashDo.getInterestRate();
-        	serviceRate = orderCashDo.getPoundageRate();
-        	overdueRate = orderCashDo.getOverdueRate();
-        	
-        	model.put("gmtStart", DateUtil.formatDate(orderCashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-            model.put("gmtEnd", DateUtil.formatDate(orderCashDo.getGmtPlanRepay(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-            model.put("gmtPlanRepayment", DateUtil.formatDate(orderCashDo.getGmtPlanRepay(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-            model.put("gmtSign", DateUtil.formatDate(orderCashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-        }else{
-        	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
-        	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
-        	trialBo.req.openId = openId;
-        	trialBo.userId = userDo.getRid();
-        	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
-        	jsdBorrowCashService.resolve(trialBo);
-        	
-        	amountLower = new BigDecimal(trialBo.resp.totalDiffFee);
-        	ResourceRateInfoBo rateInfo = jsdResourceService.getOrderRateInfo(trialBo.req.nepr);
-        	interestRate = rateInfo.interestRate;
-        	serviceRate = rateInfo.serviceRate;
-        	overdueRate = rateInfo.overdueRate;
-        }
-        
-        model.put("interestRate", interestRate.setScale(2));
-        model.put("serviceRate", serviceRate.setScale(2));
-        model.put("overdueRateDaily", overdueRate
-        			.multiply(new BigDecimal(100))
-        			.divide( new BigDecimal(Constants.ONE_YEAY_DAYS)).setScale(2) );
-        model.put("idNumber", userDo.getIdNumber());
-        model.put("realName", userDo.getRealName());
-        model.put("email", userDo.getEmail());//电子邮箱
-        model.put("mobile", userDo.getMobile());// 联系电话
-        model.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
-        model.put("amountLower", amountLower);
-        
-        // TODO 签章 图片url链接
-        
-        logger.info(JSON.toJSONString(model));
+            JsdUserDo userDo = jsdUserService.getByOpenId(openId);
+            if (userDo == null) {
+                logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+                throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            }
+            
+            JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_ORDER.name());
+            model.put("yfCompany", resdo.getValue1());
+            model.put("bfCompany", resdo.getValue2());
+            
+            
+            BigDecimal amountLower, interestRate, serviceRate, overdueRate;
+            if(StringUtils.isNotBlank(tradeNoXgxy)) {
+            	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
+            	JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashService.getLastOrderCashByBorrowId(cashDo.getRid());
+            	
+            	amountLower = orderCashDo.getAmount();
+            	interestRate = orderCashDo.getInterestRate();
+            	serviceRate = orderCashDo.getPoundageRate();
+            	overdueRate = orderCashDo.getOverdueRate();
+            	
+            	model.put("gmtStart", DateUtil.formatDate(orderCashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+                model.put("gmtEnd", DateUtil.formatDate(orderCashDo.getGmtPlanRepay(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+                model.put("gmtPlanRepayment", DateUtil.formatDate(orderCashDo.getGmtPlanRepay(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+                model.put("gmtSign", DateUtil.formatDate(orderCashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+            }else{
+            	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
+            	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
+            	trialBo.req.openId = openId;
+            	trialBo.req.term = trialBo.req.nper;
+            	trialBo.userId = userDo.getRid();
+            	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
+            	jsdBorrowCashService.resolve(trialBo);
+            	
+            	amountLower = new BigDecimal(trialBo.resp.totalDiffFee);
+            	ResourceRateInfoBo rateInfo = jsdResourceService.getOrderRateInfo(trialBo.req.nper);
+            	interestRate = rateInfo.interestRate;
+            	serviceRate = rateInfo.serviceRate;
+            	overdueRate = rateInfo.overdueRate;
+            }
+            
+            model.put("interestRate", interestRate.setScale(2));
+            model.put("serviceRate", serviceRate.setScale(2));
+            model.put("overdueRateDaily", overdueRate
+            			.multiply(new BigDecimal(100))
+            			.divide( new BigDecimal(Constants.ONE_YEAY_DAYS)).setScale(2) );
+            model.put("idNumber", userDo.getIdNumber());
+            model.put("realName", userDo.getRealName());
+            model.put("email", userDo.getEmail());//电子邮箱
+            model.put("mobile", userDo.getMobile());// 联系电话
+            model.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
+            model.put("amountLower", amountLower);
+            
+            // TODO 签章 图片url链接
+            
+            logger.info("orderProtocol, params=" + JSON.toJSONString(model));
+    	}catch (Exception e) {
+    		logger.error(e.getMessage(), e);
+		}
     }
     
     /**
@@ -208,48 +218,53 @@ public class H5ProtocolController {
      */
     @RequestMapping(value = {"platformProtocol"}, method = RequestMethod.GET)
     public void platformProtocol(HttpServletRequest request, ModelMap model){
-    	String openId = request.getParameter("openId");
-    	String preview = request.getParameter("preview");
-    	String tradeNoXgxy = request.getParameter("tradeNoXgxy");
-
-        JsdUserDo userDo = jsdUserService.getByOpenId(openId);
-        if (userDo == null) {
-            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-        }
-        
-        JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_PLATFORM.name());
-        model.put("jfCompany", resdo.getValue1());
-        
-        if(StringUtils.isNotBlank(tradeNoXgxy)) {
-        	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
-        	
-        	model.put("borrowNo", cashDo.getBorrowNo());
-        	model.put("interestRate", cashDo.getInterestRate().setScale(2));
-            model.put("serviceRate", cashDo.getPoundageRate().setScale(2));
-            model.put("overdueRate", cashDo.getOverdueRate().setScale(2));
-            model.put("serviceAmount", cashDo.getPoundageAmount());
-        }else{
-        	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
-        	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
-        	trialBo.req.openId = openId;
-        	trialBo.userId = userDo.getRid();
-        	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
-        	jsdBorrowCashService.resolve(trialBo);
-        	
-        	TrialBeforeBorrowResp resp = trialBo.resp;
-        	model.put("interestRate", resp.interestRate);
-            model.put("serviceRate", resp.serviceRate);
-            model.put("overdueRate", resp.overdueRate);
-            model.put("serviceAmount", resp.serviceAmount);
-        }
-        
-        model.put("idNumber", userDo.getIdNumber());
-        model.put("realName", userDo.getRealName());
-        model.put("email", userDo.getEmail());//电子邮箱
-        model.put("mobile", userDo.getMobile());// 联系电话
-        
-        logger.info(JSON.toJSONString(model));
+    	try {
+	    	String openId = request.getParameter("openId");
+	    	String preview = request.getParameter("preview");
+	    	String tradeNoXgxy = request.getParameter("tradeNoXgxy");
+	
+	        JsdUserDo userDo = jsdUserService.getByOpenId(openId);
+	        if (userDo == null) {
+	            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+	            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+	        }
+	        
+	        JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_PLATFORM.name());
+	        model.put("jfCompany", resdo.getValue1());
+	        
+	        if(StringUtils.isNotBlank(tradeNoXgxy)) {
+	        	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
+	        	
+	        	model.put("borrowNo", cashDo.getBorrowNo());
+	        	model.put("interestRate", cashDo.getInterestRate().setScale(2));
+	            model.put("serviceRate", cashDo.getPoundageRate().setScale(2));
+	            model.put("overdueRate", cashDo.getOverdueRate().setScale(2));
+	            model.put("serviceAmount", cashDo.getPoundageAmount());
+	        }else{
+	        	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
+	        	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
+	        	trialBo.req.openId = openId;
+	        	trialBo.req.term = trialBo.req.nper;
+	        	trialBo.userId = userDo.getRid();
+	        	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(trialBo.req.nper);
+	        	jsdBorrowCashService.resolve(trialBo);
+	        	
+	        	TrialBeforeBorrowResp resp = trialBo.resp;
+	        	model.put("interestRate", resp.interestRate);
+	            model.put("serviceRate", resp.serviceRate);
+	            model.put("overdueRate", resp.overdueRate);
+	            model.put("serviceAmount", resp.serviceAmount);
+	        }
+	        
+	        model.put("idNumber", userDo.getIdNumber());
+	        model.put("realName", userDo.getRealName());
+	        model.put("email", userDo.getEmail());//电子邮箱
+	        model.put("mobile", userDo.getMobile());// 联系电话
+	        
+	        logger.info("platformProtocol, params=" + JSON.toJSONString(model));
+	    }catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
     }
     
     /**
