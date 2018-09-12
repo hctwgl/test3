@@ -12,6 +12,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 
+import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -77,11 +78,27 @@ public class NoticeTask {
                             logger.info("jsd notice record more max count"+recordDo);
                             continue;
                         }
+                         HashMap data=null;
+                         XgxyBorrowNoticeBo data1=null;
+                        if(StringUtils.equals(recordDo.getType(), JsdNoticeType.OVERDUE.code)
+                                || StringUtils.equals(recordDo.getType(), JsdNoticeType.DELEGATEPAY.code)){
+                            data1= JSONObject.parseObject(recordDo.getParams(),XgxyBorrowNoticeBo.class);
+                            if(data1.getTimestamp()!=null){
+                                data1.setTimestamp(System.currentTimeMillis());
+                            }
+                            recordDo.setParams(JsonUtil.toJSONString(data1));
+                        }else {
+                            data=JSONObject.parseObject(recordDo.getParams(),HashMap.class);
+                            if(data.get("timestamp")!=null){
+                                data.put("timestamp",System.currentTimeMillis());
+                            };
+                            recordDo.setParams(JsonUtil.toJSONString(data));
+                        }
                         if (StringUtils.equals(recordDo.getTimes(), "5") && (StringUtils.equals(recordDo.getType(), JsdNoticeType.REPAY.code))) {
                             if(StringUtils.isBlank(recordDo.getParams())){
                                 jsdNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
                             }else{
-                                updateNoticeRecord(recordDo, xgxyUtil.repayNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+                                updateNoticeRecord(recordDo, xgxyUtil.repayNoticeRequest(data));
                             }
                             continue;
                         }
@@ -89,7 +106,7 @@ public class NoticeTask {
                             if(StringUtils.isBlank(recordDo.getParams())){
                                 jsdNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
                             }else{
-                                updateNoticeRecord(recordDo, xgxyUtil.jsdRenewalNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+                                updateNoticeRecord(recordDo, xgxyUtil.jsdRenewalNoticeRequest(data));
                             }
                             continue;
                         }
@@ -97,7 +114,7 @@ public class NoticeTask {
                             if(StringUtils.isBlank(recordDo.getParams())){
                                 jsdNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
                             }else{
-                                updateNoticeRecord(recordDo, xgxyUtil.bindBackNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+                                updateNoticeRecord(recordDo, xgxyUtil.bindBackNoticeRequest(data));
                             }
                             continue;
                         }
@@ -106,18 +123,21 @@ public class NoticeTask {
                             if(StringUtils.isBlank(recordDo.getParams())){
                                 jsdNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
                             }else {
-                                updateNoticeRecord(recordDo, xgxyUtil.borrowNoticeRequest(JSONObject.parseObject(recordDo.getParams(),XgxyBorrowNoticeBo.class)));
+                                updateNoticeRecord(recordDo, xgxyUtil.borrowNoticeRequest(data1));
                             }
                             continue;
                         }
                         if(StringUtils.isBlank(all_noticedfail_moreonce.get(recordDo.getRid()))){
+                            HashMap finalData = data;
+                            XgxyBorrowNoticeBo finalData1 = data1;
                             Runnable thread = new Runnable(){
                                 public void run(){
-                                    nextNotice(recordDo);
+                                    nextNotice(recordDo, finalData, finalData1);
                                 }
                             };
                             executor.execute(thread);
                         }
+
                     }
                 }
                 logger.info("end notice tasktime="+new Date());
@@ -127,18 +147,18 @@ public class NoticeTask {
 		}
     }
 
-     void nextNotice(JsdNoticeRecordDo recordDo){
+     void nextNotice(JsdNoticeRecordDo recordDo,HashMap data, XgxyBorrowNoticeBo data1){
          all_noticedfail_moreonce.put(recordDo.getRid(),recordDo.getTimes());
          try {
              Thread.sleep(1000*60*request_times[Integer.parseInt(recordDo.getTimes())-1]);
              if(StringUtils.equals(recordDo.getType(), JsdNoticeType.DELEGATEPAY.code) || StringUtils.equals(recordDo.getType(), JsdNoticeType.OVERDUE.code)){
-                 updateNoticeRecord(recordDo, xgxyUtil.borrowNoticeRequest(JSONObject.parseObject(recordDo.getParams(),XgxyBorrowNoticeBo.class)));
+                 updateNoticeRecord(recordDo, xgxyUtil.borrowNoticeRequest(data1));
              }else if((StringUtils.equals(recordDo.getType(), JsdNoticeType.REPAY.code))) {
-                 updateNoticeRecord(recordDo, xgxyUtil.repayNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+                 updateNoticeRecord(recordDo, xgxyUtil.repayNoticeRequest(data));
              }else if(StringUtils.equals(recordDo.getType(), JsdNoticeType.RENEW.code)){
-                 updateNoticeRecord(recordDo, xgxyUtil.jsdRenewalNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+                 updateNoticeRecord(recordDo, xgxyUtil.jsdRenewalNoticeRequest(data));
              }else if(StringUtils.equals(recordDo.getType(), JsdNoticeType.BIND.code)){
-                 updateNoticeRecord(recordDo, xgxyUtil.bindBackNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+                 updateNoticeRecord(recordDo, xgxyUtil.bindBackNoticeRequest(data));
              }
          } catch (Exception e) {
              logger.info("dsed notice is fail"+recordDo);
