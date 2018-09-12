@@ -268,9 +268,9 @@ public class LoanOverDueJob {
             buildData.put("borrowStatus",borrowCashDo.getStatus());//借款状态
             buildData.put("borrowCycle",borrowCashDo.getType());//借款周期
             buildData.put("cardNumber",borrowCashDo.getCardNumber());//收款账号
-            buildData.put("borrowAddress","");//借款地址
-            buildData.put("longitude","");//借款经度
-            buildData.put("latitude","");//借款纬度
+            buildData.put("borrowAddress",map.get("borrowAddress"));//借款地址
+            buildData.put("longitude",map.get("longitude"));//借款经度
+            buildData.put("latitude",map.get("latitude"));//借款纬度
             buildData.put("borrowTime",DateUtil.formatDateTime(borrowCashDo.getGmtCreate()));//借款时间
             buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(borrowCashDo.getGmtPlanRepayment(),new Date())));//逾期天数
             buildData.put("borrowAmount",String.valueOf(BigDecimalUtil.add(borrowCashDo.getAmount(),orderCashDo.getAmount())));//借款金额(委案金额)
