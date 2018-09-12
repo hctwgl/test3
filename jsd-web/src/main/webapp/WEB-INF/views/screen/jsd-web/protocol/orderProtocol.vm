@@ -19,6 +19,7 @@
 
         .text_decor {
             text-decoration: underline
+            font-size: 100px;
         }
 
         .main {
