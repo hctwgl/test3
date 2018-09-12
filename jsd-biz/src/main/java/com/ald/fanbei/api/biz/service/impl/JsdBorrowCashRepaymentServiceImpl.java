@@ -397,7 +397,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 					noticeXgxyRepayResult(repaymentDo,orderRepaymentDo,YesNoStatus.YES.getCode(),"",flag);
                     boolean cashResult = DateUtil.afterDay(repayDealBo.cashDo.getGmtPlanRepayment(),new Date());
 					boolean orderResult = DateUtil.afterDay(repayDealBo.orderCashDo.getGmtLastRepayment(),new Date());
-                    if(orderResult || cashResult) {
+                    logger.info(" cashResult = " + cashResult+"orderResult = "+orderResult);
+					if(orderResult || cashResult) {
                         nofityRisk(repayDealBo,repaymentDo,orderRepaymentDo,flag);
                     }
 				} catch (Exception e){
