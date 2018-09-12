@@ -40,8 +40,8 @@ public class XgxyUtil extends AbstractThird {
      */
     public boolean borrowNoticeRequest(XgxyBorrowNoticeBo borrowNoticeBo) {
         try {
+            borrowNoticeBo.setTimestamp(new Date().getTime());
         	String dataStr = JSON.toJSONString(borrowNoticeBo);
-            
             Map<String, Object> params = new HashMap<>();
             params.put("appId", APPID);
             params.put("data", JsdAesUtil.encryptToBase64Third(dataStr, PRIVATE_KEY));
@@ -78,6 +78,7 @@ public class XgxyUtil extends AbstractThird {
     public boolean repayNoticeRequest(HashMap<String, String> data) {
         try {
             Map<String, String> p = new HashMap<>();
+            data.put("timestamp",String.valueOf(new Date().getTime()));
             p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             p.put("appId", APPID);
@@ -113,6 +114,7 @@ public class XgxyUtil extends AbstractThird {
     public boolean jsdRenewalNoticeRequest(HashMap<String, String> data) {
     	try {
     		Map<String, String> p = new HashMap<>();
+            data.put("timestamp",String.valueOf(new Date().getTime()));
     		p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
     		p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
     		p.put("appId", APPID);
@@ -149,6 +151,7 @@ public class XgxyUtil extends AbstractThird {
     public boolean bindBackNoticeRequest(HashMap<String, String> data) {
         try {
             Map<String, String> p = new HashMap<>();
+            data.put("timestamp",String.valueOf(new Date().getTime()));
             p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             p.put("appId", APPID);
