@@ -31,7 +31,7 @@ public class DsedLoanTest extends BaseTest {
   String urlBase = "http://localhost:8080";
 //    String urlBase = "http://192.168.112.40:8080";
     
-    String userName = "18258023758";
+    String userName = "13958004662";
 
     /**
      * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -56,16 +56,14 @@ public class DsedLoanTest extends BaseTest {
      */
     @Test
     public void dsedSyncUserInfo() {
-        String url = urlBase + "/third/xgxy/v1/syncUserInfo";
+        String url = urlBase + "/third/eca/v1/getAddressList";
         Map<String, String> params = new HashMap<>();
-        params.put("userId", "18637962344");
-        params.put("realName", "郭帅强");
-        params.put("idNumber", "330724199211254817");
-        params.put("mobile", "13018933980");
-        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
+        params.put("userId", "4");
+        params.put("openId", "BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
+        String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"baac7fc54a2a7e75");
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
-        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
+        p.put("sign", generateSign(params, "baac7fc54a2a7e75"));
         String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
