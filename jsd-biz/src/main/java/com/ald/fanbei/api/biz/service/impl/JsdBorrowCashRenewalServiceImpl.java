@@ -508,9 +508,9 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		
 		ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(delayInfo.get("delayDay").toString());
 		//借款手续费率
-		delayInfo.put("interestRate", rateInfo.serviceRate);
+		delayInfo.put("interestRate", rateInfo.interestRate);
 		//借款利率
-		delayInfo.put("serviceRate", rateInfo.interestRate);
+		delayInfo.put("serviceRate", rateInfo.serviceRate);
 	}
 	
 	private BigDecimal getDiffFee(JsdBorrowCashDo borrowCashDo, Map<String, Object> delayInfo) {
