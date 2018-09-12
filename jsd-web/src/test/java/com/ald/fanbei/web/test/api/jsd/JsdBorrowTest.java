@@ -141,15 +141,40 @@ public class JsdBorrowTest extends BaseTest {
     	JSONObject params = new JSONObject();
         params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
 //        params.put("bizNo", "loan0911eca645000000012");
-        params.put("type", "BORROW");
+        params.put("type", "TYING");
     	
     	JSONObject previewParams = new JSONObject();
     	previewParams.put("productNo", "2");
     	previewParams.put("amount", "5000");
-    	previewParams.put("nepr", 10);
+    	previewParams.put("nper", 10);
     	previewParams.put("unit", "DAY");
     	previewParams.put("isTying", "Y");
     	previewParams.put("tyingType", "SELL");
+    	
+    	params.put("previewParam", previewParams.toString());
+    	
+        String encryptBase64Str = JsdAesUtil.encryptToBase64Third(JSON.toJSONString(params), AES_KEY);
+        Map<String, Object> p = new HashMap<>();
+        p.put("data", encryptBase64Str);
+        p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
+        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        
+        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
+    }
+    
+    /**
+     * 获取借款协议
+     */
+    @Test
+    public void getRenewalProtocol() {
+    	String url = urlBase + "/third/eca/v1/getProtocolInfo";
+    	JSONObject params = new JSONObject();
+        params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
+        params.put("bizNo", "delay0912eca267900000001");
+        params.put("type", "DELAY");
+    	
+    	JSONObject previewParams = new JSONObject();
+    	previewParams.put("borrowNo", "loan0912dsed645000000018");
     	
     	params.put("previewParam", previewParams.toString());
     	

@@ -361,14 +361,16 @@ public class H5ProtocolController {
 	        	//续期信息
 	        	model.put("reAmount", renewalDo.getRenewalAmount());
 	        	model.put("reAmountUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getRenewalAmount()));
-	        	model.put("reInterestRate", renewalDo.getBaseBankRate());
+	        	model.put("reInterestRate", renewalDo.getBaseBankRate().setScale(2));
 	        	model.put("reGmtStart", DateUtil.formatDate(renewalDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 	        	model.put("reGmtEnd", DateUtil.formatDate(renewalDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 	        	model.put("remark", renewalDo.getRemark());
 	        	model.put("reGmtPlanRepay", DateUtil.formatDate(renewalDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 	        	model.put("reRepayCapital", renewalDo.getCapital());
 	        	model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getCapital()));
-	        	model.put("reServiceRate", renewalDo.getPoundageRate());
+	        	model.put("reServiceRate", renewalDo.getPoundageRate().setScale(2));
+	        	
+	        	model.put("overdueRate", cashDo.getOverdueRate().setScale(2));
 	        	
 	            model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 	        }else{
@@ -392,6 +394,8 @@ public class H5ProtocolController {
 	        	model.put("reRepayCapital", info.getString("capital"));
 	        	model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("capital")) ));
 	        	model.put("reServiceRate", info.getString("serviceRate"));
+	        	
+	        	model.put("overdueRate", cashDo.getOverdueRate().setScale(2));
 	        }
 	        
 	        model.put("idNumber", userDo.getIdNumber());
