@@ -83,7 +83,7 @@
                 </tr>
                 <tr>
                     <td>大写金额</td>
-                    <td>人民币$!{oriAmountUpper}元</td>
+                    <td>人民币$!{oriAmountUpper}</td>
                 </tr>
                 <tr>
                     <td>借款利率（年化）</td>
@@ -102,7 +102,7 @@
                 </tr>
                 <tr>
                     <td>大写金额</td>
-                    <td>人民币$!{reAmountUpper}元</td>
+                    <td>人民币$!{reAmountUpper}</td>
                 </tr>
                 <tr>
                     <td>续期利率（年化）</td>
@@ -130,7 +130,7 @@
                 </tr>
                 <tr>
                     <td>大写金额</td>
-                    <td>人民币$!{reRepayCapitalUpper}元</td>
+                    <td>人民币$!{reRepayCapitalUpper}</td>
                 </tr>
                 <tr>
                     <td>手续费率（年化）</td>
