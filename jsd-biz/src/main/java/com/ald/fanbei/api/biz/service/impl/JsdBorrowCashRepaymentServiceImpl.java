@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.*;
@@ -86,6 +87,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	TransactionTemplate transactionTemplate;
 	@Resource
 	private JsdNoticeRecordDao jsdNoticeRecordDao;
+
+	@Resource
+	private JsdNoticeRecordService jsdNoticeRecordService;
     @Resource
 	XgxyUtil xgxyUtil;
 
@@ -113,7 +117,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			if(StringUtil.equals("sysJob",bo.remoteIp)){
 				name = Constants.BORROW_REPAYMENT_NAME_AUTO;
 			}
-			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now,bankPayType);
+			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
 			bo.tradeNo = tradeNo;
 			bo.name = name;
 			generateRepayRecords(bo);
@@ -410,20 +414,10 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			data = buildData(orderRepaymentDo.getRepayNo(),orderRepaymentDo.getTradeNoUps(),orderRepaymentDo.getBorrowId(),orderRepaymentDo.getActualAmount(),status,errorMsg);
 		}
 		logger.info("noticeXgxyRepayResult data cfp "+JSON.toJSONString(data));
-
+		
 		// 通知记录
-		JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
-		noticeRecordDo.setUserId(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
-		noticeRecordDo.setRefId(String.valueOf(repaymentDo!=null?repaymentDo.getRid():orderRepaymentDo.getRid()));
-		noticeRecordDo.setType(JsdNoticeType.REPAY.code);
-		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
-		noticeRecordDo.setParams(JSON.toJSONString(data));
-		jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
-		if (xgxyUtil.dsedRePayNoticeRequest(data)) {
-			noticeRecordDo.setRid(noticeRecordDo.getRid());
-			noticeRecordDo.setGmtModified(new Date());
-			jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
-		}
+		jsdNoticeRecordService.dealRepayNoticed(repaymentDo,orderRepaymentDo,data);
+
 	}
 	private HashMap<String, String> buildData(String tradeNoXgxy,String tradeNoUps,Long borrowId,BigDecimal actualAmount, String status,String errorMsg){
 		    HashMap<String,String> map=new HashMap<>();

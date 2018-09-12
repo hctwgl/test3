@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.biz.service;
 
-import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
+import com.ald.fanbei.api.dal.domain.*;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Service
@@ -17,6 +21,13 @@ public interface JsdNoticeRecordService extends ParentService<JsdNoticeRecordDo,
     int  updateNoticeRecordTimes(JsdNoticeRecordDo noticeRecordDo);
 
     int addNoticeRecord(JsdNoticeRecordDo noticeRecordDo);
+
+    List<JsdNoticeRecordDo> getAllFailNoticeRecord();
+
+    void dealBorrowNoticed(JsdBorrowCashDo jsdBorrowCashDo, XgxyBorrowNoticeBo noticeRecord);
+
+
+    void dealRepayNoticed(JsdBorrowCashRepaymentDo repaymentDo, JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, HashMap data);
 
 
 

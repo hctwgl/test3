@@ -2,6 +2,8 @@ package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 
+import java.util.List;
+
 /**
  * Dao
  * 
@@ -17,5 +19,8 @@ public interface JsdNoticeRecordDao extends BaseDao<JsdNoticeRecordDo, Long> {
     int  updateNoticeRecordTimes(JsdNoticeRecordDo noticeRecordDo);
 
     int addNoticeRecord(JsdNoticeRecordDo noticeRecordDo);
+
+    List<JsdNoticeRecordDo> getAllFailNoticeRecord();
+
 
 }

@@ -36,6 +36,11 @@ public class TrialBeforeBorrowBo {
 		public String isTying;	
 		public String tyingType;
 		
+		/**
+		 * 兼容字段，对应term
+		 */
+		public String nper;
+		
 		public TrialBeforeBorrowReq() {}
 		
 		/**
