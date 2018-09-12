@@ -81,6 +81,8 @@ public enum ResourceType {
 	
 	OVERDUE("OVERDUE", "逾期配置"),
 	PROTOCOL_BORROW("PROTOCOL_BORROW", "借款协议配置"),
+	PROTOCOL_AGENCY("PROTOCOL_AGENCY","代买协议"),
+	PROTOCOL_RENEWAL("PROTOCOL_RENEWAL", "续期协议"),
 	;
 
 
