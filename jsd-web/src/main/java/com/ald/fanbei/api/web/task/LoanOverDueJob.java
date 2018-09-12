@@ -77,12 +77,12 @@ public class LoanOverDueJob {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
 
-    @Scheduled(cron = "0/1 * * * * ?")
+    @Scheduled(cron = "0 0 0 * * ?")
     public void laonDueJob(){
         try{
         	String curHostIp = getHostIpUtil.getIpAddress();
         	logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-//            if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)){
+            if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)){
         		int pageSize = 200;
                 int totalRecord = borrowCashService.getBorrowCashOverdueCount();
                 int totalPageNum = (totalRecord + pageSize - 1) / pageSize;
@@ -105,7 +105,7 @@ public class LoanOverDueJob {
                     }
                 }
                 logger.info("borrowCashDueJob run end,time=" + new Date());
-//        	}
+        	}
         } catch (Exception e){
             logger.error("borrowCashDueJob  error, case=",e);
         }
