@@ -53,6 +53,9 @@ public class CuiShouUtils {
     @Resource
     CollectionSystemUtil collectionSystemUtil;
 
+    @Resource
+    XgxyUtil xgxyUtil;
+
     private static String token = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjMyODQxfQ.NPLQiwpOsS1FPnCaIal2X9AaRk3R_fRFkCFfbRbNvIQ";
 
 
@@ -199,19 +202,21 @@ public class CuiShouUtils {
         Long borrowId = borrowCashDo.getRid();
         //搭售商品信息
         JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(borrowId);
-
+        Map<String,String>  param = new HashMap<>();
+        param.put("borrowNo",borrowCashDo.getTradeNoXgxy());
+        HashMap<String,String> map = xgxyUtil.borrowNoticeRequest(param);
         if(jsdBorrowLegalOrder != null){
             buildData.put("goodsName",jsdBorrowLegalOrder.getGoodsName());//商品名称
             buildData.put("goodsPrice",String.valueOf(jsdBorrowLegalOrder.getPriceAmount()));//商品价格
-            buildData.put("orderStatus",jsdBorrowLegalOrder.getStatus());//订单状态
-            buildData.put("expressNo",jsdBorrowLegalOrder.getLogisticsNo());//快递单号
-            buildData.put("expressCompany",jsdBorrowLegalOrder.getLogisticsCompany());//物流公司
-            buildData.put("consigneeName",jsdBorrowLegalOrder.getDeliveryUser());//收货人姓名
-            buildData.put("consigneePhone",jsdBorrowLegalOrder.getDeliveryPhone());//收货人手机号码
-            buildData.put("consigneeAddress",jsdBorrowLegalOrder.getAddress());//收货地址
-            buildData.put("deliveryTime",DateUtil.formatDateTime(jsdBorrowLegalOrder.getGmtDeliver()));//发货时间
-            buildData.put("gmtConfirmReceived",DateUtil.formatDateTime(jsdBorrowLegalOrder.getGmtConfirmReceived()));//确定收货时间
-            buildData.put("logisticsInfo",jsdBorrowLegalOrder.getLogisticsInfo());//物流信息
+            buildData.put("orderStatus",map.get("orderStatus"));//订单状态
+            buildData.put("expressNo",map.get("shipperNumber"));//快递单号
+            buildData.put("expressCompany",map.get("shipperName"));//物流公司
+            buildData.put("consigneeName",map.get("consignee"));//收货人姓名
+            buildData.put("consigneePhone",map.get("mobile"));//收货人手机号码
+            buildData.put("consigneeAddress",map.get("fullAddress"));//收货地址
+            buildData.put("deliveryTime",map.get("gmtSended"));//发货时间
+            buildData.put("gmtConfirmReceived",map.get("gmtReceived"));//确定收货时间
+            buildData.put("logisticsInfo",map.get("traces"));//物流信息
         }
         //用户信息
         JsdUserDo userDo= jsdUserService.getById(jsdBorrowLegalOrder.getUserId());

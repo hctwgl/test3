@@ -82,12 +82,12 @@ public class LoanOverDueJob {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "* 0/1 * * * ?")
     public void laonDueJob(){
         try{
         	String curHostIp = getHostIpUtil.getIpAddress();
         	logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-            if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)){
+//            if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)){
         		int pageSize = 200;
                 int totalRecord = borrowCashService.getBorrowCashOverdueCount();
                 int totalPageNum = (totalRecord + pageSize - 1) / pageSize;
@@ -100,17 +100,17 @@ public class LoanOverDueJob {
                         //计算逾期
                         this.dealOverdueRecords(borrowCashDos);
                         //通知催收逾期人员通讯录
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                collectionPush(borrowCashDos);
-                            }
-                        }).start();
-
+//                        new Thread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                collectionPush(borrowCashDos);
+//                            }
+//                        }).start();
+                        collectionPush(borrowCashDos);
                     }
                 }
                 logger.info("borrowCashDueJob run end,time=" + new Date());
-        	}
+//        	}
         } catch (Exception e){
             logger.error("borrowCashDueJob  error, case=",e);
         }
@@ -187,25 +187,26 @@ public class LoanOverDueJob {
         List<Map<String,String>>  data = new ArrayList<>();
         Map<String,String>  param = new HashMap<>();
         for(JsdBorrowCashDo borrowCashDo : list){
-            param.put("borrowNo",borrowCashDo.getBorrowNo());
-            HashMap<String,String> map = xgxyUtil.borrowNoticeRequest(param);
+
             //--------------------start  催收上报接口需要参数---------------------------
             Long borrowId = borrowCashDo.getRid();
             //搭售商品信息
             JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(borrowId);
             Map<String, String> buildData = new HashMap<String, String>();
+            param.put("borrowNo",borrowCashDo.getTradeNoXgxy());
+            HashMap<String,String> map = xgxyUtil.borrowNoticeRequest(param);
             if(jsdBorrowLegalOrder != null){
                 buildData.put("goodsName",jsdBorrowLegalOrder.getGoodsName());//商品名称
                 buildData.put("goodsPrice",String.valueOf(jsdBorrowLegalOrder.getPriceAmount()));//商品价格
-                buildData.put("orderStatus",jsdBorrowLegalOrder.getStatus());//订单状态
-                buildData.put("expressNo",jsdBorrowLegalOrder.getLogisticsNo());//快递单号
-                buildData.put("expressCompany",jsdBorrowLegalOrder.getLogisticsCompany());//物流公司
-                buildData.put("consigneeName",jsdBorrowLegalOrder.getDeliveryUser());//收货人姓名
-                buildData.put("consigneePhone",jsdBorrowLegalOrder.getDeliveryPhone());//收货人手机号码
-                buildData.put("consigneeAddress",jsdBorrowLegalOrder.getAddress());//收货地址
-                buildData.put("deliveryTime",DateUtil.formatDateTime(jsdBorrowLegalOrder.getGmtDeliver()));//发货时间
-                buildData.put("gmtConfirmReceived",DateUtil.formatDateTime(jsdBorrowLegalOrder.getGmtConfirmReceived()));//确定收货时间
-                buildData.put("logisticsInfo",jsdBorrowLegalOrder.getLogisticsInfo());//物流信息
+                buildData.put("orderStatus",map.get("orderStatus"));//订单状态
+                buildData.put("expressNo",map.get("shipperNumber"));//快递单号
+                buildData.put("expressCompany",map.get("shipperName"));//物流公司
+                buildData.put("consigneeName",map.get("consignee"));//收货人姓名
+                buildData.put("consigneePhone",map.get("mobile"));//收货人手机号码
+                buildData.put("consigneeAddress",map.get("fullAddress"));//收货地址
+                buildData.put("deliveryTime",map.get("gmtSended"));//发货时间
+                buildData.put("gmtConfirmReceived",map.get("gmtReceived"));//确定收货时间
+                buildData.put("logisticsInfo",map.get("traces"));//物流信息
             }
             //用户信息
             JsdUserDo userDo= jsdUserService.getById(jsdBorrowLegalOrder.getUserId());

@@ -216,7 +216,7 @@ public class XgxyUtil extends AbstractThird {
 
 
     /**
-     * 获取借款信息
+     * 获取借款信息(搭售商品信息和借款经纬度)
      *
      * @param data
      * @return
@@ -230,7 +230,8 @@ public class XgxyUtil extends AbstractThird {
             params.put("appId", APPID);
             params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
-            String url = getXgxyUrl() + "/isp/open/third/eca/v1/borrowOrder";
+//            String url = getXgxyUrl() + "/isp/open/third/eca/v1/borrowOrder";
+            String url = "http://192.168.156.59:1112/isp/open/third/eca/v1/borrowOrder";
             String reqResult = "";
             if (url.contains("https")){
                 reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(params));
@@ -243,7 +244,8 @@ public class XgxyUtil extends AbstractThird {
             }
             XgxyOverdueReqBo overdueReqBo1 = JSONObject.parseObject(reqResult, XgxyOverdueReqBo.class);
             if (Constants.XGXY_REQ_CODE_SUCC.equals(overdueReqBo1.get("code"))) {
-                return param;
+                JSONObject jsonObject = JSON.parseObject(reqResult);
+                return JSONObject.parseObject(jsonObject.get("data").toString(),HashMap.class);
             }
         } catch (Exception e) {
             logger.info("bindBankNoticeRequest to xgxy request fail", e);
