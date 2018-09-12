@@ -117,7 +117,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			if(StringUtil.equals("sysJob",bo.remoteIp)){
 				name = Constants.BORROW_REPAYMENT_NAME_AUTO;
 			}
-			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(now,bankPayType);
+			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
 			bo.tradeNo = tradeNo;
 			bo.name = name;
 			generateRepayRecords(bo);
