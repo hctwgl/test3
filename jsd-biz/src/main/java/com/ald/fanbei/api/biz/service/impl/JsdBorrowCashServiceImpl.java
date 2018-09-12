@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -65,7 +66,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     @Resource
     JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
     @Resource
-    JsdNoticeRecordDao jsdNoticeRecordDao;
+	JsdNoticeRecordService jsdNoticeRecordService;
     
     @Resource
     XgxyUtil xgxyUtil;
@@ -226,7 +227,6 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         resp.serviceRate = borrowRateInfo.serviceRate.setScale(2, RoundingMode.HALF_UP).toString();
         resp.serviceAmount = actualBorrowServiceAmount.toString();
         resp.overdueRate = borrowOverdueRate.setScale(2, RoundingMode.HALF_UP).toString();
-        resp.billAmount = new BigDecimal[]{actualBorrowAmount.setScale(2, RoundingMode.HALF_UP)};
         
         //处理搭售商品相关利息
         ResourceRateInfoBo orderRateInfo = jsdResourceService.getOrderRateInfo(req.term);
@@ -244,8 +244,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         resp.sellServiceRate = orderRateInfo.serviceRate.setScale(2, RoundingMode.HALF_UP);
         resp.sellOverdueRate = orderOverdueRate.setScale(2, RoundingMode.HALF_UP);
         
-        resp.totalAmount = BigDecimalUtil.add(actualBorrowAmount, actualBorrowInterestAmount, actualBorrowServiceAmount, 
-        			actualOrderAmount, actualOrderInterestAmount, actualOrderServiceAmount).toString();
+        BigDecimal totalAmount = BigDecimalUtil.add(actualBorrowAmount, actualBorrowInterestAmount, actualBorrowServiceAmount, 
+    			actualOrderAmount, actualOrderInterestAmount, actualOrderServiceAmount);
+        resp.totalAmount = totalAmount.toString();
+        resp.billAmount = new BigDecimal[]{totalAmount.setScale(2, RoundingMode.HALF_UP)};
         
         // 1、借款费用【借款利息金额+借款服务费金额】元，其中借款利息【借款利息金额】元，借款服务费【借款服务费金额】元。2、商品费用【分期利息金额+分期服务费金额】元，其中分期利息【分期利息金额】元，分期服务费【分期服务费金额】元。
         resp.remark = "1、借款费用" + BigDecimalUtil.add(actualBorrowInterestAmount, actualBorrowServiceAmount) + "元，"
@@ -310,20 +312,15 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         orderDo.setStatus(JsdBorrowLegalOrderStatus.CLOSED.name());
         orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.CLOSED.name());
         this.transUpdate(cashDo, orderDo, orderCashDo);
-        
+
+
         jsdNoticeRecord(cashDo, failMsg,  XgxyBorrowNotifyStatus.FAILED.name());
 	}
 	
 	private void jsdNoticeRecord(JsdBorrowCashDo cashDo,String msg, String status) {
         try {
         	XgxyBorrowNoticeBo xgxyPayBo = buildXgxyPay(cashDo, msg, status);
-            JsdNoticeRecordDo noticeRecordDo = buildJsdNoticeRecord(cashDo, xgxyPayBo);
-            jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
-            if(xgxyUtil.borrowNoticeRequest(xgxyPayBo)){
-                noticeRecordDo.setRid(noticeRecordDo.getRid());
-                noticeRecordDo.setGmtModified(new Date());
-                jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
-            }
+			jsdNoticeRecordService.dealBorrowNoticed(cashDo,xgxyPayBo);
         } catch (Exception e) {
             logger.error("dsedNoticeRecord, notify user occur error!", e); //通知过程抛出任何异常捕获，不影响主流程
         }

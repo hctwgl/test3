@@ -6,6 +6,7 @@ public enum  JsdNoticeType {
     REPAY("还款", "REPAY"),
     RENEW("续期", "RENEW"),
     OVERDUE("逾期", "OVERDUE"),
+    BIND("绑卡", "BIND"),
     COLLECT("催收逾期还款推送催收", "COLLECT"),
     XGXY_COLLECT("催收逾期还款推送西瓜", "XGXY_COLLECT"),
     OVERDUEREPAY("App主动逾期还款推送催收", "OVERDUEREPAY"),

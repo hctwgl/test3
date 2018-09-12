@@ -151,13 +151,7 @@ public class LoanOverDueJob {
                 }
                 //新增逾期日志
                 jsdBorrowCashOverdueLogService.saveRecord(buildLoanOverdueLog(jsdBorrowCashDo.getRid(), currentAmount, newOverdueAmount, jsdBorrowCashDo.getUserId(), OverdueLogType.CASH.name()));
-                JsdNoticeRecordDo jsdNoticeRecordDo=buildNoticeRecord(jsdBorrowCashDo,XgxyBorrowNoticeBo.gen(jsdBorrowCashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.OVERDUE.name(), "逾期"));
-                jsdNoticeRecordService.addNoticeRecord(jsdNoticeRecordDo);
-                if(xgxyUtil.borrowNoticeRequest(XgxyBorrowNoticeBo.gen(jsdBorrowCashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.OVERDUE.name(), "逾期"))){
-                    JsdNoticeRecordDo noticeRecordDo=new JsdNoticeRecordDo();
-                    noticeRecordDo.setRid(jsdNoticeRecordDo.getRid());
-                    jsdNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
-                }
+                jsdNoticeRecordService.dealBorrowNoticed(jsdBorrowCashDo,XgxyBorrowNoticeBo.gen(jsdBorrowCashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.OVERDUE.name(), "逾期"));
             } catch (Exception e) {
                 logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId="+jsdBorrowCashDo.getRid(),e);
             }

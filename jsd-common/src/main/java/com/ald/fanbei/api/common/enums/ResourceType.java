@@ -80,6 +80,7 @@ public enum ResourceType {
 	JSD_RENEWAL_INFO("JSD_RENEWAL_INFO", "极速贷续期配置"),
 	
 	OVERDUE("OVERDUE", "逾期配置"),
+	PROTOCOL_BORROW("PROTOCOL_BORROW", "借款协议配置"),
 	;
 
 
