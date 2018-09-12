@@ -16,14 +16,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowResp;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
-import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
-import com.ald.fanbei.api.biz.util.BizCacheUtil;
-import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.ResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
@@ -32,10 +30,13 @@ import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -49,19 +50,15 @@ public class H5ProtocolController {
     private final Logger logger = Logger.getLogger(H5ProtocolController.class);
     
     @Resource
-    BizCacheUtil bizCacheUtil;
-    @Resource
     JsdUserService jsdUserService;
     @Resource
     JsdResourceService jsdResourceService;
     @Resource
     JsdBorrowCashService jsdBorrowCashService;
     @Resource
+    JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
+    @Resource
     JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
-    @Resource
-    JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
-    @Resource
-    NumberWordFormat numberWordFormat;
 
     /**
      * 借钱协议
@@ -241,6 +238,7 @@ public class H5ProtocolController {
 	            model.put("serviceRate", cashDo.getPoundageRate().setScale(2));
 	            model.put("overdueRate", cashDo.getOverdueRate().setScale(2));
 	            model.put("serviceAmount", cashDo.getPoundageAmount());
+	            model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 	        }else{
 	        	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
 	        	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
@@ -269,7 +267,7 @@ public class H5ProtocolController {
     }
     
     /**
-     * 数字证书服务协议
+     * 风险提示函
      * @param request
      * @param model
      */
@@ -301,5 +299,111 @@ public class H5ProtocolController {
         model.put("platformName", resdo.getValue3());
         model.put("platformSimpleName", resdo.getValue4());
     }
+    
+    /**
+     * 代买协议
+     * @param request
+     * @param model
+     */
+    @RequestMapping(value = { "agencyProtocol" }, method = RequestMethod.GET)
+    public void agencyProtocol(HttpServletRequest request, ModelMap model){
+    	String openId = request.getParameter("openId");
+        
+        JsdUserDo afUserDo = jsdUserService.getByOpenId(openId);
+        if (afUserDo == null) {
+            logger.warn("refer user not exist by openId " + openId);
+            return;
+        }
+        
+        JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_AGENCY.name(), ResourceSecType.PROTOCOL_AGENCY.name());
+        
+        model.put("realName", afUserDo.getRealName());
+        model.put("yfCompany", resdo.getValue1());
+        
+        logger.info("agencyProtocol, params=" + JSON.toJSONString(model));
+    }
+    
+    /**
+     * 续期协议
+     * @param request
+     * @param model
+     */
+    @RequestMapping(value = { "renewalProtocol" }, method = RequestMethod.GET)
+    public void renewalProtocol(HttpServletRequest request, ModelMap model){
+    	try {
+	    	String openId = request.getParameter("openId");
+	    	String preview = request.getParameter("preview");
+	    	String tradeNoXgxy = request.getParameter("tradeNoXgxy");
+	
+	        JsdUserDo userDo = jsdUserService.getByOpenId(openId);
+	        if (userDo == null) {
+	            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+	            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+	        }
+	        
+	        JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_RENEWAL.name(), ResourceSecType.PROTOCOL_RENEWAL.name());
+	        model.put("yfCompany", resdo.getValue1());
+            model.put("bfCompany", resdo.getValue2());
+	        
+	        if(StringUtils.isNotBlank(tradeNoXgxy)) {
+	        	JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalService.getByTradeNoXgxy(tradeNoXgxy);
+	        	JsdBorrowCashDo cashDo = jsdBorrowCashService.getById(renewalDo.getBorrowId());
+	        	
+	        	model.put("renewalNo", renewalDo.getTradeNo());
+	        	// 原借款
+	        	model.put("oriBorrowNo", cashDo.getBorrowNo());
+	        	model.put("oriAmount", cashDo.getAmount());
+	        	model.put("oriAmountUpper", NumberUtil.number2CNMontrayUnit(cashDo.getAmount()));
+	        	model.put("oriInterestRate", cashDo.getInterestRate().setScale(2));
+	        	model.put("oriGmtStart", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+	        	model.put("oriGmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+	            
+	        	//续期信息
+	        	model.put("reAmount", renewalDo.getRenewalAmount());
+	        	model.put("reAmountUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getRenewalAmount()));
+	        	model.put("reInterestRate", renewalDo.getBaseBankRate());
+	        	model.put("reGmtStart", DateUtil.formatDate(renewalDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+	        	model.put("reGmtEnd", DateUtil.formatDate(renewalDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+	        	model.put("remark", renewalDo.getRemark());
+	        	model.put("reGmtPlanRepay", DateUtil.formatDate(renewalDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+	        	model.put("reRepayCapital", renewalDo.getCapital());
+	        	model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getCapital()));
+	        	model.put("reServiceRate", renewalDo.getPoundageRate());
+	        	
+	            model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+	        }else{
+	        	JSONObject obj = JSON.parseObject(preview);
+	        	String borrowNoXgxy = obj.getString("borrowNo");
+	        	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(borrowNoXgxy);
+	        	
+	        	// 原借款
+	        	model.put("oriBorrowNo", cashDo.getBorrowNo());
+	        	model.put("oriAmount", cashDo.getAmount());
+	        	model.put("oriAmountUpper", NumberUtil.number2CNMontrayUnit(cashDo.getAmount()));
+	        	model.put("oriInterestRate", cashDo.getInterestRate().setScale(2));
+	        	
+	        	JSONArray renewalDetail = jsdBorrowCashRenewalService.getRenewalDetail(cashDo);
+	        	JSONObject info = renewalDetail.getJSONObject(0);
+	        	// 续期信息
+	        	model.put("reAmount", info.getString("principalAmount"));
+	        	model.put("reAmountUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("principalAmount")) ));
+	        	model.put("reInterestRate", info.getString("interestRate"));
+	        	model.put("remark", "续期");
+	        	model.put("reRepayCapital", info.getString("capital"));
+	        	model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("capital")) ));
+	        	model.put("reServiceRate", info.getString("serviceRate"));
+	        }
+	        
+	        model.put("idNumber", userDo.getIdNumber());
+	        model.put("realName", userDo.getRealName());
+	        model.put("email", userDo.getEmail());//电子邮箱
+	        model.put("mobile", userDo.getMobile());// 联系电话
+	        
+	        logger.info("renewalProtocol, params=" + JSON.toJSONString(model));
+	    }catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+    }
+    
 
 }

@@ -20,6 +20,8 @@
         h2 {
             text-align: center;
             font-size: .50rem;
+            margin: 10px 0 20px 0;
+            font-weight: bold;
         }
 
         .text_decor {
@@ -162,8 +164,8 @@
             <p class="text_decor">13.6本协议中所使用的定义，除非另有规定，甲方享有解释权。</p>
 
             <br>
-            <p>甲方：<img style="max-width: 1.5rem" src="$!{companyUserSeal}"></p>
-            <p>乙方：<img style="max-width: 1.5rem" src="$!{personUserSeal}"></p>
+            <p>甲方：$!{jfCompany}</p>
+            <p>乙方： $!{realName}</p>
             <p>签署时间：$!{gmtSign} </p>
 
     </div>
