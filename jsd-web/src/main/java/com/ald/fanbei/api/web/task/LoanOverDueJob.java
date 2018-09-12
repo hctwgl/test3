@@ -66,7 +66,7 @@ public class LoanOverDueJob {
     private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
     @Resource
     private JsdNoticeRecordService jsdNoticeRecordService;
-
+    @Resource
     JsdUserService jsdUserService;
     @Resource
     JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
