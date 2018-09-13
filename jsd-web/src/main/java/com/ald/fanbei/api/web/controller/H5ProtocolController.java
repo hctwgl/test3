@@ -3,10 +3,13 @@ package com.ald.fanbei.api.web.controller;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -60,9 +63,13 @@ public class H5ProtocolController {
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
     @Resource
     JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
+	@Resource
+	JsdESdkService jsdESdkService;
+	@Resource
+	JsdUserSealService jsdUserSealService;
 
     private static final BigDecimal NUM100 = new BigDecimal(100);
-    
+
     /**
      * 借钱协议
      *
@@ -83,8 +90,8 @@ public class H5ProtocolController {
                 throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             }
             this.inpourUserInfo(model, userDo);
-            
-            
+
+
             JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_CASH.name());
             model.put("yfCompany", resdo.getValue1());
             model.put("bfCompany", resdo.getValue2());
@@ -104,6 +111,9 @@ public class H5ProtocolController {
                 model.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
                 model.put("gmtPlanRepayment", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
                 model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+
+				getCompanySeal(model);
+				getUserSeal(model,userDo);
             }else{
             	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
             	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
@@ -150,7 +160,7 @@ public class H5ProtocolController {
                 throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             }
             this.inpourUserInfo(model, userDo);
-            
+
             JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_ORDER.name());
             model.put("yfCompany", resdo.getValue1());
             model.put("bfCompany", resdo.getValue2());
@@ -170,6 +180,9 @@ public class H5ProtocolController {
                 model.put("gmtEnd", DateUtil.formatDate(orderCashDo.getGmtPlanRepay(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
                 model.put("gmtPlanRepayment", DateUtil.formatDate(orderCashDo.getGmtPlanRepay(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
                 model.put("gmtSign", DateUtil.formatDate(orderCashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+
+				getCompanySeal(model);
+				getUserSeal(model,userDo);
             }else{
             	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
             	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
@@ -220,7 +233,7 @@ public class H5ProtocolController {
 	            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 	        }
 	        this.inpourUserInfo(model, userDo);
-	        
+
 	        JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_PLATFORM.name());
 	        model.put("jfCompany", resdo.getValue1());
 	        
@@ -233,6 +246,8 @@ public class H5ProtocolController {
 	            model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%" );
 	            model.put("serviceAmount", cashDo.getPoundageAmount());
 	            model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				getCompanySeal(model);
+				getUserSeal(model,userDo);
 	        }else{
 	        	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
 	        	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
@@ -248,14 +263,65 @@ public class H5ProtocolController {
 	            model.put("overdueRateDaily", new BigDecimal(resp.overdueRate).multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%" );
 	            model.put("serviceAmount", resp.serviceAmount);
 	        }
-	        
+
 	        logger.info("platformProtocol, params=" + JSON.toJSONString(model));
 	    }catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
     }
-    
-    /**
+
+	private void getCompanySeal(ModelMap map) {
+		try {
+			JsdUserSealDo companyUserSealDo = jsdESdkService.selectUserSealByUserId(-1l);
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("aldUserSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			} else {
+				logger.error("获取阿拉丁印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
+			companyUserSealDo = jsdUserSealService.getUserSealByUserName("浙江楚橡信息科技有限公司");
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("cxSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			} else {
+				logger.error("获取楚橡印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
+			companyUserSealDo = jsdUserSealService.getUserSealByUserName("杭州绿游网络科技有限公司");
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("lvSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			} else {
+				logger.error("获取绿游印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
+			companyUserSealDo = jsdUserSealService.getUserSealByUserName("金泰嘉鼎（深圳）资产管理有限公司");
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("jtSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			} else {
+				logger.error("获取金泰印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
+			companyUserSealDo = jsdUserSealService.getUserSealByUserName("深圳前海资生管家互联网金融服务有限公司");
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("qhSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			} else {
+				logger.error("获取前海印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
+		} catch (Exception e) {
+			logger.error("get userSeal  error", e);
+		}
+	}
+
+	private void getUserSeal(ModelMap map, JsdUserDo afUserDo) {
+		JsdUserSealDo afUserSealDo = jsdUserSealService.getUserSeal(afUserDo);
+		if (null == afUserSealDo || null == afUserSealDo.getUserAccountId() || null == afUserSealDo.getUserSeal()) {
+			logger.error("获取个人印章失败 => {}" + FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
+			throw new FanbeiException(FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
+		}
+		map.put("personUserSeal", "data:image/png;base64," + afUserSealDo.getUserSeal());
+	}
+
+	/**
      * 风险提示函
      * @param request
      * @param model
@@ -279,9 +345,9 @@ public class H5ProtocolController {
             return;
         }
         this.inpourUserInfo(model, userDo);
-        
+
         JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_DIGITAL_CERTIFICATE.name());
-        
+
         model.put("platformCompany", resdo.getValue1());
         model.put("platformCompanyAddress", resdo.getValue2());
         model.put("platformName", resdo.getValue3());
@@ -303,9 +369,9 @@ public class H5ProtocolController {
             return;
         }
         this.inpourUserInfo(model, userDo);
-        
+
         JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_AGENCY.name(), ResourceSecType.PROTOCOL_AGENCY.name());
-        
+
         model.put("yfCompany", resdo.getValue1());
         
         logger.info("agencyProtocol, params=" + JSON.toJSONString(model));
@@ -329,7 +395,7 @@ public class H5ProtocolController {
 	            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 	        }
 	        this.inpourUserInfo(model, userDo);
-	        
+
 	        JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_RENEWAL.name(), ResourceSecType.PROTOCOL_RENEWAL.name());
 	        model.put("yfCompany", resdo.getValue1());
             model.put("bfCompany", resdo.getValue2());
@@ -362,6 +428,9 @@ public class H5ProtocolController {
 	        	model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%");
 	        	
 	            model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+
+				getCompanySeal(model);
+				getUserSeal(model,userDo);
 	        }else{
 	        	JSONObject obj = JSON.parseObject(preview);
 	        	String borrowNoXgxy = obj.getString("borrowNo");
@@ -404,7 +473,7 @@ public class H5ProtocolController {
         String second = mobile.substring(7);
         return first + "****"+second;
     }
-    
+
     private String privacyRealName(String userName) {
         if (userName.length() == 2 || userName.length() == 3) {
             return "*" + userName.substring(1);
@@ -413,7 +482,7 @@ public class H5ProtocolController {
         }
         return userName;
     }
-    
+
     private String privacyIdNumber(String idNumber) {
         String firstCardId = idNumber.substring(0, 3);
         String secondCardId = idNumber.substring(14);

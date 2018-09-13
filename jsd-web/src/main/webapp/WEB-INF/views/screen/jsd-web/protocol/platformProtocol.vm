@@ -158,7 +158,7 @@
         <p>13.5本协议的各项补充、修订或变更，包括本协议的附件、附录及补充协议，为本协议的完整组成部分；</p>
         <p class="text_decor">13.6本协议中所使用的定义，除非另有规定，甲方享有解释权。</p>
 
-        <p>甲方：$!{jfCompany}<br>乙方： $!{realName}<br>签署时间：$!{gmtSign}</p>
+        <p>甲方：<img style="max-width: 2.5rem" src="$!{lvSeal}"><br>乙方： <img style="max-width: 2.5rem" src="$!{personUserSeal}"><br>签署时间：$!{gmtSign}</p>
 
     </div>
 </body>

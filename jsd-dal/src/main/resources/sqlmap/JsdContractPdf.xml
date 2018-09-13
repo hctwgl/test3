@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ald.fanbei.api.dal.dao.JsdContractPdfDao" >
+  <resultMap id="BaseResultMap" type="JsdContractPdfDo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="type_id" property="typeId" jdbcType="BIGINT" />
+    <result column="contract_pdf_url" property="contractPdfUrl" jdbcType="VARCHAR"/>
+    <result column="ev_id" property="evId" jdbcType="VARCHAR"/>
+    <result column="gmt_create" property="gmtCreate" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, type, type_id, contract_pdf_url,ev_id,gmt_create,is_delete,user_seal_id
+  </sql>
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from jsd_contract_pdf
+    where id = #{id,jdbcType=BIGINT}
+    and is_delete = 0
+  </select>
+  <select id="selectByTypeId" resultMap="BaseResultMap" parameterType="JsdContractPdfDo" >
+    select
+    <include refid="Base_Column_List" />
+    from jsd_contract_pdf
+    where type_id = #{typeId,jdbcType=BIGINT}
+    AND type = #{type}
+    and is_delete = 0
+    ORDER by id desc
+    limit 1
+  </select>
+  <insert id="insert" parameterType="JsdContractPdfDo" keyProperty="id" useGeneratedKeys="true">
+    insert into jsd_contract_pdf (id, type, type_id,
+      contract_pdf_url,ev_id,gmt_create,is_delete,user_seal_id)
+    values (#{id,jdbcType=BIGINT}, #{type,jdbcType=TINYINT}, #{typeId,jdbcType=BIGINT},
+      #{contractPdfUrl,jdbcType=VARCHAR},#{evId},now(),0,#{userSealId})
+  </insert>
+
+  <update id="updateById" parameterType="JsdContractPdfDo" >
+    update jsd_contract_pdf
+    set type = #{type,jdbcType=TINYINT},
+      type_id = #{typeId,jdbcType=BIGINT},
+      contract_pdf_url = #{contractPdfUrl,jdbcType=VARCHAR},user_seal_id = #{userSealId}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

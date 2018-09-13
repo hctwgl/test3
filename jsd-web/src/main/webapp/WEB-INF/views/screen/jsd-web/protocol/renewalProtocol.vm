@@ -223,9 +223,9 @@
         <p>4、如果本协议中的任何一条或多条违反适用的法律法规，则该条将被视为无效，但该无效条款并不影响本协议其他条款的效力。</p>
         <p>5、本协议若有修改或者补充的，均由丙方以电子文本形式在其平台及合作方处进行公布，修改后或者补充后的内容与本协议有冲突的，以修改后或者补充后的效力为准。</p>
         
-        <p>甲方：$!{realName}<br/>
-        乙方：$!{yfCompany}<br/>
-        丙方：$!{bfCompany}<br/>
+        <p>甲方：<img style="max-width: 2.5rem" src="$!{personUserSeal}"><br/>
+        乙方：<img style="max-width: 2.5rem" src="$!{qhSeal}"><br/>
+        丙方：<img style="max-width: 2.5rem" src="$!{lvSeal}"><br/>
         签署时间：$!{gmtSign}</p>
 
     </div>

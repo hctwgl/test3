@@ -184,9 +184,9 @@
 
 
     
-    <p>甲方：$!{realName}<br/>
-    乙方：$!{yfCompany}<br/>
-    丙方：$!{bfCompany}<br/>
+    <p>甲方：<img style="max-width: 2.5rem" src="$!{personUserSeal}"><br/>
+    乙方：<img style="max-width: 2.5rem" src="$!{jtSeal}"><br/>
+    丙方：<img style="max-width: 2.5rem" src="$!{lvSeal}"><br/>
     签署时间：$!{gmtSign}</p>
 
 </div>
