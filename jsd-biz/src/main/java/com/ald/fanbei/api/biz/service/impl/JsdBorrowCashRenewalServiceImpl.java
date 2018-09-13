@@ -359,13 +359,13 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 	@Override
 	public long dealJsdRenewalFail(String renewalNo, String tradeNo, boolean isNeedMsgNotice, String errorCode, String errorMsg) {
 		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
-		logger.info("dealJsdRenewalSucess renewalNo="+renewalNo+", tradeNo="+tradeNo+", delayNo="+renewalDo.getTradeNoXgxy()+
+		logger.info("dealJsdRenewalFail renewalNo="+renewalNo+", tradeNo="+tradeNo+", delayNo="+renewalDo.getTradeNoXgxy()+
 				", isNeedMsgNotice="+isNeedMsgNotice+", errorCode="+errorCode+", errorMsg="+errorMsg);
-		if(JsdRenewalDetailStatus.NO.name().equals(renewalDo.getStatus())){
+		if(JsdRenewalDetailStatus.NO.getCode().equals(renewalDo.getStatus())){
 			return 0l;
 		}
 		
-		long result = dealChangStatus(renewalNo, tradeNo, JsdRenewalDetailStatus.NO.name(), renewalDo.getRid(), errorCode, errorMsg);
+		long result = dealChangStatus(renewalNo, tradeNo, JsdRenewalDetailStatus.NO.getCode(), renewalDo.getRid(), errorCode, errorMsg);
 		
 		if(result == 1l){
 			//续期失败，调用西瓜信用通知接口
