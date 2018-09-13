@@ -27,6 +27,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BorrowVersionType;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
@@ -167,6 +168,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         afBorrowCashDo.setTradeNoXgxy(cashReq.borrowNo);
         afBorrowCashDo.setBorrowNo(generatorClusterNo.getLoanNo(new Date()));
         afBorrowCashDo.setRepayPrinciple(BigDecimal.ZERO);
+        afBorrowCashDo.setVersion(BorrowVersionType.SELL.name());
         return afBorrowCashDo;
     }
     
