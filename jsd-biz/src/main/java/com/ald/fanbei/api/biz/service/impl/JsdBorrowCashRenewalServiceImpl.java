@@ -200,10 +200,8 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		    		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getById(renewalId);
 		    		renewalDo.setStatus(status);
 		    		renewalDo.setGmtModified(now);
-		    		if(!JsdRenewalDetailStatus.NO.getCode().equals(status)){
-		    			renewalDo.setFailCode(errorCode);
-		    			renewalDo.setFailMsg(errorMsg);
-		    		}
+	    			renewalDo.setFailCode(errorCode);
+	    			renewalDo.setFailMsg(errorMsg);
 		    		jsdBorrowCashRenewalDao.updateById(renewalDo);
 		    		
 		    		// 更新新增订单还款状态
