@@ -151,9 +151,9 @@ public class CollectionSystemUtil extends AbstractThird {
 	public boolean consumerRepayment(Map<String, String> reqBo) {
 		// APP还款类型写3 , 线下还款写4
 		try {
-			String url = getUrl() + "/report/thirdRepayment";
+//			String url = getUrl() + "/report/thirdRepayment";
 
-//			String url = "http://192.168.152.21:8003/report/thirdRepayment";
+			String url = "http://192.168.152.21:8003/report/thirdRepayment";
 			logger.info("consumerRepayment url :" + url);
 			String reqResult = "";
 			if (url.contains("https")){

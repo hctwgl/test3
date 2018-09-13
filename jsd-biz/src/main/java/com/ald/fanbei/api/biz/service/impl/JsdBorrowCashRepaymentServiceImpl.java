@@ -188,7 +188,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 	private JsdBorrowLegalOrderRepaymentDo buildOrderRepayment(BorrowCashRepayBo bo, BigDecimal repayAmount) {
 		JsdBorrowLegalOrderRepaymentDo repayment = new JsdBorrowLegalOrderRepaymentDo();
-
 		repayment.setUserId(bo.userId);
 		repayment.setBorrowLegalOrderCashId(bo.borrowLegalOrderCashId);
 		repayment.setRepayAmount(repayAmount);
@@ -197,9 +196,15 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		repayment.setTradeNo(bo.tradeNo);	// 我方生成
 		repayment.setRepayNo(bo.repayNo);	// 西瓜提供
 		repayment.setStatus(JsdBorrowLegalRepaymentStatus.APPLY.getCode());
-		repayment.setCardNo(bo.bankNo);
-		HashMap<?, ?> bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
-        repayment.setCardName((String) bank.get("bankChannel"));
+		//催收还款没有银行卡号
+		if(StringUtil.isNotBlank(bo.bankNo)){
+			repayment.setCardNo(bo.bankNo);
+			HashMap<?, ?> bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
+			repayment.setCardName((String) bank.get("bankChannel"));
+		}else {
+			repayment.setCardNo("");
+			repayment.setCardName("");
+		}
 		Date now = new Date();
 		repayment.setGmtCreate(now);
 		repayment.setGmtModified(now);
@@ -221,10 +226,15 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		repay.setStatus(JsdBorrowCashRepaymentStatus.APPLY.getCode());
 		repay.setName(name);
 		repay.setUserId(userId);
-		repay.setCardNumber(cardNo);
 		repay.setType(repayType);
-		HashMap<?, ?> bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(userId,cardNo);
-		repay.setCardName((String) bank.get("bankName"));
+		//催收还款没有银行卡号
+		if(StringUtil.isNotBlank(cardNo)){
+			repay.setCardNumber(cardNo);
+			HashMap<?, ?> bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(userId,cardNo);
+			repay.setCardName((String) bank.get("bankName"));
+		}else {
+			repay.setCardNumber("");
+		}
 		return repay;
 	}
 
@@ -477,7 +487,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			Map<String, String> repayData = new HashMap<String, String>();
 			HashMap<String, String> data = new HashMap<String, String>();
 			//("还款流水")
-			repayData.put("repaymentNo", repayDealBo.curTradeNo);
+			repayData.put("repaymentNo", repayDealBo.curOutTradeNo);
 			//("还款时间")
 			repayData.put("repayTime", DateUtil.formatDateTime(new Date()));
 			//("订单编号")
@@ -494,7 +504,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			data.put("amount",repayAmount+"");
 			repayData.put("companyId","6");
 			repayData.put("totalAmount", repayAmount+"");
-			byte[] pd = DigestUtil.digestString(repayDealBo.curTradeNo.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+			byte[] pd = DigestUtil.digestString(repayDealBo.curOutTradeNo.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
 			String sign = DigestUtil.encodeHex(pd);
 			repayData.put("sign",sign);
 			list.add(data);
@@ -782,10 +792,10 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		bo.borrowCashDo = jsdBorrowCashDo;
 		bo.tradeNo = generatorClusterNo.getOfflineRepaymentBorrowCashNo(new Date());
 		bo.tradeNoUps = outTradeNo;
-		bo.repayType = JsdRepayType.COLLECTION.getCode();
+		bo.repayType = JsdRepayType.COLLECTION.getName();
 		bo.cardName = "";
 		bo.bankNo = "";
-		bo.name = JsdRepayType.COLLECTION.getName();
+		bo.name = JsdRepayType.COLLECTION.getCode();
 		return bo;
 	}
 
