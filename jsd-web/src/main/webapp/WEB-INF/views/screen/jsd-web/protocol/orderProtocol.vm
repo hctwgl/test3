@@ -75,7 +75,7 @@
         </tr>
         <tr>
             <th>大写金额</th>
-            <td>人民币$!{amountCapital} 元</td>
+            <td>人民币$!{amountCapital}</td>
         </tr>
         <tr>
             <td>借款利率（年化）</td>

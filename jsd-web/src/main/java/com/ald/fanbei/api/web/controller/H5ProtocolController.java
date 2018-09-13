@@ -200,7 +200,7 @@ public class H5ProtocolController {
             
             model.put("interestRate", interestRate.multiply(NUM100).setScale(2) + "%");
             model.put("serviceRate", serviceRate.multiply(NUM100).setScale(2) + "%");
-            model.put("overdueRateDaily", overdueRate.multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(4) + "%" );
+            model.put("overdueRateDaily", overdueRate.multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%" );
             model.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
             model.put("amountLower", amountLower);
             
@@ -241,7 +241,7 @@ public class H5ProtocolController {
 	        	model.put("borrowNo", cashDo.getBorrowNo());
 	        	model.put("interestRate", cashDo.getInterestRate().multiply(NUM100).setScale(2) + "%" );
 	            model.put("serviceRate", cashDo.getPoundageRate().multiply(NUM100).setScale(2) + "%" );
-	            model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(4) + "%" );
+	            model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%" );
 	            model.put("serviceAmount", cashDo.getPoundageAmount());
 	            model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				getCompanySeal(model);
@@ -258,7 +258,7 @@ public class H5ProtocolController {
 	        	TrialBeforeBorrowResp resp = trialBo.resp;
 	        	model.put("interestRate", new BigDecimal(resp.interestRate).multiply(NUM100).setScale(2) + "%" );
 	            model.put("serviceRate", new BigDecimal(resp.serviceRate).multiply(NUM100).setScale(2) + "%" );
-	            model.put("overdueRateDaily", new BigDecimal(resp.overdueRate).multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(4) + "%" );
+	            model.put("overdueRateDaily", new BigDecimal(resp.overdueRate).multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%" );
 	            model.put("serviceAmount", resp.serviceAmount);
 	        }
 
@@ -421,7 +421,7 @@ public class H5ProtocolController {
 	        	model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getCapital()));
 	        	model.put("reServiceRate", renewalDo.getPoundageRate().multiply(NUM100).setScale(2) + "%");
 	        	
-	        	model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(4) + "%");
+	        	model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%");
 	        	
 	            model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 
@@ -449,7 +449,7 @@ public class H5ProtocolController {
 	        	model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("capital")) ));
 	        	model.put("reServiceRate", new BigDecimal(info.getString("serviceRate")).multiply(NUM100).setScale(2) + "%" );
 	        	
-	        	model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(4) + "%");
+	        	model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%");
 	        }
 	        
 	    }catch (Exception e) {
