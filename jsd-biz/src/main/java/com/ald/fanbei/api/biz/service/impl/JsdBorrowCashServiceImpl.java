@@ -143,13 +143,16 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
      */
 	@Override
 	public BigDecimal getRiskDailyRate(String openId) {
-        BigDecimal riskRateDaily = BigDecimal.valueOf(0.005); // TODO 数据库配置利率
+        BigDecimal riskRateDaily = BigDecimal.valueOf(0.008); // TODO 数据库配置利率
         try {
+        	// TODO 从缓存中取利率
+        	
             String riskRate = oriRateUtil.getOriRateNoticeRequest(openId); //风控返回的数据为日利率，并除以1000
             if( StringUtils.isNotBlank(riskRate) ) {
             	if(BigDecimal.ZERO.compareTo(new BigDecimal(riskRate)) == 0) {
             		logger.error("openId=" + openId + ", riskRate from xgxy is 0.00 !");
             	}else {
+            		// TODO 缓存风控利率
             		riskRateDaily = new BigDecimal(riskRate).divide(BigDecimal.valueOf(1000), 6, RoundingMode.HALF_UP);
             	}
             }else {

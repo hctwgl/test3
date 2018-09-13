@@ -79,6 +79,8 @@ public class H5ProtocolController {
                 logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
                 throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             }
+            this.inpourUserInfo(model, userDo);
+            
             
             JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_CASH.name());
             model.put("yfCompany", resdo.getValue1());
@@ -119,10 +121,6 @@ public class H5ProtocolController {
             model.put("interestRate", interestRate.setScale(2));
             model.put("serviceRate", serviceRate.setScale(2));
             model.put("overdueRate", overdueRate.setScale(2));
-            model.put("idNumber", userDo.getIdNumber());
-            model.put("realName", userDo.getRealName());
-            model.put("email", userDo.getEmail());//电子邮箱
-            model.put("mobile", userDo.getMobile());// 联系电话
             model.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
             model.put("amountLower", amountLower);
             
@@ -151,6 +149,7 @@ public class H5ProtocolController {
                 logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
                 throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             }
+            this.inpourUserInfo(model, userDo);
             
             JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_ORDER.name());
             model.put("yfCompany", resdo.getValue1());
@@ -192,10 +191,6 @@ public class H5ProtocolController {
             model.put("overdueRateDaily", overdueRate
             			.multiply(new BigDecimal(100))
             			.divide( new BigDecimal(Constants.ONE_YEAY_DAYS)).setScale(2) );
-            model.put("idNumber", userDo.getIdNumber());
-            model.put("realName", userDo.getRealName());
-            model.put("email", userDo.getEmail());//电子邮箱
-            model.put("mobile", userDo.getMobile());// 联系电话
             model.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
             model.put("amountLower", amountLower);
             
@@ -226,6 +221,7 @@ public class H5ProtocolController {
 	            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 	            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 	        }
+	        this.inpourUserInfo(model, userDo);
 	        
 	        JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_PLATFORM.name());
 	        model.put("jfCompany", resdo.getValue1());
@@ -255,11 +251,6 @@ public class H5ProtocolController {
 	            model.put("serviceAmount", resp.serviceAmount);
 	        }
 	        
-	        model.put("idNumber", userDo.getIdNumber());
-	        model.put("realName", userDo.getRealName());
-	        model.put("email", userDo.getEmail());//电子邮箱
-	        model.put("mobile", userDo.getMobile());// 联系电话
-	        
 	        logger.info("platformProtocol, params=" + JSON.toJSONString(model));
 	    }catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -284,16 +275,15 @@ public class H5ProtocolController {
     public void numProtocol(HttpServletRequest request, ModelMap model){
     	String openId = request.getParameter("openId");
         
-        JsdUserDo afUserDo = jsdUserService.getByOpenId(openId);
-        if (afUserDo == null) {
+        JsdUserDo userDo = jsdUserService.getByOpenId(openId);
+        if (userDo == null) {
             logger.warn("refer user not exist by openId " + openId);
             return;
         }
+        this.inpourUserInfo(model, userDo);
         
         JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_DIGITAL_CERTIFICATE.name());
         
-        model.put("idNumber", afUserDo.getIdNumber());
-        model.put("realName", afUserDo.getRealName());
         model.put("platformCompany", resdo.getValue1());
         model.put("platformCompanyAddress", resdo.getValue2());
         model.put("platformName", resdo.getValue3());
@@ -309,15 +299,15 @@ public class H5ProtocolController {
     public void agencyProtocol(HttpServletRequest request, ModelMap model){
     	String openId = request.getParameter("openId");
         
-        JsdUserDo afUserDo = jsdUserService.getByOpenId(openId);
-        if (afUserDo == null) {
+        JsdUserDo userDo = jsdUserService.getByOpenId(openId);
+        if (userDo == null) {
             logger.warn("refer user not exist by openId " + openId);
             return;
         }
+        this.inpourUserInfo(model, userDo);
         
         JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_AGENCY.name(), ResourceSecType.PROTOCOL_AGENCY.name());
         
-        model.put("realName", afUserDo.getRealName());
         model.put("yfCompany", resdo.getValue1());
         
         logger.info("agencyProtocol, params=" + JSON.toJSONString(model));
@@ -340,6 +330,7 @@ public class H5ProtocolController {
 	            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 	            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 	        }
+	        this.inpourUserInfo(model, userDo);
 	        
 	        JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_RENEWAL.name(), ResourceSecType.PROTOCOL_RENEWAL.name());
 	        model.put("yfCompany", resdo.getValue1());
@@ -398,16 +389,37 @@ public class H5ProtocolController {
 	        	model.put("overdueRate", cashDo.getOverdueRate().setScale(2));
 	        }
 	        
-	        model.put("idNumber", userDo.getIdNumber());
-	        model.put("realName", userDo.getRealName());
-	        model.put("email", userDo.getEmail());//电子邮箱
-	        model.put("mobile", userDo.getMobile());// 联系电话
-	        
 	        logger.info("renewalProtocol, params=" + JSON.toJSONString(model));
 	    }catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
     }
     
+    private void inpourUserInfo(ModelMap model, JsdUserDo userDo) {
+    	model.put("idNumber", this.privacyIdNumber(userDo.getIdNumber()));
+        model.put("realName", this.privacyRealName(userDo.getRealName()));
+        model.put("email", userDo.getEmail());							//电子邮箱
+        model.put("mobile", this.privacyMobile(userDo.getMobile()));	// 联系电话
+    }
+    private String privacyMobile(String mobile) {
+    	String first = mobile.substring(0, 3);
+        String second = mobile.substring(7);
+        return first + "****"+second;
+    }
+    
+    private String privacyRealName(String userName) {
+        if (userName.length() == 2 || userName.length() == 3) {
+            return "*" + userName.substring(1);
+        } else if (userName.length() > 3){
+        	return "**" + userName.substring(2);
+        }
+        return userName;
+    }
+    
+    private String privacyIdNumber(String idNumber) {
+        String firstCardId = idNumber.substring(0, 3);
+        String secondCardId = idNumber.substring(14);
+        return firstCardId + "****"+secondCardId;
+    }
 
 }
