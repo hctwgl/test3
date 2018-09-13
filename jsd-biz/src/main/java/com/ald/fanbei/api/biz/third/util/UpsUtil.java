@@ -244,7 +244,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setReturnUrl(getNotifyHost() + "/third/ups/authSignReturn");
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignNotify");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNumber, "authSign", orderNo, "", "DSED_LOAN", userNo));
+		jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNumber, "authSign", orderNo, "", "JSD_LOAN", userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		logThird(reqResult, "authSign", reqBo);
 		if(StringUtil.isBlank(reqResult)){
@@ -527,7 +527,7 @@ public class UpsUtil extends AbstractThird {
 		}
 		if(StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
 				Constants.INVELOMENT_TYPE_TEST)){
-			return StringUtil.appendStrs(SYS_KEY,method,identity,"test" + (System.currentTimeMillis()+"").substring(4));
+			return StringUtil.appendStrs(SYS_KEY,method,identity,"t" + (System.currentTimeMillis()+"").substring(4));
 		}
 		return StringUtil.appendStrs(SYS_KEY,method,identity,System.currentTimeMillis());
 	}
