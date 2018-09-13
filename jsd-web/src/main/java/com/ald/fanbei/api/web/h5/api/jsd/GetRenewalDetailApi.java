@@ -13,6 +13,7 @@ import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
+import com.ald.fanbei.api.common.enums.BorrowVersionType;
 import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
@@ -61,10 +62,12 @@ public class GetRenewalDetailApi implements JsdH5Handle {
 		jsdBorrowCashRenewalService.checkCanRenewal(borrowCashDo);
 		
 		Map<String, Object> data = Maps.newHashMap();
-		if("v1".equals(borrowCashDo.getVersion())) { // v1 赊销
+		if(BorrowVersionType.SELL.name().equals(borrowCashDo.getVersion())) { 			// v1 赊销
+			logger.info("getRenewalDetail SELL tradeNoXgxy"+tradeNoXgxy);
 			data.put("delayInfo", jsdBorrowCashRenewalService.getRenewalDetail(borrowCashDo));
 			
-		} else{		// v2 砍头
+		} else if(BorrowVersionType.BEHEAD.name().equals(borrowCashDo.getVersion())){	// v2 砍头
+			logger.info("getRenewalDetail BEHEAD tradeNoXgxy"+tradeNoXgxy);
 			data.put("delayInfo", jsdBorrowCashRenewalService.getBeheadRenewalDetail(borrowCashDo));
 			
 		}
