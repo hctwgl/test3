@@ -218,12 +218,14 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		    			if(JsdBorrowLegalOrderCashStatus.APPLYING.getCode().equals(orderCashDo.getStatus())){
 		    				orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.CLOSED.getCode());
 		    				orderCashDo.setGmtModified(now);
+		    				orderCashDo.setGmtClose(now);
 		    			}
 		    			// 关闭新增订单
 		    			JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getById(orderCashDo.getBorrowLegalOrderId());
 		    			if(JsdBorrowLegalOrderStatus.UNPAID.getCode().equals(orderDo.getStatus())){
 		    				orderDo.setStatus(JsdBorrowLegalOrderStatus.CLOSED.getCode());
 		    				orderDo.setGmtModified(now);
+		    				orderDo.setGmtClosed(now);
 		    			}
 		    			jsdBorrowLegalOrderCashDao.updateById(orderCashDo);
 		    			jsdBorrowLegalOrderDao.updateById(orderDo);
@@ -271,7 +273,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 					// 上期订单借款
 					JsdBorrowLegalOrderCashDo lastOrderCashDo = jsdBorrowLegalOrderCashDao.getPreviousOrderCashByBorrowId(borrowCashDo.getRid());
 					
-					
+					Date now = new Date(System.currentTimeMillis());
 					if(lastOrderCashDo!=null){
 						// 更新上期订单借款记录为FINISHED
 						lastOrderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.FINISHED.getCode());
@@ -282,6 +284,8 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 						lastOrderCashDo.setSumRepaidInterest(lastOrderCashDo.getSumRepaidInterest().add(lastOrderCashDo.getInterestAmount()));
 						lastOrderCashDo.setInterestAmount(BigDecimal.ZERO);
 						lastOrderCashDo.setRepaidAmount(BigDecimalUtil.add(lastOrderCashDo.getAmount(),lastOrderCashDo.getSumRepaidInterest(),lastOrderCashDo.getSumRepaidPoundage(),lastOrderCashDo.getSumRepaidOverdue()));
+						lastOrderCashDo.setGmtFinish(now);
+						lastOrderCashDo.setGmtLastRepayment(now);
 						jsdBorrowLegalOrderCashDao.updateById(lastOrderCashDo);
 			
 						// 更新本次 订单还款记录为已结清（对应上期订单）
@@ -293,18 +297,18 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 					
 					// 更新本次 订单借款状态
 					orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.getCode());//待还款
-					orderCashDo.setGmtModified(new Date());
+					orderCashDo.setGmtModified(now);
 					jsdBorrowLegalOrderCashDao.updateById(orderCashDo);
 					
 					// 更新本次 订单状态为待发货
 					orderDo.setStatus(JsdBorrowLegalOrderStatus.AWAIT_DELIVER.getCode());//待发货
-					orderDo.setGmtModified(new Date());
+					orderDo.setGmtModified(now);
 					jsdBorrowLegalOrderDao.updateById(orderDo);
 					
 					// 更新本次 续期成功
 					renewalDo.setStatus(JsdRenewalDetailStatus.YES.getCode());
 					renewalDo.setTradeNoUps(tradeNoOut);
-					renewalDo.setGmtModified(new Date());
+					renewalDo.setGmtModified(now);
 					jsdBorrowCashRenewalDao.updateById(renewalDo);
 					
 					// 更新借款记录--->
@@ -313,7 +317,6 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		    		BigDecimal poundage = BigDecimalUtil.multiply(waitPayAmount, renewalDo.getPoundageRate(), new BigDecimal(renewalDo.getRenewalDay()).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
 					
 					Date gmtPlanRepayment = borrowCashDo.getGmtPlanRepayment();
-					Date now = new Date(System.currentTimeMillis());
 
 					// 	如果预计还款时间在今天之后，则在原预计还款时间的基础上加上续期天数，否则在今天的基础上加上续期天数，作为新的预计还款时间
 					if (gmtPlanRepayment.after(now)) {
