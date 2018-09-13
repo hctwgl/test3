@@ -276,21 +276,28 @@ public class H5ProtocolController {
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
 				map.put("aldUserSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 			} else {
-				logger.error("公司印章不存在 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				logger.error("获取阿拉丁印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
 			companyUserSealDo = jsdUserSealService.getUserSealByUserName("浙江楚橡信息科技有限公司");
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
 				map.put("cxSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 			} else {
-				logger.error("获取钱包印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				logger.error("获取楚橡印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
 			companyUserSealDo = jsdUserSealService.getUserSealByUserName("杭州绿游网络科技有限公司");
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
 				map.put("lvSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 			} else {
-				logger.error("获取钱包印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				logger.error("获取绿游印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
+			companyUserSealDo = jsdUserSealService.getUserSealByUserName("金泰嘉鼎（深圳）资产管理有限公司");
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("lvSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			} else {
+				logger.error("获取金泰印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
 		} catch (Exception e) {
