@@ -399,6 +399,8 @@
         borrow_id = #{borrowId}
         AND
         is_delete = 0
+        AND
+        status IN ('AWAIT_REPAY','PART_REPAID','FINISHED')
         ORDER BY gmt_create DESC
         LIMIT 1
     </select>
