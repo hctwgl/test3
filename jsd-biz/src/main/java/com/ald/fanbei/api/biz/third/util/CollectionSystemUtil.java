@@ -180,12 +180,10 @@ public class CollectionSystemUtil extends AbstractThird {
 	public boolean collectRenewal(Map<String, String> reqBo) {
 		// APP还款类型写3 , 线下还款写4
 		try {
-			Map<String, String> params = new HashMap<>();
-			params.put("info",JSON.toJSONString(reqBo));
-			params.put("orderNo",getOrderNo("JSD"));
-			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo");
-			String url = "http://192.168.110.70:8080/api/ald/collect/v1/third/renewal";
-//			String url = getUrl() + "/api/ald/collect/v1/third/renewal";
+			reqBo.put("orderNo",getOrderNo("JSD"));
+			reqBo.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo");
+//			String url = "http://192.168.156.40:8080/api/ald/collect/v1/third/renewal";
+			String url = getUrl() + "/api/ald/collect/v1/third/renewal";
 			String reqResult = "";
 			if (url.contains("https")){
 				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(reqBo));
