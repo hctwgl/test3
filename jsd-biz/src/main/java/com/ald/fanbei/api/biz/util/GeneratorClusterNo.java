@@ -203,6 +203,13 @@ public class GeneratorClusterNo extends AbstractThird {
 		return TokenCacheUtil.incr(Constants.CACHEKEY_REPAYCASHNO);
 	}
 	/**
+	 * 获取续期序列号
+	 * @return
+	 */
+	private int getRenewalSequenceNum() {
+		return TokenCacheUtil.incr(Constants.CACHEKEY_RENEWALCASHNO);
+	}
+	/**
 	 * 获取贷款编号
 	 * 
 	 * @param currDate
@@ -319,7 +326,7 @@ public class GeneratorClusterNo extends AbstractThird {
 		Date currDate = new Date();
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
 		StringBuffer orderSb = new StringBuffer("xj");
-		orderSb.append(dateStr).append(getOrderSeqStr(this.getRepaymentBorrowCacheSequenceNum(currDate, "xj")));
+		orderSb.append(dateStr).append(getOrderSeqStr(this.getRenewalSequenceNum()));
 		return orderSb.toString();
 	}
 	

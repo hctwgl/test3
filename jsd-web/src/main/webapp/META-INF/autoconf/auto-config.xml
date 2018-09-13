@@ -49,6 +49,8 @@
 		<property name="dsed.aes.password" defaultValue="aef5c8c6114b8d6a" description="西瓜信用密钥" />
 		<property name="dsed.xgxy.notice.host" defaultValue="192.168.112.40" description="西瓜通知主机IP" />
 		<property name="dsed.collection.url" defaultValue="http://192.168.106.20:10086" description="催收通知主机IP" />
+		
+		<property name="security.overdue.task" defaultValue="off" description="白名单逾期定时器开关" />
 	</group>
 
 	<script>
