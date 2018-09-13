@@ -184,7 +184,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("info",JSON.toJSONString(reqBo));
 			params.put("orderNo",getOrderNo("JSD"));
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo");
-			String url = getUrl() + "/api/ald/collect/v1/third/renewal";
+			String url = "http://192.168.110.70:8080/api/ald/collect/v1/third/renewal";
 //			String url = getUrl() + "/api/ald/collect/v1/third/renewal";
 			String reqResult = "";
 			if (url.contains("https")){
