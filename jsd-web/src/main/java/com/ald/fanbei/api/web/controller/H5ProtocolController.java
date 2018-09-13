@@ -295,9 +295,16 @@ public class H5ProtocolController {
 			}
 			companyUserSealDo = jsdUserSealService.getUserSealByUserName("金泰嘉鼎（深圳）资产管理有限公司");
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
-				map.put("lvSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+				map.put("jtSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 			} else {
 				logger.error("获取金泰印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
+			companyUserSealDo = jsdUserSealService.getUserSealByUserName("深圳前海资生管家互联网金融服务有限公司");
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("qhSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			} else {
+				logger.error("获取前海印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
 		} catch (Exception e) {
