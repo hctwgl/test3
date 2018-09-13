@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateIn
 import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
 import com.ald.fanbei.api.biz.third.util.OriRateUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
@@ -71,6 +72,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     XgxyUtil xgxyUtil;
     @Resource
     OriRateUtil oriRateUtil;
+    @Resource
+    BizCacheUtil bizCacheUtil;
     @Resource
     TransactionTemplate transactionTemplate;
     
@@ -145,21 +148,25 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	public BigDecimal getRiskDailyRate(String openId) {
         BigDecimal riskRateDaily = BigDecimal.valueOf(0.02); // 0913产品与风控分析确定值
         try {
-        	// TODO 从缓存中取利率
-        	
-            String riskRate = oriRateUtil.getOriRateNoticeRequest(openId); //风控返回的数据为日利率，并除以1000
-            if( StringUtils.isNotBlank(riskRate) ) {
-            	if(BigDecimal.ZERO.compareTo(new BigDecimal(riskRate)) == 0) {
-            		logger.error("openId=" + openId + ", riskRate from xgxy is 0.00 !");
-            	}else {
-            		// TODO 缓存风控利率
-            		riskRateDaily = new BigDecimal(riskRate).divide(BigDecimal.valueOf(1000), 6, RoundingMode.HALF_UP);
-            	}
-            }else {
-            	logger.error("openId=" + openId + ", riskRate from xgxy is null!");
-            }
+        	String riskRateDailyFromCache = bizCacheUtil.hget(Constants.CACHEKEY_RISK_LAYER_RATE, openId);
+        	if(StringUtils.isNotBlank(riskRateDailyFromCache)) {
+        		logger.info("getRiskDailyRate, openId=" + openId + ", risk from cache is " + riskRateDailyFromCache);
+        		riskRateDaily = new BigDecimal(riskRateDailyFromCache);
+        	}else {
+        		String riskRate = oriRateUtil.getOriRateNoticeRequest(openId); //风控返回的数据为日利率，并除以1000
+                if( StringUtils.isNotBlank(riskRate) ) {
+                	if(BigDecimal.ZERO.compareTo(new BigDecimal(riskRate)) == 0) {
+                		logger.error("getRiskDailyRate, openId=" + openId + ", riskRate from xgxy is 0.00 !");
+                	}else {
+                		riskRateDaily = new BigDecimal(riskRate).divide(BigDecimal.valueOf(1000), 6, RoundingMode.HALF_UP);
+                		bizCacheUtil.hset(Constants.CACHEKEY_RISK_LAYER_RATE, openId, riskRateDaily.toPlainString(), DateUtil.getTodayLast());
+                	}
+                }else {
+                	logger.error("getRiskDailyRate, openId=" + openId + ", riskRate from xgxy is null!");
+                }
+        	}
         } catch (Exception e) {
-            logger.error("openId=" + openId + ", occur exception when getRiskDailyRate, msg=" + e.getMessage(), e);
+            logger.error("getRiskDailyRate, openId=" + openId + ", occur exception when getRiskDailyRate, msg=" + e.getMessage(), e);
         }
         return riskRateDaily;
     }
