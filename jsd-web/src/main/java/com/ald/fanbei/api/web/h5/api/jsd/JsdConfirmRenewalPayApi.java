@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
+import com.ald.fanbei.api.biz.service.BeheadBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
@@ -49,6 +50,7 @@ import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 
 /**  
@@ -82,6 +84,8 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 	TransactionTemplate transactionTemplate;
 	@Resource
 	GeneratorClusterNo generatorClusterNo;
+	@Resource
+	BeheadBorrowCashRenewalService beheadBorrowCashRenewalService;
 
 	@Override
 	public JsdH5HandleResponse process(Context context) {
@@ -110,6 +114,27 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		paramBo.userDo = userDo;
 		paramBo.borrowCashDo = borrowCashDo;
 
+		Map<String, Object> resultMap = Maps.newHashMap();
+
+		if(StringUtil.equals("N", paramBo.isTying) && StringUtil.equals("BEHEAD", paramBo.tyingType)) {	// 搭售-砍头
+			resultMap = beheadBorrowCashRenewalService.dealRenewalV2(paramBo);
+			
+		}else if(StringUtil.equals("N", paramBo.isTying) && StringUtil.equals("SELL", paramBo.tyingType)){	// 搭售-赊销
+			long result = buildRecord(paramBo, borrowCashDo);
+			if(result == 0l) throw new FanbeiException("JsdConfirmRenewal error", FanbeiExceptionCode.RENEWAL_FAIL_ERROR);
+			resultMap = jsdBorrowCashRenewalService.doRenewal(paramBo);
+			
+		}else {
+			throw new FanbeiException(FanbeiExceptionCode.FUNCTIONAL_MAINTENANCE);
+		}
+		
+		JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功", resultMap);
+		return resp;
+	}
+
+
+
+	private long buildRecord(JsdRenewalDealBo paramBo, JsdBorrowCashDo borrowCashDo) {
 		long result = transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -143,14 +168,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 				}
 			}
 		});
-
-		if(result == 1l){
-			Map<String, Object> resultMap = jsdBorrowCashRenewalService.doRenewal(paramBo);
-			JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功", resultMap);
-			return resp;
-		}else {
-			throw new FanbeiException("JsdConfirmRenewal error", FanbeiExceptionCode.RENEWAL_FAIL_ERROR);
-		}
+		return result;
 	}
 
 
@@ -352,9 +370,6 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 			throw new FanbeiException(FanbeiExceptionCode.JSD_PARAMS_ERROR);
 		}
 		
-		if(StringUtil.equals("N", bo.isTying) && StringUtil.equals("BEHEAD", bo.tyingType)) {
-			throw new FanbeiException(FanbeiExceptionCode.FUNCTIONAL_MAINTENANCE);
-		}
 		this.getRateInfo(bo);
 
 		return bo;
