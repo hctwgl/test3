@@ -15,7 +15,7 @@
 	<appender name="JSD_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${fbapi.log.path.root}/bi/app-bi.log" />
 		<param name="append" value="true" />
-		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
@@ -27,7 +27,7 @@
 	<appender name="JSD_MD_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${fbapi.log.path.root}/bi/maidian.log" />
 		<param name="append" value="true" />
-		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
@@ -50,7 +50,7 @@
 	<appender name="DEFAULT_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${fbapi.log.path.root}/app.log" />
 		<param name="append" value="true" />
-		<param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern"
