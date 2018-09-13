@@ -134,7 +134,6 @@ public class H5ProtocolController {
             model.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
             model.put("amountLower", amountLower);
             
-            logger.info("cashProtocol, params=" + JSON.toJSONString(model));
     	}catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -207,7 +206,6 @@ public class H5ProtocolController {
             
             // TODO 签章 图片url链接
             
-            logger.info("orderProtocol, params=" + JSON.toJSONString(model));
     	}catch (Exception e) {
     		logger.error(e.getMessage(), e);
 		}
@@ -264,7 +262,6 @@ public class H5ProtocolController {
 	            model.put("serviceAmount", resp.serviceAmount);
 	        }
 
-	        logger.info("platformProtocol, params=" + JSON.toJSONString(model));
 	    }catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -374,7 +371,6 @@ public class H5ProtocolController {
 
         model.put("yfCompany", resdo.getValue1());
         
-        logger.info("agencyProtocol, params=" + JSON.toJSONString(model));
     }
     
     /**
@@ -456,7 +452,6 @@ public class H5ProtocolController {
 	        	model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%");
 	        }
 	        
-	        logger.info("renewalProtocol, params=" + JSON.toJSONString(model));
 	    }catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
