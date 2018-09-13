@@ -2,10 +2,13 @@ package com.ald.fanbei.api.web.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -16,11 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowResp;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
-import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
-import com.ald.fanbei.api.biz.service.JsdResourceService;
-import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.ResourceSecType;
@@ -29,11 +27,6 @@ import com.ald.fanbei.api.common.exception.FanbeiException;
 import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.dal.domain.JsdResourceDo;
-import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -59,6 +52,10 @@ public class H5ProtocolController {
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
     @Resource
     JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
+	@Resource
+	JsdESdkService jsdESdkService;
+	@Resource
+	JsdUserSealService jsdUserSealService;
 
     /**
      * 借钱协议
@@ -265,8 +262,39 @@ public class H5ProtocolController {
 			logger.error(e.getMessage(), e);
 		}
     }
-    
-    /**
+
+	private void getCompanySeal(ModelMap map, JsdUserDo afUserDo) {
+		try {
+			JsdUserSealDo companyUserSealDo = jsdESdkService.selectUserSealByUserId(-1l);
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("companyUserSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			} else {
+				logger.error("公司印章不存在 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
+			getUserSeal(map, afUserDo);
+			companyUserSealDo = jsdUserSealService.getUserSealByUserName("浙江楚橡信息科技股份有限公司");
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("thirdSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			} else {
+				logger.error("获取钱包印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
+		} catch (Exception e) {
+			logger.error("get userSeal  error", e);
+		}
+	}
+
+	private void getUserSeal(ModelMap map, JsdUserDo afUserDo) {
+		JsdUserSealDo afUserSealDo = jsdUserSealService.getUserSeal(afUserDo);
+		if (null == afUserSealDo || null == afUserSealDo.getUserAccountId() || null == afUserSealDo.getUserSeal()) {
+			logger.error("获取个人印章失败 => {}" + FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
+			throw new FanbeiException(FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
+		}
+		map.put("personUserSeal", "data:image/png;base64," + afUserSealDo.getUserSeal());
+	}
+
+	/**
      * 风险提示函
      * @param request
      * @param model
