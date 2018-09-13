@@ -112,9 +112,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	public Map<String, Object> repay(BorrowCashRepayBo bo, String bankPayType) {
 		try {
 
-//			if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
-//				lockRepay(bo.userId);
-//			}
+			if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
+				lockRepay(bo.userId);
+			}
 
 			Date now = new Date();
 			String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
@@ -463,7 +463,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 	private void nofityRisk(RepayDealBo repayDealBo,JsdBorrowCashRepaymentDo repaymentDo,JsdBorrowLegalOrderRepaymentDo orderRepaymentDo,boolean flag) {
 		try{
-			logger.info("nofityRisk= " +flag);
 			List<HashMap<String,String>> list = new ArrayList<>();
 			JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
 			Long borrowId = 0l;
