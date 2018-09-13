@@ -1,7 +1,6 @@
 package com.ald.fanbei.api.web.application;
 
 import com.ald.fanbei.api.biz.service.JsdESdkService;
-import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdUserSealService;
 import com.ald.fanbei.api.common.EsignPublicInit;
 import com.ald.fanbei.api.common.exception.FanbeiException;
@@ -45,13 +44,11 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
     private AccountService SERVICE = AccountServiceFactory.instance();
     private SealService SEAL = SealServiceFactory.instance();
     @Resource
-    private JsdResourceService afResourceService;
-    @Resource
     private JsdESdkService afESdkService;
     @Resource
-    private EsignPublicInit esignPublicInit;
-    @Resource
     private JsdUserSealService jsdUserSealService;
+    @Resource
+    private EsignPublicInit esignPublicInit;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -105,8 +102,8 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
             map1.put("organCode", "095715972");
             map1.put("userId", -3l);
             createCompanySeal(mhSeal, map1);
-            JsdUserSealDo cxSeal = afESdkService.selectUserSealByUserId(-4l);//浙江楚橡信息科技股份有限公司
-            map1.put("name", "浙江楚橡信息科技股份有限公司");
+            JsdUserSealDo cxSeal = afESdkService.selectUserSealByUserId(-4l);//浙江楚橡信息科技有限公司
+            map1.put("name", "浙江楚橡信息科技有限公司");
             map1.put("organCode", "328203207");
             map1.put("userId", -4l);
             createCompanySeal(cxSeal, map1);
@@ -115,6 +112,11 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
             map1.put("organCode", "MA5DBLHE8");
             map1.put("userId", -5l);
             createCompanySeal(jtSeal, map1);
+            JsdUserSealDo lySeal = afESdkService.selectUserSealByUserId(-6l);//杭州绿游网络科技有限公司
+            map1.put("name", "杭州绿游网络科技有限公司");
+            map1.put("organCode", "067894205");
+            map1.put("userId", -6l);
+            createCompanySeal(lySeal, map1);
         }
         logger.info("初始化执行完成...projectId =>{},projectSecret=>{}", projectId, projectSecret);
     }
@@ -189,6 +191,12 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
                 .setLegalArea(legalArea);
         AddAccountResult r = SERVICE.addAccount(org);
         if (150016 == r.getErrCode() || r.getMsg().contains("账户已存在")) {
+            if ("浙江楚橡信息科技有限公司".equals(name)) {
+                JsdUserSealDo mhSeal = afESdkService.selectUserSealByUserId(-4l);
+                SERVICE.deleteAccount(mhSeal.getUserAccountId());
+                r = SERVICE.addAccount(org);
+                return r.getAccountId();
+            }
             GetAccountProfileResult getAccountProfileResult = SERVICE.getAccountInfoByIdNo(legalIdNo, 11);
             return getAccountProfileResult.getAccountInfo().getAccountUid();
         }

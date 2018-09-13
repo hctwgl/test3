@@ -97,6 +97,9 @@ public class H5ProtocolController {
                 model.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
                 model.put("gmtPlanRepayment", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
                 model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+
+				getCompanySeal(model);
+				getUserSeal(model,userDo);
             }else{
             	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
             	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
@@ -168,6 +171,9 @@ public class H5ProtocolController {
                 model.put("gmtEnd", DateUtil.formatDate(orderCashDo.getGmtPlanRepay(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
                 model.put("gmtPlanRepayment", DateUtil.formatDate(orderCashDo.getGmtPlanRepay(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
                 model.put("gmtSign", DateUtil.formatDate(orderCashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+
+				getCompanySeal(model);
+				getUserSeal(model,userDo);
             }else{
             	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
             	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
@@ -236,6 +242,8 @@ public class H5ProtocolController {
 	            model.put("overdueRate", cashDo.getOverdueRate().setScale(2));
 	            model.put("serviceAmount", cashDo.getPoundageAmount());
 	            model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				getCompanySeal(model);
+				getUserSeal(model,userDo);
 	        }else{
 	        	TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
 	        	trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
@@ -263,19 +271,25 @@ public class H5ProtocolController {
 		}
     }
 
-	private void getCompanySeal(ModelMap map, JsdUserDo afUserDo) {
+	private void getCompanySeal(ModelMap map) {
 		try {
 			JsdUserSealDo companyUserSealDo = jsdESdkService.selectUserSealByUserId(-1l);
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
-				map.put("companyUserSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+				map.put("aldUserSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 			} else {
 				logger.error("公司印章不存在 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
-			getUserSeal(map, afUserDo);
-			companyUserSealDo = jsdUserSealService.getUserSealByUserName("浙江楚橡信息科技股份有限公司");
+			companyUserSealDo = jsdUserSealService.getUserSealByUserName("浙江楚橡信息科技有限公司");
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
-				map.put("thirdSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+				map.put("cxSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			} else {
+				logger.error("获取钱包印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
+			companyUserSealDo = jsdUserSealService.getUserSealByUserName("杭州绿游网络科技有限公司");
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("lvSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 			} else {
 				logger.error("获取钱包印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
@@ -401,6 +415,9 @@ public class H5ProtocolController {
 	        	model.put("overdueRate", cashDo.getOverdueRate().setScale(2));
 	        	
 	            model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+
+				getCompanySeal(model);
+				getUserSeal(model,userDo);
 	        }else{
 	        	JSONObject obj = JSON.parseObject(preview);
 	        	String borrowNoXgxy = obj.getString("borrowNo");
