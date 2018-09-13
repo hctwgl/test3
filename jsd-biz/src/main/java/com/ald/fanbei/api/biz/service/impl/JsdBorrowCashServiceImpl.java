@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -66,8 +65,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     @Resource
     JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
     @Resource
-	JsdNoticeRecordService jsdNoticeRecordService;
-    
+    JsdNoticeRecordDao jsdNoticeRecordDao;
+
     @Resource
     XgxyUtil xgxyUtil;
     @Resource
@@ -320,7 +319,13 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	private void jsdNoticeRecord(JsdBorrowCashDo cashDo,String msg, String status) {
         try {
         	XgxyBorrowNoticeBo xgxyPayBo = buildXgxyPay(cashDo, msg, status);
-			jsdNoticeRecordService.dealBorrowNoticed(cashDo,xgxyPayBo);
+            JsdNoticeRecordDo noticeRecordDo = buildJsdNoticeRecord(cashDo, xgxyPayBo);
+            jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+            if(xgxyUtil.borrowNoticeRequest(xgxyPayBo)){
+                noticeRecordDo.setRid(noticeRecordDo.getRid());
+                noticeRecordDo.setGmtModified(new Date());
+                jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
+            }
         } catch (Exception e) {
             logger.error("dsedNoticeRecord, notify user occur error!", e); //通知过程抛出任何异常捕获，不影响主流程
         }

@@ -194,7 +194,7 @@ public class GetRenewalDetailApi implements JsdH5Handle {
 		delayInfo.put("delayDay", allowRenewalDay+"");	// 续期天数
 		delayInfo.put("delayRemark", deferRemark);	// 费用明细	展期金额的相关具体描述（多条说明用英文逗号,用间隔）
 		this.getRenewalRate(delayInfo);
-		delayInfo.put("totalDiffFee", diffFee.toPlainString());	// 展期后的利润差，西瓜会根据此金额匹配搭售商品 TODO
+		delayInfo.put("totalDiffFee", diffFee.toPlainString());	// 展期后的利润差，西瓜会根据此金额匹配搭售商品
 		
 		delayArray.add(delayInfo);
 		

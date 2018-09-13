@@ -77,6 +77,7 @@ public class NoticeTask {
                             logger.info("jsd notice record more max count"+recordDo);
                             continue;
                         }
+                      
                         if (StringUtils.equals(recordDo.getTimes(), "5") && (StringUtils.equals(recordDo.getType(), JsdNoticeType.REPAY.code))) {
                             if(StringUtils.isBlank(recordDo.getParams())){
                                 jsdNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
