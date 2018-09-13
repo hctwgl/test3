@@ -274,8 +274,14 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 		if(cashDo == null) {
 			throw new FanbeiException("dealBorrowSucc, can't find refer borrowCash by id=" + cashId);
 		}
+		
 		logger.info("dealBorrowSucc, borrowCashId="+ cashId + ", borrowNo=" + cashDo.getBorrowNo()
 			+ ", tradeNoXgxy=" + cashDo.getTradeNoXgxy() + ", tradeNoUps=" + cashDo.getTradeNoUps());
+		
+		if(JsdBorrowCashStatus.FINISHED.name().equals(cashDo.getStatus())) {
+			logger.warn("cur borrowNo " + cashDo.getBorrowNo() + "have FINISHED! repeat UPS callback!");
+			return;
+		}
 		
 		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(cashId);
 		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(cashId);

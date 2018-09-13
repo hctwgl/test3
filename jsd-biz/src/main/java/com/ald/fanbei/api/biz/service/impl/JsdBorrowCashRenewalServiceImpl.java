@@ -259,7 +259,10 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 					// 本次续借
 					JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
 					logger.info("dealJsdRenewalSucess delayNo="+renewalDo.getTradeNoXgxy());
-					if(JsdRenewalDetailStatus.YES.getCode().equals(renewalDo.getStatus())) return 0l;
+					if(JsdRenewalDetailStatus.YES.getCode().equals(renewalDo.getStatus())) {
+						logger.warn("cur renewalNo " + renewalNo + "have success! repeat UPS callback!");
+						return 0l;
+					}
 					// 本次订单
 					JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(renewalDo.getBorrowId());
 					JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getById(orderCashDo.getBorrowLegalOrderId());
