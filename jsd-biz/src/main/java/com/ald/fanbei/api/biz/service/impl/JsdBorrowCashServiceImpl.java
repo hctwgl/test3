@@ -143,7 +143,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
      */
 	@Override
 	public BigDecimal getRiskDailyRate(String openId) {
-        BigDecimal riskRateDaily = BigDecimal.valueOf(0.008); // TODO 数据库配置利率
+        BigDecimal riskRateDaily = BigDecimal.valueOf(0.02); // 0913产品与风控分析确定值
         try {
         	// TODO 从缓存中取利率
         	
@@ -202,8 +202,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         BigDecimal borrowOverdueRate = borrowRateInfo.overdueRate;
         
         // 借款 利息 与 服务费 乘法表达式可复用左侧
-        BigDecimal borrowinterestLeft = borrowInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowDay);
-        BigDecimal borrowISLeft = borrowISRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP).multiply(borrowDay);
+        BigDecimal borrowinterestLeft = borrowInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS)).multiply(borrowDay);
+        BigDecimal borrowISLeft = borrowISRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS)).multiply(borrowDay);
         
         BigDecimal titularInterestAmount = borrowinterestLeft.multiply(titularBorrowAmount);
         BigDecimal titularServiceAmount = borrowISLeft.multiply(titularBorrowAmount).subtract(titularInterestAmount);
@@ -235,9 +235,9 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         BigDecimal orderInterestRate = orderRateInfo.interestRate;
         BigDecimal orderISRate = orderRateInfo.interestRate.add(orderRateInfo.serviceRate);
         BigDecimal orderOverdueRate = orderRateInfo.overdueRate;
-        BigDecimal actualOrderInterestAmount = orderInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP)
+        BigDecimal actualOrderInterestAmount = orderInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS))
         			.multiply(borrowDay).multiply(actualOrderAmount).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal actualOrderServiceAmount = orderISRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP)
+        BigDecimal actualOrderServiceAmount = orderISRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS))
         			.multiply(borrowDay).multiply(actualOrderAmount).setScale(2, RoundingMode.DOWN).subtract(actualOrderInterestAmount);
         resp.totalDiffFee = actualOrderAmount.toPlainString();
         resp.sellInterestFee = actualOrderInterestAmount.toString();

@@ -239,7 +239,7 @@ public class H5ProtocolController {
 	        	trialBo.req.openId = openId;
 	        	trialBo.req.term = trialBo.req.nper;
 	        	trialBo.userId = userDo.getRid();
-	        	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(trialBo.req.nper);
+	        	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
 	        	jsdBorrowCashService.resolve(trialBo);
 	        	
 	        	TrialBeforeBorrowResp resp = trialBo.resp;
