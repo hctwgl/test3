@@ -33,6 +33,4 @@ public interface JsdBorrowCashRenewalService {
 	
 	public JSONArray getRenewalDetail(JsdBorrowCashDo borrowCashDo);
 
-	public JSONArray getBeheadRenewalDetail(JsdBorrowCashDo borrowCashDo);
-
 }

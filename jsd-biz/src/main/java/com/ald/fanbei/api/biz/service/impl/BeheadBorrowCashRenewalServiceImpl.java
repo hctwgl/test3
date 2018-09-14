@@ -61,7 +61,9 @@ import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRenewalServiceImpl.JsdRenewalDealBo;
+import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.google.common.collect.Maps;
 
 
@@ -244,6 +246,7 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 		    			if(JsdBorrowLegalOrderStatus.UNPAID.getCode().equals(orderDo.getStatus())){
 		    				orderDo.setStatus(JsdBorrowLegalOrderStatus.CLOSED.getCode());
 		    				orderDo.setGmtModified(now);
+		    				orderDo.setGmtClosed(now);
 		    			}
 		    			jsdBorrowLegalOrderDao.updateById(orderDo);
 		    		}
@@ -277,12 +280,12 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 				try {
 					// 本次续借
 					JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
+					// 借款记录
+					JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
 					logger.info("dealJsdRenewalSucess V2 delayNo="+renewalDo.getTradeNoXgxy());
 					if(JsdRenewalDetailStatus.YES.getCode().equals(renewalDo.getStatus())) return 0l;
 					// 本次订单
 					JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(renewalDo.getBorrowId());
-					// 借款记录
-					JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
 					
 					// 更新本次 订单状态为待发货
 					orderDo.setStatus(JsdBorrowLegalOrderStatus.AWAIT_DELIVER.getCode());//待发货
@@ -347,13 +350,13 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 	@Override
 	public long dealJsdRenewalFail(String renewalNo, String tradeNo, boolean isNeedMsgNotice, String errorCode, String errorMsg) {
 		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
-		logger.info("dealJsdRenewalSucess renewalNo="+renewalNo+", tradeNo="+tradeNo+", delayNo="+renewalDo.getTradeNoXgxy()+
+		logger.info("dealJsdRenewalFail renewalNo="+renewalNo+", tradeNo="+tradeNo+", delayNo="+renewalDo.getTradeNoXgxy()+
 				", isNeedMsgNotice="+isNeedMsgNotice+", errorCode="+errorCode+", errorMsg="+errorMsg);
-		if(JsdRenewalDetailStatus.NO.name().equals(renewalDo.getStatus())){
+		if(JsdRenewalDetailStatus.NO.getCode().equals(renewalDo.getStatus())){
 			return 0l;
 		}
 		
-		long result = dealChangStatus(renewalNo, tradeNo, JsdRenewalDetailStatus.NO.name(), renewalDo.getRid(), errorCode, errorMsg);
+		long result = dealChangStatus(renewalNo, tradeNo, JsdRenewalDetailStatus.NO.getCode(), renewalDo.getRid(), errorCode, errorMsg);
 		
 		if(result == 1l){
 			//续期失败，调用西瓜信用通知接口
@@ -479,6 +482,97 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 //		orderDo.setGmtConfirmReceived();
 
 		return orderDo;
+	}
+
+	
+	/**
+	 * 搭售 - 砍头
+	 */
+	@Override
+	public JSONArray getBeheadRenewalDetail(JsdBorrowCashDo borrowCashDo) {
+		JSONArray delayArray = new JSONArray();
+		Map<String, Object> delayInfo = new HashMap<String, Object>();
+		
+		JsdResourceDo renewalResource = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RENEWAL_INFO.getCode());
+		if(renewalResource==null) throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
+
+		// 允许续期天数
+		BigDecimal allowRenewalDay = new BigDecimal(renewalResource.getValue());
+		
+		// 续借需还本金比例
+		BigDecimal renewalCapitalRate = new BigDecimal(renewalResource.getValue1());
+		//续借需要支付本金 = 借款金额 * 续借需还本金比例
+		BigDecimal capital = borrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
+		
+		// 上期总利息
+		BigDecimal rateAmount = BigDecimalUtil.add(borrowCashDo.getInterestAmount());
+		// 上期总手续费
+		BigDecimal poundage = BigDecimalUtil.add(borrowCashDo.getPoundageAmount());
+		// 上期总逾期费
+		BigDecimal overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount());
+		
+		// 利润差
+		BigDecimal diffFee = this.getDiffFee(borrowCashDo, delayInfo);
+		
+		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +本期商品(利润差))
+		BigDecimal renewalPayAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital, diffFee);
+		
+		String deferRemark = "上期利息"+rateAmount+
+							 "元,赊销手续费"+poundage+
+							 "元,上期逾期费"+overdueAmount+
+							 "元,本金还款部分"+capital+
+							 "元,商品价格"+""+"元";
+		
+		BigDecimal principalAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidOverdue(), 
+				borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage())
+				.subtract(borrowCashDo.getRepayAmount().add(capital));
+		
+		delayInfo.put("principalAmount", principalAmount+"");	// 展期后剩余借款本金
+		delayInfo.put("delayAmount", renewalPayAmount+"");	// 需支付总金额
+		delayInfo.put("delayDay", allowRenewalDay+"");	// 续期天数
+		delayInfo.put("delayRemark", deferRemark);	// 费用明细	展期金额的相关具体描述（多条说明用英文逗号,用间隔）
+		this.getRenewalRate(delayInfo);
+		delayInfo.put("totalDiffFee", diffFee.toPlainString());	// 展期后的利润差，西瓜会根据此金额匹配搭售商品
+		
+		delayArray.add(delayInfo);
+		
+		return delayArray;
+	}
+	
+	private void getRenewalRate(Map<String, Object> delayInfo) {
+		
+		ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(delayInfo.get("delayDay").toString());
+		//借款手续费率
+		delayInfo.put("interestRate", rateInfo.interestRate);
+		//借款利率
+		delayInfo.put("serviceRate", rateInfo.serviceRate);
+	}
+	
+	private BigDecimal getDiffFee(JsdBorrowCashDo borrowCashDo, Map<String, Object> delayInfo) {
+		
+		BigDecimal interestRate = new BigDecimal(delayInfo.get("interestRate").toString());
+		BigDecimal serviceRate = new BigDecimal(delayInfo.get("serviceRate").toString());
+		BigDecimal renewalAmount = new BigDecimal(delayInfo.get("principalAmount").toString());
+		BigDecimal renewalDay = new BigDecimal(delayInfo.get("delayDay").toString());
+
+		// 借款利息手续费
+		BigDecimal rateAmount = BigDecimalUtil.multiply(renewalAmount, interestRate, renewalDay.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
+		BigDecimal poundage = BigDecimalUtil.multiply(renewalAmount, serviceRate, renewalDay.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
+		
+		// 用户分层利率
+		BigDecimal riskDailyRate = borrowCashDo.getRiskDailyRate();
+		// 总利润
+		BigDecimal totalDiffFee = BigDecimalUtil.multiply(renewalAmount, renewalDay, riskDailyRate);
+		
+//		BigDecimal finalDiffProfit = totalDiffFee.subtract(rateAmount).subtract(poundage).subtract(orderCashService);
+		BigDecimal diffProfit = totalDiffFee.subtract(rateAmount).subtract(poundage);
+		BigDecimal finalDiffProfit = diffProfit.setScale(-1, RoundingMode.UP);	// 向上取十
+		logger.info("jsd renewal diffProfit="+diffProfit+", return finalDiffProfit="+finalDiffProfit);
+		if (finalDiffProfit.compareTo(BigDecimal.ZERO) <= 0) {
+        	finalDiffProfit = BigDecimal.ZERO;
+        }
+		
+		return finalDiffProfit;
 	}
 
 }

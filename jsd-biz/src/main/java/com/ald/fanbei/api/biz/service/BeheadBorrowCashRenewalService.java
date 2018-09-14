@@ -5,6 +5,7 @@ import java.util.Map;
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRenewalServiceImpl.JsdRenewalDealBo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
+import com.alibaba.fastjson.JSONArray;
 
 /**
  * 极速贷续期V2Service
@@ -21,5 +22,7 @@ public interface BeheadBorrowCashRenewalService {
 	public long dealJsdRenewalSucess(String outTradeNo, String tradeNo);
 
 	public long dealJsdRenewalFail(final String outTradeNo, final String tradeNo,boolean isNeedMsgNotice, String errorCode, String errorMsg);
+
+	public JSONArray getBeheadRenewalDetail(JsdBorrowCashDo borrowCashDo);
 
 }

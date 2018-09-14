@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.service.BeheadBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
@@ -44,6 +45,8 @@ public class GetRenewalDetailApi implements JsdH5Handle {
     private JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
     @Resource
     private JsdResourceService jsdResourceService;
+    @Resource
+    private BeheadBorrowCashRenewalService beheadBorrowCashRenewalService;
 
 	@Override
 	public JsdH5HandleResponse process(Context context) {
@@ -68,7 +71,7 @@ public class GetRenewalDetailApi implements JsdH5Handle {
 			
 		} else if(BorrowVersionType.BEHEAD.name().equals(borrowCashDo.getVersion())){	// v2 砍头
 			logger.info("getRenewalDetail BEHEAD tradeNoXgxy"+tradeNoXgxy);
-			data.put("delayInfo", jsdBorrowCashRenewalService.getBeheadRenewalDetail(borrowCashDo));
+			data.put("delayInfo", beheadBorrowCashRenewalService.getBeheadRenewalDetail(borrowCashDo));
 			
 		}
 		
