@@ -338,9 +338,6 @@
             <if test="gmtCreate != null">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
-            <if test="gmtModified != null">        
-                gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},                
-            </if>
             <if test="productNo != null">        
                 product_no = #{productNo,jdbcType=VARCHAR},                
             </if>
@@ -435,8 +432,9 @@
                 finish_date = #{finishDate,jdbcType=VARCHAR},                
             </if>
             <if test="remark != null">        
-                remark = #{remark,jdbcType=VARCHAR}                
+                remark = #{remark,jdbcType=VARCHAR}, 
             </if>
+            gmt_modified = NOW()
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>

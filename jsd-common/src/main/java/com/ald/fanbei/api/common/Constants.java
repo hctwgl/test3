@@ -672,4 +672,6 @@ public class Constants {
 
 	//通知失败次数
 	public static final String NOTICE_FAIL_COUNT = "5";
+	
+	public static final String CACHEKEY_RISK_LAYER_RATE = "CACHEKEY_RISK_LAYER_RATE";
 }

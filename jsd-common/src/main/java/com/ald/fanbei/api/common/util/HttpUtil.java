@@ -595,7 +595,7 @@ public class HttpUtil {
     public static String post(String url, Map<String, String> params) {
         DefaultHttpClient httpclient = new DefaultHttpClient();
         String body = null;
-
+        long start = System.currentTimeMillis();
         logger.debug("create httppost: url = " + url);
         HttpPost post = postForm(url, params);
 
@@ -603,9 +603,10 @@ public class HttpUtil {
         httpclient.getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 120000);
         httpclient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 120000);
 
-
         httpclient.getConnectionManager().shutdown();
-
+        long end = System.currentTimeMillis();
+        logger.info("POST - " + url + " ,spend time " + (end - start));
+        
         return body;
     }
 

@@ -13,6 +13,6 @@ import com.ald.fanbei.api.dal.domain.JsdBankDo;
 public interface JsdBankService extends ParentService<JsdBankDo, Long>{
 
 
-    JsdBankDo getBankByName(String name);
+    JsdBankDo getBankByCode(String name);
 
 }

@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.biz.util;
 
-import io.netty.handler.codec.AsciiHeadersEncoder.NewlineType;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -18,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.connection.RedisStringCommands;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisCallback;

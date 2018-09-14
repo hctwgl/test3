@@ -51,7 +51,7 @@ public class JsdApplyBindBankCardMsgApi implements JsdH5Handle {
     public JsdH5HandleResponse process(Context context) {
     	JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "请求成功");
         String bankNo = ObjectUtils.toString(context.getData("bankNo"), null);
-        String bankName = ObjectUtils.toString(context.getData("bankName"), null);
+        String bankCode = ObjectUtils.toString(context.getData("bankName"), null);
         String bankMobile = ObjectUtils.toString(context.getData("bankMobile"), null);
         String bindNo = ObjectUtils.toString(context.getData("bindNo"), "");
         String timestamp = ObjectUtils.toString(context.getData("timestamp"), "");
@@ -70,8 +70,8 @@ public class JsdApplyBindBankCardMsgApi implements JsdH5Handle {
         }
         //创建用户银行卡新加状态
         JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getByBindNo(bindNo);
-        JsdBankDo bank = jsdBankService.getBankByName(bankName);
-        JsdUserBankcardDo userBankcard = buildUserCard(bank.getBankCode(), bankName, bankNo, bankMobile, userid, isMain, bindNo);
+        JsdBankDo bank = jsdBankService.getBankByCode(bankCode);
+        JsdUserBankcardDo userBankcard = buildUserCard(bank.getBankCode(), bank.getBankName(), bankNo, bankMobile, userid, isMain, bindNo);
         if(userBankcardDo==null){
             jsdUserBankcardService.addUserBankcard(userBankcard);
         }
