@@ -186,7 +186,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			String url = getUrl() + "/api/ald/collect/v1/third/renewal";
 			String reqResult = "";
 			if (url.contains("https")){
-				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(reqBo));
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, getUrlParamsByMap(reqBo));
 			}else {
 				reqResult = HttpUtil.post(url, reqBo);
 			}
@@ -199,6 +199,29 @@ public class CollectionSystemUtil extends AbstractThird {
 			logger.error("consumerRepayment error:", e);
 			throw new FanbeiException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
 		}
+	}
+
+
+	/**
+	 * 将map转换成url
+	 *
+	 * @param map
+	 * @return
+	 */
+	public String getUrlParamsByMap(Map<String, String> map) {
+		if (map == null) {
+			return "";
+		}
+		StringBuffer sb = new StringBuffer();
+		for (Map.Entry<String, String> entry : map.entrySet()) {
+			sb.append(entry.getKey() + "=" + entry.getValue());
+			sb.append("&");
+		}
+		String s = sb.toString();
+		if (s.endsWith("&")) {
+			s = org.apache.commons.lang.StringUtils.substringBeforeLast(s, "&");
+		}
+		return s;
 	}
 
 
