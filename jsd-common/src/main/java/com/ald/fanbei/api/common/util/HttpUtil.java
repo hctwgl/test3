@@ -605,7 +605,7 @@ public class HttpUtil {
 
         httpclient.getConnectionManager().shutdown();
         long end = System.currentTimeMillis();
-        logger.info("POST - " + url + " ,spend time " + (end - start));
+        logger.info("POST - " + url + " ,params="+params+",resp="+body+",spend time " + (end - start));
         
         return body;
     }
