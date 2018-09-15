@@ -51,8 +51,8 @@ public class HttpUtilForXgxy {
 	static {
 		try {
 			requestConfig = RequestConfig.custom()
-		              .setConnectTimeout(30000).setConnectionRequestTimeout(20000)  
-		              .setSocketTimeout(10000).setCircularRedirectsAllowed(true).build();
+		              .setConnectTimeout(60000).setConnectionRequestTimeout(55000)
+		              .setSocketTimeout(60000).setCircularRedirectsAllowed(true).build();
 			
 			SSLContext ctx = SSLContext.getInstance("TLS");
 			X509TrustManager tm = new X509TrustManager() {  

@@ -53,8 +53,8 @@ public class HttpUtil {
 	static {
 		try {
 			requestConfig = RequestConfig.custom()
-		              .setConnectTimeout(30000).setConnectionRequestTimeout(20000)  
-		              .setSocketTimeout(10000).setCircularRedirectsAllowed(true).build();
+		              .setConnectTimeout(60000).setConnectionRequestTimeout(55000)  
+		              .setSocketTimeout(60000).setCircularRedirectsAllowed(true).build();
 			
 			SSLContext ctx = SSLContext.getInstance("TLS");
 			X509TrustManager tm = new X509TrustManager() {  
@@ -141,14 +141,15 @@ public class HttpUtil {
 	public static String post(String url){
 		return post(url,null);
 	}
-	public static String post(String url, Object data){
-		return (String)post(url, data, false);
+	public static String post(String url, Object reqData){
+		return (String)post(url, reqData, false);
 	}
-	public static Object post(String url, Object data, boolean isRaw){
+	public static Object post(String url, Object reqData, boolean isRaw){
 		Args.notBlank(url, "HTTP request url");
-		
+		long start = System.currentTimeMillis();
 		CloseableHttpClient httpclient;
 		CloseableHttpResponse resp = null;
+		Object respObj = null;
 		try {
 			if(url.startsWith("https")) {
 				httpclient = HttpUtil.httpsclient;
@@ -157,21 +158,21 @@ public class HttpUtil {
 			}
 		
         	HttpEntity reqEntity = null;
-        	if(data == null){
+        	if(reqData == null){
         		reqEntity = new StringEntity("");
-        	}else if(data instanceof Map){
+        	}else if(reqData instanceof Map){
 				@SuppressWarnings("unchecked")
-				Set<Entry<Object,Object>> entrys = ((Map<Object,Object>)data).entrySet();
+				Set<Entry<Object,Object>> entrys = ((Map<Object,Object>)reqData).entrySet();
         		List<NameValuePair> params = new ArrayList<>();
         		Object value;
             	for(Entry<Object,Object> entry : entrys){
             		params.add(new BasicNameValuePair(entry.getKey().toString(), (value = entry.getValue()) != null?value.toString():""));
             	}
             	reqEntity = new UrlEncodedFormEntity(params, Consts.UTF_8);
-        	}else if(data instanceof byte[]){
-        		reqEntity = new ByteArrayEntity((byte[])data);
+        	}else if(reqData instanceof byte[]){
+        		reqEntity = new ByteArrayEntity((byte[])reqData);
 			}else{
-				reqEntity = new StringEntity(data.toString());
+				reqEntity = new StringEntity(reqData.toString());
         	}
         	
         	HttpPost httppost = new HttpPost(url);
@@ -179,14 +180,16 @@ public class HttpUtil {
             
         	resp = httpclient.execute(httppost);
         	if(isRaw) {
-        		return EntityUtils.toByteArray(resp.getEntity());
+        		respObj = EntityUtils.toByteArray(resp.getEntity());
         	}else {
-        		return EntityUtils.toString(resp.getEntity());
+        		respObj = EntityUtils.toString(resp.getEntity());
         	}
            
+        	return respObj;
         } catch (Exception e) {
 			throw new IllegalStateException(e);
 		}finally {
+			log.info("POST - " + url + ", PARAMS=" + reqData + ", RESP=" + respObj + ", TIME=" + (System.currentTimeMillis() - start));
 			try {
 				if(resp != null)resp.close();
 			} catch (IOException e) {

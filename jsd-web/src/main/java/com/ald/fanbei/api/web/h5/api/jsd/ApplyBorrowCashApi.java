@@ -129,6 +129,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
                     	jsdBorrowCashService.updateById(cashDo);
                     }
                 } catch (Exception e) {
+                	logger.error(e.getMessage(), e);
                 	jsdBorrowCashService.dealBorrowFail(cashDo, orderDo, orderCashDo, "UPS打款时发生异常");
                 }
             }}.start();
