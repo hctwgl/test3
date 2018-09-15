@@ -5,8 +5,6 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 
 public class KuaijieRepayBo {
 
-    private static final long serialVersionUID = 1L;
-
     public KuaijieRepayBo() {
 
 

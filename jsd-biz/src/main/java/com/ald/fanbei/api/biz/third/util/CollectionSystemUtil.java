@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdNoticeStatus;
-import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -55,16 +55,11 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
 			logger.info("dsed overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getUrl());
 			String url = getUrl() + "/api/ald/collect/v1/third/import";
-			String reqResult = "";
-			if (url.contains("https")){
-				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(params));
-			}else {
-				reqResult = HttpUtil.post(url, params);
-			}
+			String reqResult = HttpUtil.post(url, params);
 			logThird(reqResult, "noticeCollect", JSON.toJSONString(data));
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
-				throw new FanbeiException("dsed overdue notice collect request fail , reqResult is null");
+				throw new BizException("dsed overdue notice collect request fail , reqResult is null");
 			}
 			if("success".equals(reqResult)){
 				return true;
@@ -72,7 +67,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			return false;
 		} catch (Exception e) {
 			logger.error("dsed overdue notice collect request error:", e);
-			throw new FanbeiException("dsed overdue notice collect request fail Exception is " + e + ",dsed overdue notice collect request send again");
+			throw new BizException("dsed overdue notice collect request fail Exception is " + e + ",dsed overdue notice collect request send again");
 		}
 	}
 
@@ -85,16 +80,11 @@ public class CollectionSystemUtil extends AbstractThird {
 		try {
 //			String url = "http://192.168.110.70:8080/api/ald/collect/v1/third/import";
 			String url = getUrl() + "/api/ald/collect/v1/third/import";
-			String reqResult = "";
-			if (url.contains("https")){
-				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(data));
-			}else {
-				reqResult = HttpUtil.post(url, data);
-			}
+			String reqResult = HttpUtil.post(url, data);
 			logThird(reqResult, "dsedNoticeCollect", JSON.toJSONString(data));
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
-				throw new FanbeiException("dsed overdue notice collect request fail , reqResult is null");
+				throw new BizException("dsed overdue notice collect request fail , reqResult is null");
 			}
 			if("success".equals(reqResult)){
 				return true;
@@ -102,7 +92,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			return false;
 		} catch (Exception e) {
 			logger.error("dsed overdue notice collect request error:", e);
-			throw new FanbeiException("dsed overdue notice collect request fail Exception is " + e + ",dsed overdue notice collect request send again");
+			throw new BizException("dsed overdue notice collect request fail Exception is " + e + ",dsed overdue notice collect request send again");
 		}
 	}
 
@@ -117,15 +107,10 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("info",JSON.toJSONString(data));
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
 			String url = getUrl() + "/api/ald/collect/v1/third/import";
-			String reqResult = "";
-			if (url.contains("https")){
-				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(params));
-			}else {
-				reqResult = HttpUtil.post(url, params);
-			}
+			String reqResult = HttpUtil.post(url, params);
 			logThird(reqResult, "dsedRePayCollect", JSON.toJSONString(data));
 			if (StringUtil.isBlank(reqResult)) {
-				throw new FanbeiException("dsed overdue notice collect request fail , reqResult is null");
+				throw new BizException("dsed overdue notice collect request fail , reqResult is null");
 			}
 			if("success".equals(reqResult)){
 				logger.info("send overdue push user collect request success");
@@ -152,12 +137,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		// APP还款类型写3 , 线下还款写4
 		try {
 			String url = getUrl() + "/api/ald/collect/v1/third/repayment";
-			String reqResult = "";
-			if (url.contains("https")){
-				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(reqBo));
-			}else {
-				reqResult = HttpUtil.post(url, reqBo);
-			}
+			String reqResult = HttpUtil.post(url, reqBo);
 			logger.info(getUrl() + "/api/ald/collect/v1/third/repayment");
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
@@ -166,7 +146,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			return false;
 		} catch (Exception e) {
 			logger.error("consumerRepayment error:", e);
-			throw new FanbeiException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
+			throw new BizException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
 		}
 	}
 

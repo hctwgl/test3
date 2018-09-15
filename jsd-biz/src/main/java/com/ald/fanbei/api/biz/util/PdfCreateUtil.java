@@ -1,18 +1,23 @@
 package com.ald.fanbei.api.biz.util;
 
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.*;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.AcroFields;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
+
 public class PdfCreateUtil {
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(PdfCreateUtil.class);
     public static void create(Map<String, Object> data,OutputStream fos,ByteArrayOutputStream bos) throws IOException, DocumentException {
             String templatePath = data.get("templatePath").toString();//模板路径
             String newPDFPath = data.get("PDFPath").toString();//生成路径
@@ -20,7 +25,7 @@ public class PdfCreateUtil {
             bos = new ByteArrayOutputStream();
             /* 将要生成的目标PDF文件名称 */
             PdfStamper ps = new PdfStamper(reader, bos);
-            PdfContentByte under = ps.getUnderContent(1);
+            ps.getUnderContent(1);
 	          /* 使用中文字体 */
             BaseFont bf = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
             ArrayList<BaseFont> fontList = new ArrayList<BaseFont>();
@@ -47,7 +52,7 @@ public class PdfCreateUtil {
         PdfReader reader = new PdfReader(templatePath);
             /* 将要生成的目标PDF文件名称 */
         PdfStamper ps = new PdfStamper(reader, bos);
-        PdfContentByte under = ps.getUnderContent(1);
+        ps.getUnderContent(1);
 	          /* 使用中文字体 */
         BaseFont bf = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
         ArrayList<BaseFont> fontList = new ArrayList<BaseFont>();

@@ -36,8 +36,8 @@ import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -161,28 +161,21 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setPurpose(purpose);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/delegatePay");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-		try {
-			jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
-			String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
-			if(StringUtil.isBlank(reqResult)){
-				UpsDelegatePayRespBo authSignResp = new UpsDelegatePayRespBo();
-				authSignResp.setSuccess(false);
-				return authSignResp;
-			}
-			UpsDelegatePayRespBo authSignResp = JSONObject.parseObject(reqResult,UpsDelegatePayRespBo.class);
-			if(authSignResp != null && authSignResp.getTradeState()!=null &&(StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)||StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_DEAL))){
-				authSignResp.setSuccess(true);
-				return authSignResp;
-			}else{
-				UpsDelegatePayRespBo authSignResp1 = new UpsDelegatePayRespBo();
-				authSignResp1.setSuccess(false);
-				return authSignResp1;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "delegatePay", orderNo, reqExt, merPriv, userNo));
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+		if(StringUtil.isBlank(reqResult)){
 			UpsDelegatePayRespBo authSignResp = new UpsDelegatePayRespBo();
 			authSignResp.setSuccess(false);
 			return authSignResp;
+		}
+		UpsDelegatePayRespBo authSignResp = JSONObject.parseObject(reqResult,UpsDelegatePayRespBo.class);
+		if(authSignResp != null && authSignResp.getTradeState()!=null &&(StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)||StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_DEAL))){
+			authSignResp.setSuccess(true);
+			return authSignResp;
+		}else{
+			UpsDelegatePayRespBo authSignResp1 = new UpsDelegatePayRespBo();
+			authSignResp1.setSuccess(false);
+			return authSignResp1;
 		}
 	}
 
@@ -203,14 +196,14 @@ public class UpsUtil extends AbstractThird {
 		
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		if(StringUtil.isBlank(reqResult)){
-			throw new FanbeiException(FanbeiExceptionCode.UPS_QUERY_TRADE_ERROR);
+			throw new BizException(BizExceptionCode.UPS_QUERY_TRADE_ERROR);
 		}
 		UpsQueryTradeRespBo authSignResp = JSONObject.parseObject(reqResult,UpsQueryTradeRespBo.class);
 		if(authSignResp != null && authSignResp.getTradeState()!=null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+			throw new BizException(BizExceptionCode.BANK_CARD_PAY_ERR);
 		}
 	}
 	
@@ -245,7 +238,7 @@ public class UpsUtil extends AbstractThird {
 		jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNumber, "authSign", orderNo, "", "JSD_LOAN", userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		if(StringUtil.isBlank(reqResult)){
-			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
+			throw new BizException(BizExceptionCode.UPS_AUTH_SIGN_ERROR);
 		}
 		
 		UpsAuthSignRespBo authSignResp = JSONObject.parseObject(reqResult,UpsAuthSignRespBo.class);
@@ -262,7 +255,7 @@ public class UpsUtil extends AbstractThird {
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
+			throw new BizException(BizExceptionCode.UPS_AUTH_SIGN_ERROR);
 		}
 	}
 	
@@ -283,14 +276,14 @@ public class UpsUtil extends AbstractThird {
 		jsdUpsLogDao.saveRecord(buildDsedUpsLog("", cardNo, "authSignValid", orderNo, verifyCode, "smsCode", userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		if(StringUtil.isBlank(reqResult)){
-			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
+			throw new BizException(BizExceptionCode.UPS_AUTH_SIGN_ERROR);
 		}
 		UpsAuthSignValidRespBo authSignResp = JSONObject.parseObject(reqResult,UpsAuthSignValidRespBo.class);
 		if(authSignResp != null && authSignResp.getTradeState()!=null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR);
+			throw new BizException(BizExceptionCode.UPS_AUTH_SIGN_ERROR);
 		}
 	}
 	
@@ -307,14 +300,14 @@ public class UpsUtil extends AbstractThird {
 		
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		if(StringUtil.isBlank(reqResult)){
-			throw new FanbeiException(FanbeiExceptionCode.UPS_QUERY_AUTH_SIGN_ERROR);
+			throw new BizException(BizExceptionCode.UPS_QUERY_AUTH_SIGN_ERROR);
 		}
 		UpsQueryAuthSignRespBo authSignResp = JSONObject.parseObject(reqResult,UpsQueryAuthSignRespBo.class);
 		if(authSignResp != null && authSignResp.getTradeState()!=null && StringUtil.equals(authSignResp.getTradeState(), TRADE_STATUE_SUCC)){
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.BANK_CARD_PAY_ERR);
+			throw new BizException(BizExceptionCode.BANK_CARD_PAY_ERR);
 		}
 		
 	}
@@ -333,8 +326,8 @@ public class UpsUtil extends AbstractThird {
 	 * @param remark --
 	 * @param clientType
 	 */
-        public UpsCollectRespBo collect(String orderNo, BigDecimal amount, String userNo, String realName, String phone, String bankCode, String cardNo, String certNo, String purpose, String remark, String clientType, String merPriv) {
-            amount = setActualAmount(amount);
+    public UpsCollectRespBo collect(String orderNo, BigDecimal amount, String userNo, String realName, String phone, String bankCode, String cardNo, String certNo, String purpose, String remark, String clientType, String merPriv) {
+        amount = setActualAmount(amount);
 		UpsCollectReqBo reqBo = new UpsCollectReqBo();
 		setPubParam(reqBo,"collect",orderNo,clientType);
 		reqBo.setMerPriv(merPriv);
@@ -354,7 +347,7 @@ public class UpsUtil extends AbstractThird {
 			jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "collect", orderNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		if(StringUtil.isBlank(reqResult)){
-			throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
+			throw new BizException(BizExceptionCode.UPS_COLLECT_ERROR);
 		}
 		UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult,UpsCollectRespBo.class);
 		if(authSignResp != null && authSignResp.getTradeState()!=null && (
@@ -365,7 +358,7 @@ public class UpsUtil extends AbstractThird {
 			authSignResp.setSuccess(false);
 			return authSignResp;
 		}
-        }
+    }
 		
 	/**
 	 * 快捷支付
@@ -404,7 +397,7 @@ public class UpsUtil extends AbstractThird {
 		jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "quickPay", orderNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		if(StringUtil.isBlank(reqResult)){
-			throw new FanbeiException(FanbeiExceptionCode.UPS_COLLECT_ERROR);
+			throw new BizException(BizExceptionCode.UPS_COLLECT_ERROR);
 		}
 		UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult,UpsCollectRespBo.class);
 		if(authSignResp != null && authSignResp.getTradeState()!=null && (
@@ -422,33 +415,33 @@ public class UpsUtil extends AbstractThird {
 	 *
 	 * @param orderNo -- 订单编号
 	 */
-        public UpsResendSmsRespBo quickPayResendSms(String payTradeNo,String orderNo) {
-        	Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo);
-        	if (cacheObject != null) {
-        	    UpsCollectBo upsCollectBo =  JSON.parseObject(cacheObject.toString(), UpsCollectBo.class);;
-        	    UpsResendSmsReqBo reqBo = new UpsResendSmsReqBo();
-        	    setPubParam(reqBo, "quickPayResendCode", orderNo, upsCollectBo.getClientType());
-        	    reqBo.setOldOrderNo(payTradeNo);
-        	    reqBo.setTradeType("pay_order");
-        	    reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
-				jsdUpsLogDao.saveRecord(buildDsedUpsLog(upsCollectBo.getBankCode(), upsCollectBo.getCardNo(), "quickPayResendCode", payTradeNo, "", upsCollectBo.getMerPriv(), upsCollectBo.getUserNo()));
-        	    String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
-        	    if (StringUtil.isBlank(reqResult)) {
-        		throw new FanbeiException(FanbeiExceptionCode.UPS_QUICKPAY_RESEND_CODE_ERROR);
-        	    }
-        	    
-        	    UpsResendSmsRespBo authSignResp = JSONObject.parseObject(reqResult, UpsResendSmsRespBo.class);
-        	    if (authSignResp != null && authSignResp.getTradeState() != null && (TRADE_STATUE_SUCC.equals(authSignResp.getTradeState()) || TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))) {
-        		authSignResp.setSuccess(true);
-        		return authSignResp;
-        	    } else {
-        		authSignResp.setSuccess(false);
-        		return authSignResp;
-        	    }
-        	} else {
-        	    throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
-        	}
-        }
+    public UpsResendSmsRespBo quickPayResendSms(String payTradeNo,String orderNo) {
+    	Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo);
+    	if (cacheObject != null) {
+    	    UpsCollectBo upsCollectBo =  JSON.parseObject(cacheObject.toString(), UpsCollectBo.class);;
+    	    UpsResendSmsReqBo reqBo = new UpsResendSmsReqBo();
+    	    setPubParam(reqBo, "quickPayResendCode", orderNo, upsCollectBo.getClientType());
+    	    reqBo.setOldOrderNo(payTradeNo);
+    	    reqBo.setTradeType("pay_order");
+    	    reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+			jsdUpsLogDao.saveRecord(buildDsedUpsLog(upsCollectBo.getBankCode(), upsCollectBo.getCardNo(), "quickPayResendCode", payTradeNo, "", upsCollectBo.getMerPriv(), upsCollectBo.getUserNo()));
+    	    String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+    	    if (StringUtil.isBlank(reqResult)) {
+    		throw new BizException(BizExceptionCode.UPS_QUICKPAY_RESEND_CODE_ERROR);
+    	    }
+    	    
+    	    UpsResendSmsRespBo authSignResp = JSONObject.parseObject(reqResult, UpsResendSmsRespBo.class);
+    	    if (authSignResp != null && authSignResp.getTradeState() != null && (TRADE_STATUE_SUCC.equals(authSignResp.getTradeState()) || TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))) {
+    		authSignResp.setSuccess(true);
+    		return authSignResp;
+    	    } else {
+    		authSignResp.setSuccess(false);
+    		return authSignResp;
+    	    }
+    	} else {
+    	    throw new BizException(BizExceptionCode.UPS_CACHE_EXPIRE);
+    	}
+    }
 	
 	
 	/**
@@ -465,7 +458,7 @@ public class UpsUtil extends AbstractThird {
 		jsdUpsLogDao.saveRecord(buildDsedUpsLog("", "", "quickPayConfirm", tradeNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		if(StringUtil.isBlank(reqResult)){
-			throw new FanbeiException(FanbeiExceptionCode.UPS_QUICK_PAY_CONFIRM_ERROR);
+			throw new BizException(BizExceptionCode.UPS_QUICK_PAY_CONFIRM_ERROR);
 		}
 		UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult,UpsCollectRespBo.class);
 		if(authSignResp != null && authSignResp.getTradeState()!=null && (
@@ -495,14 +488,14 @@ public class UpsUtil extends AbstractThird {
 		jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "signRelease", orderNo, "", "", userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		if(StringUtil.isBlank(reqResult)){
-			throw new FanbeiException(FanbeiExceptionCode.SIGN_RELEASE_ERROR);
+			throw new BizException(BizExceptionCode.SIGN_RELEASE_ERROR);
 		}
 		UpsSignReleaseRespBo authSignResp = JSONObject.parseObject(reqResult,UpsSignReleaseRespBo.class);
 		if(authSignResp != null && authSignResp.getTradeState()!=null  && TRADE_STATUE_SUCC.equals(authSignResp.getTradeState())){
 			authSignResp.setSuccess(true);
 			return authSignResp;
 		}else{
-			throw new FanbeiException(FanbeiExceptionCode.SIGN_RELEASE_ERROR);
+			throw new BizException(BizExceptionCode.SIGN_RELEASE_ERROR);
 		}
 	}
 	
@@ -513,7 +506,7 @@ public class UpsUtil extends AbstractThird {
 	 */
 	private static String getOrderNo(String method,String identity){
 		if(StringUtil.isBlank(method) || method.length() != 4 || StringUtil.isBlank(identity) || identity.length() != 4){
-			throw new FanbeiException(FanbeiExceptionCode.UPS_ORDERNO_BUILD_ERROR);
+			throw new BizException(BizExceptionCode.UPS_ORDERNO_BUILD_ERROR);
 		}
 		if(StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
 				Constants.INVELOMENT_TYPE_TEST)){

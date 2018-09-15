@@ -27,6 +27,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.Args;
 import org.apache.http.util.EntityUtils;
@@ -35,14 +36,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 基于apache httpclient包，支持http1.1
- * httpClient默认的ResponseHandler会自动处理所有http协议下状态码，例如302自动跳转。也会自动编码响应字节流，包括解压报文。
- * @attention 此类的任何属性运行时不可变，方可保证线程安全
- * @author ZJF
- * @since 1.8
+ * 区别，增加了定制消息头
+ * @see {@link HttpUtil}
  */
-public class HttpUtil {
-	private static Logger log = LoggerFactory.getLogger(HttpUtil.class);
+public class HttpUtilForXgxy {
+	private static Logger log = LoggerFactory.getLogger(HttpUtilForXgxy.class);
 	
 	private static RequestConfig requestConfig;
 	private static SSLConnectionSocketFactory sslsf;
@@ -53,7 +51,7 @@ public class HttpUtil {
 	static {
 		try {
 			requestConfig = RequestConfig.custom()
-		              .setConnectTimeout(60000).setConnectionRequestTimeout(55000)  
+		              .setConnectTimeout(60000).setConnectionRequestTimeout(55000)
 		              .setSocketTimeout(60000).setCircularRedirectsAllowed(true).build();
 			
 			SSLContext ctx = SSLContext.getInstance("TLS");
@@ -75,6 +73,8 @@ public class HttpUtil {
 	        sslsf = new SSLConnectionSocketFactory(ctx);
 	        
 	        List<Header> headers = new ArrayList<>();
+	        headers.add(new BasicHeader("content-type", "application/json"));
+	        headers.add(new BasicHeader("charset", "utf-8"));
 	        
 	        httpsclient = HttpClients.custom().setDefaultHeaders(headers).setDefaultRequestConfig(requestConfig).setSSLSocketFactory(sslsf).build();
 	        httpclient = HttpClients.custom().setDefaultHeaders(headers).setDefaultRequestConfig(requestConfig).build();
@@ -96,9 +96,9 @@ public class HttpUtil {
 		CloseableHttpResponse resp = null;
 		try {
 			if(url.startsWith("https")) {
-				httpclient = HttpUtil.httpsclient;
+				httpclient = HttpUtilForXgxy.httpsclient;
 			}else {
-				httpclient = HttpUtil.httpclient;
+				httpclient = HttpUtilForXgxy.httpclient;
 			}
 			
         	String requestStr = null;
@@ -141,38 +141,37 @@ public class HttpUtil {
 	public static String post(String url){
 		return post(url,null);
 	}
-	public static String post(String url, Object reqData){
-		return (String)post(url, reqData, false);
+	public static String post(String url, Object data){
+		return (String)post(url, data, false);
 	}
-	public static Object post(String url, Object reqData, boolean isRaw){
+	public static Object post(String url, Object data, boolean isRaw){
 		Args.notBlank(url, "HTTP request url");
-		long start = System.currentTimeMillis();
+		
 		CloseableHttpClient httpclient;
 		CloseableHttpResponse resp = null;
-		Object respObj = null;
 		try {
 			if(url.startsWith("https")) {
-				httpclient = HttpUtil.httpsclient;
+				httpclient = HttpUtilForXgxy.httpsclient;
 			}else {
-				httpclient = HttpUtil.httpclient;
+				httpclient = HttpUtilForXgxy.httpclient;
 			}
 		
         	HttpEntity reqEntity = null;
-        	if(reqData == null){
+        	if(data == null){
         		reqEntity = new StringEntity("");
-        	}else if(reqData instanceof Map){
+        	}else if(data instanceof Map){
 				@SuppressWarnings("unchecked")
-				Set<Entry<Object,Object>> entrys = ((Map<Object,Object>)reqData).entrySet();
+				Set<Entry<Object,Object>> entrys = ((Map<Object,Object>)data).entrySet();
         		List<NameValuePair> params = new ArrayList<>();
         		Object value;
             	for(Entry<Object,Object> entry : entrys){
             		params.add(new BasicNameValuePair(entry.getKey().toString(), (value = entry.getValue()) != null?value.toString():""));
             	}
             	reqEntity = new UrlEncodedFormEntity(params, Consts.UTF_8);
-        	}else if(reqData instanceof byte[]){
-        		reqEntity = new ByteArrayEntity((byte[])reqData);
+        	}else if(data instanceof byte[]){
+        		reqEntity = new ByteArrayEntity((byte[])data);
 			}else{
-				reqEntity = new StringEntity(reqData.toString());
+				reqEntity = new StringEntity(data.toString());
         	}
         	
         	HttpPost httppost = new HttpPost(url);
@@ -180,16 +179,14 @@ public class HttpUtil {
             
         	resp = httpclient.execute(httppost);
         	if(isRaw) {
-        		respObj = EntityUtils.toByteArray(resp.getEntity());
+        		return EntityUtils.toByteArray(resp.getEntity());
         	}else {
-        		respObj = EntityUtils.toString(resp.getEntity());
+        		return EntityUtils.toString(resp.getEntity());
         	}
            
-        	return respObj;
         } catch (Exception e) {
 			throw new IllegalStateException(e);
 		}finally {
-			log.info("POST - " + url + ", PARAMS=" + reqData + ", RESP=" + respObj + ", TIME=" + (System.currentTimeMillis() - start));
 			try {
 				if(resp != null)resp.close();
 			} catch (IOException e) {

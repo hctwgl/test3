@@ -15,8 +15,8 @@ import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
@@ -52,7 +52,7 @@ public class GetRenewalResultApi implements JsdH5Handle {
 		String timestamp = ObjectUtils.toString(context.getDataMap().get("timestamp"), ""); // 请求时间戳
 		
 		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalService.getByTradeNoXgxy(delayNo);
-		if(renewalDo == null) throw new FanbeiException(FanbeiExceptionCode.RENEWAL_NOT_EXIST_ERROR);
+		if(renewalDo == null) throw new BizException(BizExceptionCode.RENEWAL_NOT_EXIST_ERROR);
 		
 		String status = renewalDo.getStatus();
 		String tradeNo = renewalDo.getTradeNo();

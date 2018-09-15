@@ -1,32 +1,31 @@
 package com.ald.fanbei.api.web.task;
 
 
-import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
-
-import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
-import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
-import com.ald.fanbei.api.biz.third.util.XgxyUtil;
-import com.ald.fanbei.api.biz.util.GetHostIpUtil;
-import com.ald.fanbei.api.common.Constants;
-
-import com.ald.fanbei.api.common.enums.JsdNoticeType;
-import com.ald.fanbei.api.common.util.ConfigProperties;
-
-import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
-import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
+import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
+import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.biz.util.GetHostIpUtil;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.JsdNoticeType;
+import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @author jilong
@@ -61,7 +60,8 @@ public class NoticeTask {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
 
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @SuppressWarnings("unchecked")
+	@Scheduled(cron = "0 0/5 * * * ?")
     public void notice() {
     	try {
     		String curHostIp = getHostIpUtil.getIpAddress();
@@ -128,7 +128,8 @@ public class NoticeTask {
 		}
     }
 
-     void nextNotice(JsdNoticeRecordDo recordDo){
+     @SuppressWarnings("unchecked")
+	void nextNotice(JsdNoticeRecordDo recordDo){
          all_noticedfail_moreonce.put(recordDo.getRid(),recordDo.getTimes());
          try {
              Thread.sleep(1000*60*request_times[Integer.parseInt(recordDo.getTimes())-1]);

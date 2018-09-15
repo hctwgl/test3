@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Conditional;
@@ -16,10 +15,8 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
-import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.ResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 
@@ -45,8 +42,6 @@ public class SecurityLoanOverDueJob {
 
     @Resource
     GetHostIpUtil getHostIpUtil;
-
-    private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
 
     @Scheduled(cron = "0 0/5 * * * ?")
     public void laonDueJob(){

@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.web.h5.api.jsd;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -15,8 +16,8 @@ import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.common.enums.BorrowVersionType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
@@ -58,7 +59,7 @@ public class GetRenewalDetailApi implements JsdH5Handle {
 		// 借款记录
 		JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
 		if (borrowCashDo == null) {
-			throw new FanbeiException("borrowCash is not exist", FanbeiExceptionCode.SYSTEM_ERROR);
+			throw new BizException("borrowCash is not exist", BizExceptionCode.SYSTEM_ERROR);
 		}
 		logger.info("getRenewalDetail jsdBorrowCash record = {} " , borrowCashDo);
 

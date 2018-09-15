@@ -34,8 +34,8 @@ import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -233,7 +233,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		long count = redisTemplate.opsForValue().increment(key, 1);
 		redisTemplate.expire(key, 300, TimeUnit.SECONDS);
 		if (count != 1) {
-			throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
+			throw new BizException(BizExceptionCode.LOAN_REPAY_PROCESS_ERROR);
 		}
 	}
 
@@ -308,7 +308,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			}
 		} else {
 			// 未获取到缓存数据，支付订单过期
-			throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+			throw new BizException(BizExceptionCode.UPS_CACHE_EXPIRE);
 		}
 	}
 	/**
@@ -598,7 +598,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		// 检查交易流水 对应记录数据库中是否已经处理
 		if ((repaymentDo != null && YesNoStatus.YES.getCode().equals(repaymentDo.getStatus()) )
 				|| (orderRepaymentDo != null && YesNoStatus.YES.getCode().equals(orderRepaymentDo.getStatus()) )) {
-			throw new FanbeiException("preCheck,repayment has been dealed!"); // TODO
+			throw new BizException("preCheck,repayment has been dealed!"); // TODO
 		}
 
 	}
@@ -659,7 +659,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		long count = redisTemplate.opsForValue().increment(key, 1);
 		redisTemplate.expire(key, 30, TimeUnit.SECONDS);
 		if (count != 1) {
-			throw new FanbeiException(FanbeiExceptionCode.UPS_REPEAT_NOTIFY);
+			throw new BizException(BizExceptionCode.UPS_REPEAT_NOTIFY);
 		}
 	}
 

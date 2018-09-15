@@ -2,7 +2,7 @@ package com.ald.fanbei.api.biz.bo.aassetside.edspay;
 
 import java.io.Serializable;
 
-import com.ald.fanbei.api.common.exception.FanbeiAssetSideRespCode;
+import com.ald.fanbei.api.common.exception.BizAssetSideRespCode;
 
 /**
  *@类现描述：资产方平台响应实体
@@ -19,8 +19,8 @@ public class AssetSideRespBo implements Serializable{
 	
 	public AssetSideRespBo() {
 		super();
-		this.code = FanbeiAssetSideRespCode.SUCCESS.getCode();
-		this.message = FanbeiAssetSideRespCode.SUCCESS.getMsg();
+		this.code = BizAssetSideRespCode.SUCCESS.getCode();
+		this.message = BizAssetSideRespCode.SUCCESS.getMsg();
 	}
 	
 	public AssetSideRespBo(Integer code, String message,String data) {
@@ -30,14 +30,14 @@ public class AssetSideRespBo implements Serializable{
 		this.data = data;
 	}
 
-	public AssetSideRespBo(FanbeiAssetSideRespCode respCode,String data) {
+	public AssetSideRespBo(BizAssetSideRespCode respCode,String data) {
 		super();
 		this.code = respCode.getCode();
 		this.message = respCode.getDesc();
 		this.data = data;
 	}
 	
-	public void resetRespInfo(FanbeiAssetSideRespCode respCode) {
+	public void resetRespInfo(BizAssetSideRespCode respCode) {
 		this.code = respCode.getCode();
 		this.message = respCode.getDesc();
 	}

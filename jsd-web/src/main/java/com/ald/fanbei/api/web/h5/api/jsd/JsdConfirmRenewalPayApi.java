@@ -34,8 +34,8 @@ import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowOrderRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.ResourceType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -95,7 +95,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		// 借款记录
 		JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(paramBo.borrowNo);
 		if(borrowCashDo == null || !StringUtil.equals(borrowCashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.name())){
-			throw new FanbeiException("No borrow can renewal", FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
+			throw new BizException("No borrow can renewal", BizExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		}
 		
 		// 续期校验
@@ -104,7 +104,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		// 用户信息
 		JsdUserDo userDo = jsdUserService.getById(paramBo.userId);
 		if(userDo == null) {
-			throw new FanbeiException("user not exist error", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+			throw new BizException("user not exist error", BizExceptionCode.USER_NOT_EXIST_ERROR);
 		}
 		// 银行卡信息
 		HashMap<String,Object> map = jsdUserBankcardService.getBankByBankNoAndUserId(paramBo.userId, paramBo.bankNo);
@@ -367,7 +367,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 			bo.renewalNo = generatorClusterNo.getJsdRenewalNo();
 		} catch (Exception e) {
 			logger.error("jsd renewal params error",e);
-			throw new FanbeiException(FanbeiExceptionCode.JSD_PARAMS_ERROR);
+			throw new BizException(BizExceptionCode.JSD_PARAMS_ERROR);
 		}
 		
 		this.getRateInfo(bo);
@@ -385,7 +385,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		
 		JsdResourceDo renewalResource = JsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RENEWAL_INFO.getCode());
 		if(renewalResource ==null) 
-			throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
+			throw new BizException(BizExceptionCode.GET_JSD_RATE_ERROR);
 
 		//借款手续费率
 		paramBo.cashPoundageRate = borrowRateInfo.serviceRate;

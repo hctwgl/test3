@@ -16,8 +16,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 
 
 
@@ -91,7 +91,7 @@ public class CommonUtil {
             
             return getDigestStr(md.digest());
         }catch(NoSuchAlgorithmException e){
-            throw new FanbeiException(FanbeiExceptionCode.CALCULATE_SHA_256_ERROR,e);
+            throw new BizException(BizExceptionCode.CALCULATE_SHA_256_ERROR,e);
         }
     }
     

@@ -18,8 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 
 
 /**
@@ -121,7 +121,7 @@ public class DigestUtil{
 	        return stb.toString(); 
 		} catch (NoSuchAlgorithmException e) {
 			logger.error(e.getMessage(), e);
-			throw new FanbeiException("sign is error",FanbeiExceptionCode.SYSTEM_ERROR);
+			throw new BizException("sign is error",BizExceptionCode.SYSTEM_ERROR);
 		}
     }
     public static String SHA1(String decript) {
