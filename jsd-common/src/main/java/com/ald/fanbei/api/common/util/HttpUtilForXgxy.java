@@ -191,7 +191,7 @@ public class HttpUtilForXgxy {
         } catch (Exception e) {
 			throw new IllegalStateException(e);
 		}finally {
-			log.info("POST - " + url + ", PARAMS=" + reqDataForLog + ", RESP=" + respObj + ", TIME=" + (System.currentTimeMillis() - start));
+			log.info("POST - " + url + ", PARAMS=" + reqDataForLog + ", RESP=" + (respObj == null? "":respObj) + ", TIME=" + (System.currentTimeMillis() - start));
 			try {
 				if(resp != null)resp.close();
 			} catch (IOException e) {
