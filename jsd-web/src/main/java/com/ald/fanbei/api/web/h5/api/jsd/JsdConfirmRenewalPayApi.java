@@ -14,8 +14,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.BeheadBorrowCashRenewalService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
@@ -121,11 +121,11 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 			
 		}else if(StringUtil.equals("N", paramBo.isTying) && StringUtil.equals("SELL", paramBo.tyingType)){	// 搭售-赊销
 			long result = buildRecord(paramBo, borrowCashDo);
-			if(result == 0l) throw new FanbeiException("JsdConfirmRenewal error", FanbeiExceptionCode.RENEWAL_FAIL_ERROR);
+			if(result == 0l) throw new BizException("JsdConfirmRenewal error", BizExceptionCode.RENEWAL_FAIL_ERROR);
 			resultMap = jsdBorrowCashRenewalService.doRenewal(paramBo);
 			
 		}else {
-			throw new FanbeiException(FanbeiExceptionCode.FUNCTIONAL_MAINTENANCE);
+			throw new BizException(BizExceptionCode.FUNCTIONAL_MAINTENANCE);
 		}
 		
 		JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功", resultMap);
