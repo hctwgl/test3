@@ -45,7 +45,7 @@ public class JsdTest extends BaseTest {
     public void syncUserInfo() {
     	String url = urlBase + "/third/eca/v1/syncUserInfo";
     	JSONObject params = new JSONObject();
-        params.put("userId", "36C91DFB07EB236DF28CC32187EDA223");
+        params.put("userId", "36C91DFB07EB236DF28CC32187979788");
         params.put("realName", "朱江丰");
         params.put("idNumber", "320324198911057031");
         params.put("bankMobile", "15968196088");
