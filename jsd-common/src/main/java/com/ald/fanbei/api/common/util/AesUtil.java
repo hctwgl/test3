@@ -153,7 +153,6 @@ public class AesUtil {
      */
     public static byte[] decrypt(byte[] content, String password) {
         try {
-            logger.info("------");
             KeyGenerator kgen = KeyGenerator.getInstance("AES");
 //            kgen.init(128, new SecureRandom(password.getBytes()));
             SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG" );
@@ -194,7 +193,6 @@ public class AesUtil {
     public static String decryptFromBase64(String base64Str, String password) {
         String result = "";
 		try {
-		    logger.info("------"+base64Str);
 			result = new String(decrypt(Base64.decodeBase64(base64Str.getBytes("UTF-8")), password),"UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -202,21 +200,4 @@ public class AesUtil {
         return result;
     }
     
-    public static void main(String[] args) {
-
-    	
-      /*  String encryptStr = new String(Base64.encodeBase64(encrypt("92e14df48e375e5f115b421d84305866", "testC1b6x@6aH$2dlw")));
-        System.out.println(encryptStr);*/
-//        String secretStr = "f6f5W4zatBcaTI7ClzZbDqt0dFWVElzygmg7MZfpCMHMoAylen6z4AuWKsErKu9J";
-        //String sec = decryptFromBase64("4r1JFuNNEHg2RU3jUAOr0IYC9KMPZSbw1S7bhCBACSw=", "testC1b6x@6aH$2dlw");
-        //System.out.println(sec);
-       String online = decryptFromBase64("j1FIhYNyickGrgtmqKPeS1F7jfGVLd/SWlF10OaN4wK0R6GmKTbA6j7RqF+7x2fK", "Cw5bM6x@6sH$2dlw^3JueH");
-        String online1 = decryptFromBase64("cJiZKo2M0HcKZdjgGmv/vQ==", "testC1b6x@6aH$2dlw");
-
-        String online2 = decryptFromBase64("EjxHo0U8fOjuwprOOe5jjg==", "testC1b6x@6aH$2dlw");
-        System.out.println(online);
-//   	AesUtil.decryptFromBase64("", "testC1b6x");
-       System.out.println(new String(Base64.encodeBase64(encrypt("10.100.120.104", "testC1b6x@6aH$2dlw"))));
-    
-    }
 }
