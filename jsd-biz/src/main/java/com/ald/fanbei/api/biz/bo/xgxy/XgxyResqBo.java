@@ -1,26 +1,22 @@
-package com.ald.fanbei.api.biz.bo.jsd;
+package com.ald.fanbei.api.biz.bo.xgxy;
 
-import java.io.Serializable;
+public class XgxyResqBo {
 
-public class ResponseXgxy implements Serializable {
-
-	private static final long serialVersionUID = -7947422672590193046L;
-
-	private Integer code;
+	private String code;
 	private String message;
 	private String data;
 
-	public ResponseXgxy() {}
+	public XgxyResqBo() {}
 
-	public ResponseXgxy(Integer code, String message, String data) {
+	public XgxyResqBo(String code, String message, String data) {
 		this.code = code;
 		this.message = message;
 		this.data = data;
 	}
-	public Integer getCode() {
+	public String getCode() {
 		return code;
 	}
-	public void setCode(Integer code) {
+	public void setCode(String code) {
 		this.code = code;
 	}
 	public String getMessage() {
@@ -38,5 +34,4 @@ public class ResponseXgxy implements Serializable {
 		this.data = data;
 	}
 
-	
 }

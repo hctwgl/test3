@@ -11,10 +11,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.jsd.ResponseXgxy;
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
-import com.ald.fanbei.api.biz.bo.xgxy.XgxyPayReqBo;
-import com.ald.fanbei.api.biz.bo.xgxy.XgxyReqBo;
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyResqBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -60,8 +58,8 @@ public class XgxyUtil extends AbstractThird {
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
-            XgxyPayReqBo payRespResult = JSONObject.parseObject(reqResult, XgxyPayReqBo.class);
-            if (Constants.XGXY_REQ_CODE_SUCC.equals(payRespResult.get("code"))) {
+            XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
+            if (Constants.XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
                 return true;
             }
         } catch (Exception e) {
@@ -95,8 +93,8 @@ public class XgxyUtil extends AbstractThird {
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
-            XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult, XgxyPayReqBo.class);
-            if (Constants.XGXY_REQ_CODE_SUCC.equals(rePayRespResult.get("code"))) {
+            XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
+            if (Constants.XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
                 return true;
             }
         } catch (Exception e) {
@@ -125,8 +123,8 @@ public class XgxyUtil extends AbstractThird {
     		if (StringUtil.isBlank(reqResult)) {
     			return false;
     		}
-    		XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult, XgxyPayReqBo.class);
-    		if (Constants.XGXY_REQ_CODE_SUCC.equals(rePayRespResult.get("code"))) {
+    		XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
+    		if (Constants.XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
     			return true;
     		}
     	} catch (Exception e) {
@@ -156,8 +154,8 @@ public class XgxyUtil extends AbstractThird {
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
-            XgxyPayReqBo rePayRespResult = JSONObject.parseObject(reqResult, XgxyPayReqBo.class);
-            if (Constants.XGXY_REQ_CODE_SUCC.equals(rePayRespResult.get("code"))) {
+            XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
+            if (Constants.XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
                 return true;
             }
         } catch (Exception e) {
@@ -185,9 +183,9 @@ public class XgxyUtil extends AbstractThird {
             if (StringUtil.isBlank(reqResult)) {
                 return "";
             }
-            XgxyReqBo reqBo = JSONObject.parseObject(reqResult, XgxyReqBo.class);
-            if (Constants.XGXY_REQ_CODE_SUCC.equals(reqBo.get("code"))) {
-                return (String) reqBo.get("data");
+            XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
+            if (Constants.XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
+                return (String) resp.getData();
             }
         } catch (Exception e) {
             logger.info("overDueNoticeRequest request fail", e);
@@ -217,9 +215,9 @@ public class XgxyUtil extends AbstractThird {
             if (StringUtil.isBlank(reqResult)) {
                 return null;
             }
-            ResponseXgxy responseXgxy = JSONObject.parseObject(reqResult, ResponseXgxy.class);
-            if (Constants.XGXY_REQ_CODE_SUCC.equals(responseXgxy.getCode().toString())) {
-            	JSONObject dataObj = JSON.parseObject(responseXgxy.getData());
+            XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
+            if (Constants.XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
+            	JSONObject dataObj = JSON.parseObject(resp.getData());
                 return dataObj.getString("interestNewRate");
             }
         } catch (Exception e) {
