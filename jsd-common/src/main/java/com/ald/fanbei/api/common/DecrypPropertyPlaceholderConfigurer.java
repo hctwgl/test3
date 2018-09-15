@@ -25,7 +25,7 @@ public class DecrypPropertyPlaceholderConfigurer extends PropertyPlaceholderConf
     protected String convertProperty(String propertyName, String propertyValue) {
         if(encryptPropNames.contains(propertyName)){//属性propertyName的值加密了，需要解密
             String decryPro = AesUtil.decryptFromBase64(propertyValue, password);
-            logger.debug("propertyName=" + propertyName + ", propertyValue=" + propertyValue + ", decryValue=" + decryPro);
+            logger.info("propertyName=" + propertyName + ", propertyValue=" + propertyValue + ", decryValue=" + decryPro);
             return decryPro;
         }
         
