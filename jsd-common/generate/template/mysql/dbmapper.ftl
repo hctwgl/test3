@@ -60,12 +60,14 @@
             <#list list as column>
             <#if column.columnName == "id">
             <#elseif column.columnName == "isDelete">
+            <#elseif column.columnName == "gmtCreate">
+            <#elseif column.columnName == "gmtModified">
             <#else >
-            <if test="${column.columnName} != null">        
-                ${column.typeName} = #${leftBraces}${column.columnName},jdbcType=${column.jdbcType}${rightBraces}<#if column_index+1 != listSize>,<#else></#if>
-                
-            </if>
+                <if test="${column.columnName} != null">        
+                    ${column.typeName} = #${leftBraces}${column.columnName},jdbcType=${column.jdbcType}${rightBraces}<#if column_index+1 != listSize>,<#else></#if>
+                </if>
             </#if >
+                gmtModified = NOW()
             </#list>
         </set>    
         WHERE is_delete = 0 AND id = #${leftBraces}rid ,jdbcType=BIGINT${rightBraces}

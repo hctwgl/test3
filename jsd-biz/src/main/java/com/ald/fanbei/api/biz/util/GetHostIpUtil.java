@@ -15,7 +15,7 @@ public class GetHostIpUtil {
    static Logger logger = LoggerFactory.getLogger(GetHostIpUtil.class);
 
     // 获取ip地址
-    public  String getIpAddress() {
+    public static String getIpAddress() {
         try {
             Enumeration<NetworkInterface> allNetInterfaces = NetworkInterface.getNetworkInterfaces();
             InetAddress ip = null;
