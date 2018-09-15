@@ -121,24 +121,6 @@ public class StringUtil extends StringUtils {
 		return sb.toString();
 	}
 
-	/**
-	 * 把List拼接成String 并且添加分隔符
-	 * 
-	 * @param <T>
-	 * @param strList
-	 * @return
-	 */
-	public static <T> String turnListToStr(List<T> list) {
-		String result = StringUtils.EMPTY;
-		if (CollectionUtil.isEmpty(list)) {
-			return StringUtils.EMPTY;
-		}
-		for (T item : list) {
-			result = result + item + COMMA;
-		}
-		return result.substring(0, result.length() - 1);
-	}
-
 	public static String getNotEmptyString(String str) {
 		return StringUtils.isNotEmpty(str) ? str : StringUtils.EMPTY;
 	}

@@ -27,6 +27,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.Args;
 import org.apache.http.util.EntityUtils;
@@ -35,14 +36,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 基于apache httpclient包，支持http1.1
- * httpClient默认的ResponseHandler会自动处理所有http协议下状态码，例如302自动跳转。也会自动编码响应字节流，包括解压报文。
- * @attention 此类的任何属性运行时不可变，方可保证线程安全
- * @author ZJF
- * @since 1.8
+ * 区别，增加了定制消息头
+ * @see {@link HttpUtil}
  */
-public class HttpUtil {
-	private static Logger log = LoggerFactory.getLogger(HttpUtil.class);
+public class HttpUtilForXgxy {
+	private static Logger log = LoggerFactory.getLogger(HttpUtilForXgxy.class);
 	
 	private static RequestConfig requestConfig;
 	private static SSLConnectionSocketFactory sslsf;
@@ -75,6 +73,8 @@ public class HttpUtil {
 	        sslsf = new SSLConnectionSocketFactory(ctx);
 	        
 	        List<Header> headers = new ArrayList<>();
+	        headers.add(new BasicHeader("content-type", "application/json"));
+	        headers.add(new BasicHeader("charset", "utf-8"));
 	        
 	        httpsclient = HttpClients.custom().setDefaultHeaders(headers).setDefaultRequestConfig(requestConfig).setSSLSocketFactory(sslsf).build();
 	        httpclient = HttpClients.custom().setDefaultHeaders(headers).setDefaultRequestConfig(requestConfig).build();
@@ -96,9 +96,9 @@ public class HttpUtil {
 		CloseableHttpResponse resp = null;
 		try {
 			if(url.startsWith("https")) {
-				httpclient = HttpUtil.httpsclient;
+				httpclient = HttpUtilForXgxy.httpsclient;
 			}else {
-				httpclient = HttpUtil.httpclient;
+				httpclient = HttpUtilForXgxy.httpclient;
 			}
 			
         	String requestStr = null;
@@ -151,9 +151,9 @@ public class HttpUtil {
 		CloseableHttpResponse resp = null;
 		try {
 			if(url.startsWith("https")) {
-				httpclient = HttpUtil.httpsclient;
+				httpclient = HttpUtilForXgxy.httpsclient;
 			}else {
-				httpclient = HttpUtil.httpclient;
+				httpclient = HttpUtilForXgxy.httpclient;
 			}
 		
         	HttpEntity reqEntity = null;

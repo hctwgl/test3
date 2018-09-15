@@ -17,7 +17,7 @@ import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.enums.BankcardStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.dal.domain.JsdBankDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.web.common.Context;
@@ -61,7 +61,7 @@ public class JsdApplyBindBankCardMsgApi implements JsdH5Handle {
 
         //判断是否已经被绑定
         if (jsdUserBankcardService.getUserBankByCardNo(bankNo) > 0) {
-            return new JsdH5HandleResponse(1545, FanbeiExceptionCode.DSED_BANK_BINDED.getDesc());
+            return new JsdH5HandleResponse(1545, BizExceptionCode.DSED_BANK_BINDED.getDesc());
         }
         //是否是设主卡
         String isMain = YesNoStatus.NO.getCode();
@@ -82,9 +82,9 @@ public class JsdApplyBindBankCardMsgApi implements JsdH5Handle {
         UpsAuthSignRespBo upsResult = upsUtil.authSign(userid.toString(), userDo.getRealName(), userBankcard.getMobile(), userDo.getIdNumber(), userBankcard.getBankCardNumber(), "02",
                 userBankcard.getBankCode(),cardType,userBankcard.getValidDate(),userBankcard.getSafeCode());
         if(!upsResult.isSuccess()){
-            return new JsdH5HandleResponse(1542, FanbeiExceptionCode.AUTH_BINDCARD_ERROR.getDesc());
+            return new JsdH5HandleResponse(1542, BizExceptionCode.AUTH_BINDCARD_ERROR.getDesc());
         }else if(!"10".equals(upsResult.getNeedCode())){
-            return new JsdH5HandleResponse(1567, FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
+            return new JsdH5HandleResponse(1567, BizExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
         }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("timestamp", timestamp);

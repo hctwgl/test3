@@ -1,10 +1,11 @@
 package com.ald.fanbei.api.biz.bo.xgxy;
 
-import com.ald.fanbei.api.common.util.JsonUtil;
+import java.util.HashMap;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import java.util.HashMap;
+import com.alibaba.fastjson.JSON;
 
 public class XgxyReqBo extends HashMap<String, Object> {
 
@@ -58,7 +59,7 @@ public class XgxyReqBo extends HashMap<String, Object> {
 
     public void setData(Object data) {
         this.data = data;
-        this.put("data", JsonUtil.toJSONString(data));
+        this.put("data", JSON.toJSONString(data));
 
     }
     @Override

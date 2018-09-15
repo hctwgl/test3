@@ -4,8 +4,6 @@
  */
 package com.ald.fanbei.api.web.h5.api.jsd;
 
-import java.util.Date;
-
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -24,8 +22,8 @@ import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.SmsCodeType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
@@ -72,7 +70,7 @@ public class SendSmsCodeApi implements JsdH5Handle {
 	UpsResendSmsRespBo respBo=null;
 
 	if (StringUtils.isBlank(busiFlag)) {
-		return new JsdH5HandleResponse(3001, FanbeiExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
+		return new JsdH5HandleResponse(3001, BizExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
 	}
 	if(SmsCodeType.REPAY.getCode().equals(type)){
 		JsdBorrowCashRepaymentDo repaymentDo=jsdBorrowCashRepaymentService.getByTradeNoXgxy(busiFlag);
@@ -85,7 +83,7 @@ public class SendSmsCodeApi implements JsdH5Handle {
 		String orderNo = generatorClusterNo.getRepaymentBorrowCashNo(BankPayChannel.KUAIJIE.getCode());
 		respBo = upsUtil.quickPayResendSms(busiFlag,orderNo);
 		if (!respBo.isSuccess()) {
-			throw new FanbeiException(respBo.getRespDesc());
+			throw new BizException(respBo.getRespDesc());
 		}
 
 	}else if(SmsCodeType.BIND.getCode().equals(type)){
@@ -100,16 +98,16 @@ public class SendSmsCodeApi implements JsdH5Handle {
 				userBankcardDo.getBankCode(),cardType,userBankcardDo.getValidDate(),userBankcardDo.getSafeCode());
 
 		if(!upsResult.isSuccess()){
-			return new JsdH5HandleResponse(1542, FanbeiExceptionCode.AUTH_BINDCARD_ERROR.getDesc());
+			return new JsdH5HandleResponse(1542, BizExceptionCode.AUTH_BINDCARD_ERROR.getDesc());
 		}else if(!"10".equals(upsResult.getNeedCode())){
-			return new JsdH5HandleResponse(1567, FanbeiExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
+			return new JsdH5HandleResponse(1567, BizExceptionCode.AUTH_BINDCARD_SMS_ERROR.getErrorMsg());
 		}
 	}else if(SmsCodeType.DELAY.getCode().equals(type)){
 		String orderNo = generatorClusterNo.getJsdRenewalNo();
 		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalService.getByTradeNoXgxy(busiFlag);
 		respBo = upsUtil.quickPayResendSms(renewalDo.getTradeNo(),orderNo);
 		if (!respBo.isSuccess()) {
-			throw new FanbeiException(respBo.getRespDesc());
+			throw new BizException(respBo.getRespDesc());
 		}
 	}
 

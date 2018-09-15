@@ -18,6 +18,7 @@ public class UpsDelegatePayReqBo extends UpsReqBo{
 	private String bankName		; //银行名称
 	private String bankCode		; //银行代码
 	private String purpose		;   //用途
+	
 	/************************UPS1.0.1新增**************/
 	private String certNo;	 //用户的省份证号
 	private String branchName; // 支行名称
@@ -26,6 +27,7 @@ public class UpsDelegatePayReqBo extends UpsReqBo{
 	private String remark; // 备注
 
 	/************************UPS1.0.1新增**************/
+	
 	private String notifyUrl	;   //异步通知地址
 	
 	

@@ -75,6 +75,7 @@ public class TomcatServerStart {
 		
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private void startNioFileWatcher() throws Exception {
 		List<File> scanList = new ArrayList<File>();
 		getAllDirectory(new File(Bootstrap4Tomcat.ROOT_PATH).getParentFile(), scanList);

@@ -17,8 +17,8 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.ResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.XgxyProtocolType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.web.common.Context;
@@ -59,7 +59,7 @@ public class GetLoanProtocolApi implements JsdH5Handle {
         	protocolVos = getRenewalProtocols(param.openId, param.bizNo, param.previewParam);
         }else {
     		logger.warn("Don't support " + param.type + " protocol yet!");
-    		throw new FanbeiException(FanbeiExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
+    		throw new BizException(BizExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
     	}
         resp.setData(protocolVos);
         return resp;

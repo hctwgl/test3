@@ -21,7 +21,6 @@ import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
-import com.ald.fanbei.api.biz.third.util.OriRateUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
@@ -29,8 +28,8 @@ import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdNoticeType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.BaseDao;
@@ -71,8 +70,6 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     @Resource
     XgxyUtil xgxyUtil;
     @Resource
-    OriRateUtil oriRateUtil;
-    @Resource
     BizCacheUtil bizCacheUtil;
     @Resource
     TransactionTemplate transactionTemplate;
@@ -95,7 +92,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	public void checkCanBorrow(Long userId) {
 		List<JsdBorrowCashDo> notFinishBorrowList = jsdBorrowCashDao.getBorrowCashByStatusNotInFinshAndClosed(userId);
 		if(!notFinishBorrowList.isEmpty()) {
-			throw new FanbeiException(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
+			throw new BizException(BizExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
 		}
 	}
 
@@ -153,7 +150,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         		logger.info("getRiskDailyRate, openId=" + openId + ", risk from cache is " + riskRateDailyFromCache);
         		riskRateDaily = new BigDecimal(riskRateDailyFromCache);
         	}else {
-        		String riskRate = oriRateUtil.getOriRateNoticeRequest(openId); //风控返回的数据为日利率，并除以1000
+        		String riskRate = xgxyUtil.getOriRateNoticeRequest(openId); //风控返回的数据为日利率，并除以1000
                 if( StringUtils.isNotBlank(riskRate) ) {
                 	if(BigDecimal.ZERO.compareTo(new BigDecimal(riskRate)) == 0) {
                 		logger.error("getRiskDailyRate, openId=" + openId + ", riskRate from xgxy is 0.00 !");
@@ -272,7 +269,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	public void dealBorrowSucc(Long cashId, String outTradeNo) {
 		JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
 		if(cashDo == null) {
-			throw new FanbeiException("dealBorrowSucc, can't find refer borrowCash by id=" + cashId);
+			throw new BizException("dealBorrowSucc, can't find refer borrowCash by id=" + cashId);
 		}
 		
 		logger.info("dealBorrowSucc, borrowCashId="+ cashId + ", borrowNo=" + cashDo.getBorrowNo()
@@ -306,7 +303,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	public void dealBorrowFail(Long cashId, String outTradeNo, String failMsg) {
 		JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
 		if(cashDo == null) {
-			throw new FanbeiException("dealBorrowFail, can't find refer borrowCash by id=" + cashId);
+			throw new BizException("dealBorrowFail, can't find refer borrowCash by id=" + cashId);
 		}
 		logger.info("dealBorrowFail, borrowCashId="+ cashId + ", borrowNo=" + cashDo.getBorrowNo()
 			+ ", tradeNoXgxy=" + cashDo.getTradeNoXgxy() + ", tradeNoUps=" + cashDo.getTradeNoUps());

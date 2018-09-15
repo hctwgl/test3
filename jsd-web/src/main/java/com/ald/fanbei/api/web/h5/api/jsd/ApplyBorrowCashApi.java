@@ -25,7 +25,6 @@ import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
-import com.ald.fanbei.api.biz.util.NumberWordFormat;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BorrowVersionType;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
@@ -33,8 +32,8 @@ import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
@@ -69,8 +68,6 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
     
     @Resource
     UpsUtil upsUtil;
-    @Resource
-    NumberWordFormat numberWordFormat;
     @Resource
     BizCacheUtil bizCacheUtil;
     @Resource
@@ -217,7 +214,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
     private void lock(Long userId) {
     	String lockKey = Constants.CACHEKEY_APPLY_BORROW_CASH_LOCK + userId;
         if (!bizCacheUtil.getLock30Second(lockKey, "1")) {
-        	throw new FanbeiException(FanbeiExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
+        	throw new BizException(BizExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
         }
     }
     private void unLock(Long userId) {

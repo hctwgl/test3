@@ -21,7 +21,6 @@ import javax.management.MBeanServer;
 import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.util.Scanner;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import com.ald.fanbei.api.ioc.start.Bootstrap4Jetty;
@@ -130,6 +129,7 @@ public class JettyServerStart {
 		return webapp;
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void startNioFileWatcher() throws Exception {
 		List<File> scanList = new ArrayList<File>();
 		getAllDirectory(new File(Bootstrap4Jetty.ROOT_PATH).getParentFile(), scanList);
@@ -169,43 +169,6 @@ public class JettyServerStart {
 			watckKey.reset();
 		}
 
-	}
-
-	/**
-	 * Jetty 监听文件修改
-	 * 
-	 * @throws Exception
-	 */
-	private void startFileWatchScanner() throws Exception {
-		List<File> scanList = new ArrayList<File>();
-		scanList.add(new File(webappPath, "WEB-INF"));
-		scanList.add(new File(webappPath));
-		scanList.add(new File(Bootstrap4Jetty.ROOT_PATH).getParentFile());
-		// getAllDirectory(new File(Bootstrap.ROOT_PATH).getParentFile(),
-		// scanList);
-
-		Scanner scanner = new Scanner();
-		scanner.setReportExistingFilesOnStartup(false);
-		scanner.setScanInterval(scanIntervalSeconds);
-		scanner.setScanDirs(scanList);
-		scanner.addListener(new Scanner.BulkListener() {
-			public void filesChanged(List<String> changes) {
-				try {
-					System.out.println("Loading changes ......");
-					for (String change : changes) {
-						System.out.println(change);
-					}
-					webapp.stop();
-					webapp.start();
-					System.out.println("Loading complete.\n");
-				} catch (Exception e) {
-					System.out.println("Error reconfiguring/restarting webapp after change in watched files");
-					e.printStackTrace();
-				}
-			}
-		});
-		System.out.println("Starting scanner at interval of " + scanIntervalSeconds + " seconds.");
-		scanner.start();
 	}
 
 	private static boolean portAvailable(int port) {

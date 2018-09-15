@@ -20,10 +20,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.bo.jsd.JsdParam;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
-import com.ald.fanbei.api.biz.util.TokenCacheUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.CommonUtil;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -59,8 +58,6 @@ public class JsdGatewayController {
     JsdResourceService jsdResourceService;
     @Resource
     JsdH5HandleFactory jsdH5HandleFactory;
-    @Resource
-    TokenCacheUtil tokenCacheUtil;
     
     @Resource
     InterceptorChain interceptorChain;
@@ -97,10 +94,10 @@ public class JsdGatewayController {
         	
             this.checkSign(context, param.getSign());
             baseResponse = this.doProcess(context);
-        } catch (FanbeiException e) {
+        } catch (BizException e) {
             baseResponse = buildErrorResult(e, request);
         } catch (Exception e) {
-            baseResponse = buildErrorResult(FanbeiExceptionCode.SYSTEM_ERROR, request);
+            baseResponse = buildErrorResult(BizExceptionCode.SYSTEM_ERROR, request);
         }
         
         doBiLog(context, request, baseResponse, System.currentTimeMillis() - stmap);
@@ -127,10 +124,10 @@ public class JsdGatewayController {
             context = this.buildContext(request, data);
             this.checkSign(context, sign);
             baseResponse = this.doProcess(context);
-        } catch (FanbeiException e) {
+        } catch (BizException e) {
             baseResponse = buildErrorResult(e, request);
         } catch (Exception e) {
-            baseResponse = buildErrorResult(FanbeiExceptionCode.SYSTEM_ERROR, request);
+            baseResponse = buildErrorResult(BizExceptionCode.SYSTEM_ERROR, request);
         }
         
         doBiLog(context, request, baseResponse, System.currentTimeMillis() - stmap);
@@ -146,14 +143,14 @@ public class JsdGatewayController {
             dataMap = JSON.parseObject(decryptData);
             Object openId = dataMap.get("openId");
             if(openId == null) {
-            	throw new FanbeiException("OpenId can't be null!");
+            	throw new BizException("OpenId can't be null!");
             }
             
             JsdUserDo userDo = jsdUserService.getByOpenId(openId.toString());
             
             contextBuilder.method(method);
             if (userDo == null) {
-            	throw new FanbeiException("Can't find refer user by openId " + openId);
+            	throw new BizException("Can't find refer user by openId " + openId);
             } else {
             	contextBuilder.userName(userDo.getMobile());
             	contextBuilder.userId(userDo.getRid());
@@ -175,29 +172,29 @@ public class JsdGatewayController {
         	interceptorChain.execute(context);
         	JsdH5Handle methodHandle = jsdH5HandleFactory.getHandle(context.getMethod());
             return methodHandle.process(context);
-        } catch (FanbeiException e) {
+        } catch (BizException e) {
             logger.error("biz exception, msg=" + e.getMessage() + ", code=" + e.getErrorCode(), e);
             throw e;
         } catch (Exception e) {
             logger.error("sys exception", e);
-            throw new FanbeiException("sys exception", FanbeiExceptionCode.SYSTEM_ERROR);
+            throw new BizException("sys exception", BizExceptionCode.SYSTEM_ERROR);
         }
     }
 
     
-    protected JsdH5HandleResponse buildErrorResult(FanbeiExceptionCode exceptionCode, HttpServletRequest request) {
+    protected JsdH5HandleResponse buildErrorResult(BizExceptionCode exceptionCode, HttpServletRequest request) {
         JsdH5HandleResponse resp;
         if (exceptionCode == null) {
-            exceptionCode = FanbeiExceptionCode.SYSTEM_ERROR;
+            exceptionCode = BizExceptionCode.SYSTEM_ERROR;
         }
         resp = new JsdH5HandleResponse(exceptionCode);
         return resp;
     }
-    protected JsdH5HandleResponse buildErrorResult(FanbeiException e, HttpServletRequest request) {
-        FanbeiExceptionCode exceptionCode = e.getErrorCode();
+    protected JsdH5HandleResponse buildErrorResult(BizException e, HttpServletRequest request) {
+        BizExceptionCode exceptionCode = e.getErrorCode();
         JsdH5HandleResponse resp;
         if (exceptionCode == null) {
-            exceptionCode = FanbeiExceptionCode.SYSTEM_ERROR;
+            exceptionCode = BizExceptionCode.SYSTEM_ERROR;
         }
         if (e.getDynamicMsg() != null && e.getDynamicMsg()) {
             resp = new JsdH5HandleResponse(exceptionCode, e.getMessage());

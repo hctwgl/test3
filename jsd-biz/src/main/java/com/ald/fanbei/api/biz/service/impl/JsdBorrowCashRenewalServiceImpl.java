@@ -37,8 +37,8 @@ import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.ResourceType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -175,13 +175,13 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		if (StringUtils.isNotBlank(payBizObject)) {
 			if (StringUtil.isNotBlank(respBo.getRespCode())) { // 处理业务数据
 				dealJsdRenewalFail(renewalNo, "", true, respBo.getRespCode(), respBo.getRespDesc());
-				throw new FanbeiException(errorMsg);
+				throw new BizException(errorMsg);
 			} else {
 				dealJsdRenewalFail(renewalNo, "", false, "", "UPS响应码为空");
 			}
 		} else {
 			// 未获取到缓存数据，支付订单过期
-			throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+			throw new BizException(BizExceptionCode.UPS_CACHE_EXPIRE);
 		}
 	}
 
@@ -417,17 +417,17 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		// 还款记录
 		JsdBorrowCashRepaymentDo cashRepaymentDo = jsdBorrowCashRepaymentService.getLastByBorrowId(borrowCashDo.getRid());
 		if (null != cashRepaymentDo && StringUtils.equals(cashRepaymentDo.getStatus(), JsdBorrowCashRepaymentStatus.PROCESS.getCode())) {
-			throw new FanbeiException("There is a repayment is processing", FanbeiExceptionCode.HAVE_A_REPAYMENT_PROCESSING);
+			throw new BizException("There is a repayment is processing", BizExceptionCode.HAVE_A_REPAYMENT_PROCESSING);
 		}
 		// 续期记录
 		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getLastJsdRenewalByBorrowId(borrowCashDo.getRid());
 		if (null != renewalDo && StringUtils.equals(renewalDo.getStatus(), JsdRenewalDetailStatus.PROCESS.getCode())) {
-			throw new FanbeiException("There is a renewal is processing", FanbeiExceptionCode.HAVE_A_RENEWAL_PROCESSING);
+			throw new BizException("There is a renewal is processing", BizExceptionCode.HAVE_A_RENEWAL_PROCESSING);
 		}
 		
 		// 当前日期与预计还款时间之前的天数差小于配置的betweenDuedate，并且未还款金额大于配置的限制金额时，可续期
 		JsdResourceDo resource = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RENEWAL_INFO.getCode());
-		if(resource==null) throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
+		if(resource==null) throw new BizException(BizExceptionCode.GET_JSD_RATE_ERROR);
 		BigDecimal betweenDuedate = new BigDecimal(resource.getValue2()); // 距还款日天数
 		BigDecimal amountLimit = new BigDecimal(resource.getValue3()); // 最低续期金额
 		logger.info("checkCanRenewal betweenDuedate="+betweenDuedate+"amountLimit="+amountLimit);
@@ -441,7 +441,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		}*/
 		
 		if(amountLimit.compareTo(waitRepayAmount) >= 0){
-			throw new FanbeiException(FanbeiExceptionCode.CAN_NOT_RENEWAL_ERROR);
+			throw new BizException(BizExceptionCode.CAN_NOT_RENEWAL_ERROR);
 		}
 		
 	}
@@ -453,14 +453,14 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		
 		//上一笔订单记录
 		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(borrowCashDo.getRid());
-		if(orderCashDo == null)	throw new FanbeiException(FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
+		if(orderCashDo == null)	throw new BizException(BizExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		
 		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getById(orderCashDo.getBorrowLegalOrderId());
-		if(orderDo==null) throw new FanbeiException(FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
+		if(orderDo==null) throw new BizException(BizExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		logger.info("last orderCash record = {} " , orderCashDo);
 		
 		JsdResourceDo renewalResource = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RENEWAL_INFO.getCode());
-		if(renewalResource==null) throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
+		if(renewalResource==null) throw new BizException(BizExceptionCode.GET_JSD_RATE_ERROR);
 
 		// 允许续期天数
 		BigDecimal allowRenewalDay = new BigDecimal(renewalResource.getValue());

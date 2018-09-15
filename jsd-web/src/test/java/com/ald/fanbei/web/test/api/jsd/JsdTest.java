@@ -10,11 +10,11 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.ald.fanbei.api.biz.arbitration.MD5;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.HttpUtilForXgxy;
 import com.ald.fanbei.api.common.util.JsdAesUtil;
 import com.ald.fanbei.api.common.util.JsdSignUtil;
+import com.ald.fanbei.api.common.util.MD5Util;
 import com.ald.fanbei.web.test.common.BaseTest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -54,7 +54,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -73,7 +73,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -104,7 +104,7 @@ public class JsdTest extends BaseTest {
     	Map<String, String> p = new HashMap<>();
     	p.put("data", data);
     	p.put("sign", generateSign(params, AES_KEY));
-    	String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+    	String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
     	System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
 
 //    	testH5(url, params, userName, true);
@@ -145,7 +145,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -162,7 +162,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -178,7 +178,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
@@ -196,7 +196,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
@@ -213,7 +213,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
@@ -234,7 +234,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -252,7 +252,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
@@ -267,7 +267,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
@@ -291,7 +291,7 @@ public class JsdTest extends BaseTest {
             result.append(key).append("=").append(params.get(key));
         }
         result.append("&appSecret=" + appSecret);
-        return params == null ? null : MD5.md5(result.toString());
+        return params == null ? null : MD5Util.md5(result.toString());
     }
 
 }

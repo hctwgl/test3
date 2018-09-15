@@ -1,24 +1,25 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import javax.annotation.Resource;
-
-import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
-import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
-import com.ald.fanbei.api.biz.third.util.XgxyUtil;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.JsdNoticeType;
-import com.ald.fanbei.api.common.util.JsonUtil;
-import com.ald.fanbei.api.dal.domain.*;
-import com.alibaba.fastjson.JSON;
-import org.springframework.stereotype.Service;
-
-import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
+import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.JsdNoticeType;
+import com.ald.fanbei.api.dal.dao.BaseDao;
+import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
+import com.alibaba.fastjson.JSON;
 
 
 /**
@@ -76,6 +77,7 @@ public class JsdNoticeRecordServiceImpl extends ParentServiceImpl<JsdNoticeRecor
 	}
 
 	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void dealRepayNoticed(JsdBorrowCashRepaymentDo repaymentDo, JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, HashMap data){
 		JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
 		noticeRecordDo.setUserId(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
@@ -96,7 +98,7 @@ public class JsdNoticeRecordServiceImpl extends ParentServiceImpl<JsdNoticeRecor
 		noticeRecordDo.setUserId(jsdBorrowCashDo.getUserId());
 		noticeRecordDo.setType(noticeBo.getStatus());
 		noticeRecordDo.setRefId(String.valueOf(jsdBorrowCashDo.getRid()));
-		noticeRecordDo.setParams(JsonUtil.toJSONString(noticeBo));
+		noticeRecordDo.setParams(JSON.toJSONString(noticeBo));
 		return noticeRecordDo;
 	}
 }

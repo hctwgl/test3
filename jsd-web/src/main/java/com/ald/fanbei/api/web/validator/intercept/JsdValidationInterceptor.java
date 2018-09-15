@@ -24,7 +24,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleFactory;
@@ -102,7 +102,7 @@ public class JsdValidationInterceptor implements Interceptor, ApplicationContext
 						}
 					}
 					logger.error(paramName + message);
-					throw new FanbeiException( paramName + message, true);
+					throw new BizException( paramName + message, true);
 				}
 			}
 		}

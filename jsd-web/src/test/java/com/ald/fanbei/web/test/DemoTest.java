@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
-import org.junit.Test;
 
 import com.ald.fanbei.web.test.common.BaseTest;
 

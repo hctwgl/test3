@@ -9,10 +9,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.enums.JsdNoticeType;
-import com.ald.fanbei.api.common.util.JsonUtil;
-import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,17 +19,32 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.ups.UpsAuthSignValidRespBo;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
+import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
+import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
+import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.enums.BankcardStatus;
+import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.enums.SmsCodeType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
+import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
+import com.alibaba.fastjson.JSON;
 
 /**
  * 
@@ -93,7 +104,7 @@ public class ConfirmSmsApi implements JsdH5Handle {
 		JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByTradeNoXgxy(busiFlag);
 		
 		if (StringUtils.isBlank(busiFlag) || StringUtils.isBlank(smsCode)) {
-			return new JsdH5HandleResponse(3001, FanbeiExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
+			return new JsdH5HandleResponse(3001, BizExceptionCode.JSD_PARAMS_ERROR.getErrorMsg());
 		}
 
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -106,7 +117,7 @@ public class ConfirmSmsApi implements JsdH5Handle {
 			Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + busiFlag);
 			if (beanName == null) {
 				// 未获取到缓存数据，支付订单过期
-				throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+				throw new BizException(BizExceptionCode.UPS_CACHE_EXPIRE);
 			}
 
 			switch (beanName.toString()) {
@@ -114,7 +125,7 @@ public class ConfirmSmsApi implements JsdH5Handle {
 					map = jsdBorrowCashRepaymentService.doUpsPay(busiFlag, smsCode);
 					break;
 				default:
-					throw new FanbeiException("ups kuaijie not support", FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
+					throw new BizException("ups kuaijie not support", BizExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
 			}
 			
 		}else if(SmsCodeType.DELAY.getCode().equals(type)){
@@ -122,7 +133,7 @@ public class ConfirmSmsApi implements JsdH5Handle {
  			Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + renewalDo.getTradeNo());
  			if (beanName == null) {
  				// 未获取到缓存数据，支付订单过期
- 				throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+ 				throw new BizException(BizExceptionCode.UPS_CACHE_EXPIRE);
  			}
  			
  			switch (beanName.toString()) {
@@ -130,7 +141,7 @@ public class ConfirmSmsApi implements JsdH5Handle {
 	 				map = jsdBorrowCashRenewalService.doUpsPay(renewalDo.getTradeNo(), smsCode);
 	 				break;
 	 			default:
-	 				throw new FanbeiException("ups kuaijie not support", FanbeiExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
+	 				throw new BizException("ups kuaijie not support", BizExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
 	 		}
  		}else if(SmsCodeType.BIND.getCode().equals(type)){
 			final JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getByBindNo(busiFlag);
@@ -157,7 +168,7 @@ public class ConfirmSmsApi implements JsdH5Handle {
 			if(res == 1000) {
 				userBankcardDo.setStatus(BankcardStatus.UNBIND.getCode());
 				jsdUserBankcardService.updateUserBankcard(userBankcardDo);
-				return new JsdH5HandleResponse(1556, FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR.getErrorMsg());
+				return new JsdH5HandleResponse(1556, BizExceptionCode.UPS_AUTH_SIGN_ERROR.getErrorMsg());
 			}
 
 			HashMap<String,String> cardMap=new HashMap<>();
@@ -167,11 +178,11 @@ public class ConfirmSmsApi implements JsdH5Handle {
 				cardMap.put("status", "Y");
 			}else {
 				cardMap.put("status", "N");
-				cardMap.put("reason", FanbeiExceptionCode.UPS_AUTH_SIGN_ERROR.getErrorMsg());
+				cardMap.put("reason", BizExceptionCode.UPS_AUTH_SIGN_ERROR.getErrorMsg());
 			}
 			cardMap.put("timestamp",System.currentTimeMillis()+"");
 			JsdNoticeRecordDo jsdNoticeRecordDo=new JsdNoticeRecordDo();
-			jsdNoticeRecordDo.setParams(JsonUtil.toJSONString(cardMap));
+			jsdNoticeRecordDo.setParams(JSON.toJSONString(cardMap));
 			jsdNoticeRecordDo.setType(JsdNoticeType.BIND.code);
 			jsdNoticeRecordDo.setUserId(userDo.getRid());
 			jsdNoticeRecordService.addNoticeRecord(jsdNoticeRecordDo);
