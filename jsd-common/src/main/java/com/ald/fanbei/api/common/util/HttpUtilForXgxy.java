@@ -141,14 +141,18 @@ public class HttpUtilForXgxy {
 	public static String post(String url){
 		return post(url,null);
 	}
-	public static String post(String url, Object data){
-		return (String)post(url, data, false);
+	public static String post(String url, Object reqData){
+		return (String)post(url, reqData, reqData+"", false);
 	}
-	public static Object post(String url, Object data, boolean isRaw){
+	public static String post(String url, Object reqData, String reqDataForLog){
+		return (String)post(url, reqData, reqDataForLog, false);
+	}
+	public static Object post(String url, Object reqData, String reqDataForLog, boolean isRaw){
 		Args.notBlank(url, "HTTP request url");
-		
+		long start = System.currentTimeMillis();
 		CloseableHttpClient httpclient;
 		CloseableHttpResponse resp = null;
+		Object respObj = null;
 		try {
 			if(url.startsWith("https")) {
 				httpclient = HttpUtilForXgxy.httpsclient;
@@ -157,21 +161,21 @@ public class HttpUtilForXgxy {
 			}
 		
         	HttpEntity reqEntity = null;
-        	if(data == null){
+        	if(reqData == null){
         		reqEntity = new StringEntity("");
-        	}else if(data instanceof Map){
+        	}else if(reqData instanceof Map){
 				@SuppressWarnings("unchecked")
-				Set<Entry<Object,Object>> entrys = ((Map<Object,Object>)data).entrySet();
+				Set<Entry<Object,Object>> entrys = ((Map<Object,Object>)reqData).entrySet();
         		List<NameValuePair> params = new ArrayList<>();
         		Object value;
             	for(Entry<Object,Object> entry : entrys){
             		params.add(new BasicNameValuePair(entry.getKey().toString(), (value = entry.getValue()) != null?value.toString():""));
             	}
             	reqEntity = new UrlEncodedFormEntity(params, Consts.UTF_8);
-        	}else if(data instanceof byte[]){
-        		reqEntity = new ByteArrayEntity((byte[])data);
+        	}else if(reqData instanceof byte[]){
+        		reqEntity = new ByteArrayEntity((byte[])reqData);
 			}else{
-				reqEntity = new StringEntity(data.toString());
+				reqEntity = new StringEntity(reqData.toString());
         	}
         	
         	HttpPost httppost = new HttpPost(url);
@@ -187,6 +191,7 @@ public class HttpUtilForXgxy {
         } catch (Exception e) {
 			throw new IllegalStateException(e);
 		}finally {
+			log.info("POST - " + url + ", PARAMS=" + reqDataForLog + ", RESP=" + respObj + ", TIME=" + (System.currentTimeMillis() - start));
 			try {
 				if(resp != null)resp.close();
 			} catch (IOException e) {
