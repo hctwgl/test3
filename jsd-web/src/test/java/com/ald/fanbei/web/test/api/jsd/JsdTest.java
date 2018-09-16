@@ -10,7 +10,6 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.util.HttpUtilForXgxy;
 import com.ald.fanbei.api.common.util.JsdAesUtil;
 import com.ald.fanbei.api.common.util.JsdSignUtil;
@@ -109,25 +108,6 @@ public class JsdTest extends BaseTest {
 
 //    	testH5(url, params, userName, true);
 
-    }
-
-    /**
-     * 续期回调
-     */
-    @Test
-    public void renewawlUpsCallBack() {
-
-        String url = urlBase + "/third/ups/collect?";
-		String orderNo = "xj2018090421105600022";
-		String merPriv = PayOrderSource.RENEW_JSD.getCode();
-		String tradeNo = "csxj123456";
-		String tradeState = "00";
-
-		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
-		url += reqStr;
-		Map<String,String> params = new HashMap<>();
-
-		testApi(url, params, userName ,true);
     }
 
     /**

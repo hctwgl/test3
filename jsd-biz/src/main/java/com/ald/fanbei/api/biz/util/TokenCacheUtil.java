@@ -2,7 +2,6 @@ package com.ald.fanbei.api.biz.util;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -16,11 +15,9 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.TokenBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.SerializeUtil;
-import com.ald.fanbei.api.common.util.UserUtil;
 
 
 
@@ -38,88 +35,6 @@ public class TokenCacheUtil extends AbstractThird{
     
     @Resource
     private RedisTemplate<String, Object> cacheRedisTemplate;
-    
-    /**
-     * 设置token
-     * @param userId
-     * @param token
-     * @return
-     */
-    public void saveToken(String userId, final TokenBo tokenBo) {
-        final String key = Constants.CACHEKEY_USER_TOKEN + userId;
-        if(tokenBo == null){
-            return ;
-        }
-        if(StringUtils.isBlank(tokenBo.getUserId()) || StringUtils.isBlank(tokenBo.getToken())){
-            return ;
-        }
-
-        if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(userId)) {
-            return;
-        }
-        try{
-	        cacheRedisTemplate.execute(new RedisCallback<Object>() {
-	            @Override
-	            public Object doInRedis(RedisConnection connection) throws DataAccessException {
-	                connection.hMSet(key.getBytes(), tokenBo.getTokenMap());
-	                connection.expire(key.getBytes(), Constants.SECOND_OF_ONE_WEEK);
-	                return null;
-	            }
-	        });
-        }catch(Exception e){
-        	logger.error("saveToken error",e);
-        	return;
-        }
-        
-    }
-    
-    /**
-     * 读取token，读取token之后会从新设计token过期时间
-     * @param userId
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public TokenBo getToken(final String userId) {
-        final String key = Constants.CACHEKEY_USER_TOKEN + userId;
-        if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(userId)) {
-            return null;
-        }
-        Map<byte[], byte[]> resultCache = null;
-        try{
-	        resultCache = ((Map<byte[], byte[]>)cacheRedisTemplate.execute(new RedisCallback<Object>() {
-	            @Override
-	            public Object doInRedis(RedisConnection connection) throws DataAccessException {
-	                Map<byte[], byte[]> cacheData = connection.hGetAll(key.getBytes());
-	                if(cacheData != null && !cacheData.isEmpty()){
-	                    connection.expire(key.getBytes(), Constants.SECOND_OF_ONE_WEEK);
-	                }
-	                return cacheData;
-	            }
-	        }));
-        }catch(Exception e){
-        	logger.error("getToken",e);
-        	return null;
-        }
-        if(resultCache == null || resultCache.isEmpty()){
-            return null;
-        }
-        TokenBo token = new TokenBo();
-        token.setToken(resultCache);
-        return token;
-    }
-    
-    /**
-     * 删除tokean
-     * @param userId
-     */
-    public void delToken(String userId) {
-        String key = Constants.CACHEKEY_USER_TOKEN + userId;
-        if (!BIZ_CACHE_SWITCH || StringUtils.isBlank(userId)) {
-            return ;
-        }
-        this.delCache(key);
-    }
-    
     
     /**
      * 保存到缓存，过期时间为默认过期时间
@@ -388,20 +303,6 @@ public class TokenCacheUtil extends AbstractThird{
         	logger.error("incr error",e);
         	return 0;
         }
-	}
-
-	/**
-	 * 授予访问令牌
-	 * @param userName
-	 */
-	public TokenBo grant(String userName) {
-		String token = UserUtil.generateToken(userName);
-		TokenBo tokenBo = new TokenBo();
-		tokenBo.setLastAccess(System.currentTimeMillis() + "");
-		tokenBo.setToken(token);
-		tokenBo.setUserId(userName);
-		saveToken(userName, tokenBo);
-		return tokenBo;
 	}
 
 }

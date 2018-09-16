@@ -313,7 +313,7 @@ public class GeneratorClusterNo extends AbstractThird {
 	 * @return
 	 */
 	private int getOfflineRepaymentSequenceNum() {
-		return TokenCacheUtil.incr(Constants.OFFLINE_CACHEKEY_REPAYCASHNO);
+		return TokenCacheUtil.incr(Constants.CACHEKEY_OFFLINE_REPAYCASHNO);
 	}
 
 	/**

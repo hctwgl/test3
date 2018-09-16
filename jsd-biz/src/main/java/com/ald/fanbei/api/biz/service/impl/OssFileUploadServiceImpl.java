@@ -38,7 +38,7 @@ public class OssFileUploadServiceImpl implements OssFileUploadService {
     @Override
     public OssUploadResult uploadFileToOss(MultipartFile file) {
         String oldFileName = file.getOriginalFilename();
-        String path = ConfigProperties.get(Constants.CONF_KEY_INVELOMENT_TYPE) + "/";
+        String path = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE) + "/";
 //        String newFileName = ImageUtil.getFileName(oldFileName);
         String contextType = "";
         if(oldFileName.lastIndexOf(".") >=0){
@@ -50,7 +50,7 @@ public class OssFileUploadServiceImpl implements OssFileUploadService {
     
     @Override
     public OssUploadResult uploadFileToOssWithName(MultipartFile file, String fileName) {
-        String path = ConfigProperties.get(Constants.CONF_KEY_INVELOMENT_TYPE) + "/";
+        String path = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE) + "/";
         String contextType = this.getImageFileContentType(fileName);
         return this.uploadFileToOss(file, contextType, path, fileName);
     }
@@ -59,7 +59,7 @@ public class OssFileUploadServiceImpl implements OssFileUploadService {
     public OssUploadResult uploadImageToOss(MultipartFile imageFile) {
         String fileName = imageFile.getOriginalFilename();
         String contextType = this.getImageFileContentType(fileName);
-        String path = ConfigProperties.get(Constants.CONF_KEY_INVELOMENT_TYPE) + "/";
+        String path = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE) + "/";
         String fileNameSuffix = UUID.randomUUID().toString();
         if(StringUtils.isNotBlank(contextType)){
             fileNameSuffix = fileNameSuffix + fileName.substring(fileName.lastIndexOf("."));
@@ -71,7 +71,7 @@ public class OssFileUploadServiceImpl implements OssFileUploadService {
     public OssUploadResult uploadImageToOss(InputStream inputStream,String fileName,int fileSize) {
         OssUploadResult result = new OssUploadResult();
         try{
-            String path = ConfigProperties.get(Constants.CONF_KEY_INVELOMENT_TYPE) + "/";
+            String path = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE) + "/";
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(fileSize);
             metadata.setContentType(this.getImageFileContentType(fileName));
