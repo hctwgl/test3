@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.web.h5.api.jsd;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;

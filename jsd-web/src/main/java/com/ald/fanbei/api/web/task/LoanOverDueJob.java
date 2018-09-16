@@ -63,17 +63,14 @@ public class LoanOverDueJob {
     @Resource
     private JsdNoticeRecordService jsdNoticeRecordService;
 
-    @Resource
-    GetHostIpUtil getHostIpUtil;
-
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void laonDueJob(){
         try{
-        	String curHostIp = getHostIpUtil.getIpAddress();
+        	String curHostIp = GetHostIpUtil.getIpAddress();
         	logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-            if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)){
+            if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
         		int pageSize = 200;
                 int totalRecord = borrowCashService.getBorrowCashOverdueCount();
                 int totalPageNum = (totalRecord + pageSize - 1) / pageSize;

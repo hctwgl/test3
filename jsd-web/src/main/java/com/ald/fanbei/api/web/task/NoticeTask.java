@@ -55,18 +55,15 @@ public class NoticeTask {
 
     ExecutorService executor = Executors.newFixedThreadPool(10);
 
-    @Resource
-    GetHostIpUtil getHostIpUtil;
-
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
 
     @SuppressWarnings("unchecked")
 	@Scheduled(cron = "0 0/5 * * * ?")
     public void notice() {
     	try {
-    		String curHostIp = getHostIpUtil.getIpAddress();
+    		String curHostIp = GetHostIpUtil.getIpAddress();
         	logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-            if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)){
+            if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
                 logger.info("start notice task， time="+new Date());
                 List<JsdNoticeRecordDo> noticeRecordDos = jsdNoticeRecordService.getAllFailNoticeRecord();
                 if(noticeRecordDos.size()==0){
