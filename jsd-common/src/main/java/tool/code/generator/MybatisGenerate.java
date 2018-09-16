@@ -87,7 +87,7 @@ public class MybatisGenerate {
 			while (tables.next()) {
 				table_name = tables.getString(getTable);
 				// 判断执行那个表的,生成代码操作
-				if (table_name.indexOf(table) == -1) {
+				if (!table_name.equalsIgnoreCase(table)) {
 					continue;
 				}
 //				String cn = StringUtil.lowerCase(table_name); // 全部转换为小写
@@ -115,13 +115,13 @@ public class MybatisGenerate {
 //				String javaPath = StringUtils.replaceEach(
 //						projectPath + "/src/main/java/" + StringUtils.lowerCase(packageName), new String[] { "/", "." },
 //						new String[] { separator, separator });
-				String dalPath = StringUtils.replaceEach(realProjectPath + "/study" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/dal", new String[] { "/", "." },new String[] { separator, separator });
-				String bizPath = StringUtils.replaceEach(realProjectPath + "/study" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/biz", new String[] { "/", "." },new String[] { separator, separator });
-				String webPath = StringUtils.replaceEach(realProjectPath + "/study" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/web", new String[] { "/", "." },new String[] { separator, separator });
+				String dalPath = StringUtils.replaceEach(realProjectPath + "/codeGenerate" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/dal", new String[] { "/", "." },new String[] { separator, separator });
+				String bizPath = StringUtils.replaceEach(realProjectPath + "/codeGenerate" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/biz", new String[] { "/", "." },new String[] { separator, separator });
+				String webPath = StringUtils.replaceEach(realProjectPath + "/codeGenerate" + "/src/main/java/" + StringUtils.lowerCase(packageName) + "/web", new String[] { "/", "." },new String[] { separator, separator });
 				
 				// mybatis文件生成地址
 				
-				String batisPath = StringUtils.replace(realProjectPath + "/study/src/main/resources/sqlmap", "/", separator);
+				String batisPath = StringUtils.replace(realProjectPath + "/codeGenerate/src/main/resources/sqlmap", "/", separator);
 
 				// 代码模板配置
 				Configuration cfg = new Configuration();
@@ -243,6 +243,8 @@ public class MybatisGenerate {
 				 * 提示信息
 				 */
 				System.out.println("代码生成成功");
+				
+				break;
 			}
 			tables.close();
 			stateMent_table.close();

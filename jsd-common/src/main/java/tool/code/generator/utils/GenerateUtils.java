@@ -221,7 +221,7 @@ public class GenerateUtils {
 		// 创建文件
 		try {
 			if (file.createNewFile()) {
-				System.err.println(descFileName + " 文件创建成功!");
+				System.out.println(descFileName + " 文件创建成功!");
 				return true;
 			} else {
 				System.err.println(descFileName + " 文件创建失败!");
