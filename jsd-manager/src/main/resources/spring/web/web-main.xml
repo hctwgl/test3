@@ -22,42 +22,7 @@
     <context:component-scan base-package="com.ald.fanbei.api.biz.service" />
     <context:component-scan base-package="com.ald.fanbei.api.biz.bo.jsd" />
     
-	<context:component-scan base-package="com.ald.fanbei.api.web.controller" />
-	<context:component-scan base-package="com.ald.fanbei.api.web.h5.api" />
-	<context:component-scan base-package="com.ald.fanbei.api.web.common" />
-	<context:component-scan base-package="com.ald.fanbei.api.web.h5.controller" />
-	<context:component-scan base-package="com.ald.fanbei.api.web.third.controller" />
-
-	<context:component-scan base-package="com.ald.fanbei.api.web.validator.bean" />
-	<context:component-scan base-package="com.ald.fanbei.api.web.validator.intercept" />
-	<context:component-scan base-package="com.ald.fanbei.api.web.task" />
-
-	<!-- velocity configuration -->
-	<bean id="velocityConfigurer"
-		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer"
-		p:resourceLoaderPath="/WEB-INF/views/">
-		<property name="configLocation" value="classpath:props/velocity.properties">
-		</property>
-	</bean>
-	<bean id="viewResolver"
-		class="org.springframework.web.servlet.view.velocity.VelocityLayoutViewResolver"
-		p:cache="true" p:suffix=".vm" p:layoutUrl="layout/default.vm"
-		p:prefix="screen/" p:dateToolAttribute="dateTool"
-		p:numberToolAttribute="numberTool" p:contentType="text/html;charset=UTF-8"
-		p:allowSessionOverride="false" p:allowRequestOverride="false"
-		p:exposeSessionAttributes="false" p:exposeRequestAttributes="false"
-		p:exposeSpringMacroHelpers="true" p:redirectHttp10Compatible="false">
-		<property name="attributesMap">
-			<map>
-				<entry key="stringUtils">
-					<bean class="org.apache.commons.lang.StringUtils" />
-				</entry>
-				<entry key="dateUtil">
-					<bean class="com.ald.fanbei.api.common.util.DateUtil" />
-				</entry>
-			</map>
-		</property>
-	</bean>
+	<context:component-scan base-package="com.ald.fanbei.admin.web.controller" />
 
 	<bean
 		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
@@ -79,44 +44,6 @@
 		</property>
 	</bean>
 
-	<!-- App内部H5接口 ,接口需要满足h5/**格式 -->
-	<bean id="h5HandleMap" class="java.util.HashMap">
-		<constructor-arg>
-			<map key-type="java.lang.String">
-			    <!-- 极速贷接口 --> 	
-				<entry key="/third/eca/v1/getDelayDetail" value-ref="getRenewalDetailApi" />
-				<entry key="/third/eca/v1/fetchDelayResult" value-ref="getRenewalResultApi" />
-				<entry key="/third/eca/v1/pushDelay" value-ref="jsdConfirmRenewalPayApi" />
-				<entry key="/third/eca/v1/submitMessage" value-ref="confirmSmsApi" />
-				<entry key="/third/eca/v1/getBorrowBill" value-ref="borrowCashRepaymentBillApi" />
-				<entry key="/third/eca/v1/getRepaymentDetail" value-ref="borrowCashRepaymentDetailApi" />
-				<entry key="/third/eca/v1/pushRepayment" value-ref="jsdBorrowCashRepayApi" />
-				<entry key="/third/eca/v1/bankCardBind" value-ref="jsdApplyBindBankCardMsgApi" />
-				<entry key="/third/eca/v1/sendMessage" value-ref="sendSmsCodeApi" />
-				
-                <!-- 借钱 -->
-                <entry key="/third/eca/v1/getBorrowStatus" value-ref="getBorrowStatusApi" />
-                <entry key="/third/eca/v1/getBorrowFeeDetail" value-ref="trialBeforeBorrowApi" />
-				<entry key="/third/eca/v1/pushBorrow" value-ref="applyBorrowCashApi" />
-				<entry key="/third/eca/v1/getProfit" value-ref="getProfitApi" />
-				<!-- 协议 -->
-				<entry key="/third/eca/v1/getProtocolInfo" value-ref="getLoanProtocolApi" />
-                
-				<entry key="/third/eca/v1/syncUserInfo" value-ref="jsdSyncUserInfoApi" />
-			</map>
-		</constructor-arg>
-	</bean>
-	
 	<bean id="springBeanContextUtil" class="com.ald.fanbei.api.common.util.SpringBeanContextUtil" />
-
-	<!-- 拦截器链 -->
-	<bean id="interceptorChain" class="com.ald.fanbei.api.web.chain.InterceptorChain">
-		<property name="interceptors">
-			<list>
-				<ref bean="jsdValidationInterceptor"/>
-			</list>
-		</property>
-	</bean>
-	<bean  class="com.ald.fanbei.api.web.application.SpringInit" />
 
 </beans>
