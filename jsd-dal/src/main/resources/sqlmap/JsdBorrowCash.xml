@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,product_no,borrow_no,trade_no_xgxy,trade_no_ups,user_id,type,version,status,amount,arrival_amount,card_number,card_name,overdue_status,overdue_day,overdue_amount,poundage_amount,interest_amount,repay_principle,repay_amount,sum_repaid_interest,sum_repaid_poundage,sum_repaid_overdue,renewal_num,interest_rate,poundage_rate,overdue_rate,risk_daily_rate,gmt_plan_repayment,gmt_arrival,gmt_close,finish_date,remark 
+        id rid,user_id,product_no,borrow_no,trade_no_xgxy,trade_no_ups,type,version,status,review_status,review_remark,amount,arrival_amount,card_number,card_name,overdue_status,overdue_day,overdue_amount,poundage_amount,interest_amount,repay_principle,repay_amount,sum_repaid_interest,sum_repaid_poundage,sum_repaid_overdue,renewal_num,interest_rate,poundage_rate,overdue_rate,risk_daily_rate,gmt_plan_repayment,gmt_arrival,finish_date,remark,gmt_close,gmt_create,gmt_modified,
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -14,11 +14,8 @@
         <if test="rid !=null">
             AND id  = #{rid,jdbcType=INTEGER}
         </if>
-        <if test="gmtCreate !=null">
-            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
-        </if>
-        <if test="gmtModified !=null">
-            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        <if test="userId != null">
+            AND user_id = #{userId,jdbcType=INTEGER}
         </if>
         <if test="productNo != null">
             AND product_no = #{productNo,jdbcType=VARCHAR}
@@ -32,9 +29,6 @@
         <if test="tradeNoUps != null">
             AND trade_no_ups = #{tradeNoUps,jdbcType=VARCHAR}
         </if>
-        <if test="userId != null">
-            AND user_id = #{userId,jdbcType=INTEGER}
-        </if>
         <if test="type != null">
             AND type = #{type,jdbcType=VARCHAR}
         </if>
@@ -43,6 +37,12 @@
         </if>
         <if test="status != null">
             AND status = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="reviewStatus != null">
+            AND review_status = #{reviewStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="reviewRemark != null">
+            AND review_remark = #{reviewRemark,jdbcType=VARCHAR}
         </if>
         <if test="amount != null">
             AND amount = #{amount,jdbcType=DECIMAL}
@@ -107,14 +107,20 @@
         <if test="gmtArrival !=null">
             AND gmt_arrival = #{gmtArrival,jdbcType=TIMESTAMP}
         </if>
-        <if test="gmtClose !=null">
-            AND gmt_close = #{gmtClose,jdbcType=TIMESTAMP}
-        </if>
         <if test="finishDate != null">
             AND finish_date = #{finishDate,jdbcType=VARCHAR}
         </if>
         <if test="remark != null">
             AND remark = #{remark,jdbcType=VARCHAR}
+        </if>
+        <if test="gmtClose !=null">
+            AND gmt_close = #{gmtClose,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
     </sql>
 
@@ -122,11 +128,8 @@
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO jsd_borrow_cash
         <trim prefix="(" suffix=")" suffixOverrides="," >
-            <if test="gmtCreate != null">        
-                gmt_create,
-            </if>
-            <if test="gmtModified != null">        
-                gmt_modified,
+            <if test="userId != null">        
+                user_id,
             </if>
             <if test="productNo != null">        
                 product_no,
@@ -140,9 +143,6 @@
             <if test="tradeNoUps != null">        
                 trade_no_ups,
             </if>
-            <if test="userId != null">        
-                user_id,
-            </if>
             <if test="type != null">        
                 type,
             </if>
@@ -151,6 +151,12 @@
             </if>
             <if test="status != null">        
                 status,
+            </if>
+            <if test="reviewStatus != null">        
+                review_status,
+            </if>
+            <if test="reviewRemark != null">        
+                review_remark,
             </if>
             <if test="amount != null">        
                 amount,
@@ -215,23 +221,26 @@
             <if test="gmtArrival != null">        
                 gmt_arrival,
             </if>
-            <if test="gmtClose != null">        
-                gmt_close,
-            </if>
             <if test="finishDate != null">        
                 finish_date,
             </if>
             <if test="remark != null">        
                 remark,
             </if>
+            <if test="gmtClose != null">        
+                gmt_close,
+            </if>
+            <if test="gmtCreate != null">        
+                gmt_create,
+            </if>
+            <if test="gmtModified != null">        
+                gmt_modified,
+            </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-            <if test="gmtCreate != null" >
-               #{gmtCreate,jdbcType=TIMESTAMP},
-            </if>
-            <if test="gmtModified != null" >
-               #{gmtModified,jdbcType=TIMESTAMP},
+            <if test="userId != null" >
+               #{userId,jdbcType=INTEGER},
             </if>
             <if test="productNo != null" >
                #{productNo,jdbcType=VARCHAR},
@@ -245,9 +254,6 @@
             <if test="tradeNoUps != null" >
                #{tradeNoUps,jdbcType=VARCHAR},
             </if>
-            <if test="userId != null" >
-               #{userId,jdbcType=INTEGER},
-            </if>
             <if test="type != null" >
                #{type,jdbcType=VARCHAR},
             </if>
@@ -256,6 +262,12 @@
             </if>
             <if test="status != null" >
                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="reviewStatus != null" >
+               #{reviewStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="reviewRemark != null" >
+               #{reviewRemark,jdbcType=VARCHAR},
             </if>
             <if test="amount != null" >
                #{amount,jdbcType=DECIMAL},
@@ -320,14 +332,20 @@
             <if test="gmtArrival != null" >
                #{gmtArrival,jdbcType=TIMESTAMP},
             </if>
-            <if test="gmtClose != null" >
-               #{gmtClose,jdbcType=TIMESTAMP},
-            </if>
             <if test="finishDate != null" >
                #{finishDate,jdbcType=VARCHAR},
             </if>
             <if test="remark != null" >
                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtClose != null" >
+               #{gmtClose,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtCreate != null" >
+               #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModified != null" >
+               #{gmtModified,jdbcType=TIMESTAMP},
             </if>
         </trim>
     </insert>
@@ -335,106 +353,109 @@
     <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
         UPDATE jsd_borrow_cash
           <set>
-            <if test="gmtCreate != null">        
-                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
+            <if test="userId != null">        
+                user_id = #{userId,jdbcType=INTEGER},
             </if>
             <if test="productNo != null">        
-                product_no = #{productNo,jdbcType=VARCHAR},                
+                product_no = #{productNo,jdbcType=VARCHAR},
             </if>
             <if test="borrowNo != null">        
-                borrow_no = #{borrowNo,jdbcType=VARCHAR},                
+                borrow_no = #{borrowNo,jdbcType=VARCHAR},
             </if>
             <if test="tradeNoXgxy != null">        
-                trade_no_xgxy = #{tradeNoXgxy,jdbcType=VARCHAR},                
+                trade_no_xgxy = #{tradeNoXgxy,jdbcType=VARCHAR},
             </if>
             <if test="tradeNoUps != null">        
-                trade_no_ups = #{tradeNoUps,jdbcType=VARCHAR},                
-            </if>
-            <if test="userId != null">        
-                user_id = #{userId,jdbcType=INTEGER},                
+                trade_no_ups = #{tradeNoUps,jdbcType=VARCHAR},
             </if>
             <if test="type != null">        
-                type = #{type,jdbcType=VARCHAR},                
+                type = #{type,jdbcType=VARCHAR},
             </if>
             <if test="version != null">        
-                version = #{version,jdbcType=VARCHAR},                
+                version = #{version,jdbcType=VARCHAR},
             </if>
             <if test="status != null">        
-                status = #{status,jdbcType=VARCHAR},                
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="reviewStatus != null">        
+                review_status = #{reviewStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="reviewRemark != null">        
+                review_remark = #{reviewRemark,jdbcType=VARCHAR},
             </if>
             <if test="amount != null">        
-                amount = #{amount,jdbcType=DECIMAL},                
+                amount = #{amount,jdbcType=DECIMAL},
             </if>
             <if test="arrivalAmount != null">        
-                arrival_amount = #{arrivalAmount,jdbcType=DECIMAL},                
+                arrival_amount = #{arrivalAmount,jdbcType=DECIMAL},
             </if>
             <if test="cardNumber != null">        
-                card_number = #{cardNumber,jdbcType=VARCHAR},                
+                card_number = #{cardNumber,jdbcType=VARCHAR},
             </if>
             <if test="cardName != null">        
-                card_name = #{cardName,jdbcType=VARCHAR},                
+                card_name = #{cardName,jdbcType=VARCHAR},
             </if>
             <if test="overdueStatus != null">        
-                overdue_status = #{overdueStatus,jdbcType=VARCHAR},                
+                overdue_status = #{overdueStatus,jdbcType=VARCHAR},
             </if>
             <if test="overdueDay != null">        
-                overdue_day = #{overdueDay,jdbcType=INTEGER},                
+                overdue_day = #{overdueDay,jdbcType=INTEGER},
             </if>
             <if test="overdueAmount != null">        
-                overdue_amount = #{overdueAmount,jdbcType=DECIMAL},                
+                overdue_amount = #{overdueAmount,jdbcType=DECIMAL},
             </if>
             <if test="poundageAmount != null">        
-                poundage_amount = #{poundageAmount,jdbcType=DECIMAL},                
+                poundage_amount = #{poundageAmount,jdbcType=DECIMAL},
             </if>
             <if test="interestAmount != null">        
-                interest_amount = #{interestAmount,jdbcType=DECIMAL},                
+                interest_amount = #{interestAmount,jdbcType=DECIMAL},
             </if>
             <if test="repayPrinciple != null">        
-                repay_principle = #{repayPrinciple,jdbcType=DECIMAL},                
+                repay_principle = #{repayPrinciple,jdbcType=DECIMAL},
             </if>
             <if test="repayAmount != null">        
-                repay_amount = #{repayAmount,jdbcType=DECIMAL},                
+                repay_amount = #{repayAmount,jdbcType=DECIMAL},
             </if>
             <if test="sumRepaidInterest != null">        
-                sum_repaid_interest = #{sumRepaidInterest,jdbcType=DECIMAL},                
+                sum_repaid_interest = #{sumRepaidInterest,jdbcType=DECIMAL},
             </if>
             <if test="sumRepaidPoundage != null">        
-                sum_repaid_poundage = #{sumRepaidPoundage,jdbcType=DECIMAL},                
+                sum_repaid_poundage = #{sumRepaidPoundage,jdbcType=DECIMAL},
             </if>
             <if test="sumRepaidOverdue != null">        
-                sum_repaid_overdue = #{sumRepaidOverdue,jdbcType=DECIMAL},                
+                sum_repaid_overdue = #{sumRepaidOverdue,jdbcType=DECIMAL},
             </if>
             <if test="renewalNum != null">        
-                renewal_num = #{renewalNum,jdbcType=INTEGER},                
+                renewal_num = #{renewalNum,jdbcType=INTEGER},
             </if>
             <if test="interestRate != null">        
-                interest_rate = #{interestRate,jdbcType=DECIMAL},                
+                interest_rate = #{interestRate,jdbcType=DECIMAL},
             </if>
             <if test="poundageRate != null">        
-                poundage_rate = #{poundageRate,jdbcType=DECIMAL},                
+                poundage_rate = #{poundageRate,jdbcType=DECIMAL},
             </if>
             <if test="overdueRate != null">        
-                overdue_rate = #{overdueRate,jdbcType=DECIMAL},                
+                overdue_rate = #{overdueRate,jdbcType=DECIMAL},
             </if>
             <if test="riskDailyRate != null">        
-                risk_daily_rate = #{riskDailyRate,jdbcType=DECIMAL},                
+                risk_daily_rate = #{riskDailyRate,jdbcType=DECIMAL},
             </if>
             <if test="gmtPlanRepayment != null">        
-                gmt_plan_repayment = #{gmtPlanRepayment,jdbcType=TIMESTAMP},                
+                gmt_plan_repayment = #{gmtPlanRepayment,jdbcType=TIMESTAMP},
             </if>
             <if test="gmtArrival != null">        
-                gmt_arrival = #{gmtArrival,jdbcType=TIMESTAMP},                
-            </if>
-            <if test="gmtClose != null">        
-                gmt_close = #{gmtClose,jdbcType=TIMESTAMP},                
+                gmt_arrival = #{gmtArrival,jdbcType=TIMESTAMP},
             </if>
             <if test="finishDate != null">        
-                finish_date = #{finishDate,jdbcType=VARCHAR},                
+                finish_date = #{finishDate,jdbcType=VARCHAR},
             </if>
             <if test="remark != null">        
-                remark = #{remark,jdbcType=VARCHAR}, 
+                remark = #{remark,jdbcType=VARCHAR},
             </if>
-            gmt_modified = NOW()
+            <if test="gmtClose != null">        
+                gmt_close = #{gmtClose,jdbcType=TIMESTAMP},
+            </if>
+            gmtModified = NOW()
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
