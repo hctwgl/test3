@@ -14,6 +14,5 @@
 	<import resource="biz-beans.xml" />
 	<import resource="dal-beans.xml" />
 	<import resource="encrypt-beans.xml" />
-	<import resource="common-beans.xml" />
 	
 </beans>

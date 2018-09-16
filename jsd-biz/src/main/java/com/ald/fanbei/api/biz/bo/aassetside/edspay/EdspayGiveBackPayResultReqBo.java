@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.biz.bo.aassetside.edspay;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -22,7 +20,6 @@ public class EdspayGiveBackPayResultReqBo implements Serializable {
 	private Integer code ;//回传结果:0成功1失败
 	private String message ;
 
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date loanTime;
 
 	public Date getLoanTime() {

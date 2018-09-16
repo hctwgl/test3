@@ -13,36 +13,23 @@
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
 	<context:annotation-config />
-	<task:annotation-driven />
-	<mvc:annotation-driven />
 	<mvc:default-servlet-handler />
+
+    <!-- 加载后在容器中以 springSessionRepositoryFilter 名称显示，必须和web.xml中的DelegatingFilterProxy 名称相同 -->
+    <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration"></bean>
 
 	<context:component-scan base-package="com.ald.fanbei.api.biz.third.util" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.util" />
     <context:component-scan base-package="com.ald.fanbei.api.biz.service" />
     <context:component-scan base-package="com.ald.fanbei.api.biz.bo.jsd" />
     
-	<context:component-scan base-package="com.ald.fanbei.admin.web.controller" />
+	<context:component-scan base-package="com.ald.jsd.admin.web.controller" />
 
-	<bean
-		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
-		<property name="messageConverters">
-			<list>
-				<bean
-					class="org.springframework.http.converter.StringHttpMessageConverter">
-					<property name="supportedMediaTypes">
-						<list>
-							<bean class="org.springframework.http.MediaType">
-								<constructor-arg value="text" />
-								<constructor-arg value="plain" />
-								<constructor-arg value="UTF-8" />
-							</bean>
-						</list>
-					</property>
-				</bean>
-			</list>
-		</property>
-	</bean>
+	<mvc:annotation-driven>
+        <mvc:argument-resolvers>
+            <bean class="org.springframework.data.web.PageableHandlerMethodArgumentResolver" />
+        </mvc:argument-resolvers>
+    </mvc:annotation-driven>
 
 	<bean id="springBeanContextUtil" class="com.ald.fanbei.api.common.util.SpringBeanContextUtil" />
 

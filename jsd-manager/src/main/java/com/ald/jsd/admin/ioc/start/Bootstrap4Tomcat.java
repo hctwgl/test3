@@ -1,10 +1,10 @@
-package com.ald.fanbei.api.ioc.start;
+package com.ald.jsd.admin.ioc.start;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.ald.fanbei.api.server.webapp.TomcatServerStart;
+import com.ald.jsd.admin.server.webapp.TomcatServerStart;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 /**

@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.server.webapp;
+package com.ald.jsd.admin.server.webapp;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ald.fanbei.api.ioc.start.Bootstrap4Jetty;
+import com.ald.jsd.admin.ioc.start.Bootstrap4Jetty;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 /**

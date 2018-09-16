@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.controller;
+package com.ald.jsd.admin.web.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;

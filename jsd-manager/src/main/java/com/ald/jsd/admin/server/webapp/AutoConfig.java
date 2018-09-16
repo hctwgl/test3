@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.server.webapp;
+package com.ald.jsd.admin.server.webapp;
 
 import java.util.List;
 /**

@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.server.webapp;
+package com.ald.jsd.admin.server.webapp;
 
 import java.io.File;
 import java.nio.file.FileSystem;
@@ -18,7 +18,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
 
-import com.ald.fanbei.api.ioc.start.Bootstrap4Tomcat;
+import com.ald.jsd.admin.ioc.start.Bootstrap4Tomcat;
 /**
  * tomcat嵌入式启动类
  * @author rongbo

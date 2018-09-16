@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.server.webapp;
+package com.ald.jsd.admin.server.webapp;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,7 +16,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.ald.fanbei.api.ioc.start.Bootstrap4Jetty;
+import com.ald.jsd.admin.ioc.start.Bootstrap4Jetty;
 import com.google.common.collect.Lists;
 /**
  * 解析autoconfig配置文件

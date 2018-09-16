@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.web.application;
+package com.ald.jsd.admin.web.application;
 
 import java.util.HashMap;
 import java.util.Map;

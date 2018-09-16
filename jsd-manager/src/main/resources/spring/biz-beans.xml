@@ -14,15 +14,14 @@
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd">
 	
-	<bean id="multipartResolver"
-		  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-		<!-- 设定默认编码 -->
-		<property name="defaultEncoding" value="UTF-8"></property>
-		<!-- 设定文件上传的最大值5MB，5*1024*1024 -->
-		<property name="maxUploadSize" value="5242880"></property>
-	</bean>
-	
-	<bean class="com.ald.fanbei.api.common.DecrypPropertyPlaceholderConfigurer">
+	<bean id="configProperties" class="com.ald.fanbei.api.common.util.ConfigProperties"
+        init-method="init">
+        <property name="configPath">
+            <value>props/config.properties</value>
+        </property>
+    </bean>
+  
+    <bean class="com.ald.fanbei.api.common.DecrypPropertyPlaceholderConfigurer">
 		<property name="password" value="${fbapi.aes.password}"/>
 		<property name="encryptPropNames">
 			<list>
@@ -86,21 +85,5 @@
             <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
         </property>
     </bean>
-	<!-- redis template definition  -->
-	<bean id="cacheRedisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="cacheJedisConnFactory" />
-	</bean>
-
-	<bean id="threadPoolMaidianTaskExecutor"
-		  class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-		<!-- 核心线程数，默认为1 -->
-		<property name="corePoolSize" value="15" />
-		<!-- 最大线程数，默认为Integer.MAX_VALUE -->
-		<property name="maxPoolSize" value="90" />
-		<!-- 队列最大长度，一般需要设置值>=notifyScheduledMainExecutor.maxNum；默认为nteger.MAX_VALUE -->
-		<property name="queueCapacity" value="3000" />
-		<!-- 线程池维护线程所允许的空闲时间，默认为60s -->
-		<property name="keepAliveSeconds" value="300" />
-	</bean>
 
 </beans>

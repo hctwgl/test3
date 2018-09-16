@@ -41,7 +41,7 @@ public class JsdBorrowTest extends BaseTest {
     public void getProfit() {
         String url = urlBase + "/third/eca/v1/getProfit";
         JSONObject params = new JSONObject();
-        params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
+        params.put("openId", "BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
         params.put("type", "BORROW");
         params.put("amount", "5000.00");
         params.put("term", "20");
@@ -63,7 +63,7 @@ public class JsdBorrowTest extends BaseTest {
     public void getBorrowFeeDetail() {
     	String url = urlBase + "/third/eca/v1/getBorrowFeeDetail";
     	JSONObject params = new JSONObject();
-        params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
+        params.put("openId", "BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
         params.put("productNo", "2");
         params.put("amount", "5000");
         params.put("term", "10");

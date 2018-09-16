@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.server.webapp;
+package com.ald.jsd.admin.server.webapp;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import com.ald.fanbei.api.ioc.start.Bootstrap4Jetty;
+import com.ald.jsd.admin.ioc.start.Bootstrap4Jetty;
 
 /**
  * Jetty嵌入式启动类
