@@ -68,7 +68,7 @@
             </if>
             </#if>
             </#list>
-            gmtModified = NOW()
+            gmt_modified = NOW()
         </set>    
         WHERE is_delete = 0 AND id = #${leftBraces}rid ,jdbcType=BIGINT${rightBraces}
     </update>

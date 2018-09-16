@@ -131,7 +131,7 @@
             <if test="reviewStatus != null">        
                 review_status = #{reviewStatus,jdbcType=VARCHAR},
             </if>
-            gmtModified = NOW()
+            gmt_modified = NOW()
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>

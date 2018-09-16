@@ -86,7 +86,7 @@ public class JsdBorrowTest extends BaseTest {
     public void pushBorrow() {
         String url = urlBase + "/third/eca/v1/pushBorrow";
         JSONObject params = new JSONObject();
-        params.put("openId", "36C91DFB07EB236DF28CC32187979788");
+        params.put("openId", "BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
         params.put("productNo", "2");
         params.put("borrowNo", "xgxy20231412309067676867");
         params.put("amount", "5000");

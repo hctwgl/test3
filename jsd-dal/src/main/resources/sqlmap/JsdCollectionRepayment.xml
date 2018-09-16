@@ -215,7 +215,7 @@
             <if test="gmtRepay != null">        
                 gmt_repay = #{gmtRepay,jdbcType=TIMESTAMP},
             </if>
-            gmtModified = NOW()
+            gmt_modified = NOW()
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>

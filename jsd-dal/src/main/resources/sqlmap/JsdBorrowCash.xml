@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,user_id,product_no,borrow_no,trade_no_xgxy,trade_no_ups,type,version,status,review_status,review_remark,amount,arrival_amount,card_number,card_name,overdue_status,overdue_day,overdue_amount,poundage_amount,interest_amount,repay_principle,repay_amount,sum_repaid_interest,sum_repaid_poundage,sum_repaid_overdue,renewal_num,interest_rate,poundage_rate,overdue_rate,risk_daily_rate,gmt_plan_repayment,gmt_arrival,finish_date,remark,gmt_close,gmt_create,gmt_modified,
+        id rid,user_id,product_no,borrow_no,trade_no_xgxy,trade_no_ups,type,version,status,review_status,review_remark,amount,arrival_amount,card_number,card_name,overdue_status,overdue_day,overdue_amount,poundage_amount,interest_amount,repay_principle,repay_amount,sum_repaid_interest,sum_repaid_poundage,sum_repaid_overdue,renewal_num,interest_rate,poundage_rate,overdue_rate,risk_daily_rate,gmt_plan_repayment,gmt_arrival,finish_date,remark,gmt_close,gmt_create,gmt_modified
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -455,7 +455,7 @@
             <if test="gmtClose != null">        
                 gmt_close = #{gmtClose,jdbcType=TIMESTAMP},
             </if>
-            gmtModified = NOW()
+            gmt_modified = NOW()
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
     </update>
