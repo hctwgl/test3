@@ -9,7 +9,7 @@ import com.ald.fanbei.api.server.webapp.JettyServerStart;
  */
 public class Bootstrap4Jetty {
 	
-	public static final int PORT = 8088;
+	public static final int PORT = 8098;
 	public static final String ENV_TYPE = "test"; // test,pre_env,online
 	public static final String ROOT_PATH;
 	
