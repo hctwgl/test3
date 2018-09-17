@@ -286,6 +286,8 @@ public class CuiShouUtils {
         overdueAmount = borrowCashDo.getOverdueAmount();
         //还款金额
         repayAmount = borrowCashDo.getRepayAmount();
+        //借款金额
+        BigDecimal borrowAmount = borrowCashDo.getAmount();
         if(orderCashDo != null){
             //应还本金
             currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
@@ -299,6 +301,8 @@ public class CuiShouUtils {
             overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(), orderCashDo.getOverdueAmount());
             //还款金额
             repayAmount = borrowCashDo.getRepayAmount().add(orderCashDo.getRepaidAmount());
+            //借款金额
+            borrowAmount = borrowAmount.add(orderCashDo.getAmount());
         }
         buildData.put("productId","1");//产品id
         buildData.put("caseName","jsd");//案件名称
@@ -307,7 +311,7 @@ public class CuiShouUtils {
         buildData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
         buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
         buildData.put("currentAmount",String.valueOf(currentAmount));//委案未还金额
-        buildData.put("dataId",String.valueOf(orderCashDo.getRid()));//源数据id
+        buildData.put("dataId",String.valueOf(jsdBorrowLegalOrderDo.getRid()));//源数据id
         buildData.put("planRepaymenTime",DateUtil.formatDateTime(borrowCashDo.getGmtPlanRepayment()));//计划还款时间
         buildData.put("overdueAmount",String.valueOf(overdueAmount));//逾期金额
         //借款详情
@@ -318,7 +322,7 @@ public class CuiShouUtils {
         buildData.put("borrowAddress",map.get("borrowAddress"));//借款地址
         buildData.put("longitude",map.get("longitude"));//借款经度
         buildData.put("latitude",map.get("latitude"));//借款纬度
-        buildData.put("borrowAmount",String.valueOf(BigDecimalUtil.add(borrowCashDo.getAmount(),orderCashDo.getAmount())));//借款金额(委案金额)
+        buildData.put("borrowAmount",String.valueOf(borrowAmount));//借款金额(委案金额)
         buildData.put("accountAmount",String.valueOf(borrowCashDo.getAmount()));//到账金额
         buildData.put("borrowCash",String.valueOf(borrowCash));//借款费用(手续费加利息)
         buildData.put("appName","jsd");//借款app
