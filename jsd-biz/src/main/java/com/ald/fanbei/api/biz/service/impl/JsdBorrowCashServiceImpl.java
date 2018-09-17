@@ -90,10 +90,20 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 	}
 
 	@Override
-	public void checkCanBorrow(Long userId) {
+	public void checkCanBorrow(Long userId, BigDecimal amount) {
+		// 未完成借款校验
 		List<JsdBorrowCashDo> notFinishBorrowList = jsdBorrowCashDao.getBorrowCashByStatusNotInFinshAndClosed(userId);
 		if(!notFinishBorrowList.isEmpty()) {
 			throw new BizException(BizExceptionCode.JSD_BORROW_CASH_STATUS_ERROR);
+		}
+		
+		// 借款金额区间校验
+		JsdResourceDo rateInfoDo = jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG, Constants.JSD_RATE_INFO);
+		if(rateInfoDo!=null){
+			String[] split = rateInfoDo.getValue2().split(",");
+			if(amount.compareTo(new BigDecimal(split[0]))<0 || amount.compareTo(new BigDecimal(split[1]))>0){
+				throw new BizException(BizExceptionCode.BORROW_AMOUNT_NOT_IN_INTERVAL);
+			}
 		}
 	}
 

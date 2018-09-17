@@ -32,10 +32,12 @@ import com.ald.fanbei.api.biz.bo.ups.UpsResendSmsReqBo;
 import com.ald.fanbei.api.biz.bo.ups.UpsResendSmsRespBo;
 import com.ald.fanbei.api.biz.bo.ups.UpsSignReleaseReqBo;
 import com.ald.fanbei.api.biz.bo.ups.UpsSignReleaseRespBo;
+import com.ald.fanbei.api.biz.service.BeheadBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -43,8 +45,16 @@ import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
+import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.JsdUpsLogDao;
+import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
+import com.ald.fanbei.api.dal.dao.JsdUserDao;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdUpsLogDo;
+import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
+import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
@@ -92,6 +102,16 @@ public class UpsUtil extends AbstractThird {
 
 	@Resource
 	JsdUpsLogDao jsdUpsLogDao;
+	@Resource
+	JsdUserDao jsdUserDao;
+	@Resource
+	JsdUserBankcardDao jsdUserBankcardDao;
+	@Resource
+	JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
+	@Resource
+	JsdBorrowCashDao jsdBorrowCashDao;
+	@Resource
+	BeheadBorrowCashService beheadBorrowCashService;
 
 	@Autowired
 	BizCacheUtil bizCacheUtil;
@@ -127,6 +147,36 @@ public class UpsUtil extends AbstractThird {
 		payRoutBo.setClientType(clientType);
 		payRoutBo.setMerPriv("");
 		payRoutBo.setReqExt("");
+	}
+	
+	/**
+	 * 单笔代付
+	 * 砍头审批
+	 */
+	public void jsdDelegatePay(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo){
+
+		final JsdUserDo userDo = jsdUserDao.getById(cashDo.getUserId());
+		final JsdUserBankcardDo mainCard = jsdUserBankcardDao.getByBankNo(cashDo.getCardNumber());
+		
+		new Thread() { public void run() {
+        	try {
+                UpsDelegatePayRespBo upsResult = jsdDelegatePay(cashDo.getArrivalAmount(), userDo.getRealName(), 
+                        mainCard.getBankCardNumber(), userDo.getRid().toString(), mainCard.getMobile(),
+                        mainCard.getBankName(), mainCard.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
+                        "JSD_LOAN", cashDo.getRid().toString(), userDo.getIdNumber());
+                cashDo.setTradeNoUps(upsResult.getOrderNo());
+                
+                if (!upsResult.isSuccess()) {
+                	beheadBorrowCashService.dealBorrowFail(cashDo, orderDo, "UPS打款实时反馈失败");
+                }else {
+                	cashDo.setStatus(JsdBorrowCashStatus.TRANSFERING.name());
+                	jsdBorrowCashDao.updateById(cashDo);
+                }
+            } catch (Exception e) {
+            	logger.error(e.getMessage(), e);
+            	beheadBorrowCashService.dealBorrowFail(cashDo, orderDo, "UPS打款时发生异常");
+            }
+        }}.start();
 	}
 	
 	/**

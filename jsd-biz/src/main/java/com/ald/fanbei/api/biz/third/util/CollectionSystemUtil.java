@@ -53,8 +53,8 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("orderNo",getOrderNo("XGXY"));
 			params.put("info",JSON.toJSONString(data));
 			params.put("companyId","");
-			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
-			logger.info("dsed overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getUrl());
+			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo");
+			logger.info("jsd overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getUrl());
 			String url = getUrl() + "/api/ald/collect/v1/third/import";
 			String reqResult = "";
 			if (url.contains("https")){
@@ -78,70 +78,9 @@ public class CollectionSystemUtil extends AbstractThird {
 	}
 
 
-	/**
-	 * 都市e贷主动还款通知催收平台（补偿）
-	 * @return
-	 */
-	public boolean noticeRiskCollect(Map<String,String>  data) {
-		try {
-//			String url = "http://192.168.110.70:8080/api/ald/collect/v1/third/import";
-			String url = getUrl() + "/api/ald/collect/v1/third/import";
-			String reqResult = "";
-			if (url.contains("https")){
-				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(data));
-			}else {
-				reqResult = HttpUtil.post(url, data);
-			}
-			logThird(reqResult, "dsedNoticeCollect", JSON.toJSONString(data));
-			logger.info("repaymentAchieve response :" + reqResult);
-			if (StringUtil.isBlank(reqResult)) {
-				throw new BizException("dsed overdue notice collect request fail , reqResult is null");
-			}
-			if("success".equals(reqResult)){
-				return true;
-			}
-			return false;
-		} catch (Exception e) {
-			logger.error("dsed overdue notice collect request error:", e);
-			throw new BizException("dsed overdue notice collect request fail Exception is " + e + ",dsed overdue notice collect request send again");
-		}
-	}
 
-	/**
-	 * 还款通知请求
-	 * @param data
-	 * @return
-	 */
-	public boolean  dsedRePayNoticeRequest(HashMap<String, String> data ){
-		try {
-			Map<String, String> params = new HashMap<>();
-			params.put("info",JSON.toJSONString(data));
-			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
-			String url = getUrl() + "/api/ald/collect/v1/third/import";
-			String reqResult = "";
-			if (url.contains("https")){
-				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(params));
-			}else {
-				reqResult = HttpUtil.post(url, params);
-			}
-			logThird(reqResult, "dsedRePayCollect", JSON.toJSONString(data));
-			if (StringUtil.isBlank(reqResult)) {
-				throw new BizException("dsed overdue notice collect request fail , reqResult is null");
-			}
-			if("success".equals(reqResult)){
-				logger.info("send overdue push user collect request success");
-				return true;
-			}else {
-				logger.info("send overdue push user collect request fail"+JSON.toJSONString(params));
-				return false;
-			}
-		}catch (Exception e){
-			logger.info("rePayNoticeRequest request fail",e);
-		}
 
-		return false;
 
-	}
 
 
 	/**
@@ -150,11 +89,8 @@ public class CollectionSystemUtil extends AbstractThird {
 	 * @return
 	 */
 	public boolean consumerRepayment(Map<String, String> reqBo) {
-		// APP还款类型写3 , 线下还款写4
 		try {
 			String url = getCollectUrl() + "/report/thirdRepayment";
-
-//			String url = "http://192.168.152.21:8003/report/thirdRepayment";
 			logger.info("consumerRepayment url :" + url);
 			String reqResult = "";
 			if (url.contains("https")){

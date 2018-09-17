@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,user_id,product_no,borrow_no,trade_no_xgxy,trade_no_ups,type,version,status,review_status,review_remark,amount,arrival_amount,card_number,card_name,overdue_status,overdue_day,overdue_amount,poundage_amount,interest_amount,repay_principle,repay_amount,sum_repaid_interest,sum_repaid_poundage,sum_repaid_overdue,renewal_num,interest_rate,poundage_rate,overdue_rate,risk_daily_rate,gmt_plan_repayment,gmt_arrival,finish_date,remark,gmt_close,gmt_create,gmt_modified
+        id rid,user_id,product_no,borrow_no,trade_no_xgxy,trade_no_ups,type,version,status,review_status,review_remark,amount,arrival_amount,card_number,card_name,overdue_status,overdue_day,overdue_amount,poundage_amount,interest_amount,repay_principle,repay_amount,sum_repaid_interest,sum_repaid_poundage,sum_repaid_overdue,renewal_num,interest_rate,poundage_rate,overdue_rate,risk_daily_rate,gmt_plan_repayment,gmt_arrival,finish_date,remark,gmt_close,gmt_create,gmt_modified,borrow_remark,repay_remark
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -122,6 +122,12 @@
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
+        <if test="borrowRemark !=null">
+            AND borrow_remark = #{borrowRemark,jdbcType=VARCHAR}
+        </if>
+        <if test="repayRemark !=null">
+            AND borrow_remark = #{repayRemark,jdbcType=VARCHAR}
+        </if>
     </sql>
 
     
@@ -236,6 +242,12 @@
             <if test="gmtModified != null">        
                 gmt_modified,
             </if>
+            <if test="borrowRemark != null">        
+                borrow_remark,
+            </if>
+            <if test="repayRemark != null">        
+                repay_remark,
+            </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -347,6 +359,12 @@
             <if test="gmtModified != null" >
                #{gmtModified,jdbcType=TIMESTAMP},
             </if>
+            <if test="borrowRemark != null" >
+               #{borrowRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="repayRemark != null" >
+               #{repayRemark,jdbcType=VARCHAR},
+            </if>
         </trim>
     </insert>
     
@@ -452,6 +470,12 @@
             <if test="remark != null">        
                 remark = #{remark,jdbcType=VARCHAR},
             </if>
+            <if test="borrowRemark != null">        
+                borrow_remark = #{borrowRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="repayRemark != null">        
+                repay_remark = #{repayRemark,jdbcType=VARCHAR},
+            </if>
             <if test="gmtClose != null">        
                 gmt_close = #{gmtClose,jdbcType=TIMESTAMP},
             </if>
@@ -538,4 +562,9 @@
 			and  status ='TRANSFERRED' and b.gmt_plan_repayment <![CDATA[   <  ]]> #{nowTime} and user_id in (${userIds})
 	</select>
 
+	<update id="updateReviewStatus" parameterType="java.lang.String">
+		UPDATE jsd_borrow_cash
+		SET review_status=#{reviewStatus} 
+		Where id=#{borrowId ,jdbcType=BIGINT}
+	</update>
 </mapper>
