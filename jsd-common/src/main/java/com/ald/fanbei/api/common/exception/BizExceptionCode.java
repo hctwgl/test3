@@ -97,6 +97,7 @@ public enum BizExceptionCode {
     ADD_JSD_BORROW_CASH_INFO_FAIL("ADD_JSD_BORROW_CASH_INFO_FAIL",2011,"add jsd borrow cash info fail","生成借款信息失败"),
     DELEGATEPAY_DIRECT_FAIL("DELEGATEPAY_DIRECT_FAIL", 2012,"delegatepay direct fail","借款打款直接失败"),
     PROTOCOL_NOT_SUPPORT_YET("PROTOCOL_NOT_SUPPORT_YET", 2013, "protocol not support yet", "暂不支持目标协议"),
+    BORROW_AMOUNT_NOT_IN_INTERVAL("BORROW_AMOUNT_NOT_IN_INTERVAL", 2015, "borrow amount not in interval", "借款金额不在控制区间内"),
     ;
 
 

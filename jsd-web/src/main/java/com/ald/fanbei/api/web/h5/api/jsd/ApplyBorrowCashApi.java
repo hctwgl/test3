@@ -16,6 +16,7 @@ import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowResp;
 import com.ald.fanbei.api.biz.bo.ups.UpsDelegatePayRespBo;
+import com.ald.fanbei.api.biz.service.BeheadBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
@@ -74,6 +75,8 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
     TransactionTemplate transactionTemplate;
     @Resource
     GeneratorClusterNo generatorClusterNo;
+    @Resource
+    BeheadBorrowCashService beheadBorrowCashService;
     // [end]
     
     @Override
@@ -83,7 +86,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
 	        JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
 	        ApplyBorrowCashReq cashReq = (ApplyBorrowCashReq)context.getParamEntity();
         	
-	        jsdBorrowCashService.checkCanBorrow(context.getUserId());
+	        jsdBorrowCashService.checkCanBorrow(context.getUserId(), cashReq.amount);
 	        
             JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(cashReq.bankNo);
            
@@ -92,6 +95,12 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
 			trialBo.userId = context.getUserId();
 			trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(cashReq.openId);
         	jsdBorrowCashService.resolve(trialBo);
+        	
+        	if("Y".equals(cashReq.isTying) && BorrowVersionType.BEHEAD.name().equals(cashReq.tyingType)){
+        		// 砍头模式
+        		beheadBorrowCashService.applyBeheadBorrowCash(cashReq, mainCard, trialBo);
+        		return resp;
+        	}
 	    	
             final JsdBorrowCashDo cashDo = buildBorrowCashDo(cashReq, mainCard, trialBo); 				// 主借款
             final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(cashReq, context.getUserId());	// 搭售商品订单
