@@ -30,7 +30,7 @@
 
     
     <insert id="saveRecord" parameterType="JsdUserContactsDo" keyProperty="rid" useGeneratedKeys="true">
-        INSERT INTO dsed_user_contacts
+        INSERT INTO jsd_user_contacts
         <trim prefix="(" suffix=")" suffixOverrides="," >
 	        <if test="gmtCreate != null">        
 	            gmt_create,
@@ -63,7 +63,7 @@
     </insert>
     
     <update id="updateById"  parameterType="JsdUserContactsDo">
-        UPDATE dsed_user_contacts
+        UPDATE jsd_user_contacts
           <set>
             <if test="gmtCreate != null and gmtCreate != '' ">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
@@ -84,7 +84,7 @@
 	<select id="getById" resultType="JsdUserContactsDo">
         SELECT
         <include refid="queryFields" />
-        FROM dsed_user_contacts
+        FROM jsd_user_contacts
         WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
         LIMIT 0,1
     </select>
@@ -92,7 +92,7 @@
 	<select id="getByCommonCondition" resultType="JsdUserContactsDo" parameterType="JsdUserContactsDo">
         SELECT
         <include refid="queryFields" />
-        FROM dsed_user_contacts
+        FROM jsd_user_contacts
         <include refid="commonCondition"/> 
         limit 0,1
     </select>
@@ -100,14 +100,14 @@
     <select id="getListByCommonCondition" resultType="JsdUserContactsDo" parameterType="JsdUserContactsDo">
         SELECT
         <include refid="queryFields" />
-        FROM dsed_user_contacts
+        FROM jsd_user_contacts
         <include refid="commonCondition"/>
     </select>
 
     <select id="getUserContactsByUserId" resultType="JsdUserContactsDo">
         SELECT
         <include refid="queryFields" />
-        FROM dsed_user_contacts
+        FROM jsd_user_contacts
         where is_delete=0 and user_id = #{userId}
     </select>
 
@@ -115,7 +115,7 @@
     <select id="getUserContactsByUserIds" resultType="JsdUserContactsDo">
         SELECT
         <include refid="queryFields" />
-        FROM dsed_user_contacts
+        FROM jsd_user_contacts
         where user_id in
         <foreach item="userList" index="index" collection="list"
                                   open="(" separator="," close=")">#{userList}</foreach>
@@ -123,7 +123,7 @@
 
 
     <update id="updateByUserId"  parameterType="JsdUserContactsDo">
-        UPDATE dsed_user_contacts
+        UPDATE jsd_user_contacts
         <set>
             gmt_modified = now(),
             <if test="contactsMobile != null and contactsMobile != '' ">
