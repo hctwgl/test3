@@ -8,7 +8,6 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.util.JsonUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.common.enums.GenderType;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -78,8 +77,6 @@ public class LoanOverDueJob {
     JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
     @Resource
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
-    @Resource
-    GetHostIpUtil getHostIpUtil;
 
     private static String token = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjMyODQxfQ.NPLQiwpOsS1FPnCaIal2X9AaRk3R_fRFkCFfbRbNvIQ";
 
@@ -172,15 +169,6 @@ public class LoanOverDueJob {
         }
    }
 
-
-   private JsdNoticeRecordDo buildNoticeRecord(JsdBorrowCashDo jsdBorrowCashDo,XgxyBorrowNoticeBo noticeBo){
-       JsdNoticeRecordDo noticeRecordDo=new JsdNoticeRecordDo();
-       noticeRecordDo.setUserId(jsdBorrowCashDo.getUserId());
-       noticeRecordDo.setType(XgxyBorrowNotifyStatus.OVERDUE.name());
-       noticeRecordDo.setRefId(String.valueOf(jsdBorrowCashDo.getRid()));
-       noticeRecordDo.setParams(JsonUtil.toJSONString(noticeBo));
-       return noticeRecordDo;
-   }
 
     void addUserContancts(Long userId){
         JsdUserDo userDo = jsdUserService.getById(userId);

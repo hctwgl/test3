@@ -10,18 +10,16 @@ import java.util.Map;
 
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.util.DigestUtil;
+import com.ald.fanbei.api.common.util.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.ald.fanbei.api.biz.arbitration.MD5;
-import com.ald.fanbei.api.common.util.AesUtil;
-import com.ald.fanbei.api.common.util.JsdSignUtil;
-import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.web.test.common.AccountOfTester;
 import com.ald.fanbei.web.test.common.BaseTest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
+import javax.annotation.Resource;
 
 public class DsedLoanTest extends BaseTest {
     /**
@@ -32,6 +30,7 @@ public class DsedLoanTest extends BaseTest {
 //    String urlBase = "http://192.168.112.40:8080";
     
     String userName = "18258023758";
+
 
     /**
      * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -48,7 +47,6 @@ public class DsedLoanTest extends BaseTest {
     public void getHomeInfo() {
         String msg = String.format("该银行单笔限额%.2f元，请使用其他银行卡还款，谢谢！", 0.1);
         String url = urlBase + "/h5/loan/getLoanHomeInfo";
-        testH5(url, null, userName, true);
     }
 
     /**
@@ -66,7 +64,7 @@ public class DsedLoanTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtil.post(url, JSON.toJSONString(p));
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -83,7 +81,7 @@ public class DsedLoanTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtil.post(url, JSON.toJSONString(p));
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -107,7 +105,7 @@ public class DsedLoanTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtil.post(url, JSON.toJSONString(p));
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -169,7 +167,7 @@ public class DsedLoanTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtil.post(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -187,7 +185,7 @@ public class DsedLoanTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtil.post(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -205,7 +203,6 @@ public class DsedLoanTest extends BaseTest {
         Map<String,String> params = new HashMap<>();
 
 
-        testApi(url, params, userName ,true);
     }
 
 
@@ -220,7 +217,7 @@ public class DsedLoanTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtil.post(url, JSON.toJSONString(p));
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -237,7 +234,7 @@ public class DsedLoanTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtil.post(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -252,7 +249,7 @@ public class DsedLoanTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtil.post(url, JSON.toJSONString(p));
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -278,7 +275,7 @@ public class DsedLoanTest extends BaseTest {
             result.append(key).append("=").append(params.get(key));
         }
         result.append("&appSecret=" + appSecret);
-        return params == null ? null : MD5.md5(result.toString());
+        return params == null ? null : MD5Util.md5(result.toString());
     }
 
 

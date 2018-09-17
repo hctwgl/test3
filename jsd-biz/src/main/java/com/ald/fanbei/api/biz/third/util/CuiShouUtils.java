@@ -302,7 +302,6 @@ public class CuiShouUtils {
         buildData.put("appName","jsd");//借款app
         buildData.put("contractPdfUrl","");
         buildData.put("payTime",DateUtil.formatDateTime(borrowCashDo.getGmtArrival()));//打款时间
-        buildData.put("type","");
 
         //--------------------end  催收上报接口需要参数---------------------------
         data.add(buildData);

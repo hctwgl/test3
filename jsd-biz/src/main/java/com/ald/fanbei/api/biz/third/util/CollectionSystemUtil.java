@@ -24,14 +24,15 @@ import com.alibaba.fastjson.JSON;
 @Component("collectionSystemUtil")
 public class CollectionSystemUtil extends AbstractThird {
 
-	private static String url = null;
-
+	//收发路径
 	private static String getUrl() {
-		if (url == null) {
-			url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL);
-			return url;
-		}
+		String url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL);
 		return url;
+	}
+	//催收路径
+	private static String getCollectUrl() {
+		String urls = ConfigProperties.get(Constants.CONFKEY_COLLECT_URL);
+		return urls;
 	}
 
 	/**
@@ -151,9 +152,9 @@ public class CollectionSystemUtil extends AbstractThird {
 	public boolean consumerRepayment(Map<String, String> reqBo) {
 		// APP还款类型写3 , 线下还款写4
 		try {
-//			String url = getUrl() + "/report/thirdRepayment";
+			String url = getCollectUrl() + "/report/thirdRepayment";
 
-			String url = "http://192.168.152.21:8003/report/thirdRepayment";
+//			String url = "http://192.168.152.21:8003/report/thirdRepayment";
 			logger.info("consumerRepayment url :" + url);
 			String reqResult = "";
 			if (url.contains("https")){
@@ -167,7 +168,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			return false;
 		} catch (Exception e) {
 			logger.error("consumerRepayment error:", e);
-			throw new FanbeiException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
+			throw new BizException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
 		}
 	}
 
