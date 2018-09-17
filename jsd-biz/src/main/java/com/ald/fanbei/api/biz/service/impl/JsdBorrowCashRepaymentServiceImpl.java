@@ -100,12 +100,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	@Resource
 	private JsdNoticeRecordService jsdNoticeRecordService;
 	@Resource
-	XgxyUtil xgxyUtil;
-
-	@Resource
-	JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
-
-	@Resource
 	CollectionSystemUtil collectionSystemUtil;
 
 	private static String nofityRiskToken = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6M30.eyJhdWQiOiIzIiwiaXNzIjoiQUxEIiwiaWF0IjoxNTMxODgwNjE5fQ.hU2GhPAbTKTXdVHpLscbjxJ7pc710jNdsxoteipwdMs";
@@ -367,7 +361,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	public void dealRepaymentSucess(String repayNo, String outTradeNo) {
 		final JsdBorrowCashRepaymentDo repaymentDo = jsdBorrowCashRepaymentDao.getByTradeNo(repayNo);
 		final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = jsdBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByTradeNo(repayNo);
-		dealRepaymentSucess(repayNo, outTradeNo, repaymentDo, orderRepaymentDo,false,null);
+		dealRepaymentSucess(repayNo, outTradeNo, repaymentDo, orderRepaymentDo,false,null,null);
 	}
 
 	@Override
@@ -375,7 +369,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		return jsdBorrowCashRepaymentDao.getByTradeNoXgxy(tradeNoXgxy);
 	}
 
-	public void dealRepaymentSucess(String tradeNo, String outTradeNo, final JsdBorrowCashRepaymentDo repaymentDo, final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, Boolean flag, final String isBalance) {
+	public void dealRepaymentSucess(String tradeNo, String outTradeNo, final JsdBorrowCashRepaymentDo repaymentDo, final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, Boolean flag, final String isBalance,String dataId ) {
 		try {
 			lock(tradeNo);
 
@@ -413,7 +407,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 					boolean orderResult = DateUtil.afterDay(new Date(),repayDealBo.orderCashDo.getGmtLastRepayment());
 					logger.info(" cashResult = " + cashResult+"orderResult = "+orderResult +"new Date() = " + new Date());
 					if(orderResult || cashResult) {
-						nofityRisk(repayDealBo,repaymentDo,orderRepaymentDo,flag);
+						nofityRisk(repayDealBo,repaymentDo,orderRepaymentDo,flag,dataId);
 					}
 				} catch (Exception e){
 					logger.error("notice eca fail error=",e);
@@ -465,7 +459,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		return map;
 	}
 
-	private void nofityRisk(RepayDealBo repayDealBo,JsdBorrowCashRepaymentDo repaymentDo,JsdBorrowLegalOrderRepaymentDo orderRepaymentDo,boolean flag) {
+	private void nofityRisk(RepayDealBo repayDealBo,JsdBorrowCashRepaymentDo repaymentDo,JsdBorrowLegalOrderRepaymentDo orderRepaymentDo,boolean flag,String dataId) {
 		try{
 			List<HashMap<String,String>> list = new ArrayList<>();
 			JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
@@ -483,8 +477,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				userId = orderRepaymentDo.getUserId();
 				noticeRecordDo.setRefId(String.valueOf(orderRepaymentDo.getRid()));
 			}
-			JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(borrowId);
-			JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(cashDo.getRid());
 			//--------------------start  催收还款接口需要参数---------------------------
 
 			Map<String, String> repayData = new HashMap<String, String>();
@@ -503,7 +495,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				noticeRecordDo.setType(JsdNoticeType.COLLECT.code);
 			}
 			repayData.put("repaymentAcc", repayDealBo.userId+"");//还款账户
-			data.put("dataId",String.valueOf(orderCashDo.getRid()));//源数据id
+			data.put("dataId",dataId);//源数据id
 			data.put("amount",repayAmount+"");
 			repayData.put("companyId","6");
 			repayData.put("totalAmount", repayAmount+"");
@@ -765,7 +757,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	 * @param
 	 */
 	@Override
-	public void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, String type, String repayTime, String orderNo) {
+	public void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, String type, String repayTime, String orderNo,String dataId) {
 		try {
 			BorrowCashRepayBo bo = buildLoanRepayBo(userId, jsdBorrowCashDo ,jsdBorrowLegalOrderCashDo, totalAmount, repaymentNo);
 
@@ -773,7 +765,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			generateRepayRecords(bo);
 
-			dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.repaymentDo,bo.orderRepaymentDo,true,null);
+			dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.repaymentDo,bo.orderRepaymentDo,true,null,dataId);
 
 		}catch (Exception e){
 			logger.info("offlineRepay is error = " + e );

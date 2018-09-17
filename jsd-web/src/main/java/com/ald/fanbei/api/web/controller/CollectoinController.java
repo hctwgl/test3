@@ -32,10 +32,36 @@ public class CollectoinController {
         return cuiShouUtils.offlineRepaymentMoney(request);
     }
 
-
+    /**
+     * 催收上报
+     * @param data
+     * @return
+     */
     @ResponseBody
     @RequestMapping(value = {"/collectImport"}, method = RequestMethod.POST)
     public String collectImport(String data){
+        return cuiShouUtils.collectImport(data);
+    }
+
+    /**
+     * 催收平账申请
+     * @param data
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = {"/collectReconciliate"}, method = RequestMethod.POST)
+    public String collectReconciliate(String data){
+        return cuiShouUtils.collectImport(data);
+    }
+
+    /**
+     * 催收还款申请
+     * @param data
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = {"/collectRepay"}, method = RequestMethod.POST)
+    public String collectRepay(String data){
         return cuiShouUtils.collectImport(data);
     }
 
