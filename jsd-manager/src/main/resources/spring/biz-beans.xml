@@ -48,7 +48,7 @@
 	</bean>	
 	
 	<!-- redis 192.168.11.118 foobared	 -->
-    <bean id="poolConfigBiz" class="redis.clients.jedis.JedisPoolConfig">
+    <bean id="redisPoolConfigBiz" class="redis.clients.jedis.JedisPoolConfig">
     	<property name="minIdle" value="10" />
         <property name="maxIdle" value="300" />  
         <property name="maxTotal" value="60000" />  

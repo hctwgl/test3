@@ -16,7 +16,7 @@
         <property name="port" value="${fbapi.redis.port}" />
         <property name="password" value="${fbapi.redis.password}" />
         <property name="usePool" value="true" />
-        <property name="poolConfig" ref="poolConfigBiz" />
+        <property name="poolConfig" ref="redisPoolConfigBiz" />
         <property name="database" value="9"/>
     </bean>
 

@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee" 
          xmlns:web="http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee">
-	<display-name>fanbei</display-name>
-	<description>fanbei api</description>
+	<display-name>jsd_admin</display-name>
+	<description>jsd admin server</description>
  
  	<!-- log4j -->
 	<context-param>
@@ -14,22 +14,6 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:spring/import-beans.xml</param-value>
-	</context-param>
-	<context-param>
-		<param-name>log4jExposeWebAppRoot</param-name>
-		<param-value>true</param-value>
-	</context-param>
-	<context-param>
-		<param-name>log4jRefreshInterval</param-name>
-		<param-value>10000</param-value>
-	</context-param>
-	<context-param>
-		<param-name>webAppRootKey</param-name>
-		<param-value>51fbapi</param-value>
-	</context-param>
-	<context-param>
-		<param-name>useJndiDataSource</param-name>
-		<param-value>true</param-value>
 	</context-param>
 	
 	<session-config>
@@ -62,7 +46,6 @@
 		<filter-name>encoding</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
 	<!-- SessionFilter -->
 	<filter>
 	    <filter-name>springSessionRepositoryFilter</filter-name>
