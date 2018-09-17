@@ -28,6 +28,7 @@ import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRenewalServiceImpl.JsdRe
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BorrowVersionType;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
@@ -116,10 +117,10 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 
 		Map<String, Object> resultMap = Maps.newHashMap();
 
-		if(StringUtil.equals("N", paramBo.isTying) && StringUtil.equals("BEHEAD", paramBo.tyingType)) {	// 搭售-砍头
+		if(StringUtil.equals("Y", paramBo.isTying) && StringUtil.equals(BorrowVersionType.BEHEAD.name(), paramBo.tyingType)) {	// 搭售-砍头
 			resultMap = beheadBorrowCashRenewalService.dealRenewalV2(paramBo);
 			
-		}else if(StringUtil.equals("N", paramBo.isTying) && StringUtil.equals("SELL", paramBo.tyingType)){	// 搭售-赊销
+		}else if(StringUtil.equals("Y", paramBo.isTying) && StringUtil.equals(BorrowVersionType.SELL.name(), paramBo.tyingType)){	// 搭售-赊销
 			long result = buildRecord(paramBo, borrowCashDo);
 			if(result == 0l) throw new BizException("JsdConfirmRenewal error", BizExceptionCode.RENEWAL_FAIL_ERROR);
 			resultMap = jsdBorrowCashRenewalService.doRenewal(paramBo);

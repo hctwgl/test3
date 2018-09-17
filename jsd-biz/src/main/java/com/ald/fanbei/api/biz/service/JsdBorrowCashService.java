@@ -22,7 +22,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     
     JsdBorrowCashDo getByTradeNoXgxy(String tradeNoXgxy);
 
-    void checkCanBorrow(Long userId);
+    void checkCanBorrow(Long userId, BigDecimal amount);
 
     String getCurrentLastBorrowNo(String orderNoPre);
     

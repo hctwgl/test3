@@ -200,10 +200,36 @@ import java.math.BigDecimal;
      * 
      */
     private Date gmtModified;
-
-
-
+    
     /**
+     * 借款用途
+     */
+    private String borrowRemark;
+    
+    /**
+     * 还款来源
+     */
+    private String repayRemark;
+
+
+
+    public String getBorrowRemark() {
+		return borrowRemark;
+	}
+
+	public void setBorrowRemark(String borrowRemark) {
+		this.borrowRemark = borrowRemark;
+	}
+
+	public String getRepayRemark() {
+		return repayRemark;
+	}
+
+	public void setRepayRemark(String repayRemark) {
+		this.repayRemark = repayRemark;
+	}
+
+	/**
      * 获取主键Id
      *
      * @return rid
