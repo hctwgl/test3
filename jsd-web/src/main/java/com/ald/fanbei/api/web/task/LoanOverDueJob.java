@@ -302,6 +302,7 @@ public class LoanOverDueJob {
             //--------------------end  催收上报接口需要参数---------------------------
             data.add(buildData);
         }
+        logger.info("data = " + data);
         collectionSystemUtil.noticeCollect(data);
     }
 
