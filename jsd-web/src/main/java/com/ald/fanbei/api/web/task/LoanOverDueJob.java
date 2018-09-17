@@ -231,11 +231,11 @@ public class LoanOverDueJob {
                 }
                 buildData.put("gender",gender);//性别(非必填)
                 buildData.put("birthday",userDo.getBirthday());//生日(非必填)
-                buildData.put("workAddress","");//工作单位(非必填)
-                buildData.put("workPost","");//工作岗位(非必填)
-                buildData.put("income","");//税前收入(非必填)
-                buildData.put("workTelephone","");//单位联系方式(非必填)
-                buildData.put("marry","");//婚恋情况(非必填)
+//                buildData.put("workAddress","");//工作单位(非必填)
+//                buildData.put("workPost","");//工作岗位(非必填)
+//                buildData.put("income","");//税前收入(非必填)
+//                buildData.put("workTelephone","");//单位联系方式(非必填)
+//                buildData.put("marry","");//婚恋情况(非必填)
             }
             //案件信息
             JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(jsdBorrowLegalOrder.getRid());
