@@ -276,19 +276,30 @@ public class CuiShouUtils {
         BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
         //应还本金
         currentAmount = borrowCashDo.getAmount().subtract(borrowCashDo.getRepayPrinciple());
-        currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
         //应还金额
         residueAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getOverdueAmount(), borrowCashDo.getPoundageAmount(), borrowCashDo.getInterestAmount()).subtract(borrowCashDo.getRepayPrinciple());
-        residueAmount = BigDecimalUtil.add(residueAmount, orderCashDo.getAmount(), orderCashDo.getOverdueAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getInterestAmount()).subtract(orderCashDo.getRepaidAmount());
         //催收金额
         BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestRate(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
-        collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
         //借款费用
-        BigDecimal borrowCash = BigDecimalUtil.add(borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidPoundage(),borrowCashDo.getSumRepaidInterest(),orderCashDo.getPoundageAmount(),orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getSumRepaidInterest());
+        BigDecimal borrowCash = BigDecimalUtil.add(borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidPoundage(),borrowCashDo.getSumRepaidInterest());
         //逾期金额
-        overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(), orderCashDo.getOverdueAmount());
-        repayAmount = borrowCashDo.getRepayAmount().add(orderCashDo.getRepaidAmount());
-
+        overdueAmount = borrowCashDo.getOverdueAmount();
+        //还款金额
+        repayAmount = borrowCashDo.getRepayAmount();
+        if(orderCashDo != null){
+            //应还本金
+            currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
+            //应还金额
+            residueAmount = BigDecimalUtil.add(residueAmount, orderCashDo.getAmount(), orderCashDo.getOverdueAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getInterestAmount()).subtract(orderCashDo.getRepaidAmount());
+            //催收金额
+            collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
+            //借款费用
+            borrowCash = BigDecimalUtil.add(borrowCash,orderCashDo.getPoundageAmount(),orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getSumRepaidInterest());
+            //逾期金额
+            overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(), orderCashDo.getOverdueAmount());
+            //还款金额
+            repayAmount = borrowCashDo.getRepayAmount().add(orderCashDo.getRepaidAmount());
+        }
         buildData.put("productId","1");//产品id
         buildData.put("caseName","jsd");//案件名称
         buildData.put("caseType","jsd");//案件类型
