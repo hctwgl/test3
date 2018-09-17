@@ -1,4 +1,4 @@
-package com.ald.jsd.admin.server.webapp;
+package com.ald.jsd.mgr.server.webapp;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import com.ald.jsd.admin.ioc.start.Bootstrap4Jetty;
+import com.ald.jsd.mgr.ioc.start.Bootstrap4Jetty;
 
 /**
  * Jetty嵌入式启动类
@@ -43,7 +43,7 @@ public class JettyServerStart {
 	private String[] _dftConfigurationClasses = { "org.eclipse.jetty.webapp.WebInfConfiguration",
 			"org.eclipse.jetty.webapp.WebXmlConfiguration", "org.eclipse.jetty.webapp.MetaInfConfiguration",
 			"org.eclipse.jetty.webapp.FragmentConfiguration", "org.eclipse.jetty.webapp.JettyWebXmlConfiguration",
-			"com.ald.fanbei.api.server.webapp.FanbeiConfiguration" };
+			"com.ald.jsd.mgr.server.webapp.FanbeiConfiguration" };
 
 	public static final String[] IGNORE_DIRS = { ".git", "classes", "test-classes", ".settings", "target", "test" };
 

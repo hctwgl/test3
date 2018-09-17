@@ -1,4 +1,4 @@
-package com.ald.jsd.admin.server.webapp;
+package com.ald.jsd.mgr.server.webapp;
 
 import java.util.List;
 /**

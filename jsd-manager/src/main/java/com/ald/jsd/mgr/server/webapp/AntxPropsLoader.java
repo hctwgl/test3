@@ -1,11 +1,11 @@
-package com.ald.jsd.admin.server.webapp;
+package com.ald.jsd.mgr.server.webapp;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
-import com.ald.jsd.admin.ioc.start.Bootstrap4Jetty;
+import com.ald.jsd.mgr.ioc.start.Bootstrap4Jetty;
 /**
  * 加载properties
  * @author rongbo

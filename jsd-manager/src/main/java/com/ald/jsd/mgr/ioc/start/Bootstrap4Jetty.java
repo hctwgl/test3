@@ -1,6 +1,6 @@
-package com.ald.jsd.admin.ioc.start;
+package com.ald.jsd.mgr.ioc.start;
 
-import com.ald.jsd.admin.server.webapp.JettyServerStart;
+import com.ald.jsd.mgr.server.webapp.JettyServerStart;
 /**
  * 启动类
  * @attention 使用此类启动项目时，配置文件fbapi.notify.host = http://192.168.106.191:8280 会自动替换为当前机器IP:http://localhost:8078

@@ -9,6 +9,7 @@
 
 	<typeAliases>
 		<package name="com.ald.fanbei.api.dal.domain"/>
+		<package name="com.ald.jsd.mgr.dal.domain"/>
 	</typeAliases>
 
 	<plugins>

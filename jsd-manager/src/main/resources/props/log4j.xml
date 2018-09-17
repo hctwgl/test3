@@ -13,19 +13,7 @@
 
 	<!-- [应用Appender] 收到app客户端的请求，非app接口入口日志请勿放这里  -->
 	<appender name="JSD_BI_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="${fbapi.log.path.root}/bi/app-bi.log" />
-		<param name="append" value="true" />
-		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
-		<param name="encoding" value="UTF-8" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern"
-				value="%d; %m%n" />
-		</layout>
-	</appender>
-
-	<!-- [应用Appender] 埋点相关日志,飞埋点日志请勿放这里 -->
-	<appender name="JSD_MD_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="${fbapi.log.path.root}/bi/maidian.log" />
+		<param name="file" value="${fbapi.log.path.root}/bi/mgr-bi.log" />
 		<param name="append" value="true" />
 		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
 		<param name="encoding" value="UTF-8" />
@@ -37,7 +25,7 @@
 
 	<!-- [应用Appender] 调用第三方接口日志，如推送日志、发送短信日志 -->
 	<appender name="JSD_THIRD_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="${fbapi.log.path.root}/bi/app-third.log" />
+		<param name="file" value="${fbapi.log.path.root}/bi/mgr-third.log" />
 		<param name="append" value="true" />
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
@@ -48,7 +36,7 @@
 	
 	<!-- [公共Appender] 默认 -->
 	<appender name="DEFAULT_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="${fbapi.log.path.root}/app.log" />
+		<param name="file" value="${fbapi.log.path.root}/mgr.log" />
 		<param name="append" value="true" />
 		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
 		<param name="encoding" value="UTF-8" />
@@ -60,7 +48,7 @@
 	
 	<!-- [公共Appender] dal -->
 	<appender name="JSD_DAL_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="${fbapi.log.path.root}/app-dal.log" />
+		<param name="file" value="${fbapi.log.path.root}/mgr-dal.log" />
 		<param name="append" value="true" />
 		<param name="encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
@@ -72,7 +60,7 @@
 	<!-- [公共Appender] 汇总错误 -->
 	<appender name="ERROR_APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file"
-			value="${fbapi.log.path.root}/app-error.log" />
+			value="${fbapi.log.path.root}/mgr-error.log" />
 		<param name="append" value="true" />
 		<param name="encoding" value="UTF-8" />
 		<param name="threshold" value="error" />
@@ -99,14 +87,8 @@
 		<appender-ref ref="JSD_THIRD_APPENDER" />
 	</logger>
 	
-	<!-- [应用Logger] THIRD日志 -->
-    <logger name="JSD_MD" additivity="true">
-        <level value="${fbapi.log.level}" />
-        <appender-ref ref="JSD_MD_APPENDER" />
-    </logger>
-	
 	<!-- [默认logger] logger -->
-	<logger name="com.ald.fanbei" additivity="true">
+	<logger name="com.ald.jsd" additivity="true">
 		<level value="${fbapi.log.level}" />
 	</logger>
 	

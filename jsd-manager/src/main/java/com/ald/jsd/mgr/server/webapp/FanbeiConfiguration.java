@@ -1,4 +1,4 @@
-package com.ald.jsd.admin.server.webapp;
+package com.ald.jsd.mgr.server.webapp;
 
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.WebAppClassLoader;
