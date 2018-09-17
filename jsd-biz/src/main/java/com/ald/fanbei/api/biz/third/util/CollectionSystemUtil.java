@@ -53,7 +53,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			Map<String,String>  params=new HashMap<>();
 			params.put("orderNo",getOrderNo("JSD"));
 			params.put("info",JSON.toJSONString(data));
-			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjMyODQxfQ.NPLQiwpOsS1FPnCaIal2X9AaRk3R_fRFkCFfbRbNvIQ");
+			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo");
 			logger.info("jsd overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getUrl());
 			String url = getUrl() + "/api/ald/collect/v1/third/import";
 			String reqResult = "";
