@@ -238,26 +238,42 @@ public class LoanOverDueJob {
                 buildData.put("marry","");//婚恋情况(非必填)
             }
             //案件信息
-            JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowId);
+            JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(jsdBorrowLegalOrder.getRid());
+
             BigDecimal repayAmount = BigDecimal.ZERO;
             BigDecimal residueAmount = BigDecimal.ZERO;//应还金额
             BigDecimal currentAmount = BigDecimal.ZERO;//应还本金
             BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
             //应还本金
             currentAmount = borrowCashDo.getAmount().subtract(borrowCashDo.getRepayPrinciple());
-            currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
             //应还金额
             residueAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getOverdueAmount(), borrowCashDo.getPoundageAmount(), borrowCashDo.getInterestAmount()).subtract(borrowCashDo.getRepayPrinciple());
-            residueAmount = BigDecimalUtil.add(residueAmount, orderCashDo.getAmount(), orderCashDo.getOverdueAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getInterestAmount()).subtract(orderCashDo.getRepaidAmount());
             //催收金额
             BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestRate(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
-            collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
             //借款费用
-            BigDecimal borrowCash = BigDecimalUtil.add(borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidPoundage(),borrowCashDo.getSumRepaidInterest(),orderCashDo.getPoundageAmount(),orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getSumRepaidInterest());
+            BigDecimal borrowCash = BigDecimalUtil.add(borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidPoundage(),borrowCashDo.getSumRepaidInterest());
             //逾期金额
-            overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(), orderCashDo.getOverdueAmount());
-            repayAmount = borrowCashDo.getRepayAmount().add(orderCashDo.getRepaidAmount());
-
+            overdueAmount = borrowCashDo.getOverdueAmount();
+            //还款金额
+            repayAmount = borrowCashDo.getRepayAmount();
+            //借款金额
+            BigDecimal borrowAmount = borrowCashDo.getAmount();
+            if(orderCashDo != null){
+                //应还本金
+                currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
+                //应还金额
+                residueAmount = BigDecimalUtil.add(residueAmount, orderCashDo.getAmount(), orderCashDo.getOverdueAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getInterestAmount()).subtract(orderCashDo.getRepaidAmount());
+                //催收金额
+                collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
+                //借款费用
+                borrowCash = BigDecimalUtil.add(borrowCash,orderCashDo.getPoundageAmount(),orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getSumRepaidInterest());
+                //逾期金额
+                overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(), orderCashDo.getOverdueAmount());
+                //还款金额
+                repayAmount = borrowCashDo.getRepayAmount().add(orderCashDo.getRepaidAmount());
+                //借款金额
+                borrowAmount = borrowAmount.add(orderCashDo.getAmount());
+            }
             buildData.put("productId","1");//产品id
             buildData.put("caseName","jsd");//案件名称
             buildData.put("caseType","jsd");//案件类型
@@ -265,7 +281,7 @@ public class LoanOverDueJob {
             buildData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
             buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
             buildData.put("currentAmount",String.valueOf(currentAmount));//委案未还金额
-            buildData.put("dataId",String.valueOf(orderCashDo.getRid()));//源数据id
+            buildData.put("dataId",String.valueOf(jsdBorrowLegalOrder.getRid()));//源数据id
             buildData.put("planRepaymenTime",DateUtil.formatDateTime(borrowCashDo.getGmtPlanRepayment()));//计划还款时间
             buildData.put("overdueAmount",String.valueOf(overdueAmount));//逾期金额
             //借款详情
@@ -278,7 +294,7 @@ public class LoanOverDueJob {
             buildData.put("latitude",map.get("latitude"));//借款纬度
             buildData.put("borrowTime",DateUtil.formatDateTime(borrowCashDo.getGmtCreate()));//借款时间
             buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(borrowCashDo.getGmtPlanRepayment(),new Date())));//逾期天数
-            buildData.put("borrowAmount",String.valueOf(BigDecimalUtil.add(borrowCashDo.getAmount(),orderCashDo.getAmount())));//借款金额(委案金额)
+            buildData.put("borrowAmount",String.valueOf(borrowAmount));//借款金额(委案金额)
             buildData.put("accountAmount",String.valueOf(borrowCashDo.getAmount()));//到账金额
             buildData.put("borrowCash",String.valueOf(borrowCash));//借款费用(手续费加利息)
             buildData.put("appName","jsd");//借款app
