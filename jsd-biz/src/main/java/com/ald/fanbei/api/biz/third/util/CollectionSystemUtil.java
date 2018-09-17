@@ -24,14 +24,16 @@ import com.alibaba.fastjson.JSON;
 @Component("collectionSystemUtil")
 public class CollectionSystemUtil extends AbstractThird {
 
-	private static String url = null;
 
+	//收发路径
 	private static String getUrl() {
-		if (url == null) {
-			url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL);
-			return url;
-		}
+		String url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL);
 		return url;
+	}
+	//催收路径
+	private static String getCollectUrl() {
+		String urls = ConfigProperties.get(Constants.CONFKEY_COLLECT_URL);
+		return urls;
 	}
 
 	/**
@@ -53,8 +55,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("info",JSON.toJSONString(data));
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjMyODQxfQ.NPLQiwpOsS1FPnCaIal2X9AaRk3R_fRFkCFfbRbNvIQ");
 			logger.info("jsd overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getUrl());
-//			String url = getUrl() + "/api/ald/collect/v1/third/import";
-			String url = "http://192.168.156.40:8080/api/ald/collect/v1/third/import";
+			String url = getUrl() + "/api/ald/collect/v1/third/import";
 			String reqResult = "";
 			if (url.contains("https")){
 				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(params));
@@ -83,7 +84,6 @@ public class CollectionSystemUtil extends AbstractThird {
 	 */
 	public boolean noticeRiskCollect(Map<String,String>  data) {
 		try {
-//			String url = "http://192.168.110.70:8080/api/ald/collect/v1/third/import";
 			String url = getUrl() + "/api/ald/collect/v1/third/import";
 			String reqResult = "";
 			if (url.contains("https")){
@@ -151,13 +151,12 @@ public class CollectionSystemUtil extends AbstractThird {
 	public boolean consumerRepayment(Map<String, String> reqBo) {
 		// APP还款类型写3 , 线下还款写4
 		try {
-//			String url = getUrl() + "/report/thirdRepayment";
+			String url = getCollectUrl() + "/report/thirdRepayment";
 
-			String url = "http://192.168.152.21:8003/report/thirdRepayment";
 			logger.info("consumerRepayment url :" + url);
 			String reqResult = "";
 			if (url.contains("https")){
-				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(reqBo));
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, getUrlParamsByMap(reqBo));
 			}else {
 				reqResult = HttpUtil.post(url, reqBo);
 			}logger.info("repaymentAchieve response :" + reqResult);
