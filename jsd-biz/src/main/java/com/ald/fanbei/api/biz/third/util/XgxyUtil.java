@@ -3,12 +3,10 @@ package com.ald.fanbei.api.biz.third.util;
 
 import static com.ald.fanbei.api.common.util.JsdSignUtil.generateSign;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyOverdueReqBo;
+import com.ald.fanbei.api.common.util.*;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
@@ -45,14 +43,20 @@ public class XgxyUtil extends AbstractThird {
      */
     public boolean borrowNoticeRequest(XgxyBorrowNoticeBo borrowNoticeBo) {
         try {
+            borrowNoticeBo.setTimestamp(new Date().getTime());
         	String dataStr = JSON.toJSONString(borrowNoticeBo);
-            
             Map<String, Object> params = new HashMap<>();
             params.put("appId", APPID);
             params.put("data", JsdAesUtil.encryptToBase64Third(dataStr, PRIVATE_KEY));
             params.put("sign", generateSign(JSON.parseObject(dataStr), PRIVATE_KEY));
             String url = getXgxyUrl() + "/isp/open/third/eca/v1/borrowStatusNotify";
-            String reqResult = HttpUtilForXgxy.post(url, JSON.toJSONString(params), dataStr);
+            String reqResult = "";
+            if (url.contains("https")){
+                reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(params));
+            }else {
+                reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(params));
+            }
+            logThird(reqResult, url, borrowNoticeBo);
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
@@ -76,14 +80,19 @@ public class XgxyUtil extends AbstractThird {
      */
     public boolean repayNoticeRequest(HashMap<String, String> data) {
         try {
-        	String dataStr = JSON.toJSONString(data);
-        	
             Map<String, String> p = new HashMap<>();
-            p.put("data", JsdAesUtil.encryptToBase64Third(dataStr, PRIVATE_KEY));
-            p.put("sign", generateSign(JSONObject.parseObject(dataStr),PRIVATE_KEY));
+            data.put("timestamp",String.valueOf(new Date().getTime()));
+            p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+            p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             p.put("appId", APPID);
             String url = getXgxyUrl() + "/isp/open/third/eca/v1/repaymentNotify";
-            String reqResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p), dataStr);
+            String reqResult = "";
+            if (url.contains("https")){
+                reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(p));
+            }else {
+                reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+            }
+            logThird(reqResult, url, data);
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
@@ -107,14 +116,19 @@ public class XgxyUtil extends AbstractThird {
      */
     public boolean jsdRenewalNoticeRequest(HashMap<String, String> data) {
     	try {
-    		String dataStr = JSON.toJSONString(data);
-    		
     		Map<String, String> p = new HashMap<>();
-    		p.put("data", JsdAesUtil.encryptToBase64Third(dataStr, PRIVATE_KEY));
-    		p.put("sign", generateSign(JSONObject.parseObject(dataStr),PRIVATE_KEY));
+            data.put("timestamp",String.valueOf(new Date().getTime()));
+    		p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+    		p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
     		p.put("appId", APPID);
     		String url = getXgxyUrl() + "/isp/open/third/eca/v1/delayNotify";
-    		String reqResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p), dataStr);
+    		String reqResult = "";
+    		if (url.contains("https")){
+    			reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(p));
+    		}else {
+    			reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+    		}
+    		logThird(reqResult, url, data);
     		if (StringUtil.isBlank(reqResult)) {
     			return false;
     		}
@@ -139,13 +153,19 @@ public class XgxyUtil extends AbstractThird {
      */
     public boolean bindBackNoticeRequest(HashMap<String, String> data) {
         try {
-        	String dataStr = JSON.toJSONString(data);
             Map<String, String> p = new HashMap<>();
-            p.put("data", JsdAesUtil.encryptToBase64Third(dataStr, PRIVATE_KEY));
-            p.put("sign", generateSign(JSONObject.parseObject(dataStr),PRIVATE_KEY));
+            data.put("timestamp",String.valueOf(new Date().getTime()));
+            p.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+            p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             p.put("appId", APPID);
             String url = getXgxyUrl()+"/isp/open/third/eca/v1/bandBankCardNotify";
-            String reqResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p), dataStr);
+            String reqResult = "";
+            if (url.contains("https")){
+                reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(p));
+            }else {
+                reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+            }
+            logThird(reqResult, url, data);
             if (StringUtil.isBlank(reqResult)) {
                 return false;
             }
@@ -165,18 +185,21 @@ public class XgxyUtil extends AbstractThird {
 
     public String getUserContactsInfo(String openId) {
         try {
-        	Map<String, String> data = new HashMap<>();
-            data.put("userId", openId);
-            data.put("timestamp",System.currentTimeMillis()+"");
-            String dataStr = JSON.toJSONString(data);
-        	
             Map<String, Object> params = new HashMap<>();
             params.put("appId", APPID);
-            params.put("data", JsdAesUtil.encryptToBase64Third(dataStr, PRIVATE_KEY));
-            params.put("sign", generateSign(JSONObject.parseObject(dataStr), PRIVATE_KEY));
+            Map<String, String> data = new HashMap<>();
+            data.put("userId", openId);
+            params.put("data", JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+            params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/getAddressList";
-            String reqResult = HttpUtilForXgxy.post(url, JSON.toJSONString(params), dataStr);
+            String reqResult = "";
+            if (url.contains("https")){
+                reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(params));
+            }else {
+                reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(params));
+            }
+            logThird(reqResult, url, data);
             if (StringUtil.isBlank(reqResult)) {
                 return "";
             }
@@ -204,7 +227,7 @@ public class XgxyUtil extends AbstractThird {
             data.put("openId", openId);
             data.put("timestamp",System.currentTimeMillis()+"");
             String dataStr = JSON.toJSONString(data);
-            
+
             params.put("appId", XgxyUtil.APPID);
             params.put("data", JsdAesUtil.encryptToBase64Third(dataStr, PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(dataStr), PRIVATE_KEY));
@@ -223,6 +246,45 @@ public class XgxyUtil extends AbstractThird {
         }
         return null;
     }
+
+    /**
+     * 获取借款信息(搭售商品信息和借款经纬度)
+     *
+     * @param data
+     * @return
+     */
+    public HashMap<String,String> borrowNoticeRequest(Map<String,String> data) {
+        HashMap<String,String> param = new HashMap<>();
+        try {
+            logger.info("borrowNoticeRequest to xgxy request start");
+            data.put("timestamp",String.valueOf(new Date().getTime()));
+            Map<String, Object> params = new HashMap<>();
+            params.put("appId", APPID);
+            params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+            params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+//            String url = getXgxyUrl() + "/isp/open/third/eca/v1/borrowOrder";
+            String url = "http://192.168.156.59:1112/isp/open/third/eca/v1/borrowOrder";
+            String reqResult = "";
+            if (url.contains("https")){
+                reqResult = HttpUtil.doHttpsPostIgnoreCertJSON(url, JSON.toJSONString(params));
+            }else {
+                reqResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(params));
+            }
+            logThird(reqResult, url, JSON.toJSONString(data));
+            if (StringUtil.isBlank(reqResult)) {
+                return param;
+            }
+            XgxyOverdueReqBo overdueReqBo1 = JSONObject.parseObject(reqResult, XgxyOverdueReqBo.class);
+            if (Constants.XGXY_REQ_CODE_SUCC.equals(overdueReqBo1.get("code"))) {
+                JSONObject jsonObject = JSON.parseObject(reqResult);
+                return JSONObject.parseObject(jsonObject.get("data").toString(),HashMap.class);
+            }
+        } catch (Exception e) {
+            logger.info("bindBankNoticeRequest to xgxy request fail", e);
+        }
+        return param;
+    }
+
 
     public static void main(String[] ars) {
 //        XgxyUtil xgxyUtil = new XgxyUtil();

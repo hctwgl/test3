@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRenewalServiceImpl.JsdRenewalDealBo;
@@ -32,5 +33,7 @@ public interface JsdBorrowCashRenewalService {
 	public void checkCanRenewal(JsdBorrowCashDo borrowCashDo);
 	
 	public JSONArray getRenewalDetail(JsdBorrowCashDo borrowCashDo);
+
+	List<JsdBorrowCashRenewalDo> getJsdRenewalByBorrowId(Long borrowId);
 
 }

@@ -38,6 +38,9 @@ public interface JsdBorrowCashRepaymentDao extends BaseDao<JsdBorrowCashRepaymen
 
     JsdBorrowCashRepaymentDo getByTradeNoXgxy(@Param("tradeNoXgxy")String tradeNoXgxy);
 
+    JsdBorrowCashRepaymentDo getByTradeNoOut(@Param("tradeNoUps") String tradeNoUps);
+
+
 
 
 }

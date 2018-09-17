@@ -55,7 +55,12 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
 			logger.info("dsed overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getUrl());
 			String url = getUrl() + "/api/ald/collect/v1/third/import";
-			String reqResult = HttpUtil.post(url, params);
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(params));
+			}else {
+				reqResult = HttpUtil.post(url, params);
+			}
 			logThird(reqResult, "noticeCollect", JSON.toJSONString(data));
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
@@ -80,7 +85,12 @@ public class CollectionSystemUtil extends AbstractThird {
 		try {
 //			String url = "http://192.168.110.70:8080/api/ald/collect/v1/third/import";
 			String url = getUrl() + "/api/ald/collect/v1/third/import";
-			String reqResult = HttpUtil.post(url, data);
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(data));
+			}else {
+				reqResult = HttpUtil.post(url, data);
+			}
 			logThird(reqResult, "dsedNoticeCollect", JSON.toJSONString(data));
 			logger.info("repaymentAchieve response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
@@ -107,7 +117,12 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("info",JSON.toJSONString(data));
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6MywiYiI6MX0.eyJhdWQiOiJhbGQiLCJpc3MiOiJBTEQiLCJpYXQiOjE1MzAxNzI3MzB9.-ZCGIOHgHnUbtJoOChHSi2fFj_XHnIDJk3bF1zrGLSk");
 			String url = getUrl() + "/api/ald/collect/v1/third/import";
-			String reqResult = HttpUtil.post(url, params);
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(params));
+			}else {
+				reqResult = HttpUtil.post(url, params);
+			}
 			logThird(reqResult, "dsedRePayCollect", JSON.toJSONString(data));
 			if (StringUtil.isBlank(reqResult)) {
 				throw new BizException("dsed overdue notice collect request fail , reqResult is null");
@@ -129,17 +144,53 @@ public class CollectionSystemUtil extends AbstractThird {
 
 
 	/**
-	 * 都市e贷主动还款通知催收平台
+	 * jsd主动还款通知催收平台
 	 * @param reqBo
 	 * @return
 	 */
 	public boolean consumerRepayment(Map<String, String> reqBo) {
 		// APP还款类型写3 , 线下还款写4
 		try {
-			String url = getUrl() + "/api/ald/collect/v1/third/repayment";
-			String reqResult = HttpUtil.post(url, reqBo);
-			logger.info(getUrl() + "/api/ald/collect/v1/third/repayment");
-			logger.info("repaymentAchieve response :" + reqResult);
+//			String url = getUrl() + "/report/thirdRepayment";
+
+			String url = "http://192.168.152.21:8003/report/thirdRepayment";
+			logger.info("consumerRepayment url :" + url);
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(reqBo));
+			}else {
+				reqResult = HttpUtil.post(url, reqBo);
+			}logger.info("repaymentAchieve response :" + reqResult);
+			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			logger.error("consumerRepayment error:", e);
+			throw new FanbeiException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
+		}
+	}
+
+
+	/**
+	 * jsd续期成功通知催收平台
+	 * @param reqBo
+	 * @return
+	 */
+	public boolean collectRenewal(Map<String, String> reqBo) {
+		// APP还款类型写3 , 线下还款写4
+		try {
+			reqBo.put("orderNo",getOrderNo("JSD"));
+			reqBo.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo");
+//			String url = "http://192.168.156.40:8080/api/ald/collect/v1/third/renewal";
+			String url = getUrl() + "/api/ald/collect/v1/third/renewal";
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, getUrlParamsByMap(reqBo));
+			}else {
+				reqResult = HttpUtil.post(url, reqBo);
+			}
+			logger.info("collectRenewal response :" + reqResult);
 			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 				return true;
 			}
@@ -149,6 +200,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			throw new BizException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
 		}
 	}
+
 
 	/**
 	 * 将map转换成url
@@ -171,5 +223,9 @@ public class CollectionSystemUtil extends AbstractThird {
 		}
 		return s;
 	}
+
+
+
+
 
 }

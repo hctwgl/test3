@@ -5,6 +5,7 @@ public enum  JsdNoticeType {
 	DELEGATEPAY("打款", "DELEGATEPAY"),
     REPAY("还款", "REPAY"),
     RENEW("续期", "RENEW"),
+    COLLECT_RENEW("催收续期", "COLLECT_RENEW"),
     OVERDUE("逾期", "OVERDUE"),
     BIND("绑卡", "BIND"),
     COLLECT("催收逾期还款推送催收", "COLLECT"),

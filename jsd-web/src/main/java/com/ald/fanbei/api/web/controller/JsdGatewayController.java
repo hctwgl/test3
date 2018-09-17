@@ -70,7 +70,7 @@ public class JsdGatewayController {
      * @return
      * @throws IOException
      */
-    @RequestMapping(value = {"/third/eca/v1/syncUserInfo"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+    @RequestMapping(value = {"/third/eca/v1/syncUserInfo","/third/eca/v1/getAddressList"}, method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     @ResponseBody
     public String handleIgnoreOpenId(@RequestBody JsdParam param, HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding(Constants.DEFAULT_ENCODE);
