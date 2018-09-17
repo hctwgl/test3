@@ -29,10 +29,14 @@ public class CollectionMgrController extends BaseController{
     JsdResourceService jsdResourceService;
     @Resource
     JsdBorrowCashService jsdBorrowCashService;
+    
+    
 
     @RequestMapping(value = { "listBorrow.json" })
     public Resp<CollectionListBorrowRespBody> numProtocol(@RequestBody @Valid CollectionListBorrowReq params, HttpServletRequest request){
     	CollectionListBorrowRespBody body = new CollectionListBorrowRespBody();
+    	
+    	
     	
     	return Resp.succ(body, "");
     }
