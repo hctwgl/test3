@@ -20,7 +20,7 @@ public class Create {
 		String database = "jsd_loan";
 
 
-		String tables = "jsd_collection_borrow,jsd_collection_repayment,jsd_user_auth,jsd_borrow_cash";
+		String tables = "mgr_operator";
 
 		// 配置作者及Domain说明
 		String classAuthor = "CodeGenerate";

@@ -24,7 +24,9 @@
 	    <session-timeout>1</session-timeout>
 	</session-config>
 	
-
+    <listener>
+        <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+    </listener>
 	<listener>
 	   <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>

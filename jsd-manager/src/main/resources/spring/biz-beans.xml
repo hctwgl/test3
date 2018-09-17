@@ -47,6 +47,9 @@
 		</property>
 	</bean>	
 	
+	<!-- 加载后在容器中以 springSessionRepositoryFilter 名称显示，必须和web.xml中的DelegatingFilterProxy 名称相同 -->
+    <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration"></bean>
+	
 	<!-- redis 192.168.11.118 foobared	 -->
     <bean id="redisPoolConfigBiz" class="redis.clients.jedis.JedisPoolConfig">
     	<property name="minIdle" value="10" />
@@ -55,9 +58,8 @@
         <property name="maxWaitMillis" value="10000" />
         <property name="testOnBorrow" value="true" />  
     </bean>
-	
 	<!-- redis template definition -->
-	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate" primary="true">>
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate" primary="true">
 		<property name="connectionFactory" ref="jedisConnFactory" />
 		<property name="keySerializer">  
             <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />  
