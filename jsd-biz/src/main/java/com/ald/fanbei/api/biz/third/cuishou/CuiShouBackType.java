@@ -1,18 +1,16 @@
-package com.ald.fanbei.api.common.enums;
+package com.ald.fanbei.api.biz.third.cuishou;
 
-public enum JsdRepayType {
-
-    ONLINE( "app线上还款","ONLINE"),
-    WITHHOLD( "代扣还款","WITHHOLD"),
-    INITIATIVE( "主动还款","INITIATIVE"),
-    OFFLINE( "线下还款","OFFLINE"),
-    COLLECTION( "催收逾期还款","COLLECTION");
+/**
+ * 返回状态
+ */
+public enum CuiShouBackType {
+    synchronization("synchronization", "同步"),
+    asynchronous("asynchronous", "异步");
 
     private String code;
     private String name;
 
-
-    JsdRepayType(String code, String name) {
+    CuiShouBackType(String code, String name) {
         this.code = code;
         this.name = name;
     }

@@ -1,6 +1,10 @@
 package com.ald.fanbei.api.common.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -9,9 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 
 import org.apache.http.Consts;
 import org.apache.http.Header;
@@ -49,7 +51,9 @@ public class HttpUtil {
 	
 	private static CloseableHttpClient httpsclient;
 	private static CloseableHttpClient httpclient;
-	
+
+
+
 	static {
 		try {
 			requestConfig = RequestConfig.custom()
@@ -136,8 +140,104 @@ public class HttpUtil {
 			}
 		}
 	}
-	
-	
+
+	/**
+	 * 发送HTTPS的POST请求，并且忽略证书验证,将参数放置到BODY里边
+	 *
+	 * @param urlString
+	 * @param query
+	 * @return
+	 */
+	public static String doHttpsPostIgnoreCert(String urlString, String query) {
+
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream(512);
+		try {
+			URL url = new URL(urlString);
+            /*
+             * use ignore host name verifier
+             */
+			HttpsURLConnection.setDefaultHostnameVerifier(ignoreHostnameVerifier);
+			HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+
+			// Prepare SSL Context
+			TrustManager[] tm = { ignoreCertificationTrustManger };
+			SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
+			sslContext.init(null, tm, new java.security.SecureRandom());
+			// 设置doOutput属性为true表示将使用此urlConnection写入数据
+			connection.setDoOutput(true);
+			// 从上述SSLContext对象中得到SSLSocketFactory对象
+			SSLSocketFactory ssf = sslContext.getSocketFactory();
+			connection.setSSLSocketFactory(ssf);
+
+			OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
+			// 把数据写入请求的Body
+			out.write(query);
+			out.flush();
+			out.close();
+
+			InputStream reader = connection.getInputStream();
+			byte[] bytes = new byte[512];
+			int length = reader.read(bytes);
+
+			do {
+				buffer.write(bytes, 0, length);
+				length = reader.read(bytes);
+			} while (length > 0);
+
+			reader.close();
+			connection.disconnect();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			log.error("error = ",ex);
+		} finally {
+		}
+		String repString = new String(buffer.toByteArray());
+		return repString;
+	}
+
+	/**
+	 * 忽视证书HostName
+	 */
+	private static HostnameVerifier ignoreHostnameVerifier = new HostnameVerifier() {
+
+		public boolean verify(String s, SSLSession sslsession) {
+			log.debug("WARNING: Hostname is not matched for cert.");
+			return true;
+		}
+	};
+
+
+	/**
+	 * Ignore Certification
+	 */
+	private static TrustManager ignoreCertificationTrustManger = new X509TrustManager() {
+
+		private X509Certificate[] certificates;
+
+		public void checkClientTrusted(X509Certificate certificates[], String authType) throws CertificateException {
+			if (this.certificates == null) {
+				this.certificates = certificates;
+				log.debug("init at checkClientTrusted");
+			}
+		}
+
+		public void checkServerTrusted(X509Certificate[] ax509certificate, String s) throws CertificateException {
+			if (this.certificates == null) {
+				this.certificates = ax509certificate;
+				log.debug("init at checkServerTrusted");
+			}
+		}
+
+		public X509Certificate[] getAcceptedIssuers() {
+			return null;
+		}
+	};
+
+
+
+
+
+
 	public static String post(String url){
 		return post(url,null);
 	}

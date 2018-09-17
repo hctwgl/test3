@@ -34,4 +34,6 @@ public interface JsdBorrowLegalOrderRepaymentDao extends BaseDao<JsdBorrowLegalO
 
     JsdBorrowLegalOrderRepaymentDo getByTradeNoXgxy(@Param("tradeNoXgxy") String VARCHAR);
 
+    JsdBorrowLegalOrderRepaymentDo getByTradeNoOut(@Param("tradeNoUps") String tradeNoUps);
+
 }

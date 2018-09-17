@@ -108,6 +108,14 @@ public class NoticeTask {
                             }
                             continue;
                         }
+                        if (StringUtils.equals(recordDo.getTimes(), "5") && (StringUtils.equals(recordDo.getType(), JsdNoticeType.COLLECT_RENEW.code))) {
+                            if(StringUtils.isBlank(recordDo.getParams())){
+                                jsdNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
+                            }else{
+                                updateNoticeRecord(recordDo, collectionSystemUtil.collectRenewal(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+                            }
+                            continue;
+                        }
                         if(StringUtils.isBlank(all_noticedfail_moreonce.get(recordDo.getRid()))){
                             Runnable thread = new Runnable(){
                                 public void run(){
@@ -138,6 +146,12 @@ public class NoticeTask {
                  updateNoticeRecord(recordDo, xgxyUtil.jsdRenewalNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
              }else if(StringUtils.equals(recordDo.getType(), JsdNoticeType.BIND.code)){
                  updateNoticeRecord(recordDo, xgxyUtil.bindBackNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+             }else if(StringUtils.equals(recordDo.getType(), JsdNoticeType.COLLECT_RENEW.code)){
+                 updateNoticeRecord(recordDo, collectionSystemUtil.collectRenewal(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+             }else if(StringUtils.equals(recordDo.getType(), JsdNoticeType.OVERDUEREPAY.code)){
+                 updateNoticeRecord(recordDo, collectionSystemUtil.consumerRepayment(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+             }else if(StringUtils.equals(recordDo.getType(), JsdNoticeType.COLLECT.code)){
+                 updateNoticeRecord(recordDo, collectionSystemUtil.consumerRepayment(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
              }
          } catch (Exception e) {
              logger.info("dsed notice is fail"+recordDo);

@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -71,4 +72,15 @@ public class JsdBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<JsdBor
 	public JsdBorrowLegalOrderCashDo getLastOrderCashByBorrowId(Long borrowId) {
 		return jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(borrowId);
 	}
+
+	@Override
+	public List<JsdBorrowLegalOrderCashDo> getBorrowOrderCashsByBorrowId(Long borrowId) {
+		return jsdBorrowLegalOrderCashDao.getBorrowOrderCashsByBorrowId(borrowId);
+	}
+
+	@Override
+	public JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashByOrderId(Long orderId){
+		return jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByOrderId(orderId);
+	}
+
 }

@@ -170,8 +170,10 @@ public class Constants {
 	public static final String CACHEKEY_APPLY_STRONG_RISK_LOCK = "jsd_apply_strong_risk_lock";
 	public static final String CACHEKEY_APPLY_BLD_RISK_LOCK = "jsd_apply_bld_risk_lock";
 	public static final String CACHEKEY_APPLY_RENEWAL_LOCK = "cachekey_apply_renewal_lock";
-	// 催收系统
+	// 收发系统
 	public static final String CONFKEY_COLLECTION_URL = "dsed.collection.url";
+	// 催收系统
+	public static final String CONFKEY_COLLECT_URL = "jsd.collect.url";
 	// 借贷超市签到锁
 	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_LOCK = "dsed_loan_supermarket_sign_lock$";
 	// 借贷超市签到领奖锁

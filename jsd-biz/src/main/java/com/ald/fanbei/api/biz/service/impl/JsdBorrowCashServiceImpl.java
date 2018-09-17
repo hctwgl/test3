@@ -41,6 +41,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
+import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.alibaba.fastjson.JSON;
 
 
@@ -143,7 +144,16 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
      */
 	@Override
 	public BigDecimal getRiskDailyRate(String openId) {
-        BigDecimal riskRateDaily = BigDecimal.valueOf(0.02); // 0913产品与风控分析确定值
+		BigDecimal riskRateDaily = BigDecimal.valueOf(0.02); // 0913产品与风控分析确定值
+
+		// 默认利润率 取后台配置
+		JsdResourceDo jsdResourceDo = jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG, Constants.JSD_RATE_INFO);
+		if (jsdResourceDo == null) {
+			logger.error("getRiskDailyRate, openId=" + openId + ", riskRate from jsdResource is null !");
+		}else {
+			riskRateDaily = new BigDecimal(jsdResourceDo.getValue1()).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP);
+		}
+		
         try {
         	String riskRateDailyFromCache = bizCacheUtil.hget(Constants.CACHEKEY_RISK_LAYER_RATE, openId);
         	if(StringUtils.isNotBlank(riskRateDailyFromCache)) {

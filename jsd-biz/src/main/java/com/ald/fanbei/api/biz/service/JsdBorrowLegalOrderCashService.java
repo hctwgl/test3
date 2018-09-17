@@ -5,6 +5,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 极速贷订单借款Service
@@ -31,5 +32,8 @@ public interface JsdBorrowLegalOrderCashService extends ParentService<JsdBorrowL
 
     JsdBorrowLegalOrderCashDo getOverdueBorrowLegalOrderCashByBorrowId(Long borrowId);
 
+    List<JsdBorrowLegalOrderCashDo> getBorrowOrderCashsByBorrowId(Long borrowId);
+
+    JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashByOrderId(Long orderId);
 
 }
