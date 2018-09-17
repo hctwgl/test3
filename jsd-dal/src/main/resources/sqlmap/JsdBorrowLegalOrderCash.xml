@@ -457,7 +457,7 @@
         ORDER BY id DESC
     </select>
 
-    <select id="getBorrowOrderCashsByOrderId"
+    <select id="getBorrowLegalOrderCashByOrderId"
             resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">
         SELECT
         <include refid="queryFields" />
