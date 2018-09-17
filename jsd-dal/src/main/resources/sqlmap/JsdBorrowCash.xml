@@ -562,4 +562,9 @@
 			and  status ='TRANSFERRED' and b.gmt_plan_repayment <![CDATA[   <  ]]> #{nowTime} and user_id in (${userIds})
 	</select>
 
+	<update id="updateReviewStatus" parameterType="java.lang.String">
+		UPDATE jsd_borrow_cash
+		SET review_status=#{reviewStatus} 
+		Where id=#{borrowId ,jdbcType=BIGINT}
+	</update>
 </mapper>

@@ -1,8 +1,10 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -46,6 +48,10 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
     List<JsdBorrowCashDo> getBorrowCashOverduePaging(@Param("nowTime") Date nowTime, @Param("beginIndex") int beginIndex, @Param("pageSize") int pageSize);
 
     List<JsdBorrowCashDo> getBorrowCashOverdueByUserIds(@Param("nowTime") Date nowTime, @Param("userIds") String userIds);
+
+	int updateReviewStatus(@Param("reviewStatus")String reviewStatus, @Param("borrowId")Long borrowId);
+
+	BigDecimal getCurrDayAllamount();
 
 
 }

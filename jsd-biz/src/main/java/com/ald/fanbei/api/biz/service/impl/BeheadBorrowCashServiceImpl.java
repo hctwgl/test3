@@ -26,12 +26,16 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BorrowVersionType;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewSwitch;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
@@ -41,6 +45,7 @@ import com.ald.fanbei.api.dal.dao.JsdUserDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
+import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
@@ -91,7 +96,6 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 	public void applyBeheadBorrowCash(ApplyBorrowCashReq cashReq, final JsdUserBankcardDo mainCard, TrialBeforeBorrowBo trialBo) {
 		final JsdBorrowCashDo cashDo = buildBorrowCashDo(cashReq, mainCard, trialBo);
 		final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(cashReq, trialBo.userId);
-		final JsdUserDo userDo = jsdUserDao.getById(trialBo.userId);
 		
 		transactionTemplate.execute(new TransactionCallback<Long>() {
             @Override
@@ -107,27 +111,30 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
             }
         });
 		
-		// 极速贷审批模式 TODO
+		JsdResourceDo review = jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG, Constants.JSD_CONFIG_REVIEW_MODE);
+		String reviewSwitch = review.getValue(); // 审批开关 
+		BigDecimal allAmount = new BigDecimal(review.getValue1());	// 放款总额
 		
-		new Thread() { public void run() {
-        	try {
-                UpsDelegatePayRespBo upsResult = upsUtil.jsdDelegatePay(cashDo.getArrivalAmount(), userDo.getRealName(), 
-                        mainCard.getBankCardNumber(), userDo.getRid().toString(), mainCard.getMobile(),
-                        mainCard.getBankName(), mainCard.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
-                        "JSD_LOAN", cashDo.getRid().toString(), userDo.getIdNumber());
-                cashDo.setTradeNoUps(upsResult.getOrderNo());
-                
-                if (!upsResult.isSuccess()) {
-                	dealBorrowFail(cashDo, orderDo, "UPS打款实时反馈失败");
-                }else {
-                	cashDo.setStatus(JsdBorrowCashStatus.TRANSFERING.name());
-                	jsdBorrowCashDao.updateById(cashDo);
-                }
-            } catch (Exception e) {
-            	logger.error(e.getMessage(), e);
-            	dealBorrowFail(cashDo, orderDo, "UPS打款时发生异常");
-            }
-        }}.start();
+		// 极速贷审批模式
+		if(StringUtil.equals(JsdBorrowCashReviewSwitch.AUTO.name(), reviewSwitch)){		// 自动
+			jsdBorrowCashDao.updateReviewStatus(JsdBorrowCashReviewStatus.PASS.name(), cashDo.getRid());
+			upsUtil.jsdDelegatePay(cashDo, orderDo);
+			
+		}else if(StringUtil.equals(JsdBorrowCashReviewSwitch.MANUAL.name(), reviewSwitch)){	// 手动
+			
+			
+		}else if(StringUtil.equals(JsdBorrowCashReviewSwitch.SEMI_AUTO.name(), reviewSwitch)){	// 半自动
+			// 当天放款总额
+			BigDecimal currDayAllamount = jsdBorrowCashDao.getCurrDayAllamount();
+			// 剩余款额
+			BigDecimal remainAmount = BigDecimalUtil.subtract(allAmount, currDayAllamount.add(cashDo.getAmount()));
+			if(remainAmount.compareTo(BigDecimal.ZERO)>0){
+				jsdBorrowCashDao.updateReviewStatus(JsdBorrowCashReviewStatus.PASS.name(), cashDo.getRid());
+				upsUtil.jsdDelegatePay(cashDo, orderDo);
+			}
+		}
+		
+		
 	}
 	
 	/**
@@ -159,6 +166,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         afBorrowCashDo.setVersion(BorrowVersionType.SELL.name());
         afBorrowCashDo.setBorrowRemark(cashReq.loanRemark);
         afBorrowCashDo.setRepayRemark(cashReq.repayRemark);
+        afBorrowCashDo.setReviewStatus(JsdBorrowCashReviewStatus.WAIT.name()); // 待审批
         return afBorrowCashDo;
     }
     
