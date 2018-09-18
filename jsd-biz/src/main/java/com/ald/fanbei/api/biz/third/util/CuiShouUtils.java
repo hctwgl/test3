@@ -7,6 +7,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.GenderType;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
@@ -144,7 +145,7 @@ public class CuiShouUtils {
                 return cuiShouBackMoney;
             }
             if (StringUtil.isAllNotEmpty(orderNo, repaymentNo)) {
-                jsdBorrowCashRepaymentService.offlineRepay(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,totalAmount, repaymentNo, userId, type, repayTime, orderNo,dataId);
+                jsdBorrowCashRepaymentService.offlineRepay(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,totalAmount, repaymentNo, userId, JsdRepayType.COLLECTION,null, repayTime, orderNo,dataId,null);
             } else {
                 cuiShouBackMoney.setCode(303);
                 thirdLog.error("orderNo and repaymentNo is error orderNo =" + orderNo);
