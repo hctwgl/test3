@@ -118,7 +118,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 		// 极速贷审批模式
 		if(StringUtil.equals(JsdBorrowCashReviewSwitch.AUTO.name(), reviewSwitch)){		// 自动
 			jsdBorrowCashDao.updateReviewStatus(JsdBorrowCashReviewStatus.PASS.name(), cashDo.getRid());
-			upsUtil.jsdDelegatePay(cashDo, orderDo);
+			upsUtil.autoJsdDelegatePay(cashDo, orderDo, mainCard);
 			
 		}else if(StringUtil.equals(JsdBorrowCashReviewSwitch.MANUAL.name(), reviewSwitch)){	// 手动
 			
@@ -130,7 +130,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 			BigDecimal remainAmount = BigDecimalUtil.subtract(allAmount, currDayAllamount.add(cashDo.getAmount()));
 			if(remainAmount.compareTo(BigDecimal.ZERO)>0){
 				jsdBorrowCashDao.updateReviewStatus(JsdBorrowCashReviewStatus.PASS.name(), cashDo.getRid());
-				upsUtil.jsdDelegatePay(cashDo, orderDo);
+				upsUtil.autoJsdDelegatePay(cashDo, orderDo, mainCard);
 			}
 		}
 		
@@ -163,7 +163,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         afBorrowCashDo.setTradeNoXgxy(cashReq.borrowNo);
         afBorrowCashDo.setBorrowNo(generatorClusterNo.getLoanNo(new Date()));
         afBorrowCashDo.setRepayPrinciple(BigDecimal.ZERO);
-        afBorrowCashDo.setVersion(BorrowVersionType.SELL.name());
+        afBorrowCashDo.setVersion(BorrowVersionType.BEHEAD.name());
         afBorrowCashDo.setBorrowRemark(cashReq.loanRemark);
         afBorrowCashDo.setRepayRemark(cashReq.repayRemark);
         afBorrowCashDo.setReviewStatus(JsdBorrowCashReviewStatus.WAIT.name()); // 待审批
