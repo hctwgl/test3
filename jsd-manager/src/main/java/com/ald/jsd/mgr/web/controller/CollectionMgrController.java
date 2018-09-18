@@ -9,15 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
-import com.ald.fanbei.api.biz.service.JsdResourceService;
-import com.ald.fanbei.api.biz.service.JsdUserService;
-import com.ald.fanbei.api.dal.domain.JsdUserDo;
-import com.ald.jsd.mgr.dal.dao.MgrOperatorDao;
-import com.ald.jsd.mgr.web.dto.req.CollectionListBorrowReq;
-import com.ald.jsd.mgr.web.dto.resp.CollectionListBorrowRespBody;
+import com.ald.fanbei.api.dal.dao.JsdCollectionBorrowDao;
+import com.ald.jsd.mgr.dal.query.MgrCommonQuery;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
-import com.alibaba.fastjson.JSON;
 
 /**
  * @author ZJF
@@ -27,23 +21,12 @@ import com.alibaba.fastjson.JSON;
 @RequestMapping("/api/collection")
 public class CollectionMgrController extends BaseController{
     @Resource
-    JsdUserService jsdUserService;
-    @Resource
-    JsdResourceService jsdResourceService;
-    @Resource
-    JsdBorrowCashService jsdBorrowCashService;
-    
-    @Resource
-    MgrOperatorDao mgrOperatorDao;
+    JsdCollectionBorrowDao jsdCollectionBorrowDao;
 
     @RequestMapping(value = { "/listBorrow.json" })
-    public Resp<CollectionListBorrowRespBody> numProtocol(@RequestBody @Valid CollectionListBorrowReq params, HttpServletRequest request){
-    	CollectionListBorrowRespBody body = new CollectionListBorrowRespBody();
+    public Resp<MgrCommonQuery> numProtocol(@RequestBody @Valid MgrCommonQuery query, HttpServletRequest request){
     	
-    	JsdUserDo userDo = jsdUserService.getById(4L);
-    	System.out.println(JSON.toJSONString(userDo));
-    	
-    	return Resp.succ(body, "");
+    	return Resp.succ(null, "");
     }
     
 }
