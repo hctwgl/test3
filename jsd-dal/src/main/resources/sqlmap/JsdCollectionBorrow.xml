@@ -47,7 +47,8 @@
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO jsd_collection_borrow
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="borrowId != null">        
+            gmt_create,
+            <if test="borrowId != null">
 	            borrow_id,
 	        </if>
 	        <if test="status != null">        
@@ -68,15 +69,13 @@
 	        <if test="reviewStatus != null">        
 	            review_status,
 	        </if>
-	        <if test="gmtCreate != null">        
-	            gmt_create,
-	        </if>
 	        <if test="gmtModified != null">        
 	            gmt_modified,
 	        </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
+            now(),
 		    <if test="borrowId != null" >
 		       #{borrowId,jdbcType=INTEGER},
 		    </if>
@@ -97,9 +96,6 @@
 		    </if>
 		    <if test="reviewStatus != null" >
 		       #{reviewStatus,jdbcType=VARCHAR},
-		    </if>
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
 		    </if>
 		    <if test="gmtModified != null" >
 		       #{gmtModified,jdbcType=TIMESTAMP},
@@ -158,5 +154,13 @@
         FROM jsd_collection_borrow
         <include refid="commonCondition"/>
     </select>
+
+    <select id="selectByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo" >
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_collection_borrow
+        WHERE borrow_id = #{borrowId} AND is_delete = 0
+    </select>
+
     
 </mapper>

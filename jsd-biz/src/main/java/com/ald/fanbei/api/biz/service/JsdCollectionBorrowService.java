@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
  */
 public interface JsdCollectionBorrowService extends ParentService<JsdCollectionBorrowDo, Long>{
 
+    JsdCollectionBorrowDo selectByBorrowId(Long borrowId);
+
 }

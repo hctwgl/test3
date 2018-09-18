@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Dao
@@ -12,6 +13,6 @@ import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
  */
 public interface JsdCollectionBorrowDao extends BaseDao<JsdCollectionBorrowDo, Long> {
 
-    
+    JsdCollectionBorrowDo selectByBorrowId(@Param("borrowId")Long borrowId);
 
 }

@@ -55,7 +55,8 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("companyId","");
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo");
 			logger.info("jsd overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getUrl());
-			String url = getUrl() + "/api/ald/collect/v1/third/import";
+			String url = "http://192.168.110.70:8080/api/ald/collect/v1/third/import";
+//			String url = getUrl() + "/api/ald/collect/v1/third/import";
 			String reqResult = "";
 			if (url.contains("https")){
 				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(params));
