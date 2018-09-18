@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl;
+import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
@@ -45,7 +46,7 @@ public interface JsdBorrowCashRepaymentService{
      * @param repayTime
      * @param orderNo
      */
-    void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, String type, String repayTime, String orderNo,String dataId);
+    void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, JsdRepayType type,String channel, String repayTime, String orderNo, String dataId,String remark);
 
 
 }
