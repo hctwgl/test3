@@ -24,7 +24,7 @@ public class UserAuthContriller extends BaseController{
     @Resource
     JsdUserAuthService jsdUserAuthService;
 
-    @RequestMapping("/getJsdUserAuthInfo")
+    @RequestMapping("/getUserAuthInfo")
     public String getJsdUserAuthInfo(@RequestBody JSONObject data, HttpServletRequest request, ModelMap model, JsdUserAuthQuery query){
         String riskStatus = data.getString("riskStatus");
         String searchContent = data.getString("searchContent");
