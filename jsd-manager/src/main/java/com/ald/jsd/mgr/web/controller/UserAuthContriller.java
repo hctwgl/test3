@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -51,11 +50,11 @@ public class UserAuthContriller extends BaseController{
 
 
     @RequestMapping(value = {"synUserAuth.json"})
-    public String synUserAuth(UserAuthReq req){
+    public Resp synUserAuth(UserAuthReq req){
         try {
             JsdUserDo userDo=jsdUserService.getByOpenId(req.getOpenId());
             if(userDo==null){
-                return Resp.fail(req,306,"用户为空！").toString();
+                return Resp.fail(req,306,"用户为空！");
             }
             JsdUserAuthDo userAuthDo=new JsdUserAuthDo();
             userAuthDo.setGmtCreate(new Date());
@@ -66,7 +65,7 @@ public class UserAuthContriller extends BaseController{
             userAuthDo.setUserId(userDo.getRid());
             userAuthDo.setRiskRate(req.getRiskRate());
             jsdUserAuthService.saveRecord(userAuthDo);
-            return Resp.fail(req,000,"成功").toString();
+            return Resp.fail(req,200,"成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
