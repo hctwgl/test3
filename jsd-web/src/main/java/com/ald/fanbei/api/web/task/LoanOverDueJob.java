@@ -78,7 +78,6 @@ public class LoanOverDueJob {
     @Resource
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
 
-    private static String token = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjMyODQxfQ.NPLQiwpOsS1FPnCaIal2X9AaRk3R_fRFkCFfbRbNvIQ";
 
 
 
