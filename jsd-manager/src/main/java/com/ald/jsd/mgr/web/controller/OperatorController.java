@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -16,16 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ald.fanbei.admin.biz.service.DsedSysOperatorService;
-import com.ald.fanbei.admin.dal.domain.DsedSysOperatorDo;
-import com.ald.fanbei.admin.dal.domain.DsedSysOperatorRoleDo;
-import com.ald.fanbei.admin.dal.domain.DsedSysRoleDo;
-import com.ald.fanbei.admin.dal.domain.dto.DsedSysOperatorDto;
-import com.ald.fanbei.admin.dal.util.OperatorUtil;
-import com.ald.fanbei.admin.web.common.CommonResponse;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.jsd.mgr.biz.service.MgrOperatorService;
+import com.ald.jsd.mgr.dal.domain.MgrOperatorDo;
+import com.ald.jsd.mgr.dal.domain.MgrOperatorRoleDo;
+import com.ald.jsd.mgr.dal.domain.MgrRoleDo;
 import com.ald.jsd.mgr.web.dto.req.OperatorEditReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 import com.alibaba.fastjson.JSON;
@@ -37,25 +35,28 @@ import jodd.util.StringUtil;
 @ResponseBody
 @RequestMapping("/api/operator")
 public class OperatorController extends BaseController {
-
+	
+	@Resource
+	private MgrOperatorService mgrOperatorService;
+	
+	
     @RequestMapping(value = "/edit.json")
     public Resp<?> edit(@RequestBody @Valid OperatorEditReq params, HttpServletRequest request) {
         try {
-            DsedSysOperatorDo operatorDo = null;
-            String operator = getUser(request);
+            MgrOperatorDo operatorDo = null;
             if(StringUtil.isNotBlank(id)){//edit
-            	operatorDo = DsedSysOperatorService.getOperatorById(Long.parseLong(id));
+            	operatorDo = MgrOperatorService.getOperatorById(Long.parseLong(id));
             	if(operatorDo == null){
                     return CommonResponse.getNewInstance(false, "非法用户").toString();
             	}
                 String status = ObjectUtils.toString(request.getParameter("status")).trim();
                 operatorDo.setStatus(Integer.parseInt(status));
             }else{//add
-            	operatorDo = DsedSysOperatorService.getUserByUserName(userName);
+            	operatorDo = MgrOperatorService.getUserByUserName(userName);
                 if (null != operatorDo) {
                     return CommonResponse.getNewInstance(false, "用户登录名已存在").toString();
                 }
-                operatorDo = new DsedSysOperatorDo();
+                operatorDo = new MgrOperatorDo();
                 operatorDo.setCreator(operator);
                 operatorDo.setStatus(1);
                 operatorDo.setUserName(userName);
@@ -67,11 +68,12 @@ public class OperatorController extends BaseController {
             operatorDo.setEmail(email);
             operatorDo.setMobile(mobile);
             operatorDo.setPhone("");
+            
             if (StringUtil.isBlank(id)) {//add
-                DsedSysOperatorService.addUser(operatorDo);
+                MgrOperatorService.addUser(operatorDo);
                 dsedSysOptLogService.addOptLog(buildOptLog(getUser(request), "新增用户信息，名称："+operatorDo.getUserName()));
             }else{
-            	DsedSysOperatorService.updateUser(operatorDo);
+            	MgrOperatorService.updateUser(operatorDo);
             	dsedSysOptLogService.addOptLog(buildOptLog(getUser(request), "更新用户信息，名称："+operatorDo.getUserName()));
             }
             
@@ -103,7 +105,7 @@ public class OperatorController extends BaseController {
         return "";
     }
     
-    private void setPassword(DsedSysOperatorDo operatorDO,HttpServletRequest request,String id) throws UnsupportedEncodingException{
+    private void setPassword(MgrOperatorDo operatorDO,HttpServletRequest request,String id) throws UnsupportedEncodingException{
     	String rawPwd = Constants.DEFAULT_PASSWORD;
     	if (StringUtil.isNotBlank(id)) {//edit
         	String resetPass = ObjectUtils.toString(request.getParameter("resetPass")).trim();
@@ -126,10 +128,10 @@ public class OperatorController extends BaseController {
     	}
     }
     
-    private String dealWithOperatorRole(String id,DsedSysOperatorDo operatorDO,String operator,Integer roleType){
+    private String dealWithOperatorRole(String id,MgrOperatorDo operatorDO,String operator,Integer roleType){
         if (StringUtil.isBlank(id)) {//add
-            DsedSysOperatorRoleDo operatorRoleDO = new DsedSysOperatorRoleDo();
-            DsedSysRoleDo roleDO = dsedSysRoleService.getRoleByRoleType(roleType);
+            MgrOperatorRoleDo operatorRoleDO = new MgrOperatorRoleDo();
+            MgrRoleDo roleDO = dsedSysRoleService.getRoleByRoleType(roleType);
             if (null == roleDO || null == roleDO.getId()) {
                 return CommonResponse.getNewInstance(false, "编辑失败，角色非法").toString();
             }
@@ -140,12 +142,12 @@ public class OperatorController extends BaseController {
             operatorRoleDO.setOperatorId(operatorDO.getId());
             sysOperatorRoleService.insertOrUpdate(operatorRoleDO);
         }else{
-//        	DsedSysOperatorService.updateUser(operatorDO);
-        	DsedSysOperatorDto userDto = DsedSysOperatorService.getOperatorById(Long.parseLong(id));
+//        	MgrOperatorService.updateUser(operatorDO);
+        	MgrOperatorDto userDto = MgrOperatorService.getOperatorById(Long.parseLong(id));
         	if(roleType != userDto.getRoleType()){
-                DsedSysOperatorRoleDo optRole = new DsedSysOperatorRoleDo();
+                MgrOperatorRoleDo optRole = new MgrOperatorRoleDo();
                 optRole.setId(userDto.getUrId());
-                DsedSysRoleDo roleDO = dsedSysRoleService.getRoleByRoleType(roleType);
+                MgrRoleDo roleDO = dsedSysRoleService.getRoleByRoleType(roleType);
                 if (null == roleDO || null == roleDO.getId()) {
                     return CommonResponse.getNewInstance(false, "编辑失败，角色非法").toString();
                 }
@@ -166,7 +168,7 @@ public class OperatorController extends BaseController {
     public String deleteOperator(ModelMap model, HttpServletRequest request) {
         try {
             Long id = NumberUtil.objToLongWithDefault(request.getParameter("id"), -1l);
-            DsedSysOperatorService.deleteUserById(id);
+            MgrOperatorService.deleteUserById(id);
             dsedSysOptLogService.addOptLog(buildOptLog(getUser(request), "删除用户信息，id："+id));
             logger.info("do add role with id="+id+" by userName="+getUser(request));
         } catch (Exception e) {
@@ -187,7 +189,7 @@ public class OperatorController extends BaseController {
     	try {
     		String userName = OperatorUtil.getUserName(request);
         	String password = request.getParameter("password");
-            DsedSysOperatorDo userDO = DsedSysOperatorService.getUserByUserName(userName);
+            MgrOperatorDo userDO = MgrOperatorService.getUserByUserName(userName);
             String salt = userDO.getSalt();
             password = changeStr(salt, password);
             if(userDO.getPassword().equals(password)){
@@ -215,11 +217,11 @@ public class OperatorController extends BaseController {
     	try {
     		String userName = OperatorUtil.getUserName(request);
         	String password = request.getParameter("password");
-            DsedSysOperatorDo userDO = DsedSysOperatorService.getUserByUserName(userName);
+            MgrOperatorDo userDO = MgrOperatorService.getUserByUserName(userName);
             String salt = userDO.getSalt();
             password = changeStr(salt, password);
             userDO.setPassword(password);
-            int updateCount = DsedSysOperatorService.updateUserInfoByName(userDO);
+            int updateCount = MgrOperatorService.updateUserInfoByName(userDO);
             if(updateCount>0){
                 logger.info("do update password success with userName="+userName);
                 dsedSysOptLogService.addOptLog(buildOptLog(getUser(request), "修改密码成功，id："+userDO.getUserName()));
