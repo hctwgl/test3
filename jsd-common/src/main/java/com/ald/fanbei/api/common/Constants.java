@@ -413,4 +413,6 @@ public class Constants {
 	public static final String NOTICE_FAIL_COUNT = "5";
 	
 	public static final String CACHEKEY_RISK_LAYER_RATE = "CACHEKEY_RISK_LAYER_RATE";
+
+	public static final String JSD_BORROW_CURRDAY_ALLAMOUNT = "JSD_BORROW_CURRDAY_ALLAMOUNT";
 }

@@ -40,9 +40,11 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.SignUtil;
@@ -157,12 +159,12 @@ public class UpsUtil extends AbstractThird {
 	 */
 	public void manualJsdDelegatePay(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo){
 		
-		if(!JsdBorrowCashStatus.APPLY.name().equals(orderDo.getStatus()) || !JsdBorrowLegalOrderStatus.UNPAID.name().equals(orderDo.getStatus())){
+		if(JsdBorrowCashReviewStatus.PASS.name().equals(cashDo.getReviewStatus())){
 			logger.error("jsdDelegatePay is already do, borrowNo="+cashDo.getBorrowNo());
 			return;
 		}
 
-		final JsdUserBankcardDo mainCard = jsdUserBankcardDao.getByBankNo(cashDo.getCardNumber());
+		JsdUserBankcardDo mainCard = jsdUserBankcardDao.getByBankNo(cashDo.getCardNumber());
 		jsdBorrowCashDao.updateReviewStatus(JsdBorrowCashReviewStatus.PASS.name(), cashDo.getRid());
 		
 		autoJsdDelegatePay(cashDo, orderDo, mainCard);
@@ -173,18 +175,22 @@ public class UpsUtil extends AbstractThird {
 	 * 自动、半自动审批 调用
 	 */
 	public void autoJsdDelegatePay(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdUserBankcardDo mainCard) {
+		
 		final JsdUserDo userDo = jsdUserDao.getById(cashDo.getUserId());
+		
 		new Thread() { public void run() {
         	try {
                 UpsDelegatePayRespBo upsResult = jsdDelegatePay(cashDo.getArrivalAmount(), userDo.getRealName(), 
                         mainCard.getBankCardNumber(), userDo.getRid().toString(), mainCard.getMobile(),
                         mainCard.getBankName(), mainCard.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
-                        "JSD_LOAN", cashDo.getRid().toString(), userDo.getIdNumber());
+                        PayOrderSource.JSD_LOAN_V2.getCode(), cashDo.getRid().toString(), userDo.getIdNumber());
                 cashDo.setTradeNoUps(upsResult.getOrderNo());
                 
                 if (!upsResult.isSuccess()) {
                 	beheadBorrowCashService.dealBorrowFail(cashDo, orderDo, "UPS打款实时反馈失败");
                 }else {
+                	// 当天借款金额存入缓存
+                	bizCacheUtil.incr(Constants.JSD_BORROW_CURRDAY_ALLAMOUNT, cashDo.getAmount().longValue(), DateUtil.getTodayLast());
                 	cashDo.setStatus(JsdBorrowCashStatus.TRANSFERING.name());
                 	jsdBorrowCashDao.updateById(cashDo);
                 }
