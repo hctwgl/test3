@@ -7,6 +7,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
+import com.ald.fanbei.api.dal.domain.dto.ReviewLoanDto;
+import com.ald.fanbei.api.dal.query.ReviewLoanQuery;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -132,8 +135,13 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 		Date bengin = DateUtil.getStartOfDate(date);
 		return jsdBorrowCashDao.getBorrowCashOverdueByUserIds(bengin, userIds);
 	}
-	
-	
+
+	@Override
+	public List<ReviewLoanDto> getReviewLoanList(ReviewLoanQuery query) {
+		return jsdBorrowCashDao.getReviewLoanList(query);
+	}
+
+
 	public void transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo) {
     	transactionTemplate.execute(new TransactionCallback<String>() {
             @Override

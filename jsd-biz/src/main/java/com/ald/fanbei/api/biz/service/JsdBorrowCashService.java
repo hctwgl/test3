@@ -7,6 +7,9 @@ import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
+import com.ald.fanbei.api.dal.domain.dto.ReviewLoanDto;
+import com.ald.fanbei.api.dal.query.ReviewLoanQuery;
 
 /**
  * 极速贷Service
@@ -73,4 +76,6 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      *
      */
     List<JsdBorrowCashDo> getBorrowCashOverdueByUserIds(String userIds);
+
+    List<ReviewLoanDto> getReviewLoanList(ReviewLoanQuery query);
 }

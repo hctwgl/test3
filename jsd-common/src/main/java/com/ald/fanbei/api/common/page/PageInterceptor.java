@@ -99,7 +99,7 @@ public class PageInterceptor implements Interceptor {
 	 * @return Mysql数据库分页语句
 	 */
 	private String getMysqlPageSql(Page<?> page, StringBuffer sqlBuffer) {
-		int offset = (page.getPageNo() - 1) * page.getPageSize();
+		int offset = (page.getPageIndex() - 1) * page.getPageSize();
 		sqlBuffer.append(" limit ").append(offset).append(",").append(page.getPageSize());
 		return sqlBuffer.toString();
 	}
@@ -114,7 +114,7 @@ public class PageInterceptor implements Interceptor {
 	 * @return Oracle数据库的分页查询语句
 	 */
 	private String getOraclePageSql(Page<?> page, StringBuffer sqlBuffer) {
-		int offset = (page.getPageNo() - 1) * page.getPageSize() + 1;
+		int offset = (page.getPageIndex() - 1) * page.getPageSize() + 1;
 		sqlBuffer.insert(0, "select u.*, rownum r from (").append(") u where rownum < ")
 				.append(offset + page.getPageSize());
 		sqlBuffer.insert(0, "select * from (").append(") where r >= ").append(offset);
