@@ -3,6 +3,7 @@ package com.ald.jsd.mgr.web.controller;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.dal.query.ReviewLoanQuery;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,5 +35,11 @@ public class ReviewLoanController {
     public Resp<HashMap<String, BigDecimal>> statistics(HttpServletRequest request) {
         HashMap<String, BigDecimal> hashMap = jsdBorrowCashService.getReviewLoanStatistics();
         return Resp.succ(hashMap, "");
+    }
+
+    @RequestMapping(value = {"review.json"}, method = RequestMethod.POST)
+    public Resp<String> review(@RequestBody JSONArray jsonArray, HttpServletRequest request) {
+        jsdBorrowCashService.updateReviewStatusByXgNo(jsonArray);
+        return Resp.succ("成功", "");
     }
 }

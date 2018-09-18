@@ -8,9 +8,12 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
 import com.ald.fanbei.api.dal.domain.dto.ReviewLoanDto;
 import com.ald.fanbei.api.dal.query.ReviewLoanQuery;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -28,10 +31,6 @@ import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
-import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -156,6 +155,26 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
             result.put("passingRate", BigDecimalUtil.divide(result.get("pass"), result.get("review")).multiply(new BigDecimal(100)));
         }
         return result;
+    }
+
+    @Override
+    public Boolean updateReviewStatusByXgNo(JSONArray jsonArray) {
+        if (jsonArray != null && jsonArray.size() > 0) {
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String reviewStatus = jsonObject.getString("reviewStatus");
+                String reviewRemark = jsonObject.getString("reviewRemark") == null ? "" : jsonObject.getString("reviewRemark");
+                String tradeNoXgxy = jsonObject.getString("tradeNoXgxy");
+                if (reviewStatus.equals(JsdBorrowCashReviewStatus.REFUSE.name())) {
+                    jsdBorrowCashDao.refuseByXgNo(reviewRemark, tradeNoXgxy);
+                }
+                if(reviewStatus.equals(JsdBorrowCashReviewStatus.PASS.name())){
+                    jsdBorrowCashDao.passByXgNo(tradeNoXgxy);
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
 
