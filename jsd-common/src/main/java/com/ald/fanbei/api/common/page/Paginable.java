@@ -18,7 +18,7 @@ public interface Paginable<T> {
     int getPageSize();
 
     /** 当前页号 */
-    int getPageNo();
+    int getPageIndex();
 
     /** 是否第一页 */
     boolean isFirstPage();
