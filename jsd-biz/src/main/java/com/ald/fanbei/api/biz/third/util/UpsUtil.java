@@ -37,7 +37,9 @@ import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.ConfigProperties;
@@ -151,13 +153,27 @@ public class UpsUtil extends AbstractThird {
 	
 	/**
 	 * 单笔代付
-	 * 砍头审批
+	 * 后台手动审批 调用
 	 */
-	public void jsdDelegatePay(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo){
-
-		final JsdUserDo userDo = jsdUserDao.getById(cashDo.getUserId());
-		final JsdUserBankcardDo mainCard = jsdUserBankcardDao.getByBankNo(cashDo.getCardNumber());
+	public void manualJsdDelegatePay(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo){
 		
+		if(!JsdBorrowCashStatus.APPLY.name().equals(orderDo.getStatus()) || !JsdBorrowLegalOrderStatus.UNPAID.name().equals(orderDo.getStatus())){
+			logger.error("jsdDelegatePay is already do, borrowNo="+cashDo.getBorrowNo());
+			return;
+		}
+
+		final JsdUserBankcardDo mainCard = jsdUserBankcardDao.getByBankNo(cashDo.getCardNumber());
+		jsdBorrowCashDao.updateReviewStatus(JsdBorrowCashReviewStatus.PASS.name(), cashDo.getRid());
+		
+		autoJsdDelegatePay(cashDo, orderDo, mainCard);
+	}
+
+	/**
+	 * 单笔代付
+	 * 自动、半自动审批 调用
+	 */
+	public void autoJsdDelegatePay(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdUserBankcardDo mainCard) {
+		final JsdUserDo userDo = jsdUserDao.getById(cashDo.getUserId());
 		new Thread() { public void run() {
         	try {
                 UpsDelegatePayRespBo upsResult = jsdDelegatePay(cashDo.getArrivalAmount(), userDo.getRealName(), 

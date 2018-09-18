@@ -144,7 +144,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 					JsdBorrowCashRenewalDo renewalDo = buildRenewalDo(paramBo);
 					JsdBorrowLegalOrderDo legalOrderDo = buildOrderDo(paramBo);
 					JsdBorrowLegalOrderCashDo legalOrderCashDo = buildOrderCashDo(paramBo);
-					JsdBorrowLegalOrderCashDo lastOrderCashDo = jsdBorrowLegalOrderCashService.getLastOrderCashByBorrowId(borrowCashDo.getRid());
+					JsdBorrowLegalOrderCashDo lastOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
 					JsdBorrowLegalOrderRepaymentDo orderCashRepaymentDo = null;
 					if(lastOrderCashDo.getStatus().equals(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.getCode()) 
 							|| lastOrderCashDo.getStatus().equals(JsdBorrowLegalOrderCashStatus.PART_REPAID.getCode())){
@@ -181,7 +181,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		JsdBorrowCashDo borrowCashDo = paramBo.borrowCashDo;
 
 		// 上期订单借款
-		JsdBorrowLegalOrderCashDo lastOrderCashDo = jsdBorrowLegalOrderCashService.getLastOrderCashByBorrowId(borrowCashDo.getRid());
+		JsdBorrowLegalOrderCashDo lastOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
 		BigDecimal orderWaitAmount = BigDecimalUtil.add(lastOrderCashDo.getAmount(),lastOrderCashDo.getInterestAmount(),lastOrderCashDo.getPoundageAmount(),lastOrderCashDo.getOverdueAmount(),
 				lastOrderCashDo.getSumRepaidInterest(),lastOrderCashDo.getSumRepaidOverdue(),lastOrderCashDo.getSumRepaidPoundage()).subtract(lastOrderCashDo.getRepaidAmount());
 
@@ -273,7 +273,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 	private JsdBorrowLegalOrderCashDo buildOrderCashDo(JsdRenewalDealBo paramBo) {
 
 		JsdBorrowCashDo borrowCashDo = paramBo.borrowCashDo;
-		JsdBorrowLegalOrderCashDo lastOrderCashDo = jsdBorrowLegalOrderCashService.getLastOrderCashByBorrowId(borrowCashDo.getRid());
+		JsdBorrowLegalOrderCashDo lastOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
 		int renewalDay = paramBo.delayDay.intValue();
 
 		JsdBorrowLegalOrderCashDo orderCashDo = new JsdBorrowLegalOrderCashDo();
@@ -303,11 +303,19 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		
 		orderCashDo.setSumRepaidOverdue(BigDecimal.ZERO);
 		orderCashDo.setSumRepaidInterest(BigDecimal.ZERO);
-		Date date = DateUtil.addDays(lastOrderCashDo.getGmtPlanRepay(), renewalDay);
-		orderCashDo.setGmtPlanRepay(date);
-		orderCashDo.setGmtCreate(new Date());
+		Date now = new Date();
+		orderCashDo.setGmtCreate(now);
 		
-
+	 	// 如果预计还款时间在今天之后，则在原预计还款时间的基础上加上续期天数，否则在今天的基础上加上续期天数，作为新的预计还款时间
+		Date gmtPlanRepayment = lastOrderCashDo.getGmtPlanRepay();
+		if (gmtPlanRepayment.after(now)) {
+			Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(gmtPlanRepayment, paramBo.delayDay.intValue()));
+			orderCashDo.setGmtPlanRepay(repaymentDay);
+		} else {
+			Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(now, paramBo.delayDay.intValue()));
+			orderCashDo.setGmtPlanRepay(repaymentDay);
+		}
+		
 		return orderCashDo;
 	}
 
@@ -316,7 +324,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 	 */
 	private JsdBorrowLegalOrderRepaymentDo buildOrderCashRepaymentDo(JsdRenewalDealBo paramBo) {
 		JsdBorrowCashDo borrowCashDo = paramBo.borrowCashDo;
-		JsdBorrowLegalOrderCashDo lastOrderCashDo = jsdBorrowLegalOrderCashService.getLastOrderCashByBorrowId(borrowCashDo.getRid());
+		JsdBorrowLegalOrderCashDo lastOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
 
 		JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = new JsdBorrowLegalOrderRepaymentDo();
 		orderRepaymentDo.setUserId(paramBo.userId);

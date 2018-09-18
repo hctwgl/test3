@@ -44,7 +44,7 @@ public class CollectoinController {
     }
 
     /**
-     * 催收平账申请
+     * 催收平账申请(plus)
      * @param data
      * @return
      */
@@ -55,7 +55,7 @@ public class CollectoinController {
     }
 
     /**
-     * 催收还款申请
+     * 催收还款申请(plus)
      * @param data
      * @return
      */
@@ -64,5 +64,28 @@ public class CollectoinController {
     public String collectRepay(String data){
         return cuiShouUtils.collectImport(data);
     }
+
+    /**
+     * 催收更新数据(第二版)
+     * @param data
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = {"/collectData"}, method = RequestMethod.POST)
+    public String collectData(String data){
+        return cuiShouUtils.collectImport(data);
+    }
+
+    /**
+     * 催收平账修改状态(第二版)
+     * @param data
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = {"/collectUpdateStatus"}, method = RequestMethod.POST)
+    public String collectUpdateStatus(String data){
+        return cuiShouUtils.collectUpdateStatus(data);
+    }
+
 
 }

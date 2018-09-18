@@ -5,6 +5,8 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.cuishou.CuiShouBackMoney;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.GenderType;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
@@ -163,29 +165,29 @@ public class CuiShouUtils {
 
 
     /**
-     * 催收上报接口
+     * 催收平账修改状态
      *
      * @param data
      * @return
      */
-    public String collectImport(String data) {
+    public String collectUpdateStatus(String data) {
         try {
             if(StringUtil.isEmpty(data)){
                 thirdLog.error("data is null");
                 return "false";
             }
-            //上报
-            JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = new JsdBorrowLegalOrderDo();
-            JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(Long.parseLong(data));
-            if(jsdBorrowLegalOrderCashDo != null){
-                jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(data));
+            JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderService.getById(Long.valueOf(data));
+            JsdBorrowCashDo jsdBorrowCashDo = new JsdBorrowCashDo();
+            jsdBorrowCashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
+            jsdBorrowCashDo.setRid(orderDo.getBorrowId());
+            int count = jsdBorrowCashService.updateById(jsdBorrowCashDo);
+            if(count>0){
+                return "fail";
             }
-            JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getById(jsdBorrowLegalOrderDo.getBorrowId());
-            collectionPush(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,jsdBorrowLegalOrderDo);
             return "success";
         } catch (Exception e) {
             thirdLog.error("collectImport error = " + e);
-            return "false";
+            return "fail";
         }
     }
 
@@ -248,11 +250,11 @@ public class CuiShouUtils {
             }
             buildData.put("gender",gender);//性别(非必填)
             buildData.put("birthday",userDo.getBirthday());//生日(非必填)
-            buildData.put("workAddress","");//工作单位(非必填)
-            buildData.put("workPost","");//工作岗位(非必填)
-            buildData.put("income","");//税前收入(非必填)
-            buildData.put("workTelephone","");//单位联系方式(非必填)
-            buildData.put("marry","");//婚恋情况(非必填)
+//            buildData.put("workAddress","");//工作单位(非必填)
+//            buildData.put("workPost","");//工作岗位(非必填)
+//            buildData.put("income","");//税前收入(非必填)
+//            buildData.put("workTelephone","");//单位联系方式(非必填)
+//            buildData.put("marry","");//婚恋情况(非必填)
         }
         //续期信息
         List<Map<String, String>> arrayList = new ArrayList<>();
@@ -338,7 +340,32 @@ public class CuiShouUtils {
 
 
 
-
+    /**
+     * 催收上报接口
+     *
+     * @param data
+     * @return
+     */
+    public String collectImport(String data) {
+        try {
+            if(StringUtil.isEmpty(data)){
+                thirdLog.error("data is null");
+                return "false";
+            }
+            //上报
+            JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = new JsdBorrowLegalOrderDo();
+            JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(Long.parseLong(data));
+            if(jsdBorrowLegalOrderCashDo != null){
+                jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(data));
+            }
+            JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getById(jsdBorrowLegalOrderDo.getBorrowId());
+            collectionPush(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,jsdBorrowLegalOrderDo);
+            return "success";
+        } catch (Exception e) {
+            thirdLog.error("collectImport error = " + e);
+            return "false";
+        }
+    }
 
 
 
