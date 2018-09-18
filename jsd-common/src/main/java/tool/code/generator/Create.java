@@ -20,7 +20,7 @@ public class Create {
 		String database = "jsd_loan";
 
 
-		String tables = "mgr_operator";
+		String tables = "mgr_operator_role,mgr_role,mgr_role_menu,mgr_menu";
 
 		// 配置作者及Domain说明
 		String classAuthor = "CodeGenerate";
@@ -32,7 +32,7 @@ public class Create {
 		// 公共包路径 (例如 BaseDao、 BaseService、 BaseServiceImpl)
 		String commonName = "";
 
-		String packageName ="com.ald.fanbei.api";
+		String packageName ="com.ald.jsd.mgr";
 		String moduleName = "";
 
 		// Mapper文件存储地址 默认在resources中

@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -164,7 +165,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		BigDecimal borrowRepayAmount = bo.amount.subtract(orderRemainShouldRepayAmount);
 		if(borrowRepayAmount.compareTo(BigDecimal.ZERO) > 0) { //还款额大于订单应还总额，拆分还款
 			borrowRepaymentDo = buildRepayment( borrowRepayAmount, bo.repayNo, now, bo.amount,
-					bo.borrowId,  bo.tradeNo, name, bo.userId,bo.repayType,bo.bankNo);
+					bo.borrowId,  bo.tradeNo, name, bo.userId,bo.repayType,bo.bankNo,bo.payTime,bo.cardName,bo.remark);
 			jsdBorrowCashRepaymentDao.saveRecord(borrowRepaymentDo);
 			bo.repaymentDo=borrowRepaymentDo;
 			if(orderCashDo!=null){
@@ -194,6 +195,17 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		repayment.setTradeNo(bo.tradeNo);	// 我方生成
 		repayment.setRepayNo(bo.repayNo);	// 西瓜提供
 		repayment.setStatus(JsdBorrowLegalRepaymentStatus.APPLY.getCode());
+		repayment.setRemark(bo.remark);
+		if(StringUtil.isNotBlank(bo.payTime)){
+			try {
+				repayment.setPayTime(DateUtil.stringToDate(bo.payTime));
+			} catch (ParseException e) {
+				logger.info("offline repay paytime format is error borrowId="+bo.borrowId);
+			}
+		}
+		if(StringUtil.isNotBlank(bo.cardName)){
+			repayment.setCardName(bo.cardName);
+		}
 		//催收还款没有银行卡号
 		if(StringUtil.isNotBlank(bo.bankNo)){
 			repayment.setCardNo(bo.bankNo);
@@ -213,7 +225,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 	private JsdBorrowCashRepaymentDo buildRepayment( BigDecimal repaymentAmount, String tradeNoXgxy, Date gmtCreate,
 													 BigDecimal actualAmountForBorrow,
-													 Long borrowId,  String TradeNo, String name, Long userId,String repayType,String cardNo) {
+													 Long borrowId,  String TradeNo, String name, Long userId,String repayType,String cardNo,String payTime,String cardName,String remark) {
 		JsdBorrowCashRepaymentDo repay = new JsdBorrowCashRepaymentDo();
 		repay.setActualAmount(actualAmountForBorrow);
 		repay.setBorrowId(borrowId);
@@ -225,6 +237,17 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		repay.setName(name);
 		repay.setUserId(userId);
 		repay.setType(repayType);
+		repay.setRemark(remark);
+		if(StringUtil.isNotBlank(payTime)){
+			try {
+				repay.setPayTime(DateUtil.stringToDate(payTime));
+			} catch (ParseException e) {
+				logger.info("offline repay paytime format is error borrowId="+borrowId);
+			}
+		}
+		if(StringUtil.isNotBlank(cardName)){
+			repay.setCardName(cardName);
+		}
 		//催收还款没有银行卡号
 		if(StringUtil.isNotBlank(cardNo)){
 			repay.setCardNumber(cardNo);
@@ -369,7 +392,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		return jsdBorrowCashRepaymentDao.getByTradeNoXgxy(tradeNoXgxy);
 	}
 
-	public void dealRepaymentSucess(String tradeNo, String outTradeNo, final JsdBorrowCashRepaymentDo repaymentDo, final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, Boolean flag, final String isBalance,String dataId ) {
+	public void dealRepaymentSucess(String tradeNo, String outTradeNo, final JsdBorrowCashRepaymentDo repaymentDo, final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, Boolean flag, final String isBalance,String dataId) {
 		try {
 			lock(tradeNo);
 
@@ -757,9 +780,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	 * @param
 	 */
 	@Override
-	public void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, String type, String repayTime, String orderNo,String dataId) {
+	public void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, JsdRepayType type,String channel ,String repayTime, String orderNo,String dataId,String remark) {
 		try {
-			BorrowCashRepayBo bo = buildLoanRepayBo(userId, jsdBorrowCashDo ,jsdBorrowLegalOrderCashDo, totalAmount, repaymentNo);
+			BorrowCashRepayBo bo = buildLoanRepayBo(userId, jsdBorrowCashDo ,jsdBorrowLegalOrderCashDo, totalAmount, repaymentNo,type,channel,repayTime,remark);
 
 			checkOfflineRepayment(repaymentNo);
 
@@ -775,7 +798,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	}
 
 	private BorrowCashRepayBo buildLoanRepayBo(Long userId,JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo,
-											   String repayAmount, String outTradeNo){
+											   String repayAmount, String outTradeNo,JsdRepayType type,String channel,String repayTime,String remark){
 		BorrowCashRepayBo bo = new BorrowCashRepayBo();
 		JsdUserDo jsdUserDo = jsdUserDao.getById(userId);
 		bo.userDo = jsdUserDo;
@@ -787,10 +810,12 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		bo.borrowCashDo = jsdBorrowCashDo;
 		bo.tradeNo = generatorClusterNo.getOfflineRepaymentBorrowCashNo(new Date());
 		bo.tradeNoUps = outTradeNo;
-		bo.repayType = JsdRepayType.COLLECTION.getName();
-		bo.cardName = "";
+		bo.repayType = type.getName();
+		bo.cardName = channel;
 		bo.bankNo = "";
-		bo.name = JsdRepayType.COLLECTION.getCode();
+		bo.name = type.getCode();
+		bo.payTime=repayTime;
+        bo.remark=remark;
 		return bo;
 	}
 
@@ -887,6 +912,10 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		public JsdUserDo userDo;
 
 		public String payType;
+
+		public String payTime;
+
+		public String remark;
 
 		public JsdBorrowLegalOrderCashDo orderCashDo;
 

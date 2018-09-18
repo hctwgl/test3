@@ -21,6 +21,7 @@
     <context:component-scan base-package="com.ald.fanbei.api.biz.service" />
     <context:component-scan base-package="com.ald.fanbei.api.biz.bo.jsd" />
     
+    <context:component-scan base-package="com.ald.jsd.mgr.biz.service" />
 	<context:component-scan base-package="com.ald.jsd.mgr.web.controller" />
 
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">

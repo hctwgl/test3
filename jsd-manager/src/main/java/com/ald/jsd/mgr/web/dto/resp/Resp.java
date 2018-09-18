@@ -19,6 +19,13 @@ public class Resp<T> {
 		
 		return resp;
 	}
+	/**
+	 * @param failMsg
+	 * @return
+	 */
+	public static <T> Resp<T> failCommon(String failMsg) {
+		return fail(null, 900, failMsg);
+	}
 	
 	/**
 	 * @param body @nullable
@@ -32,6 +39,9 @@ public class Resp<T> {
 		resp.msg = succMsg;
 		
 		return resp;
+	}
+	public static <T> Resp<T> succ(){
+		return succ(null, null);
 	}
 	
 }

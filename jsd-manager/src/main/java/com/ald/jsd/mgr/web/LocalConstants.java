@@ -26,6 +26,9 @@ public class LocalConstants {
 	public final static String SESS_KEY_USERNAME = "USERNAME";
 	public final static String SESS_KEY_PHONE = "PHONE";
 	
+	public final static String CACHE_KEY_LOGIN_SMS = "CACHE_KEY_LOGIN_SMS";
+	public final static Long CACHE_KEY_LOGIN_SMS_EXPIRE_SECS = 60*30L;
+	
 	/**
 	 * Cookie key name
 	 */

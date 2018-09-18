@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdUserAuthDo;
+import com.ald.fanbei.api.dal.query.JsdUserAuthQuery;
+
+import java.util.List;
 
 /**
  * Dao
@@ -12,6 +15,6 @@ import com.ald.fanbei.api.dal.domain.JsdUserAuthDo;
  */
 public interface JsdUserAuthDao extends BaseDao<JsdUserAuthDo, Long> {
 
-    
+    List<JsdUserAuthDo> getListJsdUserAuth(JsdUserAuthQuery query);
 
 }

@@ -7,6 +7,10 @@
     <sql id="queryFields">
         id rid,user_id,risk_no,risk_status,risk_amount,risk_rate,gmt_risk,gmt_create,gmt_modified 
     </sql>
+    <!--关联查询的字段-->
+    <sql id="queryRelationFields">
+      a.risk_no,u.real_name,a.risk_status,a.risk_amount,a.gmt_create
+    </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
@@ -65,9 +69,7 @@
 	        <if test="gmtCreate != null">        
 	            gmt_create,
 	        </if>
-	        <if test="gmtModified != null">        
 	            gmt_modified,
-	        </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -92,9 +94,7 @@
 		    <if test="gmtCreate != null" >
 		       #{gmtCreate,jdbcType=TIMESTAMP},
 		    </if>
-		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
-		    </if>
+		     now()
         </trim>
     </insert>
     
@@ -146,5 +146,30 @@
         FROM jsd_user_auth
         <include refid="commonCondition"/>
     </select>
-    
+
+    <select id="getListJsdUserAuth" resultType="com.ald.fanbei.api.dal.domain.JsdUserAuthDo" >
+        SELECT
+        <include refid="queryRelationFields" />
+        FROM jsd_user u LEFT JOIN jsd_user_auth a on u.id=a.user_id
+        WHERE
+        <if test="riskStatus == 'Y' and riskStatus !=null">
+            a.risk_status = #{riskStatus},
+        </if>
+        <if test="riskStatus == 'N'and riskStatus !=null">
+            AND a.risk_status = #{riskStatus},
+        </if>
+        <if test="searchContent != null and searchContent !=''">
+            AND u.user_name LIKE  CONCAT('%',#{searchContent},'%')
+            AND a.risk_no LIKE  CONCAT('%',#{searchContent},'%')
+        </if>
+        ORDER BY a.gmt_create DESC
+    </select>
+
+    <select id="getSubmitPersonNum" resultType="java.lang.Integer">
+        SELECT count(`id`) FROM jsd_user_auth WHERE DATE(gmt_create) = curdate();
+    </select>
+
+    <select id="getPassPersonNum" resultType="java.lang.Integer">
+        SELECT count(`id`) FROM jsd_user_auth WHERE risk_status='Y' AND DATE(gmt_create) = curdate();
+    </select>
 </mapper>

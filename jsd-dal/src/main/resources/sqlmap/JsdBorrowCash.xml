@@ -567,4 +567,41 @@
 		SET review_status=#{reviewStatus} 
 		Where id=#{borrowId ,jdbcType=BIGINT}
 	</update>
+
+    <select id="getReviewLoanList" resultType="ReviewLoanDto">
+        SELECT
+        a.*,b.mobile,b.real_name
+        FROM
+        jsd_borrow_cash a inner join jsd_user b on a.user_id=b.id where a.is_delete=0
+        <if test="status != null and status =='WAIT'">
+            AND a.review_status ='WAIT'
+        </if>
+        <if test="status != null and status =='PASS'">
+            AND a.review_status ='PASS'
+        </if>
+        <if test="status != null and status =='REFUSE'">
+            AND a.review_status ='REFUSE'
+        </if>
+        <if test="searchContent != null and searchContent !=''">
+            AND a.trade_no_xgxy LIKE  CONCAT('%',#{searchContent},'%')
+            AND b.mobile LIKE  CONCAT('%',#{searchContent},'%')
+            AND b.real_name LIKE  CONCAT('%',#{searchContent},'%')
+        </if>
+    </select>
+
+    <select id="getReviewLoanStatistics" resultType="java.util.HashMap">
+        SELECT COUNT(review_status='WAIT' or NULL) as wait,COUNT(review_status !='WAIT' or NULL) as review,COUNT(review_status ='PASS' or NULL) as pass FROM jsd_borrow_cash WHERE to_days(gmt_create) = to_days(now())
+    </select>
+
+    <update id="refuseByXgNo">
+		UPDATE jsd_borrow_cash
+		SET review_status='REFUSE',review_remark=#{reviewRemark},status='CLOSED',gmt_close=NOW(),gmt_modified=NOW()
+		Where trade_no_xgxy=#{tradeNoXgxy}
+	</update>
+
+    <update id="passByXgNo">
+		UPDATE jsd_borrow_cash
+		SET review_status='PASS',status='WAITTRANSED',gmt_modified=NOW()
+		Where trade_no_xgxy=#{tradeNoXgxy}
+	</update>
 </mapper>

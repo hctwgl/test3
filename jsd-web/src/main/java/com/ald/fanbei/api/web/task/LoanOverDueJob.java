@@ -78,7 +78,6 @@ public class LoanOverDueJob {
     @Resource
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
 
-    private static String token = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjMyODQxfQ.NPLQiwpOsS1FPnCaIal2X9AaRk3R_fRFkCFfbRbNvIQ";
 
 
 
@@ -217,7 +216,7 @@ public class LoanOverDueJob {
             if(userDo != null){
                 buildData.put("userId",String.valueOf(userDo.getRid()));//userId
                 buildData.put("realName",userDo.getRealName());//姓名
-                buildData.put("userName",userDo.getUserName());//账号
+                buildData.put("userName",userDo.getMobile());//账号
                 buildData.put("idNumber",userDo.getIdNumber());//身份证号码
                 buildData.put("phoneNumber",userDo.getMobile());//电话号码
                 buildData.put("address",userDo.getAddress());//户籍地址
