@@ -107,6 +107,12 @@ import java.math.BigDecimal;
     private Date gmtModified;
 
 
+    /**
+     * 还款时间
+     */
+    private Date payTime;
+
+
 
     /**
      * 获取主键Id
@@ -169,6 +175,14 @@ import java.math.BigDecimal;
      */
     public String getTradeNoXgxy(){
       return tradeNoXgxy;
+    }
+
+    public Date getPayTime() {
+        return payTime;
+    }
+
+    public void setPayTime(Date payTime) {
+        this.payTime = payTime;
     }
 
     /**

@@ -588,4 +588,20 @@
             AND b.real_name LIKE  CONCAT('%',#{searchContent},'%')
         </if>
     </select>
+
+    <select id="getReviewLoanStatistics" resultType="java.util.HashMap">
+        SELECT COUNT(review_status='WAIT' or NULL) as wait,COUNT(review_status !='WAIT' or NULL) as review,COUNT(review_status ='PASS' or NULL) as pass FROM jsd_borrow_cash WHERE to_days(gmt_create) = to_days(now())
+    </select>
+
+    <update id="refuseByXgNo">
+		UPDATE jsd_borrow_cash
+		SET review_status='REFUSE',review_remark=#{reviewRemark},status='CLOSED',gmt_close=NOW(),gmt_modified=NOW()
+		Where trade_no_xgxy=#{tradeNoXgxy}
+	</update>
+
+    <update id="passByXgNo">
+		UPDATE jsd_borrow_cash
+		SET review_status='PASS',status='WAITTRANSED',gmt_modified=NOW()
+		Where trade_no_xgxy=#{tradeNoXgxy}
+	</update>
 </mapper>

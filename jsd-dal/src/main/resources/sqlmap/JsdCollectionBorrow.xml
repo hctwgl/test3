@@ -163,4 +163,26 @@
     </select>
 
     
+    <select id="listMgrCollectionBorrow" resultType="MgrCollectionBorrowDto">
+        SELECT 
+            
+        FROM jsd_collection_borrow cb
+        INNER JOIN jsd_borrow_cash bc ON cb.borrow_id = bc.id
+        INNER JOIN jsd_user u ON bc.user_id = u.id
+        <if test="status != null and status =='WAIT'">
+            AND a.review_status ='WAIT'
+        </if>
+        <if test="status != null and status =='PASS'">
+            AND a.review_status ='PASS'
+        </if>
+        <if test="status != null and status =='REFUSE'">
+            AND a.review_status ='REFUSE'
+        </if>
+        <if test="searchContent != null and searchContent !=''">
+            AND a.trade_no_xgxy LIKE  CONCAT('%',#{searchContent},'%')
+            AND b.mobile LIKE  CONCAT('%',#{searchContent},'%')
+            AND b.real_name LIKE  CONCAT('%',#{searchContent},'%')
+        </if>
+    </select>
+    
 </mapper>
