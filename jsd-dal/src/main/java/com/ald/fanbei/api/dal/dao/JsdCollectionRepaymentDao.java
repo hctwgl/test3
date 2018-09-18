@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdCollectionRepaymentDo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Dao
@@ -12,6 +13,6 @@ import com.ald.fanbei.api.dal.domain.JsdCollectionRepaymentDo;
  */
 public interface JsdCollectionRepaymentDao extends BaseDao<JsdCollectionRepaymentDo, Long> {
 
-    
+    JsdCollectionRepaymentDo getByRepayNo(@Param("repayNo") String repayNo);
 
 }

@@ -56,13 +56,13 @@ public class CollectoinController {
 
     /**
      * 催收还款申请(plus)
-     * @param data
+     * @param request
      * @return
      */
     @ResponseBody
     @RequestMapping(value = {"/collectRepay"}, method = RequestMethod.POST)
-    public String collectRepay(String data){
-        return cuiShouUtils.collectImport(data);
+    public String collectRepay(HttpServletRequest request){
+        return cuiShouUtils.collectRepay(request);
     }
 
     /**

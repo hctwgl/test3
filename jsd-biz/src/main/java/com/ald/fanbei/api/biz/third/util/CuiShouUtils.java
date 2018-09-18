@@ -63,6 +63,9 @@ public class CuiShouUtils {
     JsdCollectionBorrowService jsdCollectionBorrowService;
 
     @Resource
+    JsdCollectionRepaymentService jsdCollectionRepaymentService;
+
+    @Resource
     XgxyUtil xgxyUtil;
 
     private static String token = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjMyODQxfQ.NPLQiwpOsS1FPnCaIal2X9AaRk3R_fRFkCFfbRbNvIQ";
@@ -477,6 +480,54 @@ public class CuiShouUtils {
         }
     }
 
+
+    /**
+     * 催收还款申请(plus)
+     *
+     * @param request
+     * @return
+     */
+    public String collectRepay(HttpServletRequest request) {
+        try {
+            String requester = request.getParameter("requester");//发起还款操作者
+            String repayCert = request.getParameter("repayCert");//图片
+            String tradeNo = request.getParameter("tradeNo");//还款编号
+            String realName = request.getParameter("realName");//还款编号
+            String gmtRepay = request.getParameter("gmtRepay");//还款时间
+            String repayAmount = request.getParameter("repayAmount");//还款金额
+            String repayWay = request.getParameter("repayWay");//还款方式
+            String dataId = request.getParameter("dataId");//唯一交互数据
+            if(StringUtil.isEmpty(dataId)){
+                logger.info("param is error");
+                return "false";
+            }
+            JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(dataId));
+            Long borrowId = jsdBorrowLegalOrderDo.getBorrowId();
+            JsdCollectionRepaymentDo jsdCollectionRepaymentDo = jsdCollectionRepaymentService.getByRepayNo(tradeNo);
+            if(jsdCollectionRepaymentDo != null){
+                logger.info("jsdCollectionRepaymentDo is exist");
+                return "false";
+            }
+            JsdCollectionRepaymentDo repaymentDo = new JsdCollectionRepaymentDo();
+            repaymentDo.setBorrowId(borrowId);
+            repaymentDo.setRequester(requester);
+            repaymentDo.setGmtRepay(DateUtil.parseDateyyyyMMddHHmmss(gmtRepay));
+            repaymentDo.setRepayWay(repayWay);
+            repaymentDo.setRealName(realName);
+            repaymentDo.setBorrowId(borrowId);
+            repaymentDo.setRepayAmount(new BigDecimal(repayAmount));
+            repaymentDo.setRepayCert(repayCert);
+            int count = jsdCollectionRepaymentService.saveRecord(repaymentDo);
+            if (count<1){
+                logger.info("save is error");
+                return "false";
+            }
+            return "success";
+        } catch (Exception e) {
+            thirdLog.error("collectImport error = " + e);
+            return "false";
+        }
+    }
 
 
 

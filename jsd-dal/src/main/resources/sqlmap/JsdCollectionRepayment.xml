@@ -242,5 +242,14 @@
         FROM jsd_collection_repayment
         <include refid="commonCondition"/>
     </select>
+
+
+    <select id="getByRepayNo" resultType="com.ald.fanbei.api.dal.domain.JsdCollectionRepaymentDo" >
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_collection_repayment
+        WHERE is_delete = 0 AND trade_no = #{repayNo}
+    </select>
+
     
 </mapper>

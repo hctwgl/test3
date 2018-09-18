@@ -12,4 +12,6 @@ import com.ald.fanbei.api.dal.domain.JsdCollectionRepaymentDo;
  */
 public interface JsdCollectionRepaymentService extends ParentService<JsdCollectionRepaymentDo, Long>{
 
+    JsdCollectionRepaymentDo getByRepayNo(String repayNo);
+
 }
