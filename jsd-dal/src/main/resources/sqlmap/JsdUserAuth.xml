@@ -151,19 +151,19 @@
         <include refid="commonCondition"/>
     </select>
 
-    <select id="getListJsdUserAuth" resultType="com.ald.fanbei.api.dal.domain.JsdUserAuthDo" >
+    <select id="getListUserAuth" resultType="com.ald.jsd.mgr.dal.domain.dto.UserAuthDto" parameterType="com.ald.fanbei.api.dal.query.UserAuthQuery">
         SELECT
         <include refid="queryRelationFields" />
         FROM jsd_user u LEFT JOIN jsd_user_auth a on u.id=a.user_id
         WHERE
         <if test="riskStatus == 'Y' and riskStatus !=null">
-            a.risk_status = #{riskStatus},
+            a.risk_status ='Y',
         </if>
         <if test="riskStatus == 'N'and riskStatus !=null">
-            AND a.risk_status = #{riskStatus},
+            AND a.risk_status ='N',
         </if>
         <if test="searchContent != null and searchContent !=''">
-            AND u.user_name LIKE  CONCAT('%',#{searchContent},'%')
+            AND u.real_name LIKE  CONCAT('%',#{searchContent},'%')
             AND a.risk_no LIKE  CONCAT('%',#{searchContent},'%')
         </if>
         ORDER BY a.gmt_create DESC

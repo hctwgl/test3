@@ -1,7 +1,8 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.JsdUserAuthDo;
-import com.ald.fanbei.api.dal.query.JsdUserAuthQuery;
+import com.ald.jsd.mgr.dal.domain.dto.UserAuthDto;
+import com.ald.fanbei.api.dal.query.UserAuthQuery;
 
 import java.util.List;
 
@@ -15,6 +16,6 @@ import java.util.List;
  */
 public interface JsdUserAuthService extends ParentService<JsdUserAuthDo, Long>{
 
-    List<JsdUserAuthDo> getListJsdUserAuth(JsdUserAuthQuery query);
+    List<UserAuthDto> getListUserAuth(UserAuthQuery query);
 
 }
