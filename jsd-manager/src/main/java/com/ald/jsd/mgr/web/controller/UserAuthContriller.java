@@ -40,4 +40,19 @@ public class UserAuthContriller extends BaseController{
     }
 
 
+    @RequestMapping(value = {"synUserAuth.json"})
+    public String synUserAuth(@RequestBody JSONObject data, HttpServletRequest request, ModelMap model, JsdUserAuthQuery query){
+        String riskStatus = data.getString("riskStatus");
+        String searchContent = data.getString("searchContent");
+        int pageIndex = data.getInteger("pageIndex");
+        int pageSize = data.getInteger("pageSize");
+        JsdUserAuthQuery jsdUserAuthQuery=new JsdUserAuthQuery();
+        jsdUserAuthQuery.setPageIndex(pageIndex);
+        jsdUserAuthQuery.setPageSize(pageSize);
+        jsdUserAuthQuery.setRiskStatus(riskStatus);
+        jsdUserAuthQuery.setSearchContent(searchContent);
+        List<JsdUserAuthDo> list=jsdUserAuthService.getListJsdUserAuth(query);
+        return null;
+    }
+
 }
