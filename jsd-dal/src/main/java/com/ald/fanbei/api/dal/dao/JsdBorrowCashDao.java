@@ -71,4 +71,21 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      * @return
      */
     HashMap<String, Long> getReviewLoanStatistics();
+
+    /**
+     * 借款审批-拒绝
+     *
+     * @param reviewRemark
+     * @param tradeNoXgxy
+     * @return
+     */
+    int refuseByXgNo(@Param("reviewRemark") String reviewRemark, @Param("tradeNoXgxy") String tradeNoXgxy);
+
+    /**
+     * 借款审批-通过
+     *
+     * @param tradeNoXgxy
+     * @return
+     */
+    int passByXgNo(@Param("tradeNoXgxy") String tradeNoXgxy);
 }

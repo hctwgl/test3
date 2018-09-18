@@ -1,5 +1,7 @@
 package com.ald.jsd.mgr.web.dto.req;
 
+import java.math.BigDecimal;
+
 public class UserAuthReq extends BaseReq{
 
     private String openId;
@@ -8,11 +10,13 @@ public class UserAuthReq extends BaseReq{
 
     private String riskStatus;
 
-    private String riskAmount;
+    private BigDecimal riskAmount;
 
-    private String riskRate;
+    private BigDecimal riskRate;
 
     private String url;
+
+    private String riskTime;
 
     public String getOpenId() {
         return openId;
@@ -38,19 +42,19 @@ public class UserAuthReq extends BaseReq{
         this.riskStatus = riskStatus;
     }
 
-    public String getRiskAmount() {
+    public BigDecimal getRiskAmount() {
         return riskAmount;
     }
 
-    public void setRiskAmount(String riskAmount) {
+    public void setRiskAmount(BigDecimal riskAmount) {
         this.riskAmount = riskAmount;
     }
 
-    public String getRiskRate() {
+    public BigDecimal getRiskRate() {
         return riskRate;
     }
 
-    public void setRiskRate(String riskRate) {
+    public void setRiskRate(BigDecimal riskRate) {
         this.riskRate = riskRate;
     }
 
@@ -60,5 +64,13 @@ public class UserAuthReq extends BaseReq{
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getRiskTime() {
+        return riskTime;
+    }
+
+    public void setRiskTime(String riskTime) {
+        this.riskTime = riskTime;
     }
 }

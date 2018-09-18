@@ -45,13 +45,13 @@ public class CollectoinController {
 
     /**
      * 催收平账申请(plus)
-     * @param data
+     * @param request
      * @return
      */
     @ResponseBody
     @RequestMapping(value = {"/collectReconciliate"}, method = RequestMethod.POST)
-    public String collectReconciliate(String data){
-        return cuiShouUtils.collectImport(data);
+    public String collectReconciliate(HttpServletRequest request){
+        return cuiShouUtils.collectReconciliate(request);
     }
 
     /**
@@ -73,7 +73,7 @@ public class CollectoinController {
     @ResponseBody
     @RequestMapping(value = {"/collectData"}, method = RequestMethod.POST)
     public String collectData(String data){
-        return cuiShouUtils.collectImport(data);
+        return cuiShouUtils.collectData(data);
     }
 
     /**

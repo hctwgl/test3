@@ -5,6 +5,7 @@ import java.util.List;
 import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
 import com.ald.jsd.mgr.dal.domain.dto.MgrCollectionBorrowDto;
 import com.ald.jsd.mgr.dal.query.MgrCommonQuery;
+JsdCollectionBorrowDo selectByBorrowId(@Param("borrowId")Long borrowId);
 
 /**
  * Dao
@@ -15,6 +16,8 @@ import com.ald.jsd.mgr.dal.query.MgrCommonQuery;
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface JsdCollectionBorrowDao extends BaseDao<JsdCollectionBorrowDo, Long> {
+
+	JsdCollectionBorrowDo selectByBorrowId(@Param("borrowId")Long borrowId);
 
 	List<MgrCollectionBorrowDto> listMgrCollectionBorrow(MgrCommonQuery<?> query);
 
