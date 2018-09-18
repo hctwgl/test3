@@ -70,7 +70,7 @@ public class Constants {
 	 */
 	public static final String JSD_CONFIG = "JSD_CONFIG";
 	public static final String JSD_RATE_INFO = "JSD_RATE_INFO";
-	
+	public static final String JSD_CONFIG_REVIEW_MODE = "JSD_CONFIG_REVIEW_MODE";
 
 	// ---------------- CONFIG 业务参数区域
 	public static final String CONFIG_KEY_LOCK_TRY_TIMES = "fbapi.sync.lock.try.times";

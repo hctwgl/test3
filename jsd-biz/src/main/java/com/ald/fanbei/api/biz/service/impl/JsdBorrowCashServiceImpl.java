@@ -248,9 +248,9 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         BigDecimal actualBorrowServiceAmount = borrowISLeft.multiply(actualBorrowAmount).setScale(2, RoundingMode.DOWN).subtract(actualBorrowInterestAmount);
         resp.borrowAmount = actualBorrowAmount.setScale(2, RoundingMode.HALF_UP).toString();
         resp.arrivalAmount = actualBorrowAmount.setScale(2, RoundingMode.HALF_UP).toString();
-        resp.interestRate = borrowInterestRate.setScale(2, RoundingMode.HALF_UP).toString();
+        resp.interestRate = borrowInterestRate.setScale(4, RoundingMode.HALF_UP).toString();
         resp.interestAmount = actualBorrowInterestAmount.toString();
-        resp.serviceRate = borrowRateInfo.serviceRate.setScale(2, RoundingMode.HALF_UP).toString();
+        resp.serviceRate = borrowRateInfo.serviceRate.setScale(4, RoundingMode.HALF_UP).toString();
         resp.serviceAmount = actualBorrowServiceAmount.toString();
         resp.overdueRate = borrowOverdueRate.setScale(2, RoundingMode.HALF_UP).toString();
         
@@ -265,10 +265,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         			.multiply(borrowDay).multiply(actualOrderAmount).setScale(2, RoundingMode.DOWN).subtract(actualOrderInterestAmount);
         resp.totalDiffFee = actualOrderAmount.toPlainString();
         resp.sellInterestFee = actualOrderInterestAmount.toString();
-        resp.sellInterestRate = orderInterestRate.setScale(2, RoundingMode.HALF_UP);
+        resp.sellInterestRate = orderInterestRate.setScale(4, RoundingMode.HALF_UP);
         resp.sellServiceFee = actualOrderServiceAmount.toString();
         resp.sellServiceRate = orderRateInfo.serviceRate.setScale(2, RoundingMode.HALF_UP);
-        resp.sellOverdueRate = orderOverdueRate.setScale(2, RoundingMode.HALF_UP);
+        resp.sellOverdueRate = orderOverdueRate.setScale(4, RoundingMode.HALF_UP);
         
         BigDecimal totalAmount = BigDecimalUtil.add(actualBorrowAmount, actualBorrowInterestAmount, actualBorrowServiceAmount, 
     			actualOrderAmount, actualOrderInterestAmount, actualOrderServiceAmount);
