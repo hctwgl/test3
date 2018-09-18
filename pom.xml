@@ -11,7 +11,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<java.encoding>UTF-8</java.encoding>
-		<spring-version>4.2.1.RELEASE</spring-version>
+		<spring-version>4.3.11.RELEASE</spring-version>
 		<springext-plugin-version>1.0</springext-plugin-version>
 		<jackson-version>1.9.9</jackson-version>
 		<jetty-version>9.2.21.v20170120</jetty-version>

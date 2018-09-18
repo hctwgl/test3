@@ -1,6 +1,7 @@
 package com.ald.jsd.mgr.dal.domain.dto;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 public class MgrCollectionBorrowDto {
 	private String tradeNoXgxy;
@@ -9,8 +10,8 @@ public class MgrCollectionBorrowDto {
 	private BigDecimal repaidAmount;
 	private BigDecimal unrepayAmount;
 	private Long overdueDays;
-	private Long gmtDue;
-	private Long gmtLastRepay;
+	private Date gmtDue;
+	private Date gmtLastRepay;
 	
 	public String getTradeNoXgxy() {
 		return tradeNoXgxy;
@@ -48,16 +49,16 @@ public class MgrCollectionBorrowDto {
 	public void setOverdueDays(Long overdueDays) {
 		this.overdueDays = overdueDays;
 	}
-	public Long getGmtDue() {
+	public Date getGmtDue() {
 		return gmtDue;
 	}
-	public void setGmtDue(Long gmtDue) {
+	public void setGmtDue(Date gmtDue) {
 		this.gmtDue = gmtDue;
 	}
-	public Long getGmtLastRepay() {
+	public Date getGmtLastRepay() {
 		return gmtLastRepay;
 	}
-	public void setGmtLastRepay(Long gmtLastRepay) {
+	public void setGmtLastRepay(Date gmtLastRepay) {
 		this.gmtLastRepay = gmtLastRepay;
 	}
 }
