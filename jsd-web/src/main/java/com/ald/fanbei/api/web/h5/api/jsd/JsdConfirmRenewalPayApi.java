@@ -284,11 +284,19 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		
 		orderCashDo.setSumRepaidOverdue(BigDecimal.ZERO);
 		orderCashDo.setSumRepaidInterest(BigDecimal.ZERO);
-		Date date = DateUtil.addDays(lastOrderCashDo.getGmtPlanRepay(), renewalDay);
-		orderCashDo.setGmtPlanRepay(date);
-		orderCashDo.setGmtCreate(new Date());
+		Date now = new Date();
+		orderCashDo.setGmtCreate(now);
 		
-
+	 	// 如果预计还款时间在今天之后，则在原预计还款时间的基础上加上续期天数，否则在今天的基础上加上续期天数，作为新的预计还款时间
+		Date gmtPlanRepayment = lastOrderCashDo.getGmtPlanRepay();
+		if (gmtPlanRepayment.after(now)) {
+			Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(gmtPlanRepayment, paramBo.delayDay.intValue()));
+			orderCashDo.setGmtPlanRepay(repaymentDay);
+		} else {
+			Date repaymentDay = DateUtil.getEndOfDatePrecisionSecond(DateUtil.addDays(now, paramBo.delayDay.intValue()));
+			orderCashDo.setGmtPlanRepay(repaymentDay);
+		}
+		
 		return orderCashDo;
 	}
 
