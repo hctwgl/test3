@@ -22,16 +22,7 @@ public class ReviewLoanController {
     JsdBorrowCashService jsdBorrowCashService;
 
     @RequestMapping(value = { "list.json" },method = RequestMethod.POST)
-    public Resp<ReviewLoanQuery> numProtocol(@RequestBody JSONObject data, HttpServletRequest request){
-        String status = data.getString("status");
-        String searchContent = data.getString("searchContent");
-        int pageIndex = data.getInteger("pageIndex");
-        int pageSize = data.getInteger("pageSize");
-        ReviewLoanQuery reviewLoanQuery = new ReviewLoanQuery();
-        reviewLoanQuery.setSearchContent(searchContent);
-        reviewLoanQuery.setStatus(status);
-        reviewLoanQuery.setPageIndex(pageIndex);
-        reviewLoanQuery.setPageSize(pageSize);
+    public Resp<ReviewLoanQuery> numProtocol(@RequestBody ReviewLoanQuery reviewLoanQuery, HttpServletRequest request){
         reviewLoanQuery.setFull(true);
         reviewLoanQuery.setList(jsdBorrowCashService.getReviewLoanList(reviewLoanQuery));
         return Resp.succ(reviewLoanQuery, "");
