@@ -33,9 +33,9 @@ import com.ald.jsd.mgr.web.dto.resp.Resp;
 public class LoginController extends BaseController {
 
     @Resource
-    private MgrOperatorService mgrUserService;
+    private MgrOperatorService mgrOperatorService;
     @Resource
-    private MgrRoleService dsedSysRoleService;
+    private MgrRoleService mgrRoleService;
     @Resource
     private BizCacheUtil bizCacheUtil;
     
@@ -47,7 +47,7 @@ public class LoginController extends BaseController {
      */
     @RequestMapping(value = "/in.json", method = RequestMethod.POST)
     public Resp<?> doLogin(@RequestBody @Valid LoginReq loginReq, HttpServletRequest request) {
-        MgrOperatorDo userDO = mgrUserService.getByUsername(loginReq.username);
+        MgrOperatorDo userDO = mgrOperatorService.getByUsername(loginReq.username);
         if (null == userDO) {
             return Resp.fail(null, 900, "用户不存在");
         }
@@ -75,7 +75,7 @@ public class LoginController extends BaseController {
      */
     @RequestMapping(value = "/smsIn.json", method = RequestMethod.POST)
     public Resp<?> doSmsLogin(@RequestBody @Valid LoginReq loginReq, HttpServletRequest request) {
-    	MgrOperatorDo userDO = mgrUserService.getByUsername(loginReq.username);
+    	MgrOperatorDo userDO = mgrOperatorService.getByUsername(loginReq.username);
         if (null == userDO) {
             return Resp.fail(null, 900, "用户不存在");
         }
@@ -96,7 +96,7 @@ public class LoginController extends BaseController {
      */
     @RequestMapping(value = "/sendSms.json", method = RequestMethod.POST)
     public Resp<?> verifyCode(@RequestBody @Valid LoginReq loginReq, HttpServletResponse response){
-    	MgrOperatorDo userDO = mgrUserService.getByUsername(loginReq.username);
+    	MgrOperatorDo userDO = mgrOperatorService.getByUsername(loginReq.username);
         if (null == userDO) {
             return Resp.fail(null, 900, "用户不存在");
         }
