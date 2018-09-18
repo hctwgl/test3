@@ -32,7 +32,7 @@ public class JsdBankServiceImpl extends ParentServiceImpl<JsdBankDo, Long> imple
 	}
 
 	@Override
-	public JsdBankDo getBankByName(String name) {
-		return jsdBankDao.getBankByName( name);
+	public JsdBankDo getBankByCode(String code) {
+		return jsdBankDao.getBankByCode(code);
 	}
 }

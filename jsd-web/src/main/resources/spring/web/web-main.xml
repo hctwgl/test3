@@ -127,5 +127,6 @@
 			</list>
 		</property>
 	</bean>
+	<bean  class="com.ald.fanbei.api.web.application.SpringInit" />
 
 </beans>

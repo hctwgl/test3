@@ -22,4 +22,3 @@ public class Bootstrap4Jetty {
 
 	}
 }
-

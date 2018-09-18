@@ -219,12 +219,14 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		    			if(JsdBorrowLegalOrderCashStatus.APPLYING.getCode().equals(orderCashDo.getStatus())){
 		    				orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.CLOSED.getCode());
 		    				orderCashDo.setGmtModified(now);
+		    				orderCashDo.setGmtClose(now);
 		    			}
 		    			// 关闭新增订单
 		    			JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getById(orderCashDo.getBorrowLegalOrderId());
 		    			if(JsdBorrowLegalOrderStatus.UNPAID.getCode().equals(orderDo.getStatus())){
 		    				orderDo.setStatus(JsdBorrowLegalOrderStatus.CLOSED.getCode());
 		    				orderDo.setGmtModified(now);
+		    				orderDo.setGmtClosed(now);
 		    			}
 		    			jsdBorrowLegalOrderCashDao.updateById(orderCashDo);
 		    			jsdBorrowLegalOrderDao.updateById(orderDo);
@@ -260,7 +262,10 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 					// 本次续借
 					JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
 					logger.info("dealJsdRenewalSucess delayNo="+renewalDo.getTradeNoXgxy());
-					if(JsdRenewalDetailStatus.YES.getCode().equals(renewalDo.getStatus())) return 0l;
+					if(JsdRenewalDetailStatus.YES.getCode().equals(renewalDo.getStatus())) {
+						logger.warn("cur renewalNo " + renewalNo + "have success! repeat UPS callback!");
+						return 0l;
+					}
 					// 本次订单
 					JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(renewalDo.getBorrowId());
 					JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getById(orderCashDo.getBorrowLegalOrderId());
@@ -273,6 +278,8 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 					JsdBorrowLegalOrderCashDo lastOrderCashDo = jsdBorrowLegalOrderCashDao.getPreviousOrderCashByBorrowId(borrowCashDo.getRid());
 
 
+
+					Date now = new Date(System.currentTimeMillis());
 					if(lastOrderCashDo!=null){
 						// 更新上期订单借款记录为FINISHED
 						lastOrderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.FINISHED.getCode());
@@ -283,6 +290,8 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 						lastOrderCashDo.setSumRepaidInterest(lastOrderCashDo.getSumRepaidInterest().add(lastOrderCashDo.getInterestAmount()));
 						lastOrderCashDo.setInterestAmount(BigDecimal.ZERO);
 						lastOrderCashDo.setRepaidAmount(BigDecimalUtil.add(lastOrderCashDo.getAmount(),lastOrderCashDo.getSumRepaidInterest(),lastOrderCashDo.getSumRepaidPoundage(),lastOrderCashDo.getSumRepaidOverdue()));
+						lastOrderCashDo.setGmtFinish(now);
+						lastOrderCashDo.setGmtLastRepayment(now);
 						jsdBorrowLegalOrderCashDao.updateById(lastOrderCashDo);
 
 						// 更新本次 订单还款记录为已结清（对应上期订单）
@@ -294,18 +303,18 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 
 					// 更新本次 订单借款状态
 					orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.getCode());//待还款
-					orderCashDo.setGmtModified(new Date());
+					orderCashDo.setGmtModified(now);
 					jsdBorrowLegalOrderCashDao.updateById(orderCashDo);
 
 					// 更新本次 订单状态为待发货
 					orderDo.setStatus(JsdBorrowLegalOrderStatus.AWAIT_DELIVER.getCode());//待发货
-					orderDo.setGmtModified(new Date());
+					orderDo.setGmtModified(now);
 					jsdBorrowLegalOrderDao.updateById(orderDo);
 
 					// 更新本次 续期成功
 					renewalDo.setStatus(JsdRenewalDetailStatus.YES.getCode());
 					renewalDo.setTradeNoUps(tradeNoOut);
-					renewalDo.setGmtModified(new Date());
+					renewalDo.setGmtModified(now);
 					jsdBorrowCashRenewalDao.updateById(renewalDo);
 
 					// 更新借款记录--->
@@ -314,7 +323,6 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		    		BigDecimal poundage = BigDecimalUtil.multiply(waitPayAmount, renewalDo.getPoundageRate(), new BigDecimal(renewalDo.getRenewalDay()).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
 
 					Date gmtPlanRepayment = borrowCashDo.getGmtPlanRepayment();
-					Date now = new Date(System.currentTimeMillis());
 
 					// 	如果预计还款时间在今天之后，则在原预计还款时间的基础上加上续期天数，否则在今天的基础上加上续期天数，作为新的预计还款时间
 					if (gmtPlanRepayment.after(now)) {
@@ -335,7 +343,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 					borrowCashDo.setRenewalNum(borrowCashDo.getRenewalNum() + 1);// 累计续期次数
 					jsdBorrowCashDao.updateById(borrowCashDo);
 					// ---<
-
+					
 					return 1l;
 				} catch (Exception e) {
 					t.setRollbackOnly();
@@ -377,13 +385,13 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 	@Override
 	public long dealJsdRenewalFail(String renewalNo, String tradeNo, boolean isNeedMsgNotice, String errorCode, String errorMsg) {
 		JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
-		logger.info("dealJsdRenewalSucess renewalNo="+renewalNo+", tradeNo="+tradeNo+", delayNo="+renewalDo.getTradeNoXgxy()+
+		logger.info("dealJsdRenewalFail renewalNo="+renewalNo+", tradeNo="+tradeNo+", delayNo="+renewalDo.getTradeNoXgxy()+
 				", isNeedMsgNotice="+isNeedMsgNotice+", errorCode="+errorCode+", errorMsg="+errorMsg);
-		if(JsdRenewalDetailStatus.NO.name().equals(renewalDo.getStatus())){
+		if(JsdRenewalDetailStatus.NO.getCode().equals(renewalDo.getStatus())){
 			return 0l;
 		}
 		
-		long result = dealChangStatus(renewalNo, tradeNo, JsdRenewalDetailStatus.NO.name(), renewalDo.getRid(), errorCode, errorMsg);
+		long result = dealChangStatus(renewalNo, tradeNo, JsdRenewalDetailStatus.NO.getCode(), renewalDo.getRid(), errorCode, errorMsg);
 		
 		if(result == 1l){
 			//续期失败，调用西瓜信用通知接口
@@ -464,7 +472,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		Map<String, Object> delayInfo = new HashMap<String, Object>();
 
 		//上一笔订单记录
-		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(borrowCashDo.getRid());
+		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
 		if(orderCashDo == null)	throw new FanbeiException(FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 
 		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getById(orderCashDo.getBorrowLegalOrderId());

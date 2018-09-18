@@ -17,6 +17,7 @@ import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.alibaba.fastjson.JSON;
 
 /**
  * @author chenjinhu 2017年2月20日 下午2:59:32 @类现描述：
@@ -87,14 +88,22 @@ public class PayRoutController {
 		return "succ";
 	}
 
+	@RequestMapping(value = { "/signRelease" }, method = RequestMethod.POST)
+	@ResponseBody
+	public String signRelease(HttpServletRequest request, HttpServletResponse response) {
+		for (String paramKey : request.getParameterMap().keySet()) {
+			logger.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
+		}
+		return "succ";
+	}
+	
 	@RequestMapping(value = { "/delegatePay" }, method = RequestMethod.POST)
 	@ResponseBody
 	public String delegatePay(HttpServletRequest request, HttpServletResponse response) {
 		String outTradeNo = request.getParameter("orderNo");
-		String merPriv = request.getParameter("merPriv");
 		String tradeState = request.getParameter("tradeState");
 		long result = NumberUtil.objToLongDefault(request.getParameter("reqExt"), 0);
-		logger.info("delegatePay callback, from ups params: " + " merPriv=" + merPriv + ",tradeState=" + tradeState + ",reqExt=" + result + ",outTradeNo=" + outTradeNo);
+		logger.info("delegatePay callback, from ups params: " + JSON.toJSONString(request.getParameterMap()));
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 打款成功
 				jsdBorrowCashService.dealBorrowSucc(result, outTradeNo);
@@ -103,19 +112,9 @@ public class PayRoutController {
 			}
 			return "SUCCESS";
 		} catch (Exception e) {
-			logger.error("delegatePay", e);
+			logger.error("delegatePay error", e);
 			return "ERROR";
 		}
-	}
-
-
-	@RequestMapping(value = { "/signRelease" }, method = RequestMethod.POST)
-	@ResponseBody
-	public String signRelease(HttpServletRequest request, HttpServletResponse response) {
-		for (String paramKey : request.getParameterMap().keySet()) {
-			logger.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
-		}
-		return "succ";
 	}
 
 	@RequestMapping(value = { "/collect" }, method = RequestMethod.POST)
@@ -127,11 +126,8 @@ public class PayRoutController {
 		String tradeState = request.getParameter("tradeState");
 		String respCode = StringUtil.null2Str(request.getParameter("respCode"));
 		String respDesc = StringUtil.null2Str(request.getParameter("respDesc"));
-		String tradeDesc = StringUtil.null2Str(request.getParameter("tradeDesc"));
 
-		logger.info("collect callback, from ups params: merPriv=" + merPriv + ",tradeState=" + tradeState + "tradeDesc:" + tradeDesc
-				+ ",outTradeNo=" + outTradeNo + ",tradeNo=" + tradeNo + ",respCode=" + respCode + ",respDesc="
-				+ respDesc);
+		logger.info("collect callback, from ups params: " + JSON.toJSONString(request.getParameterMap()));
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代收成功
 				if(PayOrderSource.REPAY_JSD.getCode().equals(merPriv)){
@@ -148,7 +144,7 @@ public class PayRoutController {
 			}
 			return "SUCCESS";
 		} catch (Exception e) {
-			logger.error("collect", e);
+			logger.error("collect error!", e);
 			return "ERROR";
 		}
 	}

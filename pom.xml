@@ -101,6 +101,21 @@
 			<version>1.10.1.RELEASE</version>
 		</dependency>
 		<dependency>
+			<groupId>org.sdk.tech</groupId>
+			<artifactId>tech</artifactId>
+			<version>2.0.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.sdk.tgtext</groupId>
+			<artifactId>tgtext</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.sdk.utils</groupId>
+			<artifactId>utils</artifactId>
+			<version>3.0.6</version>
+		</dependency>
+		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
 			<version>1.2.44</version>

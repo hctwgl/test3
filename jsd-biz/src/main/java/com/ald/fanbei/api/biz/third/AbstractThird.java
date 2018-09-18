@@ -3,7 +3,6 @@ package com.ald.fanbei.api.biz.third;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 
 /**
@@ -24,14 +23,16 @@ public abstract class AbstractThird {
 	 *            第三方响应结果
 	 * @param methodName
 	 *            接口名称
+	 * @param methodName
+	 *            请求接口耗时
 	 * @param param
 	 *            参数数组
 	 */
-	protected void logThird(Object resp, String methodName, Object... param) {
+	protected void logThird(String resp, String methodName, Object... param) {
 		StringBuffer sb = new StringBuffer();
 		for (Object item : param) {
 			sb = sb.append(JSON.toJSONString(item)).append("|");
 		}
-		logger.info(StringUtil.appendStrs("methodName=", methodName, "; params=", sb.toString().replaceAll("\n", ""), "; resp=", resp == null ? "" : resp));
+		logger.info("methodName=" + methodName + ", params=" + sb.toString().replaceAll("\n", "") + ", resp=" + (resp == null ? "" : resp));
 	}
 }

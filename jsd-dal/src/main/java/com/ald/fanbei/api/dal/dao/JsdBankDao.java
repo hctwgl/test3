@@ -16,6 +16,6 @@ public interface JsdBankDao extends BaseDao<JsdBankDo, Long> {
 
     String getBankNameByCardNumAndUserId(@Param("bankNo") String bankNo, @Param("userId")Long userId);
 
-    JsdBankDo getBankByName(String name);
+    JsdBankDo getBankByCode(String bankCode);
 
 }
