@@ -34,7 +34,7 @@ public class ExecptionHandler{
 		FieldError fieldError = e.getFieldError();
 		logger.error("Request params error! Class = " + e.getTarget().getClass().getSimpleName() + ", Msg = " + fieldError.getField() + " is [" + fieldError.getRejectedValue() + "] " + fieldError.getCode());
 		
-		return Resp.fail(null, 901, "请求参数不合法");
+		return Resp.fail(null, 902, "请求参数不合法");
 	}
 	
 	/**
@@ -47,7 +47,7 @@ public class ExecptionHandler{
 		BindingResult br = e.getBindingResult();
 		FieldError fieldError = br.getFieldError();
 		logger.error("Request argument error! Class=" + br.getTarget().getClass().getSimpleName() + ", Msg = " + fieldError.getField() + " is [" + fieldError.getRejectedValue() + "] " + fieldError.getCode());
-		return Resp.fail(null, 901, "请求参数不合法");
+		return Resp.fail(null, 902, "请求参数不合法");
 	}
 	
    /**

@@ -31,4 +31,11 @@ public class MgrOperatorServiceImpl extends ParentServiceImpl<MgrOperatorDo, Lon
 	public BaseDao<MgrOperatorDo, Long> getDao() {
 		return mgrOperatorDao;
 	}
+
+	@Override
+	public MgrOperatorDo getByUsername(String username) {
+		// TODO
+		return null;
+	}
+	
 }
