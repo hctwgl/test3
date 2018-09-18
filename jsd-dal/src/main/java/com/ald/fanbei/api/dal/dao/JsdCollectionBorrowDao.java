@@ -1,7 +1,12 @@
 package com.ald.fanbei.api.dal.dao;
 
-import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
+
+import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
+import com.ald.jsd.mgr.dal.domain.dto.MgrCollectionBorrowDto;
+import com.ald.jsd.mgr.dal.query.MgrCommonQuery;
 
 /**
  * Dao
@@ -13,6 +18,8 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface JsdCollectionBorrowDao extends BaseDao<JsdCollectionBorrowDo, Long> {
 
-    JsdCollectionBorrowDo selectByBorrowId(@Param("borrowId")Long borrowId);
+	JsdCollectionBorrowDo selectByBorrowId(@Param("borrowId")Long borrowId);
+
+	List<MgrCollectionBorrowDto> listMgrCollectionBorrow(MgrCommonQuery<?> query);
 
 }
