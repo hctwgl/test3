@@ -28,10 +28,12 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BorrowVersionType;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.OrderType;
+import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
@@ -94,7 +96,6 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
 	    	trialBo.req = new TrialBeforeBorrowReq(cashReq.openId, cashReq.amount, cashReq.term, cashReq.unit);
 			trialBo.userId = context.getUserId();
 			trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(cashReq.openId);
-        	jsdBorrowCashService.resolve(trialBo);
         	
         	if("Y".equals(cashReq.isTying) && BorrowVersionType.BEHEAD.name().equals(cashReq.tyingType)){
         		// 砍头模式
@@ -102,6 +103,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         		return resp;
         	}
 	    	
+        	jsdBorrowCashService.resolve(trialBo);
             final JsdBorrowCashDo cashDo = buildBorrowCashDo(cashReq, mainCard, trialBo); 				// 主借款
             final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(cashReq, context.getUserId());	// 搭售商品订单
             final JsdBorrowLegalOrderCashDo orderCashDo = buildBorrowLegalOrderCashDo(cashReq, trialBo);// 订单借款
@@ -128,7 +130,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
                     UpsDelegatePayRespBo upsResult = upsUtil.jsdDelegatePay(cashDo.getArrivalAmount(), context.getRealName(), 
                             mainCard.getBankCardNumber(), context.getUserId().toString(), mainCard.getMobile(),
                             mainCard.getBankName(), mainCard.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
-                            "JSD_LOAN", cashDo.getRid().toString(), context.getIdNumber());
+                            PayOrderSource.JSD_LOAN.getCode(), cashDo.getRid().toString(), context.getIdNumber());
                     cashDo.setTradeNoUps(upsResult.getOrderNo());
                     
                     if (!upsResult.isSuccess()) {
@@ -150,7 +152,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
     }
 
     /**
-     * 构建 主借款
+     * 构建 主借款(赊销)
      * @return
      */
     private JsdBorrowCashDo buildBorrowCashDo(ApplyBorrowCashReq cashReq, JsdUserBankcardDo mainCard, TrialBeforeBorrowBo trialBo) {
@@ -176,11 +178,14 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         afBorrowCashDo.setBorrowNo(generatorClusterNo.getLoanNo(new Date()));
         afBorrowCashDo.setRepayPrinciple(BigDecimal.ZERO);
         afBorrowCashDo.setVersion(BorrowVersionType.SELL.name());
+        afBorrowCashDo.setBorrowRemark(cashReq.loanRemark);
+        afBorrowCashDo.setRepayRemark(cashReq.repayRemark);
+        afBorrowCashDo.setReviewStatus(JsdBorrowCashReviewStatus.PASS.name()); // 赊销无审批
         return afBorrowCashDo;
     }
     
     /**
-     * 构建 商品订单
+     * 构建 商品订单(赊销)
      * @return
      */
     private JsdBorrowLegalOrderDo buildBorrowLegalOrder(ApplyBorrowCashReq cashReq, Long userId) {
@@ -197,7 +202,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
     }
     
     /**
-     * 构建 商品借款 
+     * 构建 商品借款 (赊销)
      * @return
      */
     private JsdBorrowLegalOrderCashDo buildBorrowLegalOrderCashDo(ApplyBorrowCashReq cashReq, TrialBeforeBorrowBo trialBo) {

@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.SerializeUtil;
 
 /**
@@ -211,6 +212,26 @@ public class BizCacheUtil extends AbstractThird {
 			Long r = redisIntegerTemplate.opsForValue().increment(key, 1);
 			if(r<2){
 				redisIntegerTemplate.expire(key,expiredSeconds,TimeUnit.SECONDS);
+			}
+			return r;
+		} catch (Exception e) {
+			logger.error("incr", e);
+		}
+		return 0l;
+	}
+	/**
+	 * 自增命令
+	 * @param key 键
+	 * @param date 失效时间
+	 * @return 自增值
+	 */
+	public long incr(String key, Long delta, Date date){
+		try {
+			Long r = redisIntegerTemplate.opsForValue().increment(key, delta);
+			long curTimeout = redisIntegerTemplate.getExpire(key);
+			
+			if(curTimeout == -1) { // -2不存在, -1永久
+				redisIntegerTemplate.expireAt(key, date);
 			}
 			return r;
 		} catch (Exception e) {
