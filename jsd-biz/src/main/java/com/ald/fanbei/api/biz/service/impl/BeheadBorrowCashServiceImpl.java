@@ -119,19 +119,18 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 		JsdResourceDo review = jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG, Constants.JSD_CONFIG_REVIEW_MODE);
 		String reviewSwitch = review.getValue(); // 审批开关 
 		BigDecimal allAmount = new BigDecimal(review.getValue1());	// 放款总额
+		logger.info("applyBeheadBorrowCash borrowNo="+cashDo.getBorrowNo()+", reviewSwitch="+reviewSwitch);
 		
 		/*极速贷审批模式*/
 		// 1.自动
-		if(StringUtil.equals(JsdBorrowCashReviewSwitch.AUTO.name(), reviewSwitch)){		
+		if(StringUtil.equals(JsdBorrowCashReviewSwitch.AUTO.name(), reviewSwitch)) {
 			jsdBorrowCashDao.updateReviewStatus(JsdBorrowCashReviewStatus.PASS.name(), cashDo.getRid());
 			upsUtil.autoJsdDelegatePay(cashDo, orderDo, mainCard);
 		}
 		
 		// 2.半自动
-		else if(StringUtil.equals(JsdBorrowCashReviewSwitch.SEMI_AUTO.name(), reviewSwitch)){	
-			
+		else if(StringUtil.equals(JsdBorrowCashReviewSwitch.SEMI_AUTO.name(), reviewSwitch)) {
 			// 当天放款总额
-			//BigDecimal currDayAllamount = jsdBorrowCashDao.getCurrDayAllamount();
 			long currDayAllamount = bizCacheUtil.incr(Constants.JSD_BORROW_CURRDAY_ALLAMOUNT, 0L, DateUtil.getTodayLast());
 			// 剩余款额
 			BigDecimal remainAmount = BigDecimalUtil.subtract(allAmount, new BigDecimal(currDayAllamount));
@@ -143,7 +142,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 		}
 		
 		// 3.手动
-		/*else if(StringUtil.equals(JsdBorrowCashReviewSwitch.MANUAL.name(), reviewSwitch)){	
+		/*else if(StringUtil.equals(JsdBorrowCashReviewSwitch.MANUAL.name(), reviewSwitch)) {	
 		}*/
 		
 	}
