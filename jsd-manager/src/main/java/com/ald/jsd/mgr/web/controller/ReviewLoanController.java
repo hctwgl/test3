@@ -32,6 +32,7 @@ public class ReviewLoanController {
         reviewLoanQuery.setStatus(status);
         reviewLoanQuery.setPageIndex(pageIndex);
         reviewLoanQuery.setPageSize(pageSize);
+        reviewLoanQuery.setFull(true);
         reviewLoanQuery.setList(jsdBorrowCashService.getReviewLoanList(reviewLoanQuery));
         return Resp.succ(reviewLoanQuery, "");
     }
