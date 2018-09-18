@@ -11,6 +11,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
 import com.ald.fanbei.api.dal.domain.dto.ReviewLoanDto;
 import com.ald.fanbei.api.dal.query.ReviewLoanQuery;
+import com.alibaba.fastjson.JSONArray;
 
 /**
  * 极速贷Service
@@ -96,4 +97,6 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      * @return
      */
     HashMap<String, BigDecimal> getReviewLoanStatistics();
+
+    Boolean updateReviewStatusByXgNo(JSONArray jsonArray);
 }
