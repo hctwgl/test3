@@ -41,11 +41,10 @@ public interface JsdBorrowCashRepaymentService{
      * @param totalAmount
      * @param repaymentNo
      * @param userId
-     * @param type
      * @param repayTime
      * @param orderNo
      */
-    void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, String type, String repayTime, String orderNo);
+    void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId,String channel, String repayTime, String orderNo, String dataId,String remark);
 
 
 }

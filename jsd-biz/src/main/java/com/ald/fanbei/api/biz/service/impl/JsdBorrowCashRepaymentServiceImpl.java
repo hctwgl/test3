@@ -759,7 +759,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	 * @param
 	 */
 	@Override
-	public void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, String type, String repayTime, String orderNo) {
+	public void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId,String channel ,String repayTime, String orderNo,String dataId,String remark) {
 		try {
 			BorrowCashRepayBo bo = buildLoanRepayBo(userId, jsdBorrowCashDo ,jsdBorrowLegalOrderCashDo, totalAmount, repaymentNo);
 
