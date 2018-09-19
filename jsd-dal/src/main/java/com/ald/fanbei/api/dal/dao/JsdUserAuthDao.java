@@ -1,7 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdUserAuthDo;
-import com.ald.jsd.mgr.dal.domain.dto.UserAuthDto;
+import com.ald.fanbei.api.dal.domain.dto.UserAuthDto;
 import com.ald.fanbei.api.dal.query.UserAuthQuery;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,4 +20,8 @@ public interface JsdUserAuthDao extends BaseDao<JsdUserAuthDo, Long> {
     List<UserAuthDto> getListUserAuth(UserAuthQuery query);
 
     JsdUserAuthDo getByUserId(@Param("userId") Long userId);
+
+    int getSubmitPersonNum();
+
+    int getPassPersonNum();
 }
