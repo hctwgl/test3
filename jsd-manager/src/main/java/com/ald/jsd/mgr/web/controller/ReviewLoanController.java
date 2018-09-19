@@ -4,7 +4,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.query.ReviewLoanQuery;
+import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.ald.jsd.mgr.web.dto.req.ReviewLoanDetailsReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 import com.alibaba.fastjson.JSONArray;
@@ -40,10 +40,10 @@ public class ReviewLoanController {
     JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
 
     @RequestMapping(value = {"list.json"}, method = RequestMethod.POST)
-    public Resp<ReviewLoanQuery> list(@RequestBody ReviewLoanQuery reviewLoanQuery, HttpServletRequest request) {
-        reviewLoanQuery.setFull(true);
-        reviewLoanQuery.setList(jsdBorrowCashService.getReviewLoanList(reviewLoanQuery));
-        return Resp.succ(reviewLoanQuery, "");
+    public Resp<LoanQuery> list(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
+        loanQuery.setFull(true);
+        loanQuery.setList(jsdBorrowCashService.getReviewLoanList(loanQuery));
+        return Resp.succ(loanQuery, "");
     }
 
     @RequestMapping(value = {"statistics.json"}, method = RequestMethod.POST)
