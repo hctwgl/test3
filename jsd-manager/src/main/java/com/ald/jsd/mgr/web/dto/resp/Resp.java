@@ -1,5 +1,7 @@
 package com.ald.jsd.mgr.web.dto.resp;
 
+import com.ald.jsd.mgr.enums.RespCode;
+
 public class Resp<T> {
 	public Integer code;
 	public String msg;
@@ -24,7 +26,7 @@ public class Resp<T> {
 	 * @return
 	 */
 	public static <T> Resp<T> failCommon(String failMsg) {
-		return fail(null, 900, failMsg);
+		return fail(null, RespCode.FAIL.code, failMsg);
 	}
 	
 	/**
@@ -35,7 +37,7 @@ public class Resp<T> {
 	public static <T> Resp<T> succ(T body, String succMsg) {
 		Resp<T> resp = new Resp<T>();
 		resp.data = body;
-		resp.code = 100;
+		resp.code = RespCode.SUCC.code;
 		resp.msg = succMsg;
 		
 		return resp;

@@ -6,9 +6,7 @@ public class LoginReq extends BaseReq{
 	@NotNull
 	public String username;
 	
-	@NotNull
 	public String passwd;
 	
-	@NotNull
 	public String verifyCode;
 }
