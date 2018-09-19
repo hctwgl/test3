@@ -159,7 +159,7 @@ public class CollectionSystemUtil extends AbstractThird {
 				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, getUrlParamsByMap(reqBo));
 			}else {
 				reqResult = HttpUtil.post(url, reqBo);
-			}logger.info("repaymentAchieve response :" + reqResult);
+			}logger.info("consumerRepayment response :" + reqResult);
 			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 				return true;
 			}
