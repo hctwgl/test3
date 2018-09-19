@@ -267,7 +267,7 @@ public class LoanOverDueJob {
             buildData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
             buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
             buildData.put("currentAmount",String.valueOf(currentAmount));//委案未还金额
-            buildData.put("dataId",String.valueOf(orderCashDo.getRid()));//源数据id
+            buildData.put("dataId",String.valueOf(jsdBorrowLegalOrder.getRid()));//源数据id
             buildData.put("planRepaymenTime",DateUtil.formatDateTime(borrowCashDo.getGmtPlanRepayment()));//计划还款时间
             buildData.put("overdueAmount",String.valueOf(overdueAmount));//逾期金额
             //借款详情

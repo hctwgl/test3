@@ -61,7 +61,7 @@ public class NoticeTask {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
 
-    @Scheduled(cron = "* 0/5 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void notice() {
     	try {
     		String curHostIp = getHostIpUtil.getIpAddress();
