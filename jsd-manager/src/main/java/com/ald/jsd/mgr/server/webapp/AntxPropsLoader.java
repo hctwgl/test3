@@ -21,7 +21,7 @@ public class AntxPropsLoader {
 	}
 
 	public void load() {
-		String antxPath = Bootstrap4Jetty.ROOT_PATH + "src/conf/jsd_admin_" + Bootstrap4Jetty.ENV_TYPE + ".properties";
+		String antxPath = Bootstrap4Jetty.ROOT_PATH + "src/conf/jsd_mgr_" + Bootstrap4Jetty.ENV_TYPE + ".properties";
 		try {
 			pros.load(new FileInputStream(antxPath));
 			
