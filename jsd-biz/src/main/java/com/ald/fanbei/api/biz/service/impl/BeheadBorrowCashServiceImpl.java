@@ -3,6 +3,8 @@ package com.ald.fanbei.api.biz.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -43,15 +45,19 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
+import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderInfoDao;
 import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
 import com.ald.fanbei.api.dal.dao.JsdUserDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 
 
 /**
@@ -74,6 +80,8 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
     JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
     @Resource
     JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
+    @Resource
+    JsdBorrowLegalOrderInfoDao jsdBorrowLegalOrderInfoDao;
     @Resource
     JsdNoticeRecordDao jsdNoticeRecordDao;
     @Resource
@@ -116,6 +124,9 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
             }
         });
 		
+		// 从西瓜获取订单信息
+		this.saveOrderInfo(cashDo);
+		
 		JsdResourceDo review = jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG, Constants.JSD_CONFIG_REVIEW_MODE);
 		String reviewSwitch = review.getValue(); // 审批开关 
 		BigDecimal allAmount = new BigDecimal(review.getValue1());	// 放款总额
@@ -145,6 +156,21 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 		/*else if(StringUtil.equals(JsdBorrowCashReviewSwitch.MANUAL.name(), reviewSwitch)) {	
 		}*/
 		
+	}
+
+	/**
+	 * 从西瓜获取订单信息
+	 */
+	private void saveOrderInfo(final JsdBorrowCashDo cashDo) {
+		Map<String,String> data = Maps.newHashMap();
+		data.put("borrowNo", cashDo.getTradeNoXgxy());
+		HashMap<String, String> orderInfoMap = xgxyUtil.borrowNoticeRequest(data);
+		if(!orderInfoMap.isEmpty()){
+			JsdBorrowLegalOrderInfoDo orderInfoDo = JSONObject.parseObject(JSON.toJSONString(orderInfoMap), JsdBorrowLegalOrderInfoDo.class);
+			orderInfoDo.setUserId(cashDo.getUserId());
+			orderInfoDo.setBorrowId(cashDo.getRid());
+			jsdBorrowLegalOrderInfoDao.saveRecord(orderInfoDo); 
+		}
 	}
 	
 	/**
