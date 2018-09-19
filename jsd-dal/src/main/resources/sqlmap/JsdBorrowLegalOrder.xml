@@ -312,7 +312,7 @@
         FROM jsd_borrow_legal_order
         WHERE is_delete = 0
         AND borrow_id = #{borrowId}
-        ORDER BY id DESC LIMIT 1
+        ORDER BY id DESC
     </select>
 
     
