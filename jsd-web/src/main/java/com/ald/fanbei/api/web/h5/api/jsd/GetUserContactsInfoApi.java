@@ -30,7 +30,7 @@ public class GetUserContactsInfoApi implements JsdH5Handle {
         String arr[] = userId.split(",");
         for(int i=0;i<arr.length;i++){
             String str = arr[i];
-            userList.add(Long.valueOf(str));
+            userList.add(Long.valueOf(str.trim()));
         }
         List<JsdUserContactsDo> contacts= jsdUserContactsService.getUserContactsByUserIds(userList);
         Map<String,Object>  data=new HashMap<>();
