@@ -103,6 +103,7 @@ public class CuiShouUtils {
             final String orderNo = repaymentBo.getOrderNo();
             Date time = DateUtil.stringToDate(repayTime);
             JSONArray detailsArray = obj.getJSONArray("details");
+            String dataId = "";
             Long borrowId = 0l;
             Long userId = 0l;
             JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = new JsdBorrowLegalOrderCashDo();
@@ -113,11 +114,18 @@ public class CuiShouUtils {
                 return cuiShouBackMoney;
             }
             if(detailsArray != null && detailsArray.size()>0){
-                String id = String.valueOf(detailsArray.getJSONObject(0).get("dataId"));
-                jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getById(Long.parseLong(id));
-                borrowId = jsdBorrowLegalOrderCashDo.getBorrowId();
-                jsdBorrowCashDo = jsdBorrowCashService.getById(borrowId);
-                userId = jsdBorrowCashDo.getUserId();
+                dataId = String.valueOf(detailsArray.getJSONObject(0).get("dataId"));
+                JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(dataId));
+                if(jsdBorrowLegalOrderDo == null){
+                    cuiShouBackMoney.setCode(205);
+                    thirdLog.error("param is null error orderNo =" + orderNo);
+                    return cuiShouBackMoney;
+                }else {
+                    jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(jsdBorrowLegalOrderDo.getRid());
+                    borrowId = jsdBorrowLegalOrderDo.getBorrowId();
+                    jsdBorrowCashDo = jsdBorrowCashService.getById(borrowId);
+                    userId = jsdBorrowCashDo.getUserId();
+                }
             }
             if(jsdBorrowCashDo == null){
                 cuiShouBackMoney.setCode(205);
@@ -135,7 +143,7 @@ public class CuiShouUtils {
                 return cuiShouBackMoney;
             }
             if (StringUtil.isAllNotEmpty(orderNo, repaymentNo)) {
-                jsdBorrowCashRepaymentService.offlineRepay(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,totalAmount, repaymentNo, userId, type, repayTime, orderNo);
+                jsdBorrowCashRepaymentService.offlineRepay(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,totalAmount, repaymentNo, userId, JsdRepayType.COLLECTION,null, repayTime, orderNo,dataId,null);
             } else {
                 cuiShouBackMoney.setCode(303);
                 thirdLog.error("orderNo and repaymentNo is error orderNo =" + orderNo);
