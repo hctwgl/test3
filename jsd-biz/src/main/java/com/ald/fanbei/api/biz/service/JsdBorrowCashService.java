@@ -8,9 +8,8 @@ import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
-import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
-import com.ald.fanbei.api.dal.domain.dto.ReviewLoanDto;
-import com.ald.fanbei.api.dal.query.ReviewLoanQuery;
+import com.ald.fanbei.api.dal.domain.dto.LoanDto;
+import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.alibaba.fastjson.JSONArray;
 
 /**
@@ -89,7 +88,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      * @param query
      * @return
      */
-    List<ReviewLoanDto> getReviewLoanList(ReviewLoanQuery query);
+    List<LoanDto> getReviewLoanList(LoanQuery query);
 
     /**
      * 借款审批统计
@@ -99,4 +98,20 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     HashMap<String, BigDecimal> getReviewLoanStatistics();
 
     Boolean updateReviewStatusByXgNo(JSONArray jsonArray);
+
+    /**
+     * 借款列表
+     *
+     * @param query
+     * @return
+     */
+    List<LoanDto> getLoanList(LoanQuery query);
+
+    /**
+     * 还款计划列表
+     *
+     * @param query
+     * @return
+     */
+    List<LoanDto> getRepayList(LoanQuery query);
 }

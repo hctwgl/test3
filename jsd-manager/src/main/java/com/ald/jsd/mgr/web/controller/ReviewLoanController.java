@@ -4,7 +4,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.query.ReviewLoanQuery;
+import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.ald.jsd.mgr.web.dto.req.ReviewLoanDetailsReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 import com.alibaba.fastjson.JSONArray;
@@ -40,10 +40,10 @@ public class ReviewLoanController {
     JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
 
     @RequestMapping(value = {"list.json"}, method = RequestMethod.POST)
-    public Resp<ReviewLoanQuery> list(@RequestBody ReviewLoanQuery reviewLoanQuery, HttpServletRequest request) {
-        reviewLoanQuery.setFull(true);
-        reviewLoanQuery.setList(jsdBorrowCashService.getReviewLoanList(reviewLoanQuery));
-        return Resp.succ(reviewLoanQuery, "");
+    public Resp<LoanQuery> list(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
+        loanQuery.setFull(true);
+        loanQuery.setList(jsdBorrowCashService.getReviewLoanList(loanQuery));
+        return Resp.succ(loanQuery, "");
     }
 
     @RequestMapping(value = {"statistics.json"}, method = RequestMethod.POST)
@@ -64,15 +64,17 @@ public class ReviewLoanController {
         String tradeNoXgxy = jsonObject.getString("tradeNoXgxy");
         //借款信息
         JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
-        BeanUtils.copyProperties(jsdBorrowCashDo, reviewLoanDetailsReq);
+        BeanUtils.copyProperties(reviewLoanDetailsReq, jsdBorrowCashDo);
         reviewLoanDetailsReq.setTerm(jsdBorrowCashDo.getType());
         reviewLoanDetailsReq.setApplyDate(jsdBorrowCashDo.getGmtCreate());
         //授信额度
         JsdUserAuthDo jsdUserAuthDo = jsdUserAuthService.getByUserId(jsdBorrowCashDo.getUserId());
-        reviewLoanDetailsReq.setRiskAmount(jsdUserAuthDo.getRiskAmount());
+        if (jsdUserAuthDo != null) {
+            reviewLoanDetailsReq.setRiskAmount(jsdUserAuthDo.getRiskAmount());
+        }
         //用户信息
         JsdUserDo jsdUserDo = jsdUserService.getById(jsdBorrowCashDo.getUserId());
-        BeanUtils.copyProperties(jsdUserDo, reviewLoanDetailsReq);
+        BeanUtils.copyProperties(reviewLoanDetailsReq, jsdUserDo);
         if (StringUtil.isNotBlank(jsdUserDo.getBirthday())) {
             String year = jsdUserDo.getBirthday().substring(0, 4);
             String currentYear = DateUtil.getYear(new Date());

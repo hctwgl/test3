@@ -9,9 +9,8 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
-import com.ald.fanbei.api.dal.domain.dto.ReviewLoanDto;
-import com.ald.fanbei.api.dal.query.ReviewLoanQuery;
+import com.ald.fanbei.api.dal.domain.dto.LoanDto;
+import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
@@ -138,7 +137,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
-    public List<ReviewLoanDto> getReviewLoanList(ReviewLoanQuery query) {
+    public List<LoanDto> getReviewLoanList(LoanQuery query) {
         return jsdBorrowCashDao.getReviewLoanList(query);
     }
 
@@ -175,6 +174,16 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<LoanDto> getLoanList(LoanQuery query) {
+        return jsdBorrowCashDao.getLoanList(query);
+    }
+
+    @Override
+    public List<LoanDto> getRepayList(LoanQuery query) {
+        return jsdBorrowCashDao.getRepayList(query);
     }
 
 

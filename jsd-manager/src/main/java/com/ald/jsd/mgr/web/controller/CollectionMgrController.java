@@ -1,5 +1,9 @@
 package com.ald.jsd.mgr.web.controller;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -9,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.JsdCollectionBorrowDao;
 import com.ald.fanbei.api.dal.dao.JsdCollectionRepaymentDao;
 import com.ald.fanbei.api.dal.domain.JsdCollectionRepaymentDo;
@@ -32,6 +37,15 @@ public class CollectionMgrController extends BaseController{
     public Resp<MgrCommonQuery<MgrCollectionBorrowDto>> listBorrow(@RequestBody @Valid MgrCommonQuery<MgrCollectionBorrowDto> query, HttpServletRequest request){
     	query.list = jsdCollectionBorrowDao.mgrListCollectionBorrow(query);
     	return Resp.succ(query, "");
+    }
+    
+    @RequestMapping(value = { "/borrow/stats.json" })
+    public Resp<Map<String, Long>> statsBorrow(HttpServletRequest request){
+    	Map<String, Long> data = new HashMap<String, Long>(4);
+    	Date now = new Date();
+    	data.put("totalAmtToday", jsdCollectionBorrowDao.countTotalAmtBetweenGmtCreate(DateUtil.getStartOfDate(now), DateUtil.getEndOfDate(now)));
+    	data.put("totalWaitFinish", jsdCollectionBorrowDao.countTotalWaitFinish());
+    	return Resp.succ(data, "");
     }
     
     @RequestMapping(value = { "/repayment/list.json" })
