@@ -1,5 +1,7 @@
 package com.ald.jsd.mgr.dal.dao;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.jsd.mgr.dal.domain.MgrOperatorDo;
 
@@ -13,6 +15,6 @@ import com.ald.jsd.mgr.dal.domain.MgrOperatorDo;
  */
 public interface MgrOperatorDao extends BaseDao<MgrOperatorDo, Long> {
 
-    
+    public MgrOperatorDo getByUsername(@Param("username") String username);
 
 }

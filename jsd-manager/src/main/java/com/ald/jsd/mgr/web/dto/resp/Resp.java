@@ -25,7 +25,7 @@ public class Resp<T> {
 	 * @param failMsg
 	 * @return
 	 */
-	public static <T> Resp<T> failCommon(String failMsg) {
+	public static <T> Resp<T> fail(String failMsg) {
 		return fail(null, RespCode.FAIL.code, failMsg);
 	}
 	
