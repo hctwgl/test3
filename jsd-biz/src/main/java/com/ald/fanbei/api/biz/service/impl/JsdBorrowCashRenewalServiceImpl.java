@@ -355,7 +355,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		if(result == 1l){
 			//续期成功，调用西瓜信用通知接口
 			JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
-			List<JsdBorrowLegalOrderCashDo> list = jsdBorrowLegalOrderCashDao.getBorrowOrderCashsByBorrowId(renewalDo.getBorrowId());
+			List<JsdBorrowLegalOrderDo> list = jsdBorrowLegalOrderDao.getBorrowOrdersByBorrowId(renewalDo.getBorrowId());
 			notifyXgxyRenewalResult("Y", tradeNoOut, "", renewalDo);
 			if(renewalDo.getOverdueDay()>0){
 				Map<String, String> repayData = new HashMap<String, String>();
