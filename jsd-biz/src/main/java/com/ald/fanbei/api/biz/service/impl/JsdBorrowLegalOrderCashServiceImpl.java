@@ -78,4 +78,9 @@ public class JsdBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<JsdBor
 		return jsdBorrowLegalOrderCashDao.getBorrowOrderCashsByBorrowId(borrowId);
 	}
 
+	@Override
+	public JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashByOrderId(Long orderId){
+		return jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByOrderId(orderId);
+	}
+
 }

@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -19,5 +20,7 @@ public interface JsdBorrowLegalOrderDao extends BaseDao<JsdBorrowLegalOrderDo, L
     String getCurrentLastOrderNo(Date currentDate);
 
     JsdBorrowLegalOrderDo getLastOrderByBorrowId(@Param("borrowId") Long borrowId);
+
+    List<JsdBorrowLegalOrderDo> getBorrowOrdersByBorrowId(@Param("borrowId")Long borrowId);
     
 }
