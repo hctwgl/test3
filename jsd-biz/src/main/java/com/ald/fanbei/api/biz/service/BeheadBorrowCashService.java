@@ -28,4 +28,6 @@ public interface BeheadBorrowCashService extends ParentService<JsdBorrowCashDo, 
     void dealBorrowFail(Long cashId, String outTradeNo, String failMsg);
     void dealBorrowFail(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderDo orderDo, String failMsg);
 
+	void resolve(TrialBeforeBorrowBo bo);
+
 }

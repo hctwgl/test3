@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
+import com.ald.fanbei.api.biz.service.BeheadBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.common.enums.BorrowVersionType;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
@@ -24,6 +26,8 @@ import com.alibaba.fastjson.JSONObject;
 public class GetProfitApi implements JsdH5Handle {
     @Resource
     JsdBorrowCashService jsdBorrowCashService;
+    @Resource
+    BeheadBorrowCashService beheadBorrowCashService;
     
     @Override
     public JsdH5HandleResponse process(Context context) {
@@ -36,10 +40,15 @@ public class GetProfitApi implements JsdH5Handle {
     	JSONObject dataMap = context.getDataMap();
     	String type = dataMap.getString("type");
     	if("BORROW".equals(type)) {
-    		bo.req = new TrialBeforeBorrowReq(context.getOpenId(), new BigDecimal(dataMap.getString("amount")),
-    				dataMap.getString("term"), dataMap.getString("unit"));
+//    		bo.req = new TrialBeforeBorrowReq(context.getOpenId(), new BigDecimal(dataMap.getString("amount")),
+//    				dataMap.getString("term"), dataMap.getString("unit"));
+    		bo.req = (TrialBeforeBorrowReq)context.getParamEntity();
     		
-        	jsdBorrowCashService.resolve(bo);
+    		if("Y".equals(bo.req.isTying) && BorrowVersionType.SELL.name().equals(bo.req.tyingType)){
+        		jsdBorrowCashService.resolve(bo);	// 赊销
+        	}else{
+        		beheadBorrowCashService.resolve(bo); // 砍头
+        	}
         	
         	Map<String,Object> respData = new HashMap<>();
         	respData.put("totalDiffFee", bo.resp.totalDiffFee);
