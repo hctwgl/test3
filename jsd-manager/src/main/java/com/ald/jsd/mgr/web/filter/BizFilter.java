@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -27,6 +28,7 @@ import com.alibaba.fastjson.JSON;
 public class BizFilter implements Filter{
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 	private static final String UTF_8 = "UTF-8";
+	private static final Charset CHARSET_UTF_8 = Charset.forName("UTF-8");
     private static final String LOG_SEPARATOR = " | ";
     
 	@Override
@@ -54,6 +56,7 @@ public class BizFilter implements Filter{
 		long end = System.currentTimeMillis();
 		
 		String result = bizResponseWrapper.getHolderStr();
+		
 		if(result.length() <= 2048) {
 			logStr += LOG_SEPARATOR + result;
 		}else {
@@ -119,7 +122,11 @@ public class BizFilter implements Filter{
 	    }
 	    
 	    public String getHolderStr() {
-	    	return ((WapperedPrintWriter)writer).getHolderString();
+	    	String holderStr = ((WapperedPrintWriter)writer).getHolderString();
+	    	if( "".equals(holderStr.trim())) {
+	    		holderStr = new String(buffer.toByteArray(), CHARSET_UTF_8);
+	    	}
+	    	return holderStr;
 	    }
 
 	    private class WapperedPrintWriter extends PrintWriter {
