@@ -184,7 +184,7 @@
     </select>
     
     <select id="countTotalAmtBetweenGmtCreate" resultType="java.lang.Long">
-        SELECT COUNT(b.amount + b.interest_amount + b.sum_repaid_interest + b.poundage_amount + b.sum_repaid_poundage + b.overdue_amount + b.sum_repaid_overdue)
+        SELECT SUM(b.amount + b.interest_amount + b.sum_repaid_interest + b.poundage_amount + b.sum_repaid_poundage + b.overdue_amount + b.sum_repaid_overdue)
         FROM jsd_collection_borrow a
         INNER JOIN jsd_borrow_cash b 
             ON a.borrow_id = b.id 
