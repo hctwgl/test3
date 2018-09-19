@@ -2,7 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import com.ald.jsd.mgr.dal.domain.dto.UserAuthDto;
+import com.ald.fanbei.api.dal.domain.dto.UserAuthDto;
 import com.ald.fanbei.api.dal.query.UserAuthQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,5 +45,15 @@ public class JsdUserAuthServiceImpl extends ParentServiceImpl<JsdUserAuthDo, Lon
 	@Override
 	public JsdUserAuthDo getByUserId(Long userId) {
 		return jsdUserAuthDao.getByUserId(userId);
+	}
+
+	@Override
+	public int getSubmitPersonNum() {
+		return jsdUserAuthDao.getSubmitPersonNum();
+	}
+
+	@Override
+	public int getPassPersonNum() {
+		return jsdUserAuthDao.getPassPersonNum();
 	}
 }

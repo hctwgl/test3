@@ -1,4 +1,4 @@
-package com.ald.jsd.mgr.dal.domain.dto;
+package com.ald.fanbei.api.dal.domain.dto;
 
 import com.ald.fanbei.api.dal.domain.JsdUserAuthDo;
 
