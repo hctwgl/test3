@@ -405,28 +405,34 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 	 * 通知西瓜 续期结果
 	 */
 	private void notifyXgxyRenewalResult(String status, String tradeNo, String errorMsg, JsdBorrowCashRenewalDo renewalDo) {
-		//还款失败，调用西瓜信用通知接口
-		JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
-		HashMap<String, String> data = new HashMap<String, String>();
-		data.put("borrowNo", borrowCashDo.getTradeNoXgxy());
-		data.put("delayNo", renewalDo.getTradeNoXgxy());
-		data.put("status", status);
-		data.put("reason", errorMsg);
-		data.put("tradeNo", tradeNo);
-		data.put("timestamp", System.currentTimeMillis()+"");
-		
-		JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
-		noticeRecordDo.setUserId(renewalDo.getUserId());
-		noticeRecordDo.setRefId(String.valueOf(renewalDo.getRid()));
-		noticeRecordDo.setType(JsdNoticeType.RENEW.code);
-		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
-		noticeRecordDo.setParams(JSON.toJSONString(data));
-		jsdNoticeRecordService.addNoticeRecord(noticeRecordDo);
-		if (xgxyUtil.jsdRenewalNoticeRequest(data)) {
-			noticeRecordDo.setRid(noticeRecordDo.getRid());
-			noticeRecordDo.setGmtModified(new Date());
-			jsdNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
+		try{
+			//还款失败，调用西瓜信用通知接口
+			JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
+			HashMap<String, String> data = new HashMap<String, String>();
+			data.put("borrowNo", borrowCashDo.getTradeNoXgxy());
+			data.put("delayNo", renewalDo.getTradeNoXgxy());
+			data.put("status", status);
+			data.put("reason", errorMsg);
+			data.put("tradeNo", tradeNo);
+			data.put("timestamp", System.currentTimeMillis()+"");
+
+			JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
+			noticeRecordDo.setUserId(renewalDo.getUserId());
+			noticeRecordDo.setRefId(String.valueOf(renewalDo.getRid()));
+			noticeRecordDo.setType(JsdNoticeType.RENEW.code);
+			noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+			noticeRecordDo.setParams(JSON.toJSONString(data));
+			jsdNoticeRecordService.addNoticeRecord(noticeRecordDo);
+			if (xgxyUtil.jsdRenewalNoticeRequest(data)) {
+				noticeRecordDo.setRid(noticeRecordDo.getRid());
+				noticeRecordDo.setGmtModified(new Date());
+				jsdNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
+			}
+		}catch (Exception e){
+			logger.info("renew notify push is error");
+			e.printStackTrace();
 		}
+
 	}
 	
 	/**
