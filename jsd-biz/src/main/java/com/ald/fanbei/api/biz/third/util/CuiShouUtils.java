@@ -143,7 +143,7 @@ public class CuiShouUtils {
                 return cuiShouBackMoney;
             }
             if (StringUtil.isAllNotEmpty(orderNo, repaymentNo)) {
-                jsdBorrowCashRepaymentService.offlineRepay(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,totalAmount, repaymentNo, userId, JsdRepayType.COLLECTION,null, repayTime, orderNo,dataId,null);
+                jsdBorrowCashRepaymentService.offlineRepay(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,totalAmount, repaymentNo, userId, type, repayTime, orderNo,dataId);
             } else {
                 cuiShouBackMoney.setCode(303);
                 thirdLog.error("orderNo and repaymentNo is error orderNo =" + orderNo);
