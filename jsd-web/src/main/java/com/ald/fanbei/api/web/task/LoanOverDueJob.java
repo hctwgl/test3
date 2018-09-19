@@ -319,13 +319,6 @@ public class LoanOverDueJob {
         collectionSystemUtil.noticeCollect(data);
     }
 
-    Map<String,String> buildBorrowLegalOrderCashDo(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo){
-        return null;
-    }
-
-    List<Map<String,String>> buildOverdueContactsDo(List<JsdBorrowCashDo> jsdBorrowCashDos){
-        return null;
-    }
 
     private JsdBorrowCashOverdueLogDo buildLoanOverdueLog(Long borrowId, BigDecimal currentAmount, BigDecimal interest, Long userId, String type){
         JsdBorrowCashOverdueLogDo overdueLog = new JsdBorrowCashOverdueLogDo();
