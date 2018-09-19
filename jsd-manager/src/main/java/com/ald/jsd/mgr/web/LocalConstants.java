@@ -16,6 +16,8 @@ public class LocalConstants {
 	public final static Integer DONATED_BANN_TIMES_OF_REGISTER = 0;
 	public final static Integer DONATED_TEXT_BANN_WORDS_LIMIT_OF_REGISTER = 20000;
 	
+	public final static String DEFAULT_PASSWD = "123456";
+	
 	/**
 	 * Session key name
 	 */

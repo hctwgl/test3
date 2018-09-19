@@ -219,4 +219,12 @@
         <include refid="commonCondition"/>
     </select>
     
+    <select id="getByUsername" resultType="MgrOperatorDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM mgr_operator
+        WHERE is_delete = 0 AND user_name=#{username}
+        LIMIT 1
+    </select>
+    
 </mapper>
