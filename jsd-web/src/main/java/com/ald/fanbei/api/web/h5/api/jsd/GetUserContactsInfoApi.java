@@ -32,7 +32,7 @@ public class GetUserContactsInfoApi implements JsdH5Handle {
         List<Map<String,String>> con=new ArrayList<>();
         for (JsdUserContactsDo contactsDo:contacts){
             Map<String,String> map=new HashMap<>();
-            map.put(contactsDo.getUserId(),contactsDo.getContactsMobile());
+            map.put(String.valueOf(contactsDo.getUserId()),contactsDo.getContactsMobile());
             con.add(map);
         }
         data.put("contacts",con);
