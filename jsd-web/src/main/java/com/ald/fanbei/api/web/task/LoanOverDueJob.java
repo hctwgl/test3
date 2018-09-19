@@ -244,7 +244,7 @@ public class LoanOverDueJob {
             //应还本金
             currentAmount = borrowCashDo.getAmount().subtract(borrowCashDo.getRepayPrinciple());
             //催收金额
-            BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestRate(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
+            BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
             //应还金额
             residueAmount = collectAmount.subtract(borrowCashDo.getRepayAmount());
             //借款费用
