@@ -1,6 +1,8 @@
 package com.ald.jsd.mgr.web.controller;
 
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.ald.jsd.mgr.biz.service.MgrOfflineRepaymentService;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
@@ -15,6 +17,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -26,6 +29,8 @@ public class RepayController {
     JsdBorrowCashService jsdBorrowCashService;
     @Resource
     MgrOfflineRepaymentService mgrOfflineRepaymentService;
+    @Resource
+    JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
 
     @RequestMapping(value = {"list.json"}, method = RequestMethod.POST)
     public Resp<LoanQuery> list(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
@@ -41,7 +46,14 @@ public class RepayController {
     }
 
     @RequestMapping(value = {"offline.json"}, method = RequestMethod.POST)
-    public Resp<String> statistics(@RequestBody Map<String,String> data, HttpServletRequest request) {
+    public Resp<String> offline(@RequestBody Map<String, String> data, HttpServletRequest request) {
         return mgrOfflineRepaymentService.dealOfflineRepayment(data);
+    }
+
+    @RequestMapping(value = {"record.json"}, method = RequestMethod.POST)
+    public Resp<List<JsdBorrowCashRepaymentDo>> record(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
+        String tradeNoXgxy = jsonObject.getString("tradeNoXgxy");
+        List<JsdBorrowCashRepaymentDo> list = jsdBorrowCashRepaymentService.getByBorrowTradeNoXgxy(tradeNoXgxy);
+        return Resp.succ(list, "");
     }
 }

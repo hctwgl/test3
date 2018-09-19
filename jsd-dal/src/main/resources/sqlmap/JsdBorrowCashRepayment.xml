@@ -339,4 +339,17 @@
         ORDER BY
         gmt_create DESC
     </select>
+
+    <select id="getByBorrowTradeNoXgxy" resultType="JsdBorrowCashRepaymentDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        jsd_borrow_cash_repayment as a inner join jsd_borrow_cash b on a.borrow_id=b.id
+        WHERE
+        a.is_delete = 0
+        AND
+        b.trade_no_xgxy=#{tradeNoXgxy}
+        ORDER BY
+        gmt_create DESC
+    </select>
 </mapper>

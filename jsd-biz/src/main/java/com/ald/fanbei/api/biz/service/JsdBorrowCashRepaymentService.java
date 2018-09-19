@@ -37,6 +37,8 @@ public interface JsdBorrowCashRepaymentService{
 
     JsdBorrowCashRepaymentDo  getByTradeNoXgxy(String tradeNoXgxy);
 
+    List<JsdBorrowCashRepaymentDo>  getByBorrowTradeNoXgxy(String tradeNoXgxy);
+
     /**
      * jsd 线下还款
      * @param totalAmount
