@@ -349,7 +349,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 			JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
 			List<JsdBorrowLegalOrderDo> list = jsdBorrowLegalOrderDao.getBorrowOrdersByBorrowId(renewalDo.getBorrowId());
 			notifyXgxyRenewalResult("Y", tradeNoOut, "", renewalDo);
-			logger.info("renewalOverdueStatus = " + renewalDo.getOverdueStatus() + " renewalNo = " +renewalNo);
+			logger.info("renewalDo = " + renewalDo);
 			if(StringUtils.equals(renewalDo.getOverdueStatus(), YesNoStatus.YES.getCode())){
 				Map<String, String> repayData = new HashMap<String, String>();
 				repayData.put("info",String.valueOf(list.get(1).getRid()));
