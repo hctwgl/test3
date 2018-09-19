@@ -208,7 +208,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		if(StringUtil.isNotBlank(bo.bankNo)){
 			repayment.setCardNo(bo.bankNo);
 			HashMap<?, ?> bank=jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
-			repayment.setCardName((String) bank.get("bankChannel"));
+			repayment.setCardName((String) bank.get("bankName"));
 		}else {
 			repayment.setCardNo("");
 			repayment.setCardName("");
