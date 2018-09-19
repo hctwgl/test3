@@ -593,6 +593,37 @@
         SELECT COUNT(review_status='WAIT' or NULL) as wait,COUNT(review_status !='WAIT' or NULL) as review,COUNT(review_status ='PASS' or NULL) as pass FROM jsd_borrow_cash WHERE to_days(gmt_create) = to_days(now())
     </select>
 
+    <select id="getLoanStatistics" resultType="java.util.HashMap">
+        SELECT
+            SUM(amount) AS amount,
+            COUNT(1) AS apply
+        FROM
+            jsd_borrow_cash
+        WHERE
+            to_days(gmt_create) = to_days(now())
+    </select>
+
+    <select id="getRepayStatistics" resultType="java.util.HashMap">
+        SELECT
+        (
+            SELECT
+                COUNT(1)
+            FROM
+                jsd_borrow_cash
+            WHERE
+                `status` = 'FINSH'
+            AND to_days(finish_date) = to_days(now())
+        ) AS repay,
+        (
+            SELECT
+                COUNT(1)
+            FROM
+                jsd_borrow_cash
+            WHERE
+                `status` = 'TRANSFERRED'
+        ) AS awaitRepay
+    </select>
+
     <update id="refuseByXgNo">
 		UPDATE jsd_borrow_cash
 		SET review_status='REFUSE',review_remark=#{reviewRemark},status='CLOSED',gmt_close=NOW(),gmt_modified=NOW()

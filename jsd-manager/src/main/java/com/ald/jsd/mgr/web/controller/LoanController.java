@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.HashMap;
 
 @Controller
 @ResponseBody
@@ -25,5 +27,11 @@ public class LoanController {
         loanQuery.setFull(true);
         loanQuery.setList(jsdBorrowCashService.getLoanList(loanQuery));
         return Resp.succ(loanQuery, "");
+    }
+
+    @RequestMapping(value = {"statistics.json"}, method = RequestMethod.POST)
+    public Resp<HashMap<String, BigDecimal>> statistics(HttpServletRequest request) {
+        HashMap<String, BigDecimal> hashMap = jsdBorrowCashService.getLoanStatistics();
+        return Resp.succ(hashMap, "");
     }
 }
