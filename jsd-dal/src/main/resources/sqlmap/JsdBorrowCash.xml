@@ -565,7 +565,7 @@
 	<update id="updateReviewStatus" parameterType="java.lang.String">
 		UPDATE jsd_borrow_cash
 		SET review_status=#{reviewStatus} 
-		Where id=#{borrowId ,jdbcType=BIGINT}
+		Where id=#{borrowId}
 	</update>
 
     <select id="getReviewLoanList" resultType="ReviewLoanDto">
