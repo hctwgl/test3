@@ -2,7 +2,8 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.dal.query.JsdUserAuthQuery;
+import com.ald.jsd.mgr.dal.domain.dto.UserAuthDto;
+import com.ald.fanbei.api.dal.query.UserAuthQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class JsdUserAuthServiceImpl extends ParentServiceImpl<JsdUserAuthDo, Lon
 	}
 
 	@Override
-	public List<JsdUserAuthDo> getListJsdUserAuth(JsdUserAuthQuery query) {
-		return jsdUserAuthDao.getListJsdUserAuth(query);
+	public List<UserAuthDto> getListUserAuth(UserAuthQuery query) {
+		return jsdUserAuthDao.getListUserAuth(query);
 	}
 }

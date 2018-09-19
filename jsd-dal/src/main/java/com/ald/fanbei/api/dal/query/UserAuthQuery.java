@@ -2,10 +2,11 @@ package com.ald.fanbei.api.dal.query;
 
 import com.ald.fanbei.api.common.page.Page;
 import com.ald.fanbei.api.dal.domain.JsdUserAuthDo;
-import lombok.Getter;
-import lombok.Setter;
+import com.ald.jsd.mgr.dal.domain.dto.UserAuthDto;
 
-public class JsdUserAuthQuery extends Page<JsdUserAuthDo>{
+import java.util.List;
+
+public class UserAuthQuery extends Page<JsdUserAuthDo>{
 
     /**
      * 认证状态，直接存入西关递交的值
@@ -15,6 +16,8 @@ public class JsdUserAuthQuery extends Page<JsdUserAuthDo>{
      * 搜索查询的内容
      */
     private String searchContent;
+
+    private List<UserAuthDto> list;
 
     public String getRiskStatus() {
         return riskStatus;
@@ -30,5 +33,13 @@ public class JsdUserAuthQuery extends Page<JsdUserAuthDo>{
 
     public void setSearchContent(String searchContent) {
         this.searchContent = searchContent;
+    }
+
+    public List<UserAuthDto> getList() {
+        return list;
+    }
+
+    public void setList(List<UserAuthDto> list) {
+        this.list = list;
     }
 }
