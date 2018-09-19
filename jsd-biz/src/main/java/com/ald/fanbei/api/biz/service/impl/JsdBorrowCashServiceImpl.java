@@ -123,10 +123,20 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
+    public int getBorrowCashByBeforeTodayCount(Date todayLast) {
+        return jsdBorrowCashDao.getBorrowCashByBeforeTodayCount(todayLast);
+    }
+
+    @Override
     public List<JsdBorrowCashDo> getBorrowCashOverdue(int nowPage, int pageSize) {
         Date date = new Date(System.currentTimeMillis());
         Date bengin = DateUtil.getStartOfDate(date);
         return jsdBorrowCashDao.getBorrowCashOverduePaging(bengin, nowPage, pageSize);
+    }
+
+    @Override
+    public List<JsdBorrowCashDo> getBorrowCashByBeforeToday(int nowPage, int pageSize, Date todayLast) {
+        return jsdBorrowCashDao.getBorrowCashByBeforeToday(nowPage,pageSize,todayLast);
     }
 
     @Override

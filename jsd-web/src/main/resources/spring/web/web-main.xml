@@ -104,6 +104,9 @@
                 
 				<entry key="/third/eca/v1/syncUserInfo" value-ref="jsdSyncUserInfoApi" />
 
+				<entry key="/third/eca/v1/synUserAuth" value-ref="synUserAuthApi" />
+
+
 				<!-- 催收获取通讯录 -->
 				<entry key="/third/eca/v1/getAddressList" value-ref="getUserContactsInfoApi"/>
 

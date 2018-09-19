@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.biz.service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -69,10 +70,22 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
 
     /**
+     * 获取还款日在当前以前
+     * @return
+     */
+    int getBorrowCashByBeforeTodayCount(Date todayLast);
+
+
+    /**
      * 获取当前的逾期借款
      */
     List<JsdBorrowCashDo> getBorrowCashOverdue(int nowPage, int pageSize);
 
+
+    /**
+     * 获取当前的逾期借款
+     */
+    List<JsdBorrowCashDo> getBorrowCashByBeforeToday(int nowPage, int pageSize,Date todayLast);
 
     /**
      * 获取当前的测试逾期借款

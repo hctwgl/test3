@@ -61,6 +61,8 @@ import java.math.BigDecimal;
      */
     private Date gmtModified;
 
+    private String url;
+
 
     /**
      * 获取主键Id
@@ -224,4 +226,11 @@ import java.math.BigDecimal;
       this.gmtModified = gmtModified;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }
