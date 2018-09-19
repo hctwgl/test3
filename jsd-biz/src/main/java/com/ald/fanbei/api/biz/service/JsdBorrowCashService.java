@@ -97,6 +97,20 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      */
     HashMap<String, BigDecimal> getReviewLoanStatistics();
 
+    /**
+     * 借款统计
+     *
+     * @return
+     */
+    HashMap<String, BigDecimal> getLoanStatistics();
+
+    /**
+     * 还款计划统计
+     *
+     * @return
+     */
+    HashMap<String, BigDecimal> getRepayStatistics();
+
     Boolean updateReviewStatusByXgNo(JSONArray jsonArray);
 
     /**
