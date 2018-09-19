@@ -19,6 +19,13 @@
        </mvc:message-converters>
 	</mvc:annotation-driven>
 	<mvc:default-servlet-handler />
+	
+	<mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <bean class="com.ald.jsd.mgr.spring.LoginInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
 
 	<context:component-scan base-package="com.ald.fanbei.api.biz.third.util" />
 	<context:component-scan base-package="com.ald.fanbei.api.biz.util" />

@@ -22,11 +22,13 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.jsd.mgr.biz.service.MgrRoleService;
 import com.ald.jsd.mgr.dal.dao.MgrOperatorDao;
 import com.ald.jsd.mgr.dal.domain.MgrOperatorDo;
+import com.ald.jsd.mgr.spring.NotNeedLogin;
 import com.ald.jsd.mgr.web.LocalConstants;
 import com.ald.jsd.mgr.web.Sessions;
 import com.ald.jsd.mgr.web.dto.req.LoginReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 
+@NotNeedLogin
 @Controller
 @ResponseBody
 @RequestMapping("/api/login")

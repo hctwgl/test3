@@ -119,10 +119,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				lockRepay(bo.userId);
 			}
 
-			String name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
 			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
 			bo.tradeNo = tradeNo;
-			bo.name = name;
 			generateRepayRecords(bo);
 			return doRepay(bo,bankPayType);
 		}catch (Exception e) {

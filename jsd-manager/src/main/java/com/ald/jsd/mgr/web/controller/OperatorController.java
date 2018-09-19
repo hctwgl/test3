@@ -16,11 +16,12 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.jsd.mgr.dal.dao.MgrOperatorDao;
 import com.ald.jsd.mgr.dal.domain.MgrOperatorDo;
+import com.ald.jsd.mgr.spring.NotNeedLogin;
 import com.ald.jsd.mgr.web.LocalConstants;
 import com.ald.jsd.mgr.web.dto.req.OperatorEditReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 
-
+@NotNeedLogin
 @Controller
 @ResponseBody
 @RequestMapping("/api/operator")
