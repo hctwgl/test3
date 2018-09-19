@@ -33,4 +33,9 @@ public class JsdCollectionBorrowServiceImpl extends ParentServiceImpl<JsdCollect
 	public BaseDao<JsdCollectionBorrowDo, Long> getDao() {
 		return jsdCollectionBorrowDao;
 	}
+
+	@Override
+	public JsdCollectionBorrowDo selectByBorrowId(Long borrowId){
+		return jsdCollectionBorrowDao.selectByBorrowId(borrowId);
+	}
 }

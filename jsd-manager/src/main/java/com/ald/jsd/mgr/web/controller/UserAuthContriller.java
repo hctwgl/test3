@@ -18,7 +18,7 @@ import java.util.List;
 
 @Controller
 @ResponseBody
-@RequestMapping("/api/auth")
+@RequestMapping("/api/auth/")
 public class UserAuthContriller extends BaseController{
 
     @Resource

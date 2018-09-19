@@ -33,4 +33,9 @@ public class JsdCollectionRepaymentServiceImpl extends ParentServiceImpl<JsdColl
 	public BaseDao<JsdCollectionRepaymentDo, Long> getDao() {
 		return jsdCollectionRepaymentDao;
 	}
+
+	@Override
+	public JsdCollectionRepaymentDo getByRepayNo(String repayNo){
+			return jsdCollectionRepaymentDao.getByRepayNo(repayNo);
+	}
 }

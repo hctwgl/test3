@@ -52,8 +52,6 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
 
     int updateReviewStatus(@Param("reviewStatus") String reviewStatus, @Param("borrowId") Long borrowId);
 
-    BigDecimal getCurrDayAllamount();
-
 
     /*-------------------------------------------------------管理后台------------------------------------------------------------------------------*/
 

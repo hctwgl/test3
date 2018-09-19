@@ -69,9 +69,7 @@
 	        <if test="gmtCreate != null">        
 	            gmt_create,
 	        </if>
-	        <if test="gmtModified != null">        
 	            gmt_modified,
-	        </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -96,9 +94,7 @@
 		    <if test="gmtCreate != null" >
 		       #{gmtCreate,jdbcType=TIMESTAMP},
 		    </if>
-		    <if test="gmtModified != null" >
-		       #{gmtModified,jdbcType=TIMESTAMP},
-		    </if>
+		     now()
         </trim>
     </insert>
     

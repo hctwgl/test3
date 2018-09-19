@@ -1,5 +1,7 @@
 package com.ald.jsd.mgr.web.controller;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.dal.dao.JsdCollectionBorrowDao;
+import com.ald.jsd.mgr.dal.domain.dto.MgrCollectionBorrowDto;
 import com.ald.jsd.mgr.dal.query.MgrCommonQuery;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 
@@ -24,9 +27,11 @@ public class CollectionMgrController extends BaseController{
     JsdCollectionBorrowDao jsdCollectionBorrowDao;
 
     @RequestMapping(value = { "/listBorrow.json" })
-    public Resp<MgrCommonQuery> numProtocol(@RequestBody @Valid MgrCommonQuery query, HttpServletRequest request){
+    public Resp<MgrCommonQuery<MgrCollectionBorrowDto>> listBorrow(@RequestBody @Valid MgrCommonQuery<MgrCollectionBorrowDto> query, HttpServletRequest request){
+    	List<MgrCollectionBorrowDto> list = jsdCollectionBorrowDao.listMgrCollectionBorrow(query);
+    	query.list = list;
     	
-    	return Resp.succ(null, "");
+    	return Resp.succ(query, "");
     }
     
 }

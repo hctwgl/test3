@@ -47,7 +47,8 @@
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO jsd_collection_borrow
         <trim prefix="(" suffix=")" suffixOverrides="," >
-	        <if test="borrowId != null">        
+            gmt_create,
+            <if test="borrowId != null">
 	            borrow_id,
 	        </if>
 	        <if test="status != null">        
@@ -68,15 +69,13 @@
 	        <if test="reviewStatus != null">        
 	            review_status,
 	        </if>
-	        <if test="gmtCreate != null">        
-	            gmt_create,
-	        </if>
 	        <if test="gmtModified != null">        
 	            gmt_modified,
 	        </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
+            now(),
 		    <if test="borrowId != null" >
 		       #{borrowId,jdbcType=INTEGER},
 		    </if>
@@ -97,9 +96,6 @@
 		    </if>
 		    <if test="reviewStatus != null" >
 		       #{reviewStatus,jdbcType=VARCHAR},
-		    </if>
-		    <if test="gmtCreate != null" >
-		       #{gmtCreate,jdbcType=TIMESTAMP},
 		    </if>
 		    <if test="gmtModified != null" >
 		       #{gmtModified,jdbcType=TIMESTAMP},
@@ -158,27 +154,33 @@
         FROM jsd_collection_borrow
         <include refid="commonCondition"/>
     </select>
+
+    <select id="selectByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo" >
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_collection_borrow
+        WHERE borrow_id = #{borrowId} AND is_delete = 0
+    </select>
+
     
     <select id="listMgrCollectionBorrow" resultType="MgrCollectionBorrowDto">
         SELECT 
-            
+            bc.trade_no_xgxy, u.real_name, cb.status, bc.repay_amount AS repaid_amount,
+            (bc.amount + bc.interest_amount + bc.sum_repaid_interest + bc.poundage_amount + bc.sum_repaid_poundage + bc.overdue_amount + bc.sum_repaid_overdue - bc.repay_amount) AS unrepay_amount,
+            bc.gmt_plan_repayment AS gmt_due, bc.overdue_day AS overdue_days, MAX(bcr.gmt_create) AS gmt_last_repay
         FROM jsd_collection_borrow cb
         INNER JOIN jsd_borrow_cash bc ON cb.borrow_id = bc.id
         INNER JOIN jsd_user u ON bc.user_id = u.id
-        <if test="status != null and status =='WAIT'">
-            AND a.review_status ='WAIT'
-        </if>
-        <if test="status != null and status =='PASS'">
-            AND a.review_status ='PASS'
-        </if>
-        <if test="status != null and status =='REFUSE'">
-            AND a.review_status ='REFUSE'
+        INNER JOIN jsd_borrow_cash_repayment bcr ON cb.borrow_id = bcr.borrow_id
+        WHERE bc.is_delete = 0
+        <if test="status != null">
+            AND cb.status = #{status}
         </if>
         <if test="searchContent != null and searchContent !=''">
-            AND a.trade_no_xgxy LIKE  CONCAT('%',#{searchContent},'%')
-            AND b.mobile LIKE  CONCAT('%',#{searchContent},'%')
-            AND b.real_name LIKE  CONCAT('%',#{searchContent},'%')
+            AND bc.trade_no_xgxy LIKE '${searchContent}%'
+            AND u.real_name LIKE '%${searchContent}%'
         </if>
+        GROUP BY bc.trade_no_xgxy
     </select>
     
 </mapper>
