@@ -656,8 +656,11 @@
         a.*,b.mobile,b.real_name
         FROM
         jsd_borrow_cash a inner join jsd_user b on a.user_id=b.id where a.is_delete=0
-        <if test="status != null and status !='ALL'">
+        <if test="status != null and status !='ALL' and status !='OVERDUE'">
             AND a.status =#{status}
+        </if>
+        <if test="status != null and status ='OVERDUE'">
+            AND a.overdue_status='Y'
         </if>
         <if test="searchContent != null and searchContent !=''">
             AND a.borrow_no LIKE  CONCAT('%',#{searchContent},'%')
