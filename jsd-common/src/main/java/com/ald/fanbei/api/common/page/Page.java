@@ -27,7 +27,7 @@ public class Page<T> extends AbstractSerial implements Paginable<T> {
 
 	private String timestamp = null; // 查询时间戳
 
-	private boolean full = false; // 是否全量更新 //false 不更新totalcount
+	private boolean full = true; // 是否需要感知全量数据 //false 不更新totalcount
 
 	public int getPageIndex() {
 		return pageIndex;
@@ -61,60 +61,6 @@ public class Page<T> extends AbstractSerial implements Paginable<T> {
 
 	public void setTotalPage(int totalPage) {
 		this.totalPage = totalPage;
-	}
-
-	@Override
-	public boolean isFirstPage() {
-		return pageIndex <= 1;
-	}
-
-	@Override
-	public boolean isLastPage() {
-		return pageIndex >= totalPage;
-	}
-
-	@Override
-	public int getNextPage() {
-		return isLastPage() ? pageIndex : (pageIndex + 1);
-	}
-
-	@Override
-	public int getPrePage() {
-		return isFirstPage() ? pageIndex : (pageIndex - 1);
-	}
-
-	@Override
-	public int getBeginIndex() {
-		if (pageIndex > 0) {
-			return (pageSize * (pageIndex - 1));
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public int getEndIndex() {
-		if (pageIndex > 0) {
-			return Math.min(pageSize * pageIndex, totalCount);
-		} else {
-			return 0;
-		}
-	}
-
-	public int getBeginPage() {
-		if (pageIndex > 0) {
-			return (PAGE_COUNT * ((pageIndex - 1) / PAGE_COUNT)) + 1;
-		} else {
-			return 0;
-		}
-	}
-
-	public int getEndPage() {
-		if (pageIndex > 0) {
-			return Math.min(PAGE_COUNT * ((pageIndex - 1) / PAGE_COUNT + 1), getTotalPage());
-		} else {
-			return 0;
-		}
 	}
 
 	public boolean isFull() {

@@ -250,6 +250,17 @@
         FROM jsd_collection_repayment
         WHERE is_delete = 0 AND trade_no = #{repayNo}
     </select>
-
+    
+    <select id="listMgrCollectionRepayment" resultType="MgrCollectionRepaymentDto">
+        SELECT *
+        FROM jsd_collection_repayment a
+        WHERE a.is_delete = 0
+        <if test="reviewStatus != null">
+            AND a.review_status = #{reviewStatus}
+        </if>
+        <if test="searchContent != null">
+            AND a.trade_no LIKE '${searchContent}%'
+        </if>
+    </select>
     
 </mapper>

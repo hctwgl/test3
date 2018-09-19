@@ -47,7 +47,7 @@ public class PageInterceptor implements Interceptor {
 			Connection connection = (Connection) invocation.getArgs()[0];
 			String sql = boundSql.getSql();
 			if (page.isFull()) {
-				this.settotalCount(page, mappedStatement, connection);
+				this.setTotalCount(page, mappedStatement, connection);
 			}
 			this.setTimestamp(page, connection);
 			String pageSql = this.getPageSql(page, sql);
@@ -131,7 +131,7 @@ public class PageInterceptor implements Interceptor {
 	 * @param connection
 	 *            当前的数据库连接
 	 */
-	private void settotalCount(Page<?> page, MappedStatement mappedStatement, Connection connection) {
+	private void setTotalCount(Page<?> page, MappedStatement mappedStatement, Connection connection) {
 		BoundSql boundSql = mappedStatement.getBoundSql(page);
 		String sql = boundSql.getSql();
 		String countSql = this.getCountSql(sql);

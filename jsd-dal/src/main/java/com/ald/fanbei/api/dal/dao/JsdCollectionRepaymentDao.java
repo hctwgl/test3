@@ -1,7 +1,12 @@
 package com.ald.fanbei.api.dal.dao;
 
-import com.ald.fanbei.api.dal.domain.JsdCollectionRepaymentDo;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
+
+import com.ald.fanbei.api.dal.domain.JsdCollectionRepaymentDo;
+import com.ald.jsd.mgr.dal.domain.dto.MgrCollectionRepaymentDto;
+import com.ald.jsd.mgr.dal.query.MgrCommonQuery;
 
 /**
  * Dao
@@ -14,5 +19,7 @@ import org.apache.ibatis.annotations.Param;
 public interface JsdCollectionRepaymentDao extends BaseDao<JsdCollectionRepaymentDo, Long> {
 
     JsdCollectionRepaymentDo getByRepayNo(@Param("repayNo") String repayNo);
-
+    
+    List<MgrCollectionRepaymentDto> listMgrCollectionRepayment(MgrCommonQuery<?> query);;
+    
 }
