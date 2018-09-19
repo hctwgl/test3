@@ -18,7 +18,7 @@ public class Bootstrap4Jetty {
 		String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 		ROOT_PATH = rootPath.replace("target/classes/", "");
 		String tmpStr = ROOT_PATH.substring(0, ROOT_PATH.length() - 1);
-		PARENT_ROOT_PATH = tmpStr.substring(0, tmpStr.lastIndexOf("/"));
+		PARENT_ROOT_PATH = tmpStr.substring(0, tmpStr.lastIndexOf("/") + 1);
 	}
 	public static void main(String[] args) {
 		try {
