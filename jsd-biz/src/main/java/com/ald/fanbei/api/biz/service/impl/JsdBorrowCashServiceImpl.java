@@ -285,7 +285,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     @Override
     public BigDecimal calcuUnrepayAmount(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderCashDo orderCashDo) {
         BigDecimal totalAmount = this.calcuTotalAmount(cashDo, orderCashDo);
-        return totalAmount.subtract(cashDo.getRepayAmount()).subtract(orderCashDo.getRepaidAmount());
+        if(orderCashDo != null) {
+        	return totalAmount.subtract(cashDo.getRepayAmount()).subtract(orderCashDo.getRepaidAmount());
+        }
+        return totalAmount.subtract(cashDo.getRepayAmount());
     }
 
     /**
