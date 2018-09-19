@@ -63,13 +63,13 @@ public class JsdBorrowV2Test extends BaseTest {
     public void getBorrowFeeDetail() {
     	String url = urlBase + "/third/eca/v1/getBorrowFeeDetail";
     	JSONObject params = new JSONObject();
-        params.put("openId", "BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
+        params.put("openId", "BC539267586FB64E8990BB3113FCA5BC");
         params.put("productNo", "2");
-        params.put("amount", "5000");
+        params.put("amount", "100");
         params.put("term", "7");
         params.put("unit", "DAY");
         params.put("isTying", "Y");
-        params.put("tyingType", "SELL");
+        params.put("tyingType", "BEHEAD");
         String encryptBase64Str = JsdAesUtil.encryptToBase64Third(JSON.toJSONString(params), AES_KEY);
         Map<String, Object> p = new HashMap<>();
         p.put("data", encryptBase64Str);

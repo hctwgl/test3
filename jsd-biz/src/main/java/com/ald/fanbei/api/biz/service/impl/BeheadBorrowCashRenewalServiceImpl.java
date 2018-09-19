@@ -69,7 +69,7 @@ import com.google.common.collect.Maps;
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  
-@Service("jsdBorrowCashRenewalV2Service")
+@Service("beheadBorrowCashRenewalService")
 public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbstract implements BeheadBorrowCashRenewalService {
 	
     private static final Logger logger = LoggerFactory.getLogger(BeheadBorrowCashRenewalServiceImpl.class);
@@ -114,6 +114,8 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 					
 					jsdBorrowCashRenewalDao.saveRecord(renewalDo);
 					jsdBorrowLegalOrderDao.saveRecord(orderDo);
+					
+					paramBo.renewalDo = renewalDo;
 					return 1l;
 				}catch(Exception e) {
 					status.setRollbackOnly();
@@ -146,7 +148,7 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 	    
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bo.bankChannel)) {// 快捷支付
 			map = sendKuaiJieSms(bank, renewalDo.getTradeNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(), 
-					userDo.getIdNumber(), JSON.toJSONString(bizObject), "jsdBorrowCashRenewalV2Service",Constants.DEFAULT_PAY_PURPOSE, name, 
+					userDo.getIdNumber(), JSON.toJSONString(bizObject), "beheadBorrowCashRenewalService",Constants.DEFAULT_PAY_PURPOSE, name, 
 				PayOrderSource.RENEW_JSD_V2.getCode());
 		} else {// 代扣
 			map = doUpsPay(bo.bankChannel, bank, renewalDo.getTradeNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(),
@@ -503,12 +505,6 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 		// 上期总逾期费
 		BigDecimal overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount());
 		
-		// 利润差
-		BigDecimal diffFee = this.getDiffFee(borrowCashDo, delayInfo);
-		
-		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +本期商品(利润差))
-		BigDecimal renewalPayAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital, diffFee);
-		
 		String deferRemark = "上期利息"+rateAmount+
 							 "元,赊销手续费"+poundage+
 							 "元,上期逾期费"+overdueAmount+
@@ -520,10 +516,17 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 				.subtract(borrowCashDo.getRepayAmount().add(capital));
 		
 		delayInfo.put("principalAmount", principalAmount+"");	// 展期后剩余借款本金
-		delayInfo.put("delayAmount", renewalPayAmount+"");	// 需支付总金额
 		delayInfo.put("delayDay", allowRenewalDay+"");	// 续期天数
 		delayInfo.put("delayRemark", deferRemark);	// 费用明细	展期金额的相关具体描述（多条说明用英文逗号,用间隔）
+		
+		// 利润差
 		this.getRenewalRate(delayInfo);
+		BigDecimal diffFee = this.getDiffFee(borrowCashDo, delayInfo);
+		
+		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +本期商品(利润差))
+		BigDecimal renewalPayAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital, diffFee);
+		
+		delayInfo.put("delayAmount", renewalPayAmount+"");	// 需支付总金额
 		delayInfo.put("totalDiffFee", diffFee.toPlainString());	// 展期后的利润差，西瓜会根据此金额匹配搭售商品
 		
 		delayArray.add(delayInfo);
