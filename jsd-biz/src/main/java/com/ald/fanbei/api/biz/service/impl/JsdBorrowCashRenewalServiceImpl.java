@@ -367,6 +367,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 				noticeRecordDo.setParams(JSON.toJSONString(repayData));
 				jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+				logger.info("collectRenewal repayData = " + repayData);
 				if(collectionSystemUtil.collectRenewal(repayData)){
 					noticeRecordDo.setRid(noticeRecordDo.getRid());
 					noticeRecordDo.setGmtModified(new Date());
