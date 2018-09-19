@@ -5,6 +5,7 @@ import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 import com.ald.fanbei.api.dal.query.LoanQuery;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +69,20 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      * @return
      */
     HashMap<String, Long> getReviewLoanStatistics();
+
+    /**
+     * 借款统计
+     *
+     * @return
+     */
+    HashMap<String, Object> getLoanStatistics();
+
+    /**
+     * 还款计划统计
+     *
+     * @return
+     */
+    HashMap<String, Object> getRepayStatistics();
 
     /**
      * 借款审批-拒绝

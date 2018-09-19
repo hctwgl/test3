@@ -157,6 +157,34 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
+    public HashMap<String, BigDecimal> getLoanStatistics() {
+        HashMap<String, BigDecimal> result = new HashMap<>();
+        HashMap<String, Object> hashMap = jsdBorrowCashDao.getLoanStatistics();
+        result.put("apply", new BigDecimal((Long) hashMap.get("apply")));
+        result.put("amount", (BigDecimal) hashMap.get("amount"));
+        if (result.get("apply").equals(BigDecimal.ZERO)) {
+            result.put("perAmount", BigDecimal.ZERO);
+        } else {
+            result.put("perAmount", BigDecimalUtil.divide(result.get("amount"), result.get("apply")));
+        }
+        return result;
+    }
+
+    @Override
+    public HashMap<String, BigDecimal> getRepayStatistics() {
+        HashMap<String, BigDecimal> result = new HashMap<>();
+        HashMap<String, Object> hashMap = jsdBorrowCashDao.getRepayStatistics();
+        result.put("awaitRepay", new BigDecimal((Long) hashMap.get("awaitRepay")));
+        result.put("repay", new BigDecimal((Long) hashMap.get("repay")));
+        if (result.get("awaitRepay").equals(BigDecimal.ZERO)) {
+            result.put("repayRate", BigDecimal.ZERO);
+        } else {
+            result.put("repayRate", BigDecimalUtil.divide(result.get("repay"), result.get("awaitRepay")).multiply(new BigDecimal(100)));
+        }
+        return result;
+    }
+
+    @Override
     public Boolean updateReviewStatusByXgNo(JSONArray jsonArray) {
         if (jsonArray != null && jsonArray.size() > 0) {
             for (int i = 0; i < jsonArray.size(); i++) {
