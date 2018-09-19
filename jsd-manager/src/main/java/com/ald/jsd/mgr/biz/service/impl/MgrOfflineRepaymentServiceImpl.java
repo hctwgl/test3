@@ -11,11 +11,13 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.jsd.mgr.biz.service.MgrOfflineRepaymentService;
 import com.ald.jsd.mgr.enums.RespCode;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.Map;
 
+@Component
 public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentService {
 
     @Resource
