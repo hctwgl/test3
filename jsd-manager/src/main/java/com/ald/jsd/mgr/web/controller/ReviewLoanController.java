@@ -64,15 +64,17 @@ public class ReviewLoanController {
         String tradeNoXgxy = jsonObject.getString("tradeNoXgxy");
         //借款信息
         JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
-        BeanUtils.copyProperties(jsdBorrowCashDo, reviewLoanDetailsReq);
+        BeanUtils.copyProperties(reviewLoanDetailsReq, jsdBorrowCashDo);
         reviewLoanDetailsReq.setTerm(jsdBorrowCashDo.getType());
         reviewLoanDetailsReq.setApplyDate(jsdBorrowCashDo.getGmtCreate());
         //授信额度
         JsdUserAuthDo jsdUserAuthDo = jsdUserAuthService.getByUserId(jsdBorrowCashDo.getUserId());
-        reviewLoanDetailsReq.setRiskAmount(jsdUserAuthDo.getRiskAmount());
+        if (jsdUserAuthDo != null) {
+            reviewLoanDetailsReq.setRiskAmount(jsdUserAuthDo.getRiskAmount());
+        }
         //用户信息
         JsdUserDo jsdUserDo = jsdUserService.getById(jsdBorrowCashDo.getUserId());
-        BeanUtils.copyProperties(jsdUserDo, reviewLoanDetailsReq);
+        BeanUtils.copyProperties(reviewLoanDetailsReq, jsdUserDo);
         if (StringUtil.isNotBlank(jsdUserDo.getBirthday())) {
             String year = jsdUserDo.getBirthday().substring(0, 4);
             String currentYear = DateUtil.getYear(new Date());
