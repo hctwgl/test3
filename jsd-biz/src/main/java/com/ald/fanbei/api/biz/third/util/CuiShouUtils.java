@@ -69,9 +69,11 @@ public class CuiShouUtils {
         try {
             String sign = request.getParameter("sign");
             String data = request.getParameter("data");
-            logger.info("offlineRepaymentMoney data = " + data);
+            logger.info("offlineRepaymentMoney data = " + data +"  ,sign = " + sign);
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+            logger.info("offlineRepaymentMoney pd = " + pd);
             String sign1 = DigestUtil.encodeHex(pd);
+            logger.info("offlineRepaymentMoney sign1 = " + sign1);
             if (!sign1.equals(sign)) return JSONObject.toJSONString(new CuiShouBackMoney(201, "sign error"));
             final JSONObject jsonObject = JSONObject.parseObject(data);
             CuiShouBackMoney result = loanBorrowCashMoney(jsonObject);
