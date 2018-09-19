@@ -330,4 +330,20 @@
 		AND
         xgxy_bind_no = #{bindNo}
 	</select>
+
+
+    <select id="getMainBankByUserId" resultType="JsdUserBankcardDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_user_bankcard
+        WHERE
+        is_delete=0
+        AND
+        user_id = #{userId}
+        AND
+        status = 'B'
+        AND
+        is_main='Y'
+    </select>
 </mapper>

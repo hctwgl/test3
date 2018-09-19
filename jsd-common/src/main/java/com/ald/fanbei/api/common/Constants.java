@@ -45,8 +45,9 @@ public class Constants {
 	public static final String DEFAULT_REPAYMENT_NAME_BORROW_CASH = "主动还款";
 	public static final String DEFAULT_REPAYMENT_NAME_BORROW_RECYCLE = "主动支付";
 	public static final String DEFAULT_RENEWAL_NAME_BORROW_CASH = "续费支付";
-	
-	
+	public static final String DEFAULT_WITHHOLD_NAME_BORROW_CASH = "代扣还款";
+
+
 	// -------------- CACHE KEY ZONE ---------------
 	public static final String CACHEKEY_REPAYCASHNO_LOCK = "jsd_repay_cash_no_lock";
 	public static final String CACHEKEY_OFFLINE_REPAYCASHNO = "dsed_offline_repay_cash_no";

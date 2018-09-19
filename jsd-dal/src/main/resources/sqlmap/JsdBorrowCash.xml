@@ -534,6 +534,22 @@
 			jsd_borrow_cash b where b.is_delete=0 and b.gmt_plan_repayment <![CDATA[   <  ]]> #{nowTime}  and status ='TRANSFERRED'
 	</select>
 
+    <select id="getBorrowCashByBeforeTodayCount" resultType="java.lang.Integer">
+		SELECT
+			count(*)
+		FROM
+			jsd_borrow_cash b where b.is_delete=0 and b.gmt_plan_repayment <![CDATA[   <  ]]> #{todayLast}  and status ='TRANSFERRED'
+	</select>
+
+
+    <select id="getBorrowCashByBeforeToday" resultType="JsdBorrowCashDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_borrow_cash b where b.is_delete=0 and b.gmt_plan_repayment <![CDATA[   <  ]]> #{todayLast}
+        and status='TRANSFERRED' limit #{beginIndex}, #{pageSize}
+    </select>
+
     <select id="getBorrowCashOverduePaging" resultType="JsdBorrowCashDo">
         SELECT
         <include refid="queryFields"/>

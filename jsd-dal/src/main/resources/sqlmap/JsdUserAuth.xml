@@ -63,12 +63,15 @@
 	        <if test="riskRate != null">        
 	            risk_rate,
 	        </if>
-	        <if test="gmtRisk != null">        
+	        <if test="gmtRisk != null">
 	            gmt_risk,
 	        </if>
 	        <if test="gmtCreate != null">        
 	            gmt_create,
 	        </if>
+            <if test="url != null">
+                url,
+            </if>
 	            gmt_modified,
         </trim>
         
@@ -94,6 +97,9 @@
 		    <if test="gmtCreate != null" >
 		       #{gmtCreate,jdbcType=TIMESTAMP},
 		    </if>
+            <if test="url != null" >
+                #{url,jdbcType=VARCHAR},
+            </if>
 		     now()
         </trim>
     </insert>

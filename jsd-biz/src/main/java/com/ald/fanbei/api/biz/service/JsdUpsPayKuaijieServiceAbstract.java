@@ -81,7 +81,7 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 		// 获取用户绑定银行卡信息
 		// 调用ups进行支付
 		UpsCollectRespBo respBo = null;
-		if(StringUtil.equals(RepayType.WITHHOLD.getCode(), bank.get("bankChannel").toString())){
+		if(StringUtil.equals(RepayType.WITHHOLD.getCode(), bank.get("bankChannel").toString()) || StringUtil.equals(RepayType.WITHHOLD.getCode(), bankPayType)){
 			daikouConfirmPre(payTradeNo, bankPayType, payBizObject);
 			respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(), bank.get("bankCardNumber").toString(),
 					idNumber, purpose, remark, "02", merPriv);

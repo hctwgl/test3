@@ -102,6 +102,22 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
     int passByXgNo(@Param("tradeNoXgxy") String tradeNoXgxy);
 
     /**
+     * 代扣数
+     * @param todayLast
+     * @return
+     */
+    int getBorrowCashByBeforeTodayCount(@Param("todayLast") Date todayLast);
+
+    /**
+     * 代扣数据
+     * @param nowPage
+     * @param pageSize
+     * @param todayLast
+     * @return
+     */
+    List<JsdBorrowCashDo> getBorrowCashByBeforeToday(@Param("beginIndex")int nowPage, @Param("pageSize")int pageSize, @Param("todayLast")Date todayLast);
+
+    /**
      * 借款列表
      *
      * @param query

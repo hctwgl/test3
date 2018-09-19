@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.Constants;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -82,6 +83,7 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
         bo.bankNo = param.bankNo;
         bo.period = param.period;
         bo.repayNo=param.repayNo;
+        bo.name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
         checkPwdAndCard(bo);
         checkFrom(bo);
         return bo;
