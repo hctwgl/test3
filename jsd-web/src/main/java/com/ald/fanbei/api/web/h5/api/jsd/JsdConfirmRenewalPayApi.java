@@ -214,7 +214,6 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		renewalDo.setGmtModified(new Date());
 
 		Date curr = DateUtil.getStartOfDate(new Date(System.currentTimeMillis()));
-		logger.info("curr = " +curr +",planTime = "+ borrowCashDo.getGmtPlanRepayment());
 		Integer overdueday = NumberUtil.objToInteger(DateUtil.getNumberOfDayBetween(curr, borrowCashDo.getGmtPlanRepayment()));
 		if(overdueday<0) overdueday=0;
 		renewalDo.setOverdueDay(overdueday);
