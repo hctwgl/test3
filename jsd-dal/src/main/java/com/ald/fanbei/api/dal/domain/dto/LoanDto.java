@@ -2,7 +2,7 @@ package com.ald.fanbei.api.dal.domain.dto;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 
-public class ReviewLoanDto extends JsdBorrowCashDo {
+public class LoanDto extends JsdBorrowCashDo {
     private String realName;//借款人姓名
     private String mobile;//借款人手机号码
 

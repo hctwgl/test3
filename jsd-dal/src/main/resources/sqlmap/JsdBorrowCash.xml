@@ -568,7 +568,7 @@
 		Where id=#{borrowId}
 	</update>
 
-    <select id="getReviewLoanList" resultType="ReviewLoanDto">
+    <select id="getReviewLoanList" resultType="LoanDto">
         SELECT
         a.*,b.mobile,b.real_name
         FROM
@@ -604,4 +604,33 @@
 		SET review_status='PASS',status='WAITTRANSED',gmt_modified=NOW()
 		Where trade_no_xgxy=#{tradeNoXgxy}
 	</update>
+
+    <select id="getLoanList" resultType="LoanDto">
+        SELECT
+        a.*,b.mobile,b.real_name
+        FROM
+        jsd_borrow_cash a inner join jsd_user b on a.user_id=b.id where a.is_delete=0
+        <if test="status != null and status !='ALL'">
+            AND a.status =#{status}
+        </if>
+        <if test="searchContent != null and searchContent !=''">
+            AND a.trade_no_xgxy LIKE  CONCAT('%',#{searchContent},'%')
+            AND b.mobile LIKE  CONCAT('%',#{searchContent},'%')
+            AND b.real_name LIKE  CONCAT('%',#{searchContent},'%')
+        </if>
+    </select>
+
+    <select id="getRepayList" resultType="LoanDto">
+        SELECT
+        a.*,b.mobile,b.real_name
+        FROM
+        jsd_borrow_cash a inner join jsd_user b on a.user_id=b.id where a.is_delete=0
+        <if test="status != null and status !='ALL'">
+            AND a.status =#{status}
+        </if>
+        <if test="searchContent != null and searchContent !=''">
+            AND a.borrow_no LIKE  CONCAT('%',#{searchContent},'%')
+            AND b.real_name LIKE  CONCAT('%',#{searchContent},'%')
+        </if>
+    </select>
 </mapper>

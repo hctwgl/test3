@@ -1,11 +1,10 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.dto.ReviewLoanDto;
-import com.ald.fanbei.api.dal.query.ReviewLoanQuery;
+import com.ald.fanbei.api.dal.domain.dto.LoanDto;
+import com.ald.fanbei.api.dal.query.LoanQuery;
 import org.apache.ibatis.annotations.Param;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -61,7 +60,7 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      * @param query
      * @return
      */
-    List<ReviewLoanDto> getReviewLoanList(ReviewLoanQuery query);
+    List<LoanDto> getReviewLoanList(LoanQuery query);
 
     /**
      * 借款审批统计
@@ -86,4 +85,20 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      * @return
      */
     int passByXgNo(@Param("tradeNoXgxy") String tradeNoXgxy);
+
+    /**
+     * 借款列表
+     *
+     * @param query
+     * @return
+     */
+    List<LoanDto> getLoanList(LoanQuery query);
+
+    /**
+     * 还款计划列表
+     *
+     * @param query
+     * @return
+     */
+    List<LoanDto> getRepayList(LoanQuery query);
 }
