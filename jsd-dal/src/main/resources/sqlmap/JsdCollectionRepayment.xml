@@ -251,15 +251,18 @@
         WHERE is_delete = 0 AND trade_no = #{repayNo}
     </select>
     
-    <select id="listMgrCollectionRepayment" resultType="MgrCollectionRepaymentDto">
-        SELECT *
+    <select id="mgrListCollectionRepayment" resultType="JsdCollectionRepaymentDo">
+        SELECT a.trade_no, a.real_name, a.account, a.repay_way, a.repay_amount AS amount, a.gmt_create, a.gmt_repay, a.review_status
         FROM jsd_collection_repayment a
         WHERE a.is_delete = 0
         <if test="reviewStatus != null">
             AND a.review_status = #{reviewStatus}
         </if>
         <if test="searchContent != null">
-            AND a.trade_no LIKE '${searchContent}%'
+            AND (a.trade_no LIKE '${searchContent}%'
+                OR a.real_name LIKE '%${searchContent}%'
+                OR a.account LIKE '%${searchContent}%'
+                OR a.repay_way LIKE '${searchContent}%')
         </if>
     </select>
     

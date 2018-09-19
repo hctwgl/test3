@@ -163,7 +163,7 @@
     </select>
 
     
-    <select id="listMgrCollectionBorrow" resultType="MgrCollectionBorrowDto">
+    <select id="mgrListCollectionBorrow" resultType="MgrCollectionBorrowDto">
         SELECT 
             bc.trade_no_xgxy, u.real_name, cb.status, bc.repay_amount AS repaid_amount,
             (bc.amount + bc.interest_amount + bc.sum_repaid_interest + bc.poundage_amount + bc.sum_repaid_poundage + bc.overdue_amount + bc.sum_repaid_overdue - bc.repay_amount) AS unrepay_amount,
@@ -177,8 +177,8 @@
             AND cb.status = #{status}
         </if>
         <if test="searchContent != null and searchContent !=''">
-            AND bc.trade_no_xgxy LIKE '${searchContent}%'
-            AND u.real_name LIKE '%${searchContent}%'
+            AND (bc.trade_no_xgxy LIKE '${searchContent}%'
+                OR u.real_name LIKE '%${searchContent}%')
         </if>
         GROUP BY bc.trade_no_xgxy
     </select>
