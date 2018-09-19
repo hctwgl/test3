@@ -176,7 +176,7 @@ public class LoanOverDueJob {
         JsdUserDo userDo = jsdUserService.getById(userId);
         String contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
         if(StringUtils.isNotBlank(contacts)){
-            List<JsdUserContactsDo> userContactsDo= jsdUserContactsService.getUserContactsByUserId(String.valueOf(userId));
+            List<JsdUserContactsDo> userContactsDo= jsdUserContactsService.getUserContactsByUserId(userId);
             JsdUserContactsDo contactsDo=new JsdUserContactsDo();
             contactsDo.setUserId(String.valueOf(userId));
             contactsDo.setContactsMobile(contacts);

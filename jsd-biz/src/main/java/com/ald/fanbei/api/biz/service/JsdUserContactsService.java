@@ -14,9 +14,9 @@ import java.util.List;
  */
 public interface JsdUserContactsService extends ParentService<JsdUserContactsDo, Long> {
 
-    List<JsdUserContactsDo>  getUserContactsByUserId(String userId);
+    List<JsdUserContactsDo>  getUserContactsByUserId(Long userId);
 
-    List<JsdUserContactsDo>  getUserContactsByUserIds(List<String> userIds);
+    List<JsdUserContactsDo>  getUserContactsByUserIds(List<Long> userIds);
 
     int updateByUserId(JsdUserContactsDo contactsDo);
 }

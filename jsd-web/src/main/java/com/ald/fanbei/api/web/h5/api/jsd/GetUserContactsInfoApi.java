@@ -26,7 +26,7 @@ public class GetUserContactsInfoApi implements JsdH5Handle {
     public JsdH5HandleResponse process(Context context) {
         JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
         String userId = ObjectUtils.toString(context.getData("userId"), null);
-        List<String> userList = Arrays.asList(userId.split(","));
+        List<Long> userList = Arrays.asList((Long.parseLong(String.valueOf(userId.split(",")))));
         List<JsdUserContactsDo> contacts= jsdUserContactsService.getUserContactsByUserIds(userList);
         Map<String,Object>  data=new HashMap<>();
         List<Map<String,String>> con=new ArrayList<>();
