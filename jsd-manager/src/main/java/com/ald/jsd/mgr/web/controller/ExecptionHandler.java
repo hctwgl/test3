@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.jsd.mgr.enums.RespCode;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 
 /**
@@ -34,7 +35,7 @@ public class ExecptionHandler{
 		FieldError fieldError = e.getFieldError();
 		logger.error("Request params error! Class = " + e.getTarget().getClass().getSimpleName() + ", Msg = " + fieldError.getField() + " is [" + fieldError.getRejectedValue() + "] " + fieldError.getCode());
 		
-		return Resp.fail(null, 902, "请求参数不合法");
+		return Resp.fail(null, RespCode.PARAMS_ERROR.code, "请求参数不合法");
 	}
 	
 	/**
@@ -47,7 +48,7 @@ public class ExecptionHandler{
 		BindingResult br = e.getBindingResult();
 		FieldError fieldError = br.getFieldError();
 		logger.error("Request argument error! Class=" + br.getTarget().getClass().getSimpleName() + ", Msg = " + fieldError.getField() + " is [" + fieldError.getRejectedValue() + "] " + fieldError.getCode());
-		return Resp.fail(null, 902, "请求参数不合法");
+		return Resp.fail(null, RespCode.PARAMS_ERROR.code, "请求参数不合法");
 	}
 	
    /**
@@ -58,7 +59,7 @@ public class ExecptionHandler{
    @ExceptionHandler(Throwable.class)
    public Resp<?> dealAllException(Throwable e, HttpServletResponse response){
 	   logger.error("System Exception! Msg=" + e.getMessage(), e);
-	   return Resp.fail(null, 999, "系统开小差了，请联系管理员");
+	   return Resp.fail(null, RespCode.SYS_ERROR.code, "系统开小差了，请联系管理员");
    }
 	
 }
