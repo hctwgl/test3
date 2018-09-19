@@ -20,6 +20,6 @@ public interface JsdCollectionBorrowDao extends BaseDao<JsdCollectionBorrowDo, L
 
 	JsdCollectionBorrowDo selectByBorrowId(@Param("borrowId")Long borrowId);
 
-	List<MgrCollectionBorrowDto> listMgrCollectionBorrow(MgrCommonQuery<?> query);
+	List<MgrCollectionBorrowDto> mgrListCollectionBorrow(MgrCommonQuery<?> query);
 
 }

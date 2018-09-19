@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.dal.dao.JsdCollectionBorrowDao;
 import com.ald.fanbei.api.dal.dao.JsdCollectionRepaymentDao;
+import com.ald.fanbei.api.dal.domain.JsdCollectionRepaymentDo;
 import com.ald.jsd.mgr.dal.domain.dto.MgrCollectionBorrowDto;
-import com.ald.jsd.mgr.dal.domain.dto.MgrCollectionRepaymentDto;
 import com.ald.jsd.mgr.dal.query.MgrCommonQuery;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 
@@ -30,13 +30,13 @@ public class CollectionMgrController extends BaseController{
     
     @RequestMapping(value = { "/borrow/list.json" })
     public Resp<MgrCommonQuery<MgrCollectionBorrowDto>> listBorrow(@RequestBody @Valid MgrCommonQuery<MgrCollectionBorrowDto> query, HttpServletRequest request){
-    	query.list = jsdCollectionBorrowDao.listMgrCollectionBorrow(query);
+    	query.list = jsdCollectionBorrowDao.mgrListCollectionBorrow(query);
     	return Resp.succ(query, "");
     }
     
     @RequestMapping(value = { "/repayment/list.json" })
-    public Resp<MgrCommonQuery<MgrCollectionRepaymentDto>> listRepayment(@RequestBody @Valid MgrCommonQuery<MgrCollectionRepaymentDto> query, HttpServletRequest request){
-    	query.list = jsdCollectionRepaymentDao.listMgrCollectionRepayment(query);
+    public Resp<MgrCommonQuery<JsdCollectionRepaymentDo>> listRepayment(@RequestBody @Valid MgrCommonQuery<JsdCollectionRepaymentDo> query, HttpServletRequest request){
+    	query.list = jsdCollectionRepaymentDao.mgrListCollectionRepayment(query);
     	return Resp.succ(query, "");
     }
     
