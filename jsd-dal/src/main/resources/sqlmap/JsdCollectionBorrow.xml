@@ -172,7 +172,7 @@
         INNER JOIN jsd_borrow_cash bc ON cb.borrow_id = bc.id
         INNER JOIN jsd_user u ON bc.user_id = u.id
         INNER JOIN jsd_borrow_cash_repayment bcr ON cb.borrow_id = bcr.borrow_id
-        WHERE bc.is_delete = 0
+        WHERE cb.is_delete = 0
         <if test="status != null">
             AND cb.status = #{status}
         </if>
@@ -181,6 +181,21 @@
                 OR u.real_name LIKE '%${searchContent}%')
         </if>
         GROUP BY bc.trade_no_xgxy
+    </select>
+    
+    <select id="countTotalAmtBetweenGmtCreate" resultType="java.lang.Long">
+        SELECT SUM(b.amount + b.interest_amount + b.sum_repaid_interest + b.poundage_amount + b.sum_repaid_poundage + b.overdue_amount + b.sum_repaid_overdue)
+        FROM jsd_collection_borrow a
+        INNER JOIN jsd_borrow_cash b 
+            ON a.borrow_id = b.id 
+            AND (a.gmt_create BETWEEN #{dateStart} AND #{dateEnd}) 
+            AND a.is_delete = 0 
+    </select>
+    
+    <select id="countTotalWaitFinish" resultType="java.lang.Long">
+        SELECT COUNT(id)
+        FROM jsd_collection_borrow 
+        WHERE status = 'WAIT_FINISH' AND is_delete = 0
     </select>
     
 </mapper>

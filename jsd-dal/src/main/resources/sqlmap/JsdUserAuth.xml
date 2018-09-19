@@ -155,20 +155,17 @@
         <include refid="commonCondition"/>
     </select>
 
-    <select id="getListUserAuth" resultType="com.ald.jsd.mgr.dal.domain.dto.UserAuthDto" parameterType="com.ald.fanbei.api.dal.query.UserAuthQuery">
+    <select id="getListUserAuth" resultType="com.ald.fanbei.api.dal.domain.dto.UserAuthDto" parameterType="com.ald.fanbei.api.dal.query.UserAuthQuery">
         SELECT
         <include refid="queryRelationFields" />
-        FROM jsd_user u LEFT JOIN jsd_user_auth a on u.id=a.user_id
-        WHERE
-        <if test="riskStatus == 'Y' and riskStatus !=null">
-            a.risk_status ='Y',
-        </if>
-        <if test="riskStatus == 'N'and riskStatus !=null">
-            AND a.risk_status ='N',
+        FROM jsd_user_auth a LEFT JOIN jsd_user u on a.user_id=u.id
+        WHERE a.is_delete=0
+        <if test="riskStatus !=null">
+            AND a.risk_status =#{riskStatus}
         </if>
         <if test="searchContent != null and searchContent !=''">
-            AND u.real_name LIKE  CONCAT('%',#{searchContent},'%')
-            AND a.risk_no LIKE  CONCAT('%',#{searchContent},'%')
+            AND a.risk_no=#{searchContent}
+            OR u.real_name=#{searchContent}
         </if>
         ORDER BY a.gmt_create DESC
     </select>
@@ -178,6 +175,9 @@
     </select>
 
     <select id="getPassPersonNum" resultType="java.lang.Integer">
-        SELECT count(`id`) FROM jsd_user_auth WHERE risk_status='Y' AND DATE(gmt_create) = curdate();
+        SELECT count(`id`)
+        FROM jsd_user_auth WHERE is_delete=0
+        AND risk_status ='Y'
+        AND DATE(gmt_create) = curdate();
     </select>
 </mapper>

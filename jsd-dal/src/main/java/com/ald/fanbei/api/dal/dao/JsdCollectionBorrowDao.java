@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -21,5 +22,7 @@ public interface JsdCollectionBorrowDao extends BaseDao<JsdCollectionBorrowDo, L
 	JsdCollectionBorrowDo selectByBorrowId(@Param("borrowId")Long borrowId);
 
 	List<MgrCollectionBorrowDto> mgrListCollectionBorrow(MgrCommonQuery<?> query);
-
+	
+	Long countTotalAmtBetweenGmtCreate(@Param("dateStart") Date dateStart, @Param("dateEnd") Date dateEnd);
+	Long countTotalWaitFinish();
 }

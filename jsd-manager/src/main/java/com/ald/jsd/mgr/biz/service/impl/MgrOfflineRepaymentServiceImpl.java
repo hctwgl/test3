@@ -9,6 +9,7 @@ import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.jsd.mgr.biz.service.MgrOfflineRepaymentService;
+import com.ald.jsd.mgr.enums.RespCode;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 
 import javax.annotation.Resource;
@@ -39,7 +40,7 @@ public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentServic
         if(StringUtil.isAllNotEmpty(borrowNo,channel,tradeNo,amount)){
             JsdBorrowCashDo borrowCashDo=jsdBorrowCashService.getByBorrowNo(borrowNo);
             if(borrowCashDo==null){
-                return resp.fail(data,9004,"借款信息为空！");
+                return resp.fail(data,RespCode.BORROW_INFO_IS_NULL.code, RespCode.BORROW_INFO_IS_NULL.desc);
             }
             JsdBorrowLegalOrderCashDo legalOrderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
             if(repaymentDate==null){
@@ -48,7 +49,7 @@ public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentServic
             String dataId= String.valueOf(borrowCashDo.getRid()+borrowCashDo.getRenewalNum());
             jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo,legalOrderCashDo,amount,tradeNo,borrowCashDo.getUserId(), JsdRepayType.ONLINE,channel,repaymentDate,null,dataId,remark);
         }else {
-            return resp.fail(data,9001,"参数错误！");
+            return resp.fail(data,RespCode.PARAMS_ERROR.code,RespCode.PARAMS_ERROR.desc);
         }
         return null;
     }
