@@ -409,7 +409,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 					boolean orderResult = DateUtil.afterDay(new Date(),repayDealBo.orderCashDo.getGmtLastRepayment());
                     logger.info(" cashResult = " + cashResult+"orderResult = "+orderResult +"new Date() = " + new Date());
 					if(orderResult || cashResult) {
-                        nofityRisk(repayDealBo,repaymentDo,orderRepaymentDo,flag);
+						nofityRisk(repayDealBo,repaymentDo,orderRepaymentDo,flag,dataId);
                     }
 				} catch (Exception e){
 					logger.error("notice eca fail error=",e);
@@ -461,7 +461,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
             return map;
 	}
 
-	private void nofityRisk(RepayDealBo repayDealBo,JsdBorrowCashRepaymentDo repaymentDo,JsdBorrowLegalOrderRepaymentDo orderRepaymentDo,boolean flag) {
+	private void nofityRisk(RepayDealBo repayDealBo,JsdBorrowCashRepaymentDo repaymentDo,JsdBorrowLegalOrderRepaymentDo orderRepaymentDo,boolean flag,String dataId) {
 		try{
 			List<HashMap<String,String>> list = new ArrayList<>();
 			JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
@@ -479,8 +479,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				userId = orderRepaymentDo.getUserId();
 				noticeRecordDo.setRefId(String.valueOf(orderRepaymentDo.getRid()));
 			}
-			JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(borrowId);
-			JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(cashDo.getRid());
 			//--------------------start  催收还款接口需要参数---------------------------
 
 			Map<String, String> repayData = new HashMap<String, String>();
@@ -499,7 +497,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				noticeRecordDo.setType(JsdNoticeType.COLLECT.code);
 			}
 			repayData.put("repaymentAcc", repayDealBo.userId+"");//还款账户
-			data.put("dataId",String.valueOf(orderCashDo.getRid()));//源数据id
+			data.put("dataId",dataId);//源数据id
 			data.put("amount",repayAmount+"");
 			repayData.put("companyId","6");
 			repayData.put("totalAmount", repayAmount+"");
