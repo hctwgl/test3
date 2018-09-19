@@ -65,9 +65,9 @@ public class JsdTest extends BaseTest {
     public void getRenewalDetailInfo() {
     	String url = urlBase + "/third/eca/v1/getDelayDetail";
         Map<String, String> params = new HashMap<>();
-        params.put("borrowNo", "loan0909eca645000000018");
+        params.put("borrowNo", "loan0919eca283100000004");
         params.put("timestamp", System.currentTimeMillis()+"");
-        params.put("openId", "BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
+        params.put("openId", "BC539267586FB64E8990BB3113FCA5BC");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
@@ -89,16 +89,16 @@ public class JsdTest extends BaseTest {
     	goodsInfo.put("goodsImage", "http");
 
     	Map<String, String> params = new HashMap<>();
-    	params.put("borrowNo", "dk2018081010282000095");
-    	params.put("delayNo", "XJ20180904003");
+    	params.put("borrowNo", "loan0919eca283100000004");
+    	params.put("delayNo", "XJ20180919001");
     	params.put("amount", "1000");
-    	params.put("delayDay", "10");
+    	params.put("delayDay", "7");
     	params.put("bankNo", "6212261202028480466");
     	params.put("isTying", "Y");
-    	params.put("tyingType", "SELL");
+    	params.put("tyingType", "BEHEAD");
     	params.put("goodsInfo", goodsInfo.toString());
     	params.put("timestamp", System.currentTimeMillis()+"");
-    	params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
+    	params.put("openId", "BC539267586FB64E8990BB3113FCA5BC");
     	String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
     	Map<String, String> p = new HashMap<>();
     	p.put("data", data);
