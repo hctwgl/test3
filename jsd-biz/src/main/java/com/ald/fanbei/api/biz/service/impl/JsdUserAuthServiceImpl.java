@@ -41,4 +41,9 @@ public class JsdUserAuthServiceImpl extends ParentServiceImpl<JsdUserAuthDo, Lon
 	public List<UserAuthDto> getListUserAuth(UserAuthQuery query) {
 		return jsdUserAuthDao.getListUserAuth(query);
 	}
+
+	@Override
+	public JsdUserAuthDo getByUserId(Long userId) {
+		return jsdUserAuthDao.getByUserId(userId);
+	}
 }

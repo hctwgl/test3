@@ -6,7 +6,9 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
+import com.ald.fanbei.api.biz.service.BeheadBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.common.enums.BorrowVersionType;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
@@ -21,6 +23,8 @@ import com.ald.fanbei.api.web.validator.Validator;
 public class TrialBeforeBorrowApi implements JsdH5Handle {
     @Resource
     JsdBorrowCashService jsdBorrowCashService;
+    @Resource
+    BeheadBorrowCashService beheadBorrowCashService;
     
     @Override
     public JsdH5HandleResponse process(Context context) {
@@ -31,7 +35,11 @@ public class TrialBeforeBorrowApi implements JsdH5Handle {
     	bo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(context.getOpenId());
     	bo.userId = context.getUserId();
     	
-    	jsdBorrowCashService.resolve(bo);
+    	if("Y".equals(bo.req.isTying) && BorrowVersionType.SELL.name().equals(bo.req.tyingType)){
+    		jsdBorrowCashService.resolve(bo);	// 赊销
+    	}else{
+    		beheadBorrowCashService.resolve(bo); // 砍头
+    	}
     	resp.setData(bo.resp);
     	
     	return resp;

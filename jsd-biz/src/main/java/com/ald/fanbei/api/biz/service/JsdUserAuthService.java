@@ -18,4 +18,5 @@ public interface JsdUserAuthService extends ParentService<JsdUserAuthDo, Long>{
 
     List<UserAuthDto> getListUserAuth(UserAuthQuery query);
 
+    JsdUserAuthDo getByUserId(Long userId);
 }
