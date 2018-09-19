@@ -40,7 +40,7 @@ public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentServic
         if(StringUtil.isAllNotEmpty(borrowNo,channel,tradeNo,amount)){
             JsdBorrowCashDo borrowCashDo=jsdBorrowCashService.getByBorrowNo(borrowNo);
             if(borrowCashDo==null){
-                return resp.fail(data,RespCode.BORROW_OFF_IS_NULL.code, RespCode.BORROW_OFF_IS_NULL.desc);
+                return resp.fail(data,RespCode.BORROW_INFO_IS_NULL.code, RespCode.BORROW_INFO_IS_NULL.desc);
             }
             JsdBorrowLegalOrderCashDo legalOrderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
             if(repaymentDate==null){
