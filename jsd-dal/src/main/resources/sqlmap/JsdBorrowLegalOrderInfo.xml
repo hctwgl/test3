@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_borrow_legal_order_info表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderInfoDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,user_id,borrow_id,latitude,longitude,borrow_address,borrow_province,borrow_city,borrow_county,order_status,shipper_number,shipper_name,consignee,mobile,province,city,county,address,full_address,gmt_sended,gmt_received,traces,gmt_create,gmt_modified,
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="userId != null">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="borrowId != null">
+            AND borrow_id = #{borrowId,jdbcType=INTEGER}
+        </if>
+        <if test="latitude != null">
+            AND latitude = #{latitude,jdbcType=DECIMAL}
+        </if>
+        <if test="longitude != null">
+            AND longitude = #{longitude,jdbcType=DECIMAL}
+        </if>
+        <if test="borrowAddress != null">
+            AND borrow_address = #{borrowAddress,jdbcType=VARCHAR}
+        </if>
+        <if test="borrowProvince != null">
+            AND borrow_province = #{borrowProvince,jdbcType=VARCHAR}
+        </if>
+        <if test="borrowCity != null">
+            AND borrow_city = #{borrowCity,jdbcType=VARCHAR}
+        </if>
+        <if test="borrowCounty != null">
+            AND borrow_county = #{borrowCounty,jdbcType=VARCHAR}
+        </if>
+        <if test="orderStatus != null">
+            AND order_status = #{orderStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="shipperNumber != null">
+            AND shipper_number = #{shipperNumber,jdbcType=VARCHAR}
+        </if>
+        <if test="shipperName != null">
+            AND shipper_name = #{shipperName,jdbcType=VARCHAR}
+        </if>
+        <if test="consignee != null">
+            AND consignee = #{consignee,jdbcType=VARCHAR}
+        </if>
+        <if test="mobile != null">
+            AND mobile = #{mobile,jdbcType=VARCHAR}
+        </if>
+        <if test="province != null">
+            AND province = #{province,jdbcType=VARCHAR}
+        </if>
+        <if test="city != null">
+            AND city = #{city,jdbcType=VARCHAR}
+        </if>
+        <if test="county != null">
+            AND county = #{county,jdbcType=VARCHAR}
+        </if>
+        <if test="address != null">
+            AND address = #{address,jdbcType=VARCHAR}
+        </if>
+        <if test="fullAddress != null">
+            AND full_address = #{fullAddress,jdbcType=VARCHAR}
+        </if>
+        <if test="gmtSended !=null">
+            AND gmt_sended = #{gmtSended,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtReceived !=null">
+            AND gmt_received = #{gmtReceived,jdbcType=TIMESTAMP}
+        </if>
+        <if test="traces != null">
+            AND traces = #{traces,jdbcType=VARCHAR}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO jsd_borrow_legal_order_info
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="borrowId != null">        
+	            borrow_id,
+	        </if>
+	        <if test="latitude != null">        
+	            latitude,
+	        </if>
+	        <if test="longitude != null">        
+	            longitude,
+	        </if>
+	        <if test="borrowAddress != null">        
+	            borrow_address,
+	        </if>
+	        <if test="borrowProvince != null">        
+	            borrow_province,
+	        </if>
+	        <if test="borrowCity != null">        
+	            borrow_city,
+	        </if>
+	        <if test="borrowCounty != null">        
+	            borrow_county,
+	        </if>
+	        <if test="orderStatus != null">        
+	            order_status,
+	        </if>
+	        <if test="shipperNumber != null">        
+	            shipper_number,
+	        </if>
+	        <if test="shipperName != null">        
+	            shipper_name,
+	        </if>
+	        <if test="consignee != null">        
+	            consignee,
+	        </if>
+	        <if test="mobile != null">        
+	            mobile,
+	        </if>
+	        <if test="province != null">        
+	            province,
+	        </if>
+	        <if test="city != null">        
+	            city,
+	        </if>
+	        <if test="county != null">        
+	            county,
+	        </if>
+	        <if test="address != null">        
+	            address,
+	        </if>
+	        <if test="fullAddress != null">        
+	            full_address,
+	        </if>
+	        <if test="gmtSended != null">        
+	            gmt_sended,
+	        </if>
+	        <if test="gmtReceived != null">        
+	            gmt_received,
+	        </if>
+	        <if test="traces != null">        
+	            traces,
+	        </if>
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="borrowId != null" >
+		       #{borrowId,jdbcType=INTEGER},
+		    </if>
+		    <if test="latitude != null" >
+		       #{latitude,jdbcType=DECIMAL},
+		    </if>
+		    <if test="longitude != null" >
+		       #{longitude,jdbcType=DECIMAL},
+		    </if>
+		    <if test="borrowAddress != null" >
+		       #{borrowAddress,jdbcType=VARCHAR},
+		    </if>
+		    <if test="borrowProvince != null" >
+		       #{borrowProvince,jdbcType=VARCHAR},
+		    </if>
+		    <if test="borrowCity != null" >
+		       #{borrowCity,jdbcType=VARCHAR},
+		    </if>
+		    <if test="borrowCounty != null" >
+		       #{borrowCounty,jdbcType=VARCHAR},
+		    </if>
+		    <if test="orderStatus != null" >
+		       #{orderStatus,jdbcType=VARCHAR},
+		    </if>
+		    <if test="shipperNumber != null" >
+		       #{shipperNumber,jdbcType=VARCHAR},
+		    </if>
+		    <if test="shipperName != null" >
+		       #{shipperName,jdbcType=VARCHAR},
+		    </if>
+		    <if test="consignee != null" >
+		       #{consignee,jdbcType=VARCHAR},
+		    </if>
+		    <if test="mobile != null" >
+		       #{mobile,jdbcType=VARCHAR},
+		    </if>
+		    <if test="province != null" >
+		       #{province,jdbcType=VARCHAR},
+		    </if>
+		    <if test="city != null" >
+		       #{city,jdbcType=VARCHAR},
+		    </if>
+		    <if test="county != null" >
+		       #{county,jdbcType=VARCHAR},
+		    </if>
+		    <if test="address != null" >
+		       #{address,jdbcType=VARCHAR},
+		    </if>
+		    <if test="fullAddress != null" >
+		       #{fullAddress,jdbcType=VARCHAR},
+		    </if>
+		    <if test="gmtSended != null" >
+		       #{gmtSended,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtReceived != null" >
+		       #{gmtReceived,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="traces != null" >
+		       #{traces,jdbcType=VARCHAR},
+		    </if>
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo">
+        UPDATE jsd_borrow_legal_order_info
+          <set>
+            <if test="userId != null">        
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="borrowId != null">        
+                borrow_id = #{borrowId,jdbcType=INTEGER},
+            </if>
+            <if test="latitude != null">        
+                latitude = #{latitude,jdbcType=DECIMAL},
+            </if>
+            <if test="longitude != null">        
+                longitude = #{longitude,jdbcType=DECIMAL},
+            </if>
+            <if test="borrowAddress != null">        
+                borrow_address = #{borrowAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="borrowProvince != null">        
+                borrow_province = #{borrowProvince,jdbcType=VARCHAR},
+            </if>
+            <if test="borrowCity != null">        
+                borrow_city = #{borrowCity,jdbcType=VARCHAR},
+            </if>
+            <if test="borrowCounty != null">        
+                borrow_county = #{borrowCounty,jdbcType=VARCHAR},
+            </if>
+            <if test="orderStatus != null">        
+                order_status = #{orderStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="shipperNumber != null">        
+                shipper_number = #{shipperNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="shipperName != null">        
+                shipper_name = #{shipperName,jdbcType=VARCHAR},
+            </if>
+            <if test="consignee != null">        
+                consignee = #{consignee,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">        
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null">        
+                province = #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">        
+                city = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="county != null">        
+                county = #{county,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">        
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="fullAddress != null">        
+                full_address = #{fullAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtSended != null">        
+                gmt_sended = #{gmtSended,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtReceived != null">        
+                gmt_received = #{gmtReceived,jdbcType=TIMESTAMP},
+            </if>
+            <if test="traces != null">        
+                traces = #{traces,jdbcType=VARCHAR},
+            </if>
+            gmt_modified = NOW()
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order_info
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order_info
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order_info
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>
