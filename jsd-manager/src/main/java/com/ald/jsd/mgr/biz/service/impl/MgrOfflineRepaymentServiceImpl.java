@@ -53,7 +53,7 @@ public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentServic
         }else {
             return resp.fail(data,RespCode.PARAMS_ERROR.code,RespCode.PARAMS_ERROR.desc);
         }
-        return null;
+        return resp.succ(data,"200");
     }
 
 }
