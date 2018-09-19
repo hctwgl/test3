@@ -95,13 +95,13 @@ public class LoanOverDueJob {
                         //计算逾期
                         this.dealOverdueRecords(borrowCashDos);
                         //通知催收逾期人员通讯录
-//                        new Thread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                collectionPush(borrowCashDos);
-//                            }
-//                        }).start();
-                        collectionPush(borrowCashDos);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                collectionPush(borrowCashDos);
+                            }
+                        }).start();
+//                        collectionPush(borrowCashDos);
                     }
                 }
                 logger.info("borrowCashDueJob run end,time=" + new Date());
