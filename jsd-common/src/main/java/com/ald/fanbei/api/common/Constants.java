@@ -38,7 +38,7 @@ public class Constants {
 	public static final String FILE_CLOUD_PATH = "http://51fanbei-private.oss-cn-hangzhou.aliyuncs.com/";
 	public static final String INVELOMENT_TYPE_TEST = "test";
 	public static final String INVELOMENT_TYPE_ONLINE = "online";
-	public static final String INVELOMENT_TYPE_PRE_ENV = "preEnv";
+	public static final String INVELOMENT_TYPE_PRE_ENV = "pre";
 
 	public static final String DEFAULT_BORROW_PURPOSE = "借款";
 	public static final String DEFAULT_PAY_PURPOSE = "付款";
