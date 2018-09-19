@@ -28,7 +28,6 @@ import com.ald.jsd.mgr.web.Sessions;
 import com.ald.jsd.mgr.web.dto.req.LoginReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 
-@NotNeedLogin
 @Controller
 @ResponseBody
 @RequestMapping("/api/login")
@@ -47,6 +46,7 @@ public class LoginController extends BaseController {
      * @param model
      * @return
      */
+    @NotNeedLogin
     @RequestMapping(value = "/in.json", method = RequestMethod.POST)
     public Resp<?> doLogin(@RequestBody @Valid LoginReq loginReq, HttpServletRequest request) {
         MgrOperatorDo userDO = mgrOperatorDao.getByUsername(loginReq.username);
@@ -75,6 +75,7 @@ public class LoginController extends BaseController {
      * @return
      * @throws Exception
      */
+    @NotNeedLogin
     @RequestMapping(value = "/smsIn.json", method = RequestMethod.POST)
     public Resp<?> doSmsLogin(@RequestBody @Valid LoginReq loginReq, HttpServletRequest request) {
     	MgrOperatorDo userDO = mgrOperatorDao.getByUsername(loginReq.username);
@@ -96,6 +97,7 @@ public class LoginController extends BaseController {
      * 获取验证码
      * @return
      */
+    @NotNeedLogin
     @RequestMapping(value = "/sendSms.json", method = RequestMethod.POST)
     public Resp<?> verifyCode(@RequestBody @Valid LoginReq loginReq, HttpServletResponse response){
     	MgrOperatorDo userDO = mgrOperatorDao.getByUsername(loginReq.username);
