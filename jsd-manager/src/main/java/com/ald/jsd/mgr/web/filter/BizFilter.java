@@ -64,6 +64,7 @@ public class BizFilter implements Filter{
 			ServletOutputStream output = servletResponse.getOutputStream();
 				){
 			output.write(bizResponseWrapper.getResponseData());
+			output.flush();
 		} catch (IOException e) {
 			logger.error("BizFilter.write.error", e);
 		}
