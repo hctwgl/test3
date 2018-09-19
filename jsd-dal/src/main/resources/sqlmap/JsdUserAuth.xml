@@ -132,6 +132,14 @@
         LIMIT 0,1
     </select>
 
+    <select id="getByUserId" resultType="com.ald.fanbei.api.dal.domain.JsdUserAuthDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_user_auth
+        WHERE is_delete = 0 AND user_id=#{userId ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
 	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdUserAuthDo" parameterType="com.ald.fanbei.api.dal.domain.JsdUserAuthDo">
         SELECT
         <include refid="queryFields" />
