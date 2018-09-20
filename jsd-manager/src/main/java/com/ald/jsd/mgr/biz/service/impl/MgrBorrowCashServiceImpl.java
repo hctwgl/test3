@@ -8,6 +8,7 @@ import com.ald.jsd.mgr.dal.dao.MgrBorrowCashDao;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -44,6 +45,11 @@ public class MgrBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     @Override
     public int getApplyBorrowCashByDays(Integer days) {
         return mgrBorrowCashDao.getApplyBorrowCashByDays(days);
+    }
+
+    @Override
+    public BigDecimal getAmountByDays(Integer days) {
+        return mgrBorrowCashDao.getAmountByDays(days);
     }
 
 }

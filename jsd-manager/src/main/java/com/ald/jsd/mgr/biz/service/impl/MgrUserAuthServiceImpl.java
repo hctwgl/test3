@@ -47,6 +47,11 @@ public class MgrUserAuthServiceImpl extends ParentServiceImpl<JsdUserAuthDo, Lon
     }
 
     @Override
+    public int getPassPersonNumByStatusEqualDays(String status, Integer days) {
+        return mgrUserAuthDao.getPassPersonNumByStatusEqualDays(status, days);
+    }
+
+    @Override
     public JsdUserAuthDo getByUserId(Long userId) {
         return mgrUserAuthDao.getByUserId(userId);
     }

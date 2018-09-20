@@ -21,5 +21,7 @@ public interface MgrUserAuthService extends ParentService<JsdUserAuthDo, Long> {
 
     int getPassPersonNumByStatusAndDays(String status, Integer days);
 
+    int getPassPersonNumByStatusEqualDays(String status, Integer days);
+
     JsdUserAuthDo getByUserId(Long userId);
 }
