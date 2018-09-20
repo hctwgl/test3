@@ -151,4 +151,22 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      * @return
      */
     List<JsdProctocolBo> getBorrowProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
+
+    /**
+     * 获取搭售代买协议
+     * @param openId
+     * @param tradeNoXgxy
+     * @param previewJsonStr
+     * @return
+     */
+    List<JsdProctocolBo> getAgencyProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
+
+    /**
+     * 获取续期协议
+     * @param openId
+     * @param tradeNoXgxy
+     * @param previewJsonStr
+     * @return
+     */
+    List<JsdProctocolBo> getRenewalProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
 }
