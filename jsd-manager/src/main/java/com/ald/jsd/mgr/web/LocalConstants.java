@@ -28,17 +28,9 @@ public class LocalConstants {
 	public final static String SESS_KEY_USERNAME = "USERNAME";
 	public final static String SESS_KEY_PHONE = "PHONE";
 	
+	/**
+	 * Cache相关的业务常量
+	 */
 	public final static String CACHE_KEY_LOGIN_SMS = "CACHE_KEY_LOGIN_SMS";
 	public final static Long CACHE_KEY_LOGIN_SMS_EXPIRE_SECS = 60*30L;
-	
-	/**
-	 * Cookie key name
-	 */
-	public final static String COOKIE_KEY_AUTO_LOGIN_TOKEN = "AUTO_LOGIN_TOKEN";
-	public final static int COOKIE_AUTO_LOGIN_TOKEN_TIMEOUT_IN_SECOND = 60*60*60*24;
-	
-	/**
-	 * 未找到宝贝扣除基础流量币系数
-	 */
-	public static final float NON_FOUND_DEDUCT_RATE = 0.5F;
 }

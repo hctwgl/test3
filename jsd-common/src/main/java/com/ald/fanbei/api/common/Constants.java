@@ -174,7 +174,7 @@ public class Constants {
 	// 收发系统
 	public static final String CONFKEY_COLLECTION_URL = "dsed.collection.url";
 	// 催收系统
-	public static final String CONFKEY_COLLECT_URL = "jsd.collect.url";
+	public static final String CONFKEY_COLLECT_URL = "dsed.collect.url";
 	// 借贷超市签到锁
 	public static final String CACHEKEY_LOAN_SUPERMARKET_SIGN_LOCK = "dsed_loan_supermarket_sign_lock$";
 	// 借贷超市签到领奖锁

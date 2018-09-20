@@ -351,6 +351,6 @@
         SELECT
         <include refid="queryFields" />
         FROM jsd_resource
-        WHERE is_delete = 0 AND type=#{type} AND sec_type=#{secType}
+        WHERE is_delete = 0 AND is_enable=0 AND type=#{type} AND sec_type=#{secType}
     </select>
 </mapper>

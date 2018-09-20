@@ -317,5 +317,5 @@
         is_delete = 0
         ORDER BY id DESC
     </select>
-    
+
 </mapper>

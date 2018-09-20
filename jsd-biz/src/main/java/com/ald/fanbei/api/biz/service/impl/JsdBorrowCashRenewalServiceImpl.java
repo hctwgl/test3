@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -293,35 +294,35 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 						lastOrderCashDo.setGmtFinish(now);
 						lastOrderCashDo.setGmtLastRepayment(now);
 						jsdBorrowLegalOrderCashDao.updateById(lastOrderCashDo);
-			
+
 						// 更新本次 订单还款记录为已结清（对应上期订单）
 						orderRepaymentDo.setStatus(JsdBorrowLegalRepaymentStatus.YES.getCode());
 						orderRepaymentDo.setTradeNoUps(tradeNoOut);
 						orderRepaymentDo.setActualAmount(orderRepaymentDo.getRepayAmount());
 						jsdBorrowLegalOrderRepaymentDao.updateById(orderRepaymentDo);
 					}
-					
+
 					// 更新本次 订单借款状态
 					orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.getCode());//待还款
 					orderCashDo.setGmtModified(now);
 					jsdBorrowLegalOrderCashDao.updateById(orderCashDo);
-					
+
 					// 更新本次 订单状态为待发货
 					orderDo.setStatus(JsdBorrowLegalOrderStatus.AWAIT_DELIVER.getCode());//待发货
 					orderDo.setGmtModified(now);
 					jsdBorrowLegalOrderDao.updateById(orderDo);
-					
+
 					// 更新本次 续期成功
 					renewalDo.setStatus(JsdRenewalDetailStatus.YES.getCode());
 					renewalDo.setTradeNoUps(tradeNoOut);
 					renewalDo.setGmtModified(now);
 					jsdBorrowCashRenewalDao.updateById(renewalDo);
-					
+
 					// 更新借款记录--->
 					BigDecimal waitPayAmount = renewalDo.getRenewalAmount();
 					BigDecimal rateAmount = BigDecimalUtil.multiply(waitPayAmount, renewalDo.getBaseBankRate(), new BigDecimal(renewalDo.getRenewalDay()).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
 		    		BigDecimal poundage = BigDecimalUtil.multiply(waitPayAmount, renewalDo.getPoundageRate(), new BigDecimal(renewalDo.getRenewalDay()).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
-					
+
 					Date gmtPlanRepayment = borrowCashDo.getGmtPlanRepayment();
 
 					// 	如果预计还款时间在今天之后，则在原预计还款时间的基础上加上续期天数，否则在今天的基础上加上续期天数，作为新的预计还款时间
@@ -343,7 +344,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 					borrowCashDo.setRenewalNum(borrowCashDo.getRenewalNum() + 1);// 累计续期次数
 					jsdBorrowCashDao.updateById(borrowCashDo);
 					// ---<
-					
+
 					return 1l;
 				} catch (Exception e) {
 					t.setRollbackOnly();
@@ -352,13 +353,14 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 				}
 		    }
 		});
-		
+
 		if(result == 1l){
 			//续期成功，调用西瓜信用通知接口
 			JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
-			List<JsdBorrowLegalOrderCashDo> list = jsdBorrowLegalOrderCashDao.getBorrowOrderCashsByBorrowId(renewalDo.getBorrowId());
+			List<JsdBorrowLegalOrderDo> list = jsdBorrowLegalOrderDao.getBorrowOrdersByBorrowId(renewalDo.getBorrowId());
 			notifyXgxyRenewalResult("Y", tradeNoOut, "", renewalDo);
-			if(renewalDo.getOverdueDay()>0){
+			logger.info("renewalDo = " + renewalDo + ",list = " +list);
+			if(StringUtils.equals(renewalDo.getOverdueStatus(), YesNoStatus.YES.getCode())){
 				Map<String, String> repayData = new HashMap<String, String>();
 				repayData.put("info",String.valueOf(list.get(1).getRid()));
 				JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
@@ -406,28 +408,34 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 	 * 通知西瓜 续期结果
 	 */
 	private void notifyXgxyRenewalResult(String status, String tradeNo, String errorMsg, JsdBorrowCashRenewalDo renewalDo) {
-		//还款失败，调用西瓜信用通知接口
-		JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
-		HashMap<String, String> data = new HashMap<String, String>();
-		data.put("borrowNo", borrowCashDo.getTradeNoXgxy());
-		data.put("delayNo", renewalDo.getTradeNoXgxy());
-		data.put("status", status);
-		data.put("reason", errorMsg);
-		data.put("tradeNo", tradeNo);
-		data.put("timestamp", System.currentTimeMillis()+"");
-		
-		JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
-		noticeRecordDo.setUserId(renewalDo.getUserId());
-		noticeRecordDo.setRefId(String.valueOf(renewalDo.getRid()));
-		noticeRecordDo.setType(JsdNoticeType.RENEW.code);
-		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
-		noticeRecordDo.setParams(JSON.toJSONString(data));
-		jsdNoticeRecordService.addNoticeRecord(noticeRecordDo);
-		if (xgxyUtil.jsdRenewalNoticeRequest(data)) {
-			noticeRecordDo.setRid(noticeRecordDo.getRid());
-			noticeRecordDo.setGmtModified(new Date());
-			jsdNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
+		try{
+			//还款失败，调用西瓜信用通知接口
+			JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
+			HashMap<String, String> data = new HashMap<String, String>();
+			data.put("borrowNo", borrowCashDo.getTradeNoXgxy());
+			data.put("delayNo", renewalDo.getTradeNoXgxy());
+			data.put("status", status);
+			data.put("reason", errorMsg);
+			data.put("tradeNo", tradeNo);
+			data.put("timestamp", System.currentTimeMillis()+"");
+
+			JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
+			noticeRecordDo.setUserId(renewalDo.getUserId());
+			noticeRecordDo.setRefId(String.valueOf(renewalDo.getRid()));
+			noticeRecordDo.setType(JsdNoticeType.RENEW.code);
+			noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+			noticeRecordDo.setParams(JSON.toJSONString(data));
+			jsdNoticeRecordService.addNoticeRecord(noticeRecordDo);
+			if (xgxyUtil.jsdRenewalNoticeRequest(data)) {
+				noticeRecordDo.setRid(noticeRecordDo.getRid());
+				noticeRecordDo.setGmtModified(new Date());
+				jsdNoticeRecordService.updateNoticeRecordStatus(noticeRecordDo);
+			}
+		}catch (Exception e){
+			logger.info("renew notify push is error");
+			e.printStackTrace();
 		}
+
 	}
 	
 	/**
@@ -478,46 +486,46 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		//上一笔订单记录
 		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
 		if(orderCashDo == null)	throw new BizException(BizExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
-		
+
 		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getById(orderCashDo.getBorrowLegalOrderId());
 		if(orderDo==null) throw new BizException(BizExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		logger.info("last orderCash record = {} " , orderCashDo);
-		
+
 		JsdResourceDo renewalResource = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RENEWAL_INFO.getCode());
 		if(renewalResource==null) throw new BizException(BizExceptionCode.GET_JSD_RATE_ERROR);
 
 		// 允许续期天数
 		BigDecimal allowRenewalDay = new BigDecimal(renewalResource.getValue());
-		
+
 		// 续借需还本金比例
 		BigDecimal renewalCapitalRate = new BigDecimal(renewalResource.getValue1());
 		//续借需要支付本金 = 借款金额 * 续借需还本金比例
 		BigDecimal capital = borrowCashDo.getAmount().multiply(renewalCapitalRate).setScale(2, RoundingMode.HALF_UP);
-		
+
 		// 上期订单待还本金
 		BigDecimal waitOrderAmount = BigDecimalUtil.add(orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),
 				orderCashDo.getSumRepaidPoundage()).subtract(orderCashDo.getRepaidAmount());
-		
+
 		// 上期总利息
 		BigDecimal rateAmount = BigDecimalUtil.add(borrowCashDo.getInterestAmount(),orderCashDo.getInterestAmount());
 		// 上期总手续费
 		BigDecimal poundage = BigDecimalUtil.add(borrowCashDo.getPoundageAmount(),orderCashDo.getPoundageAmount());
 		// 上期总逾期费
 		BigDecimal overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(),orderCashDo.getOverdueAmount());
-		
+
 		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +上期待还订单)
 		BigDecimal renewalPayAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital, waitOrderAmount);
-		
+
 		String deferRemark = "上期利息"+rateAmount+
 							 "元,赊销手续费"+poundage+
 							 "元,上期逾期费"+overdueAmount+
 							 "元,本金还款部分"+capital+
 							 "元,上期商品价格"+waitOrderAmount+"元";
-		
-		BigDecimal principalAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidOverdue(), 
+
+		BigDecimal principalAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidOverdue(),
 				borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage())
 				.subtract(borrowCashDo.getRepayAmount().add(capital));
-		
+
 		delayInfo.put("principalAmount", principalAmount+"");	// 展期后剩余借款本金
 		delayInfo.put("capital", capital+"");				//此次续期需支付的本金
 		delayInfo.put("delayAmount", renewalPayAmount+"");	// 需支付总金额
@@ -525,24 +533,24 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		delayInfo.put("delayRemark", deferRemark);	// 费用明细	展期金额的相关具体描述（多条说明用英文逗号,用间隔）
 		this.getRenewalRate(delayInfo);
 		delayInfo.put("totalDiffFee", this.getDiffFee(borrowCashDo, delayInfo).toPlainString());	// 展期后的利润差，西瓜会根据此金额匹配搭售商品 TODO
-		
+
 		delayArray.add(delayInfo);
-		
+
 		return delayArray;
 	}
-	
-	
+
+
 	private void getRenewalRate(Map<String, Object> delayInfo) {
-		
+
 		ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(delayInfo.get("delayDay").toString());
 		//借款手续费率
 		delayInfo.put("interestRate", rateInfo.interestRate);
 		//借款利率
 		delayInfo.put("serviceRate", rateInfo.serviceRate);
 	}
-	
+
 	private BigDecimal getDiffFee(JsdBorrowCashDo borrowCashDo, Map<String, Object> delayInfo) {
-		
+
 		BigDecimal interestRate = new BigDecimal(delayInfo.get("interestRate").toString());
 		BigDecimal serviceRate = new BigDecimal(delayInfo.get("serviceRate").toString());
 		BigDecimal renewalAmount = new BigDecimal(delayInfo.get("principalAmount").toString());
@@ -551,12 +559,12 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		// 借款利息手续费
 		BigDecimal rateAmount = BigDecimalUtil.multiply(renewalAmount, interestRate, renewalDay.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
 		BigDecimal poundage = BigDecimalUtil.multiply(renewalAmount, serviceRate, renewalDay.divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 6, RoundingMode.HALF_UP));
-		
+
 		// 用户分层利率
 		BigDecimal riskDailyRate = borrowCashDo.getRiskDailyRate();
 		// 总利润
 		BigDecimal totalDiffFee = BigDecimalUtil.multiply(renewalAmount, renewalDay, riskDailyRate);
-		
+
 //		BigDecimal finalDiffProfit = totalDiffFee.subtract(rateAmount).subtract(poundage).subtract(orderCashService);
 		BigDecimal diffProfit = totalDiffFee.subtract(rateAmount).subtract(poundage);
 		BigDecimal finalDiffProfit = diffProfit.setScale(-1, RoundingMode.UP);	// 向上取十
@@ -564,11 +572,11 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		if (finalDiffProfit.compareTo(BigDecimal.ZERO) <= 0) {
         	finalDiffProfit = BigDecimal.ZERO;
         }
-		
+
 		return finalDiffProfit;
 	}
-	
-	
+
+
 	public static class JsdRenewalDealBo {
 		
 		public JsdBorrowCashDo borrowCashDo;
