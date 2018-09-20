@@ -627,7 +627,7 @@
             FROM
                 jsd_borrow_cash
             WHERE
-                `status` = 'FINSH'
+                `status` = 'FINISHED'
             AND to_days(finish_date) = to_days(now())
         ) AS repay,
         (

@@ -15,9 +15,9 @@ import java.util.List;
  */
 public interface JsdUserContactsDao extends BaseDao<JsdUserContactsDo, Long> {
 
-    List<JsdUserContactsDo> getUserContactsByUserId(@Param("userId") String userId);
+    List<JsdUserContactsDo> getUserContactsByUserId(@Param("userId") Long userId);
 
     int updateByUserId(JsdUserContactsDo contactsDo);
 
-    List<JsdUserContactsDo> getUserContactsByUserIds(List<String> userIds);
+    List<JsdUserContactsDo> getUserContactsByUserIds(List<Long> userIds);
 }

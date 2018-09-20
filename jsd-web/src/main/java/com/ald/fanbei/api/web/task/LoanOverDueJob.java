@@ -101,13 +101,13 @@ public class LoanOverDueJob {
                         //计算逾期
                         this.dealOverdueRecords(borrowCashDos);
                         //通知催收逾期人员通讯录
-//                        new Thread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                collectionPush(borrowCashDos);
-//                            }
-//                        }).start();
-                        collectionPush(borrowCashDos);
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                collectionPush(borrowCashDos);
+                            }
+                        }).start();
+//                        collectionPush(borrowCashDos);
                     }
                 }
                 logger.info("borrowCashDueJob run end,time=" + new Date());
@@ -162,7 +162,7 @@ public class LoanOverDueJob {
             } catch (Exception e) {
                 logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId="+jsdBorrowCashDo.getRid(),e);
             }
-            
+
             //TODO 通知催收逾期人员通讯录
             //collectionSystemUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
         }
@@ -173,9 +173,9 @@ public class LoanOverDueJob {
         JsdUserDo userDo = jsdUserService.getById(userId);
         String contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
         if(StringUtils.isNotBlank(contacts)){
-            List<JsdUserContactsDo> userContactsDo= jsdUserContactsService.getUserContactsByUserId(String.valueOf(userId));
+            List<JsdUserContactsDo> userContactsDo= jsdUserContactsService.getUserContactsByUserId(userId);
             JsdUserContactsDo contactsDo=new JsdUserContactsDo();
-            contactsDo.setUserId(String.valueOf(userId));
+            contactsDo.setUserId(userId);
             contactsDo.setContactsMobile(contacts);
             if(userContactsDo.size()==0){
                 jsdUserContactsService.saveRecord(contactsDo);
@@ -230,11 +230,6 @@ public class LoanOverDueJob {
                 }
                 buildData.put("gender",gender);//性别(非必填)
                 buildData.put("birthday",userDo.getBirthday());//生日(非必填)
-//                buildData.put("workAddress","");//工作单位(非必填)
-//                buildData.put("workPost","");//工作岗位(非必填)
-//                buildData.put("income","");//税前收入(非必填)
-//                buildData.put("workTelephone","");//单位联系方式(非必填)
-//                buildData.put("marry","");//婚恋情况(非必填)
             }
             //案件信息
             JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(jsdBorrowLegalOrder.getRid());
@@ -245,10 +240,10 @@ public class LoanOverDueJob {
             BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
             //应还本金
             currentAmount = borrowCashDo.getAmount().subtract(borrowCashDo.getRepayPrinciple());
-            //应还金额
-            residueAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getOverdueAmount(), borrowCashDo.getPoundageAmount(), borrowCashDo.getInterestAmount()).subtract(borrowCashDo.getRepayPrinciple());
             //催收金额
-            BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestRate(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
+            BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
+            //应还金额
+            residueAmount = collectAmount.subtract(borrowCashDo.getRepayAmount());
             //借款费用
             BigDecimal borrowCash = BigDecimalUtil.add(borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidPoundage(),borrowCashDo.getSumRepaidInterest());
             //逾期金额
@@ -260,10 +255,10 @@ public class LoanOverDueJob {
             if(orderCashDo != null){
                 //应还本金
                 currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
-                //应还金额
-                residueAmount = BigDecimalUtil.add(residueAmount, orderCashDo.getAmount(), orderCashDo.getOverdueAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getInterestAmount()).subtract(orderCashDo.getRepaidAmount());
                 //催收金额
                 collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
+                //应还金额
+                residueAmount = BigDecimalUtil.add(residueAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount()).subtract(orderCashDo.getRepaidAmount());
                 //借款费用
                 borrowCash = BigDecimalUtil.add(borrowCash,orderCashDo.getPoundageAmount(),orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getSumRepaidInterest());
                 //逾期金额

@@ -53,7 +53,7 @@ public class JsdResourceServiceImpl extends ParentServiceImpl<JsdResourceDo, Lon
 		JSONObject rateInfoHolder = JSONObject.parseObject(rateInfoDo.getValue3());
 		return rateInfoHolder.getJSONObject(borrowType).toJavaObject(ResourceRateInfoBo.class);
 	}
-	
+
 	public static class ResourceRateInfoBo {
 		public BigDecimal interestRate;
 		public BigDecimal serviceRate;
@@ -63,6 +63,11 @@ public class JsdResourceServiceImpl extends ParentServiceImpl<JsdResourceDo, Lon
 	@Override
 	public List<JsdResourceDo> listByType(String type) {
 		return jsdResourceDao.listByType(type);
+	}
+
+	@Override
+	public int updateById(JsdResourceDo jsdResourceDo) {
+		return jsdResourceDao.updateById(jsdResourceDo);
 	}
 	
 }

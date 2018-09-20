@@ -4,16 +4,14 @@ import com.ald.fanbei.api.biz.bo.RepaymentBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.cuishou.CuiShouBackMoney;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.GenderType;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.enums.JsdRepayType;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.JsdCollectionBorrowDao;
+import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -34,7 +32,7 @@ public class CuiShouUtils {
 
     protected static final Logger logger = LoggerFactory.getLogger("DSED_THIRD");
 
-    private final String salt = "dsedcuishou";
+    private final String salt = "jsdcuishou";
 
     @Resource
     JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
@@ -43,12 +41,12 @@ public class CuiShouUtils {
     JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
 
     @Resource
-    JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
-    @Resource
     JsdBorrowCashService jsdBorrowCashService;
 
     @Resource
     JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
+    @Resource
+    JsdNoticeRecordDao jsdNoticeRecordDao;
 
     @Resource
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
@@ -66,9 +64,12 @@ public class CuiShouUtils {
     JsdCollectionRepaymentService jsdCollectionRepaymentService;
 
     @Resource
+    JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
+
+    @Resource
     XgxyUtil xgxyUtil;
 
-    private static String token = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjMyODQxfQ.NPLQiwpOsS1FPnCaIal2X9AaRk3R_fRFkCFfbRbNvIQ";
+    private static String token = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo";
 
 
     /**
@@ -81,7 +82,7 @@ public class CuiShouUtils {
         try {
             String sign = request.getParameter("sign");
             String data = request.getParameter("data");
-            logger.info("offlineRepaymentMoney data = " + data);
+            logger.info("offlineRepaymentMoney data = " + data +"  ,sign = " + sign);
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
             if (!sign1.equals(sign)) return JSONObject.toJSONString(new CuiShouBackMoney(201, "sign error"));
@@ -107,7 +108,6 @@ public class CuiShouUtils {
             RepaymentBo repaymentBo = JSON.toJavaObject(obj, RepaymentBo.class);
             final String totalAmount = repaymentBo.getTotalAmount();
             final String repaymentNo = repaymentBo.getRepaymentNo();
-            final String type = repaymentBo.getType();
             final String repayTime = repaymentBo.getRepayTime();
             final String orderNo = repaymentBo.getOrderNo();
             Date time = DateUtil.stringToDate(repayTime);
@@ -178,24 +178,48 @@ public class CuiShouUtils {
      * @param data
      * @return
      */
-    public String collectUpdateStatus(String data) {
+    public String collectUpdateStatus(String data,String sign) {
         try {
             if(StringUtil.isEmpty(data)){
                 thirdLog.error("data is null");
                 return "false";
             }
+            logger.info("offlineRepaymentMoney data = " + data +"  ,sign = " + sign);
+            byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+            String sign1 = DigestUtil.encodeHex(pd);
+            if (!sign1.equals(sign)) return "false                                     ";
             JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderService.getById(Long.valueOf(data));
+            JsdBorrowCashDo cashDo = jsdBorrowCashService.getById(orderDo.getBorrowId());
             JsdBorrowCashDo jsdBorrowCashDo = new JsdBorrowCashDo();
             jsdBorrowCashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
             jsdBorrowCashDo.setRid(orderDo.getBorrowId());
             int count = jsdBorrowCashService.updateById(jsdBorrowCashDo);
             if(count>0){
-                return "fail";
+                return "false";
+            }
+            //催收平账推送西瓜
+            HashMap<String, String> map = new HashMap<>();
+            map.put("status",YesNoStatus.YES.getCode());
+            map.put("isFinish",YesNoStatus.YES.getCode());
+            map.put("borrowNo",cashDo.getTradeNoXgxy());
+            map.put("period","all");
+            map.put("amount",String.valueOf(BigDecimal.ZERO));
+            map.put("type",JsdRepayType.COLLECTION.name());
+            JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
+            noticeRecordDo.setUserId(orderDo.getUserId());
+            noticeRecordDo.setType(JsdNoticeType.COLLECT_RECONCILIATION.code);
+            noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+            noticeRecordDo.setParams(JSON.toJSONString(map));
+            jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+            if (xgxyUtil.repayNoticeRequest(map)) {
+                noticeRecordDo.setRid(noticeRecordDo.getRid());
+                noticeRecordDo.setGmtModified(new Date());
+                jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
             }
             return "success";
         } catch (Exception e) {
             thirdLog.error("collectImport error = " + e);
-            return "fail";
+            return "false";
         }
     }
 
@@ -286,10 +310,10 @@ public class CuiShouUtils {
         BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
         //应还本金
         currentAmount = borrowCashDo.getAmount().subtract(borrowCashDo.getRepayPrinciple());
-        //应还金额
-        residueAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getOverdueAmount(), borrowCashDo.getPoundageAmount(), borrowCashDo.getInterestAmount()).subtract(borrowCashDo.getRepayPrinciple());
         //催收金额
-        BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestRate(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
+        BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
+        //应还金额
+        residueAmount = collectAmount.subtract(borrowCashDo.getRepayAmount());
         //借款费用
         BigDecimal borrowCash = BigDecimalUtil.add(borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidPoundage(),borrowCashDo.getSumRepaidInterest());
         //逾期金额
@@ -301,10 +325,10 @@ public class CuiShouUtils {
         if(orderCashDo != null){
             //应还本金
             currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
-            //应还金额
-            residueAmount = BigDecimalUtil.add(residueAmount, orderCashDo.getAmount(), orderCashDo.getOverdueAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getInterestAmount()).subtract(orderCashDo.getRepaidAmount());
             //催收金额
             collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
+            //应还金额
+            residueAmount = BigDecimalUtil.add(residueAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount()).subtract(orderCashDo.getRepaidAmount());
             //借款费用
             borrowCash = BigDecimalUtil.add(borrowCash,orderCashDo.getPoundageAmount(),orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getSumRepaidInterest());
             //逾期金额
@@ -341,6 +365,7 @@ public class CuiShouUtils {
 
         //--------------------end  催收上报接口需要参数---------------------------
         data.add(buildData);
+        logger.info(" collectionPush data = "+data);
         collectionSystemUtil.noticeCollect(data);
     }
 

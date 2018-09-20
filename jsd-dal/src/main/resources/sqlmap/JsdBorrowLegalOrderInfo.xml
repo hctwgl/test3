@@ -312,6 +312,14 @@
         LIMIT 0,1
     </select>
 
+    <select id="getByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order_info
+        WHERE is_delete = 0 AND borrow_id=#{borrowId ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
 	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo">
         SELECT
         <include refid="queryFields" />

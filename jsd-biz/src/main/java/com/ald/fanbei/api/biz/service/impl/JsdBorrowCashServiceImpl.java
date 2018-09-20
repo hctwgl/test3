@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 import com.ald.fanbei.api.dal.query.LoanQuery;
@@ -76,6 +77,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     BizCacheUtil bizCacheUtil;
     @Resource
     TransactionTemplate transactionTemplate;
+    @Resource
+    UpsUtil upsUtil;
 
     @Override
     public BaseDao<JsdBorrowCashDo, Long> getDao() {
@@ -136,7 +139,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
     @Override
     public List<JsdBorrowCashDo> getBorrowCashByBeforeToday(int nowPage, int pageSize, Date todayLast) {
-        return jsdBorrowCashDao.getBorrowCashByBeforeToday(nowPage,pageSize,todayLast);
+        return jsdBorrowCashDao.getBorrowCashByBeforeToday(nowPage, pageSize, todayLast);
     }
 
     @Override
@@ -205,8 +208,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
                 if (reviewStatus.equals(JsdBorrowCashReviewStatus.REFUSE.name())) {
                     jsdBorrowCashDao.refuseByXgNo(reviewRemark, tradeNoXgxy);
                 }
-                if(reviewStatus.equals(JsdBorrowCashReviewStatus.PASS.name())){
-                    jsdBorrowCashDao.passByXgNo(tradeNoXgxy);
+                if (reviewStatus.equals(JsdBorrowCashReviewStatus.PASS.name())) {
+                    JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashDao.getByTradeNoXgxy(tradeNoXgxy);
+                    JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(jsdBorrowCashDo.getRid());
+                    upsUtil.manualJsdDelegatePay(jsdBorrowCashDo, jsdBorrowLegalOrderDo);
                 }
             }
             return true;
@@ -295,7 +300,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     @Override
     public BigDecimal calcuUnrepayAmount(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderCashDo orderCashDo) {
         BigDecimal totalAmount = this.calcuTotalAmount(cashDo, orderCashDo);
-        return totalAmount.subtract(cashDo.getRepayAmount()).subtract(orderCashDo.getRepaidAmount());
+        if (orderCashDo != null) {
+            return totalAmount.subtract(cashDo.getRepayAmount()).subtract(orderCashDo.getRepaidAmount());
+        }
+        return totalAmount.subtract(cashDo.getRepayAmount());
     }
 
     /**
