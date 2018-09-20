@@ -175,24 +175,28 @@ public class CuiShouUtils {
      * @param data
      * @return
      */
-    public String collectUpdateStatus(String data) {
+    public String collectUpdateStatus(String data,String sign) {
         try {
             if(StringUtil.isEmpty(data)){
                 thirdLog.error("data is null");
                 return "false";
             }
+            logger.info("offlineRepaymentMoney data = " + data +"  ,sign = " + sign);
+            byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+            String sign1 = DigestUtil.encodeHex(pd);
+            if (!sign1.equals(sign)) return "false                                     ";
             JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderService.getById(Long.valueOf(data));
             JsdBorrowCashDo jsdBorrowCashDo = new JsdBorrowCashDo();
             jsdBorrowCashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
             jsdBorrowCashDo.setRid(orderDo.getBorrowId());
             int count = jsdBorrowCashService.updateById(jsdBorrowCashDo);
             if(count>0){
-                return "fail";
+                return "false";
             }
             return "success";
         } catch (Exception e) {
             thirdLog.error("collectImport error = " + e);
-            return "fail";
+            return "false";
         }
     }
 
