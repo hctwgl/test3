@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 @Controller
 @ResponseBody
@@ -34,6 +35,8 @@ public class LoanController {
     JsdUserService jsdUserService;
     @Resource
     JsdCollectionBorrowService jsdCollectionBorrowService;
+    @Resource
+    JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
 
     @RequestMapping(value = {"list.json"}, method = RequestMethod.POST)
     public Resp<LoanQuery> list(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
@@ -52,6 +55,9 @@ public class LoanController {
     public Resp<LoanDetailsReq> details(@RequestBody JSONObject jsonObject, HttpServletRequest request) throws InvocationTargetException, IllegalAccessException {
         LoanDetailsReq loanDetailsReq = new LoanDetailsReq();
         String tradeNoXgxy = jsonObject.getString("tradeNoXgxy");
+        if(StringUtil.isEmpty(tradeNoXgxy)){
+            Resp.fail("参数错误");
+        }
         //借款信息
         JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
         BeanUtils.copyProperties(loanDetailsReq, jsdBorrowCashDo);
@@ -63,8 +69,9 @@ public class LoanController {
         loanDetailsReq.setUnrepayServiceAmount(jsdBorrowCashDo.getPoundageAmount());
         //用户信息
         JsdUserDo jsdUserDo = jsdUserService.getById(jsdBorrowCashDo.getUserId());
-        BeanUtils.copyProperties(loanDetailsReq, jsdUserDo);
-
+        loanDetailsReq.setRealName(jsdUserDo.getRealName());
+        loanDetailsReq.setMobile(jsdUserDo.getMobile());
+        loanDetailsReq.setIdNumber(jsdUserDo.getIdNumber());
         //是否入催
         JsdCollectionBorrowDo jsdCollectionBorrowDo = jsdCollectionBorrowService.selectByBorrowId(jsdBorrowCashDo.getRid());
         if (jsdCollectionBorrowDo == null) {
@@ -72,7 +79,8 @@ public class LoanController {
         } else {
             loanDetailsReq.setIsCollection("Y");
         }
-
+        List<JsdBorrowCashRenewalDo> list = jsdBorrowCashRenewalService.getMgrJsdRenewalByBorrowId(jsdBorrowCashDo.getRid());
+        loanDetailsReq.setRenewal(list);
         return Resp.succ(loanDetailsReq, "");
     }
 }
