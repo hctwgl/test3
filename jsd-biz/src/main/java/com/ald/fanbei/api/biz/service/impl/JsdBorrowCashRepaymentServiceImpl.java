@@ -434,7 +434,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 					logger.info(" cashResult = " + cashResult+"orderResult = "+orderResult +"new Date() = " + new Date());
 					if(orderResult || cashResult) {
 						nofityRisk(repayDealBo,repaymentDo,orderRepaymentDo,flag,dataId);
-					}
+                    }
 				} catch (Exception e){
 					logger.error("notice eca fail error=",e);
 				}
@@ -489,8 +489,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		try{
 			List<HashMap<String,String>> list = new ArrayList<>();
 			JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
-			Long borrowId = 0l;
 			Long userId = 0l;
+			Long borrowId = 0l;
 			BigDecimal repayAmount = BigDecimal.ZERO;
 			if(repaymentDo != null){
 				borrowId = repaymentDo.getBorrowId();
@@ -516,12 +516,20 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			if(!flag){
 				repayData.put("type", JsdRepayCollectionType.APP.getCode());
 				noticeRecordDo.setType(JsdNoticeType.OVERDUEREPAY.code);
+				if(repaymentDo != null){
+					JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(borrowId);
+					dataId = String.valueOf(jsdBorrowLegalOrder.getRid());
+				}else if(orderRepaymentDo != null){
+					dataId = String.valueOf(repayDealBo.orderCashDo.getBorrowLegalOrderId());
+				}
+				data.put("dataId",dataId);//源数据id
 			}else {
+				data.put("dataId",dataId);//源数据id
 				repayData.put("type", JsdRepayCollectionType.OFFLINE.getCode());
 				noticeRecordDo.setType(JsdNoticeType.COLLECT.code);
 			}
 			repayData.put("repaymentAcc", repayDealBo.userId+"");//还款账户
-			data.put("dataId",dataId);//源数据id
+
 			data.put("amount",repayAmount+"");
 			repayData.put("companyId","6");
 			repayData.put("totalAmount", repayAmount+"");
@@ -688,6 +696,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		repayDealBo.refId += orderCashDo.getRid();
 		repayDealBo.userId = cashDo.getUserId();
 		repayDealBo.renewalNum = cashDo.getRenewalNum();
+
 
 		dealOrderRepayOverdue(repayDealBo, orderCashDo);//逾期费
 		dealOrderRepayPoundage(repayDealBo, orderCashDo);//手续费
@@ -958,6 +967,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		String refId = "";								//还款的id串
 		Long userId ;									//目标用户id
 		Long renewalNum;                            //续借次数
+		Long orderId ;								//商品订单id
 	}
 
 }
