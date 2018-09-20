@@ -1,6 +1,7 @@
 package com.ald.jsd.mgr.biz.service.impl;
 
 import com.ald.fanbei.api.biz.bo.assetpush.JsdBorrowInfoAnalysisVo;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.jsd.mgr.biz.service.JsdBorrowCashAnalysisService;
@@ -43,7 +44,7 @@ public class JsdBorrowCashAnalysisServiceImpl implements JsdBorrowCashAnalysisSe
         Integer borrowMans = 0;//放款人数
         BigDecimal repeatBorrowRate = BigDecimal.ZERO;//复借率
         BigDecimal overdueRate = BigDecimal.ZERO;//逾期率
-        BigDecimal badRate = BigDecimal.ZERO;//不良率
+        BigDecimal profitRate = BigDecimal.ZERO;//不良率
         BigDecimal riskPassRate = BigDecimal.ZERO;//认证通过率
         BigDecimal borrowPassRate = BigDecimal.ZERO;//借款通过率
         for (JsdBorrowCashDo borrow : jsdBorrowCashDoList) {
@@ -68,6 +69,9 @@ public class JsdBorrowCashAnalysisServiceImpl implements JsdBorrowCashAnalysisSe
         if (applyBorrowCashNum != 0){
             borrowPassRate = new BigDecimal(borrowMans).divide(new BigDecimal(applyBorrowCashNum));//借款通过人数
         }
+        if (totalLoanAmount != BigDecimal.ZERO){
+            profitRate = (returnAmount.subtract(overdueAmount)).divide(totalLoanAmount).setScale(2,BigDecimal.ROUND_HALF_UP);
+        }
         int allUserNum = mgrUserAuthService.getPassPersonNumByStatusAndDays("", days);
         int paseUserNum = mgrUserAuthService.getPassPersonNumByStatusAndDays("Y", days);
         if (allUserNum  != 0){
@@ -79,6 +83,7 @@ public class JsdBorrowCashAnalysisServiceImpl implements JsdBorrowCashAnalysisSe
         jsdBorrowInfoAnalysisVo.setBorrowPassRate(borrowPassRate);
         jsdBorrowInfoAnalysisVo.setReturnedRate(returnedRate);
         jsdBorrowInfoAnalysisVo.setOverdueRate(overdueRate);
+        jsdBorrowInfoAnalysisVo.setProfitRate(profitRate);
         return jsdBorrowInfoAnalysisVo;
     }
 

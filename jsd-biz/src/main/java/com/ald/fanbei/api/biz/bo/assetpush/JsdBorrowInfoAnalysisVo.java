@@ -24,7 +24,7 @@ public class JsdBorrowInfoAnalysisVo implements Serializable {
 	private Integer borrowMans;//放款人数
 	private BigDecimal repeatBorrowRate;//复借率
 	private BigDecimal overdueRate;//逾期率
-	private BigDecimal badRate;//不良率
+	private BigDecimal profitRate;//收益率
 	private BigDecimal riskPassRate;//认证通过率
 	private BigDecimal borrowPassRate;//借款通过率
 }
