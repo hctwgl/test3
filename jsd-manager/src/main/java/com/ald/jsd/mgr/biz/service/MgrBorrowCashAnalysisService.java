@@ -1,6 +1,7 @@
 package com.ald.jsd.mgr.biz.service;
 
-import com.ald.fanbei.api.biz.bo.assetpush.JsdBorrowInfoAnalysisVo;
+import com.ald.fanbei.api.biz.vo.MgrBorrowInfoAnalysisVo;
+import com.ald.fanbei.api.biz.vo.MgrDashboardInfoVo;
 
 /**
  * 极速贷Service
@@ -10,7 +11,9 @@ import com.ald.fanbei.api.biz.bo.assetpush.JsdBorrowInfoAnalysisVo;
  * @date 2018-08-22 16:18:06
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public interface JsdBorrowCashAnalysisService {
+public interface MgrBorrowCashAnalysisService {
 
-    JsdBorrowInfoAnalysisVo getBorrowInfoAnalysisInfo(Integer days);
+    MgrBorrowInfoAnalysisVo getBorrowInfoAnalysis(Integer days);
+
+    MgrDashboardInfoVo getBorrowInfoDashboard();
 }
