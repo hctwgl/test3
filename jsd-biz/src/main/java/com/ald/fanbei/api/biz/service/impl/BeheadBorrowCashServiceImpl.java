@@ -201,8 +201,8 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         BigDecimal borrowinterestLeft = borrowInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).multiply(borrowDay);
         BigDecimal borrowServiceRateLeft = borrowServiceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).multiply(borrowDay);
         
-        BigDecimal interestAmount = borrowinterestLeft.multiply(titularBorrowAmount);
-        BigDecimal serviceAmount = borrowServiceRateLeft.multiply(titularBorrowAmount);
+        BigDecimal interestAmount = borrowinterestLeft.multiply(titularBorrowAmount).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal serviceAmount = borrowServiceRateLeft.multiply(titularBorrowAmount).setScale(2, RoundingMode.HALF_UP);
         BigDecimal totalProfit = bo.riskDailyRate.multiply(titularBorrowAmount).multiply(borrowDay);
         
         BigDecimal finalDiffProfit = totalProfit.subtract(interestAmount).subtract(serviceAmount);

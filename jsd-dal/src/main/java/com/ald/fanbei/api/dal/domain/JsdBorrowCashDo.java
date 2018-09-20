@@ -870,7 +870,7 @@ import java.math.BigDecimal;
       return gmtCreate;
     }
 
-   public int getGmyCreateHour(){
+   public int getGmtCreateHour(){
       Calendar calendar = Calendar.getInstance();
       calendar.setTime(gmtCreate);
       return calendar.get(Calendar.HOUR_OF_DAY);

@@ -1,6 +1,8 @@
 package com.ald.jsd.mgr.web.controller;
 
+import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
@@ -18,8 +20,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -81,6 +86,8 @@ public class LoanController {
         }
         List<JsdBorrowCashRenewalDo> list = jsdBorrowCashRenewalService.getMgrJsdRenewalByBorrowId(jsdBorrowCashDo.getRid());
         loanDetailsReq.setRenewal(list);
+        List<JsdProctocolBo> proctocol = jsdBorrowCashService.getBorrowProtocols(jsdUserDo.getOpenId(),tradeNoXgxy,"");
+        loanDetailsReq.setProctocols(proctocol);
         return Resp.succ(loanDetailsReq, "");
     }
 }

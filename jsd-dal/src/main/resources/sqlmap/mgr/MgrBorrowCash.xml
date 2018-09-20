@@ -485,10 +485,9 @@
 
     <select id="getApplyBorrowCashByDays" resultType="java.lang.Integer">
         SELECT
-        count(id)
+        count(distinct user_id)
         FROM
         jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_create) &lt; #{days}
-        group by user_id
     </select>
 
     <select id="getBorrowCashLessThanDays" resultType="JsdBorrowCashDo">

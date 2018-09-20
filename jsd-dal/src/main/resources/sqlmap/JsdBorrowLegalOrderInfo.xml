@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,user_id,borrow_id,latitude,longitude,borrow_address,borrow_province,borrow_city,borrow_county,order_status,shipper_number,shipper_name,consignee,mobile,province,city,county,address,full_address,gmt_sended,gmt_received,traces,gmt_create,gmt_modified,
+        id rid,user_id,borrow_id,latitude,longitude,borrow_address,borrow_province,borrow_city,borrow_county,order_status,shipper_number,shipper_name,consignee,mobile,province,city,county,address,full_address,gmt_sended,gmt_received,traces,gmt_create,gmt_modified
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->

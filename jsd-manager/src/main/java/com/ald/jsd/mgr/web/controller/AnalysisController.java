@@ -1,6 +1,7 @@
 package com.ald.jsd.mgr.web.controller;
 
 
+import com.ald.fanbei.api.biz.vo.MgrDashboardCityInfoVo;
 import com.ald.fanbei.api.biz.vo.MgrDashboardInfoVo;
 import com.ald.fanbei.api.biz.vo.MgrBorrowInfoAnalysisVo;
 import com.ald.fanbei.api.biz.vo.MgrTrendTodayInfoVo;
@@ -34,18 +35,18 @@ public class AnalysisController extends BaseController {
     @RequestMapping(value = {"/dashboard.json"}, method = RequestMethod.POST)
     public Resp<MgrDashboardInfoVo> getDashboardInfo() {
         MgrDashboardInfoVo mgrDashboardInfoVo = mgrBorrowCashAnalysisService.getBorrowInfoDashboard();
-        return Resp.succ(mgrDashboardInfoVo, "");
+        return Resp.succ(mgrDashboardInfoVo, "成功");
     }
     @RequestMapping(value = {"/trendToday.json"}, method = RequestMethod.POST)
     public Resp<MgrTrendTodayInfoVo> getTrendTodayInfo() {
         MgrTrendTodayInfoVo mgrDashboardInfoVo = mgrBorrowCashAnalysisService.getBorrowInfoTrendToday();
-        return Resp.succ(mgrDashboardInfoVo, "");
+        return Resp.succ(mgrDashboardInfoVo, "成功");
     }
 
     @RequestMapping(value = {"/dashboardCity.json"}, method = RequestMethod.POST)
-    public Resp<MgrTrendTodayInfoVo> getdashboardCityInfo() {
-        MgrTrendTodayInfoVo mgrDashboardInfoVo = mgrBorrowCashAnalysisService.getBorrowInfoTrendToday();
-        return Resp.succ(mgrDashboardInfoVo, "");
+    public Resp<MgrDashboardCityInfoVo> getdashboardCityInfo() {
+        MgrDashboardCityInfoVo mgrDashboardCityInfoVo = mgrBorrowCashAnalysisService.getdashboardCityInfo();
+        return Resp.succ(mgrDashboardCityInfoVo, "成功");
     }
 
 }
