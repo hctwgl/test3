@@ -3,6 +3,7 @@ package com.ald.jsd.mgr.biz.service;
 import com.ald.fanbei.api.biz.service.ParentService;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface MgrBorrowCashService extends ParentService<JsdBorrowCashDo, Long> {
@@ -15,4 +16,6 @@ public interface MgrBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     List<JsdBorrowCashDo> getBorrowCashLessThanDays(Integer days);
 
     int getApplyBorrowCashByDays(Integer days);
+
+    BigDecimal getAmountByDays(Integer days);
 }

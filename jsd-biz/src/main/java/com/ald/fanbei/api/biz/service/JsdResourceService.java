@@ -22,4 +22,6 @@ public interface JsdResourceService extends ParentService<JsdResourceDo, Long>{
 	ResourceRateInfoBo getRateInfo(String borrowType);
 
 	ResourceRateInfoBo getOrderRateInfo(String borrowType);
+
+	int updateById(JsdResourceDo jsdResourceDo);
 }

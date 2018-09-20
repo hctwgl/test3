@@ -3,6 +3,7 @@ package com.ald.jsd.mgr.dal.dao;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -26,5 +27,7 @@ public interface MgrBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      * @return
      */
     int getApplyBorrowCashByDays(Integer days);
+
+    BigDecimal getAmountByDays(Integer days);
 
 }

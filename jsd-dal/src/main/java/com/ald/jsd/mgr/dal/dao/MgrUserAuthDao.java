@@ -22,6 +22,8 @@ public interface MgrUserAuthDao extends BaseDao<JsdUserAuthDo, Long> {
 
     int getPassPersonNumByStatusAndDays(@Param("status") String status,@Param("days") Integer days);
 
+    int getPassPersonNumByStatusEqualDays(@Param("status") String status,@Param("days") Integer days);
+
     JsdUserAuthDo getByUserId(@Param("userId") Long userId);
 
     int getSubmitPersonNum();

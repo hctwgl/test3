@@ -20,4 +20,5 @@ public interface JsdResourceDao extends BaseDao<JsdResourceDo, Long> {
 	
 	List<JsdResourceDo> listByType(@Param("type")String type);
 
+	int updateById(JsdResourceDo jsdResourceDo);
 }
