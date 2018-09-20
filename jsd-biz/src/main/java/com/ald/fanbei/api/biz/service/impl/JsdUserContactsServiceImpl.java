@@ -30,12 +30,12 @@ public class JsdUserContactsServiceImpl extends ParentServiceImpl<JsdUserContact
 	}
 
 	@Override
-	public List<JsdUserContactsDo> getUserContactsByUserId(String userId) {
+	public List<JsdUserContactsDo> getUserContactsByUserId(Long userId) {
 		return jsdUserContactsDao.getUserContactsByUserId(userId);
 	}
 
 	@Override
-	public List<JsdUserContactsDo> getUserContactsByUserIds(List<String> userIds) {
+	public List<JsdUserContactsDo> getUserContactsByUserIds(List<Long> userIds) {
 		return jsdUserContactsDao.getUserContactsByUserIds(userIds);
 	}
 
