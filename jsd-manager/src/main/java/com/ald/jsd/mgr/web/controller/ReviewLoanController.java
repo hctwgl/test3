@@ -93,7 +93,7 @@ public class ReviewLoanController {
         reviewLoanDetailsReq.setGoodsName(jsdBorrowLegalOrderDo.getGoodsName());
         reviewLoanDetailsReq.setGoodsPrice(jsdBorrowLegalOrderDo.getPriceAmount());
         JsdBorrowLegalOrderInfoDo jsdBorrowLegalOrderInfoDo = jsdBorrowLegalOrderInfoService.getByBorrowId(jsdBorrowCashDo.getRid());
-        reviewLoanDetailsReq.setAddress(jsdBorrowLegalOrderInfoDo.getAddress());
+        reviewLoanDetailsReq.setAddress(jsdBorrowLegalOrderInfoDo == null ? "" : jsdBorrowLegalOrderInfoDo.getAddress());
         return Resp.succ(reviewLoanDetailsReq, "");
     }
 }
