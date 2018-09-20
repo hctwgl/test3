@@ -39,7 +39,6 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
@@ -75,8 +74,8 @@ public class UpsUtil extends AbstractThird {
 	private static String url = null;
 	private static String notifyHost = null;
 	
-	private static String SYS_KEY = "02JSD";
-	private static String USER_PREFFIX = "JSD";
+	private static String UPS_PREFFIX = "JSD";
+	private static String UPS_MERNO = "01151209001";
 
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_PART_SUCC = "01"; // 部分成功 
@@ -146,7 +145,7 @@ public class UpsUtil extends AbstractThird {
 	private static void setPubParam(UpsReqBo payRoutBo,String service,String orderNo,String clientType){
 		payRoutBo.setVersion("10");
 		payRoutBo.setService(service);
-		payRoutBo.setMerNo("01151209001");
+		payRoutBo.setMerNo(UPS_MERNO);
 		payRoutBo.setOrderNo(orderNo);
 		payRoutBo.setClientType(clientType);
 		payRoutBo.setMerPriv("");
@@ -225,7 +224,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setAmount(amount.toString());
 		reqBo.setRealName(realName);
 		reqBo.setCardNo(cardNo);
-		reqBo.setUserNo(USER_PREFFIX + userNo);
+		reqBo.setUserNo(UPS_PREFFIX + userNo);
 		reqBo.setCertNo(idNumber);
 		reqBo.setPhone(phone);
 		reqBo.setBankName(bankName);
@@ -294,7 +293,7 @@ public class UpsUtil extends AbstractThird {
 		String orderNo = getOrderNo("sign", mobile.substring(mobile.length()-4,mobile.length()));
 		UpsAuthSignReqBo reqBo = new UpsAuthSignReqBo();
 		setPubParam(reqBo,"authSign",orderNo,clientType);
-		reqBo.setUserNo(USER_PREFFIX+userNo);
+		reqBo.setUserNo(UPS_PREFFIX+userNo);
 		reqBo.setBankCode(bankCode);
 		reqBo.setRealName(realName);
 		reqBo.setPhone(mobile);
@@ -340,7 +339,7 @@ public class UpsUtil extends AbstractThird {
 		String orderNo = getOrderNo("asva", cardNo.substring(cardNo.length()-4,cardNo.length()));
 		UpsAuthSignValidReqBo reqBo = new UpsAuthSignValidReqBo();
 		setPubParam(reqBo,"authSignValid",orderNo,clientType);
-		reqBo.setUserNo(USER_PREFFIX+userNo);
+		reqBo.setUserNo(UPS_PREFFIX+userNo);
 		reqBo.setCardNo(cardNo);
 		reqBo.setSmsCode(verifyCode);
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/authSignValidNotify");
@@ -404,7 +403,7 @@ public class UpsUtil extends AbstractThird {
 		setPubParam(reqBo,"collect",orderNo,clientType);
 		reqBo.setMerPriv(merPriv);
 		reqBo.setAmount(amount.toString());
-		reqBo.setUserNo(USER_PREFFIX + userNo);
+		reqBo.setUserNo(UPS_PREFFIX + userNo);
 		reqBo.setRealName(realName);
 		reqBo.setPhone(phone);
 		reqBo.setBankCode(bankCode);
@@ -453,7 +452,7 @@ public class UpsUtil extends AbstractThird {
 		setPubParam(reqBo,"quickPay",orderNo,clientType);
 		reqBo.setMerPriv(merPriv);
 		reqBo.setAmount(amount.toString());
-		reqBo.setUserNo(USER_PREFFIX + userNo);
+		reqBo.setUserNo(UPS_PREFFIX + userNo);
 		reqBo.setPhone(phone);
 		reqBo.setRealName(realName);
 		reqBo.setCardNo(cardNo);
@@ -548,7 +547,7 @@ public class UpsUtil extends AbstractThird {
 		String orderNo = getOrderNo("sire", phone.substring(phone.length()-4,phone.length()));
 		UpsSignReleaseReqBo reqBo = new UpsSignReleaseReqBo();
 		setPubParam(reqBo,"signRelease",orderNo,clientType);
-		reqBo.setUserNo(USER_PREFFIX + userNo);
+		reqBo.setUserNo(UPS_PREFFIX + userNo);
 		reqBo.setBankCode(bankCode);
 		reqBo.setRealName(realName);
 		reqBo.setPhone(phone);
@@ -582,9 +581,9 @@ public class UpsUtil extends AbstractThird {
 		}
 		if(StringUtil.equals(ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE),
 				Constants.INVELOMENT_TYPE_TEST)){
-			return StringUtil.appendStrs(SYS_KEY,method,identity,"t" + (System.currentTimeMillis()+"").substring(4));
+			return StringUtil.appendStrs(UPS_PREFFIX, method,identity,"t" + (System.currentTimeMillis()+"").substring(4));
 		}
-		return StringUtil.appendStrs(SYS_KEY,method,identity,System.currentTimeMillis());
+		return StringUtil.appendStrs(UPS_PREFFIX, method,identity,System.currentTimeMillis());
 	}
 	
 	private static BigDecimal setActualAmount(BigDecimal amount){
