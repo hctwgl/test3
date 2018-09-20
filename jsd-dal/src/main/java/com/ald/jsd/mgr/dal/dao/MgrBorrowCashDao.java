@@ -17,6 +17,8 @@ public interface MgrBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
 
     List<JsdBorrowCashDo> getBorrowCashByDays(Integer days);
 
+    List<JsdBorrowCashDo> getBorrowCashLessThanDays(Integer days);
+
     /**
      * 获取当前申请借款人数
      *
