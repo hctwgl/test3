@@ -497,7 +497,6 @@
         FROM
         jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) &lt; #{days}
         and status in ('TRANSFERRED','FINSH')
-        group by  user_id
     </select>
 
     <select id="getBorrowCashByDays" resultType="JsdBorrowCashDo">
@@ -506,7 +505,14 @@
         FROM
         jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) = #{days}
         and status in ('TRANSFERRED','FINSH')
-        group by  user_id
+    </select>
+
+    <select id="getAmountByDays" resultType="java.math.BigDecimal">
+        SELECT
+        sum (amount)
+        FROM
+        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) = #{days}
+        and status in ('TRANSFERRED','FINSH')
     </select>
 
 </mapper>
