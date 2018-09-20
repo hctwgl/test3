@@ -87,6 +87,8 @@ public class Constants {
 	public static final String CONFKEY_XGXY_HOST = "dsed.xgxy.host";
 	public static final String CONFKEY_XGXY_AES_PASSWORD = "dsed.aes.password";
 	public static final String CONFKEY_XGXY_NOTICE_HOST = "dsed.xgxy.notice.host";
+	public static final String CONFKEY_UPS_PREFFIX = "jsd.ups.preffix";
+	public static final String CONFKEY_UPS_MERNO = "jsd.ups.merno";
 
 	public static final String CONFKEY_BKL_URL = "fbapi.bkl.url";
 	public static final String CONFKEY_ADMIN_URL = "fbapi.admin.url";

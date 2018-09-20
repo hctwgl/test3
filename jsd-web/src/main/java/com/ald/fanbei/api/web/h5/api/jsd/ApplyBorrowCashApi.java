@@ -102,48 +102,54 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         		beheadBorrowCashService.applyBeheadBorrowCash(cashReq, mainCard, trialBo);
         		return resp;
         	}
+        	else if("Y".equals(cashReq.isTying) && BorrowVersionType.BEHEAD.name().equals(cashReq.tyingType)){
+        		// 赊销模式
+        		jsdBorrowCashService.resolve(trialBo);
+        		final JsdBorrowCashDo cashDo = buildBorrowCashDo(cashReq, mainCard, trialBo); 				// 主借款
+        		final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(cashReq, context.getUserId());	// 搭售商品订单
+        		final JsdBorrowLegalOrderCashDo orderCashDo = buildBorrowLegalOrderCashDo(cashReq, trialBo);// 订单借款
+        		
+        		transactionTemplate.execute(new TransactionCallback<Long>() {
+        			@Override
+        			public Long doInTransaction(TransactionStatus arg0) {
+        				jsdBorrowCashService.saveRecord(cashDo);
+        				
+        				Long borrowId = cashDo.getRid();
+        				orderDo.setBorrowId(borrowId);
+        				jsdBorrowLegalOrderService.saveRecord(orderDo);
+        				
+        				Long orderId = orderDo.getRid();
+        				orderCashDo.setBorrowId(borrowId);
+        				orderCashDo.setBorrowLegalOrderId(orderId);
+        				jsdBorrowLegalOrderCashService.saveRecord(orderCashDo);
+        				return borrowId;
+        			}
+        		});
+        		
+        		new Thread() { public void run() {
+        			try {
+        				UpsDelegatePayRespBo upsResult = upsUtil.jsdDelegatePay(cashDo.getArrivalAmount(), context.getRealName(), 
+        						mainCard.getBankCardNumber(), context.getUserId().toString(), mainCard.getMobile(),
+        						mainCard.getBankName(), mainCard.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
+        						PayOrderSource.JSD_LOAN.getCode(), cashDo.getRid().toString(), context.getIdNumber());
+        				cashDo.setTradeNoUps(upsResult.getOrderNo());
+        				
+        				if (!upsResult.isSuccess()) {
+        					jsdBorrowCashService.dealBorrowFail(cashDo, orderDo, orderCashDo, "UPS打款实时反馈失败");
+        				}else {
+        					cashDo.setStatus(JsdBorrowCashStatus.TRANSFERING.name());
+        					jsdBorrowCashService.updateById(cashDo);
+        				}
+        			} catch (Exception e) {
+        				logger.error(e.getMessage(), e);
+        				jsdBorrowCashService.dealBorrowFail(cashDo, orderDo, orderCashDo, "UPS打款时发生异常");
+        			}
+        		}}.start();
+        	}
+        	else {
+        		throw new BizException("applyBorrowCashApi type error, isTying="+cashReq.isTying+", tyingType"+cashReq.tyingType);
+        	}
 	    	
-        	jsdBorrowCashService.resolve(trialBo);
-            final JsdBorrowCashDo cashDo = buildBorrowCashDo(cashReq, mainCard, trialBo); 				// 主借款
-            final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(cashReq, context.getUserId());	// 搭售商品订单
-            final JsdBorrowLegalOrderCashDo orderCashDo = buildBorrowLegalOrderCashDo(cashReq, trialBo);// 订单借款
-
-            transactionTemplate.execute(new TransactionCallback<Long>() {
-                @Override
-                public Long doInTransaction(TransactionStatus arg0) {
-                    jsdBorrowCashService.saveRecord(cashDo);
-                    
-                    Long borrowId = cashDo.getRid();
-                    orderDo.setBorrowId(borrowId);
-                    jsdBorrowLegalOrderService.saveRecord(orderDo);
-                    
-                    Long orderId = orderDo.getRid();
-                    orderCashDo.setBorrowId(borrowId);
-                    orderCashDo.setBorrowLegalOrderId(orderId);
-                    jsdBorrowLegalOrderCashService.saveRecord(orderCashDo);
-                    return borrowId;
-                }
-            });
-            
-            new Thread() { public void run() {
-            	try {
-                    UpsDelegatePayRespBo upsResult = upsUtil.jsdDelegatePay(cashDo.getArrivalAmount(), context.getRealName(), 
-                            mainCard.getBankCardNumber(), context.getUserId().toString(), mainCard.getMobile(),
-                            mainCard.getBankName(), mainCard.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
-                            PayOrderSource.JSD_LOAN.getCode(), cashDo.getRid().toString(), context.getIdNumber());
-                    cashDo.setTradeNoUps(upsResult.getOrderNo());
-                    
-                    if (!upsResult.isSuccess()) {
-                    	jsdBorrowCashService.dealBorrowFail(cashDo, orderDo, orderCashDo, "UPS打款实时反馈失败");
-                    }else {
-                    	cashDo.setStatus(JsdBorrowCashStatus.TRANSFERING.name());
-                    	jsdBorrowCashService.updateById(cashDo);
-                    }
-                } catch (Exception e) {
-                	logger.error(e.getMessage(), e);
-                	jsdBorrowCashService.dealBorrowFail(cashDo, orderDo, orderCashDo, "UPS打款时发生异常");
-                }
-            }}.start();
             
             return resp;
         } finally {

@@ -74,8 +74,8 @@ public class UpsUtil extends AbstractThird {
 	private static String url = null;
 	private static String notifyHost = null;
 	
-	private static String UPS_PREFFIX = "JSD";
-	private static String UPS_MERNO = "01151209001";
+	private static String UPS_PREFFIX = ConfigProperties.get(Constants.CONFKEY_UPS_PREFFIX);
+	private static String UPS_MERNO = ConfigProperties.get(Constants.CONFKEY_UPS_MERNO);
 
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_PART_SUCC = "01"; // 部分成功 

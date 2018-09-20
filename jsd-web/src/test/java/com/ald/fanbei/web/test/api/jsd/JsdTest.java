@@ -204,12 +204,12 @@ public class JsdTest extends BaseTest {
     public void repayLoan() {
         String url = urlBase + "/third/eca/v1/pushRepayment";
         Map<String,String> params = new HashMap<>();
-        params.put("amount", 95.6+"");
+        params.put("amount", 0.1+"");
         params.put("period", 1+"");
-        params.put("bankNo", "6216696200001039000");
-        params.put("borrowNo", "loan0911eca783500000030");
-        params.put("repayNo", "repay0911eca267900000092");
-        params.put("openId","9FF6EC836C741458429C7398AC0E2F26");
+        params.put("bankNo", "6212261202028480466");
+        params.put("borrowNo", "loan0919eca283100000004");
+        params.put("repayNo", "repay0911eca267900000192");
+        params.put("openId","BC539267586FB64E8990BB3113FCA5BC");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
@@ -224,10 +224,10 @@ public class JsdTest extends BaseTest {
     public void repayConfiSms() {
         String url = urlBase + "/third/eca/v1/submitMessage";
         Map<String, String> params = new HashMap<>();
-        params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
-        params.put("code","046842");
+        params.put("openId","BC539267586FB64E8990BB3113FCA5BC");
+        params.put("code","291855");
         params.put("type","REPAY");
-        params.put("busiFlag","hqkj20180830151933123241");
+        params.put("busiFlag","repay0911eca267900000192");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);

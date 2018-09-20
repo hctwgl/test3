@@ -52,7 +52,7 @@ public class WithholdJob {
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
 
 
-    @Scheduled(cron = "0 50 23 * * ?")
+//    @Scheduled(cron = "0 50 23 * * ?")
     public void withhold() {
         String curHostIp = GetHostIpUtil.getIpAddress();
         logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
