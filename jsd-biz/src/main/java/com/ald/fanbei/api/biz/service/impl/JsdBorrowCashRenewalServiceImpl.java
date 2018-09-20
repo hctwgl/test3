@@ -263,7 +263,6 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 					JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getById(orderCashDo.getBorrowLegalOrderId());
 					// 本次订单还款
 					JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = jsdBorrowLegalOrderRepaymentDao.getNewOrderRepaymentByBorrowId(renewalDo.getBorrowId());
-					logger.info("dealJsdRenewalSucess orderRepaymentDo = " +orderRepaymentDo + "renewalDo = " + renewalDo);
 					// 借款记录
 					JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
 					// 上期订单借款
@@ -287,10 +286,13 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 						jsdBorrowLegalOrderCashDao.updateById(lastOrderCashDo);
 
 						// 更新本次 订单还款记录为已结清（对应上期订单）
-						orderRepaymentDo.setStatus(JsdBorrowLegalRepaymentStatus.YES.getCode());
-						orderRepaymentDo.setTradeNoUps(tradeNoOut);
-						orderRepaymentDo.setActualAmount(orderRepaymentDo.getRepayAmount());
-						jsdBorrowLegalOrderRepaymentDao.updateById(orderRepaymentDo);
+						//续期有bug 暂时优化
+						if(orderRepaymentDo != null){
+							orderRepaymentDo.setStatus(JsdBorrowLegalRepaymentStatus.YES.getCode());
+							orderRepaymentDo.setTradeNoUps(tradeNoOut);
+							orderRepaymentDo.setActualAmount(orderRepaymentDo.getRepayAmount());
+							jsdBorrowLegalOrderRepaymentDao.updateById(orderRepaymentDo);
+						}
 					}
 
 					// 更新本次 订单借款状态
