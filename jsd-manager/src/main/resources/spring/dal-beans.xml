@@ -40,5 +40,5 @@
 			<ref bean="appTransactionManager" />
 		</property>
 	</bean>
-	
+
 </beans>
