@@ -43,8 +43,6 @@ public class CuiShouUtils {
     JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
 
     @Resource
-    JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
-    @Resource
     JsdBorrowCashService jsdBorrowCashService;
 
     @Resource

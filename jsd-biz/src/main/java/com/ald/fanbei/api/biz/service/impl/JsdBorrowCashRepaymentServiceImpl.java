@@ -87,6 +87,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	private JsdBorrowCashDao jsdBorrowCashDao;
 
 	@Resource
+	JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
+
+	@Resource
 	private JsdBorrowLegalOrderRepaymentDao jsdBorrowLegalOrderRepaymentDao;
 	@Resource
 	RedisTemplate<String, ?> redisTemplate;

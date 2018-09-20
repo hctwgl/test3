@@ -40,7 +40,6 @@ public interface JsdBorrowLegalOrderCashService extends ParentService<JsdBorrowL
 
 
 
-    JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashByOrderId(Long orderId);
 
 
 }
