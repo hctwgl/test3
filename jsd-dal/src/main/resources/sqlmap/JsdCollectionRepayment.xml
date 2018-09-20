@@ -255,10 +255,10 @@
         SELECT a.trade_no, a.real_name, a.account, a.repay_way, a.repay_amount AS amount, a.gmt_create, a.gmt_repay, a.review_status
         FROM jsd_collection_repayment a
         WHERE a.is_delete = 0
-        <if test="status != null">
+        <if test="status != null and status.trim() != ''">
             AND a.review_status = #{status}
         </if>
-        <if test="searchContent != null">
+        <if test="searchContent != null and searchContent != ''">
             AND (a.trade_no LIKE '${searchContent}%'
                 OR a.real_name LIKE '%${searchContent}%'
                 OR a.account LIKE '%${searchContent}%'

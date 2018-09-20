@@ -173,7 +173,7 @@
         INNER JOIN jsd_user u ON bc.user_id = u.id
         INNER JOIN jsd_borrow_cash_repayment bcr ON cb.borrow_id = bcr.borrow_id
         WHERE cb.is_delete = 0
-        <if test="status != null">
+        <if test="status != null and status.trim() != ''">
             AND cb.status = #{status}
         </if>
         <if test="searchContent != null and searchContent !=''">
