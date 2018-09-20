@@ -4,10 +4,7 @@ import com.ald.fanbei.api.biz.bo.RepaymentBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.cuishou.CuiShouBackMoney;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.GenderType;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.enums.JsdRepayType;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
@@ -34,7 +31,7 @@ public class CuiShouUtils {
 
     protected static final Logger logger = LoggerFactory.getLogger("DSED_THIRD");
 
-    private final String salt = "dsedcuishou";
+    private final String salt = "jsdcuishou";
 
     @Resource
     JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
@@ -108,7 +105,6 @@ public class CuiShouUtils {
             RepaymentBo repaymentBo = JSON.toJavaObject(obj, RepaymentBo.class);
             final String totalAmount = repaymentBo.getTotalAmount();
             final String repaymentNo = repaymentBo.getRepaymentNo();
-            final String type = repaymentBo.getType();
             final String repayTime = repaymentBo.getRepayTime();
             final String orderNo = repaymentBo.getOrderNo();
             Date time = DateUtil.stringToDate(repayTime);
