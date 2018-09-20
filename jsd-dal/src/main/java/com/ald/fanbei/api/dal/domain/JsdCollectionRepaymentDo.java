@@ -35,6 +35,9 @@ import java.math.BigDecimal;
      * 借款者的还款账户，一般为手机号
      */
     private String account;
+    
+    private String payInAccount;
+    private String payOutAccount;
 
     /**
      * 借款者真实姓名
@@ -412,5 +415,21 @@ import java.math.BigDecimal;
     public void setGmtModified(Date gmtModified){
       this.gmtModified = gmtModified;
     }
+
+	public String getPayInAccount() {
+		return payInAccount;
+	}
+
+	public void setPayInAccount(String payInAccount) {
+		this.payInAccount = payInAccount;
+	}
+
+	public String getPayOutAccount() {
+		return payOutAccount;
+	}
+
+	public void setPayOutAccount(String payOutAccount) {
+		this.payOutAccount = payOutAccount;
+	}
 
 }

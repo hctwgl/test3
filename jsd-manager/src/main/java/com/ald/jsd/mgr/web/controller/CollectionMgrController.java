@@ -17,10 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
+import com.ald.fanbei.api.biz.third.util.CuiShouUtils;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
 import com.ald.fanbei.api.dal.domain.JsdCollectionRepaymentDo;
 import com.ald.jsd.mgr.dal.dao.MgrCollectionBorrowDao;
@@ -45,11 +48,16 @@ public class CollectionMgrController extends BaseController{
 	JsdBorrowCashService jsdBorrowCashService;
 	@Resource
     JsdCollectionBorrowService jsdCollectionBorrowService;
+	@Resource
+	JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
 	
     @Resource
     MgrCollectionBorrowDao mgrCollectionBorrowDao;
     @Resource
     MgrCollectionRepaymentDao mgrCollectionRepaymentDao;
+    
+    @Resource
+    CuiShouUtils cuiShouUtils;
     
     @Resource
     TransactionTemplate transactionTemplate;
@@ -74,21 +82,17 @@ public class CollectionMgrController extends BaseController{
     	String reviewRemark = "管理员" + operator + "操作强制结清，原因：" + params.reviewRemark;
     	
     	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(params.tradeNoXgxy);
+    	JsdBorrowLegalOrderDo legalOrderDo = jsdBorrowLegalOrderService.getLastOrderByBorrowId(cashDo.getRid());
     	JsdCollectionBorrowDo collBorrowDo = jsdCollectionBorrowService.selectByBorrowId(cashDo.getRid());
     	
     	if(CollectionBorrowStatus.WAIT_FINISH.name().equals(collBorrowDo.getStatus())) {
     		return Resp.fail("当笔借款为待审核平账中，不可强制结清，只可审核");
     	}
     	
+    	JsdCollectionBorrowDo collBorrowDoForMod = this.buildCollectionBorrowDoForMod(collBorrowDo.getRid(),
+    			CollectionBorrowStatus.MANUAL_FINISHED.name(), operator, CommonReviewStatus.PASS.name(), reviewRemark);
+    	
     	JsdBorrowCashDo cashDoForMod = new JsdBorrowCashDo();
-    	JsdCollectionBorrowDo collBorrowDoForMod = new JsdCollectionBorrowDo();
-    	
-    	collBorrowDoForMod.setRid(collBorrowDo.getRid());
-    	collBorrowDoForMod.setStatus(CollectionBorrowStatus.MANUAL_FINISHED.name());
-    	collBorrowDoForMod.setReviewer(operator);
-    	collBorrowDoForMod.setReviewStatus(CommonReviewStatus.PASS.name());
-    	collBorrowDoForMod.setReviewRemark(reviewRemark);
-    	
     	cashDoForMod.setRid(cashDo.getRid());
     	cashDoForMod.setStatus(JsdBorrowCashStatus.FINISHED.name());
     	cashDoForMod.setRemark(reviewRemark);
@@ -97,6 +101,7 @@ public class CollectionMgrController extends BaseController{
 			public Integer doInTransaction(TransactionStatus status) {
 				jsdBorrowCashService.updateById(cashDoForMod);
 				jsdCollectionBorrowService.updateById(collBorrowDoForMod);
+				cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
 				return 1;
 			}
 		});
@@ -104,10 +109,45 @@ public class CollectionMgrController extends BaseController{
     	return Resp.succ();
     }
     @RequestMapping(value = { "/borrow/review.json" })
-    public Resp<Map<String, Long>> reviewBorrow(@RequestBody @Valid CollectionBorrowReviewReq params){
+    public Resp<Map<String, Long>> reviewBorrow(@RequestBody @Valid CollectionBorrowReviewReq params, HttpServletRequest request){
+    	String operator = Sessions.getRealname(request);
     	
+    	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(params.tradeNoXgxy);
+    	JsdBorrowLegalOrderDo legalOrderDo = jsdBorrowLegalOrderService.getLastOrderByBorrowId(cashDo.getRid());
+    	JsdCollectionBorrowDo collBorrowDo = jsdCollectionBorrowService.selectByBorrowId(cashDo.getRid());
     	
-    	return Resp.succ(null, "");
+    	String reviewRemark = "管理员" + operator + " 审核催收员" + collBorrowDo.getRequester() + " 平账请求（平账原因：" + collBorrowDo.getRequestReason() + "），审核结果:" + params.reviewRemark;
+    	
+    	if(!CollectionBorrowStatus.WAIT_FINISH.name().equals(collBorrowDo.getStatus())) {
+    		return Resp.fail("当笔借款非 待审核平账 状态，不可操作");
+    	}
+    	
+    	JsdCollectionBorrowDo collBorrowDoForMod;
+    	
+    	if(CommonReviewStatus.REFUSE.name().equals(params.reviewStatus)) {
+    		collBorrowDoForMod = this.buildCollectionBorrowDoForMod(collBorrowDo.getRid(), CollectionBorrowStatus.NOTICED.name(), 
+    				operator, params.reviewStatus, reviewRemark);
+    		jsdCollectionBorrowService.updateById(collBorrowDoForMod);
+    	}else if(CommonReviewStatus.PASS.name().equals(params.reviewStatus)) {
+    		collBorrowDoForMod = this.buildCollectionBorrowDoForMod(collBorrowDo.getRid(), CollectionBorrowStatus.COLLECT_FINISHED.name(), 
+    				operator, params.reviewStatus, reviewRemark);
+    		
+    		JsdBorrowCashDo cashDoForMod = new JsdBorrowCashDo();
+    		cashDoForMod.setRid(cashDo.getRid());
+        	cashDoForMod.setStatus(JsdBorrowCashStatus.FINISHED.name());
+        	cashDoForMod.setRemark(reviewRemark);
+        	
+        	transactionTemplate.execute(new TransactionCallback<Integer>() {
+    			public Integer doInTransaction(TransactionStatus status) {
+    				jsdBorrowCashService.updateById(cashDoForMod);
+    				jsdCollectionBorrowService.updateById(collBorrowDoForMod);
+    				cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
+    				return 1;
+    			}
+    		});
+    	}
+    	
+    	return Resp.succ();
     }
     
     /* --------- 还款 ------- */
@@ -123,5 +163,17 @@ public class CollectionMgrController extends BaseController{
     	data.put("totalAmtToday", mgrCollectionRepaymentDao.countTotalAmtBetweenGmtCreate(DateUtil.getStartOfDate(now), DateUtil.getEndOfDate(now)));
     	data.put("totalWaitReview", mgrCollectionRepaymentDao.countTotalWaitReview());
     	return Resp.succ(data, "");
+    }
+    
+    
+    
+    private JsdCollectionBorrowDo buildCollectionBorrowDoForMod(Long id, String status, String reviewer, String reviewStatus, String reviewRemark) {
+    	JsdCollectionBorrowDo collBorrowDoForMod = new JsdCollectionBorrowDo();
+    	collBorrowDoForMod.setRid(id);
+		collBorrowDoForMod.setStatus(status);
+		collBorrowDoForMod.setReviewer(reviewer);
+		collBorrowDoForMod.setReviewStatus(reviewStatus);
+		collBorrowDoForMod.setReviewRemark(reviewRemark);
+		return collBorrowDoForMod;
     }
 }

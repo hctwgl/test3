@@ -1,17 +1,16 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
-import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
-
-import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -25,8 +24,6 @@ import java.util.List;
  
 @Service("jsdBorrowLegalOrderService")
 public class JsdBorrowLegalOrderServiceImpl extends ParentServiceImpl<JsdBorrowLegalOrderDo, Long> implements JsdBorrowLegalOrderService {
-	
-    private static final Logger logger = LoggerFactory.getLogger(JsdBorrowLegalOrderServiceImpl.class);
    
     @Resource
     private JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
@@ -41,6 +38,11 @@ public class JsdBorrowLegalOrderServiceImpl extends ParentServiceImpl<JsdBorrowL
 		return jsdBorrowLegalOrderDao.getCurrentLastOrderNo(currentDate);
 	}
 
+	@Override
+	public JsdBorrowLegalOrderDo getLastOrderByBorrowId(Long borrowId) {
+		return jsdBorrowLegalOrderDao.getLastOrderByBorrowId(borrowId);
+	}
+	
 	@Override
 	public List<JsdBorrowLegalOrderDo> getBorrowOrdersByBorrowId(Long borrowId){
 		return jsdBorrowLegalOrderDao.getBorrowOrdersByBorrowId(borrowId);

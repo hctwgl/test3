@@ -6,12 +6,16 @@ import java.util.Date;
 public class MgrCollectionBorrowDto {
 	private String tradeNoXgxy;
 	private String realName;
+	private String account;
 	private String status;
 	private BigDecimal repaidAmount;
 	private BigDecimal unrepayAmount;
 	private Long overdueDays;
 	private Date gmtDue;
 	private Date gmtLastRepay;
+	private BigDecimal reducibleAmount;
+	private BigDecimal unReducibleAmount;
+	private BigDecimal reducibleRate;
 	
 	public String getTradeNoXgxy() {
 		return tradeNoXgxy;
@@ -60,5 +64,29 @@ public class MgrCollectionBorrowDto {
 	}
 	public void setGmtLastRepay(Date gmtLastRepay) {
 		this.gmtLastRepay = gmtLastRepay;
+	}
+	public String getAccount() {
+		return account;
+	}
+	public void setAccount(String account) {
+		this.account = account;
+	}
+	public BigDecimal getReducibleAmount() {
+		return reducibleAmount;
+	}
+	public void setReducibleAmount(BigDecimal reducibleAmount) {
+		this.reducibleAmount = reducibleAmount;
+	}
+	public BigDecimal getUnReducibleAmount() {
+		return unReducibleAmount;
+	}
+	public void setUnReducibleAmount(BigDecimal unReducibleAmount) {
+		this.unReducibleAmount = unReducibleAmount;
+	}
+	public BigDecimal getReducibleRate() {
+		return reducibleRate;
+	}
+	public void setReducibleRate(BigDecimal reducibleRate) {
+		this.reducibleRate = reducibleRate;
 	}
 }
