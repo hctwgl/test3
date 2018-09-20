@@ -22,4 +22,6 @@ public interface JsdBorrowCashRenewalDao extends BaseDao<JsdBorrowCashRenewalDo,
 
 	List<JsdBorrowCashRenewalDo> getJsdRenewalByBorrowId(Long borrowId);
 
+	List<JsdBorrowCashRenewalDo> getMgrJsdRenewalByBorrowId(Long borrowId);
+
 }
