@@ -8,7 +8,7 @@ import org.springframework.util.StringUtils;
 import com.ald.jsd.mgr.dal.domain.MgrOperatorDo;
 
 /**
- * Sessions全局封装类，原则上业务代码不应该直接引用Session对象
+ * Sessions全局封装类，Service中代码不可直接引用此对象
  */
 public class Sessions {
 	
