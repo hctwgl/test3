@@ -83,8 +83,8 @@ public class CollectoinController {
      */
     @ResponseBody
     @RequestMapping(value = {"/collectUpdateStatus"}, method = RequestMethod.POST)
-    public String collectUpdateStatus(String data){
-        return cuiShouUtils.collectUpdateStatus(data);
+    public String collectUpdateStatus(String data,String sign){
+        return cuiShouUtils.collectUpdateStatus(data,sign);
     }
 
 
