@@ -2,6 +2,7 @@ package com.ald.jsd.mgr.biz.service.impl;
 
 import com.ald.fanbei.api.biz.vo.MgrBorrowInfoAnalysisVo;
 import com.ald.fanbei.api.biz.vo.MgrDashboardInfoVo;
+import com.ald.fanbei.api.biz.vo.MgrTrendTodayInfoVo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.jsd.mgr.biz.service.MgrBorrowCashAnalysisService;
 import com.ald.jsd.mgr.biz.service.MgrBorrowCashService;
@@ -10,8 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -139,6 +139,23 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         mgrDashboardInfoVo.setRiskPassRateByWeek(riskPassRateByWeek);
         mgrDashboardInfoVo.setAvgAmountPer(avgAmountPer);
         return mgrDashboardInfoVo;
+    }
+
+    @Override
+    public MgrTrendTodayInfoVo getBorrowInfoTrendToday() {
+        List<JsdBorrowCashDo> todayBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(1);
+        Map<Integer, List<JsdBorrowCashDo>> borrowCashInfo = todayBorrowCashDoList.stream().collect(Collectors.groupingBy(JsdBorrowCashDo::getGmyCreateHour));
+        ArrayList<Map<Integer,Integer>> list = new ArrayList();
+        borrowCashInfo.forEach((k,v) ->{
+            Map map = new HashMap();
+            map.put("hour",Integer.parseInt(String.valueOf(k)));
+            map.put("num",v.size());
+            list.add(map);
+        });
+        list.sort((o1, o2) -> o1.get("hour")-o2.get("hour"));
+        MgrTrendTodayInfoVo mgrTrendTodayInfoVo = new MgrTrendTodayInfoVo();
+        mgrTrendTodayInfoVo.setLoanNumPerHourToday(list);
+        return mgrTrendTodayInfoVo;
     }
 
 }

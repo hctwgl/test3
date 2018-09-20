@@ -635,4 +635,8 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		return jsdBorrowCashRenewalDao.getJsdRenewalByBorrowId(borrowId);
 	}
 
+	@Override
+	public List<JsdBorrowCashRenewalDo> getMgrJsdRenewalByBorrowId(Long borrowId) {
+		return jsdBorrowCashRenewalDao.getMgrJsdRenewalByBorrowId(borrowId);
+	}
 }
