@@ -78,6 +78,7 @@ public enum ResourceType {
 	JSD_CONFIG("JSD_CONFIG", "极速贷相关配置"),
 	JSD_RATE_INFO("JSD_RATE_INFO", "极速贷利率配置"),
 	JSD_RENEWAL_INFO("JSD_RENEWAL_INFO", "极速贷续期配置"),
+	JSD_CONFIG_REVIEW_MODE("JSD_CONFIG_REVIEW_MODE","极速贷审批模式"),
 	
 	OVERDUE("OVERDUE", "逾期配置"),
 	PROTOCOL_BORROW("PROTOCOL_BORROW", "借款协议配置"),
