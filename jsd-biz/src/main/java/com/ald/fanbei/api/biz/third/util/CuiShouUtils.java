@@ -200,8 +200,10 @@ public class CuiShouUtils {
                 break;
             }
         }
+
         if(count>0){
             List<JsdBorrowCashRenewalDo> renewalList =  jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(jsdBorrowLegalOrderDo.getBorrowId());
+            logger.info(" count = " + count + " ,renewalList = "+ renewalList);
             buildData.put("overdueDay",String.valueOf(renewalList.get(count-1).getOverdueDay()));
             buildData.put("borrowTime",DateUtil.formatDateTime(renewalList.get(count).getGmtCreate()));//借款时间
         }else {
