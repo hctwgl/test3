@@ -11,6 +11,7 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.JsdCollectionBorrowDao;
+import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -44,6 +45,8 @@ public class CuiShouUtils {
 
     @Resource
     JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
+    @Resource
+    JsdNoticeRecordDao jsdNoticeRecordDao;
 
     @Resource
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
@@ -62,9 +65,6 @@ public class CuiShouUtils {
 
     @Resource
     JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
-
-    @Resource
-    XgxyUtil xgxyUtil;
 
     @Resource
     XgxyUtil xgxyUtil;
@@ -197,6 +197,7 @@ public class CuiShouUtils {
             if(count>0){
                 return "false";
             }
+            //催收平账推送西瓜
             HashMap<String, String> map = new HashMap<>();
             map.put("status",YesNoStatus.YES.getCode());
             map.put("isFinish",YesNoStatus.YES.getCode());
@@ -204,7 +205,17 @@ public class CuiShouUtils {
             map.put("period","all");
             map.put("amount",String.valueOf(BigDecimal.ZERO));
             map.put("type",JsdRepayType.COLLECTION.name());
-            xgxyUtil.repayNoticeRequest(map);
+            JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
+            noticeRecordDo.setUserId(orderDo.getUserId());
+            noticeRecordDo.setType(JsdNoticeType.COLLECT_RECONCILIATION.code);
+            noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+            noticeRecordDo.setParams(JSON.toJSONString(map));
+            jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+            if (xgxyUtil.repayNoticeRequest(map)) {
+                noticeRecordDo.setRid(noticeRecordDo.getRid());
+                noticeRecordDo.setGmtModified(new Date());
+                jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
+            }
             return "success";
         } catch (Exception e) {
             thirdLog.error("collectImport error = " + e);

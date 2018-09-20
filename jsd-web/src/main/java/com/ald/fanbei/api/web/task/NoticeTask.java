@@ -75,7 +75,8 @@ public class NoticeTask {
                             continue;
                         }
                       
-                        if (StringUtils.equals(recordDo.getTimes(), "5") && (StringUtils.equals(recordDo.getType(), JsdNoticeType.REPAY.code))) {
+                        if (StringUtils.equals(recordDo.getTimes(), "5") && (StringUtils.equals(recordDo.getType(), JsdNoticeType.REPAY.code) ||
+                                StringUtils.equals(recordDo.getType(), JsdNoticeType.COLLECT_RECONCILIATION.code) )) {
                             if(StringUtils.isBlank(recordDo.getParams())){
                                 jsdNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
                             }else{
@@ -140,7 +141,7 @@ public class NoticeTask {
              Thread.sleep(1000*60*request_times[Integer.parseInt(recordDo.getTimes())-1]);
              if(StringUtils.equals(recordDo.getType(), JsdNoticeType.DELEGATEPAY.code) || StringUtils.equals(recordDo.getType(), JsdNoticeType.OVERDUE.code)){
                  updateNoticeRecord(recordDo, xgxyUtil.borrowNoticeRequest(JSONObject.parseObject(recordDo.getParams(),XgxyBorrowNoticeBo.class)));
-             }else if((StringUtils.equals(recordDo.getType(), JsdNoticeType.REPAY.code))) {
+             }else if((StringUtils.equals(recordDo.getType(), JsdNoticeType.REPAY.code) || StringUtils.equals(recordDo.getType(), JsdNoticeType.COLLECT_RECONCILIATION.code))) {
                  updateNoticeRecord(recordDo, xgxyUtil.repayNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
              }else if(StringUtils.equals(recordDo.getType(), JsdNoticeType.RENEW.code)){
                  updateNoticeRecord(recordDo, xgxyUtil.jsdRenewalNoticeRequest(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
