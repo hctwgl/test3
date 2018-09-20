@@ -34,4 +34,9 @@ public class JsdBorrowLegalOrderInfoServiceImpl extends ParentServiceImpl<JsdBor
 	public BaseDao<JsdBorrowLegalOrderInfoDo, Long> getDao() {
 		return jsdBorrowLegalOrderInfoDao;
 	}
+
+	@Override
+	public JsdBorrowLegalOrderInfoDo getByBorrowId(Long borrowId) {
+		return jsdBorrowLegalOrderInfoDao.getByBorrowId(borrowId);
+	}
 }
