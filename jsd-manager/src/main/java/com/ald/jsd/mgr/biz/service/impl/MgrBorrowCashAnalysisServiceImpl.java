@@ -46,17 +46,16 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         BigDecimal returnAmount = BigDecimal.ZERO;//回款金额
         BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
         BigDecimal dueAmount = BigDecimal.ZERO;//到期金额
-        Integer borrowMans = 0;//放款人数
         BigDecimal repeatBorrowRate = BigDecimal.ZERO;//复借率
         BigDecimal overdueRate = BigDecimal.ZERO;//逾期率
         BigDecimal profitRate = BigDecimal.ZERO;//不良率
         BigDecimal riskPassRate = BigDecimal.ZERO;//认证通过率
         BigDecimal borrowPassRate = BigDecimal.ZERO;//借款通过率
-        borrowMans = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
-
+        Integer borrowMans = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
+        returnAmount = jsdBorrowCashDoList.stream().filter(jsdBorrowCashDo -> jsdBorrowCashDo.getStatus().equals("FINSHED")).map(jsdBorrowCashDo -> jsdBorrowCashDo.getRepayAmount()).reduce(BigDecimal.ZERO,BigDecimal::add);
         for (JsdBorrowCashDo borrow : jsdBorrowCashDoList) {
             totalLoanAmount = totalLoanAmount.add(borrow.getAmount());
-            if (StringUtils.equals(borrow.getStatus(), "FINSH")) {
+            if (StringUtils.equals(borrow.getStatus(), "FINSHED")) {
                 returnAmount.add(borrow.getRepayAmount());
             }
             if (StringUtils.equals(borrow.getOverdueStatus(), "Y")) {
@@ -177,7 +176,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         list.sort((o1, o2) -> o1.get("hour")-o2.get("hour"));
         MgrDashboardCityInfoVo mgrDashboardCityInfoVo = new MgrDashboardCityInfoVo();
         mgrDashboardCityInfoVo.setLoanCityNumToday(list);
-        return null;
+        return mgrDashboardCityInfoVo;
     }
 
 }
