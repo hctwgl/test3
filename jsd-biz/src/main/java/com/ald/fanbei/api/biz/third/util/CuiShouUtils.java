@@ -66,6 +66,9 @@ public class CuiShouUtils {
     @Resource
     XgxyUtil xgxyUtil;
 
+    @Resource
+    XgxyUtil xgxyUtil;
+
     private static String token = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo";
 
 
@@ -186,6 +189,7 @@ public class CuiShouUtils {
             String sign1 = DigestUtil.encodeHex(pd);
             if (!sign1.equals(sign)) return "false                                     ";
             JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderService.getById(Long.valueOf(data));
+            JsdBorrowCashDo cashDo = jsdBorrowCashService.getById(orderDo.getBorrowId());
             JsdBorrowCashDo jsdBorrowCashDo = new JsdBorrowCashDo();
             jsdBorrowCashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
             jsdBorrowCashDo.setRid(orderDo.getBorrowId());
@@ -193,6 +197,14 @@ public class CuiShouUtils {
             if(count>0){
                 return "false";
             }
+            HashMap<String, String> map = new HashMap<>();
+            map.put("status",YesNoStatus.YES.getCode());
+            map.put("isFinish",YesNoStatus.YES.getCode());
+            map.put("borrowNo",cashDo.getTradeNoXgxy());
+            map.put("period","all");
+            map.put("amount",String.valueOf(BigDecimal.ZERO));
+            map.put("type",JsdRepayType.COLLECTION.name());
+            xgxyUtil.repayNoticeRequest(map);
             return "success";
         } catch (Exception e) {
             thirdLog.error("collectImport error = " + e);
