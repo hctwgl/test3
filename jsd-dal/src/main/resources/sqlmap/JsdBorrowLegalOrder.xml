@@ -300,8 +300,9 @@
         SELECT
         <include refid="queryFields" />
         FROM jsd_borrow_legal_order 
-        WHERE is_delete = 0 
-            AND borrow_id = #{borrowId} 
+        WHERE is_delete = 0
+        AND status != 'CLOSED' AND status != 'UNPAID'
+        AND borrow_id = #{borrowId}
         ORDER BY id DESC LIMIT 1
     </select>
 
