@@ -152,7 +152,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             map.put("num",v.size());
             list.add(map);
         });
-        Collections.sort(list, (o1, o2) -> o1.get("hour")-o2.get("hour"));
+        list.sort((o1, o2) -> o1.get("hour")-o2.get("hour"));
         MgrTrendTodayInfoVo mgrTrendTodayInfoVo = new MgrTrendTodayInfoVo();
         mgrTrendTodayInfoVo.setLoanNumPerHourToday(list);
         return mgrTrendTodayInfoVo;
