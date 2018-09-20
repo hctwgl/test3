@@ -263,7 +263,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 					JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getById(orderCashDo.getBorrowLegalOrderId());
 					// 本次订单还款
 					JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = jsdBorrowLegalOrderRepaymentDao.getNewOrderRepaymentByBorrowId(renewalDo.getBorrowId());
-
+					logger.info("dealJsdRenewalSucess orderRepaymentDo = " +orderRepaymentDo + "renewalDo = " + renewalDo);
 					// 借款记录
 					JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(renewalDo.getBorrowId());
 					// 上期订单借款
