@@ -39,12 +39,12 @@ public class GetProfitApi implements JsdH5Handle {
     	
     	JSONObject dataMap = context.getDataMap();
     	String type = dataMap.getString("type");
+    	String tyingType = dataMap.getString("tyingType");
     	if("BORROW".equals(type)) {
-//    		bo.req = new TrialBeforeBorrowReq(context.getOpenId(), new BigDecimal(dataMap.getString("amount")),
-//    				dataMap.getString("term"), dataMap.getString("unit"));
-    		bo.req = (TrialBeforeBorrowReq)context.getParamEntity();
+    		bo.req = new TrialBeforeBorrowReq(context.getOpenId(), new BigDecimal(dataMap.getString("amount")),
+    				dataMap.getString("term"), dataMap.getString("unit"));
     		
-    		if("Y".equals(bo.req.isTying) && BorrowVersionType.SELL.name().equals(bo.req.tyingType)){
+    		if(BorrowVersionType.SELL.name().equals(tyingType)){
         		jsdBorrowCashService.resolve(bo);	// 赊销
         	}else{
         		beheadBorrowCashService.resolve(bo); // 砍头
