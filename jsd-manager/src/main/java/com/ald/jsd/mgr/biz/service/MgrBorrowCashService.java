@@ -12,5 +12,7 @@ public interface MgrBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      */
     List<JsdBorrowCashDo> getBorrowCashByDays(Integer days);
 
+    List<JsdBorrowCashDo> getBorrowCashLessThanDays(Integer days);
+
     int getApplyBorrowCashByDays(Integer days);
 }

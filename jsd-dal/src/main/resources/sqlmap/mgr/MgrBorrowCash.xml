@@ -491,7 +491,7 @@
         group by user_id
     </select>
 
-    <select id="getBorrowCashByDays" resultType="JsdBorrowCashDo">
+    <select id="getBorrowCashLessThanDays" resultType="JsdBorrowCashDo">
         SELECT
         <include refid="queryFields"/>
         FROM
@@ -500,5 +500,13 @@
         group by  user_id
     </select>
 
+    <select id="getBorrowCashByDays" resultType="JsdBorrowCashDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) = #{days}
+        and status in ('TRANSFERRED','FINSH')
+        group by  user_id
+    </select>
 
 </mapper>

@@ -1,10 +1,9 @@
 package com.ald.jsd.mgr.biz.service.impl;
 
-import com.ald.fanbei.api.biz.bo.assetpush.JsdBorrowInfoAnalysisVo;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.NumberUtil;
+import com.ald.fanbei.api.biz.vo.MgrBorrowInfoAnalysisVo;
+import com.ald.fanbei.api.biz.vo.MgrDashboardInfoVo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-import com.ald.jsd.mgr.biz.service.JsdBorrowCashAnalysisService;
+import com.ald.jsd.mgr.biz.service.MgrBorrowCashAnalysisService;
 import com.ald.jsd.mgr.biz.service.MgrBorrowCashService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ import java.util.List;
  */
 
 @Service("jsdBorrowCashAnalysisService")
-public class JsdBorrowCashAnalysisServiceImpl implements JsdBorrowCashAnalysisService {
+public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisService {
 
     @Resource
     private MgrBorrowCashService mgrBorrowCashService;
@@ -33,9 +32,9 @@ public class JsdBorrowCashAnalysisServiceImpl implements JsdBorrowCashAnalysisSe
     private MgrUserAuthService mgrUserAuthService;
 
     @Override
-    public JsdBorrowInfoAnalysisVo getBorrowInfoAnalysisInfo(Integer days) {
-        List<JsdBorrowCashDo> jsdBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(days);
-        JsdBorrowInfoAnalysisVo jsdBorrowInfoAnalysisVo = new JsdBorrowInfoAnalysisVo();
+    public MgrBorrowInfoAnalysisVo getBorrowInfoAnalysis(Integer days) {
+        List<JsdBorrowCashDo> jsdBorrowCashDoList = mgrBorrowCashService.getBorrowCashLessThanDays(days);
+        MgrBorrowInfoAnalysisVo mgrBorrowInfoAnalysisVo = new MgrBorrowInfoAnalysisVo();
         BigDecimal totalLoanAmount = BigDecimal.ZERO;
         BigDecimal returnedRate = BigDecimal.ZERO;//回款率
         BigDecimal returnAmount = BigDecimal.ZERO;//回款金额
@@ -77,14 +76,19 @@ public class JsdBorrowCashAnalysisServiceImpl implements JsdBorrowCashAnalysisSe
         if (allUserNum  != 0){
             riskPassRate = new BigDecimal(paseUserNum).divide(new BigDecimal(allUserNum)).setScale(4, BigDecimal.ROUND_HALF_UP);
         }
-        jsdBorrowInfoAnalysisVo.setRiskPassRate(riskPassRate);
-        jsdBorrowInfoAnalysisVo.setTotalLoanAmount(totalLoanAmount);
-        jsdBorrowInfoAnalysisVo.setBorrowMans(borrowMans);
-        jsdBorrowInfoAnalysisVo.setBorrowPassRate(borrowPassRate);
-        jsdBorrowInfoAnalysisVo.setReturnedRate(returnedRate);
-        jsdBorrowInfoAnalysisVo.setOverdueRate(overdueRate);
-        jsdBorrowInfoAnalysisVo.setProfitRate(profitRate);
-        return jsdBorrowInfoAnalysisVo;
+        mgrBorrowInfoAnalysisVo.setRiskPassRate(riskPassRate);
+        mgrBorrowInfoAnalysisVo.setTotalLoanAmount(totalLoanAmount);
+        mgrBorrowInfoAnalysisVo.setBorrowMans(borrowMans);
+        mgrBorrowInfoAnalysisVo.setBorrowPassRate(borrowPassRate);
+        mgrBorrowInfoAnalysisVo.setReturnedRate(returnedRate);
+        mgrBorrowInfoAnalysisVo.setOverdueRate(overdueRate);
+        mgrBorrowInfoAnalysisVo.setProfitRate(profitRate);
+        return mgrBorrowInfoAnalysisVo;
+    }
+
+    @Override
+    public MgrDashboardInfoVo getBorrowInfoDashboard() {
+        return null;
     }
 
 }

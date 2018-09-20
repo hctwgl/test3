@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.biz.bo.assetpush;
+package com.ald.fanbei.api.biz.vo;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class JsdBorrowInfoAnalysisVo implements Serializable {
+public class MgrBorrowInfoAnalysisVo implements Serializable {
 	
 	private static final long serialVersionUID = 4204652534348461359L;
 	private BigDecimal totalLoanAmount;//总放款额
