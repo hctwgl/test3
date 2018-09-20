@@ -149,7 +149,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
     @Override
     public MgrTrendTodayInfoVo getBorrowInfoTrendToday() {
         List<JsdBorrowCashDo> todayBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(1);
-        Map<Integer, List<JsdBorrowCashDo>> borrowCashInfo = todayBorrowCashDoList.stream().collect(Collectors.groupingBy(JsdBorrowCashDo::getGmyCreateHour));
+        Map<Integer, List<JsdBorrowCashDo>> borrowCashInfo = todayBorrowCashDoList.stream().collect(Collectors.groupingBy(JsdBorrowCashDo::getGmtCreateHour));
         ArrayList<Map<Integer,Integer>> list = new ArrayList();
         borrowCashInfo.forEach((k,v) ->{
             Map map = new HashMap();

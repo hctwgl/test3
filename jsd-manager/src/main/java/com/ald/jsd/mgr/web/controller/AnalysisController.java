@@ -1,6 +1,7 @@
 package com.ald.jsd.mgr.web.controller;
 
 
+import com.ald.fanbei.api.biz.vo.MgrDashboardCityInfoVo;
 import com.ald.fanbei.api.biz.vo.MgrDashboardInfoVo;
 import com.ald.fanbei.api.biz.vo.MgrBorrowInfoAnalysisVo;
 import com.ald.fanbei.api.biz.vo.MgrTrendTodayInfoVo;
@@ -43,9 +44,9 @@ public class AnalysisController extends BaseController {
     }
 
     @RequestMapping(value = {"/dashboardCity.json"}, method = RequestMethod.POST)
-    public Resp<MgrTrendTodayInfoVo> getdashboardCityInfo() {
-        MgrTrendTodayInfoVo mgrDashboardInfoVo = mgrBorrowCashAnalysisService.getBorrowInfoTrendToday();
-        return Resp.succ(mgrDashboardInfoVo, "");
+    public Resp<MgrDashboardCityInfoVo> getdashboardCityInfo() {
+        MgrDashboardCityInfoVo mgrDashboardCityInfoVo = mgrBorrowCashAnalysisService.getdashboardCityInfo();
+        return Resp.succ(mgrDashboardCityInfoVo, "");
     }
 
 }
