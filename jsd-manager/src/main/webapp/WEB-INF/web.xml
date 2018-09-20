@@ -31,15 +31,6 @@
 	   <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	
-	<!-- bizFilter -->
-	<filter>
-      <filter-name>bizFilter</filter-name>
-      <filter-class>com.ald.jsd.mgr.web.filter.BizFilter</filter-class>
-    </filter>
-    <filter-mapping>
-      <filter-name>bizFilter</filter-name>
-      <url-pattern>*.json</url-pattern>
-    </filter-mapping>
 	<!-- SessionFilter -->
 	<filter>
 	    <filter-name>springSessionRepositoryFilter</filter-name>
@@ -53,6 +44,15 @@
 	    <filter-name>springSessionRepositoryFilter</filter-name>
 	    <url-pattern>/*</url-pattern>
 	</filter-mapping>
+	<!-- bizFilter -->
+    <filter>
+      <filter-name>bizFilter</filter-name>
+      <filter-class>com.ald.jsd.mgr.web.filter.BizFilter</filter-class>
+    </filter>
+    <filter-mapping>
+      <filter-name>bizFilter</filter-name>
+      <url-pattern>*.json</url-pattern>
+    </filter-mapping>
 	
 
 	<servlet>
