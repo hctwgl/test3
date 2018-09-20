@@ -161,41 +161,5 @@
         FROM jsd_collection_borrow
         WHERE borrow_id = #{borrowId} AND is_delete = 0
     </select>
-
-    
-    <select id="mgrListCollectionBorrow" resultType="MgrCollectionBorrowDto">
-        SELECT 
-            bc.trade_no_xgxy, u.real_name, cb.status, bc.repay_amount AS repaid_amount,
-            (bc.amount + bc.interest_amount + bc.sum_repaid_interest + bc.poundage_amount + bc.sum_repaid_poundage + bc.overdue_amount + bc.sum_repaid_overdue - bc.repay_amount) AS unrepay_amount,
-            bc.gmt_plan_repayment AS gmt_due, bc.overdue_day AS overdue_days, MAX(bcr.gmt_create) AS gmt_last_repay
-        FROM jsd_collection_borrow cb
-        INNER JOIN jsd_borrow_cash bc ON cb.borrow_id = bc.id
-        INNER JOIN jsd_user u ON bc.user_id = u.id
-        INNER JOIN jsd_borrow_cash_repayment bcr ON cb.borrow_id = bcr.borrow_id
-        WHERE cb.is_delete = 0
-        <if test="status != null and status.trim() != ''">
-            AND cb.status = #{status}
-        </if>
-        <if test="searchContent != null and searchContent !=''">
-            AND (bc.trade_no_xgxy LIKE '${searchContent}%'
-                OR u.real_name LIKE '%${searchContent}%')
-        </if>
-        GROUP BY bc.trade_no_xgxy
-    </select>
-    
-    <select id="countTotalAmtBetweenGmtCreate" resultType="java.lang.Long">
-        SELECT SUM(b.amount + b.interest_amount + b.sum_repaid_interest + b.poundage_amount + b.sum_repaid_poundage + b.overdue_amount + b.sum_repaid_overdue)
-        FROM jsd_collection_borrow a
-        INNER JOIN jsd_borrow_cash b 
-            ON a.borrow_id = b.id 
-            AND (a.gmt_create BETWEEN #{dateStart} AND #{dateEnd}) 
-            AND a.is_delete = 0 
-    </select>
-    
-    <select id="countTotalWaitFinish" resultType="java.lang.Long">
-        SELECT COUNT(id)
-        FROM jsd_collection_borrow 
-        WHERE status = 'WAIT_FINISH' AND is_delete = 0
-    </select>
     
 </mapper>
