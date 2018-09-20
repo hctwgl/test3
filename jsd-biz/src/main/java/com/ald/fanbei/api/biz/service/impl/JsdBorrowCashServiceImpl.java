@@ -1,15 +1,20 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
 import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.alibaba.fastjson.JSONArray;
@@ -59,6 +64,8 @@ import com.alibaba.fastjson.JSON;
 
 @Service("jsdBorrowCashService")
 public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo, Long> implements JsdBorrowCashService {
+
+    private static String notifyHost = null;
 
     @Resource
     JsdBorrowCashDao jsdBorrowCashDao;
@@ -448,6 +455,41 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
 
         jsdNoticeRecord(cashDo, failMsg, XgxyBorrowNotifyStatus.FAILED.name());
+    }
+
+    /**
+     * 获取借款相关协议
+     * @param openId
+     * @param tradeNoXgxy
+     * @param previewJsonStr
+     * @return
+     */
+    @Override
+    public List<JsdProctocolBo> getBorrowProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
+        List<JsdResourceDo> ress = jsdResourceService.listByType(ResourceType.PROTOCOL_BORROW.getCode());
+        List<JsdProctocolBo> protocolVos = new ArrayList<>();
+        for(JsdResourceDo resdo: ress) {
+            JsdProctocolBo protocolVo = new JsdProctocolBo();
+            protocolVo.setProtocolName(resdo.getName());
+            String urlPrefix = getNotifyHost()+resdo.getValue();
+            try {
+                String urlParams = "?openId=" + openId  + "&tradeNoXgxy=" + (tradeNoXgxy == null?"":tradeNoXgxy) + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
+                protocolVo.setProtocolUrl(urlPrefix + urlParams);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            protocolVos.add(protocolVo);
+        }
+        return protocolVos;
+    }
+
+    private String getNotifyHost(){
+        if(notifyHost==null){
+            notifyHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
+            return notifyHost;
+        }
+        return notifyHost;
     }
 
     private void jsdNoticeRecord(JsdBorrowCashDo cashDo, String msg, String status) {

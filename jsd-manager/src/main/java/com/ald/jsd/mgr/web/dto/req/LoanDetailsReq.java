@@ -1,5 +1,6 @@
 package com.ald.jsd.mgr.web.dto.req;
 
+import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 
 import java.math.BigDecimal;
@@ -106,6 +107,11 @@ public class LoanDetailsReq {
     private BigDecimal repayAmount;
 
     /**
+     * 预计还款时间
+     */
+    private Date gmtPlanRepayment;
+
+    /**
      * 剩余未还总金额
      */
     private BigDecimal unrepayAmount;
@@ -129,6 +135,11 @@ public class LoanDetailsReq {
      * 是否入催
      */
     private String isCollection;
+
+    /**
+     * 协议
+     */
+    private List<JsdProctocolBo> proctocols;
 
     /**
      * 续期记录
@@ -341,5 +352,21 @@ public class LoanDetailsReq {
 
     public void setRenewal(List<JsdBorrowCashRenewalDo> renewal) {
         this.renewal = renewal;
+    }
+
+    public Date getGmtPlanRepayment() {
+        return gmtPlanRepayment;
+    }
+
+    public void setGmtPlanRepayment(Date gmtPlanRepayment) {
+        this.gmtPlanRepayment = gmtPlanRepayment;
+    }
+
+    public List<JsdProctocolBo> getProctocols() {
+        return proctocols;
+    }
+
+    public void setProctocols(List<JsdProctocolBo> proctocols) {
+        this.proctocols = proctocols;
     }
 }
