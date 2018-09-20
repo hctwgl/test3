@@ -4,10 +4,7 @@ import com.ald.fanbei.api.biz.bo.RepaymentBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.cuishou.CuiShouBackMoney;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.GenderType;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
-import com.ald.fanbei.api.common.enums.JsdRepayType;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
@@ -34,7 +31,7 @@ public class CuiShouUtils {
 
     protected static final Logger logger = LoggerFactory.getLogger("DSED_THIRD");
 
-    private final String salt = "dsedcuishou";
+    private final String salt = "jsdcuishou";
 
     @Resource
     JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
@@ -108,7 +105,6 @@ public class CuiShouUtils {
             RepaymentBo repaymentBo = JSON.toJavaObject(obj, RepaymentBo.class);
             final String totalAmount = repaymentBo.getTotalAmount();
             final String repaymentNo = repaymentBo.getRepaymentNo();
-            final String type = repaymentBo.getType();
             final String repayTime = repaymentBo.getRepayTime();
             final String orderNo = repaymentBo.getOrderNo();
             Date time = DateUtil.stringToDate(repayTime);
@@ -179,24 +175,28 @@ public class CuiShouUtils {
      * @param data
      * @return
      */
-    public String collectUpdateStatus(String data) {
+    public String collectUpdateStatus(String data,String sign) {
         try {
             if(StringUtil.isEmpty(data)){
                 thirdLog.error("data is null");
                 return "false";
             }
+            logger.info("offlineRepaymentMoney data = " + data +"  ,sign = " + sign);
+            byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+            String sign1 = DigestUtil.encodeHex(pd);
+            if (!sign1.equals(sign)) return "false                                     ";
             JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderService.getById(Long.valueOf(data));
             JsdBorrowCashDo jsdBorrowCashDo = new JsdBorrowCashDo();
             jsdBorrowCashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
             jsdBorrowCashDo.setRid(orderDo.getBorrowId());
             int count = jsdBorrowCashService.updateById(jsdBorrowCashDo);
             if(count>0){
-                return "fail";
+                return "false";
             }
             return "success";
         } catch (Exception e) {
             thirdLog.error("collectImport error = " + e);
-            return "fail";
+            return "false";
         }
     }
 
