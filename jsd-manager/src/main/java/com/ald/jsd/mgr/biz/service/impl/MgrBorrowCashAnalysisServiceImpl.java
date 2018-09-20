@@ -64,19 +64,19 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         }
         int applyBorrowCashNum = mgrBorrowCashService.getApplyBorrowCashByDays(days);//申请借款人数
         if (dueAmount != BigDecimal.ZERO){
-            overdueRate = overdueAmount.divide(dueAmount).setScale(2,BigDecimal.ROUND_HALF_UP);
-            returnedRate = returnAmount.divide(dueAmount).setScale(2,BigDecimal.ROUND_HALF_UP);//回款金额
+            overdueRate = overdueAmount.divide(dueAmount,2,BigDecimal.ROUND_HALF_UP);
+            returnedRate = returnAmount.divide(dueAmount,2,BigDecimal.ROUND_HALF_UP);//回款金额
         }
         if (applyBorrowCashNum != 0){
-            borrowPassRate = new BigDecimal(borrowMans).divide(new BigDecimal(applyBorrowCashNum));//借款通过人数
+            borrowPassRate = new BigDecimal(borrowMans).divide(new BigDecimal(applyBorrowCashNum),4,BigDecimal.ROUND_HALF_UP);//借款通过人数
         }
         if (totalLoanAmount != BigDecimal.ZERO){
-            profitRate = (returnAmount.subtract(overdueAmount)).divide(totalLoanAmount).setScale(2,BigDecimal.ROUND_HALF_UP);
+            profitRate = (returnAmount.subtract(overdueAmount)).divide(totalLoanAmount,4,BigDecimal.ROUND_HALF_UP);
         }
         int allUserNum = mgrUserAuthService.getPassPersonNumByStatusAndDays("", days);
         int paseUserNum = mgrUserAuthService.getPassPersonNumByStatusAndDays("Y", days);
         if (allUserNum  != 0){
-            riskPassRate = new BigDecimal(paseUserNum).divide(new BigDecimal(allUserNum)).setScale(4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+            riskPassRate = new BigDecimal(paseUserNum).divide(new BigDecimal(allUserNum),4,BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
         mgrBorrowInfoAnalysisVo.setRiskPassRate(riskPassRate);
         mgrBorrowInfoAnalysisVo.setTotalLoanAmount(totalLoanAmount);
@@ -96,29 +96,38 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         BigDecimal todayAmount = todayBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
         BigDecimal ystAmount = ystBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
         BigDecimal weekAmount = weekBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
-
-        BigDecimal totalLoanAmtRateByWeek = todayAmount.divide(weekAmount).setScale(2,BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
-
-        BigDecimal totalLoanAmtRateByDay = todayAmount.divide(ystAmount).setScale(2,BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
-
         int borrowMans = todayBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
+        BigDecimal avgAmountPer = BigDecimal.ZERO;
+        if (null != todayBorrowCashDoList && 0 != todayBorrowCashDoList.size() ){
+            avgAmountPer = todayAmount.divide(new BigDecimal(todayBorrowCashDoList.size()),2,BigDecimal.ROUND_HALF_UP);
+        }
+
+        BigDecimal totalLoanAmtRateByWeek = BigDecimal.ZERO;
+        if (weekAmount != BigDecimal.ZERO ){
+            totalLoanAmtRateByWeek = todayAmount.divide(weekAmount,4,BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+        }
+        BigDecimal totalLoanAmtRateByDay = BigDecimal.ZERO;
+        if (ystAmount != BigDecimal.ZERO ){
+            totalLoanAmtRateByDay = todayAmount.divide(ystAmount,4,BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+        }
+
         int todayAllUserNum = mgrUserAuthService.getPassPersonNumByStatusEqualDays("", 0);
         int todayPaseUserNum = mgrUserAuthService.getPassPersonNumByStatusEqualDays("Y", 0);
         BigDecimal riskPassRate = BigDecimal.ZERO;
         if (todayAllUserNum  != 0){
-            riskPassRate = new BigDecimal(todayPaseUserNum).divide(new BigDecimal(todayAllUserNum)).setScale(4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+            riskPassRate = new BigDecimal(todayPaseUserNum).divide(new BigDecimal(todayAllUserNum),4,BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
         int ystAllUserNum = mgrUserAuthService.getPassPersonNumByStatusEqualDays("", 1);
         int ystPaseUserNum = mgrUserAuthService.getPassPersonNumByStatusEqualDays("Y", 1);
         BigDecimal riskPassRateByDay = BigDecimal.ZERO;
         if (ystAllUserNum  != 0){
-            riskPassRateByDay = new BigDecimal(ystPaseUserNum).divide(new BigDecimal(ystAllUserNum)).setScale(4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+            riskPassRateByDay = new BigDecimal(ystPaseUserNum).divide(new BigDecimal(ystAllUserNum),4,BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
         int weekAllUserNum = mgrUserAuthService.getPassPersonNumByStatusEqualDays("", 7);
         int weekPaseUserNum = mgrUserAuthService.getPassPersonNumByStatusEqualDays("Y", 7);
         BigDecimal riskPassRateByWeek = BigDecimal.ZERO;
         if (weekAllUserNum  != 0){
-            riskPassRateByWeek = new BigDecimal(weekPaseUserNum).divide(new BigDecimal(weekAllUserNum)).setScale(4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+            riskPassRateByWeek = new BigDecimal(weekPaseUserNum).divide(new BigDecimal(weekAllUserNum),4,BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
         MgrDashboardInfoVo mgrDashboardInfoVo = new MgrDashboardInfoVo();
         mgrDashboardInfoVo.setTotalLoanAmt(todayAmount);
@@ -128,6 +137,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         mgrDashboardInfoVo.setRiskPassRate(riskPassRate);
         mgrDashboardInfoVo.setRiskPassRateByDay(riskPassRateByDay);
         mgrDashboardInfoVo.setRiskPassRateByWeek(riskPassRateByWeek);
+        mgrDashboardInfoVo.setAvgAmountPer(avgAmountPer);
         return mgrDashboardInfoVo;
     }
 
