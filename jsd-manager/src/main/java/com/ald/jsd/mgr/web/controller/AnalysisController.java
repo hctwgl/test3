@@ -3,6 +3,7 @@ package com.ald.jsd.mgr.web.controller;
 
 import com.ald.fanbei.api.biz.vo.MgrDashboardInfoVo;
 import com.ald.fanbei.api.biz.vo.MgrBorrowInfoAnalysisVo;
+import com.ald.fanbei.api.biz.vo.MgrTrendTodayInfoVo;
 import com.ald.jsd.mgr.biz.service.MgrBorrowCashAnalysisService;
 import com.ald.jsd.mgr.spring.NotNeedLogin;
 import com.ald.jsd.mgr.web.dto.req.AnalysisReq;
@@ -33,6 +34,11 @@ public class AnalysisController extends BaseController {
     @RequestMapping(value = {"/dashboard.json"}, method = RequestMethod.POST)
     public Resp<MgrDashboardInfoVo> getDashboardInfo() {
         MgrDashboardInfoVo mgrDashboardInfoVo = mgrBorrowCashAnalysisService.getBorrowInfoDashboard();
+        return Resp.succ(mgrDashboardInfoVo, "");
+    }
+    @RequestMapping(value = {"/trendToday.json"}, method = RequestMethod.POST)
+    public Resp<MgrTrendTodayInfoVo> getTrendTodayInfo() {
+        MgrTrendTodayInfoVo mgrDashboardInfoVo = mgrBorrowCashAnalysisService.getBorrowInfoTrendToday();
         return Resp.succ(mgrDashboardInfoVo, "");
     }
 
