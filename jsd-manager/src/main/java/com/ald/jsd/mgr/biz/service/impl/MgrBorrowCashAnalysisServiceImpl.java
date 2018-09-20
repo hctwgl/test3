@@ -1,17 +1,20 @@
 package com.ald.jsd.mgr.biz.service.impl;
 
 import com.ald.fanbei.api.biz.vo.MgrBorrowInfoAnalysisVo;
+import com.ald.fanbei.api.biz.vo.MgrDashboardCityInfoVo;
 import com.ald.fanbei.api.biz.vo.MgrDashboardInfoVo;
+import com.ald.fanbei.api.biz.vo.MgrTrendTodayInfoVo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo;
 import com.ald.jsd.mgr.biz.service.MgrBorrowCashAnalysisService;
 import com.ald.jsd.mgr.biz.service.MgrBorrowCashService;
+import com.ald.jsd.mgr.biz.service.MgrBorrowLegalOrderInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -31,6 +34,8 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
     private MgrBorrowCashService mgrBorrowCashService;
     @Resource
     private MgrUserAuthService mgrUserAuthService;
+    @Resource
+    private MgrBorrowLegalOrderInfoService mgrBorrowLegalOrderInfoService;
 
     @Override
     public MgrBorrowInfoAnalysisVo getBorrowInfoAnalysis(Integer days) {
@@ -41,17 +46,16 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         BigDecimal returnAmount = BigDecimal.ZERO;//回款金额
         BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
         BigDecimal dueAmount = BigDecimal.ZERO;//到期金额
-        Integer borrowMans = 0;//放款人数
         BigDecimal repeatBorrowRate = BigDecimal.ZERO;//复借率
         BigDecimal overdueRate = BigDecimal.ZERO;//逾期率
         BigDecimal profitRate = BigDecimal.ZERO;//不良率
         BigDecimal riskPassRate = BigDecimal.ZERO;//认证通过率
         BigDecimal borrowPassRate = BigDecimal.ZERO;//借款通过率
-        borrowMans = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
-
+        Integer borrowMans = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
+        returnAmount = jsdBorrowCashDoList.stream().filter(jsdBorrowCashDo -> jsdBorrowCashDo.getStatus().equals("FINSHED")).map(jsdBorrowCashDo -> jsdBorrowCashDo.getRepayAmount()).reduce(BigDecimal.ZERO,BigDecimal::add);
         for (JsdBorrowCashDo borrow : jsdBorrowCashDoList) {
             totalLoanAmount = totalLoanAmount.add(borrow.getAmount());
-            if (StringUtils.equals(borrow.getStatus(), "FINSH")) {
+            if (StringUtils.equals(borrow.getStatus(), "FINSHED")) {
                 returnAmount.add(borrow.getRepayAmount());
             }
             if (StringUtils.equals(borrow.getOverdueStatus(), "Y")) {
@@ -139,6 +143,40 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         mgrDashboardInfoVo.setRiskPassRateByWeek(riskPassRateByWeek);
         mgrDashboardInfoVo.setAvgAmountPer(avgAmountPer);
         return mgrDashboardInfoVo;
+    }
+
+    @Override
+    public MgrTrendTodayInfoVo getBorrowInfoTrendToday() {
+        List<JsdBorrowCashDo> todayBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(1);
+        Map<Integer, List<JsdBorrowCashDo>> borrowCashInfo = todayBorrowCashDoList.stream().collect(Collectors.groupingBy(JsdBorrowCashDo::getGmtCreateHour));
+        ArrayList<Map<Integer,Integer>> list = new ArrayList();
+        borrowCashInfo.forEach((k,v) ->{
+            Map map = new HashMap();
+            map.put("hour",Integer.parseInt(String.valueOf(k)));
+            map.put("num",v.size());
+            list.add(map);
+        });
+        list.sort((o1, o2) -> o1.get("hour")-o2.get("hour"));
+        MgrTrendTodayInfoVo mgrTrendTodayInfoVo = new MgrTrendTodayInfoVo();
+        mgrTrendTodayInfoVo.setLoanNumPerHourToday(list);
+        return mgrTrendTodayInfoVo;
+    }
+
+    @Override
+    public MgrDashboardCityInfoVo getdashboardCityInfo() {
+        List<JsdBorrowLegalOrderInfoDo> orderInfoDoList = mgrBorrowLegalOrderInfoService.getInfoByDays(0);
+        Map<String, List<JsdBorrowLegalOrderInfoDo>> borrowCashInfo = orderInfoDoList.stream().collect(Collectors.groupingBy(JsdBorrowLegalOrderInfoDo::getBorrowCity));
+        ArrayList<Map<String,Integer>> list = new ArrayList();
+        borrowCashInfo.forEach((k,v) ->{
+            Map map = new HashMap();
+            map.put("city",String.valueOf(k));
+            map.put("num",v.size());
+            list.add(map);
+        });
+        list.sort((o1, o2) -> o1.get("hour")-o2.get("hour"));
+        MgrDashboardCityInfoVo mgrDashboardCityInfoVo = new MgrDashboardCityInfoVo();
+        mgrDashboardCityInfoVo.setLoanCityNumToday(list);
+        return mgrDashboardCityInfoVo;
     }
 
 }

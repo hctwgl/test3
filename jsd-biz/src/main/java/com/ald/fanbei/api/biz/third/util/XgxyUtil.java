@@ -239,9 +239,7 @@ public class XgxyUtil extends AbstractThird {
             params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
             String url = getXgxyUrl() + "/isp/open/third/eca/v1/borrowOrder";
-//            String url = "http://192.168.156.59:1112/isp/open/third/eca/v1/borrowOrder";
             String reqResult = HttpUtilForXgxy.post(url, JSON.toJSONString(params), dataStr);
-
             if (StringUtil.isBlank(reqResult)) {
                 return param;
             }

@@ -76,7 +76,10 @@ public class ReviewLoanController {
         }
         //用户信息
         JsdUserDo jsdUserDo = jsdUserService.getById(jsdBorrowCashDo.getUserId());
-        BeanUtils.copyProperties(reviewLoanDetailsReq, jsdUserDo);
+        reviewLoanDetailsReq.setRealName(jsdUserDo.getRealName());
+        reviewLoanDetailsReq.setMobile(jsdUserDo.getMobile());
+        reviewLoanDetailsReq.setIdNumber(jsdUserDo.getIdNumber());
+        reviewLoanDetailsReq.setGender(jsdUserDo.getGender());
         if (StringUtil.isNotBlank(jsdUserDo.getBirthday())) {
             String year = jsdUserDo.getBirthday().substring(0, 4);
             String currentYear = DateUtil.getYear(new Date());

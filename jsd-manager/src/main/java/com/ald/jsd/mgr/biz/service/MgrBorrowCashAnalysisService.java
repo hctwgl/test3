@@ -1,7 +1,9 @@
 package com.ald.jsd.mgr.biz.service;
 
 import com.ald.fanbei.api.biz.vo.MgrBorrowInfoAnalysisVo;
+import com.ald.fanbei.api.biz.vo.MgrDashboardCityInfoVo;
 import com.ald.fanbei.api.biz.vo.MgrDashboardInfoVo;
+import com.ald.fanbei.api.biz.vo.MgrTrendTodayInfoVo;
 
 /**
  * 极速贷Service
@@ -16,4 +18,8 @@ public interface MgrBorrowCashAnalysisService {
     MgrBorrowInfoAnalysisVo getBorrowInfoAnalysis(Integer days);
 
     MgrDashboardInfoVo getBorrowInfoDashboard();
+
+    MgrTrendTodayInfoVo getBorrowInfoTrendToday();
+
+    MgrDashboardCityInfoVo getdashboardCityInfo();
 }

@@ -27,6 +27,11 @@ public class Sessions {
 		return (String)session.getAttribute(LocalConstants.SESS_KEY_USERNAME);
 	}
 	
+	public static String getRealname(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		return (String)session.getAttribute(LocalConstants.SESS_KEY_REALNAME);
+	}
+	
 	public static String getPhone(HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		return (String)session.getAttribute(LocalConstants.SESS_KEY_PHONE);
@@ -42,6 +47,7 @@ public class Sessions {
 		MgrOperatorDo mo = new MgrOperatorDo();
 		mo.setRid((Long)session.getAttribute(LocalConstants.SESS_KEY_UID));
 		mo.setUserName((String)session.getAttribute(LocalConstants.SESS_KEY_USERNAME));
+		mo.setName((String)session.getAttribute(LocalConstants.SESS_KEY_REALNAME));
 		mo.setPhone((String)session.getAttribute(LocalConstants.SESS_KEY_PHONE));
 		
 		return mo;
@@ -55,6 +61,7 @@ public class Sessions {
 		
 		session.setAttribute(LocalConstants.SESS_KEY_UID, userMo.getRid());
 		session.setAttribute(LocalConstants.SESS_KEY_USERNAME, userMo.getUserName());
+		session.setAttribute(LocalConstants.SESS_KEY_REALNAME, userMo.getName());
 		session.setAttribute(LocalConstants.SESS_KEY_PHONE, userMo.getPhone());
 		
 	}
@@ -74,6 +81,7 @@ public class Sessions {
 		HttpSession session = request.getSession();
 		session.removeAttribute(LocalConstants.SESS_KEY_UID);
 		session.removeAttribute(LocalConstants.SESS_KEY_USERNAME);
+		session.removeAttribute(LocalConstants.SESS_KEY_REALNAME);
 		session.removeAttribute(LocalConstants.SESS_KEY_PHONE);
 	}
 	

@@ -342,7 +342,7 @@
 
     <select id="getByBorrowTradeNoXgxy" resultType="JsdBorrowCashRepaymentDo">
         SELECT
-        <include refid="queryFields" />
+        a.*
         FROM
         jsd_borrow_cash_repayment as a inner join jsd_borrow_cash b on a.borrow_id=b.id
         WHERE
