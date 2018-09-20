@@ -506,6 +506,17 @@
         and status in ('TRANSFERRED','FINISHED')
     </select>
 
+    <select id="getUserNumByBorrowDays" resultType="java.lang.Integer">
+        SELECT
+        count(distinct nbc.user_id)
+        FROM
+        jsd_borrow_cash bc
+        left join jsd_borrow_cash nbc on bc.user_id = nbc.user_id
+        where bc.is_delete=0 and datediff(now(),bc.gmt_arrival) &lt; #{days}
+        and datediff(now(),nbc.gmt_arrival) &gt;= #{days}
+        and bc.status in ('TRANSFERRED','FINISHED')
+    </select>
+
     <select id="getAmountByDays" resultType="java.math.BigDecimal">
         SELECT
         sum (amount)

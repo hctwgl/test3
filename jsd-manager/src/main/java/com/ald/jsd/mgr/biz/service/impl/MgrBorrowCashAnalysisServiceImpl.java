@@ -48,16 +48,16 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         BigDecimal dueAmount = BigDecimal.ZERO;//到期金额
         BigDecimal repeatBorrowRate = BigDecimal.ZERO;//复借率
         BigDecimal overdueRate = BigDecimal.ZERO;//逾期率
-        BigDecimal profitRate = BigDecimal.ZERO;//不良率
+        BigDecimal profitRate = BigDecimal.ZERO;//收益率
         BigDecimal riskPassRate = BigDecimal.ZERO;//认证通过率
         BigDecimal borrowPassRate = BigDecimal.ZERO;//借款通过率
         Integer borrowMans = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
         returnAmount = jsdBorrowCashDoList.stream().filter(jsdBorrowCashDo -> jsdBorrowCashDo.getStatus().equals("FINSHED")).map(jsdBorrowCashDo -> jsdBorrowCashDo.getRepayAmount()).reduce(BigDecimal.ZERO,BigDecimal::add);
         for (JsdBorrowCashDo borrow : jsdBorrowCashDoList) {
             totalLoanAmount = totalLoanAmount.add(borrow.getAmount());
-            if (StringUtils.equals(borrow.getStatus(), "FINSHED")) {
+            /*if (StringUtils.equals(borrow.getStatus(), "FINSHED")) {
                 returnAmount.add(borrow.getRepayAmount());
-            }
+            }*/
             if (StringUtils.equals(borrow.getOverdueStatus(), "Y")) {
                 overdueAmount.add(borrow.getAmount().subtract(borrow.getRepayAmount().subtract(borrow.getSumRepaidInterest())
                         .subtract(borrow.getSumRepaidOverdue()).subtract(borrow.getSumRepaidPoundage())));
@@ -67,6 +67,9 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             }
         }
         int applyBorrowCashNum = mgrBorrowCashService.getApplyBorrowCashByDays(days);//申请借款人数
+        int haveBorrowCashNum = mgrBorrowCashService.getUserNumByBorrowDays(days);//当期复借人数
+
+        repeatBorrowRate = new BigDecimal(haveBorrowCashNum).divide(new BigDecimal(applyBorrowCashNum),4,BigDecimal.ROUND_HALF_UP);
         if (dueAmount != BigDecimal.ZERO){
             overdueRate = overdueAmount.divide(dueAmount,2,BigDecimal.ROUND_HALF_UP);
             returnedRate = returnAmount.divide(dueAmount,2,BigDecimal.ROUND_HALF_UP);//回款金额
@@ -89,14 +92,15 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         mgrBorrowInfoAnalysisVo.setReturnedRate(returnedRate);
         mgrBorrowInfoAnalysisVo.setOverdueRate(overdueRate);
         mgrBorrowInfoAnalysisVo.setProfitRate(profitRate);
+        mgrBorrowInfoAnalysisVo.setRepeatBorrowRate(repeatBorrowRate);
         return mgrBorrowInfoAnalysisVo;
     }
 
     @Override
     public MgrDashboardInfoVo getBorrowInfoDashboard() {
-        List<JsdBorrowCashDo> todayBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(0);
-        List<JsdBorrowCashDo> ystBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(1);
-        List<JsdBorrowCashDo> weekBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(7);
+        List<JsdBorrowCashDo> todayBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(0);//今天的借款信息
+        List<JsdBorrowCashDo> ystBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(1);//昨天的借款信息
+        List<JsdBorrowCashDo> weekBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(7);//一周前的借款信息
         BigDecimal todayAmount = todayBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
         BigDecimal ystAmount = ystBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
         BigDecimal weekAmount = weekBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
@@ -106,11 +110,11 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             avgAmountPer = todayAmount.divide(new BigDecimal(todayBorrowCashDoList.size()),2,BigDecimal.ROUND_HALF_UP);
         }
 
-        BigDecimal totalLoanAmtRateByWeek = BigDecimal.ZERO;
+        BigDecimal totalLoanAmtRateByWeek = BigDecimal.ZERO;//放款总额周同比
         if (weekAmount != BigDecimal.ZERO ){
             totalLoanAmtRateByWeek = todayAmount.divide(weekAmount,4,BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
-        BigDecimal totalLoanAmtRateByDay = BigDecimal.ZERO;
+        BigDecimal totalLoanAmtRateByDay = BigDecimal.ZERO;//放款总额日环比
         if (ystAmount != BigDecimal.ZERO ){
             totalLoanAmtRateByDay = todayAmount.divide(ystAmount,4,BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
@@ -147,7 +151,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
 
     @Override
     public MgrTrendTodayInfoVo getBorrowInfoTrendToday() {
-        List<JsdBorrowCashDo> todayBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(1);
+        List<JsdBorrowCashDo> todayBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(0);
         Map<Integer, List<JsdBorrowCashDo>> borrowCashInfo = todayBorrowCashDoList.stream().collect(Collectors.groupingBy(JsdBorrowCashDo::getGmtCreateHour));
         ArrayList<Map<Integer,Integer>> list = new ArrayList();
         borrowCashInfo.forEach((k,v) ->{

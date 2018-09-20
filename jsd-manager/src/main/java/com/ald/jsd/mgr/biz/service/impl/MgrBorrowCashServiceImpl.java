@@ -48,6 +48,11 @@ public class MgrBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
+    public int getUserNumByBorrowDays(Integer days) {
+        return mgrBorrowCashDao.getUserNumByBorrowDays(days);
+    }
+
+    @Override
     public BigDecimal getAmountByDays(Integer days) {
         return mgrBorrowCashDao.getAmountByDays(days);
     }
