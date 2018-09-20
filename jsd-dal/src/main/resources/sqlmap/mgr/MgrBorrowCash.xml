@@ -496,7 +496,7 @@
         <include refid="queryFields"/>
         FROM
         jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) &lt; #{days}
-        and status in ('TRANSFERRED','FINSH')
+        and status in ('TRANSFERRED','FINISHED')
     </select>
 
     <select id="getBorrowCashByDays" resultType="JsdBorrowCashDo">
@@ -504,7 +504,7 @@
         <include refid="queryFields"/>
         FROM
         jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) = #{days}
-        and status in ('TRANSFERRED','FINSH')
+        and status in ('TRANSFERRED','FINISHED')
     </select>
 
     <select id="getAmountByDays" resultType="java.math.BigDecimal">
@@ -512,7 +512,7 @@
         sum (amount)
         FROM
         jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) = #{days}
-        and status in ('TRANSFERRED','FINSH')
+        and status in ('TRANSFERRED','FINISHED')
     </select>
 
 </mapper>
