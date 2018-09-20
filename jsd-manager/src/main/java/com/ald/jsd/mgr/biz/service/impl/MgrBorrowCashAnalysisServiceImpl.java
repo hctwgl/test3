@@ -33,7 +33,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
 
     @Override
     public MgrBorrowInfoAnalysisVo getBorrowInfoAnalysis(Integer days) {
-        List<JsdBorrowCashDo> jsdBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(days);
+        List<JsdBorrowCashDo> jsdBorrowCashDoList = mgrBorrowCashService.getBorrowCashLessThanDays(days);
         MgrBorrowInfoAnalysisVo mgrBorrowInfoAnalysisVo = new MgrBorrowInfoAnalysisVo();
         BigDecimal totalLoanAmount = BigDecimal.ZERO;
         BigDecimal returnedRate = BigDecimal.ZERO;//回款率

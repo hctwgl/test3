@@ -37,6 +37,11 @@ public class MgrBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
+    public List<JsdBorrowCashDo> getBorrowCashLessThanDays(Integer days) {
+        return mgrBorrowCashDao.getBorrowCashLessThanDays(days);
+    }
+
+    @Override
     public int getApplyBorrowCashByDays(Integer days) {
         return mgrBorrowCashDao.getApplyBorrowCashByDays(days);
     }

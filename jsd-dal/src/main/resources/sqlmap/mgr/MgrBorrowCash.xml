@@ -491,7 +491,7 @@
         group by user_id
     </select>
 
-    <select id="getBorrowCashByDays" resultType="JsdBorrowCashDo">
+    <select id="getBorrowCashLessThanDays" resultType="JsdBorrowCashDo">
         SELECT
         <include refid="queryFields"/>
         FROM
