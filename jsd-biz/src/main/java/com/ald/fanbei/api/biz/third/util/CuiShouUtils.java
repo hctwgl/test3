@@ -30,7 +30,7 @@ public class CuiShouUtils {
 
     protected static final Logger logger = LoggerFactory.getLogger("DSED_THIRD");
 
-    private final String salt = "dsedcuishou";
+    private final String salt = "jsdcuishou";
 
     @Resource
     JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
