@@ -197,7 +197,7 @@ public class LoanOverDueJob {
             //--------------------start  催收上报接口需要参数---------------------------
             Long borrowId = borrowCashDo.getRid();
             //搭售商品信息
-            JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(borrowId);
+            JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastOrderByBorrowIdAndStatus(borrowId);
             Map<String, String> buildData = new HashMap<String, String>();
             param.put("borrowNo",borrowCashDo.getTradeNoXgxy());
             HashMap<String,String> map = xgxyUtil.borrowNoticeRequest(param);
