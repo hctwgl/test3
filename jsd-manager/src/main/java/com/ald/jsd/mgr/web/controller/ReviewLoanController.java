@@ -38,6 +38,8 @@ public class ReviewLoanController {
     JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
     @Resource
     JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
+    @Resource
+    JsdBorrowLegalOrderInfoService jsdBorrowLegalOrderInfoService;
 
     @RequestMapping(value = {"list.json"}, method = RequestMethod.POST)
     public Resp<LoanQuery> list(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
@@ -86,8 +88,9 @@ public class ReviewLoanController {
         reviewLoanDetailsReq.setGoodsPoundageAmount(jsdBorrowLegalOrderCashDo.getPoundageAmount());
         JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(jsdBorrowLegalOrderCashDo.getBorrowLegalOrderId());
         reviewLoanDetailsReq.setGoodsName(jsdBorrowLegalOrderDo.getGoodsName());
-        reviewLoanDetailsReq.setAddress(jsdBorrowLegalOrderDo.getAddress());
         reviewLoanDetailsReq.setGoodsPrice(jsdBorrowLegalOrderDo.getPriceAmount());
+        JsdBorrowLegalOrderInfoDo jsdBorrowLegalOrderInfoDo = jsdBorrowLegalOrderInfoService.getByBorrowId(jsdBorrowCashDo.getRid());
+        reviewLoanDetailsReq.setAddress(jsdBorrowLegalOrderInfoDo.getAddress());
         return Resp.succ(reviewLoanDetailsReq, "");
     }
 }

@@ -13,4 +13,5 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo;
  */
 public interface JsdBorrowLegalOrderInfoService extends ParentService<JsdBorrowLegalOrderInfoDo, Long>{
 
+    JsdBorrowLegalOrderInfoDo getByBorrowId(Long borrowId);
 }
