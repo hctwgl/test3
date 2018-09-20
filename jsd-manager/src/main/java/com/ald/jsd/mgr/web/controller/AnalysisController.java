@@ -42,5 +42,10 @@ public class AnalysisController extends BaseController {
         return Resp.succ(mgrDashboardInfoVo, "");
     }
 
+    @RequestMapping(value = {"/dashboardCity.json"}, method = RequestMethod.POST)
+    public Resp<MgrTrendTodayInfoVo> getdashboardCityInfo() {
+        MgrTrendTodayInfoVo mgrDashboardInfoVo = mgrBorrowCashAnalysisService.getBorrowInfoTrendToday();
+        return Resp.succ(mgrDashboardInfoVo, "");
+    }
 
 }

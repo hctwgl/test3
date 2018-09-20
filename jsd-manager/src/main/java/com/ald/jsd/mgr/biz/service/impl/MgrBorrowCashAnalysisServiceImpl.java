@@ -1,11 +1,14 @@
 package com.ald.jsd.mgr.biz.service.impl;
 
 import com.ald.fanbei.api.biz.vo.MgrBorrowInfoAnalysisVo;
+import com.ald.fanbei.api.biz.vo.MgrDashboardCityInfoVo;
 import com.ald.fanbei.api.biz.vo.MgrDashboardInfoVo;
 import com.ald.fanbei.api.biz.vo.MgrTrendTodayInfoVo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo;
 import com.ald.jsd.mgr.biz.service.MgrBorrowCashAnalysisService;
 import com.ald.jsd.mgr.biz.service.MgrBorrowCashService;
+import com.ald.jsd.mgr.biz.service.MgrBorrowLegalOrderInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +34,8 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
     private MgrBorrowCashService mgrBorrowCashService;
     @Resource
     private MgrUserAuthService mgrUserAuthService;
+    @Resource
+    private MgrBorrowLegalOrderInfoService mgrBorrowLegalOrderInfoService;
 
     @Override
     public MgrBorrowInfoAnalysisVo getBorrowInfoAnalysis(Integer days) {
@@ -156,6 +161,23 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         MgrTrendTodayInfoVo mgrTrendTodayInfoVo = new MgrTrendTodayInfoVo();
         mgrTrendTodayInfoVo.setLoanNumPerHourToday(list);
         return mgrTrendTodayInfoVo;
+    }
+
+    @Override
+    public MgrDashboardCityInfoVo getdashboardCityInfo() {
+        List<JsdBorrowLegalOrderInfoDo> orderInfoDoList = mgrBorrowLegalOrderInfoService.getInfoByDays(0);
+        Map<String, List<JsdBorrowLegalOrderInfoDo>> borrowCashInfo = orderInfoDoList.stream().collect(Collectors.groupingBy(JsdBorrowLegalOrderInfoDo::getBorrowCity));
+        ArrayList<Map<String,Integer>> list = new ArrayList();
+        borrowCashInfo.forEach((k,v) ->{
+            Map map = new HashMap();
+            map.put("city",String.valueOf(k));
+            map.put("num",v.size());
+            list.add(map);
+        });
+        list.sort((o1, o2) -> o1.get("hour")-o2.get("hour"));
+        MgrDashboardCityInfoVo mgrDashboardCityInfoVo = new MgrDashboardCityInfoVo();
+        mgrDashboardCityInfoVo.setLoanCityNumToday(list);
+        return null;
     }
 
 }
