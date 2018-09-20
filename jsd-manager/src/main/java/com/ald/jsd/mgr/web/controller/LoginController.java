@@ -120,7 +120,7 @@ public class LoginController extends BaseController {
      * 注销
      * @return
      */
-    @RequestMapping(value = "/logout.json")
+    @RequestMapping(value = "/out.json")
     public Resp<?> logout(HttpServletRequest request){
     	Sessions.empty(request);
         return Resp.succ();
