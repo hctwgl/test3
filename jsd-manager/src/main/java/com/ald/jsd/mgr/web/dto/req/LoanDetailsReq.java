@@ -1,7 +1,11 @@
 package com.ald.jsd.mgr.web.dto.req;
 
+import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
+
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 public class LoanDetailsReq {
     /**
@@ -103,6 +107,11 @@ public class LoanDetailsReq {
     private BigDecimal repayAmount;
 
     /**
+     * 预计还款时间
+     */
+    private Date gmtPlanRepayment;
+
+    /**
      * 剩余未还总金额
      */
     private BigDecimal unrepayAmount;
@@ -126,6 +135,16 @@ public class LoanDetailsReq {
      * 是否入催
      */
     private String isCollection;
+
+    /**
+     * 协议
+     */
+    private List<JsdProctocolBo> proctocols;
+
+    /**
+     * 续期记录
+     */
+    private List<JsdBorrowCashRenewalDo> renewal;
 
     public String getTradeNoXgxy() {
         return tradeNoXgxy;
@@ -325,5 +344,29 @@ public class LoanDetailsReq {
 
     public void setCardNumber(String cardNumber) {
         this.cardNumber = cardNumber;
+    }
+
+    public List<JsdBorrowCashRenewalDo> getRenewal() {
+        return renewal;
+    }
+
+    public void setRenewal(List<JsdBorrowCashRenewalDo> renewal) {
+        this.renewal = renewal;
+    }
+
+    public Date getGmtPlanRepayment() {
+        return gmtPlanRepayment;
+    }
+
+    public void setGmtPlanRepayment(Date gmtPlanRepayment) {
+        this.gmtPlanRepayment = gmtPlanRepayment;
+    }
+
+    public List<JsdProctocolBo> getProctocols() {
+        return proctocols;
+    }
+
+    public void setProctocols(List<JsdProctocolBo> proctocols) {
+        this.proctocols = proctocols;
     }
 }

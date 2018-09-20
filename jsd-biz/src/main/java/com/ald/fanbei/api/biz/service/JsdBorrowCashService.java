@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
@@ -141,4 +142,31 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      * @return
      */
     List<LoanDto> getRepayList(LoanQuery query);
+
+    /**
+     * 获取借款相关协议
+     * @param openId
+     * @param tradeNoXgxy
+     * @param previewJsonStr
+     * @return
+     */
+    List<JsdProctocolBo> getBorrowProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
+
+    /**
+     * 获取搭售代买协议
+     * @param openId
+     * @param tradeNoXgxy
+     * @param previewJsonStr
+     * @return
+     */
+    List<JsdProctocolBo> getAgencyProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
+
+    /**
+     * 获取续期协议
+     * @param openId
+     * @param tradeNoXgxy
+     * @param previewJsonStr
+     * @return
+     */
+    List<JsdProctocolBo> getRenewalProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
 }

@@ -1,6 +1,8 @@
 package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+
+import java.util.Calendar;
 import java.util.Date;
 import java.math.BigDecimal;
 
@@ -867,6 +869,12 @@ import java.math.BigDecimal;
     public Date getGmtCreate(){
       return gmtCreate;
     }
+
+   public int getGmtCreateHour(){
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime(gmtCreate);
+      return calendar.get(Calendar.HOUR_OF_DAY);
+   }
 
     /**
      * 设置

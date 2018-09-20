@@ -162,14 +162,18 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 	 * 从西瓜获取订单信息
 	 */
 	private void saveOrderInfo(final JsdBorrowCashDo cashDo) {
-		Map<String,String> data = Maps.newHashMap();
-		data.put("borrowNo", cashDo.getTradeNoXgxy());
-		HashMap<String, String> orderInfoMap = xgxyUtil.borrowNoticeRequest(data);
-		if(!orderInfoMap.isEmpty()){
-			JsdBorrowLegalOrderInfoDo orderInfoDo = JSONObject.parseObject(JSON.toJSONString(orderInfoMap), JsdBorrowLegalOrderInfoDo.class);
-			orderInfoDo.setUserId(cashDo.getUserId());
-			orderInfoDo.setBorrowId(cashDo.getRid());
-			jsdBorrowLegalOrderInfoDao.saveRecord(orderInfoDo); 
+		try {
+			Map<String,String> data = Maps.newHashMap();
+			data.put("borrowNo", cashDo.getTradeNoXgxy());
+			HashMap<String, String> orderInfoMap = xgxyUtil.borrowNoticeRequest(data);
+			if(!orderInfoMap.isEmpty()){
+				JsdBorrowLegalOrderInfoDo orderInfoDo = JSONObject.parseObject(JSON.toJSONString(orderInfoMap), JsdBorrowLegalOrderInfoDo.class);
+				orderInfoDo.setUserId(cashDo.getUserId());
+				orderInfoDo.setBorrowId(cashDo.getRid());
+				jsdBorrowLegalOrderInfoDao.saveRecord(orderInfoDo); 
+			}
+		} catch (Exception e) {
+			logger.error("beheadBorrowCashService saveOrderInfo error",e);
 		}
 	}
 	
@@ -184,7 +188,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 	public void resolve(TrialBeforeBorrowBo bo) {
 		TrialBeforeBorrowReq req = bo.req;
 		
-		BigDecimal titularBorrowAmount = req.amount; // 并非真实借款额
+		BigDecimal titularBorrowAmount = req.amount; // 借款额
 		BigDecimal borrowDay = new BigDecimal(req.term);
 
 		ResourceRateInfoBo borrowRateInfo = jsdResourceService.getRateInfo(req.term);
@@ -227,9 +231,8 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         resp.totalAmount = totalAmount.toString();
         resp.billAmount = new BigDecimal[]{totalAmount.setScale(2, RoundingMode.HALF_UP)};
         
-        // 1、借款费用【借款利息金额+借款服务费金额】元，其中借款利息【借款利息金额】元，借款服务费【借款服务费金额】元。2、商品费用【分期利息金额+分期服务费金额】元，其中分期利息【分期利息金额】元，分期服务费【分期服务费金额】元。
-        resp.remark = "1、借款费用" + BigDecimalUtil.add(interestAmount, serviceAmount) + "元，"
-        			+ "其中借款利息" + interestAmount + "元，借款服务费" + serviceAmount + "元。";
+        // 1、借款费用【借款利息金额+借款服务费金额】元，其中借款利息【借款利息金额】元，借款服务费【借款服务费金额】元。
+        resp.remark = "1、借款费用" + BigDecimalUtil.add(interestAmount, serviceAmount) + "元，其中借款利息" + interestAmount + "元，借款服务费" + serviceAmount + "元。";
         
         bo.resp = resp;
     }
