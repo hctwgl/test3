@@ -205,8 +205,10 @@ public class CollectionMgrController extends BaseController{
     	JsdCollectionRepaymentDo collRepayDo = jsdCollectionRepaymentService.getByRepayNo(params.tradeNo);
     	JsdBorrowCashDo cashDo = jsdBorrowCashService.getById(collRepayDo.getBorrowId());
     	
-    	Map<String, String> offlineData = new HashMap<>(8, 1);
     	
+    	// TODO reviewRemark
+    	
+    	Map<String, String> offlineData = new HashMap<>(8, 1);
     	offlineData.put("borrowNo", cashDo.getBorrowNo());
         offlineData.put("repaymentDate", collRepayDo.getGmtRepay().getTime() + "");
         offlineData.put("channel", collRepayDo.getRepayWay());
@@ -214,10 +216,10 @@ public class CollectionMgrController extends BaseController{
         offlineData.put("amount", collRepayDo.getRepayAmount().toString());
         offlineData.put("remark", collRepayDo.getReviewRemark());
         
-        // TODO 修改collRepayDo 
         transactionTemplate.execute(new TransactionCallback<Integer>() {
 			public Integer doInTransaction(TransactionStatus status) {
 				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData);
+				// TODO 修改collRepayDo 
 				return 1;
 			}
 		});

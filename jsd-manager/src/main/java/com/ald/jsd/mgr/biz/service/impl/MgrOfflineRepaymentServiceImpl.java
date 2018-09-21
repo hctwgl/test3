@@ -1,21 +1,22 @@
 package com.ald.jsd.mgr.biz.service.impl;
 
+import java.util.Date;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
-import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.jsd.mgr.biz.service.MgrOfflineRepaymentService;
 import com.ald.jsd.mgr.enums.RespCode;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.util.Date;
-import java.util.Map;
 
 @Component
 public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentService {
@@ -31,7 +32,7 @@ public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentServic
 
 
     @Override
-    public Resp dealOfflineRepayment(Map<String,String> data) {
+    public Resp<?> dealOfflineRepayment(Map<String,String> data) {
         String borrowNo= data.get("borrowNo");
         Date repaymentDate=new Date(Long.parseLong(data.get("repaymentDate")));
         String channel= data.get("channel");
@@ -44,9 +45,6 @@ public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentServic
                 return Resp.fail(data,RespCode.BORROW_INFO_IS_NULL.code, RespCode.BORROW_INFO_IS_NULL.desc);
             }
             JsdBorrowLegalOrderCashDo legalOrderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
-            if(repaymentDate==null){
-                repaymentDate= new Date();
-            }
             String dataId= String.valueOf(borrowCashDo.getRid()+borrowCashDo.getRenewalNum());
             jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo,legalOrderCashDo,amount,tradeNo,borrowCashDo.getUserId(), JsdRepayType.ONLINE,channel,repaymentDate,null,dataId,remark);
         }else {
