@@ -400,9 +400,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			final RepayDealBo repayDealBo = new RepayDealBo();
 			repayDealBo.curTradeNo = tradeNo;
 			repayDealBo.curOutTradeNo = outTradeNo;
-			boolean cashResult = DateUtil.afterDay(new Date(),repayDealBo.cashDo.getGmtPlanRepayment());
-			boolean orderResult = DateUtil.afterDay(new Date(),repayDealBo.orderCashDo.getGmtLastRepayment());
-			logger.info(" cashResult = " + cashResult+"orderResult = "+orderResult +"new Date() = " + new Date());
+			
 			long resultValue = transactionTemplate.execute(new TransactionCallback<Long>() {
 				@Override
 				public Long doInTransaction(TransactionStatus status) {
@@ -426,6 +424,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			if (resultValue == 1L) {
 				try {
 					noticeXgxyRepayResult(repaymentDo,orderRepaymentDo,YesNoStatus.YES.getCode(),"",type);
+					boolean cashResult = DateUtil.afterDay(new Date(),repayDealBo.cashDo.getGmtPlanRepayment());
+					boolean orderResult = DateUtil.afterDay(new Date(),repayDealBo.orderCashDo.getGmtLastRepayment());
+					logger.info(" cashResult = " + cashResult+"orderResult = "+orderResult +"new Date() = " + new Date());
 					if(orderResult || cashResult) {
 						nofityRisk(repayDealBo,repaymentDo,orderRepaymentDo,type,dataId);
 					}
