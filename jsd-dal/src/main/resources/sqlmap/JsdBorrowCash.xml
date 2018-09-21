@@ -675,7 +675,7 @@
         <if test="status != null and status !='ALL' and status !='OVERDUE'">
             AND a.status =#{status}
         </if>
-        <if test="status != null and status ='OVERDUE'">
+        <if test="status != null and status =='OVERDUE'">
             AND a.overdue_status='Y'
         </if>
         <if test="searchContent != null and searchContent !=''">
