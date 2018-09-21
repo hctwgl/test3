@@ -40,13 +40,18 @@ public interface JsdBorrowCashRepaymentService{
     List<JsdBorrowCashRepaymentDo>  getByBorrowTradeNoXgxy(String tradeNoXgxy);
 
     /**
-     * jsd 线下还款
+     *
+     * @param jsdBorrowCashDo
+     * @param jsdBorrowLegalOrderCashDo
      * @param totalAmount
      * @param repaymentNo
      * @param userId
      * @param type
+     * @param channel
      * @param repayTime
      * @param orderNo
+     * @param dataId
+     * @param remark
      */
     void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, JsdRepayType type,String channel, String repayTime, String orderNo, String dataId,String remark);
 
