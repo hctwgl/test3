@@ -1,4 +1,4 @@
-package com.ald.fanbei.api.server.webapp;
+package com.ald.fanbei.api.ioc.start.server;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class AntxPropsLoader {
 	}
 
 	public void load() {
-		String antxPath = Bootstrap4Jetty.ROOT_PATH + "src/conf/jsd_" + Bootstrap4Jetty.ENV_TYPE + ".properties";
+		String antxPath = Bootstrap4Jetty.PARENT_ROOT_PATH + "conf/jsd_" + Bootstrap4Jetty.ENV_TYPE + ".properties";
 		try {
 			pros.load(new FileInputStream(antxPath));
 			
