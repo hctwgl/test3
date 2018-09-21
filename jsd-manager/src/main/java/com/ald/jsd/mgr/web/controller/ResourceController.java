@@ -2,9 +2,7 @@ package com.ald.jsd.mgr.web.controller;
 
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewSwitch;
-import com.ald.fanbei.api.common.enums.ResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.jsd.mgr.spring.NotNeedLogin;
 import com.ald.jsd.mgr.web.dto.req.ResourceReq;
@@ -69,13 +67,32 @@ public class ResourceController {
         BigDecimal base=new BigDecimal(100);
         BigDecimal defaultRate = (new BigDecimal((String)map.get("defaultRate"))).divide(base);
         Long id=Long.parseLong((String)map.get("id"));
+        Map seven= (Map) map.get("7");
+        Map fourteen = (Map) map.get("14");
+        BigDecimal sInterestRate=new BigDecimal((String) seven.get("sInterestRate"));
+        BigDecimal sServiceRate=new BigDecimal((String) seven.get("sServiceRate"));
+        BigDecimal sOverdueRate=new BigDecimal((String) seven.get("sOverdueRate"));
+        BigDecimal fInterestRate=new BigDecimal((String) seven.get("fInterestRate"));
+        BigDecimal fServiceRate=new BigDecimal((String) seven.get("fServiceRate"));
+        BigDecimal fOverdueRate=new BigDecimal((String) seven.get("fOverdueRate"));
+        seven.put("sInterestRate",sInterestRate.divide(base));
+        seven.put("sServiceRate",sServiceRate.divide(base));
+        seven.put("sOverdueRate",sOverdueRate.divide(base));
+        seven.put("fInterestRate",fInterestRate.divide(base));
+        seven.put("fServiceRate",fServiceRate.divide(base));
+        Map map1 = new HashMap();
+        map1.put("7", seven);
+        Map map2 = new HashMap();
+        map2.put("14", fourteen);
+        map1.putAll(map2);
+        String value=JSONUtils.toJsonString(map1);
         String littleAmount= (String) map.get("littleAmount");
         String bigAmount= (String) map.get("bigAmount");
         String value2=littleAmount+","+bigAmount;
         JsdResourceDo jsdResourceDo=new JsdResourceDo();
-        jsdResourceDo.setValue1(defaultRate.toString());
         jsdResourceDo.setRid(id);
-        jsdResourceDo.setValue(json);
+        jsdResourceDo.setValue(value);
+        jsdResourceDo.setValue1(defaultRate.toString());
         jsdResourceDo.setValue2(value2);
         jsdResourceService.updateById(jsdResourceDo);
         return Resp.succ(jsdResourceDo,"");
@@ -86,11 +103,11 @@ public class ResourceController {
         Map<String, Object> data=new HashMap<String, Object>();
         JsdResourceDo jsdResourceDo=jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.name(), ResourceType.JSD_CONFIG_REVIEW_MODE.name());
         if(jsdResourceDo.getValue().equals(JsdBorrowCashReviewSwitch.AUTO.name())){
-            data.put("pattern","自动");
+            data.put("pattern","AUTO");
         }else if(jsdResourceDo.getValue().equals(JsdBorrowCashReviewSwitch.MANUAL.name())){
-            data.put("pattern","手动");
+            data.put("pattern","MANUAL");
         }else {
-            data.put("pattern","兼容");
+            data.put("pattern","SEMI_AUTO");
         }
         data.put("loanAmount",jsdResourceDo.getValue1());
         data.put("id",jsdResourceDo.getRid());
