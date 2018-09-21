@@ -2,8 +2,10 @@ package com.ald.jsd.mgr.dal.dao;
 
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,6 +22,8 @@ public interface MgrBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
 
     List<JsdBorrowCashDo> getBorrowCashLessThanDays(Integer days);
 
+    List<JsdBorrowCashDo> getBorrowCashBetweenStartAndEnd(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
+
     /**
      * 获取当前申请借款人数
      *
@@ -28,7 +32,11 @@ public interface MgrBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      */
     int getApplyBorrowCashByDays(Integer days);
 
+    int getApplyBorrowCashBetweenStartAndEnd(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
+
     int getUserNumByBorrowDays(Integer days);
+
+    int getUserNumBetweenStartAndEnd(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
 
     BigDecimal getAmountByDays(Integer days);
 

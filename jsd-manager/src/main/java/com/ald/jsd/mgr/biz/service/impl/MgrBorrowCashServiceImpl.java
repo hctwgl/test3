@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 
@@ -43,13 +44,28 @@ public class MgrBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
+    public List<JsdBorrowCashDo> getBorrowCashBetweenStartAndEnd(Date startDate, Date endDate) {
+        return mgrBorrowCashDao.getBorrowCashBetweenStartAndEnd(startDate,endDate);
+    }
+
+    @Override
     public int getApplyBorrowCashByDays(Integer days) {
         return mgrBorrowCashDao.getApplyBorrowCashByDays(days);
     }
 
     @Override
+    public int getApplyBorrowCashBetweenStartAndEnd(Date startDate, Date endDate) {
+        return mgrBorrowCashDao.getApplyBorrowCashBetweenStartAndEnd(startDate,endDate);
+    }
+
+    @Override
     public int getUserNumByBorrowDays(Integer days) {
         return mgrBorrowCashDao.getUserNumByBorrowDays(days);
+    }
+
+    @Override
+    public int getUserNumBetweenStartAndEnd(Date startDate, Date endDate) {
+        return mgrBorrowCashDao.getUserNumBetweenStartAndEnd(startDate,endDate);
     }
 
     @Override

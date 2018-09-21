@@ -5,6 +5,7 @@ import com.ald.fanbei.api.dal.domain.JsdUserAuthDo;
 import com.ald.fanbei.api.dal.domain.dto.UserAuthDto;
 import com.ald.fanbei.api.dal.query.UserAuthQuery;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,6 +21,8 @@ public interface MgrUserAuthService extends ParentService<JsdUserAuthDo, Long> {
     List<UserAuthDto> getListUserAuth(UserAuthQuery query);
 
     int getPassPersonNumByStatusAndDays(String status, Integer days);
+
+    int getPassPersonNumByStatusBetweenStartAndEnd(String status, Date startDate,Date endDate);
 
     int getPassPersonNumByStatusEqualDays(String status, Integer days);
 
