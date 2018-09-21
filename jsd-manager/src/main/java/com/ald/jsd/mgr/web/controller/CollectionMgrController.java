@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
+import com.ald.fanbei.api.biz.service.JsdCollectionRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.CuiShouUtils;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -26,6 +28,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
 import com.ald.fanbei.api.dal.domain.JsdCollectionRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.jsd.mgr.dal.dao.MgrCollectionBorrowDao;
 import com.ald.jsd.mgr.dal.dao.MgrCollectionRepaymentDao;
 import com.ald.jsd.mgr.dal.domain.dto.MgrCollectionBorrowDto;
@@ -35,6 +38,7 @@ import com.ald.jsd.mgr.enums.CommonReviewStatus;
 import com.ald.jsd.mgr.web.Sessions;
 import com.ald.jsd.mgr.web.dto.req.CollectionBorrowManualReq;
 import com.ald.jsd.mgr.web.dto.req.CollectionBorrowReviewReq;
+import com.ald.jsd.mgr.web.dto.req.CollectionRepaymentDetailReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 
 /**
@@ -45,9 +49,13 @@ import com.ald.jsd.mgr.web.dto.resp.Resp;
 @RequestMapping("/api/collection")
 public class CollectionMgrController extends BaseController{
 	@Resource
+	JsdUserService jsdUserService;
+	@Resource
 	JsdBorrowCashService jsdBorrowCashService;
 	@Resource
     JsdCollectionBorrowService jsdCollectionBorrowService;
+	@Resource
+    JsdCollectionRepaymentService jsdCollectionRepaymentService;
 	@Resource
 	JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
 	
@@ -79,7 +87,7 @@ public class CollectionMgrController extends BaseController{
     @RequestMapping(value = { "/borrow/manual.json" })
     public Resp<Map<String, Long>> manualBorrow(@RequestBody @Valid CollectionBorrowManualReq params, HttpServletRequest request){
     	String operator = Sessions.getRealname(request);
-    	String reviewRemark = "管理员" + operator + "操作强制结清，原因：" + params.reviewRemark;
+    	String reviewRemark = "管理员【" + operator + "】操作强制结清，原因：" + params.reviewRemark;
     	
     	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(params.tradeNoXgxy);
     	JsdBorrowLegalOrderDo legalOrderDo = jsdBorrowLegalOrderService.getLastOrderByBorrowId(cashDo.getRid());
@@ -116,7 +124,7 @@ public class CollectionMgrController extends BaseController{
     	JsdBorrowLegalOrderDo legalOrderDo = jsdBorrowLegalOrderService.getLastOrderByBorrowId(cashDo.getRid());
     	JsdCollectionBorrowDo collBorrowDo = jsdCollectionBorrowService.selectByBorrowId(cashDo.getRid());
     	
-    	String reviewRemark = "管理员" + operator + " 审核催收员" + collBorrowDo.getRequester() + " 平账请求（平账原因：" + collBorrowDo.getRequestReason() + "），审核结果:" + params.reviewRemark;
+    	String reviewRemark = "管理员【" + operator + "】审核催收员【" + collBorrowDo.getRequester() + "】平账请求（平账原因：" + collBorrowDo.getRequestReason() + "），审核结果:" + params.reviewRemark;
     	
     	if(!CollectionBorrowStatus.WAIT_FINISH.name().equals(collBorrowDo.getStatus())) {
     		return Resp.fail("当笔借款非 待审核平账 状态，不可操作");
@@ -164,7 +172,29 @@ public class CollectionMgrController extends BaseController{
     	data.put("totalWaitReview", mgrCollectionRepaymentDao.countTotalWaitReview());
     	return Resp.succ(data, "");
     }
-    
+    @RequestMapping(value = { "/repayment/detail.json" })
+    public Resp<Map<String, Object>> detailRepayment(@RequestBody @Valid CollectionRepaymentDetailReq params, HttpServletRequest request){
+    	JsdCollectionRepaymentDo collRepayDo = jsdCollectionRepaymentService.getByRepayNo(params.tradeNo);
+    	JsdUserDo userDo = jsdUserService.getById(collRepayDo.getUserId());
+    	
+    	Map<String, String> userInfo = new HashMap<>();
+    	userInfo.put("realName", userDo.getRealName());
+    	userInfo.put("account", userDo.getUserName());
+    	userInfo.put("idNumber", userDo.getIdNumber());
+    	
+    	Map<String, Object> reviewInfo = new HashMap<>();
+    	reviewInfo.put("reviewer", collRepayDo.getReviewer());
+    	reviewInfo.put("reviewStatus", collRepayDo.getReviewStatus());
+    	reviewInfo.put("reviewRemark", collRepayDo.getReviewRemark());
+    	reviewInfo.put("gmtReview", collRepayDo.getGmtModified().getTime());
+    	
+    	Map<String, Object> data = new HashMap<>();
+    	data.put("userInfo", userInfo);
+    	data.put("repayCert", collRepayDo.getRepayCert());
+    	data.put("reviewInfo", reviewInfo);
+    	
+    	return Resp.succ(data, "");
+    }
     
     
     private JsdCollectionBorrowDo buildCollectionBorrowDoForMod(Long id, String status, String reviewer, String reviewStatus, String reviewRemark) {

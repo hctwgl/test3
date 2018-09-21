@@ -2,17 +2,15 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
-import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.dal.dao.*;
-import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +25,7 @@ import com.ald.fanbei.api.biz.bo.ups.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
-import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
@@ -35,6 +33,8 @@ import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
+import com.ald.fanbei.api.common.enums.JsdNoticeType;
+import com.ald.fanbei.api.common.enums.JsdRepayCollectionType;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
@@ -42,10 +42,12 @@ import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashRepaymentDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
+import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderRepaymentDao;
 import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
 import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
@@ -53,7 +55,9 @@ import com.ald.fanbei.api.dal.dao.JsdUserDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
 
@@ -106,7 +110,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	@Resource
 	CollectionSystemUtil collectionSystemUtil;
 
-	private static String nofityRiskToken = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6M30.eyJhdWQiOiIzIiwiaXNzIjoiQUxEIiwiaWF0IjoxNTMxODgwNjE5fQ.hU2GhPAbTKTXdVHpLscbjxJ7pc710jNdsxoteipwdMs";
 	private final String salt = "jsdcuishou";
 
 	@Override

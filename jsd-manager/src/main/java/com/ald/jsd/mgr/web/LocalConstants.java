@@ -27,6 +27,7 @@ public class LocalConstants {
 	public final static String SESS_KEY_UID = "UID";
 	public final static String SESS_KEY_USERNAME = "USERNAME";
 	public final static String SESS_KEY_REALNAME = "REALNAME";
+	public final static String SESS_KEY_IDNUMBER = "IDNUMBER";
 	public final static String SESS_KEY_PHONE = "PHONE";
 	
 	/**
