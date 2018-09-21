@@ -677,6 +677,8 @@
         </if>
         <if test="status != null and status =='OVERDUE' and status !=''">
             AND a.overdue_status='Y'
+            AND a.status !='FINISHED'
+            AND a.status !='CLOSED'
         </if>
         <if test="searchContent != null and searchContent !=''">
             AND a.borrow_no LIKE  CONCAT('%',#{searchContent},'%')
