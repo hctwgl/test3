@@ -29,6 +29,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
 import com.ald.fanbei.api.dal.domain.JsdCollectionRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import com.ald.jsd.mgr.biz.service.MgrOfflineRepaymentService;
 import com.ald.jsd.mgr.dal.dao.MgrCollectionBorrowDao;
 import com.ald.jsd.mgr.dal.dao.MgrCollectionRepaymentDao;
 import com.ald.jsd.mgr.dal.domain.dto.MgrCollectionBorrowDto;
@@ -39,6 +40,7 @@ import com.ald.jsd.mgr.web.Sessions;
 import com.ald.jsd.mgr.web.dto.req.CollectionBorrowManualReq;
 import com.ald.jsd.mgr.web.dto.req.CollectionBorrowReviewReq;
 import com.ald.jsd.mgr.web.dto.req.CollectionRepaymentDetailReq;
+import com.ald.jsd.mgr.web.dto.req.CollectionRepaymentReviewReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 
 /**
@@ -58,6 +60,9 @@ public class CollectionMgrController extends BaseController{
     JsdCollectionRepaymentService jsdCollectionRepaymentService;
 	@Resource
 	JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
+	
+	@Resource
+    MgrOfflineRepaymentService mgrOfflineRepaymentService;
 	
     @Resource
     MgrCollectionBorrowDao mgrCollectionBorrowDao;
@@ -195,7 +200,29 @@ public class CollectionMgrController extends BaseController{
     	
     	return Resp.succ(data, "");
     }
-    
+    @RequestMapping(value = { "/repayment/review.json" })
+    public Resp<?> reviewRepayment(@RequestBody @Valid CollectionRepaymentReviewReq params, HttpServletRequest request){
+    	JsdCollectionRepaymentDo collRepayDo = jsdCollectionRepaymentService.getByRepayNo(params.tradeNo);
+    	JsdBorrowCashDo cashDo = jsdBorrowCashService.getById(collRepayDo.getBorrowId());
+    	
+    	Map<String, String> offlineData = new HashMap<>(8, 1);
+    	
+    	offlineData.put("borrowNo", cashDo.getBorrowNo());
+        offlineData.put("repaymentDate", collRepayDo.getGmtRepay().getTime() + "");
+        offlineData.put("channel", collRepayDo.getRepayWay());
+        offlineData.put("tradeNo", collRepayDo.getTradeNo());
+        offlineData.put("amount", collRepayDo.getRepayAmount().toString());
+        offlineData.put("remark", collRepayDo.getReviewRemark());
+        
+        // TODO 修改collRepayDo 
+        transactionTemplate.execute(new TransactionCallback<Integer>() {
+			public Integer doInTransaction(TransactionStatus status) {
+				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData);
+				return 1;
+			}
+		});
+    	return Resp.succ();
+    }
     
     private JsdCollectionBorrowDo buildCollectionBorrowDoForMod(Long id, String status, String reviewer, String reviewStatus, String reviewRemark) {
     	JsdCollectionBorrowDo collBorrowDoForMod = new JsdCollectionBorrowDo();
