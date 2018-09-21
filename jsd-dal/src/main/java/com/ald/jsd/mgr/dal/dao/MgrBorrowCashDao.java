@@ -28,6 +28,8 @@ public interface MgrBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      */
     int getApplyBorrowCashByDays(Integer days);
 
+    int getUserNumByBorrowDays(Integer days);
+
     BigDecimal getAmountByDays(Integer days);
 
 }
