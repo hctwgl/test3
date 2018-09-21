@@ -433,10 +433,13 @@ public class CuiShouUtils {
      * @return
      */
     public String collectData(String data) {
+        HashMap<String,String> map = new HashMap<>();
         try {
             if(StringUtil.isEmpty(data)){
+                map.put("code","500");
+                map.put("info","");
                 thirdLog.error("data is null");
-                return "false";
+                return JSON.toJSONString(map);
             }
             List<HashMap<String,String>> list = new ArrayList<>();
             String arr[] =  data.split(",");
@@ -487,10 +490,15 @@ public class CuiShouUtils {
                 buildData.put("status",borrowCashDo.getStatus());//状态
                 list.add(buildData);
             }
-            return JSON.toJSONString(list);
+
+            map.put("code","200");
+            map.put("info",JSON.toJSONString(list));
+            return JSON.toJSONString(map);
         } catch (Exception e) {
+            map.put("code","500");
+            map.put("info","");
             thirdLog.error("collectImport error = " + e);
-            return "false";
+            return JSON.toJSONString(map);
         }
     }
 
@@ -543,13 +551,16 @@ public class CuiShouUtils {
     public String collectRepay(HttpServletRequest request) {
         try {
             String requester = request.getParameter("requester");//发起还款操作者
-            String repayCert = request.getParameter("repayCert");//图片
+            String repayCert = request.getParameter("repaymentPic");//图片
             String tradeNo = request.getParameter("tradeNo");//还款编号
-            String realName = request.getParameter("realName");//还款编号
-            String gmtRepay = request.getParameter("gmtRepay");//还款时间
-            String repayAmount = request.getParameter("repayAmount");//还款金额
+            String realName = request.getParameter("realName");//用户真实姓名
+            String gmtRepay = request.getParameter("repayTime");//还款时间
+            String repayAmount = request.getParameter("repaymentAmount");//还款金额
             String repayWay = request.getParameter("repayWay");//还款方式
-            String dataId = request.getParameter("dataId");//唯一交互数据
+            String dataId = request.getParameter("refId");//唯一交互数据
+            String payInAccount = request.getParameter("payInAccount");//收款账户
+            String payOutAccount = request.getParameter("payOutAccount");//打款账户
+
             if(StringUtil.isEmpty(dataId)){
                 logger.info("param is error");
                 return "false";
@@ -570,6 +581,8 @@ public class CuiShouUtils {
             repaymentDo.setBorrowId(borrowId);
             repaymentDo.setRepayAmount(new BigDecimal(repayAmount));
             repaymentDo.setRepayCert(repayCert);
+            repaymentDo.setPayInAccount(payInAccount);
+            repaymentDo.setPayOutAccount(payOutAccount);
             int count = jsdCollectionRepaymentService.saveRecord(repaymentDo);
             if (count<1){
                 logger.info("save is error");
