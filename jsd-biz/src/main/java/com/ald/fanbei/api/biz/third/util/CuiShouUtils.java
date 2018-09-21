@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +27,6 @@ import com.ald.fanbei.api.biz.service.JsdCollectionRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.cuishou.CuiShouBackMoney;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.GenderType;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.JsdNoticeType;
-import com.ald.fanbei.api.common.enums.JsdRepayType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
@@ -57,6 +53,8 @@ public class CuiShouUtils {
     protected static final Logger logger = LoggerFactory.getLogger("DSED_THIRD");
 
     private final String salt = "jsdcuishou";
+
+    private final String merchantSalt = "cuishou";
 
     @Resource
     JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
@@ -444,8 +442,8 @@ public class CuiShouUtils {
             List<HashMap<String,String>> list = new ArrayList<>();
             String arr[] =  data.split(",");
             for(int i=0;i<arr.length;i++){
-                JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(data));
-                JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(Long.parseLong(data));
+                JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(arr[i]));
+                JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(Long.parseLong(arr[i]));
                 JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getById(jsdBorrowLegalOrderDo.getBorrowId());
                 List<JsdBorrowLegalOrderDo> orderList =  jsdBorrowLegalOrderService.getBorrowOrdersByBorrowId(borrowCashDo.getRid());
                 HashMap<String, String> buildData = new HashMap<String, String>();
@@ -473,6 +471,8 @@ public class CuiShouUtils {
                 overdueAmount = borrowCashDo.getOverdueAmount();
                 //委案本金
                 BigDecimal borrowAmount = borrowCashDo.getAmount();
+                //还款金额
+                BigDecimal repayAmount = borrowCashDo.getRepayAmount();
                 if(orderCashDo != null){
                     //应还金额
                     residueAmount = BigDecimalUtil.add(residueAmount, orderCashDo.getAmount(), orderCashDo.getOverdueAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getInterestAmount()).subtract(orderCashDo.getRepaidAmount());
@@ -482,12 +482,16 @@ public class CuiShouUtils {
                     overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(), orderCashDo.getOverdueAmount());
                     //委案本金
                     borrowAmount = borrowAmount.add(orderCashDo.getAmount());
+                    //还款金额
+                    repayAmount = borrowCashDo.getRepayAmount().add(orderCashDo.getRepaidAmount());
                 }
                 buildData.put("borrowAmount",String.valueOf(borrowAmount));//委案本金
                 buildData.put("collectAmount",String.valueOf(collectAmount));//催收金额
                 buildData.put("overdueAmount",String.valueOf(overdueAmount));//滞纳金
                 buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
+                buildData.put("repayAmount",String.valueOf(repayAmount));//已还金额
                 buildData.put("status",borrowCashDo.getStatus());//状态
+                buildData.put("dataId",arr[i]);//状态
                 list.add(buildData);
             }
 
@@ -514,6 +518,10 @@ public class CuiShouUtils {
             String requester = request.getParameter("requester");//发起平账操作者
             String requestReason = request.getParameter("requestReason");//发起平账操作者
             String dataId = request.getParameter("dataId");//唯一交互数据
+            String sign = request.getParameter("sign");
+            byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), merchantSalt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+            String sign1 = DigestUtil.encodeHex(pd);
+            if (!sign1.equals(sign)) return "false";
             if(StringUtil.isEmpty(dataId)){
                 logger.info("param is error");
                 return "false";
@@ -529,6 +537,8 @@ public class CuiShouUtils {
             borrowDo.setBorrowId(borrowId);
             borrowDo.setRequester(requester);
             borrowDo.setRequestReason(requestReason);
+            borrowDo.setReviewStatus(CommonReviewStatus.WAIT.name());
+            borrowDo.setStatus(CollectionBorrowStatus.COLLECT_FINISHED.name());
             int count = jsdCollectionBorrowService.saveRecord(borrowDo);
             if (count<1){
                 logger.info("save is error");
@@ -557,10 +567,13 @@ public class CuiShouUtils {
             String gmtRepay = request.getParameter("repayTime");//还款时间
             String repayAmount = request.getParameter("repaymentAmount");//还款金额
             String repayWay = request.getParameter("repayWay");//还款方式
-            String dataId = request.getParameter("refId");//唯一交互数据
+            String dataId = request.getParameter("dataId");//唯一交互数据
             String payInAccount = request.getParameter("payInAccount");//收款账户
             String payOutAccount = request.getParameter("payOutAccount");//打款账户
-
+            String sign = request.getParameter("sign");
+            byte[] pd = DigestUtil.digestString(tradeNo.getBytes("UTF-8"), merchantSalt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+            String sign1 = DigestUtil.encodeHex(pd);
+            if (!sign1.equals(sign)) return "false";
             if(StringUtil.isEmpty(dataId)){
                 logger.info("param is error");
                 return "false";
@@ -572,6 +585,7 @@ public class CuiShouUtils {
                 logger.info("jsdCollectionRepaymentDo is exist");
                 return "false";
             }
+            JsdUserDo jsdUserDo = jsdUserService.getById(jsdBorrowLegalOrderDo.getUserId());
             JsdCollectionRepaymentDo repaymentDo = new JsdCollectionRepaymentDo();
             repaymentDo.setBorrowId(borrowId);
             repaymentDo.setRequester(requester);
@@ -583,6 +597,10 @@ public class CuiShouUtils {
             repaymentDo.setRepayCert(repayCert);
             repaymentDo.setPayInAccount(payInAccount);
             repaymentDo.setPayOutAccount(payOutAccount);
+            repaymentDo.setTradeNo(tradeNo);
+            repaymentDo.setReviewStatus(CommonReviewStatus.WAIT.name());
+            repaymentDo.setUserId(jsdBorrowLegalOrderDo.getUserId());
+            repaymentDo.setAccount(jsdUserDo.getMobile());
             int count = jsdCollectionRepaymentService.saveRecord(repaymentDo);
             if (count<1){
                 logger.info("save is error");
