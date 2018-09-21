@@ -4,6 +4,9 @@ import com.ald.fanbei.api.biz.vo.MgrBorrowInfoAnalysisVo;
 import com.ald.fanbei.api.biz.vo.MgrDashboardCityInfoVo;
 import com.ald.fanbei.api.biz.vo.MgrDashboardInfoVo;
 import com.ald.fanbei.api.biz.vo.MgrTrendTodayInfoVo;
+import com.ald.jsd.mgr.web.dto.req.AnalysisReq;
+
+import java.text.ParseException;
 
 /**
  * 极速贷Service
@@ -15,7 +18,7 @@ import com.ald.fanbei.api.biz.vo.MgrTrendTodayInfoVo;
  */
 public interface MgrBorrowCashAnalysisService {
 
-    MgrBorrowInfoAnalysisVo getBorrowInfoAnalysis(Integer days);
+    MgrBorrowInfoAnalysisVo getBorrowInfoAnalysis(AnalysisReq analysisReq);
 
     MgrDashboardInfoVo getBorrowInfoDashboard();
 
