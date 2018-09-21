@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,10 +19,11 @@ import com.ald.jsd.mgr.dal.dao.MgrOperatorDao;
 import com.ald.jsd.mgr.dal.domain.MgrOperatorDo;
 import com.ald.jsd.mgr.spring.NotNeedLogin;
 import com.ald.jsd.mgr.web.LocalConstants;
+import com.ald.jsd.mgr.web.Sessions;
+import com.ald.jsd.mgr.web.dto.req.ModPwdReq;
 import com.ald.jsd.mgr.web.dto.req.OperatorEditReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 
-@NotNeedLogin
 @Controller
 @ResponseBody
 @RequestMapping("/api/operator")
@@ -30,7 +32,7 @@ public class OperatorController extends BaseController {
 	@Resource
 	private MgrOperatorDao mgrOperatorDao;
 	
-	
+	@NotNeedLogin
     @RequestMapping(value = "/edit.json")
     public Resp<?> edit(@RequestBody @Valid OperatorEditReq params, HttpServletRequest request) {
     	String operator = "byInvoke";
@@ -61,6 +63,34 @@ public class OperatorController extends BaseController {
         	mgrOperatorDao.saveRecord(operatorDo);
         	logger.info("do add operator success with operatorDo="+operatorDo);
         }
+        
+        return Resp.succ();
+    }
+    
+    /**
+     * 修改密码
+     * @return
+     */
+    @RequestMapping(value = "/modPwd.json")
+    public Resp<?> modPwd(@RequestBody @Valid ModPwdReq params, HttpServletRequest request){
+    	Long uid = Sessions.getUid(request);
+    	
+    	MgrOperatorDo optDo = mgrOperatorDao.getById(uid);
+        byte[] saltBytes = DigestUtil.decodeHex(optDo.getSalt());
+        
+        byte[] oriPwdBytes = DigestUtil.digestString(params.oriPasswd.getBytes(LocalConstants.UTF_8), saltBytes, Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+        String oriPwd = DigestUtil.encodeHex(oriPwdBytes);
+        
+        String dbPwd = optDo.getPassword();
+        if (!StringUtils.equals(oriPwd, dbPwd)) {
+        	return Resp.fail("原密码错误！");
+        }
+        
+        byte[] newPwdBytes = DigestUtil.digestString(params.newPasswd.getBytes(LocalConstants.UTF_8), saltBytes, Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+        String newPwd = DigestUtil.encodeHex(newPwdBytes);
+        
+        optDo.setPassword(newPwd);
+        mgrOperatorDao.updateById(optDo);
         
         return Resp.succ();
     }
