@@ -306,16 +306,25 @@
     </select>
 
 
-
-    <select id="getBorrowOrdersByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">
+    <select id="getBorrowOrdersByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo" >
         SELECT
         <include refid="queryFields" />
         FROM jsd_borrow_legal_order
-        WHERE
-        borrow_id = #{orderId}
-        AND
-        is_delete = 0
+        WHERE is_delete = 0
+        AND status != 'CLOSED' AND status != 'UNPAID'
+        AND borrow_id = #{borrowId}
         ORDER BY id DESC
     </select>
 
+    <select id="getLastOrderByBorrowIdAndStatus" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo" >
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order
+        WHERE is_delete = 0
+        AND status != 'CLOSED' AND status != 'UNPAID'
+        AND borrow_id = #{borrowId}
+        ORDER BY id DESC LIMIT 1
+    </select>
+
+    
 </mapper>

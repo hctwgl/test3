@@ -156,6 +156,11 @@ public class CuiShouUtils {
                     userId = jsdBorrowCashDo.getUserId();
                 }
             }
+            if(jsdBorrowCashDo == null){
+                cuiShouBackMoney.setCode(205);
+                thirdLog.error("dsedLoanPeriodsDo is null error orderNo =" + orderNo);
+                return cuiShouBackMoney;
+            }
             if(DateUtil.afterDay(jsdBorrowCashDo.getGmtPlanRepayment(),time)){
                 cuiShouBackMoney.setCode(203);
                 thirdLog.error("time error loanNo =" + orderNo);
@@ -249,10 +254,12 @@ public class CuiShouUtils {
                 break;
             }
         }
+
         if(count>0){
-            List<JsdBorrowCashRenewalDo> renewalList =  jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(jsdBorrowLegalOrderDo.getBorrowId());
+            List<JsdBorrowCashRenewalDo> renewalList =  jsdBorrowCashRenewalService.getJsdRenewalByBorrowIdAndStatus(jsdBorrowLegalOrderDo.getBorrowId());
+            logger.info(" count = " + count + " ,renewalList = "+ renewalList);
             buildData.put("overdueDay",String.valueOf(renewalList.get(count-1).getOverdueDay()));
-            buildData.put("borrowTime",DateUtil.formatDateTime(renewalList.get(count).getGmtCreate()));//借款时间
+            buildData.put("borrowTime",DateUtil.formatDateTime(renewalList.get(count-1).getGmtCreate()));//借款时间
         }else {
             buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(borrowCashDo.getGmtPlanRepayment(),new Date())));//逾期天数
             buildData.put("borrowTime",DateUtil.formatDateTime(borrowCashDo.getGmtCreate()));//借款时间
@@ -261,7 +268,7 @@ public class CuiShouUtils {
         //--------------------start  催收上报接口需要参数---------------------------
         Long borrowId = borrowCashDo.getRid();
         //搭售商品信息
-        JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(borrowId);
+        JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastOrderByBorrowIdAndStatus(borrowId);
         Map<String,String>  param = new HashMap<>();
         param.put("borrowNo",borrowCashDo.getTradeNoXgxy());
         HashMap<String,String> map = xgxyUtil.borrowNoticeRequest(param);
@@ -297,11 +304,6 @@ public class CuiShouUtils {
             }
             buildData.put("gender",gender);//性别(非必填)
             buildData.put("birthday",userDo.getBirthday());//生日(非必填)
-//            buildData.put("workAddress","");//工作单位(非必填)
-//            buildData.put("workPost","");//工作岗位(非必填)
-//            buildData.put("income","");//税前收入(非必填)
-//            buildData.put("workTelephone","");//单位联系方式(非必填)
-//            buildData.put("marry","");//婚恋情况(非必填)
         }
         //续期信息
         List<Map<String, String>> arrayList = new ArrayList<>();
@@ -324,7 +326,7 @@ public class CuiShouUtils {
         BigDecimal currentAmount = BigDecimal.ZERO;//应还本金
         BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
         //应还本金
-        currentAmount = borrowCashDo.getAmount().subtract(borrowCashDo.getRepayPrinciple());
+        currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
         //催收金额
         BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
         //应还金额
@@ -394,20 +396,22 @@ public class CuiShouUtils {
      * @param data
      * @return
      */
-    public String collectImport(String legalOrderId) {
+    public String collectImport(String data) {
         try {
-            if(StringUtil.isEmpty(legalOrderId)){
+            logger.info("collectImport  start  time =" +new Date());
+            if(StringUtil.isEmpty(data)){
                 thirdLog.error("data is null");
                 return "false";
             }
             //上报
-            JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(Long.parseLong(legalOrderId));
-            JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(legalOrderId));
+            JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(Long.parseLong(data));
+            JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(data));
             JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getById(jsdBorrowLegalOrderDo.getBorrowId());
             collectionPush(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,jsdBorrowLegalOrderDo);
+            logger.info("collectImport  End  time =" +new Date());
             return "success";
         } catch (Exception e) {
-            thirdLog.error("collectImport error = " + e.getMessage(), e);
+            thirdLog.error("collectImport error = " + e);
             return "false";
         }
     }

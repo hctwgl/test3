@@ -36,5 +36,8 @@ public interface JsdBorrowCashRenewalService {
 
 	List<JsdBorrowCashRenewalDo> getJsdRenewalByBorrowId(Long borrowId);
 
+	List<JsdBorrowCashRenewalDo> getJsdRenewalByBorrowIdAndStatus(Long borrowId);
+
+
 	List<JsdBorrowCashRenewalDo> getMgrJsdRenewalByBorrowId(Long borrowId);
 }
