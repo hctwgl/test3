@@ -81,7 +81,7 @@ public class LoanOverDueJob {
 
 
 
-    private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
+    private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void laonDueJob(){

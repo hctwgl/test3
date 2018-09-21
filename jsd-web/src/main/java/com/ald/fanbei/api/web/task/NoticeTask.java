@@ -55,7 +55,7 @@ public class NoticeTask {
 
     ExecutorService executor = Executors.newFixedThreadPool(10);
 
-    private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
+    private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
     @SuppressWarnings("unchecked")
 	@Scheduled(cron = "0 0/5 * * * ?")

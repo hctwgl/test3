@@ -9,7 +9,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 public class SecurityLoanJobCondition implements Condition {
 
 
-    private static String SECURITY_OVERDUE_TASK = ConfigProperties.get(Constants.SECURITY_OVERDUE_TASK);
+    private static String SECURITY_OVERDUE_TASK = ConfigProperties.get(Constants.CONFKEY_SECURITY_OVERDUE_TASK);
 
 
     @Override

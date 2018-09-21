@@ -190,7 +190,7 @@ public class UpsUtil extends AbstractThird {
                 	beheadBorrowCashService.dealBorrowFail(cashDo, orderDo, "UPS打款实时反馈失败");
                 }else {
                 	// 当天借款金额存入缓存
-                	bizCacheUtil.incr(Constants.JSD_BORROW_CURRDAY_ALLAMOUNT, cashDo.getAmount().longValue(), DateUtil.getTodayLast());
+                	bizCacheUtil.incr(Constants.CACHEKEY_BORROW_CURRDAY_ALLAMOUNT, cashDo.getAmount().longValue(), DateUtil.getTodayLast());
                 	cashDo.setStatus(JsdBorrowCashStatus.TRANSFERING.name());
                 	jsdBorrowCashDao.updateById(cashDo);
                 }

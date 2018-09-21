@@ -8,18 +8,16 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.biz.bo.jsd.ApplyBorrowCashBo.ApplyBorrowCashReq;
 import com.ald.fanbei.api.biz.bo.jsd.ApplyBorrowCashBo.JsdGoodsInfoBo;
+import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowResp;
-import com.ald.fanbei.api.biz.bo.ups.UpsDelegatePayRespBo;
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
 import com.ald.fanbei.api.biz.service.BeheadBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
@@ -36,7 +34,6 @@ import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewSwitch;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdNoticeType;
-import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -54,7 +51,6 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
-import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
@@ -142,7 +138,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 		// 2.半自动
 		else if(StringUtil.equals(JsdBorrowCashReviewSwitch.SEMI_AUTO.name(), reviewSwitch)) {
 			// 当天放款总额
-			long currDayAllamount = bizCacheUtil.incr(Constants.JSD_BORROW_CURRDAY_ALLAMOUNT, 0L, DateUtil.getTodayLast());
+			long currDayAllamount = bizCacheUtil.incr(Constants.CACHEKEY_BORROW_CURRDAY_ALLAMOUNT, 0L, DateUtil.getTodayLast());
 			// 剩余款额
 			BigDecimal remainAmount = BigDecimalUtil.subtract(allAmount, new BigDecimal(currDayAllamount));
 			
@@ -282,7 +278,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         afBorrowLegalOrderDo.setPriceAmount(new BigDecimal(goodsBo.goodsPrice));
         afBorrowLegalOrderDo.setGoodsName(goodsBo.goodsName);
         afBorrowLegalOrderDo.setStatus(JsdBorrowLegalOrderStatus.UNPAID.getCode());
-        String orderCashNo = generatorClusterNo.getOrderNo(OrderType.LEGAL);
+        String orderCashNo = generatorClusterNo.getOrderNo(new Date());
         afBorrowLegalOrderDo.setOrderNo(orderCashNo);
         return afBorrowLegalOrderDo;
     }
@@ -341,7 +337,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 			+ ", tradeNoXgxy=" + cashDo.getTradeNoXgxy() + ", tradeNoUps=" + cashDo.getTradeNoUps());
 		
 		// 缓存减去失败金额
-    	bizCacheUtil.incr(Constants.JSD_BORROW_CURRDAY_ALLAMOUNT, -cashDo.getAmount().longValue(), DateUtil.getTodayLast());
+    	bizCacheUtil.incr(Constants.CACHEKEY_BORROW_CURRDAY_ALLAMOUNT, -cashDo.getAmount().longValue(), DateUtil.getTodayLast());
 		
 		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(cashId);
 		cashDo.setTradeNoUps(outTradeNo);

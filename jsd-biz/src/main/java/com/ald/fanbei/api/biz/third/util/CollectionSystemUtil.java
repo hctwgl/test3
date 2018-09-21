@@ -26,13 +26,13 @@ public class CollectionSystemUtil extends AbstractThird {
 
 
 	//收发路径
-	private static String getUrl() {
-		String url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL);
+	private static String getReportUrl() {
+		String url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_REPORT_URL);
 		return url;
 	}
 	//催收路径
 	private static String getCollectUrl() {
-		String urls = ConfigProperties.get(Constants.CONFKEY_COLLECT_URL);
+		String urls = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL);
 		return urls;
 	}
 
@@ -54,8 +54,8 @@ public class CollectionSystemUtil extends AbstractThird {
 			params.put("orderNo",getOrderNo("XGXY"));
 			params.put("info",JSON.toJSONString(data));
 			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo");
-			logger.info("jsd overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getUrl());
-			String url = getUrl() + "/api/ald/collect/v1/third/import";
+			logger.info("jsd overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getReportUrl());
+			String url = getReportUrl() + "/api/ald/collect/v1/third/import";
 			String reqResult = "";
 			if (url.contains("https")){
 				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(params));
@@ -119,7 +119,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		try {
 			reqBo.put("orderNo",getOrderNo("JSD"));
 			reqBo.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo");
-			String url = getUrl() + "/api/ald/collect/v1/third/renewal";
+			String url = getReportUrl() + "/api/ald/collect/v1/third/renewal";
 			String reqResult = "";
 			if (url.contains("https")){
 				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, getUrlParamsByMap(reqBo));
