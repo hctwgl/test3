@@ -205,24 +205,34 @@ public class CollectionMgrController extends BaseController{
     	JsdCollectionRepaymentDo collRepayDo = jsdCollectionRepaymentService.getByRepayNo(params.tradeNo);
     	JsdBorrowCashDo cashDo = jsdBorrowCashService.getById(collRepayDo.getBorrowId());
     	
+    	if(!CommonReviewStatus.WAIT.name().equals(collRepayDo.getReviewStatus())) {
+    		Resp.fail("只有待审核的请求才可以操作！");
+    	}
     	
-    	// TODO reviewRemark
+    	String reviewRemark = "管理员【" + Sessions.getRealname(request) + "】审核催收员【" + collRepayDo.getRequester() + "】线下还款请求，审核结果:" + params.reviewStatus;
     	
-    	Map<String, String> offlineData = new HashMap<>(8, 1);
-    	offlineData.put("borrowNo", cashDo.getBorrowNo());
-        offlineData.put("repaymentDate", collRepayDo.getGmtRepay().getTime() + "");
-        offlineData.put("channel", collRepayDo.getRepayWay());
-        offlineData.put("tradeNo", collRepayDo.getTradeNo());
-        offlineData.put("amount", collRepayDo.getRepayAmount().toString());
-        offlineData.put("remark", collRepayDo.getReviewRemark());
-        
-        transactionTemplate.execute(new TransactionCallback<Integer>() {
-			public Integer doInTransaction(TransactionStatus status) {
-				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData);
-				// TODO 修改collRepayDo 
-				return 1;
-			}
-		});
+    	collRepayDo.setReviewStatus(params.reviewStatus);
+        collRepayDo.setReviewRemark(reviewRemark);
+    	if(CommonReviewStatus.PASS.name().equals(params.reviewStatus)) {
+    		Map<String, String> offlineData = new HashMap<>(8, 1);
+        	offlineData.put("borrowNo", cashDo.getBorrowNo());
+            offlineData.put("repaymentDate", collRepayDo.getGmtRepay().getTime() + "");
+            offlineData.put("channel", collRepayDo.getRepayWay());
+            offlineData.put("tradeNo", collRepayDo.getTradeNo());
+            offlineData.put("amount", collRepayDo.getRepayAmount().toString());
+            offlineData.put("remark", reviewRemark);
+            
+            transactionTemplate.execute(new TransactionCallback<Integer>() {
+    			public Integer doInTransaction(TransactionStatus status) {
+    				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData);
+    				jsdCollectionRepaymentService.updateById(collRepayDo);
+    				return 1;
+    			}
+    		});
+    	}else if(CommonReviewStatus.REFUSE.name().equals(params.reviewStatus)) {
+    		jsdCollectionRepaymentService.updateById(collRepayDo);
+    	}
+    	
     	return Resp.succ();
     }
     

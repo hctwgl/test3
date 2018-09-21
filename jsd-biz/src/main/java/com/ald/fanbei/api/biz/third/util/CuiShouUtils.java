@@ -92,9 +92,6 @@ public class CuiShouUtils {
     @Resource
     XgxyUtil xgxyUtil;
 
-    private static String token = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo";
-
-
     /**
      * 催收逾期还款
      *
@@ -158,11 +155,6 @@ public class CuiShouUtils {
                     jsdBorrowCashDo = jsdBorrowCashService.getById(borrowId);
                     userId = jsdBorrowCashDo.getUserId();
                 }
-            }
-            if(jsdBorrowCashDo == null){
-                cuiShouBackMoney.setCode(205);
-                thirdLog.error("dsedLoanPeriodsDo is null error orderNo =" + orderNo);
-                return cuiShouBackMoney;
             }
             if(DateUtil.afterDay(jsdBorrowCashDo.getGmtPlanRepayment(),time)){
                 cuiShouBackMoney.setCode(203);
