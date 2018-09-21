@@ -23,7 +23,8 @@ import com.alibaba.fastjson.JSONObject;
 public class XgxyUtil extends AbstractThird {
     private static String PRIVATE_KEY = ConfigProperties.get(Constants.CONFKEY_XGXY_AES_PASSWORD);
 
-    public final static String APPID = "speedloanplus";
+    private static String APPID = ConfigProperties.get(Constants.CONFKEY_XGXY_APP_ID);
+
     private static String url = null;
 
     private static String getXgxyUrl() {
