@@ -53,7 +53,8 @@
 		<property name="dsed.collect.url" defaultValue="http://192.168.106.92:8280" description="催收通知主机IP" />
 		<property name="jsd.ups.preffix" defaultValue="PLUS" description="userNo" />
 		<property name="jsd.ups.merno" defaultValue="01151209001" description="ups商户号" />
-		
+		<property name="collection.token" defaultValue="eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo" description="催收token" />
+
 		<property name="security.overdue.task" defaultValue="off" description="白名单逾期定时器开关" />
 	</group>
 
