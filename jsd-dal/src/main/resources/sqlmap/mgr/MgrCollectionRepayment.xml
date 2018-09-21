@@ -4,7 +4,7 @@
 <mapper namespace="com.ald.jsd.mgr.dal.dao.MgrCollectionRepaymentDao">
     
     <select id="listCollectionRepayment" resultType="JsdCollectionRepaymentDo">
-        SELECT a.trade_no, a.real_name, a.account, a.repay_way, a.repay_amount, a.gmt_create, a.gmt_repay, a.review_status
+        SELECT a.trade_no, a.real_name, a.account, a.pay_in_account, a.pay_out_account, a.repay_way, a.repay_amount, a.gmt_create, a.gmt_repay, a.review_status
         FROM jsd_collection_repayment a
         WHERE a.is_delete = 0
         <if test="status != null and status.trim() != ''">

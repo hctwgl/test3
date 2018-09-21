@@ -186,7 +186,7 @@ public class CollectionMgrController extends BaseController{
     	reviewInfo.put("reviewer", collRepayDo.getReviewer());
     	reviewInfo.put("reviewStatus", collRepayDo.getReviewStatus());
     	reviewInfo.put("reviewRemark", collRepayDo.getReviewRemark());
-    	reviewInfo.put("gmtReview", collRepayDo.getGmtModified().getTime());
+    	reviewInfo.put("gmtReview", collRepayDo.getGmtModified() != null? collRepayDo.getGmtModified().getTime():null);
     	
     	Map<String, Object> data = new HashMap<>();
     	data.put("userInfo", userInfo);
