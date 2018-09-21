@@ -1,9 +1,11 @@
-package com.ald.fanbei.api.common.util;
+package com.ald.fanbei.api.common;
 
 
 import java.io.IOException;
 import java.util.Properties;
 import java.util.UUID;
+
+import com.ald.fanbei.api.common.exception.BizException;
 
 /**
  * 
@@ -47,6 +49,10 @@ public class ConfigProperties {
      * @return the string
      */
     public static String get(String key) {
+    	String val = config.getProperty(key);
+    	if(val == null || "".equals(val.trim())) {
+    		throw new BizException("Can't find property: " + key);
+    	}
         return config.getProperty(key);
     }
 
