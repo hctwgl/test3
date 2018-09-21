@@ -26,6 +26,7 @@ import com.ald.jsd.mgr.spring.NotNeedLogin;
 import com.ald.jsd.mgr.web.LocalConstants;
 import com.ald.jsd.mgr.web.Sessions;
 import com.ald.jsd.mgr.web.dto.req.LoginReq;
+import com.ald.jsd.mgr.web.dto.req.ModPwdReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 
 @Controller
@@ -125,5 +126,26 @@ public class LoginController extends BaseController {
     	Sessions.empty(request);
         return Resp.succ();
     }
-
+    
+    /**
+     * 修改密码
+     * @return
+     */
+    @RequestMapping(value = "/modPwd.json")
+    public Resp<?> modPwd(@RequestBody @Valid ModPwdReq params, HttpServletRequest request){
+    	Long uid = Sessions.getUid(request);
+    	
+    	/*MgrOperatorDo optDo = mgrOperatorDao.getById(uid);
+        byte[] saltBytes = DigestUtil.decodeHex(optDo.getSalt());
+        byte[] reqPwdBytes = DigestUtil.digestString(params.passwd.getBytes(Charset.forName("UTF-8")), saltBytes, Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+        String reqPwd = DigestUtil.encodeHex(reqPwdBytes);
+        String dbPwd = optDo.getPassword();
+        
+        if (!StringUtils.equals(reqPwd, dbPwd)) {
+        	return Resp.fail("密码错误");
+        }*/
+        
+        return Resp.succ();
+    }
+    
 }
