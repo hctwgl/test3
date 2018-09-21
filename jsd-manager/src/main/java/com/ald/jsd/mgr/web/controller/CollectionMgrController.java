@@ -207,7 +207,7 @@ public class CollectionMgrController extends BaseController{
     	JsdBorrowCashDo cashDo = jsdBorrowCashService.getById(collRepayDo.getBorrowId());
     	
     	if(!CommonReviewStatus.WAIT.name().equals(collRepayDo.getReviewStatus())) {
-    		Resp.fail("只有待审核的催收还款请求才可以操作！");
+    		return Resp.fail("只有待审核的催收还款请求才可以操作！");
     	}
     	
     	String operator = Sessions.getRealname(request);
