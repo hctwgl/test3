@@ -32,9 +32,8 @@ public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentServic
 
     @Override
     public Resp dealOfflineRepayment(Map<String,String> data) {
-        Resp resp=new Resp();
         String borrowNo= data.get("borrowNo");
-        String repaymentDate=  data.get("repaymentDate");
+        Date repaymentDate=new Date(Long.parseLong(data.get("repaymentDate")));
         String channel= data.get("channel");
         String tradeNo=  data.get("tradeNo");
         String amount=  data.get("amount");
@@ -42,18 +41,18 @@ public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentServic
         if(StringUtil.isAllNotEmpty(borrowNo,channel,tradeNo,amount)){
             JsdBorrowCashDo borrowCashDo=jsdBorrowCashService.getByBorrowNo(borrowNo);
             if(borrowCashDo==null){
-                return resp.fail(data,RespCode.BORROW_INFO_IS_NULL.code, RespCode.BORROW_INFO_IS_NULL.desc);
+                return Resp.fail(data,RespCode.BORROW_INFO_IS_NULL.code, RespCode.BORROW_INFO_IS_NULL.desc);
             }
             JsdBorrowLegalOrderCashDo legalOrderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
             if(repaymentDate==null){
-                repaymentDate= DateUtil.getNow();
+                repaymentDate= new Date();
             }
             String dataId= String.valueOf(borrowCashDo.getRid()+borrowCashDo.getRenewalNum());
             jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo,legalOrderCashDo,amount,tradeNo,borrowCashDo.getUserId(), JsdRepayType.ONLINE,channel,repaymentDate,null,dataId,remark);
         }else {
-            return resp.fail(data,RespCode.PARAMS_ERROR.code,RespCode.PARAMS_ERROR.desc);
+            return Resp.fail(data,RespCode.PARAMS_ERROR.code,RespCode.PARAMS_ERROR.desc);
         }
-        return resp.succ(data,"成功");
+        return Resp.succ(data,"成功");
     }
 
 }

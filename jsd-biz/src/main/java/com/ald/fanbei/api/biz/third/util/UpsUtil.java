@@ -164,6 +164,7 @@ public class UpsUtil extends AbstractThird {
 		}
 
 		JsdUserBankcardDo mainCard = jsdUserBankcardDao.getByBankNo(cashDo.getCardNumber());
+		cashDo.setReviewStatus(JsdBorrowCashReviewStatus.PASS.name());
 		jsdBorrowCashDao.updateReviewStatus(JsdBorrowCashReviewStatus.PASS.name(), cashDo.getRid());
 		
 		autoJsdDelegatePay(cashDo, orderDo, mainCard);
