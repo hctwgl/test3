@@ -102,7 +102,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         		beheadBorrowCashService.applyBeheadBorrowCash(cashReq, mainCard, trialBo);
         		return resp;
         	}
-        	else if("Y".equals(cashReq.isTying) && BorrowVersionType.BEHEAD.name().equals(cashReq.tyingType)){
+        	else if("Y".equals(cashReq.isTying) && BorrowVersionType.SELL.name().equals(cashReq.tyingType)){
         		// 赊销模式
         		jsdBorrowCashService.resolve(trialBo);
         		final JsdBorrowCashDo cashDo = buildBorrowCashDo(cashReq, mainCard, trialBo); 				// 主借款

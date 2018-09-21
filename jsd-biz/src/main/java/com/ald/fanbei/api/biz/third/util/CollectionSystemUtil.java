@@ -53,7 +53,7 @@ public class CollectionSystemUtil extends AbstractThird {
 			Map<String,String>  params=new HashMap<>();
 			params.put("orderNo",getOrderNo("XGXY"));
 			params.put("info",JSON.toJSONString(data));
-			params.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo");
+			params.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECT_TOKEN));
 			logger.info("jsd overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getUrl());
 			String url = getUrl() + "/api/ald/collect/v1/third/import";
 			String reqResult = "";
@@ -118,7 +118,7 @@ public class CollectionSystemUtil extends AbstractThird {
 		// APP还款类型写3 , 线下还款写4
 		try {
 			reqBo.put("orderNo",getOrderNo("JSD"));
-			reqBo.put("token","eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo");
+			reqBo.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECT_TOKEN));
 			String url = getUrl() + "/api/ald/collect/v1/third/renewal";
 			String reqResult = "";
 			if (url.contains("https")){

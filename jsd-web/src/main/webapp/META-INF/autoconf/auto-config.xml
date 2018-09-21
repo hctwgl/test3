@@ -47,12 +47,14 @@
 	   
 	    <property name="dsed.xgxy.host" defaultValue="http://testeca.91ala.com:1112" description="西瓜信用地址" />
 		<property name="dsed.aes.password" defaultValue="aef5c8c6114b8d6a" description="西瓜信用密钥" />
+		<property name="jsd.xgxy.app.id" defaultValue="speedloanplus" description="西瓜信用appid" />
 		<property name="dsed.xgxy.notice.host" defaultValue="192.168.112.40" description="西瓜通知主机IP" />
 		<property name="dsed.collection.url" defaultValue="http://192.168.106.20:10086" description="收发通知主机IP" />
 		<property name="dsed.collect.url" defaultValue="http://192.168.106.92:8280" description="催收通知主机IP" />
 		<property name="jsd.ups.preffix" defaultValue="PLUS" description="userNo" />
 		<property name="jsd.ups.merno" defaultValue="01151209001" description="ups商户号" />
-		
+		<property name="collection.token" defaultValue="eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo" description="催收token" />
+
 		<property name="security.overdue.task" defaultValue="off" description="白名单逾期定时器开关" />
 	</group>
 
