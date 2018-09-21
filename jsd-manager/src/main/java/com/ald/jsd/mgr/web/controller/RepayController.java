@@ -2,6 +2,7 @@ package com.ald.jsd.mgr.web.controller;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.ald.jsd.mgr.biz.service.MgrOfflineRepaymentService;
@@ -47,7 +48,7 @@ public class RepayController {
 
     @RequestMapping(value = {"offline.json"}, method = RequestMethod.POST)
     public Resp<?> offline(@RequestBody Map<String, String> data, HttpServletRequest request) {
-        mgrOfflineRepaymentService.dealOfflineRepayment(data);
+        mgrOfflineRepaymentService.dealOfflineRepayment(data, JsdRepayType.OFFLINE);
         return Resp.succ();
     }
 

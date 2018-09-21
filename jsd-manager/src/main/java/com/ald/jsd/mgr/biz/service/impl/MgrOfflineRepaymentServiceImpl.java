@@ -29,16 +29,16 @@ public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentServic
 
 
     @Override
-    public void dealOfflineRepayment(Map<String,String> data) {
-        String borrowNo= data.get("borrowNo");
-        Date repaymentDate=new Date(Long.parseLong(data.get("repaymentDate")));
-        String channel= data.get("channel");
-        String tradeNo=  data.get("tradeNo");
-        String amount=  data.get("amount");
-        String remark=  data.get("remark");
+    public void dealOfflineRepayment(Map<String,String> reqData, JsdRepayType repayType) {
+        String borrowNo= reqData.get("borrowNo");
+        Date repaymentDate=new Date(Long.parseLong(reqData.get("repaymentDate")));
+        String channel= reqData.get("channel");
+        String tradeNo=  reqData.get("tradeNo");
+        String amount=  reqData.get("amount");
+        String remark=  reqData.get("remark");
         JsdBorrowCashDo borrowCashDo=jsdBorrowCashService.getByBorrowNo(borrowNo);
         JsdBorrowLegalOrderCashDo legalOrderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
         String dataId= String.valueOf(borrowCashDo.getRid()+borrowCashDo.getRenewalNum());
-        jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo,legalOrderCashDo,amount,tradeNo,borrowCashDo.getUserId(), JsdRepayType.ONLINE,channel,repaymentDate,null,dataId,remark);
+        jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo,legalOrderCashDo,amount,tradeNo,borrowCashDo.getUserId(), repayType, channel,repaymentDate,null,dataId,remark);
     }
 }

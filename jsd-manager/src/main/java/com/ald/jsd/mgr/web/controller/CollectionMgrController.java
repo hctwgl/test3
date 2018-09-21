@@ -23,6 +23,7 @@ import com.ald.fanbei.api.biz.service.JsdCollectionRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.CuiShouUtils;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
@@ -206,11 +207,13 @@ public class CollectionMgrController extends BaseController{
     	JsdBorrowCashDo cashDo = jsdBorrowCashService.getById(collRepayDo.getBorrowId());
     	
     	if(!CommonReviewStatus.WAIT.name().equals(collRepayDo.getReviewStatus())) {
-    		Resp.fail("只有待审核的请求才可以操作！");
+    		Resp.fail("只有待审核的催收还款请求才可以操作！");
     	}
     	
-    	String reviewRemark = "管理员【" + Sessions.getRealname(request) + "】审核催收员【" + collRepayDo.getRequester() + "】线下还款请求，审核结果:" + params.reviewStatus;
+    	String operator = Sessions.getRealname(request);
+    	String reviewRemark = "管理员【" + operator + "】审核催收员【" + collRepayDo.getRequester() + "】线下还款请求，审核结果:" + params.reviewStatus;
     	
+    	collRepayDo.setReviewer(operator);
     	collRepayDo.setReviewStatus(params.reviewStatus);
         collRepayDo.setReviewRemark(reviewRemark);
     	if(CommonReviewStatus.PASS.name().equals(params.reviewStatus)) {
@@ -224,7 +227,7 @@ public class CollectionMgrController extends BaseController{
             
             transactionTemplate.execute(new TransactionCallback<Integer>() {
     			public Integer doInTransaction(TransactionStatus status) {
-    				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData);
+    				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData, JsdRepayType.REVIEW_COLLECTION);
     				jsdCollectionRepaymentService.updateById(collRepayDo);
     				return 1;
     			}
