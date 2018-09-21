@@ -41,18 +41,19 @@ public interface JsdBorrowCashRepaymentService{
     List<JsdBorrowCashRepaymentDo>  getByBorrowTradeNoXgxy(String tradeNoXgxy);
 
     /**
+     * 系统内线下还款统一调用接口
      *
      * @param jsdBorrowCashDo
      * @param jsdBorrowLegalOrderCashDo
-     * @param totalAmount
-     * @param repaymentNo
-     * @param userId
-     * @param type
-     * @param channel
-     * @param repayTime
-     * @param orderNo
-     * @param dataId
-     * @param remark
+     * @param totalAmount 还款总额
+     * @param repaymentNo 还款流水号
+     * @param userId 用户uid
+     * @param type 还款类型，对应JsdRepayType枚举
+     * @param channel 还款渠道，支付宝，微信，银行卡等
+     * @param repayTime 实际发生还款的时间
+     * @param orderNo 借款订单的流水号
+     * @param dataId 此次线下还款处理的数据唯一标识
+     * @param remark 线下还款备注
      */
     void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, JsdRepayType type, String channel, Date repayTime, String orderNo, String dataId, String remark);
 

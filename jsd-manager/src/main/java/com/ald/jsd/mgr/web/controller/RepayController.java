@@ -46,7 +46,7 @@ public class RepayController {
     }
 
     @RequestMapping(value = {"offline.json"}, method = RequestMethod.POST)
-    public Resp<String> offline(@RequestBody Map<String, String> data, HttpServletRequest request) {
+    public Resp<?> offline(@RequestBody Map<String, String> data, HttpServletRequest request) {
         return mgrOfflineRepaymentService.dealOfflineRepayment(data);
     }
 
