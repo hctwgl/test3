@@ -200,13 +200,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		repayment.setRepayNo(bo.repayNo);	// 西瓜提供
 		repayment.setStatus(JsdBorrowLegalRepaymentStatus.APPLY.getCode());
 		repayment.setRemark(bo.remark);
-		if(StringUtil.isNotBlank(bo.payTime)){
-			try {
-				repayment.setPayTime(DateUtil.stringToDate(bo.payTime));
-			} catch (ParseException e) {
-				logger.info("offline repay paytime format is error borrowId="+bo.borrowId);
-			}
-		}
+		repayment.setPayTime(bo.payTime);
+
 		if(StringUtil.isNotBlank(bo.cardName)){
 			repayment.setCardName(bo.cardName);
 		}
@@ -229,7 +224,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 	private JsdBorrowCashRepaymentDo buildRepayment( BigDecimal repaymentAmount, String tradeNoXgxy, Date gmtCreate,
 													 BigDecimal actualAmountForBorrow,
-													 Long borrowId,  String TradeNo, String name, Long userId,String repayType,String cardNo,String payTime,String cardName,String remark) {
+													 Long borrowId,  String TradeNo, String name, Long userId,String repayType,String cardNo,Date payTime,String cardName,String remark) {
 		JsdBorrowCashRepaymentDo repay = new JsdBorrowCashRepaymentDo();
 		repay.setActualAmount(actualAmountForBorrow);
 		repay.setBorrowId(borrowId);
@@ -242,13 +237,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		repay.setUserId(userId);
 		repay.setType(repayType);
 		repay.setRemark(remark);
-		if(StringUtil.isNotBlank(payTime)){
-			try {
-				repay.setPayTime(DateUtil.stringToDate(payTime));
-			} catch (ParseException e) {
-				logger.info("offline repay paytime format is error borrowId="+borrowId);
-			}
-		}
+		repay.setPayTime(payTime);
+
 		if(StringUtil.isNotBlank(cardName)){
 			repay.setCardName(cardName);
 		}
@@ -798,7 +788,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	 * @param
 	 */
 	@Override
-	public void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, JsdRepayType type,String channel ,String repayTime, String orderNo,String dataId,String remark) {
+	public void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, JsdRepayType type,String channel ,Date repayTime, String orderNo,String dataId,String remark) {
 		try {
 			BorrowCashRepayBo bo = buildLoanRepayBo(userId, jsdBorrowCashDo ,jsdBorrowLegalOrderCashDo, totalAmount, repaymentNo,type,channel,repayTime,remark);
 
@@ -816,7 +806,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	}
 
 	private BorrowCashRepayBo buildLoanRepayBo(Long userId,JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo,
-											   String repayAmount, String outTradeNo,JsdRepayType type,String channel,String repayTime,String remark){
+											   String repayAmount, String outTradeNo,JsdRepayType type,String channel,Date repayTime,String remark){
 		BorrowCashRepayBo bo = new BorrowCashRepayBo();
 		JsdUserDo jsdUserDo = jsdUserDao.getById(userId);
 		bo.userDo = jsdUserDo;
@@ -931,7 +921,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 		public String payType;
 
-		public String payTime;
+		public Date payTime;
 
 		public String remark;
 

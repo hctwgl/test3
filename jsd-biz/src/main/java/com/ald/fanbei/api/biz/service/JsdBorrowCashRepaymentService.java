@@ -6,6 +6,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 /**
@@ -53,7 +54,7 @@ public interface JsdBorrowCashRepaymentService{
      * @param dataId
      * @param remark
      */
-    void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, JsdRepayType type,String channel, String repayTime, String orderNo, String dataId,String remark);
+    void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, JsdRepayType type, String channel, Date repayTime, String orderNo, String dataId, String remark);
 
 
 }

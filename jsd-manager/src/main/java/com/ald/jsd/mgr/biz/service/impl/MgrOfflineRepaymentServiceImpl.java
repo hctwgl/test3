@@ -14,6 +14,7 @@ import com.ald.jsd.mgr.web.dto.resp.Resp;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.Map;
 
 @Component
@@ -32,7 +33,7 @@ public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentServic
     @Override
     public Resp dealOfflineRepayment(Map<String,String> data) {
         String borrowNo= data.get("borrowNo");
-        String repaymentDate=  data.get("repaymentDate");
+        Date repaymentDate=new Date(Long.parseLong(data.get("repaymentDate")));
         String channel= data.get("channel");
         String tradeNo=  data.get("tradeNo");
         String amount=  data.get("amount");
@@ -44,7 +45,7 @@ public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentServic
             }
             JsdBorrowLegalOrderCashDo legalOrderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
             if(repaymentDate==null){
-                repaymentDate= DateUtil.getNow();
+                repaymentDate= new Date();
             }
             String dataId= String.valueOf(borrowCashDo.getRid()+borrowCashDo.getRenewalNum());
             jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo,legalOrderCashDo,amount,tradeNo,borrowCashDo.getUserId(), JsdRepayType.ONLINE,channel,repaymentDate,null,dataId,remark);
