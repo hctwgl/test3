@@ -59,7 +59,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             haveBorrowCashNum = mgrBorrowCashService.getUserNumByBorrowDays(analysisReq.days);//当期复借人数
             allUserNum = mgrUserAuthService.getPassPersonNumByStatusAndDays("", analysisReq.days);
             paseUserNum = mgrUserAuthService.getPassPersonNumByStatusAndDays("Y", analysisReq.days);
-            days = days;
+            days = analysisReq.days;
         } else if (!StringUtils.isBlank(analysisReq.endDate) && !StringUtils.isBlank(analysisReq.startDate)) {
             Date startTime = null;
             Date endTime = null;
@@ -110,6 +110,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         }
         if (!NumberUtil.isNullOrZero(days)) {
             borrowDayMans = new BigDecimal(borrowMans).divide(new BigDecimal(days), 0, BigDecimal.ROUND_HALF_UP).intValue();
+            borrowDayAmount = totalLoanAmount.divide(new BigDecimal(days), 2, BigDecimal.ROUND_HALF_UP);
         }
 
         repeatBorrowRate = new BigDecimal(haveBorrowCashNum).divide(new BigDecimal(applyBorrowCashNum), 4, BigDecimal.ROUND_HALF_UP);
@@ -122,7 +123,6 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         }
         if (totalLoanAmount != BigDecimal.ZERO) {
             profitRate = (returnAmount.subtract(overdueAmount)).divide(totalLoanAmount, 4, BigDecimal.ROUND_HALF_UP);
-            borrowDayAmount = totalLoanAmount.divide(new BigDecimal(days), 2, BigDecimal.ROUND_HALF_UP);
         }
 
         if (allUserNum != 0) {
