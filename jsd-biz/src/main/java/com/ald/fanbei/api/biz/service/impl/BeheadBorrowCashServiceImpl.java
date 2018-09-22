@@ -144,6 +144,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 			
 			if(remainAmount.compareTo(cashDo.getAmount()) >= 0){
 				jsdBorrowCashDao.updateReviewStatus(JsdBorrowCashReviewStatus.PASS.name(), cashDo.getRid());
+				cashDo.setReviewStatus(JsdBorrowCashReviewStatus.PASS.name());
 				upsUtil.autoJsdDelegatePay(cashDo, orderDo, mainCard);
 			}
 		}
@@ -336,9 +337,6 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 		logger.info("behead dealBorrowFail, borrowCashId="+ cashId + ", borrowNo=" + cashDo.getBorrowNo()
 			+ ", tradeNoXgxy=" + cashDo.getTradeNoXgxy() + ", tradeNoUps=" + cashDo.getTradeNoUps());
 		
-		// 缓存减去失败金额
-    	bizCacheUtil.incr(Constants.CACHEKEY_BORROW_CURRDAY_ALLAMOUNT, -cashDo.getAmount().longValue(), DateUtil.getTodayLast());
-		
 		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(cashId);
 		cashDo.setTradeNoUps(outTradeNo);
 		
@@ -347,7 +345,11 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 	
 	@Override
 	public void dealBorrowFail(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderDo orderDo, String failMsg) {
-        cashDo.setStatus(JsdBorrowCashStatus.CLOSED.name());
+		
+		// 缓存减去失败金额
+		bizCacheUtil.incr(Constants.CACHEKEY_BORROW_CURRDAY_ALLAMOUNT, -cashDo.getAmount().longValue(), DateUtil.getTodayLast());
+
+		cashDo.setStatus(JsdBorrowCashStatus.CLOSED.name());
         cashDo.setRemark(failMsg);
         cashDo.setGmtClose(new Date());
         
