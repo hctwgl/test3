@@ -24,6 +24,9 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Component
 public class WithholdJob {
@@ -50,6 +53,9 @@ public class WithholdJob {
 
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
+
+
+    ExecutorService executor = Executors.newFixedThreadPool(10);
 
 
 //    @Scheduled(cron = "0 50 23 * * ?")
@@ -81,6 +87,7 @@ public class WithholdJob {
 
     void  dealWithhold(List<JsdBorrowCashDo> borrowCashDos){
         for(JsdBorrowCashDo jsdBorrowCashDo:borrowCashDos){
+
             JsdBorrowCashRepaymentDo borrowCashRepaymentDo=jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(jsdBorrowCashDo.getRid());
             if(borrowCashRepaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(borrowCashRepaymentDo.getStatus())) {
                 logger.info("withhold fail,Loan is processing,borrowId=" + jsdBorrowCashDo.getRid());
@@ -106,7 +113,13 @@ public class WithholdJob {
             bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
             JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
             bo.bankNo=userBankcardDo.getBankCardNumber();
-            jsdBorrowCashRepaymentService.repay(bo,RepayType.WITHHOLD.getCode());
+            Runnable thread= new Runnable() {
+                @Override
+                public void run() {
+                    jsdBorrowCashRepaymentService.repay(bo,RepayType.WITHHOLD.getCode());
+                }
+            };
+            executor.submit(thread);
         }
 
     }
