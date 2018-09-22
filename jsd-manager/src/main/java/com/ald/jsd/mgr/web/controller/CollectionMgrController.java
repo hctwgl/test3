@@ -236,11 +236,13 @@ public class CollectionMgrController extends BaseController{
     			public Integer doInTransaction(TransactionStatus status) {
     				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData, JsdRepayType.REVIEW_COLLECTION);
     				jsdCollectionRepaymentService.updateById(collRepayDo);
+    				// TODO 通知催收
     				return 1;
     			}
     		});
     	}else if(CommonReviewStatus.REFUSE.name().equals(params.reviewStatus)) {
     		jsdCollectionRepaymentService.updateById(collRepayDo);
+    		// TODO 通知催收
     	}
     	
     	return Resp.succ();

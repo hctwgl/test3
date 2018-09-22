@@ -10,8 +10,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -27,6 +25,13 @@ import com.ald.fanbei.api.biz.service.JsdCollectionRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.cuishou.CuiShouBackMoney;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.CollectionBorrowStatus;
+import com.ald.fanbei.api.common.enums.CommonReviewStatus;
+import com.ald.fanbei.api.common.enums.GenderType;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.JsdNoticeType;
+import com.ald.fanbei.api.common.enums.JsdRepayType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
@@ -154,11 +159,6 @@ public class CuiShouUtils {
                     jsdBorrowCashDo = jsdBorrowCashService.getById(borrowId);
                     userId = jsdBorrowCashDo.getUserId();
                 }
-            }
-            if(jsdBorrowCashDo == null){
-                cuiShouBackMoney.setCode(205);
-                thirdLog.error("dsedLoanPeriodsDo is null error orderNo =" + orderNo);
-                return cuiShouBackMoney;
             }
             if(DateUtil.afterDay(jsdBorrowCashDo.getGmtPlanRepayment(),time)){
                 cuiShouBackMoney.setCode(203);
