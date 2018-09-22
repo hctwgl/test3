@@ -20,6 +20,7 @@ import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowResp;
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
 import com.ald.fanbei.api.biz.service.BeheadBorrowCashService;
+import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
@@ -33,7 +34,6 @@ import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewSwitch;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
-import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -43,12 +43,10 @@ import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderInfoDao;
-import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
 import com.ald.fanbei.api.dal.dao.JsdUserDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo;
-import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.alibaba.fastjson.JSON;
@@ -73,13 +71,13 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
     @Resource
     JsdResourceService jsdResourceService;
     @Resource
+    JsdNoticeRecordService jsdNoticeRecordService;
+    @Resource
     JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
     @Resource
     JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
     @Resource
     JsdBorrowLegalOrderInfoDao jsdBorrowLegalOrderInfoDao;
-    @Resource
-    JsdNoticeRecordDao jsdNoticeRecordDao;
     @Resource
     JsdUserDao jsdUserDao;
 
@@ -325,7 +323,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         orderDo.setStatus(JsdBorrowLegalOrderStatus.AWAIT_DELIVER.name());
         this.transUpdate(cashDo, orderDo);
         
-        jsdNoticeRecord(cashDo,"", XgxyBorrowNotifyStatus.SUCCESS.name());
+        jsdNoticeRecordService.dealBorrowNoticed(cashDo, this.buildXgxyPay(cashDo, "放款成功", XgxyBorrowNotifyStatus.SUCCESS.name()));
 	}
 
 	@Override
@@ -356,24 +354,9 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         orderDo.setStatus(JsdBorrowLegalOrderStatus.CLOSED.name());
         this.transUpdate(cashDo, orderDo);
 
-        jsdNoticeRecord(cashDo, failMsg,  XgxyBorrowNotifyStatus.FAILED.name());
+        jsdNoticeRecordService.dealBorrowNoticed(cashDo, this.buildXgxyPay(cashDo, failMsg, XgxyBorrowNotifyStatus.FAILED.name()));
 	}
 	
-	private void jsdNoticeRecord(JsdBorrowCashDo cashDo,String msg, String status) {
-        try {
-        	XgxyBorrowNoticeBo xgxyPayBo = buildXgxyPay(cashDo, msg, status);
-            JsdNoticeRecordDo noticeRecordDo = buildJsdNoticeRecord(cashDo, xgxyPayBo);
-            jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
-            if(xgxyUtil.borrowNoticeRequest(xgxyPayBo)){
-                noticeRecordDo.setRid(noticeRecordDo.getRid());
-                noticeRecordDo.setGmtModified(new Date());
-                jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
-            }
-        } catch (Exception e) {
-            logger.error("dsedNoticeRecord, notify user occur error!", e); //通知过程抛出任何异常捕获，不影响主流程
-        }
-    }
-
     private XgxyBorrowNoticeBo buildXgxyPay(JsdBorrowCashDo cashDo, String msg,String status) {
     	XgxyBorrowNoticeBo  xgxyPayBo = new XgxyBorrowNoticeBo();
         xgxyPayBo.setTradeNo(cashDo.getTradeNoUps());
@@ -383,16 +366,6 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         xgxyPayBo.setGmtArrival(cashDo.getGmtArrival());
         xgxyPayBo.setTimestamp(System.currentTimeMillis());
         return xgxyPayBo;
-    }
-
-    private JsdNoticeRecordDo buildJsdNoticeRecord(JsdBorrowCashDo cashDo, XgxyBorrowNoticeBo xgxyPayBo) {
-    	JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
-        noticeRecordDo.setUserId(cashDo.getUserId());
-        noticeRecordDo.setRefId(String.valueOf(cashDo.getRid()));
-        noticeRecordDo.setType(JsdNoticeType.DELEGATEPAY.code);
-        noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
-        noticeRecordDo.setParams(JSON.toJSONString(xgxyPayBo));
-        return noticeRecordDo;
     }
     
 }

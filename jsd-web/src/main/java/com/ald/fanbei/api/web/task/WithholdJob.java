@@ -1,21 +1,6 @@
 package com.ald.fanbei.api.web.task;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
-import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
-import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
-import com.ald.fanbei.api.biz.service.JsdUserService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
@@ -30,6 +15,17 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Component
 public class WithholdJob {
@@ -56,6 +52,9 @@ public class WithholdJob {
 
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
+
+
+    ExecutorService executor = Executors.newFixedThreadPool(10);
 
 
 //    @Scheduled(cron = "0 50 23 * * ?")
@@ -112,7 +111,13 @@ public class WithholdJob {
             bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
             JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
             bo.bankNo=userBankcardDo.getBankCardNumber();
-            jsdBorrowCashRepaymentService.repay(bo,RepayType.WITHHOLD.getCode());
+            Runnable thread= new Runnable() {
+                @Override
+                public void run() {
+                    jsdBorrowCashRepaymentService.repay(bo,RepayType.WITHHOLD.getCode());
+                }
+            };
+            executor.submit(thread);
         }
 
     }
