@@ -24,7 +24,7 @@ public class JsdBorrowV2Test extends BaseTest {
     
     String userName = "13165995223";
     
-    private static final String AES_KEY = "baac7fc54a2a7e75";
+    private static final String AES_KEY = "9c5dd35d58f8501f";
 
     /**
      * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
