@@ -925,9 +925,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 		public JsdBorrowCashDo borrowCashDo;
 
-
-
-
 	}
 
 
