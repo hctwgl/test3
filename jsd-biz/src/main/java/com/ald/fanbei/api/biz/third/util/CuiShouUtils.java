@@ -418,7 +418,7 @@ public class CuiShouUtils {
             logger.info("collectImport  End  time =" +new Date());
             return "success";
         } catch (Exception e) {
-            thirdLog.error("collectImport error = " + e);
+            thirdLog.error("collectImport error = " + e.getMessage(), e);
             return "false";
         }
     }

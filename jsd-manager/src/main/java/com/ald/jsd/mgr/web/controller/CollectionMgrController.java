@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
 import com.ald.fanbei.api.biz.service.JsdCollectionRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
+import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
 import com.ald.fanbei.api.biz.third.util.CuiShouUtils;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
@@ -55,6 +58,8 @@ public class CollectionMgrController extends BaseController{
 	JsdUserService jsdUserService;
 	@Resource
 	JsdBorrowCashService jsdBorrowCashService;
+	@Resource
+	JsdNoticeRecordService jsdNoticeRecordService;
 	@Resource
     JsdCollectionBorrowService jsdCollectionBorrowService;
 	@Resource
@@ -116,6 +121,7 @@ public class CollectionMgrController extends BaseController{
 				jsdBorrowCashService.updateById(cashDoForMod);
 				jsdCollectionBorrowService.updateById(collBorrowDoForMod);
 				cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
+				jsdNoticeRecordService.dealBorrowNoticed(cashDo, XgxyBorrowNoticeBo.gen(cashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.FINISHED.name(), "强制结清"));
 				return 1;
 			}
 		});
@@ -156,6 +162,7 @@ public class CollectionMgrController extends BaseController{
     				jsdBorrowCashService.updateById(cashDoForMod);
     				jsdCollectionBorrowService.updateById(collBorrowDoForMod);
     				cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
+    				jsdNoticeRecordService.dealBorrowNoticed(cashDo, XgxyBorrowNoticeBo.gen(cashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.FINISHED.name(), "审核强制结清"));
     				return 1;
     			}
     		});

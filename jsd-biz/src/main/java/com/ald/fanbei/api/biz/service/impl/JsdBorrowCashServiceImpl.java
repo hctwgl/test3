@@ -11,31 +11,33 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
-import com.ald.fanbei.api.biz.third.util.UpsUtil;
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.dal.domain.dto.LoanDto;
-import com.ald.fanbei.api.dal.query.LoanQuery;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowResp;
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
+import com.ald.fanbei.api.biz.third.util.UpsUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
+import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
+import com.ald.fanbei.api.common.enums.ResourceSecType;
+import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -44,13 +46,14 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
-import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
-import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
-import com.alibaba.fastjson.JSON;
+import com.ald.fanbei.api.dal.domain.dto.LoanDto;
+import com.ald.fanbei.api.dal.query.LoanQuery;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -76,8 +79,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     @Resource
     JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
     @Resource
-    JsdNoticeRecordDao jsdNoticeRecordDao;
-
+    JsdNoticeRecordService jsdNoticeRecordService;
+    
     @Resource
     XgxyUtil xgxyUtil;
     @Resource
@@ -424,7 +427,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         orderCashDo.setGmtPlanRepay(repaymentDate);
         this.transUpdate(cashDo, orderDo, orderCashDo);
 
-        jsdNoticeRecord(cashDo, "", XgxyBorrowNotifyStatus.SUCCESS.name());
+        jsdNoticeRecordService.dealBorrowNoticed(cashDo, this.buildXgxyPay(cashDo, "放款成功", XgxyBorrowNotifyStatus.SUCCESS.name()));
     }
 
     @Override
@@ -453,8 +456,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.CLOSED.name());
         this.transUpdate(cashDo, orderDo, orderCashDo);
 
-
-        jsdNoticeRecord(cashDo, failMsg, XgxyBorrowNotifyStatus.FAILED.name());
+        jsdNoticeRecordService.dealBorrowNoticed(cashDo, this.buildXgxyPay(cashDo, failMsg, XgxyBorrowNotifyStatus.FAILED.name()));
     }
 
     /**
@@ -543,21 +545,6 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         return notifyHost;
     }
 
-    private void jsdNoticeRecord(JsdBorrowCashDo cashDo, String msg, String status) {
-        try {
-            XgxyBorrowNoticeBo xgxyPayBo = buildXgxyPay(cashDo, msg, status);
-            JsdNoticeRecordDo noticeRecordDo = buildJsdNoticeRecord(cashDo, xgxyPayBo);
-            jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
-            if (xgxyUtil.borrowNoticeRequest(xgxyPayBo)) {
-                noticeRecordDo.setRid(noticeRecordDo.getRid());
-                noticeRecordDo.setGmtModified(new Date());
-                jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
-            }
-        } catch (Exception e) {
-            logger.error("dsedNoticeRecord, notify user occur error!", e); //通知过程抛出任何异常捕获，不影响主流程
-        }
-    }
-
     private XgxyBorrowNoticeBo buildXgxyPay(JsdBorrowCashDo cashDo, String msg, String status) {
         XgxyBorrowNoticeBo xgxyPayBo = new XgxyBorrowNoticeBo();
         xgxyPayBo.setTradeNo(cashDo.getTradeNoUps());
@@ -567,15 +554,5 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         xgxyPayBo.setGmtArrival(cashDo.getGmtArrival());
         xgxyPayBo.setTimestamp(System.currentTimeMillis());
         return xgxyPayBo;
-    }
-
-    private JsdNoticeRecordDo buildJsdNoticeRecord(JsdBorrowCashDo cashDo, XgxyBorrowNoticeBo xgxyPayBo) {
-        JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
-        noticeRecordDo.setUserId(cashDo.getUserId());
-        noticeRecordDo.setRefId(String.valueOf(cashDo.getRid()));
-        noticeRecordDo.setType(JsdNoticeType.DELEGATEPAY.code);
-        noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
-        noticeRecordDo.setParams(JSON.toJSONString(xgxyPayBo));
-        return noticeRecordDo;
     }
 }

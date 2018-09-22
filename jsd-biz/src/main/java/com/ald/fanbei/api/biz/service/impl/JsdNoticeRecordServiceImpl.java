@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.biz.service.impl;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -66,12 +65,15 @@ public class JsdNoticeRecordServiceImpl extends ParentServiceImpl<JsdNoticeRecor
 	}
 
 	@Override
-	public void dealBorrowNoticed(JsdBorrowCashDo jsdBorrowCashDo, XgxyBorrowNoticeBo noticeRecord) {
-		JsdNoticeRecordDo jsdNoticeRecordDo=buildNoticeRecord(jsdBorrowCashDo,noticeRecord);
-		jsdNoticeRecordDao.addNoticeRecord(jsdNoticeRecordDo);
-		if(xgxyUtil.borrowNoticeRequest(noticeRecord)){
-			JsdNoticeRecordDo noticeRecordDo=new JsdNoticeRecordDo();
-			noticeRecordDo.setRid(jsdNoticeRecordDo.getRid());
+	public void dealBorrowNoticed(JsdBorrowCashDo cashDo, XgxyBorrowNoticeBo noticeBo) {
+		JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
+        noticeRecordDo.setUserId(cashDo.getUserId());
+        noticeRecordDo.setRefId(String.valueOf(cashDo.getRid()));
+        noticeRecordDo.setType(JsdNoticeType.DELEGATEPAY.code);
+        noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+        noticeRecordDo.setParams(JSON.toJSONString(noticeBo));
+		jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+		if(xgxyUtil.borrowNoticeRequest(noticeBo)){
 			jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
 		}
 	}
@@ -87,18 +89,8 @@ public class JsdNoticeRecordServiceImpl extends ParentServiceImpl<JsdNoticeRecor
 		noticeRecordDo.setParams(JSON.toJSONString(data));
 		jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
 		if (xgxyUtil.repayNoticeRequest(data)) {
-			noticeRecordDo.setRid(noticeRecordDo.getRid());
-			noticeRecordDo.setGmtModified(new Date());
 			jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
 		}
 	}
 
-	private JsdNoticeRecordDo buildNoticeRecord(JsdBorrowCashDo jsdBorrowCashDo,XgxyBorrowNoticeBo noticeBo){
-		JsdNoticeRecordDo noticeRecordDo=new JsdNoticeRecordDo();
-		noticeRecordDo.setUserId(jsdBorrowCashDo.getUserId());
-		noticeRecordDo.setType(noticeBo.getStatus());
-		noticeRecordDo.setRefId(String.valueOf(jsdBorrowCashDo.getRid()));
-		noticeRecordDo.setParams(JSON.toJSONString(noticeBo));
-		return noticeRecordDo;
-	}
 }
