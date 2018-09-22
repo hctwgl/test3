@@ -490,11 +490,26 @@
         jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_create) &lt; #{days}
     </select>
 
+    <select id="getApplyBorrowCashBetweenStartAndEnd" resultType="java.lang.Integer">
+        SELECT
+        count(distinct user_id)
+        FROM
+        jsd_borrow_cash  where is_delete=0 and gmt_create between #{startDate} and #{endDate}
+    </select>
+
     <select id="getBorrowCashLessThanDays" resultType="JsdBorrowCashDo">
         SELECT
         <include refid="queryFields"/>
         FROM
         jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) &lt; #{days}
+        and status in ('TRANSFERRED','FINISHED')
+    </select>
+
+    <select id="getBorrowCashBetweenStartAndEnd" resultType="JsdBorrowCashDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_borrow_cash  where is_delete=0 and gmt_arrival between #{startDate} and #{endDate}
         and status in ('TRANSFERRED','FINISHED')
     </select>
 
@@ -514,6 +529,17 @@
         left join jsd_borrow_cash nbc on bc.user_id = nbc.user_id
         where bc.is_delete=0 and datediff(now(),bc.gmt_arrival) &lt; #{days}
         and datediff(now(),nbc.gmt_arrival) &gt;= #{days}
+        and bc.status in ('TRANSFERRED','FINISHED')
+    </select>
+
+    <select id="getUserNumBetweenStartAndEnd" resultType="java.lang.Integer">
+        SELECT
+        count(distinct nbc.user_id)
+        FROM
+        jsd_borrow_cash bc
+        left join jsd_borrow_cash nbc on bc.user_id = nbc.user_id
+        where bc.is_delete=0 and bc.gmt_arrival  between #{startDate} and #{endDate}
+        and ( nbc.gmt_arrival &lt; #{startDate} or nbc.gmt_arrival &gt; #{endDate})
         and bc.status in ('TRANSFERRED','FINISHED')
     </select>
 

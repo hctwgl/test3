@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
+import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.CommonUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.jsd.mgr.biz.service.MgrRoleService;
 import com.ald.jsd.mgr.dal.dao.MgrOperatorDao;

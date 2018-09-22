@@ -7,10 +7,10 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdNoticeStatus;
 import com.ald.fanbei.api.common.exception.BizException;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
@@ -26,13 +26,13 @@ public class CollectionSystemUtil extends AbstractThird {
 
 
 	//收发路径
-	private static String getUrl() {
-		String url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL);
+	private static String getReportUrl() {
+		String url = ConfigProperties.get(Constants.CONFKEY_COLLECTION_REPORT_URL);
 		return url;
 	}
 	//催收路径
 	private static String getCollectUrl() {
-		String urls = ConfigProperties.get(Constants.CONFKEY_COLLECT_URL);
+		String urls = ConfigProperties.get(Constants.CONFKEY_COLLECTION_URL);
 		return urls;
 	}
 
@@ -53,9 +53,9 @@ public class CollectionSystemUtil extends AbstractThird {
 			Map<String,String>  params=new HashMap<>();
 			params.put("orderNo",getOrderNo("XGXY"));
 			params.put("info",JSON.toJSONString(data));
-			params.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECT_TOKEN));
-			logger.info("jsd overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getUrl());
-			String url = getUrl() + "/api/ald/collect/v1/third/import";
+			params.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN));
+			logger.info("jsd overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getReportUrl());
+			String url = getReportUrl() + "/api/ald/collect/v1/third/import";
 			String reqResult = "";
 			if (url.contains("https")){
 				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(params));
@@ -118,8 +118,8 @@ public class CollectionSystemUtil extends AbstractThird {
 		// APP还款类型写3 , 线下还款写4
 		try {
 			reqBo.put("orderNo",getOrderNo("JSD"));
-			reqBo.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECT_TOKEN));
-			String url = getUrl() + "/api/ald/collect/v1/third/renewal";
+			reqBo.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN));
+			String url = getReportUrl() + "/api/ald/collect/v1/third/renewal";
 			String reqResult = "";
 			if (url.contains("https")){
 				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, getUrlParamsByMap(reqBo));

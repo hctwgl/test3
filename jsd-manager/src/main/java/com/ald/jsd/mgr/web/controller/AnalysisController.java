@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 
 @NotNeedLogin
 @Controller
@@ -28,7 +29,7 @@ public class AnalysisController extends BaseController {
 
     @RequestMapping(value = {"/query.json"}, method = RequestMethod.POST)
     public Resp<MgrBorrowInfoAnalysisVo> getAnalysisInfo(@RequestBody AnalysisReq analysisReq) {
-        MgrBorrowInfoAnalysisVo mgrBorrowInfoAnalysisVo = mgrBorrowCashAnalysisService.getBorrowInfoAnalysis(analysisReq.days);
+        MgrBorrowInfoAnalysisVo mgrBorrowInfoAnalysisVo = mgrBorrowCashAnalysisService.getBorrowInfoAnalysis(analysisReq);
         return Resp.succ(mgrBorrowInfoAnalysisVo, "");
     }
 

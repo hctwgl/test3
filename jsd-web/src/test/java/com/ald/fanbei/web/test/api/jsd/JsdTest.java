@@ -27,7 +27,7 @@ public class JsdTest extends BaseTest {
 //    String urlBase = "http://192.168.112.40:8080";
 
     String userName = "13165995223";
-    private static final String AES_KEY = "baac7fc54a2a7e75";
+    private static final String AES_KEY = "9c5dd35d58f8501f";
 
     /**
      * 自动注入登陆令牌，当needLogin为true时，不得注释此方法

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 
@@ -44,6 +45,11 @@ public class MgrUserAuthServiceImpl extends ParentServiceImpl<JsdUserAuthDo, Lon
     @Override
     public int getPassPersonNumByStatusAndDays(String status, Integer days) {
         return mgrUserAuthDao.getPassPersonNumByStatusAndDays(status, days);
+    }
+
+    @Override
+    public int getPassPersonNumByStatusBetweenStartAndEnd(String status, Date startDate, Date endDate) {
+        return mgrUserAuthDao.getPassPersonNumByStatusBetweenStartAndEnd(status,startDate,endDate);
     }
 
     @Override

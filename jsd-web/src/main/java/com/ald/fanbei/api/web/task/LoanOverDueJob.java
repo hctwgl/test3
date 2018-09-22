@@ -30,12 +30,12 @@ import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
 import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
+import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
 import com.ald.fanbei.api.common.enums.OverdueLogType;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashOverdueLogDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
@@ -81,7 +81,7 @@ public class LoanOverDueJob {
 
 
 
-    private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
+    private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void laonDueJob(){

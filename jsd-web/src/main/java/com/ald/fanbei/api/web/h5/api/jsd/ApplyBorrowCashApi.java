@@ -32,7 +32,6 @@ import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
-import com.ald.fanbei.api.common.enums.OrderType;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.BizException;
@@ -202,7 +201,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         afBorrowLegalOrderDo.setPriceAmount(new BigDecimal(goodsBo.goodsPrice));
         afBorrowLegalOrderDo.setGoodsName(goodsBo.goodsName);
         afBorrowLegalOrderDo.setStatus(JsdBorrowLegalOrderStatus.UNPAID.getCode());
-        String orderCashNo = generatorClusterNo.getOrderNo(OrderType.LEGAL);
+        String orderCashNo = generatorClusterNo.getOrderNo(new Date());
         afBorrowLegalOrderDo.setOrderNo(orderCashNo);
         return afBorrowLegalOrderDo;
     }
@@ -228,7 +227,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         afBorrowLegalOrderCashDo.setPoundageAmount(new BigDecimal(resp.sellServiceFee));
         afBorrowLegalOrderCashDo.setOverdueAmount(BigDecimal.ZERO);
         afBorrowLegalOrderCashDo.setOverdueStatus(YesNoStatus.NO.getCode());
-        afBorrowLegalOrderCashDo.setCashNo(generatorClusterNo.geBorrowLegalOrderCashNo(new Date()));
+        afBorrowLegalOrderCashDo.setCashNo(generatorClusterNo.getBorrowLegalOrderCashNo(new Date()));
         return afBorrowLegalOrderCashDo;
     }
 

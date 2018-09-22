@@ -189,6 +189,16 @@
         and datediff(now(),gmt_create) &lt; #{days}
     </select>
 
+    <select id="getPassPersonNumByStatusBetweenStartAndEnd" resultType="java.lang.Integer">
+        SELECT count(`id`)
+        FROM jsd_user_auth WHERE is_delete=0
+        <if test="status != null and status != ''">
+            AND risk_status = #{status}
+        </if>
+        and gmt_create  between #{startDate} and #{endDate}
+    </select>
+
+
     <select id="getPassPersonNumByStatusEqualDays" resultType="java.lang.Integer">
         SELECT count(`id`)
         FROM jsd_user_auth WHERE is_delete=0

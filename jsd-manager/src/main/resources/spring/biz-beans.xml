@@ -14,7 +14,7 @@
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd">
 	
-	<bean id="configProperties" class="com.ald.fanbei.api.common.util.ConfigProperties"
+	<bean id="configProperties" class="com.ald.fanbei.api.common.ConfigProperties"
         init-method="init">
         <property name="configPath">
             <value>props/config.properties</value>
@@ -32,9 +32,6 @@
 				<value>fbapi.redis.hostname</value>
 				<value>fbapi.redis.port</value>
 				<value>fbapi.redis.password</value>
-				<value>fbapi.token.redis.hostname</value>
-				<value>fbapi.token.redis.port</value>
-				<value>fbapi.token.redis.password</value>
 				
 				<value>fbfile.oss.access.key</value>
 				<value>fbfile.oss.access.secret</value>

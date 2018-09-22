@@ -6,6 +6,7 @@ import com.ald.fanbei.api.dal.domain.dto.UserAuthDto;
 import com.ald.fanbei.api.dal.query.UserAuthQuery;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,6 +22,8 @@ public interface MgrUserAuthDao extends BaseDao<JsdUserAuthDo, Long> {
     List<UserAuthDto> getListUserAuth(UserAuthQuery query);
 
     int getPassPersonNumByStatusAndDays(@Param("status") String status,@Param("days") Integer days);
+
+    int getPassPersonNumByStatusBetweenStartAndEnd(@Param("status") String status,@Param("startDate") Date startDate,@Param("endDate") Date endDate);
 
     int getPassPersonNumByStatusEqualDays(@Param("status") String status,@Param("days") Integer days);
 
