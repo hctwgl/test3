@@ -15,6 +15,17 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Component
 public class WithholdJob {
