@@ -4,16 +4,14 @@
 <mapper namespace="com.ald.jsd.mgr.dal.dao.MgrBorrowLegalOrderInfoDao">
 
     <select id="getByBorrowId" resultType="JsdBorrowLegalOrderInfoDo">
-        SELECT
-        <include refid="queryFields" />
+        SELECT * 
         FROM jsd_borrow_legal_order_info
         WHERE is_delete = 0 AND borrow_id=#{borrowId ,jdbcType=BIGINT}
         LIMIT 0,1
     </select>
 
     <select id="getInfoByDays" resultType="JsdBorrowLegalOrderInfoDo">
-        SELECT
-        <include refid="queryFields" />
+        SELECT * 
         FROM jsd_borrow_legal_order_info
         WHERE is_delete=0 and datediff(now(),gmt_create) = #{days}
         LIMIT 0,1
