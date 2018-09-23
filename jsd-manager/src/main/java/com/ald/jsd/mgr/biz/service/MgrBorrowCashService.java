@@ -1,13 +1,12 @@
 package com.ald.jsd.mgr.biz.service;
 
-import com.ald.fanbei.api.biz.service.ParentService;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-public interface MgrBorrowCashService extends ParentService<JsdBorrowCashDo, Long> {
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+
+public interface MgrBorrowCashService {
 
     /**
      * 获取一定期限内的借款数据

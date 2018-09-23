@@ -1,16 +1,16 @@
 package com.ald.jsd.mgr.biz.service.impl;
 
-import com.ald.fanbei.api.biz.service.impl.ParentServiceImpl;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-import com.ald.jsd.mgr.biz.service.MgrBorrowCashService;
-import com.ald.jsd.mgr.dal.dao.MgrBorrowCashDao;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.jsd.mgr.biz.service.MgrBorrowCashService;
+import com.ald.jsd.mgr.dal.dao.MgrBorrowCashDao;
 
 
 /**
@@ -23,15 +23,10 @@ import java.util.List;
  */
 
 @Service("mgrBorrowCashService")
-public class MgrBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo, Long> implements MgrBorrowCashService {
+public class MgrBorrowCashServiceImpl implements MgrBorrowCashService {
 
     @Resource
     MgrBorrowCashDao mgrBorrowCashDao;
-
-    @Override
-    public BaseDao<JsdBorrowCashDo, Long> getDao() {
-        return mgrBorrowCashDao;
-    }
 
     @Override
     public List<JsdBorrowCashDo> getBorrowCashByDays(Integer days) {

@@ -1,16 +1,13 @@
 package com.ald.jsd.mgr.web.controller;
 
-import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.enums.ResourceType;
-import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.query.LoanQuery;
-import com.ald.jsd.mgr.web.dto.req.LoanDetailsReq;
-import com.ald.jsd.mgr.web.dto.req.ReviewLoanDetailsReq;
-import com.ald.jsd.mgr.web.dto.resp.Resp;
-import com.alibaba.fastjson.JSONObject;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,16 +15,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
+import com.ald.fanbei.api.biz.service.JsdUserService;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
+import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
+import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import com.ald.fanbei.api.dal.query.LoanQuery;
+import com.ald.jsd.mgr.web.dto.req.LoanDetailsReq;
+import com.ald.jsd.mgr.web.dto.resp.Resp;
+import com.alibaba.fastjson.JSONObject;
 
 @Controller
 @ResponseBody

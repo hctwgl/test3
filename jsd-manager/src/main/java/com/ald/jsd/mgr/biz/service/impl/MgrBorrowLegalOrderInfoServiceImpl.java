@@ -1,16 +1,14 @@
 package com.ald.jsd.mgr.biz.service.impl;
 
-import com.ald.fanbei.api.biz.service.impl.ParentServiceImpl;
-import com.ald.fanbei.api.dal.dao.BaseDao;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderInfoDo;
 import com.ald.jsd.mgr.biz.service.MgrBorrowLegalOrderInfoService;
 import com.ald.jsd.mgr.dal.dao.MgrBorrowLegalOrderInfoDao;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.util.List;
 
 
 /**
@@ -23,17 +21,10 @@ import java.util.List;
  */
 
 @Service("mgrBorrowLegalOrderInfoService")
-public class MgrBorrowLegalOrderInfoServiceImpl extends ParentServiceImpl<JsdBorrowLegalOrderInfoDo, Long> implements MgrBorrowLegalOrderInfoService {
-
-    private static final Logger logger = LoggerFactory.getLogger(MgrBorrowLegalOrderInfoServiceImpl.class);
+public class MgrBorrowLegalOrderInfoServiceImpl implements MgrBorrowLegalOrderInfoService {
 
     @Resource
     private MgrBorrowLegalOrderInfoDao mgrBorrowLegalOrderInfoDao;
-
-    @Override
-    public BaseDao<JsdBorrowLegalOrderInfoDo, Long> getDao() {
-        return mgrBorrowLegalOrderInfoDao;
-    }
 
     @Override
     public JsdBorrowLegalOrderInfoDo getByBorrowId(Long borrowId) {
