@@ -1,18 +1,17 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.dal.domain.dto.UserAuthDto;
-import com.ald.fanbei.api.dal.query.UserAuthQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.JsdUserAuthService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdUserAuthDao;
 import com.ald.fanbei.api.dal.domain.JsdUserAuthDo;
-import com.ald.fanbei.api.biz.service.JsdUserAuthService;
-
-import java.util.List;
+import com.ald.fanbei.api.dal.domain.dto.UserAuthDto;
+import com.ald.fanbei.api.dal.query.UserAuthQuery;
 
 
 /**
@@ -27,8 +26,6 @@ import java.util.List;
 @Service("jsdUserAuthService")
 public class JsdUserAuthServiceImpl extends ParentServiceImpl<JsdUserAuthDo, Long> implements JsdUserAuthService {
 	
-    private static final Logger logger = LoggerFactory.getLogger(JsdUserAuthServiceImpl.class);
-   
     @Resource
     private JsdUserAuthDao jsdUserAuthDao;
 

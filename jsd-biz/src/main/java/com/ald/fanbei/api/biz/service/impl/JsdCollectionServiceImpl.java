@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.JsdCollectionService;
 import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
@@ -31,6 +32,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.alibaba.fastjson.JSON;
 
+@Service("jsdCollectionService")
 public class JsdCollectionServiceImpl implements JsdCollectionService{
 	private final Logger logger = LoggerFactory.getLogger(JsdBorrowCashRepaymentServiceImpl.class);
 	
