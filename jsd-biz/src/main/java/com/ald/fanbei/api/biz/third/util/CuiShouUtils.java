@@ -59,7 +59,7 @@ public class CuiShouUtils {
 
     private final String salt = "jsdcuishou";
 
-    private final String merchantSalt = "cuishou";
+    private final String merchantSalt = "jsdpluscuishou";
 
     @Resource
     JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
