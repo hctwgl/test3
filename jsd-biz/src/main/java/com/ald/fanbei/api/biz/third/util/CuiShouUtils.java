@@ -537,13 +537,14 @@ public class CuiShouUtils {
             borrowDo.setStatus(CollectionBorrowStatus.WAIT_FINISH.name());
             borrowDo.setRid(jsdCollectionBorrowDo.getRid());
             int count = jsdCollectionBorrowService.updateById(borrowDo);
+            logger.info("count = " + count + "borrowDo  = " + borrowDo);
             if (count<1){
                 logger.info("save is error");
                 return "false";
             }
             return "success";
         } catch (Exception e) {
-            thirdLog.error("collectImport error = " + e);
+            thirdLog.error("collectReconciliate error = " + e);
             return "false";
         }
     }
