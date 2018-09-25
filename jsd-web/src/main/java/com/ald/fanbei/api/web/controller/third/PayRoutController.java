@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.BeheadBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.BeheadBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
@@ -43,6 +44,9 @@ public class PayRoutController {
 
 	@Resource
 	BeheadBorrowCashService beheadBorrowCashService;
+	
+	@Resource
+	BeheadBorrowCashRenewalService beheadBorrowCashRenewalService;
 
 
 
@@ -147,12 +151,16 @@ public class PayRoutController {
 					jsdBorrowCashRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
 				}else if(PayOrderSource.RENEW_JSD.getCode().equals(merPriv)){
 					jsdBorrowCashRenewalService.dealJsdRenewalSucess(outTradeNo, tradeNo);
+				}else if(PayOrderSource.RENEW_JSD_V2.getCode().equals(merPriv)){
+					beheadBorrowCashRenewalService.dealJsdRenewalSucess(outTradeNo, tradeNo);
 				}
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
 				if(PayOrderSource.REPAY_JSD.getCode().equals(merPriv)){
 					jsdBorrowCashRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true,"", respDesc);
 				}else if(PayOrderSource.RENEW_JSD.getCode().equals(merPriv)){
 					jsdBorrowCashRenewalService.dealJsdRenewalFail(outTradeNo, tradeNo, true, respCode, respDesc);
+				}else if(PayOrderSource.RENEW_JSD_V2.getCode().equals(merPriv)){
+					beheadBorrowCashRenewalService.dealJsdRenewalFail(outTradeNo, tradeNo, true, respCode, respDesc);
 				}
 			}
 			return "SUCCESS";
