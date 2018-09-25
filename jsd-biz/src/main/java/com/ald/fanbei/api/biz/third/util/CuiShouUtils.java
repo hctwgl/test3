@@ -521,6 +521,7 @@ public class CuiShouUtils {
             String sign = request.getParameter("sign");
             byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), merchantSalt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
+            logger.info("sign1 = " + sign1 + "sign  = " + sign);
             if (!sign1.equals(sign)) return "false";
             if(StringUtil.isEmpty(dataId)){
                 logger.info("param is error");
@@ -528,20 +529,23 @@ public class CuiShouUtils {
             }
             JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(dataId));
             Long borrowId = jsdBorrowLegalOrderDo.getBorrowId();
+            JsdCollectionBorrowDo jsdCollectionBorrowDo = jsdCollectionBorrowService.selectByBorrowId(borrowId);
             JsdCollectionBorrowDo borrowDo = new JsdCollectionBorrowDo();
             borrowDo.setBorrowId(borrowId);
             borrowDo.setRequester(requester);
             borrowDo.setRequestReason(requestReason);
             borrowDo.setReviewStatus(CommonReviewStatus.WAIT.name());
             borrowDo.setStatus(CollectionBorrowStatus.WAIT_FINISH.name());
+            borrowDo.setRid(jsdCollectionBorrowDo.getRid());
             int count = jsdCollectionBorrowService.updateById(borrowDo);
+            logger.info("count = " + count + "borrowDo  = " + borrowDo);
             if (count<1){
                 logger.info("save is error");
                 return "false";
             }
             return "success";
         } catch (Exception e) {
-            thirdLog.error("collectImport error = " + e);
+            thirdLog.error("collectReconciliate error = " , e);
             return "false";
         }
     }
