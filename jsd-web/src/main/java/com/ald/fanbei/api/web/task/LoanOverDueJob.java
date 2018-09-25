@@ -8,6 +8,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.common.enums.GenderType;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -27,7 +28,6 @@ import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
-import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
 import com.ald.fanbei.api.common.ConfigProperties;
@@ -57,7 +57,7 @@ public class LoanOverDueJob {
     private XgxyUtil xgxyUtil;
 
     @Resource
-    private CollectionSystemUtil collectionSystemUtil;
+    private CollectionNoticeUtil collectionNoticeUtil;
     @Resource
     JsdUserContactsService jsdUserContactsService;
     @Resource
@@ -164,7 +164,7 @@ public class LoanOverDueJob {
             }
 
             //TODO 通知催收逾期人员通讯录
-            //collectionSystemUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
+            //collectionNoticeUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
         }
    }
 
@@ -313,7 +313,7 @@ public class LoanOverDueJob {
             data.add(buildData);
         }
         logger.info("data = " + data);
-        collectionSystemUtil.noticeCollect(data);
+        collectionNoticeUtil.noticeCollect(data);
     }
 
 

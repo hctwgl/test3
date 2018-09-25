@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import com.ald.fanbei.api.biz.service.JsdCollectionService;
 import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.RepayDealBo;
-import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
+import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.enums.JsdRepayCollectionType;
@@ -47,7 +47,7 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 	@Resource
 	JsdNoticeRecordService jsdNoticeRecordService;
 	@Resource
-	CollectionSystemUtil collectionSystemUtil;
+	CollectionNoticeUtil collectionNoticeUtil;
 	
 	public void nofityRisk(RepayDealBo repayDealBo, JsdBorrowCashRepaymentDo repaymentDo, 
 				JsdBorrowLegalOrderRepaymentDo orderRepaymentDo,JsdRepayType type,String dataId) {
@@ -111,7 +111,7 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 			noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 			noticeRecordDo.setParams(JSON.toJSONString(repayData));
 			jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
-			if(collectionSystemUtil.consumerRepayment(repayData)){
+			if(collectionNoticeUtil.consumerRepayment(repayData)){
 				noticeRecordDo.setRid(noticeRecordDo.getRid());
 				noticeRecordDo.setGmtModified(new Date());
 				jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);

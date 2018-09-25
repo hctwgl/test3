@@ -82,7 +82,7 @@ public class CuiShouUtils {
     JsdUserService jsdUserService;
 
     @Resource
-    CollectionSystemUtil collectionSystemUtil;
+    CollectionNoticeUtil collectionNoticeUtil;
 
     @Resource
     JsdCollectionBorrowService jsdCollectionBorrowService;
@@ -390,7 +390,7 @@ public class CuiShouUtils {
         //--------------------end  催收上报接口需要参数---------------------------
         data.add(buildData);
         logger.info(" collectionPush data = "+data);
-        collectionSystemUtil.noticeCollect(data);
+        collectionNoticeUtil.noticeCollect(data);
     }
 
 
