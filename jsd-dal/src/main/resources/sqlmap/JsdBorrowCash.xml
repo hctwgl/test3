@@ -599,9 +599,9 @@
             AND a.review_status ='REFUSE'
         </if>
         <if test="searchContent != null and searchContent !=''">
-            AND a.trade_no_xgxy LIKE  CONCAT('%',#{searchContent},'%')
-            AND b.mobile LIKE  CONCAT('%',#{searchContent},'%')
-            AND b.real_name LIKE  CONCAT('%',#{searchContent},'%')
+            AND (a.trade_no_xgxy LIKE  CONCAT('%',#{searchContent},'%')
+            or b.mobile LIKE  CONCAT('%',#{searchContent},'%')
+            or b.real_name LIKE  CONCAT('%',#{searchContent},'%'))
         </if>
     </select>
 
@@ -661,9 +661,9 @@
             AND a.status =#{status}
         </if>
         <if test="searchContent != null and searchContent !=''">
-            AND a.trade_no_xgxy LIKE  CONCAT('%',#{searchContent},'%')
-            AND b.mobile LIKE  CONCAT('%',#{searchContent},'%')
-            AND b.real_name LIKE  CONCAT('%',#{searchContent},'%')
+            AND (a.trade_no_xgxy LIKE  CONCAT('%',#{searchContent},'%')
+            or b.mobile LIKE  CONCAT('%',#{searchContent},'%')
+            or b.real_name LIKE  CONCAT('%',#{searchContent},'%'))
         </if>
     </select>
 
@@ -681,8 +681,8 @@
             AND a.status !='CLOSED'
         </if>
         <if test="searchContent != null and searchContent !=''">
-            AND a.borrow_no LIKE  CONCAT('%',#{searchContent},'%')
-            AND b.real_name LIKE  CONCAT('%',#{searchContent},'%')
+            AND (a.borrow_no LIKE  CONCAT('%',#{searchContent},'%')
+            or b.real_name LIKE  CONCAT('%',#{searchContent},'%'))
         </if>
     </select>
 </mapper>
