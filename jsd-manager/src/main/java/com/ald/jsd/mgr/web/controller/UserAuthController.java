@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 @Controller
 @ResponseBody
 @RequestMapping("/api/auth/")
-@NotNeedLogin
 public class UserAuthController extends BaseController{
 
     @Resource

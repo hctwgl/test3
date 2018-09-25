@@ -23,7 +23,6 @@ import java.util.*;
 @Controller
 @ResponseBody
 @RequestMapping("/api/configuremodify/")
-@NotNeedLogin
 public class ResourceController {
 
     @Resource
