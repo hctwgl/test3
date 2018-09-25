@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ald.fanbei.api.common.util.DigestUtil;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
@@ -22,8 +23,9 @@ import com.alibaba.fastjson.JSON;
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的 需加密参数 真实姓名 ， 身份证号， 手机号，邮箱，银行卡号
  */
 @Component("collectionSystemUtil")
-public class CollectionSystemUtil extends AbstractThird {
+public class CollectionNoticeUtil extends AbstractThird {
 
+	private final String salt = "jsdpluscuishou";
 
 	//收发路径
 	private static String getReportUrl() {
@@ -137,6 +139,64 @@ public class CollectionSystemUtil extends AbstractThird {
 		}
 	}
 
+
+	/**
+	 * jsdplus 平账申请通知催收
+	 * @param data
+	 * @return
+	 */
+	public boolean collectReconciliateNotice(Map<String, String> data) {
+		try {
+			String dataId = data.get("dataId").toString();
+			byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+			String sign = DigestUtil.encodeHex(pd);
+			data.put("sign",sign);
+			String url = getCollectUrl() + "/api/collect/third/thirdReconciliateCheck";
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, getUrlParamsByMap(data));
+			}else {
+				reqResult = HttpUtil.post(url, data);
+			}
+			logger.info("collectReconciliateNotice response :" + reqResult + "data = " +data );
+			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			logger.error("collectReconciliateNotice error:", e);
+			throw new BizException("collectReconciliateNotice fail Exception is " + e + ",consumerRepayment send again");
+		}
+	}
+
+	/**
+	 * jsdplus 还款申请通知催收
+	 * @param data
+	 * @return
+	 */
+	public boolean collectRepayNotice(Map<String, String> data) {
+		try {
+			String dataId = data.get("tradeNo").toString();
+			byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+			String sign = DigestUtil.encodeHex(pd);
+			data.put("sign",sign);
+			String url = getCollectUrl() + "/api/collect/third/thridRepaymentCheck";
+			String reqResult = "";
+			if (url.contains("https")){
+				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, getUrlParamsByMap(data));
+			}else {
+				reqResult = HttpUtil.post(url, data);
+			}
+			logger.info("collectRepayNotice response :" + reqResult + "data = " +data );
+			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			logger.error("collectRepayNotice error:", e);
+			throw new BizException("collectRepayNotice fail Exception is " + e + ",consumerRepayment send again");
+		}
+	}
 
 	/**
 	 * 将map转换成url

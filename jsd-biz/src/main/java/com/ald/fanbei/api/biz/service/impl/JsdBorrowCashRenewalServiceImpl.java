@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,6 @@ import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
-import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
@@ -108,7 +108,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
     @Resource
     private XgxyUtil xgxyUtil;
     @Resource
-	CollectionSystemUtil collectionSystemUtil;
+    CollectionNoticeUtil collectionNoticeUtil;
     @Resource
     private RedisTemplate<String, ?> redisTemplate;
 
@@ -378,7 +378,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 				noticeRecordDo.setParams(JSON.toJSONString(repayData));
 				jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
-				if(collectionSystemUtil.collectRenewal(repayData)){
+				if(collectionNoticeUtil.collectRenewal(repayData)){
 					noticeRecordDo.setRid(noticeRecordDo.getRid());
 					noticeRecordDo.setGmtModified(new Date());
 					jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
