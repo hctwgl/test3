@@ -5,7 +5,6 @@ import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewSwitch;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.jsd.mgr.dal.dao.MgrOperateLogDao;
-import com.ald.jsd.mgr.spring.NotNeedLogin;
 import com.ald.jsd.mgr.web.Sessions;
 import com.ald.jsd.mgr.web.dto.req.ResourceReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
@@ -108,7 +107,7 @@ public class ResourceController {
         jsdResourceDo.setValue1(defaultRate.toString());
         jsdResourceDo.setValue2(value2);
         jsdResourceService.updateById(jsdResourceDo);
-        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"产品配置:"+jsdResourceDo.toString());
+        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"产品配置:"+json);
         return Resp.succ(jsdResourceDo,"");
     }
 
@@ -135,7 +134,7 @@ public class ResourceController {
         data.setValue1(resourceReq.loanAmount);
         data.setRid(resourceReq.id);
         jsdResourceService.updateById(data);
-        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"设置："+data.toString());
+        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"设置："+resourceReq);
         return Resp.succ(data,"");
     }
 }
