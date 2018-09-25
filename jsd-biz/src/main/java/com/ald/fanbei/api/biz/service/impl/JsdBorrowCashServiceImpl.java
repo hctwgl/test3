@@ -216,11 +216,12 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
                 String reviewStatus = jsonObject.getString("reviewStatus");
                 String reviewRemark = jsonObject.getString("reviewRemark") == null ? "" : jsonObject.getString("reviewRemark");
                 String tradeNoXgxy = jsonObject.getString("tradeNoXgxy");
+                JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashDao.getByTradeNoXgxy(tradeNoXgxy);
                 if (reviewStatus.equals(JsdBorrowCashReviewStatus.REFUSE.name())) {
                     jsdBorrowCashDao.refuseByXgNo(reviewRemark, tradeNoXgxy);
+                    jsdNoticeRecordService.dealBorrowNoticed(jsdBorrowCashDo, this.buildXgxyPay(jsdBorrowCashDo, "商户审核不通过", XgxyBorrowNotifyStatus.CANCEL.name()));
                 }
                 if (reviewStatus.equals(JsdBorrowCashReviewStatus.PASS.name())) {
-                    JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashDao.getByTradeNoXgxy(tradeNoXgxy);
                     JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(jsdBorrowCashDo.getRid());
                     upsUtil.manualJsdDelegatePay(jsdBorrowCashDo, jsdBorrowLegalOrderDo);
                 }
