@@ -521,6 +521,7 @@ public class CuiShouUtils {
             String sign = request.getParameter("sign");
             byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), merchantSalt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
+            logger.info("sign1 = " + sign1 + "sign  = " + sign);
             if (!sign1.equals(sign)) return "false";
             if(StringUtil.isEmpty(dataId)){
                 logger.info("param is error");
@@ -544,7 +545,7 @@ public class CuiShouUtils {
             }
             return "success";
         } catch (Exception e) {
-            thirdLog.error("collectReconciliate error = " + e);
+            thirdLog.error("collectReconciliate error = " , e);
             return "false";
         }
     }
