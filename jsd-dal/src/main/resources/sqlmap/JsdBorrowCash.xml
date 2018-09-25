@@ -681,7 +681,7 @@
             AND a.status !='CLOSED'
         </if>
         <if test="searchContent != null and searchContent !=''">
-            AND (a.borrow_no LIKE  CONCAT('%',#{searchContent},'%')
+            AND (a.trade_no_xgxy LIKE  CONCAT('%',#{searchContent},'%')
             or b.real_name LIKE  CONCAT('%',#{searchContent},'%'))
         </if>
     </select>
