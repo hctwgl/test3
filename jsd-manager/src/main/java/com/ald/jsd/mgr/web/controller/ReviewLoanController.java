@@ -5,6 +5,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.query.LoanQuery;
+import com.ald.jsd.mgr.web.Sessions;
 import com.ald.jsd.mgr.web.dto.req.ReviewLoanDetailsReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 import com.alibaba.fastjson.JSONArray;
@@ -56,7 +57,7 @@ public class ReviewLoanController {
 
     @RequestMapping(value = {"review.json"}, method = RequestMethod.POST)
     public Resp<String> review(@RequestBody JSONArray jsonArray, HttpServletRequest request) {
-        jsdBorrowCashService.updateReviewStatusByXgNo(jsonArray);
+        jsdBorrowCashService.updateReviewStatusByXgNo(jsonArray, Sessions.getRealname(request));
         return Resp.succ("成功", "");
     }
 

@@ -72,6 +72,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     /**
      * 获取还款日在当前以前
+     *
      * @return
      */
     int getBorrowCashByBeforeTodayCount(Date todayLast);
@@ -86,7 +87,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     /**
      * 获取当前的逾期借款
      */
-    List<JsdBorrowCashDo> getBorrowCashByBeforeToday(int nowPage, int pageSize,Date todayLast);
+    List<JsdBorrowCashDo> getBorrowCashByBeforeToday(int nowPage, int pageSize, Date todayLast);
 
     /**
      * 获取当前的测试逾期借款
@@ -125,7 +126,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      */
     HashMap<String, BigDecimal> getRepayStatistics();
 
-    Boolean updateReviewStatusByXgNo(JSONArray jsonArray);
+    Boolean updateReviewStatusByXgNo(JSONArray jsonArray, String realName);
 
     /**
      * 借款列表
@@ -145,6 +146,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     /**
      * 获取借款相关协议
+     *
      * @param openId
      * @param tradeNoXgxy
      * @param previewJsonStr
@@ -154,6 +156,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     /**
      * 获取搭售代买协议
+     *
      * @param openId
      * @param tradeNoXgxy
      * @param previewJsonStr
@@ -163,6 +166,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     /**
      * 获取续期协议
+     *
      * @param openId
      * @param tradeNoXgxy
      * @param previewJsonStr

@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.jsd.mgr.dal.dao.MgrOperateLogDao;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -80,7 +81,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
     @Resource
     JsdNoticeRecordService jsdNoticeRecordService;
-    
+
     @Resource
     XgxyUtil xgxyUtil;
     @Resource
@@ -89,6 +90,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     TransactionTemplate transactionTemplate;
     @Resource
     UpsUtil upsUtil;
+    @Resource
+    MgrOperateLogDao mgrOperateLogDao;
 
     @Override
     public BaseDao<JsdBorrowCashDo, Long> getDao() {
@@ -208,7 +211,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
-    public Boolean updateReviewStatusByXgNo(JSONArray jsonArray) {
+    public Boolean updateReviewStatusByXgNo(JSONArray jsonArray, String realName) {
         if (jsonArray != null && jsonArray.size() > 0) {
             for (int i = 0; i < jsonArray.size(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -217,11 +220,13 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
                 String tradeNoXgxy = jsonObject.getString("tradeNoXgxy");
                 if (reviewStatus.equals(JsdBorrowCashReviewStatus.REFUSE.name())) {
                     jsdBorrowCashDao.refuseByXgNo(reviewRemark, tradeNoXgxy);
+                    mgrOperateLogDao.addOperateLog(realName, "审核拒绝：" + tradeNoXgxy);
                 }
                 if (reviewStatus.equals(JsdBorrowCashReviewStatus.PASS.name())) {
                     JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashDao.getByTradeNoXgxy(tradeNoXgxy);
                     JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(jsdBorrowCashDo.getRid());
                     upsUtil.manualJsdDelegatePay(jsdBorrowCashDo, jsdBorrowLegalOrderDo);
+                    mgrOperateLogDao.addOperateLog(realName, "审核通过：" + tradeNoXgxy);
                 }
             }
             return true;
@@ -461,21 +466,22 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
     /**
      * 获取借款相关协议
+     *
      * @param openId
      * @param tradeNoXgxy
      * @param previewJsonStr
      * @return
      */
     @Override
-    public List<JsdProctocolBo> getBorrowProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
+    public List<JsdProctocolBo> getBorrowProtocols(String openId, String tradeNoXgxy, String previewJsonStr) {
         List<JsdResourceDo> ress = jsdResourceService.listByType(ResourceType.PROTOCOL_BORROW.getCode());
         List<JsdProctocolBo> protocolVos = new ArrayList<>();
-        for(JsdResourceDo resdo: ress) {
+        for (JsdResourceDo resdo : ress) {
             JsdProctocolBo protocolVo = new JsdProctocolBo();
             protocolVo.setProtocolName(resdo.getName());
-            String urlPrefix = getNotifyHost()+resdo.getValue();
+            String urlPrefix = getNotifyHost() + resdo.getValue();
             try {
-                String urlParams = "?openId=" + openId  + "&tradeNoXgxy=" + (tradeNoXgxy == null?"":tradeNoXgxy) + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
+                String urlParams = "?openId=" + openId + "&tradeNoXgxy=" + (tradeNoXgxy == null ? "" : tradeNoXgxy) + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
                 protocolVo.setProtocolUrl(urlPrefix + urlParams);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -488,20 +494,21 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
     /**
      * 获取搭售代买协议
+     *
      * @param openId
      * @param tradeNoXgxy
      * @param previewJsonStr
      * @return
      */
-    public List<JsdProctocolBo> getAgencyProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
+    public List<JsdProctocolBo> getAgencyProtocols(String openId, String tradeNoXgxy, String previewJsonStr) {
         JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_AGENCY.name(), ResourceSecType.PROTOCOL_AGENCY.name());
         List<JsdProctocolBo> protocolVos = new ArrayList<>();
 
         JsdProctocolBo protocolVo = new JsdProctocolBo();
         protocolVo.setProtocolName(resdo.getName());
-        String urlPrefix = getNotifyHost()+resdo.getValue();
+        String urlPrefix = getNotifyHost() + resdo.getValue();
         try {
-            String urlParams = "?openId=" + openId  + "&tradeNoXgxy=" + (tradeNoXgxy == null?"":tradeNoXgxy) + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
+            String urlParams = "?openId=" + openId + "&tradeNoXgxy=" + (tradeNoXgxy == null ? "" : tradeNoXgxy) + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
             protocolVo.setProtocolUrl(urlPrefix + urlParams);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -513,21 +520,22 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
     /**
      * 获取续期协议
+     *
      * @param openId
      * @param tradeNoXgxy
      * @param previewJsonStr
      * @return
      */
-    public List<JsdProctocolBo> getRenewalProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
+    public List<JsdProctocolBo> getRenewalProtocols(String openId, String tradeNoXgxy, String previewJsonStr) {
         JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_RENEWAL.name(), ResourceSecType.PROTOCOL_RENEWAL.name());
         List<JsdProctocolBo> protocolVos = new ArrayList<>();
 
         JsdProctocolBo protocolVo = new JsdProctocolBo();
         protocolVo.setProtocolName(resdo.getName());
-        String urlPrefix = getNotifyHost()+resdo.getValue();
+        String urlPrefix = getNotifyHost() + resdo.getValue();
         try {
             // TODO
-            String urlParams = "?openId=" + openId  + "&tradeNoXgxy=" + (tradeNoXgxy == null?"":tradeNoXgxy) + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
+            String urlParams = "?openId=" + openId + "&tradeNoXgxy=" + (tradeNoXgxy == null ? "" : tradeNoXgxy) + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
             protocolVo.setProtocolUrl(urlPrefix + urlParams);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -537,8 +545,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         return protocolVos;
     }
 
-    private String getNotifyHost(){
-        if(notifyHost==null){
+    private String getNotifyHost() {
+        if (notifyHost == null) {
             notifyHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
             return notifyHost;
         }
