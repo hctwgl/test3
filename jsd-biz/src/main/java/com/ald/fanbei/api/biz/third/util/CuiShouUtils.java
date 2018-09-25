@@ -389,7 +389,7 @@ public class CuiShouUtils {
 
         //--------------------end  催收上报接口需要参数---------------------------
         data.add(buildData);
-        logger.info(" collectionPush data = "+data);
+//        logger.info(" collectionPush data = "+data);
         collectionNoticeUtil.noticeCollectOverdue(data);
     }
 

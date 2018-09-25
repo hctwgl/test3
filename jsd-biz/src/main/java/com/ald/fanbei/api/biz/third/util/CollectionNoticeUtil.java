@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.common.util.HttpUtilForXgxy;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
@@ -13,6 +11,7 @@ import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdNoticeStatus;
 import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
@@ -57,11 +56,10 @@ public class CollectionNoticeUtil extends AbstractThird {
 			params.put("orderNo",getOrderNo("XGXY"));
 			params.put("info",JSON.toJSONString(data));
 			params.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN));
-			logger.info("jsd overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getReportUrl());
 			String url = getReportUrl() + "/api/ald/collect/v1/third/import";
 			String reqResult = HttpUtil.post(url, data);
 			if (StringUtil.isBlank(reqResult)) {
-				throw new BizException("dsed overdue notice collect request fail , reqResult is null");
+				throw new BizException("noticeCollectOverdue request fail , reqResult is null");
 			}
 			if("success".equals(reqResult)){
 				return true;
@@ -69,7 +67,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 			return false;
 		} catch (Exception e) {
 			logger.error("noticeCollectOverdue error:", e);
-			throw new BizException("dsed overdue notice collect request fail Exception is " + e + ",dsed overdue notice collect request send again");
+			throw new BizException("noticeCollectOverdue request fail Exception is " + e + ",dsed overdue notice collect request send again");
 		}
 	}
 
@@ -83,7 +81,6 @@ public class CollectionNoticeUtil extends AbstractThird {
 	public boolean consumerRepayment(Map<String, String> reqBo) {
 		try {
 			String url = getCollectUrl() + "/report/thirdRepayment";
-			logger.info("consumerRepayment url :" + url);
 			String reqResult = HttpUtil.post(url, reqBo);
 			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 				return true;
