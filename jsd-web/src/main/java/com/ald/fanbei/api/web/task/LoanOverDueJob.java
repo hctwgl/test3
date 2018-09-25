@@ -9,8 +9,8 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.common.enums.GenderType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
@@ -32,9 +32,6 @@ import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
 import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
-import com.ald.fanbei.api.common.enums.OverdueLogType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashOverdueLogDo;
@@ -77,6 +74,8 @@ public class LoanOverDueJob {
     JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
     @Resource
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
+    @Resource
+    JsdCollectionBorrowService jsdCollectionBorrowService;
 
 
 
@@ -108,6 +107,8 @@ public class LoanOverDueJob {
                             }
                         }).start();
 //                        collectionPush(borrowCashDos);
+                        //增加已入催数据
+                        addCollectionBorrow(borrowCashDos);
                     }
                 }
                 logger.info("borrowCashDueJob run end,time=" + new Date());
@@ -314,6 +315,24 @@ public class LoanOverDueJob {
         }
         logger.info("data = " + data);
         collectionNoticeUtil.noticeCollect(data);
+    }
+
+
+    public void addCollectionBorrow(List<JsdBorrowCashDo> list){
+        for(JsdBorrowCashDo borrowCashDo : list){
+            Long borrowId = borrowCashDo.getRid();
+            JsdCollectionBorrowDo jsdCollectionBorrowDo = jsdCollectionBorrowService.selectByBorrowId(borrowId);
+            JsdCollectionBorrowDo borrowDo = new JsdCollectionBorrowDo();
+            borrowDo.setBorrowId(borrowCashDo.getRid());
+            borrowDo.setReviewStatus(CommonReviewStatus.WAIT.name());
+            borrowDo.setStatus(CollectionBorrowStatus.NOTICED.name());
+            if(jsdCollectionBorrowDo != null){
+                jsdCollectionBorrowService.updateById(borrowDo);
+            }else {
+                jsdCollectionBorrowService.saveRecord(borrowDo);
+            }
+
+        }
     }
 
 

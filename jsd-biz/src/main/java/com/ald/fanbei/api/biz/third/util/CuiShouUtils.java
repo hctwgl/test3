@@ -528,18 +528,13 @@ public class CuiShouUtils {
             }
             JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(dataId));
             Long borrowId = jsdBorrowLegalOrderDo.getBorrowId();
-            JsdCollectionBorrowDo jsdCollectionBorrowDo = jsdCollectionBorrowService.selectByBorrowId(borrowId);
-            if(jsdCollectionBorrowDo != null){
-                logger.info("jsdCollectionBorrowDo is reconciliate");
-                return "false";
-            }
             JsdCollectionBorrowDo borrowDo = new JsdCollectionBorrowDo();
             borrowDo.setBorrowId(borrowId);
             borrowDo.setRequester(requester);
             borrowDo.setRequestReason(requestReason);
             borrowDo.setReviewStatus(CommonReviewStatus.WAIT.name());
-            borrowDo.setStatus(CollectionBorrowStatus.COLLECT_FINISHED.name());
-            int count = jsdCollectionBorrowService.saveRecord(borrowDo);
+            borrowDo.setStatus(CollectionBorrowStatus.WAIT_FINISH.name());
+            int count = jsdCollectionBorrowService.updateById(borrowDo);
             if (count<1){
                 logger.info("save is error");
                 return "false";
