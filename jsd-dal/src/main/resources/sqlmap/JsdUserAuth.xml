@@ -169,7 +169,7 @@
         <include refid="queryRelationFields" />
         FROM jsd_user_auth a LEFT JOIN jsd_user u on a.user_id=u.id
         WHERE a.is_delete=0
-        <if test="riskStatus !=null">
+        <if test="riskStatus !=null and riskStatus !='' ">
             AND a.risk_status =#{riskStatus}
         </if>
         <if test="searchContent != null and searchContent !=''">
