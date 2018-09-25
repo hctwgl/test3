@@ -126,7 +126,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      */
     HashMap<String, BigDecimal> getRepayStatistics();
 
-    Boolean updateReviewStatusByXgNo(JSONArray jsonArray, String realName);
+    Boolean updateReviewStatusByXgNo(JSONArray jsonArray);
 
     /**
      * 借款列表

@@ -90,8 +90,6 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     TransactionTemplate transactionTemplate;
     @Resource
     UpsUtil upsUtil;
-    @Resource
-    MgrOperateLogDao mgrOperateLogDao;
 
     @Override
     public BaseDao<JsdBorrowCashDo, Long> getDao() {
@@ -211,7 +209,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
-    public Boolean updateReviewStatusByXgNo(JSONArray jsonArray, String realName) {
+    public Boolean updateReviewStatusByXgNo(JSONArray jsonArray) {
         if (jsonArray != null && jsonArray.size() > 0) {
             for (int i = 0; i < jsonArray.size(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -220,13 +218,11 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
                 String tradeNoXgxy = jsonObject.getString("tradeNoXgxy");
                 if (reviewStatus.equals(JsdBorrowCashReviewStatus.REFUSE.name())) {
                     jsdBorrowCashDao.refuseByXgNo(reviewRemark, tradeNoXgxy);
-                    mgrOperateLogDao.addOperateLog(realName, "借款审核拒绝：" + tradeNoXgxy);
                 }
                 if (reviewStatus.equals(JsdBorrowCashReviewStatus.PASS.name())) {
                     JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashDao.getByTradeNoXgxy(tradeNoXgxy);
                     JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(jsdBorrowCashDo.getRid());
                     upsUtil.manualJsdDelegatePay(jsdBorrowCashDo, jsdBorrowLegalOrderDo);
-                    mgrOperateLogDao.addOperateLog(realName, "借款审核通过：" + tradeNoXgxy);
                 }
             }
             return true;

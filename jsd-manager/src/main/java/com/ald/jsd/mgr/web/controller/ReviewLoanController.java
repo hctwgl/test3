@@ -5,6 +5,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.query.LoanQuery;
+import com.ald.jsd.mgr.dal.dao.MgrOperateLogDao;
 import com.ald.jsd.mgr.web.Sessions;
 import com.ald.jsd.mgr.web.dto.req.ReviewLoanDetailsReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
@@ -41,6 +42,8 @@ public class ReviewLoanController {
     JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
     @Resource
     JsdBorrowLegalOrderInfoService jsdBorrowLegalOrderInfoService;
+    @Resource
+    MgrOperateLogDao mgrOperateLogDao;
 
     @RequestMapping(value = {"list.json"}, method = RequestMethod.POST)
     public Resp<LoanQuery> list(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
@@ -57,7 +60,8 @@ public class ReviewLoanController {
 
     @RequestMapping(value = {"review.json"}, method = RequestMethod.POST)
     public Resp<String> review(@RequestBody JSONArray jsonArray, HttpServletRequest request) {
-        jsdBorrowCashService.updateReviewStatusByXgNo(jsonArray, Sessions.getRealname(request));
+        jsdBorrowCashService.updateReviewStatusByXgNo(jsonArray);
+        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request), "借款审核：" + jsonArray.toJSONString());
         return Resp.succ("成功", "");
     }
 
