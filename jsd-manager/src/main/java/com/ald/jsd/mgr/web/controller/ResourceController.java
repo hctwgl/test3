@@ -4,7 +4,9 @@ import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewSwitch;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
+import com.ald.jsd.mgr.dal.dao.MgrOperateLogDao;
 import com.ald.jsd.mgr.spring.NotNeedLogin;
+import com.ald.jsd.mgr.web.Sessions;
 import com.ald.jsd.mgr.web.dto.req.ResourceReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 import com.yeepay.g3.utils.common.json.JSONUtils;
@@ -26,6 +28,8 @@ public class ResourceController {
 
     @Resource
     JsdResourceService jsdResourceService;
+    @Resource
+    private MgrOperateLogDao mgrOperateLogDao;
 
     @RequestMapping(value = {"getProductConfigureList.json"})
     public Resp<Map<String, Object>> getProductConfigureList(HttpServletRequest request){
@@ -105,6 +109,7 @@ public class ResourceController {
         jsdResourceDo.setValue1(defaultRate.toString());
         jsdResourceDo.setValue2(value2);
         jsdResourceService.updateById(jsdResourceDo);
+        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"产品配置:"+jsdResourceDo.toString());
         return Resp.succ(jsdResourceDo,"");
     }
 
@@ -131,6 +136,7 @@ public class ResourceController {
         data.setValue1(resourceReq.loanAmount);
         data.setRid(resourceReq.id);
         jsdResourceService.updateById(data);
+        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"设置："+data.toString());
         return Resp.succ(data,"");
     }
 }
