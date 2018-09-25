@@ -73,6 +73,7 @@ public class LoanController {
         loanDetailsReq.setUnrepayInterestAmount(jsdBorrowCashDo.getInterestAmount());
         loanDetailsReq.setUnrepayOverdueAmount(jsdBorrowCashDo.getOverdueAmount());
         loanDetailsReq.setUnrepayServiceAmount(jsdBorrowCashDo.getPoundageAmount());
+        loanDetailsReq.setLoanRemark(jsdBorrowCashDo.getBorrowRemark());
         //用户信息
         JsdUserDo jsdUserDo = jsdUserService.getById(jsdBorrowCashDo.getUserId());
         loanDetailsReq.setRealName(jsdUserDo.getRealName());
