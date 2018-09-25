@@ -580,7 +580,7 @@
 
 	<update id="updateReviewStatus">
 		UPDATE jsd_borrow_cash
-		SET review_status=#{reviewStatus} 
+		SET review_status=#{reviewStatus},gmt_modified=NOW(),gmt_review=NOW()
 		Where id=#{borrowId}
 	</update>
 
@@ -607,7 +607,24 @@
     </select>
 
     <select id="getReviewLoanStatistics" resultType="java.util.HashMap">
-        SELECT COUNT(review_status='WAIT' or NULL) as wait,COUNT(review_status !='WAIT' or NULL) as review,COUNT(review_status ='PASS' or NULL) as pass FROM jsd_borrow_cash WHERE to_days(gmt_create) = to_days(now())
+        SELECT
+            COUNT(
+                review_status != 'WAIT'
+                OR NULL
+            ) AS review,
+            COUNT(review_status = 'PASS' OR NULL) AS pass,
+            (
+                SELECT
+                    COUNT(review_status = 'WAIT' OR NULL)
+                FROM
+                    jsd_borrow_cash
+                WHERE
+                    to_days(gmt_create) = to_days(now())
+            ) AS wait
+        FROM
+            jsd_borrow_cash
+        WHERE
+            to_days(gmt_review) = to_days(now())
     </select>
 
     <select id="getLoanStatistics" resultType="java.util.HashMap">
@@ -643,7 +660,7 @@
 
     <update id="refuseByXgNo">
 		UPDATE jsd_borrow_cash
-		SET review_status='REFUSE',review_remark=#{reviewRemark},status='CLOSED',gmt_close=NOW(),gmt_modified=NOW()
+		SET review_status='REFUSE',review_remark=#{reviewRemark},status='CLOSED',gmt_close=NOW(),gmt_modified=NOW(),gmt_review=NOW()
 		Where trade_no_xgxy=#{tradeNoXgxy}
 	</update>
 
