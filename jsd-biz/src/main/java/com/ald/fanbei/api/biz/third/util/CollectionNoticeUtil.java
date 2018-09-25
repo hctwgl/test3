@@ -50,7 +50,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 	 * 极速贷逾期通知催收平台
 	 * @return
 	 */
-	public boolean noticeCollect(List<Map<String,String>>  data) {
+	public boolean noticeCollectOverdue(List<Map<String,String>>  data) {
 		try {
 			Map<String,String>  params=new HashMap<>();
 			params.put("orderNo",getOrderNo("XGXY"));
@@ -64,8 +64,8 @@ public class CollectionNoticeUtil extends AbstractThird {
 			}else {
 				reqResult = HttpUtil.post(url, params);
 			}
-			logThird(reqResult, "noticeCollect", JSON.toJSONString(data));
-			logger.info("repaymentAchieve response :" + reqResult);
+			logThird(reqResult, "noticeCollectOverdue", JSON.toJSONString(data));
+			logger.info("noticeCollectOverdue response :" + reqResult);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new BizException("dsed overdue notice collect request fail , reqResult is null");
 			}
@@ -74,7 +74,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 			}
 			return false;
 		} catch (Exception e) {
-			logger.error("dsed overdue notice collect request error:", e);
+			logger.error("noticeCollectOverdue error:", e);
 			throw new BizException("dsed overdue notice collect request fail Exception is " + e + ",dsed overdue notice collect request send again");
 		}
 	}
@@ -134,7 +134,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 			}
 			return false;
 		} catch (Exception e) {
-			logger.error("consumerRepayment error:", e);
+			logger.error("collectRenewal error:", e);
 			throw new BizException("consumerRepayment fail Exception is " + e + ",consumerRepayment send again");
 		}
 	}
@@ -160,9 +160,8 @@ public class CollectionNoticeUtil extends AbstractThird {
 			}
 			logger.info("collectReconciliateNotice response :" + reqResult + "data = " +data );
 			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
-				return true;
 			}
-			return false;
+			throw new BizException("collectReconciliateNotice response fail ");
 		} catch (Exception e) {
 			logger.error("collectReconciliateNotice error:", e);
 			throw new BizException("collectReconciliateNotice fail Exception is " + e + ",consumerRepayment send again");
@@ -189,9 +188,8 @@ public class CollectionNoticeUtil extends AbstractThird {
 			}
 			logger.info("collectRepayNotice response :" + reqResult + "data = " +data );
 			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
-				return true;
 			}
-			return false;
+			throw new BizException("collectRepayNotice response fail ");
 		} catch (Exception e) {
 			logger.error("collectRepayNotice error:", e);
 			throw new BizException("collectRepayNotice fail Exception is " + e + ",consumerRepayment send again");
