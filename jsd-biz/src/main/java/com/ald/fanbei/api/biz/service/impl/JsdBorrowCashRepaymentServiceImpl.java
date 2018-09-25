@@ -9,6 +9,8 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,20 +22,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.KuaijieRepayBo;
 import com.ald.fanbei.api.biz.bo.ups.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
-import com.ald.fanbei.api.biz.service.JsdCollectionService;
-import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
-import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.BankPayChannel;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
-import com.ald.fanbei.api.common.enums.JsdRepayType;
-import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -82,6 +72,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	private JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
 	@Resource
 	private JsdBorrowLegalOrderRepaymentDao jsdBorrowLegalOrderRepaymentDao;
+
+	@Resource
+	private JsdCollectionService jsdCollectionService;
 	
 	@Resource
 	private RedisTemplate<String, ?> redisTemplate;
@@ -92,8 +85,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 	@Resource
 	private JsdNoticeRecordService jsdNoticeRecordService;
+
 	@Resource
-	private JsdCollectionService jsdCollectionService;
+	private JsdCollectionBorrowService jsdCollectionBorrowService;
 	
 
 	@Override
@@ -379,6 +373,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 						if(repaymentDo!=null){
 							dealBorrowRepay(repayDealBo, repaymentDo);
 						}
+
 						return 1L;
 					} catch (Exception e) {
 						status.setRollbackOnly();
@@ -534,6 +529,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		if (sumAmount.compareTo(allRepayAmount) <= 0) {
 			cashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
 			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
+			jsdCollectionBorrowService.updateCollectionStatus(cashDo.getRid(),CollectionBorrowStatus.NORMAL_FINISHED.desc);
 		}
 	}
 

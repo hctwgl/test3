@@ -24,10 +24,12 @@ import com.ald.fanbei.api.biz.service.JsdCollectionRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
+import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
 import com.ald.fanbei.api.biz.third.util.CuiShouUtils;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.MapUtils;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
@@ -77,6 +79,8 @@ public class CollectionMgrController extends BaseController{
     
     @Resource
     CuiShouUtils cuiShouUtils;
+    @Resource
+    CollectionNoticeUtil collectionNoticeUtil;
     
     @Resource
     TransactionTemplate transactionTemplate;
@@ -147,7 +151,11 @@ public class CollectionMgrController extends BaseController{
     	if(CommonReviewStatus.REFUSE.name().equals(params.reviewStatus)) {
     		collBorrowDoForMod = this.buildCollectionBorrowDoForMod(collBorrowDo.getRid(), CollectionBorrowStatus.NOTICED.name(), 
     				operator, params.reviewStatus, reviewRemark);
-    		jsdCollectionBorrowService.updateById(collBorrowDoForMod);
+    		transactionTemplate.execute(status -> {
+				jsdCollectionBorrowService.updateById(collBorrowDoForMod);
+	    		collectionNoticeUtil.collectReconciliateNotice(MapUtils.cstStrKeyMap("dataId", legalOrderDo.getRid(), "reviewResult", params.reviewStatus));
+				return 1;
+    		});
     	}else if(CommonReviewStatus.PASS.name().equals(params.reviewStatus)) {
     		collBorrowDoForMod = this.buildCollectionBorrowDoForMod(collBorrowDo.getRid(), CollectionBorrowStatus.COLLECT_FINISHED.name(), 
     				operator, params.reviewStatus, reviewRemark);
@@ -157,14 +165,14 @@ public class CollectionMgrController extends BaseController{
         	cashDoForMod.setStatus(JsdBorrowCashStatus.FINISHED.name());
         	cashDoForMod.setRemark(reviewRemark);
         	
-        	transactionTemplate.execute(new TransactionCallback<Integer>() {
-    			public Integer doInTransaction(TransactionStatus status) {
-    				jsdBorrowCashService.updateById(cashDoForMod);
-    				jsdCollectionBorrowService.updateById(collBorrowDoForMod);
-    				cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
-    				jsdNoticeRecordService.dealBorrowNoticed(cashDo, XgxyBorrowNoticeBo.gen(cashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.FINISHED.name(), "审核强制结清"));
-    				return 1;
-    			}
+        	transactionTemplate.execute(status -> {
+				jsdBorrowCashService.updateById(cashDoForMod);
+				jsdCollectionBorrowService.updateById(collBorrowDoForMod);
+				jsdNoticeRecordService.dealBorrowNoticed(cashDo, XgxyBorrowNoticeBo.gen(cashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.FINISHED.name(), "审核强制结清"));
+				
+				cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
+				collectionNoticeUtil.collectReconciliateNotice(MapUtils.cstStrKeyMap("dataId", legalOrderDo.getRid(), "reviewResult", params.reviewStatus));
+				return 1;
     		});
     	}
     	
@@ -236,13 +244,13 @@ public class CollectionMgrController extends BaseController{
     			public Integer doInTransaction(TransactionStatus status) {
     				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData, JsdRepayType.REVIEW_COLLECTION, operator);
     				jsdCollectionRepaymentService.updateById(collRepayDo);
-    				// TODO 通知催收
+    				collectionNoticeUtil.collectRepayNotice(MapUtils.cstStrKeyMap("tradeNo", params.tradeNo, "reviewResult", params.reviewStatus));
     				return 1;
     			}
     		});
     	}else if(CommonReviewStatus.REFUSE.name().equals(params.reviewStatus)) {
     		jsdCollectionRepaymentService.updateById(collRepayDo);
-    		// TODO 通知催收
+    		collectionNoticeUtil.collectRepayNotice(MapUtils.cstStrKeyMap("tradeNo", params.tradeNo, "reviewResult", params.reviewStatus));
     	}
     	
     	return Resp.succ();

@@ -28,4 +28,9 @@ public class MgrDashboardInfoVo implements Serializable {
 	private BigDecimal riskPassRate;//认证通过率
 	private BigDecimal riskPassRateByWeek;//认证通过率周同比
 	private BigDecimal riskPassRateByDay;//认证通过率日环比
+	
+	private BigDecimal totalRepayAmt;	//今日还款额
+	private BigDecimal totalRepayAmtRateByWeek;	//今日还款额周同比
+	private BigDecimal totalRepayAmtRateByDay;	//今日还款额日环比
+	private BigDecimal avgRepayAmtPer;	//人均还款额
 }

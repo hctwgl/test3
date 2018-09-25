@@ -333,7 +333,7 @@ public class CuiShouUtils {
         BigDecimal currentAmount = BigDecimal.ZERO;//应还本金
         BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
         //应还本金
-        currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
+        currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidInterest()).subtract(borrowCashDo.getRepayAmount());
         //催收金额
         BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
         //应还金额
@@ -528,18 +528,13 @@ public class CuiShouUtils {
             }
             JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(dataId));
             Long borrowId = jsdBorrowLegalOrderDo.getBorrowId();
-            JsdCollectionBorrowDo jsdCollectionBorrowDo = jsdCollectionBorrowService.selectByBorrowId(borrowId);
-            if(jsdCollectionBorrowDo != null){
-                logger.info("jsdCollectionBorrowDo is reconciliate");
-                return "false";
-            }
             JsdCollectionBorrowDo borrowDo = new JsdCollectionBorrowDo();
             borrowDo.setBorrowId(borrowId);
             borrowDo.setRequester(requester);
             borrowDo.setRequestReason(requestReason);
             borrowDo.setReviewStatus(CommonReviewStatus.WAIT.name());
-            borrowDo.setStatus(CollectionBorrowStatus.COLLECT_FINISHED.name());
-            int count = jsdCollectionBorrowService.saveRecord(borrowDo);
+            borrowDo.setStatus(CollectionBorrowStatus.WAIT_FINISH.name());
+            int count = jsdCollectionBorrowService.updateById(borrowDo);
             if (count<1){
                 logger.info("save is error");
                 return "false";
