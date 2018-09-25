@@ -517,7 +517,7 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 							 "元,赊销手续费"+poundage+
 							 "元,上期逾期费"+overdueAmount+
 							 "元,本金还款部分"+capital+
-							 "元,商品价格"+""+"元";
+							 "元";
 		
 		BigDecimal principalAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidOverdue(), 
 				borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage())
