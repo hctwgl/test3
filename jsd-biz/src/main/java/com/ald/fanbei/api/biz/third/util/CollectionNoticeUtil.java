@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ald.fanbei.api.common.util.DigestUtil;
+import com.ald.fanbei.api.common.util.HttpUtilForXgxy;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.third.AbstractThird;
@@ -58,14 +59,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 			params.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN));
 			logger.info("jsd overdue notice collect request :" + JSON.toJSONString(params)+"url = "+getReportUrl());
 			String url = getReportUrl() + "/api/ald/collect/v1/third/import";
-			String reqResult = "";
-			if (url.contains("https")){
-				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(params));
-			}else {
-				reqResult = HttpUtil.post(url, params);
-			}
-			logThird(reqResult, "noticeCollectOverdue", JSON.toJSONString(data));
-			logger.info("noticeCollectOverdue response :" + reqResult);
+			String reqResult = HttpUtil.post(url, data);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new BizException("dsed overdue notice collect request fail , reqResult is null");
 			}
@@ -81,10 +75,6 @@ public class CollectionNoticeUtil extends AbstractThird {
 
 
 
-
-
-
-
 	/**
 	 * jsd主动还款通知催收平台
 	 * @param reqBo
@@ -94,12 +84,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 		try {
 			String url = getCollectUrl() + "/report/thirdRepayment";
 			logger.info("consumerRepayment url :" + url);
-			String reqResult = "";
-			if (url.contains("https")){
-				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, JSON.toJSONString(reqBo));
-			}else {
-				reqResult = HttpUtil.post(url, reqBo);
-			}logger.info("consumerRepayment response :" + reqResult);
+			String reqResult = HttpUtil.post(url, reqBo);
 			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 				return true;
 			}
@@ -117,18 +102,11 @@ public class CollectionNoticeUtil extends AbstractThird {
 	 * @return
 	 */
 	public boolean collectRenewal(Map<String, String> reqBo) {
-		// APP还款类型写3 , 线下还款写4
 		try {
 			reqBo.put("orderNo",getOrderNo("JSD"));
 			reqBo.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN));
 			String url = getReportUrl() + "/api/ald/collect/v1/third/renewal";
-			String reqResult = "";
-			if (url.contains("https")){
-				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, getUrlParamsByMap(reqBo));
-			}else {
-				reqResult = HttpUtil.post(url, reqBo);
-			}
-			logger.info("collectRenewal response :" + reqResult);
+			String reqResult = HttpUtil.post(url, reqBo);
 			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 				return true;
 			}
@@ -145,23 +123,18 @@ public class CollectionNoticeUtil extends AbstractThird {
 	 * @param data 包含{dataId-即商品订单orderId ，reviewResult: PASS通过，REFUSE拒绝}
 	 * @return
 	 */
-	public boolean collectReconciliateNotice(Map<String, String> data) {
+	public void collectReconciliateNotice(Map<String, String> data) {
 		try {
 			String dataId = data.get("dataId").toString();
 			byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
 			String sign = DigestUtil.encodeHex(pd);
 			data.put("sign",sign);
 			String url = getCollectUrl() + "/api/collect/third/thirdReconciliateCheck";
-			String reqResult = "";
-			if (url.contains("https")){
-				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, getUrlParamsByMap(data));
-			}else {
-				reqResult = HttpUtil.post(url, data);
-			}
-			logger.info("collectReconciliateNotice response :" + reqResult + "data = " +data );
+			String reqResult =  HttpUtil.post(url, data);
 			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+			}else {
+				throw new BizException("collectReconciliateNotice response fail ");
 			}
-			throw new BizException("collectReconciliateNotice response fail ");
 		} catch (Exception e) {
 			logger.error("collectReconciliateNotice error:", e);
 			throw new BizException("collectReconciliateNotice fail Exception is " + e + ",consumerRepayment send again");
@@ -173,23 +146,19 @@ public class CollectionNoticeUtil extends AbstractThird {
 	 * @param data 包含{tradeNo-即催收提交的还款流水号 ，reviewResult: PASS通过，REFUSE拒绝}
 	 * @return
 	 */
-	public boolean collectRepayNotice(Map<String, String> data) {
+	public void collectRepayNotice(Map<String, String> data) {
 		try {
 			String dataId = data.get("tradeNo").toString();
 			byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
 			String sign = DigestUtil.encodeHex(pd);
 			data.put("sign",sign);
 			String url = getCollectUrl() + "/api/collect/third/thridRepaymentCheck";
-			String reqResult = "";
-			if (url.contains("https")){
-				reqResult = HttpUtil.doHttpsPostIgnoreCert(url, getUrlParamsByMap(data));
-			}else {
-				reqResult = HttpUtil.post(url, data);
-			}
-			logger.info("collectRepayNotice response :" + reqResult + "data = " +data );
+			String reqResult = HttpUtil.post(url, data);
 			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+			}else {
+				throw new BizException("collectRepayNotice response fail ");
 			}
-			throw new BizException("collectRepayNotice response fail ");
+
 		} catch (Exception e) {
 			logger.error("collectRepayNotice error:", e);
 			throw new BizException("collectRepayNotice fail Exception is " + e + ",consumerRepayment send again");
