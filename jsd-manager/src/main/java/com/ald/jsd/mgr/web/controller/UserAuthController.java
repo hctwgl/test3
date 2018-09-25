@@ -30,6 +30,9 @@ public class UserAuthController extends BaseController{
         query.setPassPersonNum(jsdUserAuthService.getPassPersonNum());
         if(query.getSubmitPersonNum()==0){
             query.setPassRate(BigDecimal.ZERO);
+        }else if(query.getPassPersonNum()==query.getSubmitPersonNum()){
+            BigDecimal num=new BigDecimal("100");
+            query.setPassRate(num);
         }else{
             query.setPassRate(BigDecimalUtil.divide(query.getPassPersonNum(),query.getSubmitPersonNum()));
         }
