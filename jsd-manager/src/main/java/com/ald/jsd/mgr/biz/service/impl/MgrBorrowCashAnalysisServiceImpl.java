@@ -113,7 +113,9 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             borrowDayAmount = totalLoanAmount.divide(new BigDecimal(days), 2, BigDecimal.ROUND_HALF_UP);
         }
 
-        repeatBorrowRate = new BigDecimal(haveBorrowCashNum).divide(new BigDecimal(applyBorrowCashNum), 4, BigDecimal.ROUND_HALF_UP);
+        if (applyBorrowCashNum != 0) {
+        	repeatBorrowRate = new BigDecimal(haveBorrowCashNum).divide(new BigDecimal(applyBorrowCashNum), 4, BigDecimal.ROUND_HALF_UP);
+        }
         if (dueAmount != BigDecimal.ZERO) {
             overdueRate = overdueAmount.divide(dueAmount, 2, BigDecimal.ROUND_HALF_UP);
             returnedRate = returnAmount.divide(dueAmount, 2, BigDecimal.ROUND_HALF_UP);//回款金额
