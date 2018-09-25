@@ -191,18 +191,18 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             riskPassRateByWeek = new BigDecimal(weekPaseUserNum).divide(new BigDecimal(weekAllUserNum), 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
         
-        //今日还款概览
-        List<JsdBorrowCashDo> todayBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(0);//今天的借款信息
-        List<JsdBorrowCashDo> ystBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(1);//昨天的借款信息
-        List<JsdBorrowCashDo> weekBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(7);//一周前的借款信息
-        BigDecimal todayAmount = todayBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal ystAmount = ystBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal weekAmount = weekBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        int borrowMans = todayBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
-        BigDecimal avgAmountPer = BigDecimal.ZERO;
-        if (null != todayBorrowCashDoList && 0 != todayBorrowCashDoList.size()) {
-            avgAmountPer = todayAmount.divide(new BigDecimal(todayBorrowCashDoList.size()), 2, BigDecimal.ROUND_HALF_UP);
-        }
+        //今日还款概览 TODO
+//        List<JsdBorrowCashDo> todayBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(0);//今天的借款信息
+//        List<JsdBorrowCashDo> ystBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(1);//昨天的借款信息
+//        List<JsdBorrowCashDo> weekBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(7);//一周前的借款信息
+//        BigDecimal todayAmount = todayBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+//        BigDecimal ystAmount = ystBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+//        BigDecimal weekAmount = weekBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+//        int borrowMans = todayBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
+//        BigDecimal avgAmountPer = BigDecimal.ZERO;
+//        if (null != todayBorrowCashDoList && 0 != todayBorrowCashDoList.size()) {
+//            avgAmountPer = todayAmount.divide(new BigDecimal(todayBorrowCashDoList.size()), 2, BigDecimal.ROUND_HALF_UP);
+//        }
         
         
         MgrDashboardInfoVo mgrDashboardInfoVo = new MgrDashboardInfoVo();

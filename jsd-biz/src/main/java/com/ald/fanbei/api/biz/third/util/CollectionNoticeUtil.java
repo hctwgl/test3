@@ -142,7 +142,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 
 	/**
 	 * jsdplus 平账申请通知催收
-	 * @param data
+	 * @param data 包含{dataId-即商品订单orderId ，reviewResult: PASS通过，REFUSE拒绝}
 	 * @return
 	 */
 	public boolean collectReconciliateNotice(Map<String, String> data) {
@@ -171,7 +171,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 
 	/**
 	 * jsdplus 还款申请通知催收
-	 * @param data
+	 * @param data 包含{tradeNo-即催收提交的还款流水号 ，reviewResult: PASS通过，REFUSE拒绝}
 	 * @return
 	 */
 	public boolean collectRepayNotice(Map<String, String> data) {
