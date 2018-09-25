@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.ConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -96,7 +97,7 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 			repayData.put("repaymentAcc", repayDealBo.userId+"");//还款账户
 
 			data.put("amount",repayAmount+"");
-			repayData.put("companyId","6");
+			repayData.put("companyId", ConfigProperties.get(Constants.CONFKEY_COLLECTION_COMPANYID));
 			repayData.put("totalAmount", repayAmount+"");
 			byte[] pd = DigestUtil.digestString(repayDealBo.curOutTradeNo.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
 			String sign = DigestUtil.encodeHex(pd);

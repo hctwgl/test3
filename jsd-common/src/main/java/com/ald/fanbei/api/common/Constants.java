@@ -87,6 +87,7 @@ public class Constants {
 	public static final String CONFKEY_XGXY_APP_ID = "jsd.xgxy.app.id";
 	
 	public static final String CONFKEY_COLLECTION_TOKEN = "jsd.collection.token";
+	public static final String CONFKEY_COLLECTION_COMPANYID = "jsd.collection.companyId";
 	public static final String CONFKEY_COLLECTION_REPORT_URL = "jsd.collection.report.url";// 收发系统
 	public static final String CONFKEY_COLLECTION_URL = "jsd.collection.url";// 催收系统
 	// --------------- CONF KEY ZONE end ---------------

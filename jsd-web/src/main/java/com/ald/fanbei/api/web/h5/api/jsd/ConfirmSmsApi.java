@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.ald.fanbei.api.biz.bo.ups.UpsAuthSignValidRespBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
@@ -35,6 +36,7 @@ import com.ald.fanbei.api.common.enums.SmsCodeType;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
@@ -62,6 +64,9 @@ public class ConfirmSmsApi implements JsdH5Handle {
 	@Autowired
 	@Qualifier("jsdBorrowCashRenewalService")
 	JsdUpsPayKuaijieServiceAbstract jsdBorrowCashRenewalService;
+	@Autowired
+	@Qualifier("beheadBorrowCashRenewalService")
+	JsdUpsPayKuaijieServiceAbstract beheadBorrowCashRenewalService;
 
 	@Resource
 	private JsdUserBankcardService jsdUserBankcardService;
@@ -139,6 +144,9 @@ public class ConfirmSmsApi implements JsdH5Handle {
  			switch (beanName.toString()) {
 	 			case "jsdBorrowCashRenewalService":
 	 				map = jsdBorrowCashRenewalService.doUpsPay(renewalDo.getTradeNo(), smsCode);
+	 				break;
+	 			case "beheadBorrowCashRenewalService":
+	 				map = beheadBorrowCashRenewalService.doUpsPay(renewalDo.getTradeNo(), smsCode);
 	 				break;
 	 			default:
 	 				throw new BizException("ups kuaijie not support", BizExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
