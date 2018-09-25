@@ -35,4 +35,14 @@ public class JsdCollectionBorrowServiceImpl extends ParentServiceImpl<JsdCollect
 	public JsdCollectionBorrowDo selectByBorrowId(Long borrowId){
 		return jsdCollectionBorrowDao.selectByBorrowId(borrowId);
 	}
+	
+	@Override
+	public void updateCollectionStatus(Long borrowId, String status){
+		JsdCollectionBorrowDo collectionBorrowDo = jsdCollectionBorrowDao.selectByBorrowId(borrowId);
+		if(collectionBorrowDo!=null) {
+			collectionBorrowDo.setStatus(status);
+			jsdCollectionBorrowDao.updateById(collectionBorrowDo);
+		}
+		
+	}
 }
