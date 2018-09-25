@@ -2,13 +2,12 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdCollectionBorrowDao;
 import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
-import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
 
 
 
@@ -24,8 +23,6 @@ import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
 @Service("jsdCollectionBorrowService")
 public class JsdCollectionBorrowServiceImpl extends ParentServiceImpl<JsdCollectionBorrowDo, Long> implements JsdCollectionBorrowService {
 	
-    private static final Logger logger = LoggerFactory.getLogger(JsdCollectionBorrowServiceImpl.class);
-   
     @Resource
     private JsdCollectionBorrowDao jsdCollectionBorrowDao;
 

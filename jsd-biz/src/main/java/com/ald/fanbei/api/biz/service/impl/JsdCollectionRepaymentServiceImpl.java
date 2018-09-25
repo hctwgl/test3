@@ -2,13 +2,12 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.JsdCollectionRepaymentService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdCollectionRepaymentDao;
 import com.ald.fanbei.api.dal.domain.JsdCollectionRepaymentDo;
-import com.ald.fanbei.api.biz.service.JsdCollectionRepaymentService;
 
 
 
@@ -24,8 +23,6 @@ import com.ald.fanbei.api.biz.service.JsdCollectionRepaymentService;
 @Service("jsdCollectionRepaymentService")
 public class JsdCollectionRepaymentServiceImpl extends ParentServiceImpl<JsdCollectionRepaymentDo, Long> implements JsdCollectionRepaymentService {
 	
-    private static final Logger logger = LoggerFactory.getLogger(JsdCollectionRepaymentServiceImpl.class);
-   
     @Resource
     private JsdCollectionRepaymentDao jsdCollectionRepaymentDao;
 

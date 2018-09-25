@@ -20,8 +20,10 @@ public class MgrBorrowInfoAnalysisVo implements Serializable {
 	
 	private static final long serialVersionUID = 4204652534348461359L;
 	private BigDecimal totalLoanAmount;//总放款额
+	private BigDecimal borrowDayAmount;//日均放款额
 	private BigDecimal returnedRate;//回款率
 	private Integer borrowMans;//放款人数
+	private Integer borrowDayMans;//日均放款人数
 	private BigDecimal repeatBorrowRate;//复借率
 	private BigDecimal overdueRate;//逾期率
 	private BigDecimal profitRate;//收益率

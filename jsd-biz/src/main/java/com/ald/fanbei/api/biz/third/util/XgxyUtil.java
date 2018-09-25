@@ -3,16 +3,21 @@ package com.ald.fanbei.api.biz.third.util;
 
 import static com.ald.fanbei.api.common.util.JsdSignUtil.generateSign;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.ald.fanbei.api.common.util.*;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyResqBo;
 import com.ald.fanbei.api.biz.third.AbstractThird;
+import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.util.DsedSignUtil;
 import com.ald.fanbei.api.common.util.HttpUtilForXgxy;
 import com.ald.fanbei.api.common.util.JsdAesUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -22,10 +27,10 @@ import com.alibaba.fastjson.JSONObject;
 @Component("xgxyUtil")
 public class XgxyUtil extends AbstractThird {
     private static String PRIVATE_KEY = ConfigProperties.get(Constants.CONFKEY_XGXY_AES_PASSWORD);
-
-    public final static String APPID = "speedloanplus";
+    private static String APPID = ConfigProperties.get(Constants.CONFKEY_XGXY_APP_ID);
+    public static final String XGXY_REQ_CODE_SUCC = "200";
+    
     private static String url = null;
-
     private static String getXgxyUrl() {
         if (url == null) {
             url = ConfigProperties.get(Constants.CONFKEY_XGXY_HOST);
@@ -54,7 +59,7 @@ public class XgxyUtil extends AbstractThird {
                 return false;
             }
             XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
-            if (Constants.XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
+            if (XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
                 return true;
             }
         } catch (Exception e) {
@@ -85,7 +90,7 @@ public class XgxyUtil extends AbstractThird {
                 return false;
             }
             XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
-            if (Constants.XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
+            if (XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
                 return true;
             }
         } catch (Exception e) {
@@ -116,7 +121,7 @@ public class XgxyUtil extends AbstractThird {
     			return false;
     		}
     		XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
-    		if (Constants.XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
+    		if (XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
     			return true;
     		}
     	} catch (Exception e) {
@@ -148,7 +153,7 @@ public class XgxyUtil extends AbstractThird {
                 return false;
             }
             XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
-            if (Constants.XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
+            if (XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
                 return true;
             }
         } catch (Exception e) {
@@ -179,7 +184,7 @@ public class XgxyUtil extends AbstractThird {
                 return "";
             }
             XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
-            if (Constants.XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
+            if (XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
                 return (String) resp.getData();
             }
         } catch (Exception e) {
@@ -212,7 +217,7 @@ public class XgxyUtil extends AbstractThird {
                 return null;
             }
             XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
-            if (Constants.XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
+            if (XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
             	JSONObject dataObj = JSON.parseObject(resp.getData());
                 return dataObj.getString("interestNewRate");
             }
@@ -228,7 +233,8 @@ public class XgxyUtil extends AbstractThird {
      * @param data
      * @return
      */
-    public HashMap<String,String> borrowNoticeRequest(Map<String,String> data) {
+    @SuppressWarnings("unchecked")
+	public HashMap<String,String> borrowNoticeRequest(Map<String,String> data) {
         HashMap<String,String> param = new HashMap<>();
         try {
             logger.info("borrowNoticeRequest to xgxy request start");
@@ -244,7 +250,7 @@ public class XgxyUtil extends AbstractThird {
                 return param;
             }
             XgxyResqBo overdueReqBo1 = JSONObject.parseObject(reqResult, XgxyResqBo.class);
-            if (Constants.XGXY_REQ_CODE_SUCC.equals(overdueReqBo1.getCode())) {
+            if (XGXY_REQ_CODE_SUCC.equals(overdueReqBo1.getCode())) {
                 JSONObject jsonObject = JSON.parseObject(reqResult);
                 return JSONObject.parseObject(jsonObject.get("data").toString(),HashMap.class);
             }

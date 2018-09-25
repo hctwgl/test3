@@ -17,8 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ald.fanbei.api.biz.service.OssFileUploadService;
 import com.ald.fanbei.api.biz.util.OssUploadResult;
+import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.PutObjectResult;

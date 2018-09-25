@@ -1,21 +1,22 @@
 package com.ald.jsd.mgr.web.controller;
 
 
-import com.ald.fanbei.api.biz.vo.MgrDashboardCityInfoVo;
-import com.ald.fanbei.api.biz.vo.MgrDashboardInfoVo;
-import com.ald.fanbei.api.biz.vo.MgrBorrowInfoAnalysisVo;
-import com.ald.fanbei.api.biz.vo.MgrTrendTodayInfoVo;
-import com.ald.jsd.mgr.biz.service.MgrBorrowCashAnalysisService;
-import com.ald.jsd.mgr.spring.NotNeedLogin;
-import com.ald.jsd.mgr.web.dto.req.AnalysisReq;
-import com.ald.jsd.mgr.web.dto.resp.Resp;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
+import com.ald.fanbei.api.biz.vo.MgrBorrowInfoAnalysisVo;
+import com.ald.fanbei.api.biz.vo.MgrDashboardCityInfoVo;
+import com.ald.fanbei.api.biz.vo.MgrDashboardInfoVo;
+import com.ald.fanbei.api.biz.vo.MgrTrendTodayInfoVo;
+import com.ald.jsd.mgr.biz.service.MgrBorrowCashAnalysisService;
+import com.ald.jsd.mgr.spring.NotNeedLogin;
+import com.ald.jsd.mgr.web.dto.req.AnalysisReq;
+import com.ald.jsd.mgr.web.dto.resp.Resp;
 
 @NotNeedLogin
 @Controller
@@ -28,7 +29,7 @@ public class AnalysisController extends BaseController {
 
     @RequestMapping(value = {"/query.json"}, method = RequestMethod.POST)
     public Resp<MgrBorrowInfoAnalysisVo> getAnalysisInfo(@RequestBody AnalysisReq analysisReq) {
-        MgrBorrowInfoAnalysisVo mgrBorrowInfoAnalysisVo = mgrBorrowCashAnalysisService.getBorrowInfoAnalysis(analysisReq.days);
+        MgrBorrowInfoAnalysisVo mgrBorrowInfoAnalysisVo = mgrBorrowCashAnalysisService.getBorrowInfoAnalysis(analysisReq);
         return Resp.succ(mgrBorrowInfoAnalysisVo, "");
     }
 

@@ -1,17 +1,16 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.Date;
+
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.common.util.DateUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.JsdBorrowCashOverdueLogService;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashOverdueLogDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashOverdueLogDo;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashOverdueLogService;
-
-import java.util.Date;
 
 
 /**
@@ -26,8 +25,6 @@ import java.util.Date;
 @Service("jsdBorrowCashOverdueLogService")
 public class JsdBorrowCashOverdueLogServiceImpl extends ParentServiceImpl<JsdBorrowCashOverdueLogDo, Long> implements JsdBorrowCashOverdueLogService {
 	
-    private static final Logger logger = LoggerFactory.getLogger(JsdBorrowCashOverdueLogServiceImpl.class);
-   
     @Resource
     private JsdBorrowCashOverdueLogDao jsdBorrowCashOverdueLogDao;
 

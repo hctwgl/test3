@@ -18,14 +18,6 @@ import java.util.Map;
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 public interface JsdBorrowCashRepaymentService{
-
-    /**
-     * 获取最近还款编号
-     * @param orderNoPre
-     * @return
-     */
-    String getCurrentLastRepayNo(String orderNoPre);
-
 	JsdBorrowCashRepaymentDo getLastByBorrowId(Long borrowId);
 
     Map<String, Object> repay(JsdBorrowCashRepaymentServiceImpl.BorrowCashRepayBo bo, String bankPayType);

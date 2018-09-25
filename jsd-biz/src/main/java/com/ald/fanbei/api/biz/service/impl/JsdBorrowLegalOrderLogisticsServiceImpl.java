@@ -2,13 +2,12 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderLogisticsService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderLogisticsDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderLogisticsDo;
-import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderLogisticsService;
 
 
 
@@ -24,8 +23,6 @@ import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderLogisticsService;
 @Service("jsdBorrowLegalOrderLogisticsService")
 public class JsdBorrowLegalOrderLogisticsServiceImpl extends ParentServiceImpl<JsdBorrowLegalOrderLogisticsDo, Long> implements JsdBorrowLegalOrderLogisticsService {
 	
-    private static final Logger logger = LoggerFactory.getLogger(JsdBorrowLegalOrderLogisticsServiceImpl.class);
-   
     @Resource
     private JsdBorrowLegalOrderLogisticsDao jsdBorrowLegalOrderLogisticsDao;
 

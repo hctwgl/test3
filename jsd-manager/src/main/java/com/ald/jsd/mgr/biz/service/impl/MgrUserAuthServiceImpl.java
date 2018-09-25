@@ -1,17 +1,16 @@
 package com.ald.jsd.mgr.biz.service.impl;
 
-import com.ald.fanbei.api.biz.service.impl.ParentServiceImpl;
-import com.ald.fanbei.api.dal.dao.BaseDao;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.dal.domain.JsdUserAuthDo;
 import com.ald.fanbei.api.dal.domain.dto.UserAuthDto;
 import com.ald.fanbei.api.dal.query.UserAuthQuery;
 import com.ald.jsd.mgr.dal.dao.MgrUserAuthDao;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.util.List;
 
 
 /**
@@ -24,17 +23,10 @@ import java.util.List;
  */
 
 @Service("mgrUserAuthService")
-public class MgrUserAuthServiceImpl extends ParentServiceImpl<JsdUserAuthDo, Long> implements MgrUserAuthService {
-
-    private static final Logger logger = LoggerFactory.getLogger(MgrUserAuthServiceImpl.class);
+public class MgrUserAuthServiceImpl implements MgrUserAuthService {
 
     @Resource
     private MgrUserAuthDao mgrUserAuthDao;
-
-    @Override
-    public BaseDao<JsdUserAuthDo, Long> getDao() {
-        return mgrUserAuthDao;
-    }
 
     @Override
     public List<UserAuthDto> getListUserAuth(UserAuthQuery query) {
@@ -44,6 +36,11 @@ public class MgrUserAuthServiceImpl extends ParentServiceImpl<JsdUserAuthDo, Lon
     @Override
     public int getPassPersonNumByStatusAndDays(String status, Integer days) {
         return mgrUserAuthDao.getPassPersonNumByStatusAndDays(status, days);
+    }
+
+    @Override
+    public int getPassPersonNumByStatusBetweenStartAndEnd(String status, Date startDate, Date endDate) {
+        return mgrUserAuthDao.getPassPersonNumByStatusBetweenStartAndEnd(status,startDate,endDate);
     }
 
     @Override

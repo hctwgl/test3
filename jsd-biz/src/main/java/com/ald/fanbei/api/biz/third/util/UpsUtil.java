@@ -36,13 +36,13 @@ import com.ald.fanbei.api.biz.service.BeheadBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
+import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
-import com.ald.fanbei.api.common.util.ConfigProperties;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.HttpUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -177,6 +177,8 @@ public class UpsUtil extends AbstractThird {
 	public void autoJsdDelegatePay(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdUserBankcardDo mainCard) {
 		
 		final JsdUserDo userDo = jsdUserDao.getById(cashDo.getUserId());
+		// 当天借款金额存入缓存
+		bizCacheUtil.incr(Constants.CACHEKEY_BORROW_CURRDAY_ALLAMOUNT, cashDo.getAmount().longValue(), DateUtil.getTodayLast());
 		
 		new Thread() { public void run() {
         	try {
@@ -189,8 +191,6 @@ public class UpsUtil extends AbstractThird {
                 if (!upsResult.isSuccess()) {
                 	beheadBorrowCashService.dealBorrowFail(cashDo, orderDo, "UPS打款实时反馈失败");
                 }else {
-                	// 当天借款金额存入缓存
-                	bizCacheUtil.incr(Constants.JSD_BORROW_CURRDAY_ALLAMOUNT, cashDo.getAmount().longValue(), DateUtil.getTodayLast());
                 	cashDo.setStatus(JsdBorrowCashStatus.TRANSFERING.name());
                 	jsdBorrowCashDao.updateById(cashDo);
                 }
