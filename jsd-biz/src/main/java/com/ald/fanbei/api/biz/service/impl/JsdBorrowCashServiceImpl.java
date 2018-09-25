@@ -220,13 +220,13 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
                 String tradeNoXgxy = jsonObject.getString("tradeNoXgxy");
                 if (reviewStatus.equals(JsdBorrowCashReviewStatus.REFUSE.name())) {
                     jsdBorrowCashDao.refuseByXgNo(reviewRemark, tradeNoXgxy);
-                    mgrOperateLogDao.addOperateLog(realName, "审核拒绝：" + tradeNoXgxy);
+                    mgrOperateLogDao.addOperateLog(realName, "借款审核拒绝：" + tradeNoXgxy);
                 }
                 if (reviewStatus.equals(JsdBorrowCashReviewStatus.PASS.name())) {
                     JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashDao.getByTradeNoXgxy(tradeNoXgxy);
                     JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(jsdBorrowCashDo.getRid());
                     upsUtil.manualJsdDelegatePay(jsdBorrowCashDo, jsdBorrowLegalOrderDo);
-                    mgrOperateLogDao.addOperateLog(realName, "审核通过：" + tradeNoXgxy);
+                    mgrOperateLogDao.addOperateLog(realName, "借款审核通过：" + tradeNoXgxy);
                 }
             }
             return true;
