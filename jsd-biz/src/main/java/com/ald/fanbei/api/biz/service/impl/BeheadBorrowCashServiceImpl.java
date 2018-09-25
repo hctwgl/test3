@@ -166,6 +166,8 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 				orderInfoDo.setUserId(cashDo.getUserId());
 				orderInfoDo.setBorrowId(cashDo.getRid());
 				jsdBorrowLegalOrderInfoDao.saveRecord(orderInfoDo); 
+			}else {
+				logger.error("beheadBorrowCashService saveOrderInfo error, xgxy return orderInfoMap is empty");
 			}
 		} catch (Exception e) {
 			logger.error("beheadBorrowCashService saveOrderInfo error",e);
