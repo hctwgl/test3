@@ -234,7 +234,7 @@ public class CollectionMgrController extends BaseController{
             
             transactionTemplate.execute(new TransactionCallback<Integer>() {
     			public Integer doInTransaction(TransactionStatus status) {
-    				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData, JsdRepayType.REVIEW_COLLECTION);
+    				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData, JsdRepayType.REVIEW_COLLECTION, operator);
     				jsdCollectionRepaymentService.updateById(collRepayDo);
     				// TODO 通知催收
     				return 1;
