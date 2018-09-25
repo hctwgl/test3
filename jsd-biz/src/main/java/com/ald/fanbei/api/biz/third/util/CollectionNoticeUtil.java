@@ -22,7 +22,7 @@ import com.alibaba.fastjson.JSON;
  * @author chengkang 2017年8月3日 16:55:23
  * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的 需加密参数 真实姓名 ， 身份证号， 手机号，邮箱，银行卡号
  */
-@Component("collectionSystemUtil")
+@Component("collectionNoticeUtil")
 public class CollectionNoticeUtil extends AbstractThird {
 
 	private final String salt = "jsdpluscuishou";
