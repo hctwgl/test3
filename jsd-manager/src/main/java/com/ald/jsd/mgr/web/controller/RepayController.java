@@ -6,6 +6,7 @@ import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.ald.jsd.mgr.biz.service.MgrOfflineRepaymentService;
+import com.ald.jsd.mgr.web.Sessions;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Controller;
@@ -48,7 +49,7 @@ public class RepayController {
 
     @RequestMapping(value = {"offline.json"}, method = RequestMethod.POST)
     public Resp<?> offline(@RequestBody Map<String, String> data, HttpServletRequest request) {
-        mgrOfflineRepaymentService.dealOfflineRepayment(data, JsdRepayType.OFFLINE);
+        mgrOfflineRepaymentService.dealOfflineRepayment(data, JsdRepayType.OFFLINE, Sessions.getRealname(request));
         return Resp.succ();
     }
 
