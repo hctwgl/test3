@@ -603,6 +603,7 @@
             or b.mobile LIKE  CONCAT('%',#{searchContent},'%')
             or b.real_name LIKE  CONCAT('%',#{searchContent},'%'))
         </if>
+        order by id desc
     </select>
 
     <select id="getReviewLoanStatistics" resultType="java.util.HashMap">
@@ -665,6 +666,7 @@
             or b.mobile LIKE  CONCAT('%',#{searchContent},'%')
             or b.real_name LIKE  CONCAT('%',#{searchContent},'%'))
         </if>
+        order by id desc
     </select>
 
     <select id="getRepayList" resultType="LoanDto">
@@ -684,5 +686,6 @@
             AND (a.trade_no_xgxy LIKE  CONCAT('%',#{searchContent},'%')
             or b.real_name LIKE  CONCAT('%',#{searchContent},'%'))
         </if>
+        order by id desc
     </select>
 </mapper>
