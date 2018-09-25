@@ -14,4 +14,6 @@ public interface JsdCollectionBorrowService extends ParentService<JsdCollectionB
 
     JsdCollectionBorrowDo selectByBorrowId(Long borrowId);
 
+	void updateCollectionStatus(Long borrowId, String status);
+
 }

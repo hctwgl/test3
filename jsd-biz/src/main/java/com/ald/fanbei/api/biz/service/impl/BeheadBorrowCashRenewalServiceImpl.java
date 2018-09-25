@@ -22,6 +22,7 @@ import com.ald.fanbei.api.biz.bo.KuaijieJsdRenewalPayBo;
 import com.ald.fanbei.api.biz.bo.ups.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.service.BeheadBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
 import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
@@ -30,6 +31,7 @@ import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateIn
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
+import com.ald.fanbei.api.common.enums.CollectionBorrowStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
@@ -51,6 +53,7 @@ import com.ald.fanbei.api.dal.dao.JsdUserDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
@@ -96,6 +99,8 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
     private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
     @Resource
     private JsdResourceService jsdResourceService;
+    @Resource
+    private JsdCollectionBorrowService jsdCollectionBorrowService;
     @Resource
     private XgxyUtil xgxyUtil;
     @Resource
@@ -319,6 +324,9 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 					borrowCashDo.setRenewalNum(borrowCashDo.getRenewalNum() + 1);// 累计续期次数
 					jsdBorrowCashDao.updateById(borrowCashDo);
 					// ---<
+					
+					// 更新借款催收状态-已续期
+					jsdCollectionBorrowService.updateCollectionStatus(borrowCashDo.getRid(), CollectionBorrowStatus.RENEWALED.name());
 					
 					return 1l;
 				} catch (Exception e) {
