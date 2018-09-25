@@ -314,7 +314,7 @@ public class LoanOverDueJob {
             data.add(buildData);
         }
         logger.info("data = " + data);
-        collectionNoticeUtil.noticeCollect(data);
+        collectionNoticeUtil.noticeCollectOverdue(data);
     }
 
 
