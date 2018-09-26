@@ -102,18 +102,18 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         Integer borrowDayMans = 0; //日均借款人数
 
         Integer borrowMans = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
-        returnAmount = jsdBorrowCashDoList.stream().filter(jsdBorrowCashDo -> jsdBorrowCashDo.getStatus().equals("FINSHED")).map(jsdBorrowCashDo -> jsdBorrowCashDo.getRepayAmount()).reduce(BigDecimal.ZERO, BigDecimal::add);
+        returnAmount = jsdBorrowCashDoList.stream().map(jsdBorrowCashDo -> jsdBorrowCashDo.getRepayAmount()).reduce(BigDecimal.ZERO, BigDecimal::add);
         for (JsdBorrowCashDo borrow : jsdBorrowCashDoList) {
             totalLoanAmount = totalLoanAmount.add(borrow.getAmount());
-            /*if (StringUtils.equals(borrow.getStatus(), "FINSHED")) {
+            /*if (StringUtils.equals(borrow.getStatus(), "FINISHED")) {
                 returnAmount.add(borrow.getRepayAmount());
             }*/
             if (StringUtils.equals(borrow.getOverdueStatus(), "Y")) {
-                overdueAmount.add(borrow.getAmount().subtract(borrow.getRepayAmount().subtract(borrow.getSumRepaidInterest())
+                overdueAmount = overdueAmount.add(borrow.getAmount().subtract(borrow.getRepayAmount().subtract(borrow.getSumRepaidInterest())
                         .subtract(borrow.getSumRepaidOverdue()).subtract(borrow.getSumRepaidPoundage())));
             }
             if (borrow.getGmtPlanRepayment().before(new Date())) {
-                dueAmount.add(borrow.getAmount());
+                dueAmount = dueAmount.add(borrow.getAmount());
             }
         }
         if (!NumberUtil.isNullOrZero(days)) {
