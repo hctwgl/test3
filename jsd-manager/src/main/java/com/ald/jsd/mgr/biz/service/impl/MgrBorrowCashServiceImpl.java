@@ -34,6 +34,11 @@ public class MgrBorrowCashServiceImpl implements MgrBorrowCashService {
     }
 
     @Override
+    public List<JsdBorrowCashDo> getPlanRepayBorrowCashByDays(Integer days) {
+        return mgrBorrowCashDao.getBorrowCashByDays(days);
+    }
+
+    @Override
     public List<JsdBorrowCashDo> getBorrowCashLessThanDays(Integer days) {
         return mgrBorrowCashDao.getBorrowCashLessThanDays(days);
     }
@@ -54,8 +59,18 @@ public class MgrBorrowCashServiceImpl implements MgrBorrowCashService {
     }
 
     @Override
+    public BigDecimal getPlanRepaymentCashAmountByDays(Integer days) {
+        return mgrBorrowCashDao.getPlanRepaymentCashAmountByDays(days);
+    }
+
+    @Override
     public int getApplyBorrowCashBetweenStartAndEnd(Date startDate, Date endDate) {
         return mgrBorrowCashDao.getApplyBorrowCashBetweenStartAndEnd(startDate,endDate);
+    }
+
+    @Override
+    public BigDecimal getPlanRepaymentCashAmountBetweenStartAndEnd(Date startDate, Date endDate) {
+        return mgrBorrowCashDao.getPlanRepaymentCashAmountBetweenStartAndEnd(startDate,endDate);
     }
 
     @Override
@@ -71,6 +86,11 @@ public class MgrBorrowCashServiceImpl implements MgrBorrowCashService {
     @Override
     public int getUserNumBetweenStartAndEnd(Date startDate, Date endDate) {
         return mgrBorrowCashDao.getUserNumBetweenStartAndEnd(startDate,endDate);
+    }
+
+    @Override
+    public int getPlanRepaymentCashAmountByDays(Date startDate, Date endDate) {
+        return 0;
     }
 
     @Override

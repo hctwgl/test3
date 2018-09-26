@@ -34,7 +34,7 @@
     <select id="getBorrowCashLessThanDays" resultType="JsdBorrowCashDo">
         SELECT *
         FROM
-        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) &lt; #{days}
+        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) &lt; #{days} and datediff(now(), gmt_arrival) &gt;= 0
         and status in ('TRANSFERRED','FINISHED')
     </select>
 
@@ -48,8 +48,22 @@
     <select id="getBorrowCashByDays" resultType="JsdBorrowCashDo">
         SELECT *
         FROM
-        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) = #{days}
+        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) = #{days} and datediff(now(), gmt_arrival) &gt;= 0
         and status in ('TRANSFERRED','FINISHED')
+    </select>
+
+    <select id="getPlanRepaymentCashAmountByDays" resultType="java.math.BigDecimal">
+        SELECT SUM(amount)
+        FROM
+        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_plan_repayment) &lt; #{days} and datediff(now(), gmt_plan_repayment) &gt;= 0
+        and status in ('TRANSFERRED','FINISHED')
+    </select>
+
+    <select id="getPlanRepaymentCashAmountBetweenStartAndEnd" resultType="java.math.BigDecimal">
+        SELECT
+        SUM(amount)
+        FROM
+        jsd_borrow_cash  where is_delete=0 and gmt_plan_repayment between #{startDate} and #{endDate}
     </select>
 
     <select id="getUserNumByBorrowDays" resultType="java.lang.Integer">
@@ -58,7 +72,7 @@
         FROM
         jsd_borrow_cash bc
         left join jsd_borrow_cash nbc on bc.user_id = nbc.user_id
-        where bc.is_delete=0 and datediff(now(),bc.gmt_arrival) &lt; #{days}
+        where bc.is_delete=0 and datediff(now(),bc.gmt_arrival) &lt; #{days} and datediff(now(), bc.gmt_arrival) &gt;= 0
         and datediff(now(),nbc.gmt_arrival) &gt;= #{days}
         and bc.status in ('TRANSFERRED','FINISHED')
     </select>
@@ -76,7 +90,7 @@
 
     <select id="getAmountByDays" resultType="java.math.BigDecimal">
         SELECT
-        sum (amount)
+        SUM(amount)
         FROM
         jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) = #{days}
         and status in ('TRANSFERRED','FINISHED')

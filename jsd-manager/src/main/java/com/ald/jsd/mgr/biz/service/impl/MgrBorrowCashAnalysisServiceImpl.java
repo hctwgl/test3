@@ -57,6 +57,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         int allUserNum = 0;
         int paseUserNum = 0;
         int days = 0;
+        BigDecimal dueAmount = BigDecimal.ZERO;//到期金额
         BigDecimal returnAmount = BigDecimal.ZERO;//回款金额
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (!NumberUtil.isNullOrZero(analysisReq.days)) {
@@ -66,7 +67,8 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             haveBorrowCashPerNum = mgrBorrowCashService.getUserNumByBorrowDays(analysisReq.days);//当期复借人数
             allUserNum = mgrUserAuthService.getPassPersonNumByStatusAndDays("", analysisReq.days);
             paseUserNum = mgrUserAuthService.getPassPersonNumByStatusAndDays("Y", analysisReq.days);
-            returnAmount = buildTotalRepayAmtByDays(analysisReq.days);
+            returnAmount = buildTotalRepayAmtByDays(analysisReq.days-1);
+            dueAmount = mgrBorrowCashService.getPlanRepaymentCashAmountByDays(analysisReq.days);
             days = analysisReq.days;
         } else if (!StringUtils.isBlank(analysisReq.endDate) && !StringUtils.isBlank(analysisReq.startDate)) {
             Date startTime = null;
@@ -87,6 +89,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             Integer startDays = getDays(startTime);
             Integer endDays = getDays(endTime);
             returnAmount = buildTotalRepayAmtByDate(startTime, endTime);
+            dueAmount = mgrBorrowCashService.getPlanRepaymentCashAmountBetweenStartAndEnd(startTime, endTime);
             days = endDays - startDays;
         }
 
@@ -94,7 +97,6 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         BigDecimal totalLoanAmount = BigDecimal.ZERO;
         BigDecimal returnedRate = BigDecimal.ZERO;//回款率
         BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
-        BigDecimal dueAmount = BigDecimal.ZERO;//到期金额
         BigDecimal repeatBorrowRate = BigDecimal.ZERO;//复借率
         BigDecimal overdueRate = BigDecimal.ZERO;//逾期率
         BigDecimal profitRate = BigDecimal.ZERO;//收益率
@@ -110,9 +112,6 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             if (StringUtils.equals(borrow.getOverdueStatus(), "Y")) {
                 overdueAmount = overdueAmount.add(borrow.getAmount().subtract(borrow.getRepayAmount().subtract(borrow.getSumRepaidInterest())
                         .subtract(borrow.getSumRepaidOverdue()).subtract(borrow.getSumRepaidPoundage())));
-            }
-            if (borrow.getGmtPlanRepayment().before(new Date())) {
-                dueAmount = dueAmount.add(borrow.getAmount());
             }
         }
         if (!NumberUtil.isNullOrZero(days)) {
