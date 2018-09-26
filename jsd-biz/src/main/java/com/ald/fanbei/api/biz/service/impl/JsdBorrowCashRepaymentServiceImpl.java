@@ -393,7 +393,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 						jsdCollectionService.nofityRisk(repayDealBo, repaymentDo, orderRepaymentDo, type, dataId);
 					}
 				} catch (Exception e){
-					logger.error("notice eca fail error=",e);
+					logger.error("notice eca or collection fail error=",e);
 				}
 			}else {
 

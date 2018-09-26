@@ -467,10 +467,12 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		if(resource==null) throw new BizException(BizExceptionCode.GET_JSD_RATE_ERROR);
 		BigDecimal betweenDuedate = new BigDecimal(resource.getValue2()); // 距还款日天数
 		BigDecimal amountLimit = new BigDecimal(resource.getValue3()); // 最低续期金额
-		logger.info("checkCanRenewal betweenDuedate="+betweenDuedate+"amountLimit="+amountLimit);
+		BigDecimal capitalRate = new BigDecimal(resource.getValue1()); // 续期支付最小本金比例
+		BigDecimal capital = borrowCashDo.getAmount().multiply(capitalRate);
+		logger.info("checkCanRenewal betweenDuedate="+betweenDuedate+", amountLimit="+amountLimit+", capitalRate="+capitalRate);
+		// 本次续期之后 待还本金
 		BigDecimal waitRepayAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidOverdue(), borrowCashDo.getSumRepaidInterest(), 
-													borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getOverdueAmount(), borrowCashDo.getInterestAmount(), 
-													borrowCashDo.getPoundageAmount()).subtract(borrowCashDo.getRepayAmount());
+													borrowCashDo.getSumRepaidPoundage()).subtract(borrowCashDo.getRepayAmount().add(capital));
 //		long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(new Date(), borrowCashDo.getGmtPlanRepayment());
 		
 		/*if (new BigDecimal(betweenGmtPlanRepayment).compareTo(betweenDuedate) > 0 && amountLimit.compareTo(waitRepayAmount) >= 0) {

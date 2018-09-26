@@ -74,6 +74,9 @@ public class ReviewLoanController {
         BeanUtils.copyProperties(reviewLoanDetailsReq, jsdBorrowCashDo);
         reviewLoanDetailsReq.setTerm(jsdBorrowCashDo.getType());
         reviewLoanDetailsReq.setApplyDate(jsdBorrowCashDo.getGmtCreate());
+        reviewLoanDetailsReq.setLoanRemark(jsdBorrowCashDo.getBorrowRemark());
+        reviewLoanDetailsReq.setInterestAmount(reviewLoanDetailsReq.getInterestAmount().add(jsdBorrowCashDo.getSumRepaidInterest()));
+        reviewLoanDetailsReq.setPoundageAmount(reviewLoanDetailsReq.getPoundageAmount().add(jsdBorrowCashDo.getSumRepaidPoundage()));
         //授信额度
         JsdUserAuthDo jsdUserAuthDo = jsdUserAuthService.getByUserId(jsdBorrowCashDo.getUserId());
         if (jsdUserAuthDo != null) {

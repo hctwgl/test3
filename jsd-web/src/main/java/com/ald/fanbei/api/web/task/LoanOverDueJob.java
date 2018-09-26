@@ -314,7 +314,7 @@ public class LoanOverDueJob {
             data.add(buildData);
         }
         logger.info("data = " + data);
-        collectionNoticeUtil.noticeCollect(data);
+        collectionNoticeUtil.noticeCollectOverdue(data);
     }
 
 
@@ -327,6 +327,7 @@ public class LoanOverDueJob {
             borrowDo.setReviewStatus(CommonReviewStatus.WAIT.name());
             borrowDo.setStatus(CollectionBorrowStatus.NOTICED.name());
             if(jsdCollectionBorrowDo != null){
+                borrowDo.setRid(jsdCollectionBorrowDo.getRid());
                 jsdCollectionBorrowService.updateById(borrowDo);
             }else {
                 jsdCollectionBorrowService.saveRecord(borrowDo);
