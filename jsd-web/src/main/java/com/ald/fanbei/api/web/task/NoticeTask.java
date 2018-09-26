@@ -58,12 +58,12 @@ public class NoticeTask {
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
     @SuppressWarnings("unchecked")
-	@Scheduled(cron = "0 0/5 * * * ?")
+	@Scheduled(cron = "* 0/1 * * * ?")
     public void notice() {
     	try {
     		String curHostIp = GetHostIpUtil.getIpAddress();
         	logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-            if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
+//            if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
                 logger.info("start notice task， time="+new Date());
                 List<JsdNoticeRecordDo> noticeRecordDos = jsdNoticeRecordService.getAllFailNoticeRecord();
                 if(noticeRecordDos.size()==0){
@@ -109,11 +109,20 @@ public class NoticeTask {
                             }
                             continue;
                         }
-                        if (StringUtils.equals(recordDo.getTimes(), "5") && (StringUtils.equals(recordDo.getType(), JsdNoticeType.COLLECT_RENEW.code))) {
+                        if (StringUtils.equals(recordDo.getTimes(), "5") && StringUtils.equals(recordDo.getType(), JsdNoticeType.COLLECT_RENEW.code)) {
                             if(StringUtils.isBlank(recordDo.getParams())){
                                 jsdNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
                             }else{
                                 updateNoticeRecord(recordDo, collectionNoticeUtil.collectRenewal(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
+                            }
+                            continue;
+                        }
+                        if (StringUtils.equals(recordDo.getTimes(), "5") && (
+                                StringUtils.equals(recordDo.getType(), JsdNoticeType.OVERDUEREPAY.code) || StringUtils.equals(recordDo.getType(), JsdNoticeType.COLLECT.code))) {
+                            if(StringUtils.isBlank(recordDo.getParams())){
+                                jsdNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
+                            }else{
+                                updateNoticeRecord(recordDo, collectionNoticeUtil.consumerRepayment(JSONObject.parseObject(recordDo.getParams(),HashMap.class)));
                             }
                             continue;
                         }
@@ -128,7 +137,7 @@ public class NoticeTask {
                     }
                 }
                 logger.info("end notice tasktime="+new Date());
-            }
+//            }
     	}catch (Exception e) {
     		logger.error(e.getMessage(), e);
 		}

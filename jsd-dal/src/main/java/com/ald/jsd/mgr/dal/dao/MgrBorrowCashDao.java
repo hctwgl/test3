@@ -32,7 +32,16 @@ public interface MgrBorrowCashDao {
      */
     int getApplyBorrowCashByDays(Integer days);
 
+    /**
+     * 获取当前申请借款数量
+     * @param days
+     * @return
+     */
+    int getApplyBorrowCashNumByDays(Integer days);
+
     int getApplyBorrowCashBetweenStartAndEnd(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
+
+    int getApplyBorrowCashNumBetweenStartAndEnd(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
 
     int getUserNumByBorrowDays(Integer days);
 

@@ -10,9 +10,23 @@
         jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_create) &lt; #{days}
     </select>
 
+    <select id="getApplyBorrowCashNumByDays" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM
+        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_create) &lt; #{days}
+    </select>
+
     <select id="getApplyBorrowCashBetweenStartAndEnd" resultType="java.lang.Integer">
         SELECT
         count(distinct user_id)
+        FROM
+        jsd_borrow_cash  where is_delete=0 and gmt_create between #{startDate} and #{endDate}
+    </select>
+
+    <select id="getApplyBorrowCashNumBetweenStartAndEnd" resultType="java.lang.Integer">
+        SELECT
+        count(1)
         FROM
         jsd_borrow_cash  where is_delete=0 and gmt_create between #{startDate} and #{endDate}
     </select>
