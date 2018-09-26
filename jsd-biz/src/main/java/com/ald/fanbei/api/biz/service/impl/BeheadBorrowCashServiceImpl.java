@@ -130,6 +130,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 		// 1.自动
 		if(StringUtil.equals(JsdBorrowCashReviewSwitch.AUTO.name(), reviewSwitch)) {
 			jsdBorrowCashDao.updateReviewStatus(JsdBorrowCashReviewStatus.PASS.name(), cashDo.getRid());
+			cashDo.setReviewStatus(JsdBorrowCashReviewStatus.PASS.name());
 			upsUtil.autoJsdDelegatePay(cashDo, orderDo, mainCard);
 		}
 		

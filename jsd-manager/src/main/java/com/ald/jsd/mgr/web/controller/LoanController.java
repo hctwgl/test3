@@ -69,10 +69,11 @@ public class LoanController {
         BeanUtils.copyProperties(loanDetailsReq, jsdBorrowCashDo);
         loanDetailsReq.setTerm(jsdBorrowCashDo.getType());
         loanDetailsReq.setApplyDate(jsdBorrowCashDo.getGmtCreate());
-        loanDetailsReq.setUnrepayAmount(jsdBorrowCashDo.getAmount().subtract(jsdBorrowCashDo.getRepayAmount()));
+        loanDetailsReq.setUnrepayAmount(jsdBorrowCashDo.getAmount().add(jsdBorrowCashDo.getInterestAmount()).add(jsdBorrowCashDo.getPoundageAmount()).add(jsdBorrowCashDo.getSumRepaidPoundage()).add(jsdBorrowCashDo.getSumRepaidInterest()).subtract(jsdBorrowCashDo.getRepayAmount()));
         loanDetailsReq.setUnrepayInterestAmount(jsdBorrowCashDo.getInterestAmount());
         loanDetailsReq.setUnrepayOverdueAmount(jsdBorrowCashDo.getOverdueAmount());
         loanDetailsReq.setUnrepayServiceAmount(jsdBorrowCashDo.getPoundageAmount());
+        loanDetailsReq.setLoanRemark(jsdBorrowCashDo.getBorrowRemark());
         //用户信息
         JsdUserDo jsdUserDo = jsdUserService.getById(jsdBorrowCashDo.getUserId());
         loanDetailsReq.setRealName(jsdUserDo.getRealName());

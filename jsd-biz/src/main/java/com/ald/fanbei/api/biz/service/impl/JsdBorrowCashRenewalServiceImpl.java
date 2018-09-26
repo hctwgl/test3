@@ -467,10 +467,12 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		if(resource==null) throw new BizException(BizExceptionCode.GET_JSD_RATE_ERROR);
 		BigDecimal betweenDuedate = new BigDecimal(resource.getValue2()); // 距还款日天数
 		BigDecimal amountLimit = new BigDecimal(resource.getValue3()); // 最低续期金额
-		logger.info("checkCanRenewal betweenDuedate="+betweenDuedate+"amountLimit="+amountLimit);
+		BigDecimal capitalRate = new BigDecimal(resource.getValue1()); // 续期支付最小本金比例
+		BigDecimal capital = borrowCashDo.getAmount().multiply(capitalRate);
+		logger.info("checkCanRenewal betweenDuedate="+betweenDuedate+", amountLimit="+amountLimit+", capitalRate="+capitalRate);
+		// 本次续期之后 待还本金
 		BigDecimal waitRepayAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidOverdue(), borrowCashDo.getSumRepaidInterest(), 
-													borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getOverdueAmount(), borrowCashDo.getInterestAmount(), 
-													borrowCashDo.getPoundageAmount()).subtract(borrowCashDo.getRepayAmount());
+													borrowCashDo.getSumRepaidPoundage()).subtract(borrowCashDo.getRepayAmount().add(capital));
 //		long betweenGmtPlanRepayment = DateUtil.getNumberOfDatesBetween(new Date(), borrowCashDo.getGmtPlanRepayment());
 		
 		/*if (new BigDecimal(betweenGmtPlanRepayment).compareTo(betweenDuedate) > 0 && amountLimit.compareTo(waitRepayAmount) >= 0) {
@@ -524,11 +526,11 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +上期待还订单)
 		BigDecimal renewalPayAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital, waitOrderAmount);
 
-		String deferRemark = "上期利息"+rateAmount+
-							 "元,赊销手续费"+poundage+
-							 "元,上期逾期费"+overdueAmount+
+		String deferRemark = "上期总利息"+rateAmount+
+							 "元,上期总服务费"+poundage+
+							 "元,上期总逾期费"+overdueAmount+
 							 "元,本金还款部分"+capital+
-							 "元,上期商品价格"+waitOrderAmount+"元";
+							 "元,上期商品价格"+waitOrderAmount+"元。";
 
 		BigDecimal principalAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidOverdue(),
 				borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage())

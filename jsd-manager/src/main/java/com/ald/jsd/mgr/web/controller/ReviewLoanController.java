@@ -74,6 +74,9 @@ public class ReviewLoanController {
         BeanUtils.copyProperties(reviewLoanDetailsReq, jsdBorrowCashDo);
         reviewLoanDetailsReq.setTerm(jsdBorrowCashDo.getType());
         reviewLoanDetailsReq.setApplyDate(jsdBorrowCashDo.getGmtCreate());
+        reviewLoanDetailsReq.setLoanRemark(jsdBorrowCashDo.getBorrowRemark());
+        reviewLoanDetailsReq.setInterestAmount(reviewLoanDetailsReq.getInterestAmount().add(jsdBorrowCashDo.getSumRepaidInterest()));
+        reviewLoanDetailsReq.setPoundageAmount(reviewLoanDetailsReq.getPoundageAmount().add(jsdBorrowCashDo.getSumRepaidPoundage()));
         //授信额度
         JsdUserAuthDo jsdUserAuthDo = jsdUserAuthService.getByUserId(jsdBorrowCashDo.getUserId());
         if (jsdUserAuthDo != null) {
@@ -91,10 +94,15 @@ public class ReviewLoanController {
             reviewLoanDetailsReq.setAge(String.valueOf(Integer.valueOf(currentYear) - Integer.valueOf(year)));
         }
         //商品订单信息
-        JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getLastOrderCashByBorrowId(jsdBorrowCashDo.getRid());
-        reviewLoanDetailsReq.setGoodsInterestAmount(jsdBorrowLegalOrderCashDo.getInterestAmount());
-        reviewLoanDetailsReq.setGoodsPoundageAmount(jsdBorrowLegalOrderCashDo.getPoundageAmount());
-        JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(jsdBorrowLegalOrderCashDo.getBorrowLegalOrderId());
+        JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getFirstOrderCashByBorrowId(jsdBorrowCashDo.getRid());
+        if (jsdBorrowLegalOrderCashDo == null) {
+            reviewLoanDetailsReq.setGoodsInterestAmount(BigDecimal.ZERO);
+            reviewLoanDetailsReq.setGoodsPoundageAmount(BigDecimal.ZERO);
+        } else {
+            reviewLoanDetailsReq.setGoodsInterestAmount(jsdBorrowLegalOrderCashDo.getInterestAmount());
+            reviewLoanDetailsReq.setGoodsPoundageAmount(jsdBorrowLegalOrderCashDo.getPoundageAmount());
+        }
+        JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getLastOrderByBorrowId(jsdBorrowCashDo.getRid());
         reviewLoanDetailsReq.setGoodsName(jsdBorrowLegalOrderDo.getGoodsName());
         reviewLoanDetailsReq.setGoodsPrice(jsdBorrowLegalOrderDo.getPriceAmount());
         JsdBorrowLegalOrderInfoDo jsdBorrowLegalOrderInfoDo = jsdBorrowLegalOrderInfoService.getByBorrowId(jsdBorrowCashDo.getRid());
