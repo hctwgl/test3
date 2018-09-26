@@ -530,7 +530,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		if (sumAmount.compareTo(allRepayAmount) <= 0) {
 			cashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
 			cashDo.setFinishDate(DateUtil.formatDateTime(new Date()));
-			jsdCollectionBorrowService.updateCollectionStatus(cashDo.getRid(),CollectionBorrowStatus.NORMAL_FINISHED.desc);
+			jsdCollectionBorrowService.updateCollectionStatus(cashDo.getRid(),CollectionBorrowStatus.NORMAL_FINISHED.name());
 		}
 	}
 
