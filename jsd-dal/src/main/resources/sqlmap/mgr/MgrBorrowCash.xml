@@ -7,7 +7,7 @@
         SELECT
         count(distinct user_id)
         FROM
-        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_create) &lt; #{days}
+        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_plan_repayment) &lt; #{days} and datediff(now(), gmt_plan_repayment) &gt;= 0
     </select>
 
     <select id="getApplyBorrowCashNumByDays" resultType="java.lang.Integer">
@@ -68,13 +68,16 @@
 
     <select id="getUserNumByBorrowDays" resultType="java.lang.Integer">
         SELECT
-        count(distinct nbc.user_id)
+        COUNT(DISTINCT bc.user_id)
         FROM
         jsd_borrow_cash bc
-        left join jsd_borrow_cash nbc on bc.user_id = nbc.user_id
-        where bc.is_delete=0 and datediff(now(),bc.gmt_arrival) &lt; #{days} and datediff(now(), bc.gmt_arrival) &gt;= 0
-        and datediff(now(),nbc.gmt_arrival) &gt;= #{days}
-        and bc.status in ('TRANSFERRED','FINISHED')
+        LEFT JOIN jsd_borrow_cash_repayment cr ON bc.user_id = cr.user_id
+        WHERE
+        bc.is_delete = 0
+        AND datediff(now(), bc.gmt_arrival) &lt; #{days} and datediff(now(), bc.gmt_arrival) &gt;= 0
+        AND datediff(now(), cr.gmt_create) &lt; #{days}
+        and cr.`status`='Y'
+        AND bc.STATUS IN ('TRANSFERRED')
     </select>
 
     <select id="getUserNumBetweenStartAndEnd" resultType="java.lang.Integer">

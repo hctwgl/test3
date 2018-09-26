@@ -123,8 +123,8 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         	repeatBorrowRate = new BigDecimal(haveBorrowCashPerNum).divide(new BigDecimal(applyBorrowCashPerNum), 4, BigDecimal.ROUND_HALF_UP);
         }
         if (dueAmount != BigDecimal.ZERO) {
-            overdueRate = overdueAmount.divide(dueAmount, 2, BigDecimal.ROUND_HALF_UP);
-            returnedRate = returnAmount.divide(dueAmount, 2, BigDecimal.ROUND_HALF_UP);//回款金额
+            overdueRate = overdueAmount.divide(dueAmount, 4, BigDecimal.ROUND_HALF_UP);
+            returnedRate = returnAmount.divide(dueAmount, 4, BigDecimal.ROUND_HALF_UP);//回款金额
         }
         if (applyBorrowCashNum != 0) {
             borrowPassRate = new BigDecimal(jsdBorrowCashDoList.size()).divide(new BigDecimal(applyBorrowCashNum), 4, BigDecimal.ROUND_HALF_UP);//借款通过人数
