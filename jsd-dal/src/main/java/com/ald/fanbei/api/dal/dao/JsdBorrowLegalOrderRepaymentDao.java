@@ -4,6 +4,8 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
 
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * 极速贷Dao
  * 
