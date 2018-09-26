@@ -34,7 +34,7 @@ public class UserAuthController extends BaseController{
         }else if(query.getPassPersonNum()==query.getSubmitPersonNum()){
             query.setPassRate(num);
         }else{
-            query.setPassRate(BigDecimalUtil.divide(query.getPassPersonNum(),query.getSubmitPersonNum()).multiply(num));
+            query.setPassRate(new BigDecimal(query.getPassPersonNum()).divide(new BigDecimal(query.getSubmitPersonNum()),2,BigDecimal.ROUND_HALF_UP).multiply(num));
         }
         query.setList(jsdUserAuthService.getListUserAuth(query));
         return Resp.succ(query,"");
