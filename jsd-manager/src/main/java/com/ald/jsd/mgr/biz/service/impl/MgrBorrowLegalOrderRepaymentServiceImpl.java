@@ -9,6 +9,7 @@ import com.ald.jsd.mgr.dal.dao.MgrBorrowLegalOrderRepaymentDao;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 
@@ -32,8 +33,13 @@ public class MgrBorrowLegalOrderRepaymentServiceImpl extends ParentServiceImpl<J
     }
 
     @Override
-    public List<JsdBorrowLegalOrderRepaymentDo> getBorrowCashByDays(Integer days) {
-        return mgrBorrowLegalOrderRepaymentDao.getBorrowCashByDays(days);
+    public List<JsdBorrowLegalOrderRepaymentDo> getBorrowCashRepayByDays(Integer days) {
+        return mgrBorrowLegalOrderRepaymentDao.getBorrowCashRepayByDays(days);
+    }
+
+    @Override
+    public List<JsdBorrowLegalOrderRepaymentDo> getBorrowCashOrderRepayBetweenStartAndEnd(Date startDate, Date endDate) {
+        return mgrBorrowLegalOrderRepaymentDao.getBorrowCashOrderRepayBetweenStartAndEnd(startDate,endDate);
     }
 
 }

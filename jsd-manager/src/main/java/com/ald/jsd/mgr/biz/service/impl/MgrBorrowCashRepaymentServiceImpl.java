@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 
@@ -37,7 +38,12 @@ public class MgrBorrowCashRepaymentServiceImpl implements MgrBorrowCashRepayment
     }
 
     @Override
-    public List<JsdBorrowCashRepaymentDo> getBorrowCashByDays(Integer days) {
-        return mgrBorrowCashRepaymentDao.getBorrowCashByDays(days);
+    public List<JsdBorrowCashRepaymentDo> getBorrowCashRepayByDays(Integer days) {
+        return mgrBorrowCashRepaymentDao.getBorrowCashRepayByDays(days);
+    }
+
+    @Override
+    public List<JsdBorrowCashRepaymentDo> getBorrowCashRepayBetweenStartAndEnd(Date startDate, Date endDate) {
+        return mgrBorrowCashRepaymentDao.getBorrowCashRepayBetweenStartAndEnd(startDate,endDate);
     }
 }

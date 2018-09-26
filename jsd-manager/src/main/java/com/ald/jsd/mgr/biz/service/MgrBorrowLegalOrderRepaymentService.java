@@ -3,6 +3,7 @@ package com.ald.jsd.mgr.biz.service;
 import com.ald.fanbei.api.biz.service.ParentService;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,6 +16,8 @@ import java.util.List;
  */
 public interface MgrBorrowLegalOrderRepaymentService extends ParentService<JsdBorrowLegalOrderRepaymentDo, Long> {
 
-    List<JsdBorrowLegalOrderRepaymentDo> getBorrowCashByDays(Integer days);
+    List<JsdBorrowLegalOrderRepaymentDo> getBorrowCashRepayByDays(Integer days);
+
+    List<JsdBorrowLegalOrderRepaymentDo> getBorrowCashOrderRepayBetweenStartAndEnd(Date startDate,Date endDate);
 
 }
