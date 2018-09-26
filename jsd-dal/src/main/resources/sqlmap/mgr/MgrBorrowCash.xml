@@ -98,17 +98,18 @@
         AND datediff(now(), bc.gmt_arrival) &lt; #{days} and datediff(now(), bc.gmt_arrival) &gt;= 0
         AND datediff(now(), cr.gmt_create) &lt; #{days}
         and cr.`status`='Y'
-        AND bc.STATUS IN ('TRANSFERRED')
+        AND bc.STATUS IN ('TRANSFERRED','FINISHED')
     </select>
 
     <select id="getUserNumBetweenStartAndEnd" resultType="java.lang.Integer">
         SELECT
-        count(distinct nbc.user_id)
+        count(DISTINCT bc.user_id)
         FROM
         jsd_borrow_cash bc
-        left join jsd_borrow_cash nbc on bc.user_id = nbc.user_id
+        LEFT JOIN jsd_borrow_cash_repayment cr ON bc.user_id = cr.user_id
         where bc.is_delete=0 and bc.gmt_arrival  between #{startDate} and #{endDate}
-        and ( nbc.gmt_arrival &lt; #{startDate} or nbc.gmt_arrival &gt; #{endDate})
+        and cr.gmt_create between #{startDate} and #{endDate}
+        and cr.`status`='Y'
         and bc.status in ('TRANSFERRED','FINISHED')
     </select>
 
