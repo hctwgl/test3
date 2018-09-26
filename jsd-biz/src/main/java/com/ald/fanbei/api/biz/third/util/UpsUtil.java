@@ -178,7 +178,8 @@ public class UpsUtil extends AbstractThird {
 		
 		final JsdUserDo userDo = jsdUserDao.getById(cashDo.getUserId());
 		// 当天借款金额存入缓存
-		bizCacheUtil.incr(Constants.CACHEKEY_BORROW_CURRDAY_ALLAMOUNT, cashDo.getAmount().longValue(), DateUtil.getTodayLast());
+		long currAllamount = bizCacheUtil.incr(Constants.CACHEKEY_BORROW_CURRDAY_ALLAMOUNT, cashDo.getAmount().longValue(), DateUtil.getTodayLast());
+		logger.info("currday borrow allamount cache : borrowNo="+cashDo.getBorrowNo()+", currAllamount+"+cashDo.getAmount().longValue()+", currAllamount="+currAllamount);
 		
 		new Thread() { public void run() {
         	try {

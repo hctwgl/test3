@@ -138,6 +138,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 		else if(StringUtil.equals(JsdBorrowCashReviewSwitch.SEMI_AUTO.name(), reviewSwitch)) {
 			// 当天放款总额
 			long currDayAllamount = bizCacheUtil.incr(Constants.CACHEKEY_BORROW_CURRDAY_ALLAMOUNT, 0L, DateUtil.getTodayLast());
+			logger.info("currday borrow allamount cache : borrowNo="+cashDo.getBorrowNo()+", currAllamount="+currDayAllamount);
 			// 剩余款额
 			BigDecimal remainAmount = BigDecimalUtil.subtract(allAmount, new BigDecimal(currDayAllamount));
 			
@@ -348,7 +349,8 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 	public void dealBorrowFail(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderDo orderDo, String failMsg) {
 		
 		// 缓存减去失败金额
-		bizCacheUtil.incr(Constants.CACHEKEY_BORROW_CURRDAY_ALLAMOUNT, -cashDo.getAmount().longValue(), DateUtil.getTodayLast());
+		long currAllamount = bizCacheUtil.incr(Constants.CACHEKEY_BORROW_CURRDAY_ALLAMOUNT, -cashDo.getAmount().longValue(), DateUtil.getTodayLast());
+		logger.info("currday borrow allamount cache : borrowNo="+cashDo.getBorrowNo()+", currAllamount-"+cashDo.getAmount().longValue()+", currAllamount="+currAllamount);
 
 		cashDo.setStatus(JsdBorrowCashStatus.CLOSED.name());
         cashDo.setRemark(failMsg);

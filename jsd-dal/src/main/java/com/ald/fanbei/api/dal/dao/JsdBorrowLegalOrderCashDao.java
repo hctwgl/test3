@@ -21,7 +21,10 @@ public interface JsdBorrowLegalOrderCashDao extends BaseDao<JsdBorrowLegalOrderC
 	 */
 	JsdBorrowLegalOrderCashDo getLastOrderCashByBorrowId(Long borrowId);
 
-
+	/**
+	 * 第一次次商品
+	 */
+	JsdBorrowLegalOrderCashDo getFirstOrderCashByBorrowId(Long borrowId);
 
     JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(@Param("borrowId")Long borrowId);
 

@@ -49,8 +49,18 @@ public class MgrBorrowCashServiceImpl implements MgrBorrowCashService {
     }
 
     @Override
+    public int getApplyBorrowCashNumByDays(Integer days) {
+        return mgrBorrowCashDao.getApplyBorrowCashNumByDays(days);
+    }
+
+    @Override
     public int getApplyBorrowCashBetweenStartAndEnd(Date startDate, Date endDate) {
         return mgrBorrowCashDao.getApplyBorrowCashBetweenStartAndEnd(startDate,endDate);
+    }
+
+    @Override
+    public int getApplyBorrowCashNumBetweenStartAndEnd(Date startDate, Date endDate) {
+        return mgrBorrowCashDao.getApplyBorrowCashNumBetweenStartAndEnd(startDate,endDate);
     }
 
     @Override

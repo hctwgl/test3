@@ -55,9 +55,10 @@ public class CollectionNoticeUtil extends AbstractThird {
 			Map<String,String>  params=new HashMap<>();
 			params.put("orderNo",getOrderNo("XGXY"));
 			params.put("info",JSON.toJSONString(data));
-			params.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN));
+			String token =  ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN);
+			params.put("token",token);
 			String url = getReportUrl() + "/api/ald/collect/v1/third/import";
-			String reqResult = HttpUtil.post(url, data);
+			String reqResult = HttpUtil.post(url, params);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new BizException("noticeCollectOverdue request fail , reqResult is null");
 			}
@@ -128,7 +129,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 			data.put("sign",sign);
 			String url = getCollectUrl() + "/api/collect/third/thirdReconciliateCheck";
 			String reqResult =  HttpUtil.post(url, data);
-			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 			}else {
 				throw new BizException("collectReconciliateNotice response fail ");
 			}
@@ -151,7 +152,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 			data.put("sign",sign);
 			String url = getCollectUrl() + "/api/collect/third/thridRepaymentCheck";
 			String reqResult = HttpUtil.post(url, data);
-			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 			}else {
 				throw new BizException("collectRepayNotice response fail ");
 			}

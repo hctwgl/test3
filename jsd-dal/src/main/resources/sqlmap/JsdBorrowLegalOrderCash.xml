@@ -415,6 +415,17 @@
 		ORDER BY gmt_create DESC
 		LIMIT 1
     </select>
+
+    <select id="getFirstOrderCashByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        jsd_borrow_legal_order_cash
+        WHERE
+        is_delete = 0 AND borrow_id = #{borrowId}
+        ORDER BY gmt_create
+        LIMIT 1
+    </select>
     
     <select id="getPreviousOrderCashByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">
     	SELECT

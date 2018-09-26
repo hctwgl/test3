@@ -19,6 +19,7 @@ public interface JsdBorrowLegalOrderCashService extends ParentService<JsdBorrowL
 
 	JsdBorrowLegalOrderCashDo getLastOrderCashByBorrowId(Long borrowId);
 
+    JsdBorrowLegalOrderCashDo getFirstOrderCashByBorrowId(Long borrowId);
 
     JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(Long borrowId);
     /**
