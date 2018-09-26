@@ -251,7 +251,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         int PaseUserNum = mgrUserAuthService.getPassPersonNumByStatusEqualDays("Y", days);
         BigDecimal riskPassRate = BigDecimal.ZERO;
         if (AllUserNum != 0) {
-            riskPassRate = new BigDecimal(PaseUserNum).divide(new BigDecimal(AllUserNum), 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+            riskPassRate = new BigDecimal(PaseUserNum).divide(new BigDecimal(AllUserNum), 4, BigDecimal.ROUND_HALF_UP);
         }
         return riskPassRate;
     }
