@@ -61,6 +61,8 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         int days = 0;
         BigDecimal dueAmount = BigDecimal.ZERO;//到期金额
         BigDecimal returnAmount = BigDecimal.ZERO;//回款金额
+        Date startTime = null;
+        Date endTime = null;
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (!NumberUtil.isNullOrZero(analysisReq.days)) {
             jsdBorrowCashDoList = mgrBorrowCashService.getBorrowCashLessThanDays(analysisReq.days);
@@ -70,13 +72,13 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             haveBorrowCashPerNum = mgrBorrowCashService.getUserNumByBorrowDays(analysisReq.days);//当期复借人数
             allUserNum = mgrUserAuthService.getPassPersonNumByStatusAndDays("", analysisReq.days);
             paseUserNum = mgrUserAuthService.getPassPersonNumByStatusAndDays("Y", analysisReq.days);
-            returnAmount = buildTotalRepayAmtByDate(DateUtil.addDays(new Date(),-analysisReq.days),new Date());
+            startTime = DateUtil.initStartDateByDay(DateUtil.addDays(new Date(),-analysisReq.days+1));
+            endTime = DateUtil.initEndDateByDay(new Date());
+            returnAmount = buildTotalRepayAmtByDate(startTime,endTime);
 //            returnAmount = buildTotalRepayAmtBySomeDays(analysisReq.days);//回款金额
             dueAmount = mgrBorrowCashService.getPlanRepaymentCashAmountByDays(analysisReq.days);//当期到期金额
             days = analysisReq.days;
         } else if (!StringUtils.isBlank(analysisReq.endDate) && !StringUtils.isBlank(analysisReq.startDate)) {
-            Date startTime = null;
-            Date endTime = null;
             try {
                 startTime = dateFormat.parse(analysisReq.startDate);
                 endTime = dateFormat.parse(analysisReq.endDate);
