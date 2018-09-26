@@ -137,6 +137,11 @@ public class LoanDetailsReq {
     private String isCollection;
 
     /**
+     * 逾期状态：Y：逾期；N：未逾期
+     */
+    private String overdueStatus;
+
+    /**
      * 协议
      */
     private List<JsdProctocolBo> proctocols;
@@ -368,5 +373,13 @@ public class LoanDetailsReq {
 
     public void setProctocols(List<JsdProctocolBo> proctocols) {
         this.proctocols = proctocols;
+    }
+
+    public String getOverdueStatus() {
+        return overdueStatus;
+    }
+
+    public void setOverdueStatus(String overdueStatus) {
+        this.overdueStatus = overdueStatus;
     }
 }
