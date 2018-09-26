@@ -51,11 +51,7 @@ public class BizFilter implements Filter{
 		long end = System.currentTimeMillis();
 		
 		String result = bizResponseWrapper.getHolderStr();
-		if(result.length() <= 2048) {
-			logStr += LOG_SEPARATOR + result;
-		}else {
-			logStr += LOG_SEPARATOR + result.substring(0, 1024) + "......";
-		}
+		logStr += LOG_SEPARATOR + result;
 		logStr += LOG_SEPARATOR + (end - start);
 		
 		logger.info(logStr);
