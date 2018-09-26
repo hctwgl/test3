@@ -13,6 +13,8 @@ public interface MgrBorrowCashService {
      */
     List<JsdBorrowCashDo> getBorrowCashByDays(Integer days);
 
+    List<JsdBorrowCashDo> getPlanRepayBorrowCashByDays(Integer days);
+
     List<JsdBorrowCashDo> getBorrowCashLessThanDays(Integer days);
 
     List<JsdBorrowCashDo> getBorrowCashBetweenStartAndEnd(Date startDate,Date endDate);
@@ -21,13 +23,19 @@ public interface MgrBorrowCashService {
 
     int getApplyBorrowCashNumByDays(Integer days);
 
+    BigDecimal getPlanRepaymentCashAmountByDays(Integer days);
+
     int getApplyBorrowCashBetweenStartAndEnd(Date startDate,Date endDate);
+
+    BigDecimal getPlanRepaymentCashAmountBetweenStartAndEnd(Date startDate,Date endDate);
 
     int getApplyBorrowCashNumBetweenStartAndEnd(Date startDate,Date endDate);
 
     int getUserNumByBorrowDays(Integer days);
 
     int getUserNumBetweenStartAndEnd(Date startDate,Date endDate);
+
+    int getPlanRepaymentCashAmountByDays(Date startDate,Date endDate);
 
     BigDecimal getAmountByDays(Integer days);
 }
