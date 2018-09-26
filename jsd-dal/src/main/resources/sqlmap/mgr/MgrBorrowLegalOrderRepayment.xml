@@ -354,11 +354,19 @@
         LIMIT 1
     </select>
 
-    <select id="getBorrowCashByDays" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo">
+    <select id="getBorrowCashRepayByDays" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo">
         SELECT
         <include refid="queryFields" />
         FROM
         jsd_borrow_legal_order_repayment  where is_delete=0 and datediff(now(),gmt_create) = #{days}
+        and status = 'Y'
+    </select>
+
+    <select id="getBorrowCashOrderRepayBetweenStartAndEnd" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        jsd_borrow_legal_order_repayment  where is_delete=0 and gmt_create between #{startDate} and #{endDate}
         and status = 'Y'
     </select>
 
