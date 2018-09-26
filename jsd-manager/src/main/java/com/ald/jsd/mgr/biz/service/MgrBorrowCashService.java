@@ -19,7 +19,11 @@ public interface MgrBorrowCashService {
 
     int getApplyBorrowCashByDays(Integer days);
 
+    int getApplyBorrowCashNumByDays(Integer days);
+
     int getApplyBorrowCashBetweenStartAndEnd(Date startDate,Date endDate);
+
+    int getApplyBorrowCashNumBetweenStartAndEnd(Date startDate,Date endDate);
 
     int getUserNumByBorrowDays(Integer days);
 
