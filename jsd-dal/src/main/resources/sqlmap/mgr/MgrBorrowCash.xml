@@ -34,7 +34,7 @@
     <select id="getBorrowCashLessThanDays" resultType="JsdBorrowCashDo">
         SELECT *
         FROM
-        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) &lt; #{days} and datediff(now(), gmt_arrival) &gt;= 0
+        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_create) &lt; #{days} and datediff(now(), gmt_create) &gt;= 0
         and status in ('TRANSFERRED','FINISHED')
     </select>
 

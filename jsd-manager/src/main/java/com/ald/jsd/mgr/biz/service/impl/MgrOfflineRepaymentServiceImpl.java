@@ -40,7 +40,7 @@ public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentServic
         String tradeNo = reqData.get("tradeNo");
         String amount = reqData.get("amount");
         String remark = reqData.get("remark");
-        JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByBorrowNo(borrowNo);
+        JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(borrowNo);
         JsdBorrowLegalOrderCashDo legalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
         String dataId = String.valueOf(borrowCashDo.getRid() + borrowCashDo.getRenewalNum());
         jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo, legalOrderCashDo, amount, tradeNo, borrowCashDo.getUserId(), repayType, channel, repaymentDate, null, dataId, remark);
