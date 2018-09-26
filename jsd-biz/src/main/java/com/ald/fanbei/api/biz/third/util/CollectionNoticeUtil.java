@@ -55,9 +55,10 @@ public class CollectionNoticeUtil extends AbstractThird {
 			Map<String,String>  params=new HashMap<>();
 			params.put("orderNo",getOrderNo("XGXY"));
 			params.put("info",JSON.toJSONString(data));
-			params.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN));
+			String token =  ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN);
+			params.put("token",token);
 			String url = getReportUrl() + "/api/ald/collect/v1/third/import";
-			String reqResult = HttpUtil.post(url, data);
+			String reqResult = HttpUtil.post(url, params);
 			if (StringUtil.isBlank(reqResult)) {
 				throw new BizException("noticeCollectOverdue request fail , reqResult is null");
 			}
