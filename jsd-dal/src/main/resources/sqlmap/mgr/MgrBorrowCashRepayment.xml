@@ -257,7 +257,7 @@
         limit 0,1
     </select>
 
-    <select id="getBorrowCashByDays" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo">
+    <select id="getBorrowCashRepayByDays" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo">
         SELECT
         <include refid="queryFields" />
         FROM
@@ -360,5 +360,13 @@
         b.trade_no_xgxy=#{tradeNoXgxy}
         ORDER BY
         gmt_create DESC
+    </select>
+
+    <select id="getBorrowCashRepayBetweenStartAndEnd" resultType="JsdBorrowCashRepaymentDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        jsd_borrow_cash_repayment  where is_delete=0 and gmt_create between #{startDate} and #{endDate}
+        and status = 'Y'
     </select>
 </mapper>

@@ -4,6 +4,7 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,5 +19,7 @@ public interface MgrBorrowCashRepaymentDao extends BaseDao<JsdBorrowCashRepaymen
 
     List<JsdBorrowCashRepaymentDo> getByBorrowTradeNoXgxy(@Param("tradeNoXgxy") String tradeNoXgxy);
 
-    List<JsdBorrowCashRepaymentDo> getBorrowCashByDays(Integer days);
+    List<JsdBorrowCashRepaymentDo> getBorrowCashRepayByDays(Integer days);
+
+    List<JsdBorrowCashRepaymentDo> getBorrowCashRepayBetweenStartAndEnd(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 }

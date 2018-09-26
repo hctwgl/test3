@@ -703,6 +703,6 @@
             AND (a.trade_no_xgxy LIKE  CONCAT('%',#{searchContent},'%')
             or b.real_name LIKE  CONCAT('%',#{searchContent},'%'))
         </if>
-        order by a.id desc
+        order by a.gmt_plan_repayment desc
     </select>
 </mapper>

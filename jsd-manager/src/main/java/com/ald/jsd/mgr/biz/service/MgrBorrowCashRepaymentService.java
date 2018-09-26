@@ -2,6 +2,7 @@ package com.ald.jsd.mgr.biz.service;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,6 +17,8 @@ public interface MgrBorrowCashRepaymentService {
 
     List<JsdBorrowCashRepaymentDo> getByBorrowTradeNoXgxy(String tradeNoXgxy);
 
-    List<JsdBorrowCashRepaymentDo> getBorrowCashByDays(Integer days);
+    List<JsdBorrowCashRepaymentDo> getBorrowCashRepayByDays(Integer days);
+
+    List<JsdBorrowCashRepaymentDo> getBorrowCashRepayBetweenStartAndEnd(Date startDate,Date endDate);
 
 }
