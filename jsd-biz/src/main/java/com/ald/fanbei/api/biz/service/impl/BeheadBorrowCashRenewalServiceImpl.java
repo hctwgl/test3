@@ -513,12 +513,6 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 		// 上期总逾期费
 		BigDecimal overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount());
 		
-		String deferRemark = "上期利息"+rateAmount+
-							 "元,赊销手续费"+poundage+
-							 "元,上期逾期费"+overdueAmount+
-							 "元,本金还款部分"+capital+
-							 "元";
-		
 		BigDecimal principalAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidOverdue(), 
 				borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage())
 				.subtract(borrowCashDo.getRepayAmount().add(capital));
@@ -526,7 +520,6 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 		delayInfo.put("principalAmount", principalAmount+"");	// 展期后剩余借款本金
 		delayInfo.put("capital", capital+"");				//此次续期需支付的本金
 		delayInfo.put("delayDay", allowRenewalDay+"");	// 续期天数
-		delayInfo.put("delayRemark", deferRemark);	// 费用明细	展期金额的相关具体描述（多条说明用英文逗号,用间隔）
 		
 		// 利润差
 		this.getRenewalRate(delayInfo);
@@ -538,6 +531,14 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 		delayInfo.put("delayAmount", renewalPayAmount+"");	// 需支付总金额
 		delayInfo.put("totalDiffFee", diffFee.toPlainString());	// 展期后的利润差，西瓜会根据此金额匹配搭售商品
 		
+		String deferRemark = "上期利息"+rateAmount+
+							 "元,上期服务费"+poundage+
+							 "元,上期逾期费"+overdueAmount+
+							 "元,本金还款部分"+capital+
+							 "元,本期商品价格"+diffFee.toPlainString()+"元。";
+		
+		delayInfo.put("delayRemark", deferRemark);	// 费用明细	展期金额的相关具体描述（多条说明用英文逗号,用间隔）
+
 		delayArray.add(delayInfo);
 		
 		return delayArray;
