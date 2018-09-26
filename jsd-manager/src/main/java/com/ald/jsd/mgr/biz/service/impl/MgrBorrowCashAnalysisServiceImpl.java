@@ -4,6 +4,7 @@ import com.ald.fanbei.api.biz.vo.MgrBorrowInfoAnalysisVo;
 import com.ald.fanbei.api.biz.vo.MgrDashboardCityInfoVo;
 import com.ald.fanbei.api.biz.vo.MgrDashboardInfoVo;
 import com.ald.fanbei.api.biz.vo.MgrTrendTodayInfoVo;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
@@ -51,24 +52,27 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
     @Override
     public MgrBorrowInfoAnalysisVo getBorrowInfoAnalysis(AnalysisReq analysisReq) {
         List<JsdBorrowCashDo> jsdBorrowCashDoList = new ArrayList<>();
-        int applyBorrowCashPerNum = 0;
-        int applyBorrowCashNum = 0;
+        int arrivalBorrowCashPerNum = 0;
+        int applyBorrowCashSuPerNum = 0;
         int haveBorrowCashPerNum = 0;
         int allUserNum = 0;
         int paseUserNum = 0;
+        int applyBorrowCashPerNum = 0;
         int days = 0;
         BigDecimal dueAmount = BigDecimal.ZERO;//到期金额
         BigDecimal returnAmount = BigDecimal.ZERO;//回款金额
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (!NumberUtil.isNullOrZero(analysisReq.days)) {
             jsdBorrowCashDoList = mgrBorrowCashService.getBorrowCashLessThanDays(analysisReq.days);
-            applyBorrowCashPerNum = mgrBorrowCashService.getApplyBorrowCashByDays(analysisReq.days);//申请借款人数
-            applyBorrowCashNum = mgrBorrowCashService.getApplyBorrowCashNumByDays(analysisReq.days);//申请借款数量
+            arrivalBorrowCashPerNum = mgrBorrowCashService.getArrivalBorrowCashPerByDays(analysisReq.days);//当期到期人数
+            applyBorrowCashSuPerNum = mgrBorrowCashService.getApplyBorrowCashSuPerByDays(analysisReq.days);//申请借款成功人数
+            applyBorrowCashPerNum = mgrBorrowCashService.getApplyBorrowCashPerByDays(analysisReq.days);//申请借款人数
             haveBorrowCashPerNum = mgrBorrowCashService.getUserNumByBorrowDays(analysisReq.days);//当期复借人数
             allUserNum = mgrUserAuthService.getPassPersonNumByStatusAndDays("", analysisReq.days);
             paseUserNum = mgrUserAuthService.getPassPersonNumByStatusAndDays("Y", analysisReq.days);
-            returnAmount = buildTotalRepayAmtByDays(analysisReq.days-1);
-            dueAmount = mgrBorrowCashService.getPlanRepaymentCashAmountByDays(analysisReq.days);
+            returnAmount = buildTotalRepayAmtByDate(DateUtil.addDays(new Date(),-analysisReq.days),new Date());
+//            returnAmount = buildTotalRepayAmtBySomeDays(analysisReq.days);//回款金额
+            dueAmount = mgrBorrowCashService.getPlanRepaymentCashAmountByDays(analysisReq.days);//当期到期金额
             days = analysisReq.days;
         } else if (!StringUtils.isBlank(analysisReq.endDate) && !StringUtils.isBlank(analysisReq.startDate)) {
             Date startTime = null;
@@ -81,8 +85,9 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
                 e.printStackTrace();
             }
             jsdBorrowCashDoList = mgrBorrowCashService.getBorrowCashBetweenStartAndEnd(startTime, endTime);
-            applyBorrowCashPerNum = mgrBorrowCashService.getApplyBorrowCashBetweenStartAndEnd(startTime, endTime);//申请借款人数
-            applyBorrowCashNum = mgrBorrowCashService.getApplyBorrowCashNumBetweenStartAndEnd(startTime, endTime);//申请借款数量
+            arrivalBorrowCashPerNum = mgrBorrowCashService.getArrivalBorrowCashBetweenStartAndEnd(startTime, endTime);//当期到期人数
+            applyBorrowCashSuPerNum = mgrBorrowCashService.getApplyBorrowCashSuPerBetweenStartAndEnd(startTime, endTime);//申请借款成功人数
+            applyBorrowCashPerNum = mgrBorrowCashService.getApplyBorrowCashPerBetweenStartAndEnd(startTime, endTime);//申请借款成功人数
             haveBorrowCashPerNum = mgrBorrowCashService.getUserNumBetweenStartAndEnd(startTime, endTime);//当期复借人数
             allUserNum = mgrUserAuthService.getPassPersonNumByStatusBetweenStartAndEnd("", startTime, endTime);
             paseUserNum = mgrUserAuthService.getPassPersonNumByStatusBetweenStartAndEnd("Y", startTime, endTime);
@@ -92,7 +97,6 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             dueAmount = mgrBorrowCashService.getPlanRepaymentCashAmountBetweenStartAndEnd(startTime, endTime);
             days = endDays - startDays;
         }
-
         MgrBorrowInfoAnalysisVo mgrBorrowInfoAnalysisVo = new MgrBorrowInfoAnalysisVo();
         BigDecimal totalLoanAmount = BigDecimal.ZERO;
         BigDecimal returnedRate = BigDecimal.ZERO;//回款率
@@ -119,15 +123,15 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             borrowDayAmount = totalLoanAmount.divide(new BigDecimal(days), 2, BigDecimal.ROUND_HALF_UP);
         }
 
-        if (applyBorrowCashPerNum != 0) {
-        	repeatBorrowRate = new BigDecimal(haveBorrowCashPerNum).divide(new BigDecimal(applyBorrowCashPerNum), 4, BigDecimal.ROUND_HALF_UP);
+        if (arrivalBorrowCashPerNum != 0) {
+        	repeatBorrowRate = new BigDecimal(haveBorrowCashPerNum).divide(new BigDecimal(arrivalBorrowCashPerNum), 4, BigDecimal.ROUND_HALF_UP);
         }
         if (dueAmount != BigDecimal.ZERO) {
             overdueRate = overdueAmount.divide(dueAmount, 4, BigDecimal.ROUND_HALF_UP);
             returnedRate = returnAmount.divide(dueAmount, 4, BigDecimal.ROUND_HALF_UP);//回款金额
         }
-        if (applyBorrowCashNum != 0) {
-            borrowPassRate = new BigDecimal(jsdBorrowCashDoList.size()).divide(new BigDecimal(applyBorrowCashNum), 4, BigDecimal.ROUND_HALF_UP);//借款通过人数
+        if (applyBorrowCashPerNum != 0) {
+            borrowPassRate = new BigDecimal(applyBorrowCashSuPerNum).divide(new BigDecimal(applyBorrowCashPerNum), 4, BigDecimal.ROUND_HALF_UP);//借款通过人数
         }
         if (totalLoanAmount != BigDecimal.ZERO) {
             profitRate = (returnAmount.subtract(overdueAmount)).divide(totalLoanAmount, 4, BigDecimal.ROUND_HALF_UP);
@@ -205,11 +209,11 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
 
         BigDecimal totalRepayAmtRateByWeek = BigDecimal.ZERO;//今日还款额周同比
 
-        BigDecimal totalRepayAmt = buildTotalRepayAmtByDays(0);//今日还款额
+        BigDecimal totalRepayAmt = buildTotalRepayAmtByOneDays(0);//今日还款额
 
-        BigDecimal ystRepayAmt = buildTotalRepayAmtByDays(1);//昨日还款额
+        BigDecimal ystRepayAmt = buildTotalRepayAmtByOneDays(1);//昨日还款额
 
-        BigDecimal lastWeekRepayAmt = buildTotalRepayAmtByDays(7);//上周还款额
+        BigDecimal lastWeekRepayAmt = buildTotalRepayAmtByOneDays(7);//上周还款额
 
         if (ystRepayAmt.compareTo(BigDecimal.ZERO) != 0){
             totalRepayAmtRateByDay = totalRepayAmt.divide(ystAmount,2,BigDecimal.ROUND_HALF_UP);
@@ -257,7 +261,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
     }
 
     public int buildTotalRepayPerson(int days){
-        List<JsdBorrowCashRepaymentDo> jsdBorrowCashRepaymentDoList = mgrBorrowCashRepaymentService.getBorrowCashRepayByDays(days);
+        List<JsdBorrowCashRepaymentDo> jsdBorrowCashRepaymentDoList = mgrBorrowCashRepaymentService.getBorrowCashRepayByOneDays(days);
         //借款还款
         Set borrowCashList = jsdBorrowCashRepaymentDoList.stream().map(JsdBorrowCashRepaymentDo::getUserId).collect(Collectors.toSet());
 
@@ -269,8 +273,8 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         return borrowCashList.size();
     }
 
-    public BigDecimal buildTotalRepayAmtByDays(int days){
-        List<JsdBorrowCashRepaymentDo> jsdBorrowCashRepaymentDoList = mgrBorrowCashRepaymentService.getBorrowCashRepayByDays(days);
+    public BigDecimal buildTotalRepayAmtByOneDays(int days){
+        List<JsdBorrowCashRepaymentDo> jsdBorrowCashRepaymentDoList = mgrBorrowCashRepaymentService.getBorrowCashRepayByOneDays(days);
         //借款还款
         BigDecimal borrowCashReapymoney = jsdBorrowCashRepaymentDoList.stream().map(JsdBorrowCashRepaymentDo::getRepaymentAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
 

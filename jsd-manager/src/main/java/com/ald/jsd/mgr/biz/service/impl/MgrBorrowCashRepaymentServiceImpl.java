@@ -38,8 +38,8 @@ public class MgrBorrowCashRepaymentServiceImpl implements MgrBorrowCashRepayment
     }
 
     @Override
-    public List<JsdBorrowCashRepaymentDo> getBorrowCashRepayByDays(Integer days) {
-        return mgrBorrowCashRepaymentDao.getBorrowCashRepayByDays(days);
+    public List<JsdBorrowCashRepaymentDo> getBorrowCashRepayByOneDays(Integer days) {
+        return mgrBorrowCashRepaymentDao.getBorrowCashRepayByOneDays(days);
     }
 
     @Override

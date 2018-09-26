@@ -19,18 +19,65 @@ public interface MgrBorrowCashService {
 
     List<JsdBorrowCashDo> getBorrowCashBetweenStartAndEnd(Date startDate,Date endDate);
 
-    int getApplyBorrowCashByDays(Integer days);
+    /**
+     * 当期到期人数
+     * @param days
+     * @return
+     */
+    int getArrivalBorrowCashPerByDays(Integer days);
 
-    int getApplyBorrowCashNumByDays(Integer days);
+    /**
+     * 申请借款成功人数
+     * @param days
+     * @return
+     */
+    int getApplyBorrowCashSuPerByDays(Integer days);
 
+    /**
+     * 申请借款人数
+     * @param days
+     * @return
+     */
+    int getApplyBorrowCashPerByDays(Integer days);
+
+    /**
+     * 当期到期金额
+     * @param days
+     * @return
+     */
     BigDecimal getPlanRepaymentCashAmountByDays(Integer days);
 
-    int getApplyBorrowCashBetweenStartAndEnd(Date startDate,Date endDate);
+    /**
+     * 当期到期人数
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    int getArrivalBorrowCashBetweenStartAndEnd(Date startDate,Date endDate);
 
     BigDecimal getPlanRepaymentCashAmountBetweenStartAndEnd(Date startDate,Date endDate);
 
-    int getApplyBorrowCashNumBetweenStartAndEnd(Date startDate,Date endDate);
+    /**
+     * 申请借款成功人数
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    int getApplyBorrowCashSuPerBetweenStartAndEnd(Date startDate,Date endDate);
 
+    /**
+     * 申请借款人数
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    int getApplyBorrowCashPerBetweenStartAndEnd(Date startDate,Date endDate);
+
+    /**
+     * 当期复借人数
+     * @param days
+     * @return
+     */
     int getUserNumByBorrowDays(Integer days);
 
     int getUserNumBetweenStartAndEnd(Date startDate,Date endDate);

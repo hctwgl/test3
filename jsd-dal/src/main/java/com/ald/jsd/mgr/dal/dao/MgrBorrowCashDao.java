@@ -27,27 +27,36 @@ public interface MgrBorrowCashDao {
     List<JsdBorrowCashDo> getBorrowCashBetweenStartAndEnd(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
 
     /**
-     * 获取当前申请借款人数
+     * 获取当期到期人数
      *
      * @param days
      * @return
      */
-    int getApplyBorrowCashByDays(Integer days);
+    int getArrivalBorrowCashPerByDays(Integer days);
 
     /**
-     * 获取当前申请借款数量
+     * 获取申请借款成功人数
      * @param days
      * @return
      */
-    int getApplyBorrowCashNumByDays(Integer days);
+    int getApplyBorrowCashSuPerByDays(Integer days);
+
+    /**
+     * 获取申请借款人数
+     * @param days
+     * @return
+     */
+    int getApplyBorrowCashPerByDays(Integer days);
 
     BigDecimal getPlanRepaymentCashAmountByDays(Integer days);
 
-    int getApplyBorrowCashBetweenStartAndEnd(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
+    int getArrivalBorrowCashBetweenStartAndEnd(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
 
     BigDecimal getPlanRepaymentCashAmountBetweenStartAndEnd(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
 
-    int getApplyBorrowCashNumBetweenStartAndEnd(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
+    int getApplyBorrowCashSuPerBetweenStartAndEnd(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
+
+    int getApplyBorrowCashPerBetweenStartAndEnd(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
 
     int getUserNumByBorrowDays(Integer days);
 
