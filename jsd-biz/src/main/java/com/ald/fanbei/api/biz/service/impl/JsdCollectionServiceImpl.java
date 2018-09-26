@@ -80,6 +80,10 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 			repayData.put("orderNo", repayDealBo.borrowNo);
 			//根据场景不同，推送催收不同还款类型
 			if(StringUtil.equals(type.getCode(),JsdRepayType.COLLECTION.getCode()) || StringUtil.equals(type.getCode(),JsdRepayType.REVIEW_COLLECTION.getCode())){
+				data.put("dataId",dataId);//源数据id
+				repayData.put("type", JsdRepayCollectionType.OFFLINE.getCode());
+				noticeRecordDo.setType(JsdNoticeType.COLLECT.code);
+			}else {
 				repayData.put("type", JsdRepayCollectionType.APP.getCode());
 				noticeRecordDo.setType(JsdNoticeType.OVERDUEREPAY.code);
 				if(repaymentDo != null){
@@ -89,10 +93,6 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 					dataId = String.valueOf(repayDealBo.orderCashDo.getBorrowLegalOrderId());
 				}
 				data.put("dataId",dataId);//源数据id
-			}else if(StringUtil.equals(type.getCode(),JsdRepayType.OFFLINE.getCode())){
-				data.put("dataId",dataId);//源数据id
-				repayData.put("type", JsdRepayCollectionType.OFFLINE.getCode());
-				noticeRecordDo.setType(JsdNoticeType.COLLECT.code);
 			}
 			repayData.put("repaymentAcc", repayDealBo.userId+"");//还款账户
 
