@@ -109,7 +109,8 @@ public class NoticeTask {
                             }
                             continue;
                         }
-                        if (StringUtils.equals(recordDo.getTimes(), "5") && (StringUtils.equals(recordDo.getType(), JsdNoticeType.COLLECT_RENEW.code))) {
+                        if (StringUtils.equals(recordDo.getTimes(), "5") && (StringUtils.equals(recordDo.getType(), JsdNoticeType.COLLECT_RENEW.code) ||
+                                StringUtils.equals(recordDo.getType(), JsdNoticeType.OVERDUEREPAY.code) || StringUtils.equals(recordDo.getType(), JsdNoticeType.COLLECT.code))) {
                             if(StringUtils.isBlank(recordDo.getParams())){
                                 jsdNoticeRecordService.updateNoticeRecordStatus(buildRecord(recordDo));
                             }else{
