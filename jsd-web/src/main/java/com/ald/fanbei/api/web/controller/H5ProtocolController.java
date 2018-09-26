@@ -163,13 +163,13 @@ public class H5ProtocolController {
 				JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getLastOrderByBorrowId(cashDo.getRid());
 				if(orderCashDo == null){
                     amountLower = jsdBorrowLegalOrderDo.getPriceAmount();
-					interestRate = BigDecimal.ZERO;
-					serviceRate = BigDecimal.ZERO;
-					overdueRate = BigDecimal.ZERO;
-					model.put("gmtStart", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-					model.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-					model.put("gmtPlanRepayment", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-					model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+					interestRate = cashDo.getInterestRate();
+					serviceRate = cashDo.getPoundageRate();
+					overdueRate = cashDo.getOverdueRate();
+					model.put("gmtStart", "");
+					model.put("gmtEnd", "");
+					model.put("gmtPlanRepayment", "");
+					model.put("gmtSign", "");
                 }else {
                     amountLower = orderCashDo.getAmount();
 					interestRate = orderCashDo.getInterestRate();

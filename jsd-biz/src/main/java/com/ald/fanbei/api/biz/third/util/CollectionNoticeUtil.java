@@ -129,7 +129,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 			data.put("sign",sign);
 			String url = getCollectUrl() + "/api/collect/third/thirdReconciliateCheck";
 			String reqResult =  HttpUtil.post(url, data);
-			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 			}else {
 				throw new BizException("collectReconciliateNotice response fail ");
 			}
@@ -152,7 +152,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 			data.put("sign",sign);
 			String url = getCollectUrl() + "/api/collect/third/thridRepaymentCheck";
 			String reqResult = HttpUtil.post(url, data);
-			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 			}else {
 				throw new BizException("collectRepayNotice response fail ");
 			}

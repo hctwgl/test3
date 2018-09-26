@@ -526,11 +526,11 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		// 续期应缴费用(上期总利息+上期总手续费+上期总逾期费+要还本金  +上期待还订单)
 		BigDecimal renewalPayAmount = BigDecimalUtil.add(rateAmount, poundage, overdueAmount, capital, waitOrderAmount);
 
-		String deferRemark = "上期利息"+rateAmount+
-							 "元,赊销手续费"+poundage+
-							 "元,上期逾期费"+overdueAmount+
+		String deferRemark = "上期总利息"+rateAmount+
+							 "元,上期总服务费"+poundage+
+							 "元,上期总逾期费"+overdueAmount+
 							 "元,本金还款部分"+capital+
-							 "元,上期商品价格"+waitOrderAmount+"元";
+							 "元,上期商品价格"+waitOrderAmount+"元。";
 
 		BigDecimal principalAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidOverdue(),
 				borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage())
