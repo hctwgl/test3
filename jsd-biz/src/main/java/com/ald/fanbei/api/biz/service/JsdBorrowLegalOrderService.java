@@ -30,6 +30,13 @@ public interface JsdBorrowLegalOrderService extends ParentService<JsdBorrowLegal
      * @return
      */
     JsdBorrowLegalOrderDo getLastOrderByBorrowId(Long borrowId);
+
+    /**
+     * 根据借款id获取第一笔订单
+     * @param borrowId
+     * @return
+     */
+    JsdBorrowLegalOrderDo getFirstOrderByBorrowId(Long borrowId);
     
     /**
      * 获取订单列表
