@@ -124,6 +124,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	private void generateRepayRecords(BorrowCashRepayBo bo) {
 		Date now = new Date();
 		String name = bo.name;
+		bo.repayType=JsdRepayType.INITIATIVE.getName();
 		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(bo.borrowId);
 		JsdBorrowCashRepaymentDo borrowRepaymentDo = null;
 		JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = null;
