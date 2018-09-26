@@ -124,6 +124,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	private void generateRepayRecords(BorrowCashRepayBo bo) {
 		Date now = new Date();
 		String name = bo.name;
+		bo.repayType=JsdRepayType.INITIATIVE.getName();
 		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(bo.borrowId);
 		JsdBorrowCashRepaymentDo borrowRepaymentDo = null;
 		JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = null;
@@ -387,7 +388,10 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				try {
 					noticeXgxyRepayResult(repaymentDo,orderRepaymentDo,YesNoStatus.YES.getCode(),"",type);
 					boolean cashResult = DateUtil.afterDay(new Date(),repayDealBo.cashDo.getGmtPlanRepayment());
-					boolean orderResult = DateUtil.afterDay(new Date(),repayDealBo.orderCashDo.getGmtLastRepayment());
+					boolean orderResult = false;
+					if(repayDealBo.orderCashDo != null){
+						orderResult= DateUtil.afterDay(new Date(),repayDealBo.orderCashDo.getGmtPlanRepay());
+					}
 					logger.info(" cashResult = " + cashResult+"orderResult = "+orderResult +"new Date() = " + new Date());
 					if(orderResult || cashResult) {
 						jsdCollectionService.nofityRisk(repayDealBo, repaymentDo, orderRepaymentDo, type, dataId);
