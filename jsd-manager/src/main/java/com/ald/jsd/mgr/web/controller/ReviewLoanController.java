@@ -94,7 +94,7 @@ public class ReviewLoanController {
             reviewLoanDetailsReq.setAge(String.valueOf(Integer.valueOf(currentYear) - Integer.valueOf(year)));
         }
         //商品订单信息
-        JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getLastOrderCashByBorrowId(jsdBorrowCashDo.getRid());
+        JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getFirstOrderCashByBorrowId(jsdBorrowCashDo.getRid());
         if (jsdBorrowLegalOrderCashDo == null) {
             reviewLoanDetailsReq.setGoodsInterestAmount(BigDecimal.ZERO);
             reviewLoanDetailsReq.setGoodsPoundageAmount(BigDecimal.ZERO);
