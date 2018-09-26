@@ -354,7 +354,7 @@
         LIMIT 1
     </select>
 
-    <select id="getBorrowCashByDays" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo">
+    <select id="getBorrowCashByDays" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo">
         SELECT
         <include refid="queryFields" />
         FROM
