@@ -190,7 +190,7 @@
     </select>
 
     <select id="getPassPersonNumByStatusBetweenStartAndEnd" resultType="java.lang.Integer">
-        SELECT count(user_id)
+        SELECT count(DISTINCT user_id)
         FROM jsd_user_auth WHERE is_delete=0
         <if test="status != null and status != ''">
             AND risk_status = #{status}
@@ -200,7 +200,7 @@
 
 
     <select id="getPassPersonNumByStatusEqualDays" resultType="java.lang.Integer">
-        SELECT count(user_id)
+        SELECT count(DISTINCT user_id)
         FROM jsd_user_auth WHERE is_delete=0
         <if test="status != null and status != ''">
             AND risk_status = #{status}
