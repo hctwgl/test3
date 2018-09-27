@@ -75,7 +75,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         Integer borrowMans = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
         Integer borrowDayMans = 0; //日均借款人数
         BigDecimal borrowDayAmount = BigDecimal.ZERO; //日均放款额
-        long days = DateUtil.getNumberOfDayBetween(startTime,endTime);
+        long days = DateUtil.getNumberOfDayBetween(DateUtil.addDays(startTime,-1),endTime);
         if (!NumberUtil.isNullOrZeroOrNegative(days)) {
             borrowDayMans = new BigDecimal(borrowMans).divide(new BigDecimal(days), 0, BigDecimal.ROUND_UP).intValue();
             borrowDayAmount = totalLoanAmount.divide(new BigDecimal(days), 2, BigDecimal.ROUND_HALF_UP);
