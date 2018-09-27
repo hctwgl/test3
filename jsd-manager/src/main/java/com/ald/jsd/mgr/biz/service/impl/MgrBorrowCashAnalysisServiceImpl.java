@@ -56,7 +56,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         Date endTime = null;
         if (!NumberUtil.isNullOrZero(analysisReq.days)) {
             startTime = DateUtil.initStartDateByDay(DateUtil.addDays(new Date(),-analysisReq.days+1));
-            endTime = DateUtil.initEndDateByDay(new Date());
+            endTime = DateUtil.initEndDateByDay(DateUtil.addDays(new Date(),-analysisReq.days+1));
         } else if (!StringUtils.isBlank(analysisReq.endDate) && !StringUtils.isBlank(analysisReq.startDate)) {
             try {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -220,8 +220,10 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
     }
 
     public BigDecimal buildAmountBorrowCashByDays(Integer days){
-        List<JsdBorrowCashDo> ystBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(days);//昨天的借款信息
-        BigDecimal amount = ystBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        Date startTime = DateUtil.initStartDateByDay(DateUtil.addDays(new Date(),-days));
+        Date endTime = DateUtil.initEndDateByDay(DateUtil.addDays(new Date(),-days));
+        List<JsdBorrowCashDo> jsdBorrowCashDoList = mgrBorrowCashService.getBorrowCashBetweenStartAndEnd(startTime, endTime);//借款成功笔数
+        BigDecimal amount = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
         return amount;
     }
 
