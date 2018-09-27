@@ -233,7 +233,7 @@ public class CollectionMgrController extends BaseController{
         collRepayDo.setReviewRemark(reviewRemark);
     	if(CommonReviewStatus.PASS.name().equals(params.reviewStatus)) {
     		Map<String, String> offlineData = new HashMap<>(8, 1);
-        	offlineData.put("borrowNo", cashDo.getBorrowNo());
+        	offlineData.put("borrowNo", cashDo.getTradeNoXgxy());
             offlineData.put("repaymentDate", collRepayDo.getGmtRepay().getTime() + "");
             offlineData.put("channel", collRepayDo.getRepayWay());
             offlineData.put("tradeNo", collRepayDo.getTradeNo());
