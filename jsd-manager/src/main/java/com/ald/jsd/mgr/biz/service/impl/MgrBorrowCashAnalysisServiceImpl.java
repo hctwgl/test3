@@ -148,7 +148,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         int borrowMans = todayBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
         BigDecimal avgAmountPer = BigDecimal.ZERO;
         if (null != todayBorrowCashDoList && 0 != todayBorrowCashDoList.size()) {
-            avgAmountPer = todayAmount.divide(new BigDecimal(todayBorrowCashDoList.size()), 2, BigDecimal.ROUND_HALF_UP);
+            avgAmountPer = todayAmount.divide(new BigDecimal(borrowMans), 2, BigDecimal.ROUND_HALF_UP);
         }
 
         BigDecimal totalLoanAmtRateByWeek = BigDecimal.ZERO;//放款总额周同比
