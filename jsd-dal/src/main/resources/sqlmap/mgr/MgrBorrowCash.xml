@@ -119,7 +119,6 @@
         where bc.is_delete=0 and bc.gmt_arrival  between #{startDate} and #{endDate}
         and cr.gmt_create between #{startDate} and #{endDate}
         and cr.`status`='Y'
-        and bc.status in ('TRANSFERRED','FINISHED')
     </select>
 
     <select id="getAmountByDays" resultType="java.math.BigDecimal">
