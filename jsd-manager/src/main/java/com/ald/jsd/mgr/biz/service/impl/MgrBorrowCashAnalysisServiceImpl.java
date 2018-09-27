@@ -192,10 +192,10 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         BigDecimal lastWeekRepayAmt = buildTotalRepayAmtByOneDays(7);//上周还款额
 
         if (ystRepayAmt.compareTo(BigDecimal.ZERO) != 0) {
-            totalRepayAmtRateByDay = totalRepayAmt.divide(ystRepayAmt, 2, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+            totalRepayAmtRateByDay = totalRepayAmt.divide(ystRepayAmt, 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
         if (lastWeekRepayAmt.compareTo(BigDecimal.ZERO) != 0) {
-            totalRepayAmtRateByWeek = totalRepayAmt.divide(lastWeekRepayAmt, 2, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+            totalRepayAmtRateByWeek = totalRepayAmt.divide(lastWeekRepayAmt, 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
         int personNum = buildTotalRepayPerson(0);
 
