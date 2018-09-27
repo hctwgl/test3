@@ -244,13 +244,13 @@ public class CollectionMgrController extends BaseController{
     			public Integer doInTransaction(TransactionStatus status) {
     				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData, JsdRepayType.REVIEW_COLLECTION, operator);
     				jsdCollectionRepaymentService.updateById(collRepayDo);
-    				collectionNoticeUtil.collectRepayNotice(MapUtils.cstStrKeyMap("tradeNo", params.tradeNo, "reviewResult", params.reviewStatus));
+    				// TODO 自行通知还款结果
     				return 1;
     			}
     		});
     	}else if(CommonReviewStatus.REFUSE.name().equals(params.reviewStatus)) {
     		jsdCollectionRepaymentService.updateById(collRepayDo);
-    		collectionNoticeUtil.collectRepayNotice(MapUtils.cstStrKeyMap("tradeNo", params.tradeNo, "reviewResult", params.reviewStatus));
+    		// TODO 自行通知还款结果
     	}
     	
     	return Resp.succ();

@@ -9,26 +9,25 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.common.ConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.JsdCollectionService;
 import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
-import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.RepayDealBo;
 import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
+import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.enums.JsdRepayCollectionType;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
+import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.alibaba.fastjson.JSON;
@@ -49,23 +48,18 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 	@Resource
 	CollectionNoticeUtil collectionNoticeUtil;
 	
-	public void nofityRisk(RepayDealBo repayDealBo, JsdBorrowCashRepaymentDo repaymentDo, 
-				JsdBorrowLegalOrderRepaymentDo orderRepaymentDo,JsdRepayType type,String dataId) {
+	public void nofityRepayment(JsdBorrowCashRepaymentDo repaymentDo, JsdBorrowLegalOrderRepaymentDo orderRepaymentDo,
+			String curOutTradeNo, String borrowNo, String orderId, Long uid, JsdRepayType type) {
 		try{
 			List<HashMap<String,String>> list = new ArrayList<>();
 			JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
-			Long userId = 0l;
-			Long borrowId = 0l;
 			BigDecimal repayAmount = BigDecimal.ZERO;
 			if(repaymentDo != null){
-				borrowId = repaymentDo.getBorrowId();
 				repayAmount = repaymentDo.getRepaymentAmount();
-				userId = repaymentDo.getUserId();
 				noticeRecordDo.setRefId(String.valueOf(repaymentDo.getRid()));
-			}else if(orderRepaymentDo != null) {
-				borrowId = orderRepaymentDo.getBorrowId();
+			}
+			if(orderRepaymentDo != null) {
 				repayAmount = orderRepaymentDo.getRepayAmount().add(repayAmount);
-				userId = orderRepaymentDo.getUserId();
 				noticeRecordDo.setRefId(String.valueOf(orderRepaymentDo.getRid()));
 			}
 			//--------------------start  催收还款接口需要参数---------------------------
@@ -73,33 +67,28 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 			Map<String, String> repayData = new HashMap<String, String>();
 			HashMap<String, String> data = new HashMap<String, String>();
 			//("还款流水")
-			repayData.put("repaymentNo", repayDealBo.curOutTradeNo);
+			repayData.put("repaymentNo", curOutTradeNo);
 			//("还款时间")
 			repayData.put("repayTime", DateUtil.formatDateTime(new Date()));
 			//("订单编号")
-			repayData.put("orderNo", repayDealBo.borrowNo);
+			repayData.put("orderNo", borrowNo);
+			
 			//根据场景不同，推送催收不同还款类型
 			if(StringUtil.equals(type.getCode(),JsdRepayType.COLLECTION.getCode()) || StringUtil.equals(type.getCode(),JsdRepayType.REVIEW_COLLECTION.getCode())){
-				data.put("dataId",dataId);//源数据id
+				data.put("dataId", orderId);//源数据id
 				repayData.put("type", JsdRepayCollectionType.OFFLINE.getCode());
 				noticeRecordDo.setType(JsdNoticeType.COLLECT.code);
 			}else {
 				repayData.put("type", JsdRepayCollectionType.APP.getCode());
 				noticeRecordDo.setType(JsdNoticeType.OVERDUEREPAY.code);
-				if(repaymentDo != null){
-					JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(borrowId);
-					dataId = String.valueOf(jsdBorrowLegalOrder.getRid());
-				}else if(orderRepaymentDo != null){
-					dataId = String.valueOf(repayDealBo.orderCashDo.getBorrowLegalOrderId());
-				}
-				data.put("dataId",dataId);//源数据id
+				data.put("dataId", orderId);//源数据id
 			}
-			repayData.put("repaymentAcc", repayDealBo.userId+"");//还款账户
+			repayData.put("repaymentAcc", userId + "");//还款账户
 
 			data.put("amount",repayAmount+"");
 			repayData.put("companyId", ConfigProperties.get(Constants.CONFKEY_COLLECTION_COMPANYID));
 			repayData.put("totalAmount", repayAmount+"");
-			byte[] pd = DigestUtil.digestString(repayDealBo.curOutTradeNo.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+			byte[] pd = DigestUtil.digestString(curOutTradeNo.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
 			String sign = DigestUtil.encodeHex(pd);
 			repayData.put("sign",sign);
 			list.add(data);

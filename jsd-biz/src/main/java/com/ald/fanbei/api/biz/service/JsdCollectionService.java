@@ -1,6 +1,5 @@
 package com.ald.fanbei.api.biz.service;
 
-import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.RepayDealBo;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
@@ -11,6 +10,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
  */
 public interface JsdCollectionService {
 	
-	public void nofityRisk(RepayDealBo repayDealBo, JsdBorrowCashRepaymentDo repaymentDo, JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, JsdRepayType type,String dataId);
+	public void nofityRepayment(JsdBorrowCashRepaymentDo repaymentDo, JsdBorrowLegalOrderRepaymentDo orderRepaymentDo,
+			String curOutTradeNo, String borrowNo, String orderId, Long uid, JsdRepayType type);
 	
 }

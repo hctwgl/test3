@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.RepayDealBo;
 import com.ald.fanbei.api.common.enums.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -340,7 +341,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	public void dealRepaymentSucess(String repayNo, String outTradeNo) {
 		final JsdBorrowCashRepaymentDo repaymentDo = jsdBorrowCashRepaymentDao.getByTradeNo(repayNo);
 		final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = jsdBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByTradeNo(repayNo);
-		dealRepaymentSucess(repayNo, outTradeNo, repaymentDo, orderRepaymentDo, JsdRepayType.INITIATIVE, null);
+		dealRepaymentSucess(repayNo, outTradeNo, repaymentDo, orderRepaymentDo, JsdRepayType.INITIATIVE);
 	}
 
 	@Override
@@ -353,7 +354,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		return jsdBorrowCashRepaymentDao.getByBorrowTradeNoXgxy(tradeNoXgxy);
 	}
 
-	public void dealRepaymentSucess(String tradeNo, String outTradeNo, final JsdBorrowCashRepaymentDo repaymentDo, final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, JsdRepayType type, String dataId) {
+	public void dealRepaymentSucess(String tradeNo, String outTradeNo, final JsdBorrowCashRepaymentDo repaymentDo, final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, JsdRepayType repayType) {
 		try {
 			lock(tradeNo);
 
@@ -386,16 +387,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			if (resultValue == 1L) {
 				try {
-					noticeXgxyRepayResult(repaymentDo,orderRepaymentDo,YesNoStatus.YES.getCode(),"",type);
-					boolean cashResult = DateUtil.afterDay(new Date(),repayDealBo.cashDo.getGmtPlanRepayment());
-					boolean orderResult = false;
-					if(repayDealBo.orderCashDo != null){
-						orderResult= DateUtil.afterDay(new Date(),repayDealBo.orderCashDo.getGmtPlanRepay());
-					}
-					logger.info(" cashResult = " + cashResult+"orderResult = "+orderResult +"new Date() = " + new Date());
-					if(orderResult || cashResult) {
-						jsdCollectionService.nofityRisk(repayDealBo, repaymentDo, orderRepaymentDo, type, dataId);
-					}
+					this.noticeXgxyRepayResult(repaymentDo,orderRepaymentDo,YesNoStatus.YES.getCode(),"", repayType);
+					this.notifyCollection(repayDealBo, repaymentDo, orderRepaymentDo, repayType, orderId);
 				} catch (Exception e){
 					logger.error("notice eca or collection fail error=",e);
 				}
@@ -442,6 +435,21 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		}
 		return map;
 	}
+	private void notifyCollection(RepayDealBo repayDealBo, JsdBorrowCashRepaymentDo repaymentDo, JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, JsdRepayType repayType, String orderId) {
+		if(JsdRepayType.REVIEW_COLLECTION.equals(repayType)) {
+			return;
+		}
+		
+		boolean isCashOverdue = DateUtil.afterDay(new Date(),repayDealBo.cashDo.getGmtPlanRepayment());
+		boolean isOrderOverdue = false;
+		if(repayDealBo.orderCashDo != null){
+			isOrderOverdue = DateUtil.afterDay(new Date(), repayDealBo.orderCashDo.getGmtPlanRepay());
+		}
+		if(isOrderOverdue || isCashOverdue) {
+			
+		}
+	}
+	
 
 	/**
 	 * 需在事务管理块中调用此函数!
