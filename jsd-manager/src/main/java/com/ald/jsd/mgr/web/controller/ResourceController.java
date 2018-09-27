@@ -106,6 +106,7 @@ public class ResourceController {
         jsdResourceDo.setValue(value);
         jsdResourceDo.setValue1(defaultRate.toString());
         jsdResourceDo.setValue2(value2);
+        jsdResourceDo.setGmtModified(new Date());
         jsdResourceService.updateById(jsdResourceDo);
         mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"产品配置:"+json);
         return Resp.succ(jsdResourceDo,"");
@@ -133,8 +134,9 @@ public class ResourceController {
         data.setValue(resourceReq.pattern);
         data.setValue1(resourceReq.loanAmount);
         data.setRid(resourceReq.id);
+        data.setGmtModified(new Date());
         jsdResourceService.updateById(data);
-        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"设置："+resourceReq);
+        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"设置："+resourceReq.toString());
         return Resp.succ(data,"");
     }
 }
