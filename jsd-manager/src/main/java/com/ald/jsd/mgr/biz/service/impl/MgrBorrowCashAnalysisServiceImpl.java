@@ -92,14 +92,14 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         List<JsdBorrowCashDo> arrivalBorrowCashList = mgrBorrowCashService.getPlanRepaymentBorrowCashBetweenStartAndEnd(DateUtil.addDays(startTime,-1), DateUtil.addDays(endTime,-1));//到期借款笔数
         BigDecimal arrivalAmount = mgrBorrowCashService.getPlanRepaymentCashAmountBetweenStartAndEnd(DateUtil.addDays(startTime,-1), DateUtil.addDays(endTime,-1));//当期到期金额
         BigDecimal overDueAmount = arrivalBorrowCashList.stream().filter(jsdBorrowCashDo -> jsdBorrowCashDo.getOverdueStatus().equals("Y")).map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
-        if (arrivalAmount.compareTo(BigDecimal.ZERO) != 0){
+        if (arrivalAmount != null && arrivalAmount.compareTo(BigDecimal.ZERO) != 0){
             overdueRate = overDueAmount.divide(arrivalAmount, 4, BigDecimal.ROUND_HALF_UP);
         }
 
         BigDecimal returnedRate = BigDecimal.ZERO;//回款率
         BigDecimal returnAmount = buildTotalRepayAmtByDate(startTime, endTime);//当期还款金额
         BigDecimal dueAmount = mgrBorrowCashService.getPlanRepaymentCashAmountBetweenStartAndEnd(startTime, endTime);//当期到期金额
-        if (dueAmount.compareTo(BigDecimal.ZERO) != 0) {
+        if (dueAmount != null && dueAmount.compareTo(BigDecimal.ZERO) != 0) {
             returnedRate = returnAmount.divide(dueAmount, 4, BigDecimal.ROUND_HALF_UP);//回款金额
         }
 
@@ -111,7 +111,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         }
 
         BigDecimal profitRate = BigDecimal.ZERO;//收益率
-        if (totalLoanAmount.compareTo(BigDecimal.ZERO) != 0 ) {
+        if (totalLoanAmount != null && totalLoanAmount.compareTo(BigDecimal.ZERO) != 0 ) {
             profitRate = (returnAmount.subtract(overDueAmount)).divide(totalLoanAmount, 4, BigDecimal.ROUND_HALF_UP);
         }
 
