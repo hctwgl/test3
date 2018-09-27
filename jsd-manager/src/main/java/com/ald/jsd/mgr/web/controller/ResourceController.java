@@ -136,7 +136,7 @@ public class ResourceController {
         data.setRid(resourceReq.id);
         data.setGmtModified(new Date());
         jsdResourceService.updateById(data);
-        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"设置："+resourceReq);
+        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"设置："+resourceReq.toString());
         return Resp.succ(data,"");
     }
 }
