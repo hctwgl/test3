@@ -1,14 +1,14 @@
 package com.ald.fanbei.api.biz.service;
 
-import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.RepayRequestBo;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 /**
  * 极速贷Service
  * 
@@ -20,7 +20,7 @@ import java.util.Map;
 public interface JsdBorrowCashRepaymentService{
 	JsdBorrowCashRepaymentDo getLastByBorrowId(Long borrowId);
 
-    Map<String, Object> repay(JsdBorrowCashRepaymentServiceImpl.BorrowCashRepayBo bo, String bankPayType);
+    Map<String, Object> repay(RepayRequestBo bo, String bankPayType);
 
     JsdBorrowCashRepaymentDo getLastRepaymentBorrowCashByBorrowId(Long borrowId);
 

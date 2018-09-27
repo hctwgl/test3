@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.common.Constants;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,8 @@ import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
-import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.BorrowCashRepayBo;
+import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.RepayRequestBo;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
@@ -64,7 +64,7 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
         Long userId = context.getUserId();
         JsdUserDo jsdUserDo = jsdUserService.getById(userId);
 
-        BorrowCashRepayBo bo = this.extractAndCheck(context, userId);
+        RepayRequestBo bo = this.extractAndCheck(context, userId);
         bo.userDo = jsdUserDo;
         bo.remoteIp = context.getClientIp();
         Map<String, Object> hashMap=jsdBorrowCashRepaymentService.repay(bo,bo.payType);
@@ -74,8 +74,8 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
 
 
 
-    private BorrowCashRepayBo extractAndCheck(Context context, Long userId) {
-        BorrowCashRepayBo bo = new BorrowCashRepayBo();
+    private RepayRequestBo extractAndCheck(Context context, Long userId) {
+    	RepayRequestBo bo = new RepayRequestBo();
         bo.userId = userId;
         BorrowCashRepayDoParam param = (BorrowCashRepayDoParam) context.getParamEntity();
         bo.amount = param.amount;
@@ -89,18 +89,17 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
         return bo;
     }
 
-    private void checkPwdAndCard(BorrowCashRepayBo bo) {
+    private void checkPwdAndCard(RepayRequestBo bo) {
         HashMap<String,Object> map = jsdUserBankcardService.getBankByBankNoAndUserId(bo.userId,bo.bankNo);
         if (null == map) {
             throw new BizException(BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }
         //还款金额是否大于银行单笔限额
-//		dsedUserBankcardService.checkUpsBankLimit(map.get("bankCode").toString(), map.get("bankChannel").toString(), bo.amount);
         bo.cardName = map.get("bankName").toString();
-        bo.payType=map.get("bankChannel").toString();
+        bo.payType = map.get("bankChannel").toString();
     }
 
-    private void checkFrom(BorrowCashRepayBo bo) {
+    private void checkFrom(RepayRequestBo bo) {
         JsdBorrowCashRepaymentDo cashRepaymentDo=jsdBorrowCashRepaymentService.getByTradeNoXgxy(bo.repayNo);
         JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByTradeNoXgxy(bo.repayNo);
        if(cashRepaymentDo!=null&&legalOrderRepaymentDo!=null){
