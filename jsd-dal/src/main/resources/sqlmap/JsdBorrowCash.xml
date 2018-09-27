@@ -634,7 +634,7 @@
         FROM
             jsd_borrow_cash
         WHERE
-            to_days(gmt_create) = to_days(now())
+            to_days(gmt_create) = to_days(now()) and status in('WAITTRANSED','TRANSFERING','TRANSFERRED','FINISHED')
     </select>
 
     <select id="getRepayStatistics" resultType="java.util.HashMap">
