@@ -675,6 +675,7 @@
         a.*,b.mobile,b.real_name
         FROM
         jsd_borrow_cash a inner join jsd_user b on a.user_id=b.id where a.is_delete=0
+        and a.review_status='PASS'
         <if test="status != null and status !='ALL' and status !=''">
             AND a.status =#{status}
         </if>
@@ -691,6 +692,7 @@
         a.*,b.mobile,b.real_name
         FROM
         jsd_borrow_cash a inner join jsd_user b on a.user_id=b.id where a.is_delete=0
+        and a.review_status='PASS'
         <if test="status != null and status !='ALL' and status !='OVERDUE' and status !=''">
             AND a.status =#{status}
         </if>
