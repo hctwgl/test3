@@ -2,9 +2,7 @@ package com.ald.jsd.mgr.web.controller;
 
 
 import com.ald.fanbei.api.biz.service.JsdUserAuthService;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.query.UserAuthQuery;
-import com.ald.jsd.mgr.spring.NotNeedLogin;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
