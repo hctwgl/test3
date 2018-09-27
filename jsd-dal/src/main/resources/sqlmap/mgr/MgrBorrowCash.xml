@@ -33,6 +33,7 @@
         count(distinct user_id)
         FROM
         jsd_borrow_cash  where is_delete=0 and gmt_plan_repayment between #{startDate} and #{endDate}
+        and status in ('TRANSFERRED','FINISHED')
     </select>
 
     <select id="getApplyBorrowCashSuPerBetweenStartAndEnd" resultType="java.lang.Integer">
@@ -63,6 +64,13 @@
         SELECT *
         FROM
         jsd_borrow_cash  where is_delete=0 and gmt_arrival between #{startDate} and #{endDate}
+        and status in ('TRANSFERRED','FINISHED')
+    </select>
+
+    <select id="getPlanRepaymentBorrowCashBetweenStartAndEnd" resultType="JsdBorrowCashDo">
+        SELECT *
+        FROM
+        jsd_borrow_cash  where is_delete=0 and gmt_plan_repayment between #{startDate} and #{endDate}
         and status in ('TRANSFERRED','FINISHED')
     </select>
 
