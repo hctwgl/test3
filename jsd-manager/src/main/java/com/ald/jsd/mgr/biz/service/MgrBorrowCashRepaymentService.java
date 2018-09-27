@@ -17,8 +17,19 @@ public interface MgrBorrowCashRepaymentService {
 
     List<JsdBorrowCashRepaymentDo> getByBorrowTradeNoXgxy(String tradeNoXgxy);
 
-    List<JsdBorrowCashRepaymentDo> getBorrowCashRepayByDays(Integer days);
+    /**
+     * 某一天的还款金额
+     * @param days
+     * @return
+     */
+    List<JsdBorrowCashRepaymentDo> getBorrowCashRepayByOneDays(Integer days);
 
+    /**
+     * 某一段时间的还款金额
+     * @param startDate
+     * @param endDate
+     * @return
+     */
     List<JsdBorrowCashRepaymentDo> getBorrowCashRepayBetweenStartAndEnd(Date startDate,Date endDate);
 
 }
