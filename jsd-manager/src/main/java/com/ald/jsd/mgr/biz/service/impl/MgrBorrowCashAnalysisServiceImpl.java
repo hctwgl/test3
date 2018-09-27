@@ -79,9 +79,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         int paseUserNum = mgrUserAuthService.getPassPersonNumByStatusBetweenStartAndEnd("Y", startTime, endTime);
         BigDecimal returnAmount = buildTotalRepayAmtByDate(startTime, endTime);//当期还款金额
         BigDecimal dueAmount = mgrBorrowCashService.getPlanRepaymentCashAmountBetweenStartAndEnd(startTime, endTime);//当期到期金额
-        Integer startDays = getDays(startTime);
-        Integer endDays = getDays(endTime);
-        int days = endDays - startDays+1;
+        long days = DateUtil.getNumberOfDayBetween(startTime,endTime);
         MgrBorrowInfoAnalysisVo mgrBorrowInfoAnalysisVo = new MgrBorrowInfoAnalysisVo();
         BigDecimal returnedRate = BigDecimal.ZERO;//回款率
         BigDecimal repeatBorrowRate = BigDecimal.ZERO;//复借率
@@ -93,7 +91,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         Integer borrowDayMans = 0; //日均借款人数
         Integer borrowMans = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
         BigDecimal totalLoanAmount = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
-        if (!NumberUtil.isNullOrZero(days)) {
+        if (!NumberUtil.isNullOrZeroOrNegative(days)) {
             borrowDayMans = new BigDecimal(borrowMans).divide(new BigDecimal(days), 0, BigDecimal.ROUND_UP).intValue();
             borrowDayAmount = totalLoanAmount.divide(new BigDecimal(days), 2, BigDecimal.ROUND_HALF_UP);
         }
