@@ -67,52 +67,61 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
                 e.printStackTrace();
             }
         }
+
         List<JsdBorrowCashDo> jsdBorrowCashDoList = mgrBorrowCashService.getBorrowCashBetweenStartAndEnd(startTime, endTime);//借款成功笔数
-        List<JsdBorrowCashDo> arrivalBorrowCashList = mgrBorrowCashService.getPlanRepaymentBorrowCashBetweenStartAndEnd(startTime, endTime);//到期借款笔数
-        int applyBorrowCashSuPerNum = arrivalBorrowCashList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();
-        BigDecimal overdueAmount = arrivalBorrowCashList.stream().filter(jsdBorrowCashDo -> jsdBorrowCashDo.getOverdueStatus().equals("Y")).map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
-        int arrivalBorrowCashPerNum = mgrBorrowCashService.getArrivalBorrowCashBetweenStartAndEnd(startTime, endTime);//当期到期人数
-//        int applyBorrowCashSuPerNum = mgrBorrowCashService.getApplyBorrowCashSuPerBetweenStartAndEnd(startTime, endTime);//申请借款成功人数
-        int applyBorrowCashPerNum = mgrBorrowCashService.getApplyBorrowCashPerBetweenStartAndEnd(startTime, endTime);//申请借款人数
-        int haveBorrowCashPerNum = mgrBorrowCashService.getUserNumBetweenStartAndEnd(startTime, endTime);//当期复借人数
-        int allUserNum = mgrUserAuthService.getPassPersonNumByStatusBetweenStartAndEnd("", startTime, endTime);
-        int paseUserNum = mgrUserAuthService.getPassPersonNumByStatusBetweenStartAndEnd("Y", startTime, endTime);
-        BigDecimal returnAmount = buildTotalRepayAmtByDate(startTime, endTime);//当期还款金额
-        BigDecimal dueAmount = mgrBorrowCashService.getPlanRepaymentCashAmountBetweenStartAndEnd(startTime, endTime);//当期到期金额
-        long days = DateUtil.getNumberOfDayBetween(startTime,endTime);
-        MgrBorrowInfoAnalysisVo mgrBorrowInfoAnalysisVo = new MgrBorrowInfoAnalysisVo();
-        BigDecimal returnedRate = BigDecimal.ZERO;//回款率
-        BigDecimal repeatBorrowRate = BigDecimal.ZERO;//复借率
-        BigDecimal overdueRate = BigDecimal.ZERO;//逾期率
-        BigDecimal profitRate = BigDecimal.ZERO;//收益率
-        BigDecimal riskPassRate = BigDecimal.ZERO;//认证通过率
-        BigDecimal borrowPassRate = BigDecimal.ZERO;//借款通过率
-        BigDecimal borrowDayAmount = BigDecimal.ZERO; //日均放款额
-        Integer borrowDayMans = 0; //日均借款人数
-        Integer borrowMans = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
+
         BigDecimal totalLoanAmount = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
+
+        Integer borrowMans = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
+        Integer borrowDayMans = 0; //日均借款人数
+        BigDecimal borrowDayAmount = BigDecimal.ZERO; //日均放款额
+        long days = DateUtil.getNumberOfDayBetween(DateUtil.addDays(startTime,-1),endTime);
         if (!NumberUtil.isNullOrZeroOrNegative(days)) {
             borrowDayMans = new BigDecimal(borrowMans).divide(new BigDecimal(days), 0, BigDecimal.ROUND_UP).intValue();
             borrowDayAmount = totalLoanAmount.divide(new BigDecimal(days), 2, BigDecimal.ROUND_HALF_UP);
         }
 
+        BigDecimal repeatBorrowRate = BigDecimal.ZERO;//复借率
+        int arrivalBorrowCashPerNum = mgrBorrowCashService.getArrivalBorrowCashBetweenStartAndEnd(startTime, endTime);//当期到期人数
+        int haveBorrowCashPerNum = mgrBorrowCashService.getUserNumBetweenStartAndEnd(startTime, endTime);//当期复借人数
         if (arrivalBorrowCashPerNum != 0) {
         	repeatBorrowRate = new BigDecimal(haveBorrowCashPerNum).divide(new BigDecimal(arrivalBorrowCashPerNum), 4, BigDecimal.ROUND_HALF_UP);
         }
+
+        BigDecimal overdueRate = BigDecimal.ZERO;//逾期率
+        List<JsdBorrowCashDo> arrivalBorrowCashList = mgrBorrowCashService.getPlanRepaymentBorrowCashBetweenStartAndEnd(DateUtil.addDays(startTime,-1), DateUtil.addDays(endTime,-1));//到期借款笔数
+        BigDecimal overDueAmount = mgrBorrowCashService.getPlanRepaymentCashAmountBetweenStartAndEnd(DateUtil.addDays(startTime,-1), DateUtil.addDays(endTime,-1));//当期到期金额
+        BigDecimal overdueAmount = arrivalBorrowCashList.stream().filter(jsdBorrowCashDo -> jsdBorrowCashDo.getOverdueStatus().equals("Y")).map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
+        if (overDueAmount.compareTo(BigDecimal.ZERO) != 0){
+            overdueRate = overdueAmount.divide(overDueAmount, 4, BigDecimal.ROUND_HALF_UP);
+        }
+
+        BigDecimal returnedRate = BigDecimal.ZERO;//回款率
+        BigDecimal returnAmount = buildTotalRepayAmtByDate(startTime, endTime);//当期还款金额
+        BigDecimal dueAmount = mgrBorrowCashService.getPlanRepaymentCashAmountBetweenStartAndEnd(startTime, endTime);//当期到期金额
         if (dueAmount != BigDecimal.ZERO) {
-            overdueRate = overdueAmount.divide(dueAmount, 4, BigDecimal.ROUND_HALF_UP);
             returnedRate = returnAmount.divide(dueAmount, 4, BigDecimal.ROUND_HALF_UP);//回款金额
         }
+
+        BigDecimal borrowPassRate = BigDecimal.ZERO;//借款通过率
+        int applyBorrowCashSuPerNum = mgrBorrowCashService.getApplyBorrowCashSuPerBetweenStartAndEnd(startTime, endTime);//申请借款成功人数
+        int applyBorrowCashPerNum = mgrBorrowCashService.getApplyBorrowCashPerBetweenStartAndEnd(startTime, endTime);//申请借款人数
         if (applyBorrowCashPerNum != 0) {
             borrowPassRate = new BigDecimal(applyBorrowCashSuPerNum).divide(new BigDecimal(applyBorrowCashPerNum), 4, BigDecimal.ROUND_HALF_UP);//借款通过人数
         }
+
+        BigDecimal profitRate = BigDecimal.ZERO;//收益率
         if (totalLoanAmount != BigDecimal.ZERO) {
             profitRate = (returnAmount.subtract(overdueAmount)).divide(totalLoanAmount, 4, BigDecimal.ROUND_HALF_UP);
         }
 
+        BigDecimal riskPassRate = BigDecimal.ZERO;//认证通过率
+        int allUserNum = mgrUserAuthService.getPassPersonNumByStatusBetweenStartAndEnd("", startTime, endTime);
+        int paseUserNum = mgrUserAuthService.getPassPersonNumByStatusBetweenStartAndEnd("Y", startTime, endTime);
         if (allUserNum != 0) {
             riskPassRate = new BigDecimal(paseUserNum).divide(new BigDecimal(allUserNum), 4, BigDecimal.ROUND_HALF_UP);
         }
+        MgrBorrowInfoAnalysisVo mgrBorrowInfoAnalysisVo = new MgrBorrowInfoAnalysisVo();
         mgrBorrowInfoAnalysisVo.setRiskPassRate(riskPassRate);
         mgrBorrowInfoAnalysisVo.setTotalLoanAmount(totalLoanAmount);
         mgrBorrowInfoAnalysisVo.setBorrowMans(borrowMans);
