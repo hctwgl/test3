@@ -81,9 +81,8 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         BigDecimal dueAmount = mgrBorrowCashService.getPlanRepaymentCashAmountBetweenStartAndEnd(startTime, endTime);//当期到期金额
         Integer startDays = getDays(startTime);
         Integer endDays = getDays(endTime);
-        int days = endDays - startDays;
+        int days = endDays - startDays+1;
         MgrBorrowInfoAnalysisVo mgrBorrowInfoAnalysisVo = new MgrBorrowInfoAnalysisVo();
-        BigDecimal totalLoanAmount = BigDecimal.ZERO;
         BigDecimal returnedRate = BigDecimal.ZERO;//回款率
         BigDecimal repeatBorrowRate = BigDecimal.ZERO;//复借率
         BigDecimal overdueRate = BigDecimal.ZERO;//逾期率
@@ -93,8 +92,9 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         BigDecimal borrowDayAmount = BigDecimal.ZERO; //日均放款额
         Integer borrowDayMans = 0; //日均借款人数
         Integer borrowMans = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getUserId).collect(Collectors.toSet()).size();//去重放贷人数
+        BigDecimal totalLoanAmount = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO,BigDecimal::add);
         if (!NumberUtil.isNullOrZero(days)) {
-            borrowDayMans = new BigDecimal(borrowMans).divide(new BigDecimal(days), 0, BigDecimal.ROUND_HALF_UP).intValue();
+            borrowDayMans = new BigDecimal(borrowMans).divide(new BigDecimal(days), 0, BigDecimal.ROUND_UP).intValue();
             borrowDayAmount = totalLoanAmount.divide(new BigDecimal(days), 2, BigDecimal.ROUND_HALF_UP);
         }
 
@@ -220,8 +220,10 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
     }
 
     public BigDecimal buildAmountBorrowCashByDays(Integer days){
-        List<JsdBorrowCashDo> ystBorrowCashDoList = mgrBorrowCashService.getBorrowCashByDays(days);//昨天的借款信息
-        BigDecimal amount = ystBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        Date startTime = DateUtil.initStartDateByDay(DateUtil.addDays(new Date(),-days));
+        Date endTime = DateUtil.initEndDateByDay(DateUtil.addDays(new Date(),-days));
+        List<JsdBorrowCashDo> jsdBorrowCashDoList = mgrBorrowCashService.getBorrowCashBetweenStartAndEnd(startTime, endTime);//借款成功笔数
+        BigDecimal amount = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
         return amount;
     }
 
