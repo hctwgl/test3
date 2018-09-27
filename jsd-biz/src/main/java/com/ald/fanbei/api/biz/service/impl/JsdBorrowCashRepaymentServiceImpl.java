@@ -99,7 +99,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
 			bo.tradeNo = tradeNo;
-			generateRepayRecords(bo);
+            bo.repayType=JsdRepayType.INITIATIVE.getName();
+            generateRepayRecords(bo);
 			return doRepay(bo,bankPayType);
 		}catch (Exception e) {
 			logger.info("repay method error", e);
@@ -125,7 +126,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	private void generateRepayRecords(BorrowCashRepayBo bo) {
 		Date now = new Date();
 		String name = bo.name;
-		bo.repayType=JsdRepayType.INITIATIVE.getName();
 		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(bo.borrowId);
 		JsdBorrowCashRepaymentDo borrowRepaymentDo = null;
 		JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = null;
@@ -160,7 +160,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		}
 		bo.repaymentDo=borrowRepaymentDo;
 		bo.orderRepaymentDo=orderRepaymentDo;
-		logger.info("Repay.add repayment finish, name="+ name +", tradeNo="+bo.repayNo+", borrowRepayment="+ JSON.toJSONString(borrowRepaymentDo) + ", legalOrderRepayment="+ JSON.toJSONString(orderRepaymentDo));
 	}
 
 	private JsdBorrowLegalOrderRepaymentDo buildOrderRepayment(BorrowCashRepayBo bo, BigDecimal repayAmount) {
