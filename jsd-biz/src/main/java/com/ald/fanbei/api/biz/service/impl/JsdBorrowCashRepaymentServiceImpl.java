@@ -102,10 +102,11 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			generateRepayRecords(bo);
 			return doRepay(bo,bankPayType);
 		}catch (Exception e) {
-			unLockRepay(bo.userId);
 			logger.info("repay method error", e);
+			throw e;
+		}finally {
+			unLockRepay(bo.userId);
 		}
-		return null;
 	}
 	private Map<String, Object> doRepay(BorrowCashRepayBo bo,String bankChannel) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
