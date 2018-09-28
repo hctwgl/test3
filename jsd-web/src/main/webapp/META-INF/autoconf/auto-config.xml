@@ -26,6 +26,7 @@
 		<property name="fbapi.redis.hostname" defaultValue="IJgdKMamAcP5btliO3edNq7Dc1rJrWG6qZ7zI9RsgCA=" description="redis host" />
 		<property name="fbapi.redis.port" defaultValue="EjxHo0U8fOjuwprOOe5jjg==" description="redis port" />
 		<property name="fbapi.redis.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="redis password" />
+		<property name="fbapi.redis.database" defaultValue="10" description="redis database" />
 		
 		<property name="fbfile.oss.access.key" defaultValue="hwfdVlH1a1bp/Lc9hSUqBtCuhgu0QhqoULwmZ+3gTgE=" description="oss access key" />
 		<property name="fbfile.oss.access.secret" defaultValue="k7QDjE5/1emiZgIjksPg/ULP8DfMCCekqoH9+ZOZGuE=" description="oss access secret" />

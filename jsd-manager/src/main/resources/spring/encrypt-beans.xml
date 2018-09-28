@@ -17,7 +17,7 @@
         <property name="password" value="${fbapi.redis.password}" />
         <property name="usePool" value="true" />
         <property name="poolConfig" ref="redisPoolConfigBiz" />
-        <property name="database" value="9"/>
+        <property name="database" value="${fbapi.redis.database}"/>
     </bean>
 
 	<bean class="com.ald.fanbei.api.common.EsignPublicInit">
