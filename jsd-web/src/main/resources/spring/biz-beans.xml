@@ -33,7 +33,6 @@
 				<value>fbapi.redis.hostname</value>
 				<value>fbapi.redis.port</value>
 				<value>fbapi.redis.password</value>
-				<value>fbapi.redis.database</value>
 				
 				<value>fbfile.oss.access.key</value>
 				<value>fbfile.oss.access.secret</value>
@@ -42,6 +41,7 @@
 		<property name="locations">
 			<list>
 				<value>classpath:props/encrypt.properties</value>
+				<value>classpath:props/config.properties</value>
 			</list>
 		</property>
 	</bean>	
