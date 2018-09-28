@@ -4,12 +4,13 @@ import com.ald.fanbei.api.biz.bo.RepaymentBo;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.cuishou.CuiShouBackMoney;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.GenderType;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
+import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -55,7 +56,8 @@ public class CuiShouUtils {
 
     @Resource
     JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
-
+    @Resource
+    JsdNoticeRecordDao jsdNoticeRecordDao;
     @Resource
     XgxyUtil xgxyUtil;
 
@@ -335,6 +337,151 @@ public class CuiShouUtils {
 
 
 
+
+    /**
+     * 催收平账修改状态
+     *
+     * @param data
+     * @return
+     */
+    public String collectUpdateStatus(String data,String sign) {
+        try {
+            if(StringUtil.isEmpty(data)){
+                thirdLog.error("data is null");
+                return "false";
+            }
+            logger.info("offlineRepaymentMoney data = " + data +"  ,sign = " + sign);
+            byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+            String sign1 = DigestUtil.encodeHex(pd);
+            if (!sign1.equals(sign)) return "false                                     ";
+            JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderService.getById(Long.valueOf(data));
+            JsdBorrowCashDo cashDo = jsdBorrowCashService.getById(orderDo.getBorrowId());
+            JsdBorrowCashDo jsdBorrowCashDo = new JsdBorrowCashDo();
+            jsdBorrowCashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
+            jsdBorrowCashDo.setRid(orderDo.getBorrowId());
+            int count = jsdBorrowCashService.updateById(jsdBorrowCashDo);
+            if(count<1){
+                return "false";
+            }
+            JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashDateBeforeToday(orderDo.getBorrowId());
+            if(jsdBorrowLegalOrderCashDo != null){
+                jsdBorrowLegalOrderCashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
+                int orderCount = jsdBorrowLegalOrderCashService.updateById(jsdBorrowLegalOrderCashDo);
+                if(orderCount<1){
+                    return "false";
+                }
+            }
+            //催收平账推送西瓜
+            HashMap<String, String> map = new HashMap<>();
+            map.put("status", YesNoStatus.YES.getCode());
+            map.put("isFinish",YesNoStatus.YES.getCode());
+            map.put("borrowNo",cashDo.getTradeNoXgxy());
+            map.put("period","all");
+            map.put("amount",String.valueOf(BigDecimal.ZERO));
+            map.put("type", JsdRepayType.COLLECTION.name());
+            JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
+            noticeRecordDo.setUserId(orderDo.getUserId());
+            noticeRecordDo.setType(JsdNoticeType.COLLECT_RECONCILIATION.code);
+            noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+            noticeRecordDo.setParams(JSON.toJSONString(map));
+            jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+            if (xgxyUtil.repayNoticeRequest(map)) {
+                noticeRecordDo.setRid(noticeRecordDo.getRid());
+                noticeRecordDo.setGmtModified(new Date());
+                jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
+            }
+            return "success";
+        } catch (Exception e) {
+            thirdLog.error("collectImport error = " + e);
+            return "false";
+        }
+    }
+
+
+
+
+
+    /**
+     * 催收更新数据
+     *
+     * @param data
+     * @return
+     */
+    public String collectData(String data) {
+        HashMap<String,String> map = new HashMap<>();
+        try {
+            if(StringUtil.isEmpty(data)){
+                map.put("code","500");
+                map.put("info","");
+                thirdLog.error("data is null");
+                return JSON.toJSONString(map);
+            }
+            List<HashMap<String,String>> list = new ArrayList<>();
+            String arr[] =  data.split(",");
+            for(int i=0;i<arr.length;i++){
+                JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(arr[i]));
+                JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(Long.parseLong(arr[i]));
+                JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getById(jsdBorrowLegalOrderDo.getBorrowId());
+                List<JsdBorrowLegalOrderDo> orderList =  jsdBorrowLegalOrderService.getBorrowOrdersByBorrowId(borrowCashDo.getRid());
+                HashMap<String, String> buildData = new HashMap<String, String>();
+                int count = 0;
+                for (int x=0;x<orderList.size();x++){
+                    if(StringUtil.equals(String.valueOf(orderList.get(x).getRid()),String.valueOf(jsdBorrowLegalOrderDo.getRid()))){
+                        count = x;
+                        break;
+                    }
+                }
+                if(count>0){
+                    List<JsdBorrowCashRenewalDo> renewalList =  jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(jsdBorrowLegalOrderDo.getBorrowId());
+                    buildData.put("overdueDay",String.valueOf(renewalList.get(count-1).getOverdueDay()));
+                }else {
+                    buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(borrowCashDo.getGmtPlanRepayment(),new Date())));//逾期天数
+                }
+                //案件信息
+                BigDecimal residueAmount = BigDecimal.ZERO;//应还金额
+                BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
+                //应还金额
+                residueAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getOverdueAmount(), borrowCashDo.getPoundageAmount(), borrowCashDo.getInterestAmount()).subtract(borrowCashDo.getRepayPrinciple());
+                //催收金额
+                BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestRate(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
+                //逾期金额
+                overdueAmount = borrowCashDo.getOverdueAmount();
+                //委案本金
+                BigDecimal borrowAmount = borrowCashDo.getAmount();
+                //还款金额
+                BigDecimal repayAmount = borrowCashDo.getRepayAmount();
+                if(orderCashDo != null){
+                    //应还金额
+                    residueAmount = BigDecimalUtil.add(residueAmount, orderCashDo.getAmount(), orderCashDo.getOverdueAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getInterestAmount()).subtract(orderCashDo.getRepaidAmount());
+                    //催收金额
+                    collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
+                    //逾期金额
+                    overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(), orderCashDo.getOverdueAmount());
+                    //委案本金
+                    borrowAmount = borrowAmount.add(orderCashDo.getAmount());
+                    //还款金额
+                    repayAmount = borrowCashDo.getRepayAmount().add(orderCashDo.getRepaidAmount());
+                }
+                buildData.put("borrowAmount",String.valueOf(borrowAmount));//委案本金
+                buildData.put("collectAmount",String.valueOf(collectAmount));//催收金额
+                buildData.put("overdueAmount",String.valueOf(overdueAmount));//滞纳金
+                buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
+                buildData.put("repayAmount",String.valueOf(repayAmount));//已还金额
+                buildData.put("status",borrowCashDo.getStatus());//状态
+                buildData.put("dataId",arr[i]);//状态
+                list.add(buildData);
+            }
+
+            map.put("code","200");
+            map.put("info",JSON.toJSONString(list));
+            return JSON.toJSONString(map);
+        } catch (Exception e) {
+            map.put("code","500");
+            map.put("info","");
+            thirdLog.error("collectImport error = " + e);
+            return JSON.toJSONString(map);
+        }
+    }
 
 
 

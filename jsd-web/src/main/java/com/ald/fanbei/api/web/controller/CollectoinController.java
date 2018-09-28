@@ -39,4 +39,28 @@ public class CollectoinController {
         return cuiShouUtils.collectImport(data);
     }
 
+
+    /**
+     * 催收更新数据(第二版)
+     * @param data
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = {"/collectData"}, method = RequestMethod.POST)
+    public String collectData(String data){
+        return cuiShouUtils.collectData(data);
+    }
+
+    /**
+     * 催收平账修改状态(第二版)
+     * @param data
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = {"/collectUpdateStatus"}, method = RequestMethod.POST)
+    public String collectUpdateStatus(String data,String sign){
+        return cuiShouUtils.collectUpdateStatus(data,sign);
+    }
+
+
 }
