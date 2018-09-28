@@ -482,5 +482,21 @@
 
     </select>
 
+    <select id="getBorrowLegalOrderCashDateBeforeToday"
+            resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order_cash
+        WHERE
+        borrow_id = #{borrowId}
+        AND
+        is_delete = 0
+        AND
+        status
+        IN ('AWAIT_REPAY','PART_REPAID')
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
 
 </mapper>
