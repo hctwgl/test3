@@ -18,6 +18,6 @@ jsd.collection.companyId           = 6
 jsd.xgxy.app.id         = jsdplus
 jsd.xgxy.aes.password   = 9c5dd35d58f8501f
 jsd.ups.preffix         = PLUS
-jsd.ups.merno           = 01151209001
+jsd.ups.merno           = 03030301001
 jsd.collection.token    = eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo
 jsd.collection.companyId           = 9
