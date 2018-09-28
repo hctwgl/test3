@@ -10,6 +10,7 @@ public enum  JsdNoticeType {
     BIND("绑卡", "BIND"),
     COLLECT("催收逾期还款推送催收", "COLLECT"),
     XGXY_COLLECT("催收逾期还款推送西瓜", "XGXY_COLLECT"),
+    COLLECT_RECONCILIATION("催收平账", "COLLECT_RECONCILIATION"),
     OVERDUEREPAY("App主动逾期还款推送催收", "OVERDUEREPAY"),
     XGXY_OVERDUEREPAY("App主动逾期还款推送西瓜", "XGXY_OVERDUEREPAY");
 
