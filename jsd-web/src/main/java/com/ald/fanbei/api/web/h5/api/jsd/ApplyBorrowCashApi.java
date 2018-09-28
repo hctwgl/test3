@@ -97,7 +97,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         	jsdBorrowCashService.resolve(trialBo);
 	    	
             final JsdBorrowCashDo cashDo = buildBorrowCashDo(cashReq, mainCard, trialBo); 				// 主借款
-            final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(cashReq, context.getUserId());	// 搭售商品订单
+            final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(cashReq, context.getUserId(), trialBo);	// 搭售商品订单
             final JsdBorrowLegalOrderCashDo orderCashDo = buildBorrowLegalOrderCashDo(cashReq, trialBo);// 订单借款
 
             transactionTemplate.execute(new TransactionCallback<Long>() {
@@ -176,12 +176,13 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
      * 构建 商品订单
      * @return
      */
-    private JsdBorrowLegalOrderDo buildBorrowLegalOrder(ApplyBorrowCashReq cashReq, Long userId) {
+    private JsdBorrowLegalOrderDo buildBorrowLegalOrder(ApplyBorrowCashReq cashReq, Long userId, TrialBeforeBorrowBo trialBo) {
     	JsdGoodsInfoBo goodsBo = cashReq.goodsInfo;
+    	TrialBeforeBorrowResp resp = trialBo.resp;
     	
         JsdBorrowLegalOrderDo afBorrowLegalOrderDo = new JsdBorrowLegalOrderDo();
         afBorrowLegalOrderDo.setUserId(userId);
-        afBorrowLegalOrderDo.setPriceAmount(new BigDecimal(goodsBo.goodsPrice));
+        afBorrowLegalOrderDo.setPriceAmount(new BigDecimal(resp.totalDiffFee));
         afBorrowLegalOrderDo.setGoodsName(goodsBo.goodsName);
         afBorrowLegalOrderDo.setStatus(JsdBorrowLegalOrderStatus.UNPAID.getCode());
         String orderCashNo = generatorClusterNo.getOrderNo(OrderType.LEGAL);
