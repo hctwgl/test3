@@ -207,7 +207,7 @@ public class CuiShouUtils {
             buildData.put("overdueDay",String.valueOf(renewalList.get(count-1).getOverdueDay()));
             buildData.put("borrowTime",DateUtil.formatDateTime(renewalList.get(count-1).getGmtCreate()));//借款时间
         }else {
-            buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(borrowCashDo.getGmtPlanRepayment(),new Date())));//逾期天数
+            buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(borrowCashDo.getGmtPlanRepayment()),DateUtil.formatDateToYYYYMMdd(new Date()))));//逾期天数
             buildData.put("borrowTime",DateUtil.formatDateTime(borrowCashDo.getGmtCreate()));//借款时间
         }
         List<Map<String,String>>  data = new ArrayList<>();
