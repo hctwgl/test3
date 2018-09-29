@@ -39,7 +39,7 @@
         
         <property name="fbapi.ups.url" defaultValue="http://tpayrout.51fanbei.com/ups/main.html" description="ups请求地址" />
         <property name="jsd.ups.preffix" defaultValue="PLUS" description="userNo" />
-        <property name="jsd.ups.merno" defaultValue="03030301001" description="ups商户号" />
+        <property name="jsd.ups.merno" defaultValue="01151209001" description="ups商户号" />
 
         <property name="jsd.xgxy.host" defaultValue="http://testeca.91ala.com:1112" description="西瓜信用地址" />
         <property name="jsd.xgxy.aes.password" defaultValue="aef5c8c6114b8d6a" description="西瓜信用密钥" />
