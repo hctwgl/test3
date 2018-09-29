@@ -473,7 +473,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				repayAmount = repaymentDo.getRepaymentAmount();
 				userId = repaymentDo.getUserId();
 				noticeRecordDo.setRefId(String.valueOf(repaymentDo.getRid()));
-			}else if(orderRepaymentDo != null) {
+			}
+			if(orderRepaymentDo != null) {
 				borrowId = orderRepaymentDo.getBorrowId();
 				repayAmount = orderRepaymentDo.getRepayAmount().add(repayAmount);
 				userId = orderRepaymentDo.getUserId();
