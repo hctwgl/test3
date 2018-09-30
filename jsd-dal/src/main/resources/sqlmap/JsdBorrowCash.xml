@@ -630,7 +630,7 @@
     <select id="getLoanStatistics" resultType="java.util.HashMap">
         SELECT
             SUM(amount) AS amount,
-            COUNT(1) AS apply
+            COUNT(distinct(user_id)) AS apply
         FROM
             jsd_borrow_cash
         WHERE
