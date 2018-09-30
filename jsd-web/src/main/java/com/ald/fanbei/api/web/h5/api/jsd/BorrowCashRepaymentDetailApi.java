@@ -60,8 +60,7 @@ public class BorrowCashRepaymentDetailApi implements JsdH5Handle {
         bo.orderAmount=BigDecimal.ZERO;
         bo.orderPoundage=BigDecimal.ZERO;
 
-        bo.cashAmount=bo.cashAmount.add(cashDo.getAmount()).add(cashDo.getOverdueAmount()).add(cashDo.getPoundageAmount()).add(cashDo.getInterestAmount()).add(cashDo.getSumRepaidOverdue())
-                .add(cashDo.getSumRepaidInterest()).add(cashDo.getSumRepaidPoundage()).subtract(cashDo.getRepayAmount());
+        bo.cashAmount=jsdBorrowCashService.calcuUnrepayAmount(cashDo, orderCashDo);
         bo.cashPoundage=bo.cashPoundage.add(cashDo.getOverdueAmount()).add(cashDo.getPoundageAmount()).add(cashDo.getInterestAmount());
         bo.principle=bo.principle.add(cashDo.getAmount()).subtract(cashDo.getRepayPrinciple());
         if(orderCashDo!=null){
