@@ -72,7 +72,6 @@ public class BorrowCashRepaymentDetailApi implements JsdH5Handle {
             bo.amount=bo.cashAmount;
         }
         bo.remark="费用明细: 1.其中含借款本金"+bo.principle+"元，利息&手续费&逾期费"+bo.cashPoundage+"元。2.商品金额为"+bo.orderAmount+"元，利息&手续费&逾期费"+bo.orderPoundage+"元。";
-         logger.info("Detail BO:"+bo+cashDo);
     }
 
     public class BorrowAmount{
