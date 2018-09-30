@@ -26,6 +26,8 @@ public interface MgrBorrowCashDao {
 
     List<JsdBorrowCashDo> getBorrowCashBetweenStartAndEnd(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
 
+    List<JsdBorrowCashDo> getPlanRepaymentBorrowCashBetweenStartAndEnd(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
+
     /**
      * 获取当期到期人数
      *

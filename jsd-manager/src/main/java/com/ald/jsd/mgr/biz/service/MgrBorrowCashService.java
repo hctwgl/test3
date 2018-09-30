@@ -19,6 +19,8 @@ public interface MgrBorrowCashService {
 
     List<JsdBorrowCashDo> getBorrowCashBetweenStartAndEnd(Date startDate,Date endDate);
 
+    List<JsdBorrowCashDo> getPlanRepaymentBorrowCashBetweenStartAndEnd(Date startDate,Date endDate);
+
     /**
      * 当期到期人数
      * @param days
