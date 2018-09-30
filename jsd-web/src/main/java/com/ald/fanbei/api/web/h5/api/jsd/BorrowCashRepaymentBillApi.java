@@ -93,6 +93,7 @@ public class BorrowCashRepaymentBillApi implements JsdH5Handle {
         borrowBillDetail.put("unrepayServiceAmount", cashDo.getPoundageAmount().add(orderCashDo.getPoundageAmount()));
         borrowBillDetails.add(borrowBillDetail);
         map.put("borrowBillDetails",borrowBillDetails);
+        logger.info("Detail BO:"+borrowBillDetail+cashDo);
         return map;
     }
 
