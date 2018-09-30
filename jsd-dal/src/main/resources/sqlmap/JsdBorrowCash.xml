@@ -630,7 +630,7 @@
     <select id="getLoanStatistics" resultType="java.util.HashMap">
         SELECT
             SUM(amount) AS amount,
-            COUNT(1) AS apply
+            COUNT(distinct(user_id)) AS apply
         FROM
             jsd_borrow_cash
         WHERE
@@ -695,6 +695,7 @@
         and a.review_status='PASS'
         <if test="status != null and status !='ALL' and status !='OVERDUE' and status !=''">
             AND a.status =#{status}
+            AND a.overdue_status='N'
         </if>
         <if test="status != null and status =='OVERDUE' and status !=''">
             AND a.overdue_status='Y'
