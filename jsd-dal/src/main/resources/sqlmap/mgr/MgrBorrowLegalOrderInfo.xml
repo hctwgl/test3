@@ -14,6 +14,5 @@
         SELECT * 
         FROM jsd_borrow_legal_order_info
         WHERE is_delete=0 and datediff(now(),gmt_create) = #{days}
-        LIMIT 0,1
     </select>
 </mapper>
