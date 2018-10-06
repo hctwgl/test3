@@ -381,7 +381,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         resp.sellInterestRate = orderInterestRate.setScale(4, RoundingMode.HALF_UP);
         resp.sellServiceFee = actualOrderServiceAmount.toString();
         resp.sellServiceRate = orderRateInfo.serviceRate.setScale(2, RoundingMode.HALF_UP);
-        resp.sellOverdueRate = orderOverdueRate.setScale(4, RoundingMode.HALF_UP);
+        resp.sellOverdueRate = orderOverdueRate.divide(new BigDecimal(360)).setScale(4, RoundingMode.HALF_UP);
 
         BigDecimal totalAmount = BigDecimalUtil.add(actualBorrowAmount, actualBorrowInterestAmount, actualBorrowServiceAmount,
                 actualOrderAmount, actualOrderInterestAmount, actualOrderServiceAmount);
