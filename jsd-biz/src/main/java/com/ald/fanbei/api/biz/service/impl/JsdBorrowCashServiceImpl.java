@@ -203,7 +203,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         if (result.get("awaitRepay").equals(BigDecimal.ZERO)) {
             result.put("repayRate", BigDecimal.ZERO);
         } else {
-            result.put("repayRate", BigDecimalUtil.divide(result.get("repay"), result.get("awaitRepay")).multiply(new BigDecimal(100)));
+            result.put("repayRate", BigDecimalUtil.divide(result.get("repay"), result.get("awaitRepay").add(result.get("repay"))).multiply(new BigDecimal(100)));
         }
         return result;
     }
