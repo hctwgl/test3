@@ -15,8 +15,10 @@ public class TrialBeforeBorrowBo {
 	
 	public TrialBeforeBorrowReq req;
 	public TrialBeforeBorrowResp resp;
-	
-	public BigDecimal riskDailyRate; 
+	/**
+	 * 分层日利率
+	 */
+	public BigDecimal layerInterestRate;
 	public Long userId;
 	
 	@Component("trialBeforeBorrowReq")
@@ -117,5 +119,6 @@ public class TrialBeforeBorrowBo {
 		 * 商品逾期费率
 		 */
 		public BigDecimal sellOverdueRate;
+
 	}
 }

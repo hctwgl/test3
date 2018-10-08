@@ -537,7 +537,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 				.subtract(borrowCashDo.getRepayAmount().add(capital));
 
 		delayInfo.put("principalAmount", principalAmount+"");	// 展期后剩余借款本金
-		delayInfo.put("capital", capital+"");				//此次续期需支付的本金
+		delayInfo.put("payCapital", capital+"");				//此次续期需支付的本金
 		delayInfo.put("delayAmount", renewalPayAmount+"");	// 需支付总金额
 		delayInfo.put("delayDay", allowRenewalDay+"");	// 续期天数
 		delayInfo.put("delayRemark", deferRemark);	// 费用明细	展期金额的相关具体描述（多条说明用英文逗号,用间隔）

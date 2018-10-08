@@ -518,7 +518,7 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 				.subtract(borrowCashDo.getRepayAmount().add(capital));
 		
 		delayInfo.put("principalAmount", principalAmount+"");	// 展期后剩余借款本金
-		delayInfo.put("capital", capital+"");				//此次续期需支付的本金
+		delayInfo.put("payCapital", capital+"");				//此次续期需支付的本金
 		delayInfo.put("delayDay", allowRenewalDay+"");	// 续期天数
 		
 		// 利润差
