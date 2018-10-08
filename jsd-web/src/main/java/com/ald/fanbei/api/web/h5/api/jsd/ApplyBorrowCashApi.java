@@ -105,7 +105,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         		// 赊销模式
         		jsdBorrowCashService.resolve(trialBo);
         		final JsdBorrowCashDo cashDo = buildBorrowCashDo(cashReq, mainCard, trialBo); 				// 主借款
-        		final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(cashReq, context.getUserId());	// 搭售商品订单
+        		final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(cashReq, context.getUserId(), trialBo);	// 搭售商品订单
         		final JsdBorrowLegalOrderCashDo orderCashDo = buildBorrowLegalOrderCashDo(cashReq, trialBo);// 订单借款
         		
         		transactionTemplate.execute(new TransactionCallback<Long>() {
