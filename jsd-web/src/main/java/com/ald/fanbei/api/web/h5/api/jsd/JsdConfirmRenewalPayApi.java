@@ -14,6 +14,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.ald.fanbei.api.biz.service.BeheadBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
@@ -27,14 +28,15 @@ import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRenewalServiceImpl.JsdRe
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.BorrowVersionType;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowOrderRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
 import com.ald.fanbei.api.common.enums.ResourceType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
@@ -49,6 +51,7 @@ import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 
 /**  
@@ -82,6 +85,8 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 	TransactionTemplate transactionTemplate;
 	@Resource
 	GeneratorClusterNo generatorClusterNo;
+	@Resource
+	BeheadBorrowCashRenewalService beheadBorrowCashRenewalService;
 
 	@Override
 	public JsdH5HandleResponse process(Context context) {
@@ -91,7 +96,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		// 借款记录
 		JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(paramBo.borrowNo);
 		if(borrowCashDo == null || !StringUtil.equals(borrowCashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.name())){
-			throw new FanbeiException("No borrow can renewal", FanbeiExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
+			throw new BizException("No borrow can renewal", BizExceptionCode.RENEWAL_ORDER_NOT_EXIST_ERROR);
 		}
 		
 		// 续期校验
@@ -100,7 +105,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		// 用户信息
 		JsdUserDo userDo = jsdUserService.getById(paramBo.userId);
 		if(userDo == null) {
-			throw new FanbeiException("user not exist error", FanbeiExceptionCode.USER_NOT_EXIST_ERROR);
+			throw new BizException("user not exist error", BizExceptionCode.USER_NOT_EXIST_ERROR);
 		}
 		// 银行卡信息
 		HashMap<String,Object> map = jsdUserBankcardService.getBankByBankNoAndUserId(paramBo.userId, paramBo.bankNo);
@@ -110,6 +115,27 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		paramBo.userDo = userDo;
 		paramBo.borrowCashDo = borrowCashDo;
 
+		Map<String, Object> resultMap = Maps.newHashMap();
+
+		if(StringUtil.equals("Y", paramBo.isTying) && StringUtil.equals(BorrowVersionType.BEHEAD.name(), paramBo.tyingType)) {	// 搭售-砍头
+			resultMap = beheadBorrowCashRenewalService.dealRenewalV2(paramBo);
+			
+		}else if(StringUtil.equals("Y", paramBo.isTying) && StringUtil.equals(BorrowVersionType.SELL.name(), paramBo.tyingType)){	// 搭售-赊销
+			long result = buildRecord(paramBo, borrowCashDo);
+			if(result == 0l) throw new BizException("JsdConfirmRenewal error", BizExceptionCode.RENEWAL_FAIL_ERROR);
+			resultMap = jsdBorrowCashRenewalService.doRenewal(paramBo);
+			
+		}else {
+			throw new BizException(BizExceptionCode.FUNCTIONAL_MAINTENANCE);
+		}
+		
+		JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功", resultMap);
+		return resp;
+	}
+
+
+
+	private long buildRecord(JsdRenewalDealBo paramBo, JsdBorrowCashDo borrowCashDo) {
 		long result = transactionTemplate.execute(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -143,14 +169,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 				}
 			}
 		});
-
-		if(result == 1l){
-			Map<String, Object> resultMap = jsdBorrowCashRenewalService.doRenewal(paramBo);
-			JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功", resultMap);
-			return resp;
-		}else {
-			throw new FanbeiException("JsdConfirmRenewal error", FanbeiExceptionCode.RENEWAL_FAIL_ERROR);
-		}
+		return result;
 	}
 
 
@@ -357,12 +376,9 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 			bo.renewalNo = generatorClusterNo.getJsdRenewalNo();
 		} catch (Exception e) {
 			logger.error("jsd renewal params error",e);
-			throw new FanbeiException(FanbeiExceptionCode.JSD_PARAMS_ERROR);
+			throw new BizException(BizExceptionCode.JSD_PARAMS_ERROR);
 		}
 		
-		if(StringUtil.equals("N", bo.isTying) && StringUtil.equals("BEHEAD", bo.tyingType)) {
-			throw new FanbeiException(FanbeiExceptionCode.FUNCTIONAL_MAINTENANCE);
-		}
 		this.getRateInfo(bo);
 
 		return bo;
@@ -378,7 +394,7 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		
 		JsdResourceDo renewalResource = JsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceType.JSD_RENEWAL_INFO.getCode());
 		if(renewalResource ==null) 
-			throw new FanbeiException(FanbeiExceptionCode.GET_JSD_RATE_ERROR);
+			throw new BizException(BizExceptionCode.GET_JSD_RATE_ERROR);
 
 		//借款手续费率
 		paramBo.cashPoundageRate = borrowRateInfo.serviceRate;

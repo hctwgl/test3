@@ -8,18 +8,19 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
+import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.ResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.enums.XgxyProtocolType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
-import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
@@ -50,16 +51,16 @@ public class GetLoanProtocolApi implements JsdH5Handle {
     public JsdH5HandleResponse process(Context context) {
     	JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
         GetLoanProtocolParam param = (GetLoanProtocolParam) context.getParamEntity();
-        List<JsdProctocolVo> protocolVos = new ArrayList<>();;
+        List<JsdProctocolBo> protocolVos = new ArrayList<>();;
     	if(XgxyProtocolType.BORROW.name().equals(param.type)) {
-			protocolVos = getBorrowProtocols(param.openId, param.bizNo, param.previewParam);
+			protocolVos = jsdBorrowCashService.getBorrowProtocols(param.openId, param.bizNo, param.previewParam);
     	}else if (XgxyProtocolType.TYING.name().equals(param.type)){
-    		protocolVos = getAgencyProtocols(param.openId, param.bizNo, param.previewParam);
+			protocolVos = jsdBorrowCashService.getAgencyProtocols(param.openId, param.bizNo, param.previewParam);
         }else if(XgxyProtocolType.DELAY.name().equals(param.type)){
-        	protocolVos = getRenewalProtocols(param.openId, param.bizNo, param.previewParam);
+			protocolVos = jsdBorrowCashService.getRenewalProtocols(param.openId, param.bizNo, param.previewParam);
         }else {
     		logger.warn("Don't support " + param.type + " protocol yet!");
-    		throw new FanbeiException(FanbeiExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
+    		throw new BizException(BizExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
     	}
         resp.setData(protocolVos);
         return resp;
@@ -72,11 +73,11 @@ public class GetLoanProtocolApi implements JsdH5Handle {
      * @param previewJsonStr
      * @return
      */
-    private List<JsdProctocolVo> getBorrowProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
+    private List<JsdProctocolBo> getBorrowProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
     	List<JsdResourceDo> ress = jsdResourceService.listByType(ResourceType.PROTOCOL_BORROW.getCode());
-    	List<JsdProctocolVo> protocolVos = new ArrayList<>();
+    	List<JsdProctocolBo> protocolVos = new ArrayList<>();
     	for(JsdResourceDo resdo: ress) {
-    		JsdProctocolVo protocolVo = new JsdProctocolVo();
+			JsdProctocolBo protocolVo = new JsdProctocolBo();
         	protocolVo.setProtocolName(resdo.getName());
         	String urlPrefix = getNotifyHost()+resdo.getValue();
 			try {
@@ -98,11 +99,11 @@ public class GetLoanProtocolApi implements JsdH5Handle {
      * @param previewJsonStr
      * @return
      */
-    private List<JsdProctocolVo> getAgencyProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
+    private List<JsdProctocolBo> getAgencyProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
     	JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_AGENCY.name(), ResourceSecType.PROTOCOL_AGENCY.name());
-    	List<JsdProctocolVo> protocolVos = new ArrayList<>();
-    		
-		JsdProctocolVo protocolVo = new JsdProctocolVo();
+    	List<JsdProctocolBo> protocolVos = new ArrayList<>();
+
+		JsdProctocolBo protocolVo = new JsdProctocolBo();
     	protocolVo.setProtocolName(resdo.getName());
     	String urlPrefix = getNotifyHost()+resdo.getValue();
 		try {
@@ -123,11 +124,11 @@ public class GetLoanProtocolApi implements JsdH5Handle {
      * @param previewJsonStr
      * @return
      */
-    private List<JsdProctocolVo> getRenewalProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
+    private List<JsdProctocolBo> getRenewalProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
     	JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_RENEWAL.name(), ResourceSecType.PROTOCOL_RENEWAL.name());
-    	List<JsdProctocolVo> protocolVos = new ArrayList<>();
-    		
-		JsdProctocolVo protocolVo = new JsdProctocolVo();
+    	List<JsdProctocolBo> protocolVos = new ArrayList<>();
+
+		JsdProctocolBo protocolVo = new JsdProctocolBo();
     	protocolVo.setProtocolName(resdo.getName());
     	String urlPrefix = getNotifyHost()+resdo.getValue();
 		try {

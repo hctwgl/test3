@@ -10,11 +10,10 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.ald.fanbei.api.biz.arbitration.MD5;
-import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.HttpUtilForXgxy;
 import com.ald.fanbei.api.common.util.JsdAesUtil;
 import com.ald.fanbei.api.common.util.JsdSignUtil;
+import com.ald.fanbei.api.common.util.MD5Util;
 import com.ald.fanbei.web.test.common.BaseTest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -28,7 +27,7 @@ public class JsdTest extends BaseTest {
 //    String urlBase = "http://192.168.112.40:8080";
 
     String userName = "13165995223";
-    private static final String AES_KEY = "baac7fc54a2a7e75";
+    private static final String AES_KEY = "9c5dd35d58f8501f";
 
     /**
      * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -45,7 +44,7 @@ public class JsdTest extends BaseTest {
     public void syncUserInfo() {
     	String url = urlBase + "/third/eca/v1/syncUserInfo";
     	JSONObject params = new JSONObject();
-        params.put("userId", "36C91DFB07EB236DF28CC32187EDA223");
+        params.put("userId", "36C91DFB07EB236DF28CC32187979788");
         params.put("realName", "朱江丰");
         params.put("idNumber", "320324198911057031");
         params.put("bankMobile", "15968196088");
@@ -54,7 +53,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -66,14 +65,14 @@ public class JsdTest extends BaseTest {
     public void getRenewalDetailInfo() {
     	String url = urlBase + "/third/eca/v1/getDelayDetail";
         Map<String, String> params = new HashMap<>();
-        params.put("borrowNo", "loan0909eca645000000018");
+        params.put("borrowNo", "loan0919eca283100000004");
         params.put("timestamp", System.currentTimeMillis()+"");
-        params.put("openId", "BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
+        params.put("openId", "BC539267586FB64E8990BB3113FCA5BC");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)), AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -90,44 +89,25 @@ public class JsdTest extends BaseTest {
     	goodsInfo.put("goodsImage", "http");
 
     	Map<String, String> params = new HashMap<>();
-    	params.put("borrowNo", "dk2018081010282000095");
-    	params.put("delayNo", "XJ20180904003");
+    	params.put("borrowNo", "loan0919eca283100000004");
+    	params.put("delayNo", "XJ20180919001");
     	params.put("amount", "1000");
-    	params.put("delayDay", "10");
+    	params.put("delayDay", "7");
     	params.put("bankNo", "6212261202028480466");
     	params.put("isTying", "Y");
-    	params.put("tyingType", "SELL");
+    	params.put("tyingType", "BEHEAD");
     	params.put("goodsInfo", goodsInfo.toString());
     	params.put("timestamp", System.currentTimeMillis()+"");
-    	params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
+    	params.put("openId", "BC539267586FB64E8990BB3113FCA5BC");
     	String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
     	Map<String, String> p = new HashMap<>();
     	p.put("data", data);
     	p.put("sign", generateSign(params, AES_KEY));
-    	String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+    	String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
     	System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
 
 //    	testH5(url, params, userName, true);
 
-    }
-
-    /**
-     * 续期回调
-     */
-    @Test
-    public void renewawlUpsCallBack() {
-
-        String url = urlBase + "/third/ups/collect?";
-		String orderNo = "xj2018090421105600022";
-		String merPriv = PayOrderSource.RENEW_JSD.getCode();
-		String tradeNo = "csxj123456";
-		String tradeState = "00";
-
-		String reqStr = "orderNo=" + orderNo + "&merPriv=" + merPriv + "&tradeNo=" + tradeNo + "&tradeState=" + tradeState;
-		url += reqStr;
-		Map<String,String> params = new HashMap<>();
-
-		testApi(url, params, userName ,true);
     }
 
     /**
@@ -145,7 +125,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -162,7 +142,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -178,7 +158,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
@@ -196,7 +176,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
@@ -213,7 +193,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
@@ -224,17 +204,17 @@ public class JsdTest extends BaseTest {
     public void repayLoan() {
         String url = urlBase + "/third/eca/v1/pushRepayment";
         Map<String,String> params = new HashMap<>();
-        params.put("amount", 95.6+"");
+        params.put("amount", 0.1+"");
         params.put("period", 1+"");
-        params.put("bankNo", "6216696200001039000");
-        params.put("borrowNo", "loan0911eca783500000030");
-        params.put("repayNo", "repay0911eca267900000092");
-        params.put("openId","9FF6EC836C741458429C7398AC0E2F26");
+        params.put("bankNo", "6212261202028480466");
+        params.put("borrowNo", "loan0919eca283100000004");
+        params.put("repayNo", "repay0911eca267900000192");
+        params.put("openId","BC539267586FB64E8990BB3113FCA5BC");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
 
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -244,15 +224,15 @@ public class JsdTest extends BaseTest {
     public void repayConfiSms() {
         String url = urlBase + "/third/eca/v1/submitMessage";
         Map<String, String> params = new HashMap<>();
-        params.put("userId","EB56E1F0A9383508DB8FD039C7D37BD1");
-        params.put("code","046842");
+        params.put("openId","BC539267586FB64E8990BB3113FCA5BC");
+        params.put("code","291855");
         params.put("type","REPAY");
-        params.put("busiFlag","hqkj20180830151933123241");
+        params.put("busiFlag","repay0911eca267900000192");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
@@ -267,7 +247,7 @@ public class JsdTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", data);
         p.put("sign", generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
@@ -291,7 +271,7 @@ public class JsdTest extends BaseTest {
             result.append(key).append("=").append(params.get(key));
         }
         result.append("&appSecret=" + appSecret);
-        return params == null ? null : MD5.md5(result.toString());
+        return params == null ? null : MD5Util.md5(result.toString());
     }
 
 }

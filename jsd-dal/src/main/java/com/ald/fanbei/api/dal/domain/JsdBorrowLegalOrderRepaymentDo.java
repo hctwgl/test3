@@ -100,6 +100,11 @@ import java.math.BigDecimal;
     private String repayNo;
 
 
+    private Date payTime;
+
+    private String  remark;
+
+
 
     /**
      * 获取主键Id
@@ -395,5 +400,21 @@ import java.math.BigDecimal;
 
     public void setRepayNo(String repayNo) {
         this.repayNo = repayNo;
+    }
+
+    public Date getPayTime() {
+        return payTime;
+    }
+
+    public void setPayTime(Date payTime) {
+        this.payTime = payTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

@@ -417,5 +417,13 @@
         AND status = 'Y'
         ORDER BY gmt_create DESC
     </select>
-    
+
+    <select id="getMgrJsdRenewalByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
+        select
+        trade_no_xgxy,renewal_amount,renewal_day,trade_no_ups,prior_interest,prior_overdue,prior_poundage,capital,actual_amount,next_interest,next_poundage
+        from jsd_borrow_cash_renewal
+        WHERE is_delete = 0 AND borrow_id=#{borrowId} and status='Y'
+        ORDER BY gmt_create DESC
+    </select>
+
 </mapper>

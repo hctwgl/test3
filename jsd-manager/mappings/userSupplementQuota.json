@@ -1,0 +1,10 @@
+{
+	"request": {
+		"method": "GET",
+		"url": "/modules/api/thrid/userSupplementQuota.htm"
+	},
+	"response": {
+		"status": 200,
+		"body": "More content\n"
+	}
+}

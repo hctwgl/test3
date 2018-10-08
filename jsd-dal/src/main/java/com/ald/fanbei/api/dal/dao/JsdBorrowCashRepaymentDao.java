@@ -4,6 +4,8 @@ import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 
+import java.util.List;
+
 /**
  * 极速贷Dao
  * 
@@ -40,7 +42,5 @@ public interface JsdBorrowCashRepaymentDao extends BaseDao<JsdBorrowCashRepaymen
 
     JsdBorrowCashRepaymentDo getByTradeNoOut(@Param("tradeNoUps") String tradeNoUps);
 
-
-
-
+    List<JsdBorrowCashRepaymentDo> getByBorrowTradeNoXgxy(@Param("tradeNoXgxy")String tradeNoXgxy);
 }

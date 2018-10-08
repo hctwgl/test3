@@ -33,9 +33,6 @@
 				<value>fbapi.redis.hostname</value>
 				<value>fbapi.redis.port</value>
 				<value>fbapi.redis.password</value>
-				<value>fbapi.token.redis.hostname</value>
-				<value>fbapi.token.redis.port</value>
-				<value>fbapi.token.redis.password</value>
 				
 				<value>fbfile.oss.access.key</value>
 				<value>fbfile.oss.access.secret</value>
@@ -44,6 +41,7 @@
 		<property name="locations">
 			<list>
 				<value>classpath:props/encrypt.properties</value>
+				<value>classpath:props/config.properties</value>
 			</list>
 		</property>
 	</bean>	
@@ -54,14 +52,6 @@
         <property name="maxIdle" value="300" />  
         <property name="maxTotal" value="60000" />  
         <property name="maxWaitMillis" value="10000" />
-        <property name="testOnBorrow" value="true" />  
-    </bean> 
-	<!-- redis 192.168.11.118 foobared -->
-    <bean id="poolConfigToken" class="redis.clients.jedis.JedisPoolConfig">
-    	<property name="minIdle" value="8" />
-        <property name="maxIdle" value="200" />  
-        <property name="maxTotal" value="300" />  
-        <property name="maxWaitMillis" value="1000" />  
         <property name="testOnBorrow" value="true" />  
     </bean>
 	
@@ -94,10 +84,6 @@
             <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
         </property>
     </bean>
-	<!-- redis template definition  -->
-	<bean id="cacheRedisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="cacheJedisConnFactory" />
-	</bean>
 
 	<bean id="threadPoolMaidianTaskExecutor"
 		  class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">

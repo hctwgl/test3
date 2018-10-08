@@ -16,8 +16,8 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
 import com.ald.fanbei.api.common.enums.RepayType;
 import com.ald.fanbei.api.common.enums.UpsErrorType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
 
@@ -60,7 +60,7 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 
 		} else {
 			// 未获取到缓存数据，支付订单过期
-			throw new FanbeiException(FanbeiExceptionCode.UPS_CACHE_EXPIRE);
+			throw new BizException(BizExceptionCode.UPS_CACHE_EXPIRE);
 		}
 	}
 
@@ -81,7 +81,7 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 		// 获取用户绑定银行卡信息
 		// 调用ups进行支付
 		UpsCollectRespBo respBo = null;
-		if(StringUtil.equals(RepayType.WITHHOLD.getCode(), bank.get("bankChannel").toString())){
+		if(StringUtil.equals(RepayType.WITHHOLD.getCode(), bank.get("bankChannel").toString()) || StringUtil.equals(RepayType.WITHHOLD.getCode(), bankPayType)){
 			daikouConfirmPre(payTradeNo, bankPayType, payBizObject);
 			respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(), bank.get("bankCardNumber").toString(),
 					idNumber, purpose, remark, "02", merPriv);
@@ -95,7 +95,7 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
 			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
 			clearCache(payTradeNo);
-			throw new FanbeiException(FanbeiExceptionCode.getByCode(errorMsg.name()));
+			throw new BizException(BizExceptionCode.getByCode(errorMsg.name()));
 		} else {
 			Map<String, Object> resultMap = upsPaySuccess(payTradeNo, bankPayType, payBizObject, respBo, bank.get("bankCardNumber").toString());
 			clearCache(payTradeNo);
@@ -137,7 +137,7 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
 //			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
 			clearCache(payTradeNo);
-			throw new FanbeiException(FanbeiExceptionCode.getByCode(errorMsg.name()));
+			throw new BizException(BizExceptionCode.getByCode(errorMsg.name()));
 		} else {
 			// 添加数据到redis缓存
 			UpsCollectBo upsCollectBo = new UpsCollectBo(bank, payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(),

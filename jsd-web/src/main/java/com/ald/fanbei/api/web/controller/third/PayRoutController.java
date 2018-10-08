@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ald.fanbei.api.biz.service.BeheadBorrowCashRenewalService;
+import com.ald.fanbei.api.biz.service.BeheadBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
@@ -39,6 +41,12 @@ public class PayRoutController {
 
 	@Resource
 	JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
+
+	@Resource
+	BeheadBorrowCashService beheadBorrowCashService;
+	
+	@Resource
+	BeheadBorrowCashRenewalService beheadBorrowCashRenewalService;
 
 
 
@@ -102,13 +110,22 @@ public class PayRoutController {
 	public String delegatePay(HttpServletRequest request, HttpServletResponse response) {
 		String outTradeNo = request.getParameter("orderNo");
 		String tradeState = request.getParameter("tradeState");
+		String merPriv = request.getParameter("merPriv");
 		long result = NumberUtil.objToLongDefault(request.getParameter("reqExt"), 0);
 		logger.info("delegatePay callback, from ups params: " + JSON.toJSONString(request.getParameterMap()));
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 打款成功
-				jsdBorrowCashService.dealBorrowSucc(result, outTradeNo);
+				if(PayOrderSource.JSD_LOAN.getCode().equals(merPriv)){
+					jsdBorrowCashService.dealBorrowSucc(result, outTradeNo);
+				}else if(PayOrderSource.JSD_LOAN_V2.getCode().equals(merPriv)){
+					beheadBorrowCashService.dealBorrowSucc(result, outTradeNo);
+				}
     		} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 打款失败
-    			jsdBorrowCashService.dealBorrowFail(result, outTradeNo, "UPS打款异步反馈失败");
+    			if(PayOrderSource.JSD_LOAN.getCode().equals(merPriv)){
+    				jsdBorrowCashService.dealBorrowFail(result, outTradeNo, "UPS打款异步反馈失败");
+				}else if(PayOrderSource.JSD_LOAN_V2.getCode().equals(merPriv)){
+					beheadBorrowCashService.dealBorrowFail(result, outTradeNo, "UPS打款异步反馈失败");
+				}
 			}
 			return "SUCCESS";
 		} catch (Exception e) {
@@ -134,12 +151,16 @@ public class PayRoutController {
 					jsdBorrowCashRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
 				}else if(PayOrderSource.RENEW_JSD.getCode().equals(merPriv)){
 					jsdBorrowCashRenewalService.dealJsdRenewalSucess(outTradeNo, tradeNo);
+				}else if(PayOrderSource.RENEW_JSD_V2.getCode().equals(merPriv)){
+					beheadBorrowCashRenewalService.dealJsdRenewalSucess(outTradeNo, tradeNo);
 				}
 			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
 				if(PayOrderSource.REPAY_JSD.getCode().equals(merPriv)){
 					jsdBorrowCashRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true,"", respDesc);
 				}else if(PayOrderSource.RENEW_JSD.getCode().equals(merPriv)){
 					jsdBorrowCashRenewalService.dealJsdRenewalFail(outTradeNo, tradeNo, true, respCode, respDesc);
+				}else if(PayOrderSource.RENEW_JSD_V2.getCode().equals(merPriv)){
+					beheadBorrowCashRenewalService.dealJsdRenewalFail(outTradeNo, tradeNo, true, respCode, respDesc);
 				}
 			}
 			return "SUCCESS";

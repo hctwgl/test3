@@ -12,18 +12,18 @@ public class Create {
 	public void test(){
 
 	 // 数据库连接信息
-		String url = "jdbc:mysql://51fanbeitest.db.com:3306/51fanbei_app?useUnicode=true&characterEncoding=utf8";
-		String MysqlUser = "51fanbei";
-		String mysqlPassword = "Hello1234";
+		String url = "jdbc:mysql://192.168.112.31:3306/jsd_loan?useUnicode=true&characterEncoding=utf8";
+		String MysqlUser = "jsd_user";
+		String mysqlPassword = "jsd_Password";
 
 		// 数据库及数据表名称
-		String database = "51fanbei_app";
+		String database = "jsd_loan";
 
 
-		String tables = "jsd_borrow_cash_overdue_log,jsd_borrow_cash,jsd_borrow_legal_order_cash,jsd_borrow_cash_repayment,jsd_borrow_cash_renewal";
+		String tables = "jsd_collection_repayment";
 
 		// 配置作者及Domain说明
-		String classAuthor = "yanghailong";
+		String classAuthor = "CodeGenerate";
 		String functionName = "";
 
 
@@ -32,7 +32,7 @@ public class Create {
 		// 公共包路径 (例如 BaseDao、 BaseService、 BaseServiceImpl)
 		String commonName = "";
 
-		String packageName ="com.ald.fanbei.api";
+		String packageName ="com.ald.jsd.mgr";
 		String moduleName = "";
 
 		// Mapper文件存储地址 默认在resources中
@@ -42,10 +42,10 @@ public class Create {
 		try {
 		    String[] table = tables.split(",");
 		    for (String tableName : table) {
-			if (StringUtils.isNotBlank(tableName)) {
-			    String classNamePrefix = getClassName(tableName);
-			    MybatisGenerate.generateCode(db, url, MysqlUser, mysqlPassword, database, tableName, commonName, packageName, batisName, moduleName, classAuthor, functionName, classNamePrefix);
-			}
+				if (StringUtils.isNotBlank(tableName)) {
+				    String classNamePrefix = getClassName(tableName);
+				    MybatisGenerate.generateCode(db, url, MysqlUser, mysqlPassword, database, tableName, commonName, packageName, batisName, moduleName, classAuthor, functionName, classNamePrefix);
+				}
 		    }
 		} catch (Exception e) {
 		    e.printStackTrace();

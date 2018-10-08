@@ -74,6 +74,11 @@ public class JsdBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<JsdBor
 	}
 
 	@Override
+	public JsdBorrowLegalOrderCashDo getFirstOrderCashByBorrowId(Long borrowId) {
+		return jsdBorrowLegalOrderCashDao.getFirstOrderCashByBorrowId(borrowId);
+	}
+
+	@Override
 	public List<JsdBorrowLegalOrderCashDo> getBorrowOrderCashsByBorrowId(Long borrowId) {
 		return jsdBorrowLegalOrderCashDao.getBorrowOrderCashsByBorrowId(borrowId);
 	}
@@ -81,6 +86,11 @@ public class JsdBorrowLegalOrderCashServiceImpl extends ParentServiceImpl<JsdBor
 	@Override
 	public JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashByOrderId(Long orderId){
 		return jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByOrderId(orderId);
+	}
+
+	@Override
+	public JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashDateBeforeToday(Long borrowId) {
+		return jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashDateBeforeToday(borrowId);
 	}
 
 }

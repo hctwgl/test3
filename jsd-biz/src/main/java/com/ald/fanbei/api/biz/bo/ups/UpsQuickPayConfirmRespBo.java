@@ -15,7 +15,6 @@ public class UpsQuickPayConfirmRespBo extends UpsRespBo {
 	private String userNo           ;//用户标识
 	private String smsCode          ;//短信验证码
 	private String cardNo           ;//银行卡号
-	private String amount           ;//交易金额
 	public String getTradeState() {
 		return tradeState;
 	}

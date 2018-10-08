@@ -18,10 +18,6 @@
 		<property name="fbapi.esign.algorithm" defaultValue="HMAC-SHA256"/>
 		<property name="fbapi.esign.eviUrl" defaultValue="http://smlcunzheng.tsign.cn:8083/evi-service/evidence/v1/preservation/original/url"/>
 
-		<!-- 邮箱验证码 -->
-		<property name="fbapi.email.username" defaultValue="mGviJyFnmdEcOb6VlJ6zl/H9G6dyjgAb1cb/tUCNgZM=" description="邮箱验证码用户名" />
-		<property name="fbapi.email.pwd" defaultValue="BeSHxmaAFBhNCE2gIdPVRg==" description="邮箱用户名密码" />
-		
 		<!-- log4j -->
 		<property name="fbapi.log.level" defaultValue="info" description="log4j level" />
 		<property name="fbapi.log.path.root" defaultValue="/home/ald/logs/fanbei" description="log dir" />
@@ -30,28 +26,29 @@
 		<property name="fbapi.redis.hostname" defaultValue="IJgdKMamAcP5btliO3edNq7Dc1rJrWG6qZ7zI9RsgCA=" description="redis host" />
 		<property name="fbapi.redis.port" defaultValue="EjxHo0U8fOjuwprOOe5jjg==" description="redis port" />
 		<property name="fbapi.redis.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="redis password" />
+		<property name="fbapi.redis.database" defaultValue="10" description="redis database" />
 		
-		<property name="fbapi.token.redis.hostname" defaultValue="IJgdKMamAcP5btliO3edNq7Dc1rJrWG6qZ7zI9RsgCA=" description="cache redis host" />
-		<property name="fbapi.token.redis.port" defaultValue="EjxHo0U8fOjuwprOOe5jjg==" description="redis port" />
-		<property name="fbapi.token.redis.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="cache redis password" />
-		 
-		<property name="fbapi.notify.host" defaultValue="http://192.168.112.40:8080" description="异步回调地址" />
-	    <!--内部其他系统地址  -->
-		<property name="fbapi.admin.url" defaultValue="http://ctestadmin.51fanbei.com" description="admin url"/>
-	    <property name="fbapi.ups.url" defaultValue="http://tpayrout.51fanbei.com/ups/main.html" description="ups请求地址" />
-		<property name="fbapi.collection.url" defaultValue="http://192.168.101.92:8081" description="催收平台请求地址" />
-
 		<property name="fbfile.oss.access.key" defaultValue="hwfdVlH1a1bp/Lc9hSUqBtCuhgu0QhqoULwmZ+3gTgE=" description="oss access key" />
 		<property name="fbfile.oss.access.secret" defaultValue="k7QDjE5/1emiZgIjksPg/ULP8DfMCCekqoH9+ZOZGuE=" description="oss access secret" />
 		<property name="fbfile.oss.url.pref" defaultValue="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/" description="oss url" />
-	   
-	    <property name="dsed.xgxy.host" defaultValue="http://testeca.91ala.com:1112" description="西瓜信用地址" />
-		<property name="dsed.aes.password" defaultValue="aef5c8c6114b8d6a" description="西瓜信用密钥" />
-		<property name="dsed.xgxy.notice.host" defaultValue="192.168.112.40" description="西瓜通知主机IP" />
-		<property name="dsed.collection.url" defaultValue="http://192.168.106.20:10086" description="催收通知主机IP" />
-		<property name="dsed.collect.url" defaultValue="http://192.168.106.92:8280" description="催收通知主机IP" />
 		
+		
+		<property name="fbapi.notify.host" defaultValue="http://192.168.112.40:8080" description="异步回调地址" />
 		<property name="security.overdue.task" defaultValue="off" description="白名单逾期定时器开关" />
+		<property name="jsd.task.active.host" defaultValue="192.168.112.40" description="定时器是否执行的依据主机IP" />
+		
+	    <property name="fbapi.ups.url" defaultValue="http://tpayrout.51fanbei.com/ups/main.html" description="ups请求地址" />
+		<property name="jsd.ups.preffix" defaultValue="PLUS" description="userNo" />
+		<property name="jsd.ups.merno" defaultValue="03030301001" description="ups商户号" />
+
+	    <property name="jsd.xgxy.host" defaultValue="http://testeca.91ala.com:1112" description="西瓜信用地址" />
+		<property name="jsd.xgxy.aes.password" defaultValue="aef5c8c6114b8d6a" description="西瓜信用密钥" />
+		<property name="jsd.xgxy.app.id" defaultValue="speedloanplus" description="西瓜信用appid" />
+		
+		<property name="jsd.collection.report.url" defaultValue="http://192.168.106.20:10086" description="收发通知主机IP" />
+		<property name="jsd.collection.url" defaultValue="http://192.168.106.92:8280" description="催收通知主机IP" />
+		<property name="jsd.collection.token" defaultValue="eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo" description="催收token" />
+		<property name="jsd.collection.companyId" defaultValue="6" description="催收商户" />
 	</group>
 
 	<script>

@@ -19,6 +19,7 @@ public interface JsdBorrowLegalOrderCashService extends ParentService<JsdBorrowL
 
 	JsdBorrowLegalOrderCashDo getLastOrderCashByBorrowId(Long borrowId);
 
+    JsdBorrowLegalOrderCashDo getFirstOrderCashByBorrowId(Long borrowId);
 
     JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashByBorrowId(Long borrowId);
     /**
@@ -32,10 +33,14 @@ public interface JsdBorrowLegalOrderCashService extends ParentService<JsdBorrowL
 
     JsdBorrowLegalOrderCashDo getOverdueBorrowLegalOrderCashByBorrowId(Long borrowId);
 
-    List<JsdBorrowLegalOrderCashDo> getBorrowOrderCashsByBorrowId(@Param("borrowId")Long borrowId);
-
+    List<JsdBorrowLegalOrderCashDo> getBorrowOrderCashsByBorrowId(Long borrowId);
 
     JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashByOrderId(Long orderId);
+
+    JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashDateBeforeToday(Long borrowId);
+
+
+
 
 
 }

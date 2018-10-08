@@ -55,12 +55,6 @@
 				<entry key="dateUtil">
 					<bean class="com.ald.fanbei.api.common.util.DateUtil" />
 				</entry>
-				<entry key="priceUtil">
-					<bean class="com.ald.fanbei.api.common.util.PriceUtil" />
-				</entry>
-				<entry key="jsonUtil">
-					<bean class="com.ald.fanbei.api.common.util.JsonUtil" />
-				</entry>
 			</map>
 		</property>
 	</bean>
@@ -109,6 +103,9 @@
 				<entry key="/third/eca/v1/getProtocolInfo" value-ref="getLoanProtocolApi" />
                 
 				<entry key="/third/eca/v1/syncUserInfo" value-ref="jsdSyncUserInfoApi" />
+
+				<entry key="/third/eca/v1/synUserAuth" value-ref="synUserAuthApi" />
+
 
 				<!-- 催收获取通讯录 -->
 				<entry key="/third/eca/v1/getAddressList" value-ref="getUserContactsInfoApi"/>

@@ -8,9 +8,9 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.util.JsonUtil;
+import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.common.enums.GenderType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
@@ -22,16 +22,21 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashOverdueLogService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
-import com.ald.fanbei.api.biz.third.util.CollectionSystemUtil;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
+import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
-import com.ald.fanbei.api.common.enums.OverdueLogType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.ConfigProperties;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashOverdueLogDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 
 
 /**
@@ -49,7 +54,7 @@ public class LoanOverDueJob {
     private XgxyUtil xgxyUtil;
 
     @Resource
-    private CollectionSystemUtil collectionSystemUtil;
+    private CollectionNoticeUtil collectionNoticeUtil;
     @Resource
     JsdUserContactsService jsdUserContactsService;
     @Resource
@@ -70,19 +75,19 @@ public class LoanOverDueJob {
     @Resource
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
     @Resource
-    GetHostIpUtil getHostIpUtil;
-
-    private static String token = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjMyODQxfQ.NPLQiwpOsS1FPnCaIal2X9AaRk3R_fRFkCFfbRbNvIQ";
+    JsdCollectionBorrowService jsdCollectionBorrowService;
 
 
-    private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_XGXY_NOTICE_HOST);
+
+
+    private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void laonDueJob(){
         try{
-        	String curHostIp = getHostIpUtil.getIpAddress();
+        	String curHostIp = GetHostIpUtil.getIpAddress();
         	logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-            if(StringUtils.equals(getHostIpUtil.getIpAddress(), NOTICE_HOST)){
+            if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
         		int pageSize = 200;
                 int totalRecord = borrowCashService.getBorrowCashOverdueCount();
                 int totalPageNum = (totalRecord + pageSize - 1) / pageSize;
@@ -102,6 +107,8 @@ public class LoanOverDueJob {
                             }
                         }).start();
 //                        collectionPush(borrowCashDos);
+                        //增加已入催数据
+                        addCollectionBorrow(borrowCashDos);
                     }
                 }
                 logger.info("borrowCashDueJob run end,time=" + new Date());
@@ -158,19 +165,10 @@ public class LoanOverDueJob {
             }
 
             //TODO 通知催收逾期人员通讯录
-//            collectionSystemUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
+            //collectionNoticeUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
         }
    }
 
-
-   private JsdNoticeRecordDo buildNoticeRecord(JsdBorrowCashDo jsdBorrowCashDo,XgxyBorrowNoticeBo noticeBo){
-       JsdNoticeRecordDo noticeRecordDo=new JsdNoticeRecordDo();
-       noticeRecordDo.setUserId(jsdBorrowCashDo.getUserId());
-       noticeRecordDo.setType(XgxyBorrowNotifyStatus.OVERDUE.name());
-       noticeRecordDo.setRefId(String.valueOf(jsdBorrowCashDo.getRid()));
-       noticeRecordDo.setParams(JsonUtil.toJSONString(noticeBo));
-       return noticeRecordDo;
-   }
 
     void addUserContancts(Long userId){
         JsdUserDo userDo = jsdUserService.getById(userId);
@@ -242,7 +240,7 @@ public class LoanOverDueJob {
             BigDecimal currentAmount = BigDecimal.ZERO;//应还本金
             BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
             //应还本金
-            currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidOverdue()).subtract(borrowCashDo.getRepayAmount());
+            currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidInterest()).subtract(borrowCashDo.getRepayAmount());
             //催收金额
             BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
             //应还金额
@@ -257,7 +255,7 @@ public class LoanOverDueJob {
             BigDecimal borrowAmount = borrowCashDo.getAmount();
             if(orderCashDo != null){
                 //应还本金
-                currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());
+                currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
                 //催收金额
                 collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
                 //应还金额
@@ -290,7 +288,7 @@ public class LoanOverDueJob {
             buildData.put("longitude",map.get("longitude"));//借款经度
             buildData.put("latitude",map.get("latitude"));//借款纬度
             buildData.put("borrowTime",DateUtil.formatDateTime(borrowCashDo.getGmtCreate()));//借款时间
-            buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(borrowCashDo.getGmtPlanRepayment()),DateUtil.formatDateToYYYYMMdd(new Date()))));//逾期天数
+            buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(borrowCashDo.getGmtPlanRepayment(),new Date())));//逾期天数
             buildData.put("borrowAmount",String.valueOf(borrowAmount));//借款金额(委案金额)
             buildData.put("accountAmount",String.valueOf(borrowCashDo.getAmount()));//到账金额
             buildData.put("borrowCash",String.valueOf(borrowCash));//借款费用(手续费加利息)
@@ -316,18 +314,37 @@ public class LoanOverDueJob {
             data.add(buildData);
         }
         logger.info("data = " + data);
-        collectionSystemUtil.noticeCollect(data);
+        collectionNoticeUtil.noticeCollectOverdue(data);
     }
 
 
-    private JsdBorrowCashOverdueLogDo buildLoanOverdueLog(Long borrowId, BigDecimal currentAmount, BigDecimal interest, Long userId, String type){
-        JsdBorrowCashOverdueLogDo overdueLog = new JsdBorrowCashOverdueLogDo();
-        overdueLog.setBorrowId(borrowId);
-        overdueLog.setCurrentAmount(currentAmount);
-        overdueLog.setInterest(interest);
-        overdueLog.setUserId(userId);
-        overdueLog.setType(type);
-        return overdueLog;
+    public void addCollectionBorrow(List<JsdBorrowCashDo> list){
+        for(JsdBorrowCashDo borrowCashDo : list){
+            Long borrowId = borrowCashDo.getRid();
+            JsdCollectionBorrowDo jsdCollectionBorrowDo = jsdCollectionBorrowService.selectByBorrowId(borrowId);
+            JsdCollectionBorrowDo borrowDo = new JsdCollectionBorrowDo();
+            borrowDo.setBorrowId(borrowCashDo.getRid());
+            borrowDo.setReviewStatus(CommonReviewStatus.WAIT.name());
+            borrowDo.setStatus(CollectionBorrowStatus.NOTICED.name());
+            if(jsdCollectionBorrowDo != null){
+                borrowDo.setRid(jsdCollectionBorrowDo.getRid());
+                jsdCollectionBorrowService.updateById(borrowDo);
+            }else {
+                jsdCollectionBorrowService.saveRecord(borrowDo);
+            }
+
+        }
     }
+
+
+   private JsdBorrowCashOverdueLogDo buildLoanOverdueLog(Long borrowId, BigDecimal currentAmount, BigDecimal interest, Long userId, String type){
+       JsdBorrowCashOverdueLogDo overdueLog = new JsdBorrowCashOverdueLogDo();
+       overdueLog.setBorrowId(borrowId);
+       overdueLog.setCurrentAmount(currentAmount);
+       overdueLog.setInterest(interest);
+       overdueLog.setUserId(userId);
+       overdueLog.setType(type);
+       return overdueLog;
+   }
 
 }

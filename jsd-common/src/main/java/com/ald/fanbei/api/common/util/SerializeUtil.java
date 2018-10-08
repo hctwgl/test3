@@ -11,7 +11,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ald.fanbei.api.common.exception.FanbeiException;
+import com.ald.fanbei.api.common.exception.BizException;
 
 
 
@@ -50,7 +50,7 @@ public class SerializeUtil {
             bos.close();
             rv = bos.toByteArray();
         } catch (IOException e) {
-            throw new FanbeiException("serializeList ioexception",e);
+            throw new BizException("serializeList ioexception",e);
         } finally {
             try{
                 if(os != null){
@@ -60,7 +60,7 @@ public class SerializeUtil {
                     bos.close();
                 }
             }catch (IOException e) {
-                throw new FanbeiException("",e);
+                throw new BizException("",e);
             }
         }
         return rv;
@@ -96,11 +96,11 @@ public class SerializeUtil {
         } catch (IOException e) {
             logger.warn("Caught IOException decoding %d bytes of data",
                     in == null ? 0 : in.length, e);
-            throw new FanbeiException("unserializeList ioexception",e);
+            throw new BizException("unserializeList ioexception",e);
         } catch (ClassNotFoundException e) {
             logger.warn("Caught CNFE decoding %d bytes of data",
                     in == null ? 0 : in.length, e);
-            throw new FanbeiException("unserializeList cnfexception",e);
+            throw new BizException("unserializeList cnfexception",e);
         } finally {
             try{
                 if(is != null){
@@ -110,7 +110,7 @@ public class SerializeUtil {
                     bis.close();
                 }
             }catch (IOException e) {
-                throw new FanbeiException("",e);
+                throw new BizException("",e);
             }
         }
         return list;
@@ -133,7 +133,7 @@ public class SerializeUtil {
             byte[] bytes = baos.toByteArray();
             return bytes;
         } catch (Exception e) {
-            throw new FanbeiException("serialize exception",e);
+            throw new BizException("serialize exception",e);
         }
     }
 
@@ -151,7 +151,7 @@ public class SerializeUtil {
             ObjectInputStream ois = new ObjectInputStream(bais);
             return ois.readObject();
         } catch (Exception e) {
-            throw new FanbeiException("unserialize exception",e);
+            throw new BizException("unserialize exception",e);
         }
     }
 }

@@ -113,6 +113,13 @@
             <if test="repayNo != null">
                 repay_no,
             </if>
+            <if test="payTime != null">
+                pay_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -163,6 +170,12 @@
 		    </if>
             <if test="repayNo != null" >
                 #{repayNo,jdbcType=TIMESTAMP},
+            </if>
+            <if test="payTime != null" >
+                #{payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null" >
+                #{remark,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>

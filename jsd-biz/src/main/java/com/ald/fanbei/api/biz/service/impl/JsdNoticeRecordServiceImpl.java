@@ -1,24 +1,24 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.HashMap;
+import java.util.List;
+
 import javax.annotation.Resource;
 
+import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
-import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
+import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdNoticeType;
-import com.ald.fanbei.api.common.util.JsonUtil;
-import com.ald.fanbei.api.dal.domain.*;
-import com.alibaba.fastjson.JSON;
-import org.springframework.stereotype.Service;
-
-import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
+import com.alibaba.fastjson.JSON;
 
 
 /**
@@ -65,17 +65,21 @@ public class JsdNoticeRecordServiceImpl extends ParentServiceImpl<JsdNoticeRecor
 	}
 
 	@Override
-	public void dealBorrowNoticed(JsdBorrowCashDo jsdBorrowCashDo, XgxyBorrowNoticeBo noticeRecord) {
-		JsdNoticeRecordDo jsdNoticeRecordDo=buildNoticeRecord(jsdBorrowCashDo,noticeRecord);
-		jsdNoticeRecordDao.addNoticeRecord(jsdNoticeRecordDo);
-		if(xgxyUtil.borrowNoticeRequest(noticeRecord)){
-			JsdNoticeRecordDo noticeRecordDo=new JsdNoticeRecordDo();
-			noticeRecordDo.setRid(jsdNoticeRecordDo.getRid());
+	public void dealBorrowNoticed(JsdBorrowCashDo cashDo, XgxyBorrowNoticeBo noticeBo) {
+		JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
+        noticeRecordDo.setUserId(cashDo.getUserId());
+        noticeRecordDo.setRefId(String.valueOf(cashDo.getRid()));
+        noticeRecordDo.setType(JsdNoticeType.DELEGATEPAY.code);
+        noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+        noticeRecordDo.setParams(JSON.toJSONString(noticeBo));
+		jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+		if(xgxyUtil.borrowNoticeRequest(noticeBo)){
 			jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
 		}
 	}
 
 	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void dealRepayNoticed(JsdBorrowCashRepaymentDo repaymentDo, JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, HashMap data){
 		JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
 		noticeRecordDo.setUserId(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
@@ -85,18 +89,8 @@ public class JsdNoticeRecordServiceImpl extends ParentServiceImpl<JsdNoticeRecor
 		noticeRecordDo.setParams(JSON.toJSONString(data));
 		jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
 		if (xgxyUtil.repayNoticeRequest(data)) {
-			noticeRecordDo.setRid(noticeRecordDo.getRid());
-			noticeRecordDo.setGmtModified(new Date());
 			jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
 		}
 	}
 
-	private JsdNoticeRecordDo buildNoticeRecord(JsdBorrowCashDo jsdBorrowCashDo,XgxyBorrowNoticeBo noticeBo){
-		JsdNoticeRecordDo noticeRecordDo=new JsdNoticeRecordDo();
-		noticeRecordDo.setUserId(jsdBorrowCashDo.getUserId());
-		noticeRecordDo.setType(noticeBo.getStatus());
-		noticeRecordDo.setRefId(String.valueOf(jsdBorrowCashDo.getRid()));
-		noticeRecordDo.setParams(JsonUtil.toJSONString(noticeBo));
-		return noticeRecordDo;
-	}
 }

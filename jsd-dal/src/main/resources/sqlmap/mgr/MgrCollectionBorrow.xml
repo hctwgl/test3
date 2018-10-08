@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_collection_borrow表 -->
+<mapper namespace="com.ald.jsd.mgr.dal.dao.MgrCollectionBorrowDao">
+    <select id="listCollectionBorrow" resultType="MgrCollectionBorrowDto">
+        SELECT * FROM 
+        (SELECT 
+            bc.trade_no_xgxy, u.real_name, u.user_name AS account, cb.status, bc.repay_amount AS repaid_amount,
+            (bc.amount + bc.interest_amount + bc.sum_repaid_interest + bc.poundage_amount + bc.sum_repaid_poundage + bc.overdue_amount + bc.sum_repaid_overdue - bc.repay_amount) AS unrepay_amount,
+            bc.gmt_plan_repayment AS gmt_due, bc.overdue_day AS overdue_days, MAX(bcr.gmt_create) AS gmt_last_repay,
+            bc.overdue_amount AS reducible_amount, 
+            (bc.amount + bc.interest_amount + bc.sum_repaid_interest + bc.poundage_amount + bc.sum_repaid_poundage + bc.overdue_amount + bc.sum_repaid_overdue - bc.repay_amount - bc.overdue_amount) AS un_reducible_amount, 
+            (bc.amount + bc.interest_amount + bc.sum_repaid_interest + bc.poundage_amount + bc.sum_repaid_poundage + bc.overdue_amount + bc.sum_repaid_overdue - bc.repay_amount)/bc.overdue_amount AS reducibleRate
+        FROM jsd_collection_borrow cb
+        INNER JOIN jsd_borrow_cash bc ON cb.borrow_id = bc.id
+        INNER JOIN jsd_user u ON bc.user_id = u.id
+        LEFT JOIN jsd_borrow_cash_repayment bcr ON cb.borrow_id = bcr.borrow_id
+        WHERE cb.is_delete = 0
+        <if test="status != null and status.trim() != ''">
+            AND cb.status = #{status}
+        </if>
+        <if test="searchContent != null and searchContent !=''">
+            AND (bc.trade_no_xgxy LIKE '${searchContent}%'
+                OR u.real_name LIKE '%${searchContent}%')
+        </if>
+        GROUP BY bc.trade_no_xgxy) s
+    </select>
+    
+    <select id="countTotalAmtBetweenGmtCreate" resultType="java.lang.Long">
+        SELECT SUM(b.amount + b.interest_amount + b.sum_repaid_interest + b.poundage_amount + b.sum_repaid_poundage + b.overdue_amount + b.sum_repaid_overdue)
+        FROM jsd_collection_borrow a
+        INNER JOIN jsd_borrow_cash b 
+            ON a.borrow_id = b.id 
+            AND (a.gmt_create BETWEEN #{dateStart} AND #{dateEnd}) 
+            AND a.is_delete = 0 
+    </select>
+    
+    <select id="countTotalWaitFinish" resultType="java.lang.Long">
+        SELECT COUNT(id)
+        FROM jsd_collection_borrow 
+        WHERE status = 'WAIT_FINISH' AND is_delete = 0
+    </select>
+    
+</mapper>

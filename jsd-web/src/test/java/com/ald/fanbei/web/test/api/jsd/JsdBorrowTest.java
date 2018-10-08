@@ -7,7 +7,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.ald.fanbei.api.common.util.HttpUtil;
+import com.ald.fanbei.api.common.util.HttpUtilForXgxy;
 import com.ald.fanbei.api.common.util.JsdAesUtil;
 import com.ald.fanbei.api.common.util.JsdSignUtil;
 import com.ald.fanbei.web.test.common.BaseTest;
@@ -41,7 +41,7 @@ public class JsdBorrowTest extends BaseTest {
     public void getProfit() {
         String url = urlBase + "/third/eca/v1/getProfit";
         JSONObject params = new JSONObject();
-        params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
+        params.put("openId", "BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
         params.put("type", "BORROW");
         params.put("amount", "5000.00");
         params.put("term", "20");
@@ -51,7 +51,7 @@ public class JsdBorrowTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", encryptBase64Str);
         p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -63,7 +63,7 @@ public class JsdBorrowTest extends BaseTest {
     public void getBorrowFeeDetail() {
     	String url = urlBase + "/third/eca/v1/getBorrowFeeDetail";
     	JSONObject params = new JSONObject();
-        params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
+        params.put("openId", "BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
         params.put("productNo", "2");
         params.put("amount", "5000");
         params.put("term", "10");
@@ -74,7 +74,7 @@ public class JsdBorrowTest extends BaseTest {
         Map<String, Object> p = new HashMap<>();
         p.put("data", encryptBase64Str);
         p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -86,7 +86,7 @@ public class JsdBorrowTest extends BaseTest {
     public void pushBorrow() {
         String url = urlBase + "/third/eca/v1/pushBorrow";
         JSONObject params = new JSONObject();
-        params.put("openId", "36C91DFB07EB236DF28CC321871E6A7D");
+        params.put("openId", "BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
         params.put("productNo", "2");
         params.put("borrowNo", "xgxy20231412309067676867");
         params.put("amount", "5000");
@@ -108,7 +108,7 @@ public class JsdBorrowTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", encryptBase64Str);
         p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -127,7 +127,7 @@ public class JsdBorrowTest extends BaseTest {
         Map<String, String> p = new HashMap<>();
         p.put("data", encryptBase64Str);
         p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -157,7 +157,7 @@ public class JsdBorrowTest extends BaseTest {
         Map<String, Object> p = new HashMap<>();
         p.put("data", encryptBase64Str);
         p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
@@ -182,7 +182,7 @@ public class JsdBorrowTest extends BaseTest {
         Map<String, Object> p = new HashMap<>();
         p.put("data", encryptBase64Str);
         p.put("sign", JsdSignUtil.generateSign(params, AES_KEY));
-        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
+        String respResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p));
         
         System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }

@@ -1,15 +1,17 @@
 package com.ald.fanbei.api.dal.domain;
 
 import com.ald.fanbei.api.common.AbstractSerial;
+
+import java.util.Calendar;
 import java.util.Date;
 import java.math.BigDecimal;
 
 /**
  * 实体
  * 
- * @author yanghailong
+ * @author CodeGenerate
  * @version 1.0.0 初始化
- * @date 2018-09-10 13:22:35
+ * @date 2018-09-16 11:51:40
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class JsdBorrowCashDo extends AbstractSerial {
@@ -21,16 +23,10 @@ import java.math.BigDecimal;
      */
     private Long rid;
     
-
     /**
-     * 
+     * 用户id
      */
-    private Date gmtCreate;
-
-    /**
-     * 
-     */
-    private Date gmtModified;
+    private Long userId;
 
     /**
      * 该值为西瓜信用为机构产品生成的一个id，标识机构产品，对接时将会告知机构
@@ -53,17 +49,12 @@ import java.math.BigDecimal;
     private String tradeNoUps;
 
     /**
-     * 用户id
-     */
-    private Long userId;
-
-    /**
      * 借款天数
      */
     private String type;
 
     /**
-     * 借款类型:v1:赊账,v2:搭售
+     * 借款类型:SELL:赊账,BEHEAD:搭售
      */
     private String version;
 
@@ -71,6 +62,16 @@ import java.math.BigDecimal;
      * 借款状态【APPLY:申请/未审核，WAITTRANSED:待打款，TRANSEDFAIL:打款失败,TRANSEDING:打款中 , TRANSED:已经打款/待还款,CLOSED:关闭,FINSH:已结清】
      */
     private String status;
+
+    /**
+     * 审批状态：PASS-审核通过，WAIT-待审批，REFUSE - 拒绝
+     */
+    private String reviewStatus;
+
+    /**
+     * 审批备注
+     */
+    private String reviewRemark;
 
     /**
      * 申请金额
@@ -178,11 +179,6 @@ import java.math.BigDecimal;
     private Date gmtArrival;
 
     /**
-     * 关闭时间
-     */
-    private Date gmtClose;
-
-    /**
      * 订单为FINSH时记录该时间
      */
     private String finishDate;
@@ -192,8 +188,50 @@ import java.math.BigDecimal;
      */
     private String remark;
 
+    /**
+     * 关闭时间
+     */
+    private Date gmtClose;
 
     /**
+     * 
+     */
+    private Date gmtCreate;
+
+    /**
+     * 
+     */
+    private Date gmtModified;
+    
+    /**
+     * 借款用途
+     */
+    private String borrowRemark;
+    
+    /**
+     * 还款来源
+     */
+    private String repayRemark;
+
+
+
+    public String getBorrowRemark() {
+		return borrowRemark;
+	}
+
+	public void setBorrowRemark(String borrowRemark) {
+		this.borrowRemark = borrowRemark;
+	}
+
+	public String getRepayRemark() {
+		return repayRemark;
+	}
+
+	public void setRepayRemark(String repayRemark) {
+		this.repayRemark = repayRemark;
+	}
+
+	/**
      * 获取主键Id
      *
      * @return rid
@@ -211,41 +249,22 @@ import java.math.BigDecimal;
       this.rid = rid;
     }
     
-
     /**
-     * 获取
+     * 获取用户id
      *
-     * @return 
+     * @return 用户id
      */
-    public Date getGmtCreate(){
-      return gmtCreate;
+    public Long getUserId(){
+      return userId;
     }
 
     /**
-     * 设置
+     * 设置用户id
      * 
-     * @param gmtCreate 要设置的
+     * @param userId 要设置的用户id
      */
-    public void setGmtCreate(Date gmtCreate){
-      this.gmtCreate = gmtCreate;
-    }
-
-    /**
-     * 获取
-     *
-     * @return 
-     */
-    public Date getGmtModified(){
-      return gmtModified;
-    }
-
-    /**
-     * 设置
-     * 
-     * @param gmtModified 要设置的
-     */
-    public void setGmtModified(Date gmtModified){
-      this.gmtModified = gmtModified;
+    public void setUserId(Long userId){
+      this.userId = userId;
     }
 
     /**
@@ -321,24 +340,6 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取用户id
-     *
-     * @return 用户id
-     */
-    public Long getUserId(){
-      return userId;
-    }
-
-    /**
-     * 设置用户id
-     * 
-     * @param userId 要设置的用户id
-     */
-    public void setUserId(Long userId){
-      this.userId = userId;
-    }
-
-    /**
      * 获取借款天数
      *
      * @return 借款天数
@@ -357,18 +358,18 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取借款类型:v1:赊账,v2:搭售
+     * 获取借款类型:SELL:赊账,BEHEAD:搭售
      *
-     * @return 借款类型:v1:赊账,v2:搭售
+     * @return 借款类型:SELL:赊账,BEHEAD:搭售
      */
     public String getVersion(){
       return version;
     }
 
     /**
-     * 设置借款类型:v1:赊账,v2:搭售
+     * 设置借款类型:SELL:赊账,BEHEAD:搭售
      * 
-     * @param version 要设置的借款类型:v1:赊账,v2:搭售
+     * @param version 要设置的借款类型:SELL:赊账,BEHEAD:搭售
      */
     public void setVersion(String version){
       this.version = version;
@@ -390,6 +391,42 @@ import java.math.BigDecimal;
      */
     public void setStatus(String status){
       this.status = status;
+    }
+
+    /**
+     * 获取审批状态：PASS-审核通过，WAIT-待审批，REFUSE - 拒绝
+     *
+     * @return 审批状态：PASS-审核通过，WAIT-待审批，REFUSE - 拒绝
+     */
+    public String getReviewStatus(){
+      return reviewStatus;
+    }
+
+    /**
+     * 设置审批状态：PASS-审核通过，WAIT-待审批，REFUSE - 拒绝
+     * 
+     * @param reviewStatus 要设置的审批状态：PASS-审核通过，WAIT-待审批，REFUSE - 拒绝
+     */
+    public void setReviewStatus(String reviewStatus){
+      this.reviewStatus = reviewStatus;
+    }
+
+    /**
+     * 获取审批备注
+     *
+     * @return 审批备注
+     */
+    public String getReviewRemark(){
+      return reviewRemark;
+    }
+
+    /**
+     * 设置审批备注
+     * 
+     * @param reviewRemark 要设置的审批备注
+     */
+    public void setReviewRemark(String reviewRemark){
+      this.reviewRemark = reviewRemark;
     }
 
     /**
@@ -771,24 +808,6 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取关闭时间
-     *
-     * @return 关闭时间
-     */
-    public Date getGmtClose(){
-      return gmtClose;
-    }
-
-    /**
-     * 设置关闭时间
-     * 
-     * @param gmtClose 要设置的关闭时间
-     */
-    public void setGmtClose(Date gmtClose){
-      this.gmtClose = gmtClose;
-    }
-
-    /**
      * 获取订单为FINSH时记录该时间
      *
      * @return 订单为FINSH时记录该时间
@@ -823,5 +842,66 @@ import java.math.BigDecimal;
     public void setRemark(String remark){
       this.remark = remark;
     }
+
+    /**
+     * 获取关闭时间
+     *
+     * @return 关闭时间
+     */
+    public Date getGmtClose(){
+      return gmtClose;
+    }
+
+    /**
+     * 设置关闭时间
+     * 
+     * @param gmtClose 要设置的关闭时间
+     */
+    public void setGmtClose(Date gmtClose){
+      this.gmtClose = gmtClose;
+    }
+
+    /**
+     * 获取
+     *
+     * @return 
+     */
+    public Date getGmtCreate(){
+      return gmtCreate;
+    }
+
+   public int getGmtCreateHour(){
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime(gmtCreate);
+      return calendar.get(Calendar.HOUR_OF_DAY);
+   }
+
+    /**
+     * 设置
+     * 
+     * @param gmtCreate 要设置的
+     */
+    public void setGmtCreate(Date gmtCreate){
+      this.gmtCreate = gmtCreate;
+    }
+
+    /**
+     * 获取
+     *
+     * @return 
+     */
+    public Date getGmtModified(){
+      return gmtModified;
+    }
+
+    /**
+     * 设置
+     * 
+     * @param gmtModified 要设置的
+     */
+    public void setGmtModified(Date gmtModified){
+      this.gmtModified = gmtModified;
+    }
+
 
 }

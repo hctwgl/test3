@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.web.common.Context;
@@ -37,7 +37,7 @@ public class BorrowCashRepaymentDetailApi implements JsdH5Handle {
         Long timestamp = Long.valueOf(context.getData("timestamp").toString());
         JsdBorrowCashDo cashDo=jsdBorrowCashService.getByTradeNoXgxy(borrowNo);
         if(cashDo==null){
-            throw new FanbeiException(FanbeiExceptionCode.JSD_BORROW_IS_NULL);
+            throw new BizException(BizExceptionCode.JSD_BORROW_IS_NULL);
         }
         JsdBorrowLegalOrderCashDo orderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(cashDo.getRid());
         BorrowAmount bo=new BorrowAmount();
@@ -60,8 +60,7 @@ public class BorrowCashRepaymentDetailApi implements JsdH5Handle {
         bo.orderAmount=BigDecimal.ZERO;
         bo.orderPoundage=BigDecimal.ZERO;
 
-        bo.cashAmount=bo.cashAmount.add(cashDo.getAmount()).add(cashDo.getOverdueAmount()).add(cashDo.getPoundageAmount()).add(cashDo.getInterestAmount()).add(cashDo.getSumRepaidOverdue())
-                .add(cashDo.getSumRepaidInterest()).add(cashDo.getSumRepaidPoundage()).subtract(cashDo.getRepayAmount());
+        bo.cashAmount=jsdBorrowCashService.calcuUnrepayAmount(cashDo, orderCashDo);
         bo.cashPoundage=bo.cashPoundage.add(cashDo.getOverdueAmount()).add(cashDo.getPoundageAmount()).add(cashDo.getInterestAmount());
         bo.principle=bo.principle.add(cashDo.getAmount()).subtract(cashDo.getRepayPrinciple());
         if(orderCashDo!=null){
@@ -73,7 +72,6 @@ public class BorrowCashRepaymentDetailApi implements JsdH5Handle {
             bo.amount=bo.cashAmount;
         }
         bo.remark="费用明细: 1.其中含借款本金"+bo.principle+"元，利息&手续费&逾期费"+bo.cashPoundage+"元。2.商品金额为"+bo.orderAmount+"元，利息&手续费&逾期费"+bo.orderPoundage+"元。";
-
     }
 
     public class BorrowAmount{

@@ -346,5 +346,11 @@
         FROM jsd_resource
         WHERE is_delete = 0 AND type=#{type} AND is_enable=0
     </select>
-    
+
+    <select id="getProductInfo" resultType="com.ald.fanbei.api.dal.domain.JsdResourceDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_resource
+        WHERE is_delete = 0 AND is_enable=0 AND type=#{type} AND sec_type=#{secType}
+    </select>
 </mapper>

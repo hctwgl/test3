@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	   xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:task="http://www.springframework.org/schema/task"
+	   xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd 
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd">
+	
+	<bean id="configProperties" class="com.ald.fanbei.api.common.ConfigProperties"
+        init-method="init">
+        <property name="configPath">
+            <value>props/config.properties</value>
+        </property>
+    </bean>
+  
+    <bean class="com.ald.fanbei.api.common.DecrypPropertyPlaceholderConfigurer">
+		<property name="password" value="${fbapi.aes.password}"/>
+		<property name="encryptPropNames">
+			<list>
+				<value>fbapi.db.url</value>
+				<value>fbapi.db.username</value>
+				<value>fbapi.db.password</value>
+				<!-- redis -->
+				<value>fbapi.redis.hostname</value>
+				<value>fbapi.redis.port</value>
+				<value>fbapi.redis.password</value>
+				
+				<value>fbfile.oss.access.key</value>
+				<value>fbfile.oss.access.secret</value>
+			</list>
+		</property>
+		<property name="locations">
+			<list>
+				<value>classpath:props/encrypt.properties</value>
+				<value>classpath:props/config.properties</value>
+			</list>
+		</property>
+	</bean>	
+	
+	<!-- 加载后在容器中以 springSessionRepositoryFilter 名称显示，必须和web.xml中的DelegatingFilterProxy 名称相同 -->
+    <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration"></bean>
+	
+	<!-- redis 192.168.11.118 foobared	 -->
+    <bean id="redisPoolConfigBiz" class="redis.clients.jedis.JedisPoolConfig">
+    	<property name="minIdle" value="10" />
+        <property name="maxIdle" value="300" />  
+        <property name="maxTotal" value="60000" />  
+        <property name="maxWaitMillis" value="10000" />
+        <property name="testOnBorrow" value="true" />  
+    </bean>
+	<!-- redis template definition -->
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate" primary="true">
+		<property name="connectionFactory" ref="jedisConnFactory" />
+		<property name="keySerializer">  
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />  
+        </property>  
+        <property name="valueSerializer">  
+            <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />  
+        </property>
+	</bean>
+	<bean id="redisIntegerTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory" ref="jedisConnFactory" />
+		<property name="keySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </property>
+        <property name="valueSerializer">
+            <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+        </property>
+	</bean>
+	<bean id="redisStringTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+        <property name="connectionFactory" ref="jedisConnFactory" />
+        <property name="defaultSerializer">  
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </property>
+    </bean>
+
+</beans>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_borrow_cash表 -->
+<mapper namespace="com.ald.jsd.mgr.dal.dao.MgrBorrowCashDao">
+
+    <select id="getArrivalBorrowCashPerByDays" resultType="java.lang.Integer">
+        SELECT
+        count(distinct user_id)
+        FROM
+        jsd_borrow_cash  where is_delete=0
+        and datediff(now(),gmt_plan_repayment) &lt; #{days} and datediff(now(), gmt_plan_repayment) &gt;= 0
+    </select>
+
+    <select id="getApplyBorrowCashSuPerByDays" resultType="java.lang.Integer">
+        SELECT
+        count(distinct user_id)
+        FROM
+        jsd_borrow_cash  where is_delete=0
+        and status in ('TRANSFERRED','FINISHED')
+        and datediff(now(),gmt_arrival) &lt; #{days}
+    </select>
+
+    <select id="getApplyBorrowCashPerByDays" resultType="java.lang.Integer">
+        SELECT
+        count(distinct user_id)
+        FROM
+        jsd_borrow_cash  where is_delete=0
+        and datediff(now(),gmt_create) &lt; #{days}
+    </select>
+
+    <select id="getArrivalBorrowCashBetweenStartAndEnd" resultType="java.lang.Integer">
+        SELECT
+        count(distinct user_id)
+        FROM
+        jsd_borrow_cash  where is_delete=0 and gmt_plan_repayment between #{startDate} and #{endDate}
+        and status in ('TRANSFERRED','FINISHED')
+    </select>
+
+    <select id="getApplyBorrowCashSuPerBetweenStartAndEnd" resultType="java.lang.Integer">
+        SELECT
+        count(distinct user_id)
+        FROM
+        jsd_borrow_cash  where is_delete=0
+        and status in ('TRANSFERRED','FINISHED')
+        and gmt_arrival between #{startDate} and #{endDate}
+    </select>
+
+    <select id="getApplyBorrowCashPerBetweenStartAndEnd" resultType="java.lang.Integer">
+        SELECT
+        count(distinct user_id)
+        FROM
+        jsd_borrow_cash  where is_delete=0
+        and gmt_create between #{startDate} and #{endDate}
+    </select>
+
+    <select id="getBorrowCashLessThanDays" resultType="JsdBorrowCashDo">
+        SELECT *
+        FROM
+        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) &lt; #{days} and datediff(now(), gmt_arrival) &gt;= 0
+        and status in ('TRANSFERRED','FINISHED')
+    </select>
+
+    <select id="getBorrowCashBetweenStartAndEnd" resultType="JsdBorrowCashDo">
+        SELECT *
+        FROM
+        jsd_borrow_cash  where is_delete=0 and gmt_arrival between #{startDate} and #{endDate}
+        and status in ('TRANSFERRED','FINISHED')
+    </select>
+
+    <select id="getPlanRepaymentBorrowCashBetweenStartAndEnd" resultType="JsdBorrowCashDo">
+        SELECT *
+        FROM
+        jsd_borrow_cash  where is_delete=0 and gmt_plan_repayment between #{startDate} and #{endDate}
+        and status in ('TRANSFERRED','FINISHED')
+    </select>
+
+    <select id="getBorrowCashByDays" resultType="JsdBorrowCashDo">
+        SELECT *
+        FROM
+        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) = #{days} and datediff(now(), gmt_arrival) &gt;= 0
+        and status in ('TRANSFERRED','FINISHED')
+    </select>
+
+    <select id="getPlanRepaymentCashAmountByDays" resultType="java.math.BigDecimal">
+        SELECT SUM(amount)
+        FROM
+        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_plan_repayment) &lt; #{days} and datediff(now(), gmt_plan_repayment) &gt;= 0
+        and status in ('TRANSFERRED','FINISHED')
+    </select>
+
+    <select id="getPlanRepaymentCashAmountBetweenStartAndEnd" resultType="java.math.BigDecimal">
+        SELECT
+        SUM(amount)
+        FROM
+        jsd_borrow_cash  where is_delete=0 and gmt_plan_repayment between #{startDate} and #{endDate}
+        and status in ('TRANSFERRED','FINISHED')
+    </select>
+
+    <select id="getUserNumByBorrowDays" resultType="java.lang.Integer">
+        SELECT
+        COUNT(DISTINCT bc.user_id)
+        FROM
+        jsd_borrow_cash bc
+        LEFT JOIN jsd_borrow_cash_repayment cr ON bc.user_id = cr.user_id
+        WHERE
+        bc.is_delete = 0
+        AND datediff(now(), bc.gmt_arrival) &lt; #{days} and datediff(now(), bc.gmt_arrival) &gt;= 0
+        AND datediff(now(), cr.gmt_create) &lt; #{days}
+        and cr.`status`='Y'
+        AND bc.STATUS IN ('TRANSFERRED','FINISHED')
+    </select>
+
+    <select id="getUserNumBetweenStartAndEnd" resultType="java.lang.Integer">
+        SELECT
+        count(DISTINCT bc.user_id)
+        FROM
+        jsd_borrow_cash bc
+        LEFT JOIN jsd_borrow_cash_repayment cr ON bc.user_id = cr.user_id
+        where bc.is_delete=0 and bc.gmt_arrival  between #{startDate} and #{endDate}
+        and cr.gmt_create between #{startDate} and #{endDate}
+        and cr.`status`='Y'
+    </select>
+
+    <select id="getAmountByDays" resultType="java.math.BigDecimal">
+        SELECT
+        SUM(amount)
+        FROM
+        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_arrival) = #{days}
+        and status in ('TRANSFERRED','FINISHED')
+    </select>
+
+</mapper>

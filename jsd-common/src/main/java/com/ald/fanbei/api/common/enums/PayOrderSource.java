@@ -27,9 +27,14 @@ public enum PayOrderSource {
 	
 	REPAY_LOAN("REPAY_LOAN", "贷款还款"),
 	
-	// 西瓜 极速贷
+	// 西瓜 极速贷 赊销
+	JSD_LOAN("JSD_LOAN", "极速贷借钱"),
 	RENEW_JSD("RENEW_JSD", "极速贷续期"),
 	REPAY_JSD("REPAY_JSD", "极速贷还款"),
+	// 西瓜 极速贷V2 砍头
+	JSD_LOAN_V2("JSD_LOAN_V2", "极速贷借钱V2"),
+	RENEW_JSD_V2("RENEW_JSD_V2", "极速贷续期V2"),
+	REPAY_JSD_V2("REPAY_JSD_V2", "极速贷还款V2"),
 
 	// 手机回收
 	BORROW_RECYCLE_REPAY("BORROW_RECYCLE_REPAY", "手机回收取消订单");

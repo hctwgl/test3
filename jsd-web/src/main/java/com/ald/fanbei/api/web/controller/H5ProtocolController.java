@@ -7,6 +7,8 @@ import java.math.RoundingMode;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -17,27 +19,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowReq;
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo.TrialBeforeBorrowResp;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
-import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
-import com.ald.fanbei.api.biz.service.JsdESdkService;
-import com.ald.fanbei.api.biz.service.JsdResourceService;
-import com.ald.fanbei.api.biz.service.JsdUserSealService;
-import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.ResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.dal.domain.JsdResourceDo;
-import com.ald.fanbei.api.dal.domain.JsdUserDo;
-import com.ald.fanbei.api.dal.domain.JsdUserSealDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -52,7 +41,7 @@ import com.alibaba.fastjson.JSONObject;
 @RequestMapping("/jsd-web/protocol/")
 public class H5ProtocolController {
     private final Logger logger = Logger.getLogger(H5ProtocolController.class);
-    
+
     @Resource
     JsdUserService jsdUserService;
     @Resource
@@ -63,6 +52,8 @@ public class H5ProtocolController {
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
     @Resource
     JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
+	@Resource
+	JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
 	@Resource
 	JsdESdkService jsdESdkService;
 	@Resource
@@ -86,8 +77,8 @@ public class H5ProtocolController {
 
             JsdUserDo userDo = jsdUserService.getByOpenId(openId);
             if (userDo == null) {
-                logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-                throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+                logger.error("user not exist" + BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+                throw new BizException(BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             }
             this.inpourUserInfo(model, userDo);
 
@@ -96,16 +87,16 @@ public class H5ProtocolController {
             model.put("yfCompany", resdo.getValue1());
             model.put("bfCompany", resdo.getValue2());
             model.put("dfCompany", resdo.getValue3());
-            
-            
+
+
             BigDecimal amountLower, interestRate, serviceRate;
             if(StringUtils.isNotBlank(tradeNoXgxy)) {
             	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
-            	
+
             	amountLower = cashDo.getAmount();
             	interestRate = cashDo.getInterestRate();
             	serviceRate = cashDo.getPoundageRate();
-            	
+
             	model.put("borrowNo", cashDo.getBorrowNo());
             	model.put("gmtStart", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
                 model.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
@@ -122,23 +113,23 @@ public class H5ProtocolController {
             	trialBo.userId = userDo.getRid();
             	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
             	jsdBorrowCashService.resolve(trialBo);
-            	
+
             	amountLower = new BigDecimal(trialBo.resp.borrowAmount);
             	ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(trialBo.req.nper);
             	interestRate = rateInfo.interestRate;
             	serviceRate = rateInfo.serviceRate;
             }
-            
+
             model.put("interestRate", interestRate.multiply(NUM100).setScale(2) + "%");
             model.put("serviceRate", serviceRate.multiply(NUM100).setScale(2) + "%");
             model.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
             model.put("amountLower", amountLower);
-            
+
     	}catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
     }
-    
+
     /**
      * 商品分期服务协议
      *
@@ -155,31 +146,40 @@ public class H5ProtocolController {
 
             JsdUserDo userDo = jsdUserService.getByOpenId(openId);
             if (userDo == null) {
-                logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-                throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+                logger.error("user not exist" + BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+                throw new BizException(BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
             }
             this.inpourUserInfo(model, userDo);
 
             JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_ORDER.name());
             model.put("yfCompany", resdo.getValue1());
             model.put("bfCompany", resdo.getValue2());
-            
-            
+
+
             BigDecimal amountLower, interestRate, serviceRate, overdueRate;
             if(StringUtils.isNotBlank(tradeNoXgxy)) {
             	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
             	JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashService.getLastOrderCashByBorrowId(cashDo.getRid());
-            	
-            	amountLower = orderCashDo.getAmount();
-            	interestRate = orderCashDo.getInterestRate();
-            	serviceRate = orderCashDo.getPoundageRate();
-            	overdueRate = orderCashDo.getOverdueRate();
-            	
-            	model.put("gmtStart", DateUtil.formatDate(orderCashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-                model.put("gmtEnd", DateUtil.formatDate(orderCashDo.getGmtPlanRepay(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-                model.put("gmtPlanRepayment", DateUtil.formatDate(orderCashDo.getGmtPlanRepay(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-                model.put("gmtSign", DateUtil.formatDate(orderCashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-
+				JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getLastOrderByBorrowId(cashDo.getRid());
+				if(orderCashDo == null){
+                    amountLower = jsdBorrowLegalOrderDo.getPriceAmount();
+					interestRate = cashDo.getInterestRate();
+					serviceRate = cashDo.getPoundageRate();
+					overdueRate = cashDo.getOverdueRate();
+					model.put("gmtStart", "");
+					model.put("gmtEnd", "");
+					model.put("gmtPlanRepayment", "");
+					model.put("gmtSign", "");
+                }else {
+                    amountLower = orderCashDo.getAmount();
+					interestRate = orderCashDo.getInterestRate();
+					serviceRate = orderCashDo.getPoundageRate();
+					overdueRate = orderCashDo.getOverdueRate();
+					model.put("gmtStart", DateUtil.formatDate(orderCashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+					model.put("gmtEnd", DateUtil.formatDate(orderCashDo.getGmtPlanRepay(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+					model.put("gmtPlanRepayment", DateUtil.formatDate(orderCashDo.getGmtPlanRepay(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+					model.put("gmtSign", DateUtil.formatDate(orderCashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+                }
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
             }else{
@@ -190,27 +190,27 @@ public class H5ProtocolController {
             	trialBo.userId = userDo.getRid();
             	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
             	jsdBorrowCashService.resolve(trialBo);
-            	
+
             	amountLower = new BigDecimal(trialBo.resp.totalDiffFee);
             	ResourceRateInfoBo rateInfo = jsdResourceService.getOrderRateInfo(trialBo.req.nper);
             	interestRate = rateInfo.interestRate;
             	serviceRate = rateInfo.serviceRate;
             	overdueRate = rateInfo.overdueRate;
             }
-            
+
             model.put("interestRate", interestRate.multiply(NUM100).setScale(2) + "%");
             model.put("serviceRate", serviceRate.multiply(NUM100).setScale(2) + "%");
             model.put("overdueRateDaily", overdueRate.multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%" );
             model.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
             model.put("amountLower", amountLower);
-            
+
             // TODO 签章 图片url链接
-            
+
     	}catch (Exception e) {
     		logger.error(e.getMessage(), e);
 		}
     }
-    
+
     /**
      * 平台服务协议
      *
@@ -224,25 +224,25 @@ public class H5ProtocolController {
 	    	String openId = request.getParameter("openId");
 	    	String preview = request.getParameter("preview");
 	    	String tradeNoXgxy = request.getParameter("tradeNoXgxy");
-	
+
 	        JsdUserDo userDo = jsdUserService.getByOpenId(openId);
 	        if (userDo == null) {
-	            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-	            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+	            logger.error("user not exist" + BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+	            throw new BizException(BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 	        }
 	        this.inpourUserInfo(model, userDo);
 
 	        JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_PLATFORM.name());
 	        model.put("jfCompany", resdo.getValue1());
-	        
+
 	        if(StringUtils.isNotBlank(tradeNoXgxy)) {
 	        	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
-	        	
+
 	        	model.put("borrowNo", cashDo.getBorrowNo());
 	        	model.put("interestRate", cashDo.getInterestRate().multiply(NUM100).setScale(2) + "%" );
 	            model.put("serviceRate", cashDo.getPoundageRate().multiply(NUM100).setScale(2) + "%" );
 	            model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%" );
-	            model.put("serviceAmount", cashDo.getPoundageAmount());
+	            model.put("serviceAmount", cashDo.getPoundageAmount().add(cashDo.getSumRepaidPoundage()));
 	            model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
@@ -254,7 +254,7 @@ public class H5ProtocolController {
 	        	trialBo.userId = userDo.getRid();
 	        	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
 	        	jsdBorrowCashService.resolve(trialBo);
-	        	
+
 	        	TrialBeforeBorrowResp resp = trialBo.resp;
 	        	model.put("interestRate", new BigDecimal(resp.interestRate).multiply(NUM100).setScale(2) + "%" );
 	            model.put("serviceRate", new BigDecimal(resp.serviceRate).multiply(NUM100).setScale(2) + "%" );
@@ -273,36 +273,36 @@ public class H5ProtocolController {
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
 				map.put("aldUserSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 			} else {
-				logger.error("获取阿拉丁印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				logger.error("获取阿拉丁印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
 			companyUserSealDo = jsdUserSealService.getUserSealByUserName("浙江楚橡信息科技有限公司");
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
 				map.put("cxSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 			} else {
-				logger.error("获取楚橡印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				logger.error("获取楚橡印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
 			companyUserSealDo = jsdUserSealService.getUserSealByUserName("杭州绿游网络科技有限公司");
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
 				map.put("lvSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 			} else {
-				logger.error("获取绿游印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				logger.error("获取绿游印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
 			companyUserSealDo = jsdUserSealService.getUserSealByUserName("金泰嘉鼎（深圳）资产管理有限公司");
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
 				map.put("jtSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 			} else {
-				logger.error("获取金泰印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				logger.error("获取金泰印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
 			companyUserSealDo = jsdUserSealService.getUserSealByUserName("深圳前海资生管家互联网金融服务有限公司");
 			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
 				map.put("qhSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
 			} else {
-				logger.error("获取前海印章失败 => {}" + FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-				throw new FanbeiException(FanbeiExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				logger.error("获取前海印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
 		} catch (Exception e) {
 			logger.error("get userSeal  error", e);
@@ -312,8 +312,8 @@ public class H5ProtocolController {
 	private void getUserSeal(ModelMap map, JsdUserDo afUserDo) {
 		JsdUserSealDo afUserSealDo = jsdUserSealService.getUserSeal(afUserDo);
 		if (null == afUserSealDo || null == afUserSealDo.getUserAccountId() || null == afUserSealDo.getUserSeal()) {
-			logger.error("获取个人印章失败 => {}" + FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
-			throw new FanbeiException(FanbeiExceptionCode.PERSON_SEAL_CREATE_FAILED);
+			logger.error("获取个人印章失败 => {}" + BizExceptionCode.PERSON_SEAL_CREATE_FAILED);
+			throw new BizException(BizExceptionCode.PERSON_SEAL_CREATE_FAILED);
 		}
 		map.put("personUserSeal", "data:image/png;base64," + afUserSealDo.getUserSeal());
 	}
@@ -326,7 +326,7 @@ public class H5ProtocolController {
     @RequestMapping(value = { "noticeProtocol" }, method = RequestMethod.GET)
     public void noticeProtocol(HttpServletRequest request, ModelMap model){
     }
-    
+
     /**
      * 数字证书服务协议（暂时弃用）
      * @param request
@@ -335,7 +335,7 @@ public class H5ProtocolController {
     @RequestMapping(value = { "digitalProtocol" }, method = RequestMethod.GET)
     public void numProtocol(HttpServletRequest request, ModelMap model){
     	String openId = request.getParameter("openId");
-        
+
         JsdUserDo userDo = jsdUserService.getByOpenId(openId);
         if (userDo == null) {
             logger.warn("refer user not exist by openId " + openId);
@@ -350,7 +350,7 @@ public class H5ProtocolController {
         model.put("platformName", resdo.getValue3());
         model.put("platformSimpleName", resdo.getValue4());
     }
-    
+
     /**
      * 代买协议
      * @param request
@@ -359,7 +359,7 @@ public class H5ProtocolController {
     @RequestMapping(value = { "agencyProtocol" }, method = RequestMethod.GET)
     public void agencyProtocol(HttpServletRequest request, ModelMap model){
     	String openId = request.getParameter("openId");
-        
+
         JsdUserDo userDo = jsdUserService.getByOpenId(openId);
         if (userDo == null) {
             logger.warn("refer user not exist by openId " + openId);
@@ -370,9 +370,9 @@ public class H5ProtocolController {
         JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_AGENCY.name(), ResourceSecType.PROTOCOL_AGENCY.name());
 
         model.put("yfCompany", resdo.getValue1());
-        
+
     }
-    
+
     /**
      * 续期协议
      * @param request
@@ -384,22 +384,22 @@ public class H5ProtocolController {
 	    	String openId = request.getParameter("openId");
 	    	String preview = request.getParameter("preview");
 	    	String tradeNoXgxy = request.getParameter("tradeNoXgxy");
-	
+
 	        JsdUserDo userDo = jsdUserService.getByOpenId(openId);
 	        if (userDo == null) {
-	            logger.error("user not exist" + FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-	            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+	            logger.error("user not exist" + BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+	            throw new BizException(BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
 	        }
 	        this.inpourUserInfo(model, userDo);
 
 	        JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_RENEWAL.name(), ResourceSecType.PROTOCOL_RENEWAL.name());
 	        model.put("yfCompany", resdo.getValue1());
             model.put("bfCompany", resdo.getValue2());
-	        
+
 	        if(StringUtils.isNotBlank(tradeNoXgxy)) {
 	        	JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalService.getByTradeNoXgxy(tradeNoXgxy);
 	        	JsdBorrowCashDo cashDo = jsdBorrowCashService.getById(renewalDo.getBorrowId());
-	        	
+
 	        	model.put("renewalNo", renewalDo.getTradeNo());
 	        	// 原借款
 	        	model.put("oriBorrowNo", cashDo.getBorrowNo());
@@ -408,7 +408,7 @@ public class H5ProtocolController {
 	        	model.put("oriInterestRate", cashDo.getInterestRate().multiply(NUM100).setScale(2) + "%");
 	        	model.put("oriGmtStart", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 	        	model.put("oriGmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-	            
+
 	        	//续期信息
 	        	model.put("reAmount", renewalDo.getRenewalAmount());
 	        	model.put("reAmountUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getRenewalAmount()));
@@ -420,9 +420,9 @@ public class H5ProtocolController {
 	        	model.put("reRepayCapital", renewalDo.getCapital());
 	        	model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getCapital()));
 	        	model.put("reServiceRate", renewalDo.getPoundageRate().multiply(NUM100).setScale(2) + "%");
-	        	
+
 	        	model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%");
-	        	
+
 	            model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 
 				getCompanySeal(model);
@@ -431,13 +431,13 @@ public class H5ProtocolController {
 	        	JSONObject obj = JSON.parseObject(preview);
 	        	String borrowNoXgxy = obj.getString("borrowNo");
 	        	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(borrowNoXgxy);
-	        	
+
 	        	// 原借款
 	        	model.put("oriBorrowNo", cashDo.getBorrowNo());
 	        	model.put("oriAmount", cashDo.getAmount());
 	        	model.put("oriAmountUpper", NumberUtil.number2CNMontrayUnit(cashDo.getAmount()));
 	        	model.put("oriInterestRate", cashDo.getInterestRate().multiply(NUM100).setScale(2) + "%");
-	        	
+
 	        	JSONArray renewalDetail = jsdBorrowCashRenewalService.getRenewalDetail(cashDo);
 	        	JSONObject info = renewalDetail.getJSONObject(0);
 	        	// 续期信息
@@ -448,15 +448,15 @@ public class H5ProtocolController {
 	        	model.put("reRepayCapital", info.getString("capital"));
 	        	model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("capital")) ));
 	        	model.put("reServiceRate", new BigDecimal(info.getString("serviceRate")).multiply(NUM100).setScale(2) + "%" );
-	        	
+
 	        	model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%");
 	        }
-	        
+
 	    }catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
     }
-    
+
     private void inpourUserInfo(ModelMap model, JsdUserDo userDo) {
     	model.put("idNumber", this.privacyIdNumber(userDo.getIdNumber()));
         model.put("realName", this.privacyRealName(userDo.getRealName()));

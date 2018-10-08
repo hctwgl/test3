@@ -1,6 +1,6 @@
 package com.ald.fanbei.api.web.common;
 
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -25,13 +25,13 @@ public class JsdH5HandleResponse {
         data = importData;
     }
 
-    public JsdH5HandleResponse(FanbeiExceptionCode excCode) {
+    public JsdH5HandleResponse(BizExceptionCode excCode) {
         code = excCode.getErrorCode();
         message = excCode.getDesc();
         data = "";
     }
 
-    public JsdH5HandleResponse(FanbeiExceptionCode excCode,String importMsg) {
+    public JsdH5HandleResponse(BizExceptionCode excCode,String importMsg) {
         code = excCode.getErrorCode();
         message = importMsg;
         data = "";

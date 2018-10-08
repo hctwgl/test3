@@ -122,6 +122,9 @@
             <if test="gmtModified != null">        
                 gmt_modified,
             </if>
+            <if test="payTime != null">
+                pay_time,
+            </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -175,6 +178,9 @@
             </if>
             <if test="gmtModified != null" >
                #{gmtModified,jdbcType=TIMESTAMP},
+            </if>
+            <if test="payTime != null" >
+                #{payTime,jdbcType=TIMESTAMP},
             </if>
         </trim>
     </insert>
@@ -330,6 +336,19 @@
         is_delete = 0
         AND
         trade_no_ups=#{tradeNoUps}
+        ORDER BY
+        gmt_create DESC
+    </select>
+
+    <select id="getByBorrowTradeNoXgxy" resultType="JsdBorrowCashRepaymentDo">
+        SELECT
+        a.*
+        FROM
+        jsd_borrow_cash_repayment as a inner join jsd_borrow_cash b on a.borrow_id=b.id
+        WHERE
+        a.is_delete = 0
+        AND
+        b.trade_no_xgxy=#{tradeNoXgxy}
         ORDER BY
         gmt_create DESC
     </select>

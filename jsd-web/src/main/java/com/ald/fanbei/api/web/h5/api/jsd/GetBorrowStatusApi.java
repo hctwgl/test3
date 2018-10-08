@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
@@ -31,11 +31,11 @@ public class GetBorrowStatusApi implements JsdH5Handle {
     	JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
     	
     	Object o = context.getData("borrowNo");
-    	if(o == null) throw new FanbeiException(FanbeiExceptionCode.JSD_PARAMS_ERROR);
+    	if(o == null) throw new BizException(BizExceptionCode.JSD_PARAMS_ERROR);
     	String borrowNo = o.toString();
     	
     	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(borrowNo);
-    	if(cashDo == null) throw new FanbeiException(FanbeiExceptionCode.BORROW_DETAIL_NOT_EXIST_ERROR);
+    	if(cashDo == null) throw new BizException(BizExceptionCode.BORROW_DETAIL_NOT_EXIST_ERROR);
     	
     	Map<String, Object> map = new HashMap<String, Object>();
     	map.put("borrowNo", borrowNo);

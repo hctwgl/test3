@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_user_auth表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.JsdUserAuthDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,user_id,risk_no,risk_status,risk_amount,risk_rate,gmt_risk,gmt_create,gmt_modified,url
+    </sql>
+    <!--关联查询的字段-->
+    <sql id="queryRelationFields">
+      a.risk_no,u.real_name,a.risk_status,a.risk_amount,a.gmt_create,a.url
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="userId != null">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="riskNo != null">
+            AND risk_no = #{riskNo,jdbcType=VARCHAR}
+        </if>
+        <if test="riskStatus != null">
+            AND risk_status = #{riskStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="riskAmount != null">
+            AND risk_amount = #{riskAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="riskRate != null">
+            AND risk_rate = #{riskRate,jdbcType=DECIMAL}
+        </if>
+        <if test="gmtRisk !=null">
+            AND gmt_risk = #{gmtRisk,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="url != null">
+            AND url = #{url,,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdUserAuthDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO jsd_user_auth
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="riskNo != null">        
+	            risk_no,
+	        </if>
+	        <if test="riskStatus != null">        
+	            risk_status,
+	        </if>
+	        <if test="riskAmount != null">        
+	            risk_amount,
+	        </if>
+	        <if test="riskRate != null">        
+	            risk_rate,
+	        </if>
+	        <if test="gmtRisk != null">
+	            gmt_risk,
+	        </if>
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+            <if test="url != null">
+                url,
+            </if>
+	            gmt_modified,
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="riskNo != null" >
+		       #{riskNo,jdbcType=VARCHAR},
+		    </if>
+		    <if test="riskStatus != null" >
+		       #{riskStatus,jdbcType=VARCHAR},
+		    </if>
+		    <if test="riskAmount != null" >
+		       #{riskAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="riskRate != null" >
+		       #{riskRate,jdbcType=DECIMAL},
+		    </if>
+		    <if test="gmtRisk != null" >
+		       #{gmtRisk,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+            <if test="url != null" >
+                #{url,jdbcType=VARCHAR},
+            </if>
+		     now()
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdUserAuthDo">
+        UPDATE jsd_user_auth
+          <set>
+            <if test="userId != null">        
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="riskNo != null">        
+                risk_no = #{riskNo,jdbcType=VARCHAR},
+            </if>
+            <if test="riskStatus != null">        
+                risk_status = #{riskStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="riskAmount != null">        
+                risk_amount = #{riskAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="riskRate != null">        
+                risk_rate = #{riskRate,jdbcType=DECIMAL},
+            </if>
+            <if test="gmtRisk != null">        
+                gmt_risk = #{gmtRisk,jdbcType=TIMESTAMP},
+            </if>
+            gmt_modified = NOW()
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.JsdUserAuthDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_user_auth
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+    <select id="getByUserId" resultType="com.ald.fanbei.api.dal.domain.JsdUserAuthDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_user_auth
+        WHERE is_delete = 0 AND user_id=#{userId ,jdbcType=BIGINT}
+        order by id desc
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdUserAuthDo" parameterType="com.ald.fanbei.api.dal.domain.JsdUserAuthDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_user_auth
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdUserAuthDo" parameterType="com.ald.fanbei.api.dal.domain.JsdUserAuthDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_user_auth
+        <include refid="commonCondition"/>
+    </select>
+
+    <select id="getListUserAuth" resultType="com.ald.fanbei.api.dal.domain.dto.UserAuthDto" parameterType="com.ald.fanbei.api.dal.query.UserAuthQuery">
+        SELECT
+        <include refid="queryRelationFields" />
+        FROM jsd_user_auth a LEFT JOIN jsd_user u on a.user_id=u.id
+        WHERE a.is_delete=0
+        <if test="riskStatus !=null and riskStatus !='' ">
+            AND a.risk_status =#{riskStatus}
+        </if>
+        <if test="searchContent != null and searchContent !=''">
+            AND a.risk_no=#{searchContent}
+            OR u.real_name=#{searchContent}
+        </if>
+        ORDER BY a.gmt_create DESC
+    </select>
+
+    <select id="getSubmitPersonNum" resultType="java.lang.Integer">
+        SELECT count(`id`) FROM jsd_user_auth WHERE DATE(gmt_create) = curdate();
+    </select>
+
+    <select id="getPassPersonNum" resultType="java.lang.Integer">
+        SELECT count(`id`)
+        FROM jsd_user_auth WHERE is_delete=0
+        AND risk_status ='Y'
+        AND DATE(gmt_create) = curdate();
+    </select>
+</mapper>

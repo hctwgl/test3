@@ -1,691 +1,301 @@
 package com.ald.fanbei.api.common.util;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 
+import org.apache.http.Consts;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.ParseException;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.protocol.HTTP;
+import org.apache.http.util.Args;
 import org.apache.http.util.EntityUtils;
+import org.apache.http.util.TextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ald.fanbei.api.common.SSLClient;
-
 /**
- * 
- * @类描述：http请求工具
- * @author 陈金虎 2017年1月16日 下午11:41:47
- * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ * 基于apache httpclient包，支持http1.1
+ * httpClient默认的ResponseHandler会自动处理所有http协议下状态码，例如302自动跳转。也会自动编码响应字节流，包括解压报文。
+ * @attention 此类的任何属性运行时不可变，方可保证线程安全
+ * @author ZJF
+ * @since 1.8
  */
-@SuppressWarnings("deprecation")
 public class HttpUtil {
+	private static Logger log = LoggerFactory.getLogger(HttpUtil.class);
+	
+	private static RequestConfig requestConfig;
+	private static SSLConnectionSocketFactory sslsf;
+	
+	private static CloseableHttpClient httpsclient;
+	private static CloseableHttpClient httpclient;
 
-    protected static final Logger logger = LoggerFactory.getLogger(HttpUtil.class);
 
-    /**
-     * 执行GET请求
-     * 
-     * @param url
-     * @param timeout
-     * @return
-     */
-    public static String doGet(String url, int timeout) {
-    	logger.info("doGet url = {}", url);
-        BufferedReader in = null;
-        OutputStreamWriter out = null;
-        String result = "";
-        try {
-            URL realUrl = new URL(url);
-            URLConnection conn = realUrl.openConnection();
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            conn.setRequestProperty("content-type", "application/json");
+
+	static {
+		try {
+			requestConfig = RequestConfig.custom()
+		              .setConnectTimeout(60000).setConnectionRequestTimeout(55000)  
+		              .setSocketTimeout(60000).setCircularRedirectsAllowed(true).build();
+			
+			SSLContext ctx = SSLContext.getInstance("TLS");
+			X509TrustManager tm = new X509TrustManager() {  
+	            @Override  
+	            public void checkClientTrusted(X509Certificate[] chain,  
+	                    String authType) throws CertificateException {
+	            }  
+	            @Override  
+	            public void checkServerTrusted(X509Certificate[] chain,  
+	                    String authType) throws CertificateException {  
+	            }  
+	            @Override  
+	            public X509Certificate[] getAcceptedIssuers() {  
+	                return null;  
+	            }  
+	        };
+	        ctx.init(null, new TrustManager[]{tm}, new java.security.SecureRandom());  
+	        sslsf = new SSLConnectionSocketFactory(ctx);
+	        
+	        List<Header> headers = new ArrayList<>();
+	        
+	        httpsclient = HttpClients.custom().setDefaultHeaders(headers).setDefaultRequestConfig(requestConfig).setSSLSocketFactory(sslsf).build();
+	        httpclient = HttpClients.custom().setDefaultHeaders(headers).setDefaultRequestConfig(requestConfig).build();
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+		}  
+	}
+	
+	public static String get(String url){
+		return get(url,null);
+	}
+	public static String get(String url, Object data){
+		return (String)get(url, data, false);
+	}
+	public static Object get(String url, Object data, boolean isRaw){
+		Args.notBlank(url, "HTTP request url");
+		
+		CloseableHttpClient httpclient;
+		CloseableHttpResponse resp = null;
+		try {
+			if(url.startsWith("https")) {
+				httpclient = HttpUtil.httpsclient;
+			}else {
+				httpclient = HttpUtil.httpclient;
+			}
+			
+        	String requestStr = null;
+        	if(data == null){
+        		requestStr = "";
+        	}else if(data instanceof Map){
+        		@SuppressWarnings("unchecked")
+				Set<Entry<Object,Object>> entrys = ((Map<Object,Object>)data).entrySet();
+        		List<NameValuePair> params = new ArrayList<>();
+        		Object value;
+            	for(Entry<Object,Object> entry : entrys){
+            		params.add(new BasicNameValuePair(entry.getKey().toString(), (value = entry.getValue()) != null?value.toString():""));
+            	}
+            	requestStr = EntityUtils.toString(new UrlEncodedFormEntity(params, Consts.UTF_8));
+        	}else{
+        		requestStr = data.toString();
+        	}
+        	
+        	url = TextUtils.isBlank(requestStr)?url:url.concat((url.contains("?")?requestStr:"?".concat(requestStr)));
+        	HttpGet httpget = new HttpGet(url);
             
-            HttpURLConnection httpConn = (HttpURLConnection)conn;
-            InputStream is;
-            if (httpConn.getResponseCode() >= 400) {
-                is = httpConn.getErrorStream();
-            } else {
-                is = httpConn.getInputStream();
-            }
+            resp = httpclient.execute(httpget);
+            if(isRaw) {
+        		return EntityUtils.toByteArray(resp.getEntity());
+        	}else {
+        		return EntityUtils.toString(resp.getEntity());
+        	}
+        } catch (Exception e) {
+			throw new IllegalStateException(e);
+		}finally {
+			try {
+				if(resp != null)resp.close();
+			} catch (IOException e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+	}
+
+	/**
+	 * 发送HTTPS的POST请求，并且忽略证书验证,将参数放置到BODY里边
+	 *
+	 * @param urlString
+	 * @param query
+	 * @return
+	 */
+	public static String doHttpsPostIgnoreCert(String urlString, String query) {
+
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream(512);
+		try {
+			URL url = new URL(urlString);
+            /*
+             * use ignore host name verifier
+             */
+			HttpsURLConnection.setDefaultHostnameVerifier(ignoreHostnameVerifier);
+			HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+
+			// Prepare SSL Context
+			TrustManager[] tm = { ignoreCertificationTrustManger };
+			SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
+			sslContext.init(null, tm, new java.security.SecureRandom());
+			// 设置doOutput属性为true表示将使用此urlConnection写入数据
+			connection.setDoOutput(true);
+			// 从上述SSLContext对象中得到SSLSocketFactory对象
+			SSLSocketFactory ssf = sslContext.getSocketFactory();
+			connection.setSSLSocketFactory(ssf);
+
+			OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
+			// 把数据写入请求的Body
+			out.write(query);
+			out.flush();
+			out.close();
+
+			InputStream reader = connection.getInputStream();
+			byte[] bytes = new byte[512];
+			int length = reader.read(bytes);
+
+			do {
+				buffer.write(bytes, 0, length);
+				length = reader.read(bytes);
+			} while (length > 0);
+
+			reader.close();
+			connection.disconnect();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			log.error("error = ",ex);
+		} finally {
+		}
+		String repString = new String(buffer.toByteArray());
+		return repString;
+	}
+
+	/**
+	 * 忽视证书HostName
+	 */
+	private static HostnameVerifier ignoreHostnameVerifier = new HostnameVerifier() {
+
+		public boolean verify(String s, SSLSession sslsession) {
+			log.debug("WARNING: Hostname is not matched for cert.");
+			return true;
+		}
+	};
+
+
+	/**
+	 * Ignore Certification
+	 */
+	private static TrustManager ignoreCertificationTrustManger = new X509TrustManager() {
+
+		private X509Certificate[] certificates;
+
+		public void checkClientTrusted(X509Certificate certificates[], String authType) throws CertificateException {
+			if (this.certificates == null) {
+				this.certificates = certificates;
+				log.debug("init at checkClientTrusted");
+			}
+		}
+
+		public void checkServerTrusted(X509Certificate[] ax509certificate, String s) throws CertificateException {
+			if (this.certificates == null) {
+				this.certificates = ax509certificate;
+				log.debug("init at checkServerTrusted");
+			}
+		}
+
+		public X509Certificate[] getAcceptedIssuers() {
+			return null;
+		}
+	};
+
+
+
+
+
+
+	public static String post(String url){
+		return post(url,null);
+	}
+	public static String post(String url, Object reqData){
+		return (String)post(url, reqData, false);
+	}
+	public static Object post(String url, Object reqData, boolean isRaw){
+		Args.notBlank(url, "HTTP request url");
+		long start = System.currentTimeMillis();
+		CloseableHttpClient httpclient;
+		CloseableHttpResponse resp = null;
+		Object respObj = null;
+		try {
+			if(url.startsWith("https")) {
+				httpclient = HttpUtil.httpsclient;
+			}else {
+				httpclient = HttpUtil.httpclient;
+			}
+		
+        	HttpEntity reqEntity = null;
+        	if(reqData == null){
+        		reqEntity = new StringEntity("");
+        	}else if(reqData instanceof Map){
+				@SuppressWarnings("unchecked")
+				Set<Entry<Object,Object>> entrys = ((Map<Object,Object>)reqData).entrySet();
+        		List<NameValuePair> params = new ArrayList<>();
+        		Object value;
+            	for(Entry<Object,Object> entry : entrys){
+            		params.add(new BasicNameValuePair(entry.getKey().toString(), (value = entry.getValue()) != null?value.toString():""));
+            	}
+            	reqEntity = new UrlEncodedFormEntity(params, Consts.UTF_8);
+        	}else if(reqData instanceof byte[]){
+        		reqEntity = new ByteArrayEntity((byte[])reqData);
+			}else{
+				reqEntity = new StringEntity(reqData.toString());
+        	}
+        	
+        	HttpPost httppost = new HttpPost(url);
+        	httppost.setEntity(reqEntity);
             
-            in = new BufferedReader(new InputStreamReader(is,"UTF-8"));
-            String line;
-            while ((line = in.readLine()) != null) {
-                result += line;
-            }
+        	resp = httpclient.execute(httppost);
+        	if(isRaw) {
+        		respObj = EntityUtils.toByteArray(resp.getEntity());
+        	}else {
+        		respObj = EntityUtils.toString(resp.getEntity());
+        	}
+           
+        	return respObj;
         } catch (Exception e) {
-            logger.error("发送失败" + e);
-            return "";
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        logger.info("doGet result = {}", result);
-        return result;
-    }
-    
-    /**
-     * 执行POST请求
-     * 
-     * @param url
-     * @param param
-     * @return
-     */
-    public static String doPost(String url, String param) {
-        BufferedReader in = null;
-        OutputStreamWriter out = null;
-        String result = "";
-        try {
-            URL realUrl = new URL(url);
-            URLConnection conn = realUrl.openConnection();
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-            out = new OutputStreamWriter(conn.getOutputStream());
-            // 把数据写入请求的Body
-            out.write(param);
-            out.flush();
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                result += line;
-            }
-        } catch (Exception e) {
-            logger.error("发送失败" + e);
-            return "";
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        return result;
-    }
-
-
-
-    public static String doHttpsPost(String url,Map<String,String> map,String charset){
-        HttpClient httpClient = null;
-        HttpPost httpPost = null;
-        String result = null;
-        try{
-            httpClient = new SSLClient();
-            httpPost = new HttpPost(url);
-            //设置参数
-            List<NameValuePair> list = new ArrayList<NameValuePair>();
-            Iterator iterator = map.entrySet().iterator();
-            while(iterator.hasNext()){
-                Map.Entry<String,String> elem = (Map.Entry<String, String>) iterator.next();
-                list.add(new BasicNameValuePair(elem.getKey(),elem.getValue()));
-            }
-            if(list.size() > 0){
-                UrlEncodedFormEntity entity = new UrlEncodedFormEntity(list,charset);
-                httpPost.setEntity(entity);
-            }
-            HttpResponse response = httpClient.execute(httpPost);
-            if(response != null){
-                HttpEntity resEntity = response.getEntity();
-                if(resEntity != null){
-                    result = EntityUtils.toString(resEntity,charset);
-                }
-            }
-        }catch(Exception ex){
-            ex.printStackTrace();
-        }
-        return result;
-    }
-
-
-
-//    /**
-//     * 发送post请求
-//     * 
-//     * @param url
-//     * @param paramsMap
-//     * @return
-//     * @throws ClientProtocolException
-//     * @throws IOException
-//     */
-//    public static String httpPost(String url, Map<String, String> paramsMap) {
-//    	logger.info("httpPost begin url = {}, paramsMap = {}",url, paramsMap);
-//        HttpClientBuilder builder = HttpClientBuilder.create();
-//        CloseableHttpClient httpClient = builder.build();
-//        // 要传递的参数
-//        List<NameValuePair> query = new ArrayList<NameValuePair>();
-//        for (String name : paramsMap.keySet()) {
-//            NameValuePair paramItem = new BasicNameValuePair(name, paramsMap.get(name));
-//            query.add(paramItem);
-//        }
-//        if (url.indexOf("?") > 0) {
-//            url = url + "&";
-//        } else {
-//            url = url + "?";
-//        }
-//        url = url + URLEncodedUtils.format(query, CharEncoding.UTF_8);
-//        HttpUriRequest request = new HttpPost(url);
-//        HttpResponse response = null;
-//        HttpPost postMethod = new HttpPost();
-//        postMethod.setURI(request.getURI());
-//        postMethod.setHeader("content-type", "application/json;charset=utf-8");
-//        try {
-//            response = httpClient.execute(postMethod);
-//            HttpEntity entity = response.getEntity();
-//            // System.out.println(response.getStatusLine());
-//            // 显示结果
-//            if (!url.contains("preview")) {
-//                BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent(), "UTF-8"));
-//
-//                String line = null;
-//                StringBuffer sb = new StringBuffer();
-//                while ((line = reader.readLine()) != null) {
-//                    sb.append(line);
-//                }
-//                reader.close();
-//                logger.info("httpPost result = {}",sb.toString());
-//                return sb.toString();
-//            } else {
-//                BufferedInputStream bi = new BufferedInputStream(entity.getContent());
-//                FileOutputStream fo = new FileOutputStream(new File("D:/picture/" + new Date().getTime() + ".jpg"));
-//                int readByte = 0;
-//                while ((readByte = bi.read()) != -1) {
-//                    fo.write(readByte);
-//                }
-//                bi.close();
-//                fo.close();
-//                return null;
-//            }
-//        } catch (Exception e) {
-//            logger.error("httpPost", e);
-//            return "";
-//        }
-//    }
-
-    /**
-     * 发送POST请求，将参数放置到BODY里边
-     * 
-     * @param url
-     * @param param
-     * @return
-     */
-    public static String doHttpPost(String url, String param) {
-    	logger.info("doHttpPost begin url = {} param = {}",url,param);
-        BufferedReader in = null;
-        OutputStreamWriter out = null;
-        String result = "";
-        try {
-            URL realUrl = new URL(url);
-            URLConnection conn = realUrl.openConnection();
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-            out = new OutputStreamWriter(conn.getOutputStream());
-            // 把数据写入请求的Body
-            out.write(param);
-            out.flush();
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream(),"utf-8"));
-            String line;
-            while ((line = in.readLine()) != null) {
-                result += line;
-            }
-        } catch (Exception e) {
-            logger.error("发送失败", e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        logger.info("doHttpPost result = {}", result);
-        return result;
-    }
-
-    /**
-     * 发送POST请求，将参数放置到BODY里边
-     * 
-     * @param url
-     * @param param
-     * @return
-     */
-    public static String doHttpPostJsonParam(String url, String param) {
-        BufferedReader in = null;
-        OutputStreamWriter out = null;
-        String result = "";
-        try {
-            URL realUrl = new URL(url);
-            URLConnection conn = realUrl.openConnection();
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            conn.setRequestProperty("content-type", "application/json");
-            conn.setRequestProperty("Accept-Charset", "utf-8");
-            conn.setRequestProperty("contentType", "utf-8");
-            out = new OutputStreamWriter(conn.getOutputStream());
-            // 把数据写入请求的Body
-            out.write(param);
-            out.flush();
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream(),"utf-8"));
-            String line;
-            while ((line = in.readLine()) != null) {
-                result += line;
-            }
-        } catch (Exception e) {
-            logger.error("Http post error!", e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * 发送POST请求，将参数放置到BODY里边
-     * 
-     * @param url
-     * @param param
-     * @param cookie
-     * @return
-     */
-    public static String httpPost(String url, String param, String cookie) {
-        BufferedReader in = null;
-        OutputStreamWriter out = null;
-        String result = "";
-        try {
-            URL realUrl = new URL(url);
-            URLConnection conn = realUrl.openConnection();
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            conn.setRequestProperty("content-type", "application/json");
-            conn.setRequestProperty("Cookie", cookie);
-            out = new OutputStreamWriter(conn.getOutputStream());
-            // 把数据写入请求的Body
-            out.write(param);
-            out.flush();
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line;
-            while ((line = in.readLine()) != null) {
-                result += line;
-            }
-        } catch (Exception e) {
-            logger.error("发送失败", e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        return result;
-    }
-
-    /**
-     * 发送HTTPS的POST请求，并且忽略证书验证,将参数放置到BODY里边
-     * 
-     * @param urlString
-     * @param query
-     * @return
-     */
-    public static String doHttpsPostIgnoreCert(String urlString, String query) {
-
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream(512);
-        try {
-            URL url = new URL(urlString);
-            /*
-             * use ignore host name verifier
-             */
-            HttpsURLConnection.setDefaultHostnameVerifier(ignoreHostnameVerifier);
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-
-            // Prepare SSL Context
-            TrustManager[] tm = { ignoreCertificationTrustManger };
-            SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
-            sslContext.init(null, tm, new java.security.SecureRandom());
-            // 设置doOutput属性为true表示将使用此urlConnection写入数据
-            connection.setDoOutput(true);
-            // 从上述SSLContext对象中得到SSLSocketFactory对象
-            SSLSocketFactory ssf = sslContext.getSocketFactory();
-            connection.setSSLSocketFactory(ssf);
-
-            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
-            // 把数据写入请求的Body
-            out.write(query);
-            out.flush();
-            out.close();
-
-            InputStream reader = connection.getInputStream();
-            byte[] bytes = new byte[512];
-            int length = reader.read(bytes);
-
-            do {
-                buffer.write(bytes, 0, length);
-                length = reader.read(bytes);
-            } while (length > 0);
-
-            reader.close();
-            connection.disconnect();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            logger.error("error = ",ex);
-        } finally {
-        }
-        String repString = new String(buffer.toByteArray());
-        return repString;
-    }
-    /**
-     * 发送HTTPS的POST请求，并且忽略证书验证,将参数放置到BODY里边
-     *
-     * @param urlString
-     * @param query
-     * @return
-     */
-    public static String doHttpsPostIgnoreCertUrlencoded(String urlString, String query) {
-
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream(512);
-        try {
-            URL url = new URL(urlString);
-            /*
-             * use ignore host name verifier
-             */
-            HttpsURLConnection.setDefaultHostnameVerifier(ignoreHostnameVerifier);
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-            connection.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("charset", "utf-8");
-            // Prepare SSL Context
-            TrustManager[] tm = { ignoreCertificationTrustManger };
-            SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
-            sslContext.init(null, tm, new java.security.SecureRandom());
-            // 设置doOutput属性为true表示将使用此urlConnection写入数据
-            connection.setDoOutput(true);
-            // 从上述SSLContext对象中得到SSLSocketFactory对象
-            SSLSocketFactory ssf = sslContext.getSocketFactory();
-            connection.setSSLSocketFactory(ssf);
-
-            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream(),"utf-8");
-            // 把数据写入请求的Body
-            out.write(query);
-            out.flush();
-            out.close();
-
-            InputStream reader = connection.getInputStream();
-            byte[] bytes = new byte[512];
-            int length = reader.read(bytes);
-
-            do {
-                buffer.write(bytes, 0, length);
-                length = reader.read(bytes);
-            } while (length > 0);
-
-            reader.close();
-            connection.disconnect();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-        }
-        try {
-            String repString = new String(buffer.toByteArray(),"utf-8");
-            return repString;
-        }  catch (Exception e){
-            return e.getMessage();
-        }
-
-
-    }
-    /**
-     * 发送HTTPS的POST请求，并且忽略证书验证,将参数放置到BODY里边
-     *
-     * @param urlString
-     * @param query
-     * @return
-     */
-    public static String doHttpsPostIgnoreCertJSON(String urlString, String query) {
-
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream(512);
-        try {
-            URL url = new URL(urlString);
-            /*
-             * use ignore host name verifier
-             */
-            HttpsURLConnection.setDefaultHostnameVerifier(ignoreHostnameVerifier);
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-            connection.setRequestProperty("content-type", "application/json");
-            connection.setRequestProperty("charset", "utf-8");
-            // Prepare SSL Context
-            TrustManager[] tm = { ignoreCertificationTrustManger };
-            SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
-            sslContext.init(null, tm, new java.security.SecureRandom());
-            // 设置doOutput属性为true表示将使用此urlConnection写入数据
-            connection.setDoOutput(true);
-            // 从上述SSLContext对象中得到SSLSocketFactory对象
-            SSLSocketFactory ssf = sslContext.getSocketFactory();
-            connection.setSSLSocketFactory(ssf);
-
-            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream(),"utf-8");
-            // 把数据写入请求的Body
-            out.write(query);
-            out.flush();
-            out.close();
-
-            InputStream reader = connection.getInputStream();
-            byte[] bytes = new byte[512];
-            int length = reader.read(bytes);
-
-            do {
-                buffer.write(bytes, 0, length);
-                length = reader.read(bytes);
-            } while (length > 0);
-
-            reader.close();
-            connection.disconnect();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-        }
-        try {
-            String repString = new String(buffer.toByteArray(),"utf-8");
-            return repString;
-        }  catch (Exception e){
-            return e.getMessage();
-        }
-
-
-    }
-    /**
-     * 忽视证书HostName
-     */
-    private static HostnameVerifier ignoreHostnameVerifier = new HostnameVerifier() {
-
-        public boolean verify(String s, SSLSession sslsession) {
-            logger.debug("WARNING: Hostname is not matched for cert.");
-            return true;
-        }
-    };
-
-    /**
-     * Ignore Certification
-     */
-    private static TrustManager ignoreCertificationTrustManger = new X509TrustManager() {
-
-        private X509Certificate[] certificates;
-
-        public void checkClientTrusted(X509Certificate certificates[], String authType) throws CertificateException {
-            if (this.certificates == null) {
-                this.certificates = certificates;
-                logger.debug("init at checkClientTrusted");
-            }
-        }
-
-        public void checkServerTrusted(X509Certificate[] ax509certificate, String s) throws CertificateException {
-            if (this.certificates == null) {
-                this.certificates = ax509certificate;
-                logger.debug("init at checkServerTrusted");
-            }
-        }
-
-        public X509Certificate[] getAcceptedIssuers() {
-            return null;
-        }
-    };
-
-    public static String post(String url, Map<String, String> params) {
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-        String body = null;
-        long start = System.currentTimeMillis();
-        logger.debug("create httppost: url = " + url);
-        HttpPost post = postForm(url, params);
-
-        body = invoke(httpclient, post);
-        httpclient.getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 120000);
-        httpclient.getParams().setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 120000);
-
-        httpclient.getConnectionManager().shutdown();
-        long end = System.currentTimeMillis();
-        logger.info("POST - " + url + " ,params="+params+",resp="+body+",spend time " + (end - start));
-        
-        return body;
-    }
-
-
-    public static HttpURLConnection connectToWeb(String uri) {
-        HttpURLConnection connection = null;
-        try {
-            URL url = new URL(uri);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-        } catch (MalformedURLException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return connection;
-    }
-
-    private static String invoke(DefaultHttpClient httpclient, HttpUriRequest httpost) {
-
-        HttpResponse response = sendRequest(httpclient, httpost);
-        String body = paseResponse(response);
-
-        return body;
-    }
-
-    private static String paseResponse(HttpResponse response) {
-        logger.debug("get response from http server..");
-        HttpEntity entity = response.getEntity();
-
-        logger.debug("response status: " + response.getStatusLine());
-        String charset = EntityUtils.getContentCharSet(entity);
-        logger.debug(charset);
-
-        String body = null;
-        try {
-            body = EntityUtils.toString(entity);
-            logger.debug(body);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return body;
-    }
-
-    private static HttpResponse sendRequest(DefaultHttpClient httpclient, HttpUriRequest httpost) {
-        logger.debug("execute post...");
-        HttpResponse response = null;
-
-        try {
-            response = httpclient.execute(httpost);
-        } catch (Exception e) {
-        	throw new RuntimeException("HttpUtil.sendRequest error！", e);
-        }
-        return response;
-    }
-
-    private static HttpPost postForm(String url, Map<String, String> params) {
-
-        HttpPost httpost = new HttpPost(url);
-        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-
-        Set<String> keySet = params.keySet();
-        for (String key : keySet) {
-            nvps.add(new BasicNameValuePair(key, params.get(key)));
-        }
-
-        try {
-            logger.debug("set utf-8 form entity to httppost");
-            httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        return httpost;
-    }
-
-
+			throw new IllegalStateException(e);
+		}finally {
+			log.info("POST - " + url + ", PARAMS=" + reqData + ", RESP=" + (respObj == null? "":respObj) + ", TIME=" + (System.currentTimeMillis() - start));
+			try {
+				if(resp != null)resp.close();
+			} catch (IOException e) {
+				log.error(e.getMessage(), e);
+			}
+		}
+	}
+	
 }

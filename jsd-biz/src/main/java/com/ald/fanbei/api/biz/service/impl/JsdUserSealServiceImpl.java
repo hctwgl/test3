@@ -2,8 +2,8 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import com.ald.fanbei.api.biz.service.JsdESdkService;
 import com.ald.fanbei.api.biz.service.JsdUserSealService;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.dal.dao.JsdUserSealDao;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.dal.domain.JsdUserSealDo;
@@ -88,7 +88,7 @@ public class JsdUserSealServiceImpl implements JsdUserSealService {
         } else if (null == addAccountResult || !"成功".equals(addAccountResult.getMsg())
                 || 0 != addAccountResult.getErrCode()) {
             logger.error("personAccount create error = > {}", addAccountResult.getMsg() + "name=" + afUserDo.getRealName());
-            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new BizException(BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }
         return addAccountResult;
     }

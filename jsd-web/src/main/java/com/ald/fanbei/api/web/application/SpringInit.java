@@ -1,10 +1,20 @@
 package com.ald.fanbei.api.web.application;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+
 import com.ald.fanbei.api.biz.service.JsdESdkService;
 import com.ald.fanbei.api.biz.service.JsdUserSealService;
 import com.ald.fanbei.api.common.EsignPublicInit;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.dal.domain.JsdUserSealDo;
 import com.timevale.esign.sdk.tech.bean.OrganizeBean;
 import com.timevale.esign.sdk.tech.bean.result.AddAccountResult;
@@ -14,23 +24,13 @@ import com.timevale.esign.sdk.tech.bean.result.Result;
 import com.timevale.esign.sdk.tech.impl.constants.OrganRegType;
 import com.timevale.esign.sdk.tech.service.AccountService;
 import com.timevale.esign.sdk.tech.service.EsignsdkService;
-import com.timevale.esign.sdk.tech.service.SealService;
 import com.timevale.esign.sdk.tech.service.factory.AccountServiceFactory;
 import com.timevale.esign.sdk.tech.service.factory.EsignsdkServiceFactory;
-import com.timevale.esign.sdk.tech.service.factory.SealServiceFactory;
 import com.timevale.tech.sdk.bean.HttpConnectionConfig;
 import com.timevale.tech.sdk.bean.ProjectConfig;
 import com.timevale.tech.sdk.bean.SignatureConfig;
 import com.timevale.tech.sdk.constants.AlgorithmType;
 import com.timevale.tech.sdk.constants.HttpType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author honghzengpei 2017/10/20 14:38
@@ -42,7 +42,6 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
     private static final Logger logger = LoggerFactory.getLogger(SpringInit.class);
     private EsignsdkService SDK = EsignsdkServiceFactory.instance();
     private AccountService SERVICE = AccountServiceFactory.instance();
-    private SealService SEAL = SealServiceFactory.instance();
     @Resource
     private JsdESdkService afESdkService;
     @Resource
@@ -50,7 +49,8 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
     @Resource
     private EsignPublicInit esignPublicInit;
 
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         event.getSource();
         String projectId = esignPublicInit.getProjectId();
@@ -127,7 +127,8 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
         logger.info("初始化执行完成...projectId =>{},projectSecret=>{}", projectId, projectSecret);
     }
 
-    private void createCompanySeal(JsdUserSealDo afUserSealDo, Map map) {
+    @SuppressWarnings("rawtypes")
+	private void createCompanySeal(JsdUserSealDo afUserSealDo, Map map) {
         if (null == afUserSealDo || null == afUserSealDo.getUserAccountId()) {// 账户标识
             String accountId = addOrganize(map);
             AddSealResult addSealResult = new AddSealResult();
@@ -136,9 +137,8 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
                         "STAR", "RED", "", "");
             } else {
                 logger.error("company seal error =>{}", addSealResult.getMsg());
-                throw new FanbeiException(FanbeiExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
+                throw new BizException(BizExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
             }
-            logger.info("addSealResult => {},userId =>{}", addSealResult.getMsg(), map.get("userId"));
             JsdUserSealDo afUserSealDo1 = new JsdUserSealDo();
             afUserSealDo1.setUserAccountId(accountId);
             afUserSealDo1.setUserType("1");
@@ -148,7 +148,7 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
                 afUserSealDo1.setUserSeal(addSealResult.getSealData());
             } else {
                 logger.error("company seal error =>{}", addSealResult.getMsg());
-                throw new FanbeiException(FanbeiExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
+                throw new BizException(BizExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
             }
             jsdUserSealService.insertUserSeal(afUserSealDo1);
         } else if (null == afUserSealDo.getUserSeal() || "" == afUserSealDo.getUserSeal()) {//公司的印章base64
@@ -158,18 +158,18 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
             afUserSealDo1.setId(afUserSealDo1.getId());
             afUserSealDo1.setUserId((Long) map.get("userId"));
             afUserSealDo1.setUserName((String) map.get("name"));
-            logger.info("addSealResult => {},userId =>{}", addSealResult.getMsg(), map.get("userId"));
             if (null != addSealResult.getSealData() || "" != addSealResult.getSealData()) {
                 afUserSealDo1.setUserSeal(addSealResult.getSealData());
             } else {
                 logger.error("company seal error =>{}", addSealResult.getMsg());
-                throw new FanbeiException(FanbeiExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
+                throw new BizException(BizExceptionCode.COMPANY_SIGN_ACCOUNT_CREATE_FAILED);
             }
             jsdUserSealService.updateUserSealByUserId(afUserSealDo1);
         }
     }
 
-    public String addOrganize(Map map) {
+    @SuppressWarnings("rawtypes")
+	public String addOrganize(Map map) {
         String name = map.get("name").toString();
         int organType = 0;
         String regType = "0";

@@ -17,15 +17,7 @@
         <property name="password" value="${fbapi.redis.password}" />
         <property name="usePool" value="true" />
         <property name="poolConfig" ref="poolConfigBiz" />
-        <property name="database" value="9"/>
-    </bean>
-    <bean id="cacheJedisConnFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
-        <property name="hostName" value="${fbapi.token.redis.hostname}" />
-        <property name="port" value="${fbapi.token.redis.port}" />
-        <property name="password" value="${fbapi.token.redis.password}" />
-        <property name="usePool" value="true" />
-        <property name="poolConfig" ref="poolConfigToken" />
-        <property name="database" value="9"/>
+        <property name="database" value="${fbapi.redis.database}"/>
     </bean>
 
 	<bean class="com.ald.fanbei.api.common.EsignPublicInit">

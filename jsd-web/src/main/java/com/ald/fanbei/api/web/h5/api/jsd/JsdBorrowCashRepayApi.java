@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.Constants;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +21,8 @@ import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.Bor
 import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
-import com.ald.fanbei.api.common.exception.FanbeiException;
-import com.ald.fanbei.api.common.exception.FanbeiExceptionCode;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
@@ -82,6 +83,7 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
         bo.bankNo = param.bankNo;
         bo.period = param.period;
         bo.repayNo=param.repayNo;
+        bo.name = Constants.DEFAULT_REPAYMENT_NAME_BORROW_CASH;
         checkPwdAndCard(bo);
         checkFrom(bo);
         return bo;
@@ -90,7 +92,7 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
     private void checkPwdAndCard(BorrowCashRepayBo bo) {
         HashMap<String,Object> map = jsdUserBankcardService.getBankByBankNoAndUserId(bo.userId,bo.bankNo);
         if (null == map) {
-            throw new FanbeiException(FanbeiExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new BizException(BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
         }
         //还款金额是否大于银行单笔限额
 //		dsedUserBankcardService.checkUpsBankLimit(map.get("bankCode").toString(), map.get("bankChannel").toString(), bo.amount);
@@ -102,34 +104,34 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
         JsdBorrowCashRepaymentDo cashRepaymentDo=jsdBorrowCashRepaymentService.getByTradeNoXgxy(bo.repayNo);
         JsdBorrowLegalOrderRepaymentDo legalOrderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getByTradeNoXgxy(bo.repayNo);
        if(cashRepaymentDo!=null&&legalOrderRepaymentDo!=null){
-          throw new FanbeiException(FanbeiExceptionCode.JSD_REPAY_REPAY_ERROR);
+          throw new BizException(BizExceptionCode.JSD_REPAY_REPAY_ERROR);
        }
       JsdBorrowCashDo cashDo= jsdBorrowCashService.getByTradeNoXgxy(bo.borrowNo);
       if(cashDo  == null ){
-    	  throw new FanbeiException("borrow cash not exist",FanbeiExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
+    	  throw new BizException("borrow cash not exist",BizExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
       }
       bo.borrowId=cashDo.getRid();
       if(!StringUtils.equals(cashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.name())){
-            throw new FanbeiException("borrow stats is not transfered",FanbeiExceptionCode.BORROW_STATS_IS_NOT_TRANSFERRED);
+            throw new BizException("borrow stats is not transfered",BizExceptionCode.BORROW_STATS_IS_NOT_TRANSFERRED);
       }
       //检查处理中 还款 商品还款  续期
       JsdBorrowCashRepaymentDo repaymentDo= jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(cashDo.getRid());
       if(repaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(repaymentDo.getStatus())) {
-            throw new FanbeiException(FanbeiExceptionCode.LOAN_REPAY_PROCESS_ERROR);
+            throw new BizException(BizExceptionCode.LOAN_REPAY_PROCESS_ERROR);
       }
       JsdBorrowLegalOrderRepaymentDo orderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getLastByBorrowId(cashDo.getRid());
       if(orderRepaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(orderRepaymentDo.getStatus())) {
-           throw new FanbeiException(FanbeiExceptionCode.LEGAL_REPAY_PROCESS_ERROR);
+           throw new BizException(BizExceptionCode.LEGAL_REPAY_PROCESS_ERROR);
       }
       JsdBorrowCashRenewalDo renewalDo= jsdBorrowCashRenewalService.getLastJsdRenewalByBorrowId(cashDo.getRid());
         if (renewalDo != null && JsdRenewalDetailStatus.PROCESS.getCode().equals(renewalDo.getStatus())) {
-            throw new FanbeiException(FanbeiExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
+            throw new BizException(BizExceptionCode.HAVE_A_PROCESS_RENEWAL_DETAIL);
         }
        //检查用户是否多还钱
         JsdBorrowLegalOrderCashDo orderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(bo.borrowId);
         BigDecimal shouldRepayAmount = jsdBorrowLegalOrderCashService.calculateLegalRestAmount(cashDo, orderCashDo);
         if(bo.amount.compareTo(shouldRepayAmount) > 0) {
-            throw new FanbeiException(FanbeiExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
+            throw new BizException(BizExceptionCode.BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR);
         }
 
 

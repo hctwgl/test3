@@ -1,27 +1,54 @@
 package com.ald.fanbei.api.biz.third.util;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import com.ald.fanbei.api.biz.bo.RepaymentBo;
-import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
+import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
+import com.ald.fanbei.api.biz.service.JsdCollectionRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.cuishou.CuiShouBackMoney;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.CollectionBorrowStatus;
+import com.ald.fanbei.api.common.enums.CommonReviewStatus;
 import com.ald.fanbei.api.common.enums.GenderType;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.JsdNoticeType;
+import com.ald.fanbei.api.common.enums.JsdRepayType;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
-import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
+import com.ald.fanbei.api.dal.domain.JsdCollectionRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
+import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.util.*;
 
 
 @Component("cuiShouUtils")
@@ -31,6 +58,8 @@ public class CuiShouUtils {
     protected static final Logger logger = LoggerFactory.getLogger("DSED_THIRD");
 
     private final String salt = "jsdcuishou";
+
+    private final String merchantSalt = "jsdpluscuishou";
 
     @Resource
     JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
@@ -43,6 +72,8 @@ public class CuiShouUtils {
 
     @Resource
     JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
+    @Resource
+    JsdNoticeRecordDao jsdNoticeRecordDao;
 
     @Resource
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
@@ -51,16 +82,19 @@ public class CuiShouUtils {
     JsdUserService jsdUserService;
 
     @Resource
-    CollectionSystemUtil collectionSystemUtil;
+    CollectionNoticeUtil collectionNoticeUtil;
+
+    @Resource
+    JsdCollectionBorrowService jsdCollectionBorrowService;
+
+    @Resource
+    JsdCollectionRepaymentService jsdCollectionRepaymentService;
 
     @Resource
     JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
 
     @Resource
     XgxyUtil xgxyUtil;
-
-    private static String token = "eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo";
-
 
     /**
      * 催收逾期还款
@@ -98,7 +132,6 @@ public class CuiShouUtils {
             RepaymentBo repaymentBo = JSON.toJavaObject(obj, RepaymentBo.class);
             final String totalAmount = repaymentBo.getTotalAmount();
             final String repaymentNo = repaymentBo.getRepaymentNo();
-            final String type = repaymentBo.getType();
             final String repayTime = repaymentBo.getRepayTime();
             final String orderNo = repaymentBo.getOrderNo();
             Date time = DateUtil.stringToDate(repayTime);
@@ -127,11 +160,6 @@ public class CuiShouUtils {
                     userId = jsdBorrowCashDo.getUserId();
                 }
             }
-            if(jsdBorrowCashDo == null){
-                cuiShouBackMoney.setCode(205);
-                thirdLog.error("dsedLoanPeriodsDo is null error orderNo =" + orderNo);
-                return cuiShouBackMoney;
-            }
             if(DateUtil.afterDay(jsdBorrowCashDo.getGmtPlanRepayment(),time)){
                 cuiShouBackMoney.setCode(203);
                 thirdLog.error("time error loanNo =" + orderNo);
@@ -143,7 +171,7 @@ public class CuiShouUtils {
                 return cuiShouBackMoney;
             }
             if (StringUtil.isAllNotEmpty(orderNo, repaymentNo)) {
-                jsdBorrowCashRepaymentService.offlineRepay(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,totalAmount, repaymentNo, userId, type, repayTime, orderNo,dataId);
+                jsdBorrowCashRepaymentService.offlineRepay(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,totalAmount, repaymentNo, userId, JsdRepayType.COLLECTION,null, DateUtil.stringToDate(repayTime), orderNo,dataId,null);
             } else {
                 cuiShouBackMoney.setCode(303);
                 thirdLog.error("orderNo and repaymentNo is error orderNo =" + orderNo);
@@ -164,24 +192,57 @@ public class CuiShouUtils {
 
 
     /**
-     * 催收上报接口
+     * 催收平账修改状态
      *
      * @param data
      * @return
      */
-    public String collectImport(String data) {
+    public String collectUpdateStatus(String data,String sign) {
         try {
-            logger.info("collectImport  start  time =" +new Date());
             if(StringUtil.isEmpty(data)){
                 thirdLog.error("data is null");
                 return "false";
             }
-            //上报
-            JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(Long.parseLong(data));
-            JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(data));
-            JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getById(jsdBorrowLegalOrderDo.getBorrowId());
-            collectionPush(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,jsdBorrowLegalOrderDo);
-            logger.info("collectImport  End  time =" +new Date());
+            logger.info("offlineRepaymentMoney data = " + data +"  ,sign = " + sign);
+            byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+            String sign1 = DigestUtil.encodeHex(pd);
+            if (!sign1.equals(sign)) return "false                                     ";
+            JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderService.getById(Long.valueOf(data));
+            JsdBorrowCashDo cashDo = jsdBorrowCashService.getById(orderDo.getBorrowId());
+            JsdBorrowCashDo jsdBorrowCashDo = new JsdBorrowCashDo();
+            jsdBorrowCashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
+            jsdBorrowCashDo.setRid(orderDo.getBorrowId());
+            int count = jsdBorrowCashService.updateById(jsdBorrowCashDo);
+            if(count<1){
+                return "false";
+            }
+            JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashDateBeforeToday(orderDo.getBorrowId());
+            if(jsdBorrowLegalOrderCashDo != null){
+                jsdBorrowLegalOrderCashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
+                int orderCount = jsdBorrowLegalOrderCashService.updateById(jsdBorrowLegalOrderCashDo);
+                if(orderCount<1){
+                    return "false";
+                }
+            }
+            //催收平账推送西瓜
+            HashMap<String, String> map = new HashMap<>();
+            map.put("status",YesNoStatus.YES.getCode());
+            map.put("isFinish",YesNoStatus.YES.getCode());
+            map.put("borrowNo",cashDo.getTradeNoXgxy());
+            map.put("period","all");
+            map.put("amount",String.valueOf(BigDecimal.ZERO));
+            map.put("type",JsdRepayType.COLLECTION.name());
+            JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
+            noticeRecordDo.setUserId(orderDo.getUserId());
+            noticeRecordDo.setType(JsdNoticeType.COLLECT_RECONCILIATION.code);
+            noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+            noticeRecordDo.setParams(JSON.toJSONString(map));
+            jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+            if (xgxyUtil.repayNoticeRequest(map)) {
+                noticeRecordDo.setRid(noticeRecordDo.getRid());
+                noticeRecordDo.setGmtModified(new Date());
+                jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
+            }
             return "success";
         } catch (Exception e) {
             thirdLog.error("collectImport error = " + e);
@@ -207,7 +268,7 @@ public class CuiShouUtils {
             buildData.put("overdueDay",String.valueOf(renewalList.get(count-1).getOverdueDay()));
             buildData.put("borrowTime",DateUtil.formatDateTime(renewalList.get(count-1).getGmtCreate()));//借款时间
         }else {
-            buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(borrowCashDo.getGmtPlanRepayment()),DateUtil.formatDateToYYYYMMdd(new Date()))));//逾期天数
+            buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(borrowCashDo.getGmtPlanRepayment(),new Date())));//逾期天数
             buildData.put("borrowTime",DateUtil.formatDateTime(borrowCashDo.getGmtCreate()));//借款时间
         }
         List<Map<String,String>>  data = new ArrayList<>();
@@ -272,7 +333,7 @@ public class CuiShouUtils {
         BigDecimal currentAmount = BigDecimal.ZERO;//应还本金
         BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
         //应还本金
-        currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidOverdue()).subtract(borrowCashDo.getRepayAmount());
+        currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidInterest()).subtract(borrowCashDo.getRepayAmount());
         //催收金额
         BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
         //应还金额
@@ -287,7 +348,7 @@ public class CuiShouUtils {
         BigDecimal borrowAmount = borrowCashDo.getAmount();
         if(orderCashDo != null){
             //应还本金
-            currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());
+            currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
             //催收金额
             collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
             //应还金额
@@ -306,12 +367,6 @@ public class CuiShouUtils {
         buildData.put("caseType","jsd");//案件类型
         buildData.put("collectAmount",String.valueOf(collectAmount));//催收金额
         buildData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
-        if(residueAmount.compareTo(BigDecimal.ZERO) < 0){
-            residueAmount = BigDecimal.ZERO;
-        }
-        if(currentAmount.compareTo(BigDecimal.ZERO) < 0){
-            currentAmount = BigDecimal.ZERO;
-        }
         buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
         buildData.put("currentAmount",String.valueOf(currentAmount));//委案未还金额
         buildData.put("dataId",String.valueOf(jsdBorrowLegalOrderDo.getRid()));//源数据id
@@ -334,19 +389,228 @@ public class CuiShouUtils {
 
         //--------------------end  催收上报接口需要参数---------------------------
         data.add(buildData);
-        logger.info(" collectionPush data = "+data);
-        collectionSystemUtil.noticeCollect(data);
+//        logger.info(" collectionPush data = "+data);
+        collectionNoticeUtil.noticeCollectOverdue(data);
     }
 
 
 
 
 
+    /**
+     * 催收上报接口
+     *
+     * @param data
+     * @return
+     */
+    public String collectImport(String data) {
+        try {
+            logger.info("collectImport  start  time =" +new Date());
+            if(StringUtil.isEmpty(data)){
+                thirdLog.error("data is null");
+                return "false";
+            }
+            //上报
+            JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(Long.parseLong(data));
+            JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(data));
+            JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getById(jsdBorrowLegalOrderDo.getBorrowId());
+            collectionPush(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,jsdBorrowLegalOrderDo);
+            logger.info("collectImport  End  time =" +new Date());
+            return "success";
+        } catch (Exception e) {
+            thirdLog.error("collectImport error = " + e.getMessage(), e);
+            return "false";
+        }
+    }
 
 
+    /**
+     * 催收更新数据
+     *
+     * @param data
+     * @return
+     */
+    public String collectData(String data) {
+        HashMap<String,String> map = new HashMap<>();
+        try {
+            if(StringUtil.isEmpty(data)){
+                map.put("code","500");
+                map.put("info","");
+                thirdLog.error("data is null");
+                return JSON.toJSONString(map);
+            }
+            List<HashMap<String,String>> list = new ArrayList<>();
+            String arr[] =  data.split(",");
+            for(int i=0;i<arr.length;i++){
+                JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(arr[i]));
+                JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(Long.parseLong(arr[i]));
+                JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getById(jsdBorrowLegalOrderDo.getBorrowId());
+                List<JsdBorrowLegalOrderDo> orderList =  jsdBorrowLegalOrderService.getBorrowOrdersByBorrowId(borrowCashDo.getRid());
+                HashMap<String, String> buildData = new HashMap<String, String>();
+                int count = 0;
+                for (int x=0;x<orderList.size();x++){
+                    if(StringUtil.equals(String.valueOf(orderList.get(x).getRid()),String.valueOf(jsdBorrowLegalOrderDo.getRid()))){
+                        count = x;
+                        break;
+                    }
+                }
+                if(count>0){
+                    List<JsdBorrowCashRenewalDo> renewalList =  jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(jsdBorrowLegalOrderDo.getBorrowId());
+                    buildData.put("overdueDay",String.valueOf(renewalList.get(count-1).getOverdueDay()));
+                }else {
+                    buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(borrowCashDo.getGmtPlanRepayment(),new Date())));//逾期天数
+                }
+                //案件信息
+                BigDecimal residueAmount = BigDecimal.ZERO;//应还金额
+                BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
+                //应还金额
+                residueAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getOverdueAmount(), borrowCashDo.getPoundageAmount(), borrowCashDo.getInterestAmount()).subtract(borrowCashDo.getRepayPrinciple());
+                //催收金额
+                BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestRate(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
+                //逾期金额
+                overdueAmount = borrowCashDo.getOverdueAmount();
+                //委案本金
+                BigDecimal borrowAmount = borrowCashDo.getAmount();
+                //还款金额
+                BigDecimal repayAmount = borrowCashDo.getRepayAmount();
+                if(orderCashDo != null){
+                    //应还金额
+                    residueAmount = BigDecimalUtil.add(residueAmount, orderCashDo.getAmount(), orderCashDo.getOverdueAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getInterestAmount()).subtract(orderCashDo.getRepaidAmount());
+                    //催收金额
+                    collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
+                    //逾期金额
+                    overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(), orderCashDo.getOverdueAmount());
+                    //委案本金
+                    borrowAmount = borrowAmount.add(orderCashDo.getAmount());
+                    //还款金额
+                    repayAmount = borrowCashDo.getRepayAmount().add(orderCashDo.getRepaidAmount());
+                }
+                buildData.put("borrowAmount",String.valueOf(borrowAmount));//委案本金
+                buildData.put("collectAmount",String.valueOf(collectAmount));//催收金额
+                buildData.put("overdueAmount",String.valueOf(overdueAmount));//滞纳金
+                buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
+                buildData.put("repayAmount",String.valueOf(repayAmount));//已还金额
+                buildData.put("status",borrowCashDo.getStatus());//状态
+                buildData.put("dataId",arr[i]);//状态
+                list.add(buildData);
+            }
+
+            map.put("code","200");
+            map.put("info",JSON.toJSONString(list));
+            return JSON.toJSONString(map);
+        } catch (Exception e) {
+            map.put("code","500");
+            map.put("info","");
+            thirdLog.error("collectImport error = " + e);
+            return JSON.toJSONString(map);
+        }
+    }
 
 
+    /**
+     * 催收平账申请(plus)
+     *
+     * @param request
+     * @return
+     */
+    public String collectReconciliate(HttpServletRequest request) {
+        try {
+            String requester = request.getParameter("requester");//发起平账操作者
+            String requestReason = request.getParameter("requestReason");//发起平账操作者
+            String dataId = request.getParameter("dataId");//唯一交互数据
+            String sign = request.getParameter("sign");
+            byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), merchantSalt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+            String sign1 = DigestUtil.encodeHex(pd);
+            logger.info("sign1 = " + sign1 + "sign  = " + sign);
+            if (!sign1.equals(sign)) return "false";
+            if(StringUtil.isEmpty(dataId)){
+                logger.info("param is error");
+                return "false";
+            }
+            JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(dataId));
+            Long borrowId = jsdBorrowLegalOrderDo.getBorrowId();
+            JsdCollectionBorrowDo jsdCollectionBorrowDo = jsdCollectionBorrowService.selectByBorrowId(borrowId);
+            JsdCollectionBorrowDo borrowDo = new JsdCollectionBorrowDo();
+            borrowDo.setBorrowId(borrowId);
+            borrowDo.setRequester(requester);
+            borrowDo.setRequestReason(requestReason);
+            borrowDo.setReviewStatus(CommonReviewStatus.WAIT.name());
+            borrowDo.setStatus(CollectionBorrowStatus.WAIT_FINISH.name());
+            borrowDo.setRid(jsdCollectionBorrowDo.getRid());
+            int count = jsdCollectionBorrowService.updateById(borrowDo);
+            logger.info("count = " + count + "borrowDo  = " + borrowDo);
+            if (count<1){
+                logger.info("save is error");
+                return "false";
+            }
+            return "success";
+        } catch (Exception e) {
+            thirdLog.error("collectReconciliate error = " , e);
+            return "false";
+        }
+    }
 
+
+    /**
+     * 催收还款申请(plus)
+     *
+     * @param request
+     * @return
+     */
+    public String collectRepay(HttpServletRequest request) {
+        try {
+            String requester = request.getParameter("requester");//发起还款操作者
+            String repayCert = request.getParameter("repaymentPic");//图片
+            String tradeNo = request.getParameter("tradeNo");//还款编号
+            String realName = request.getParameter("realName");//用户真实姓名
+            String gmtRepay = request.getParameter("repayTime");//还款时间
+            String repayAmount = request.getParameter("repaymentAmount");//还款金额
+            String repayWay = request.getParameter("repayWay");//还款方式
+            String dataId = request.getParameter("dataId");//唯一交互数据
+            String payInAccount = request.getParameter("payInAccount");//收款账户
+            String payOutAccount = request.getParameter("payOutAccount");//打款账户
+            String sign = request.getParameter("sign");
+            byte[] pd = DigestUtil.digestString(tradeNo.getBytes("UTF-8"), merchantSalt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+            String sign1 = DigestUtil.encodeHex(pd);
+            if (!sign1.equals(sign)) return "false";
+            if(StringUtil.isEmpty(dataId)){
+                logger.info("param is error");
+                return "false";
+            }
+            JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(dataId));
+            Long borrowId = jsdBorrowLegalOrderDo.getBorrowId();
+            JsdCollectionRepaymentDo jsdCollectionRepaymentDo = jsdCollectionRepaymentService.getByRepayNo(tradeNo);
+            if(jsdCollectionRepaymentDo != null){
+                logger.info("jsdCollectionRepaymentDo is exist");
+                return "false";
+            }
+            JsdUserDo jsdUserDo = jsdUserService.getById(jsdBorrowLegalOrderDo.getUserId());
+            JsdCollectionRepaymentDo repaymentDo = new JsdCollectionRepaymentDo();
+            repaymentDo.setBorrowId(borrowId);
+            repaymentDo.setRequester(requester);
+            repaymentDo.setGmtRepay(DateUtil.parseDateyyyyMMddHHmmss(gmtRepay));
+            repaymentDo.setRepayWay(repayWay);
+            repaymentDo.setRealName(realName);
+            repaymentDo.setBorrowId(borrowId);
+            repaymentDo.setRepayAmount(new BigDecimal(repayAmount));
+            repaymentDo.setRepayCert(repayCert);
+            repaymentDo.setPayInAccount(payInAccount);
+            repaymentDo.setPayOutAccount(payOutAccount);
+            repaymentDo.setTradeNo(tradeNo);
+            repaymentDo.setReviewStatus(CommonReviewStatus.WAIT.name());
+            repaymentDo.setUserId(jsdBorrowLegalOrderDo.getUserId());
+            repaymentDo.setAccount(jsdUserDo.getMobile());
+            int count = jsdCollectionRepaymentService.saveRecord(repaymentDo);
+            if (count<1){
+                logger.info("save is error");
+                return "false";
+            }
+            return "success";
+        } catch (Exception e) {
+            thirdLog.error("collectImport error = " + e);
+            return "false";
+        }
+    }
 
 
 

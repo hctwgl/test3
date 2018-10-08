@@ -1,12 +1,11 @@
 package com.ald.fanbei.api.common.enums;
 
 public enum JsdRepayType {
-
-    ONLINE( "app线上还款","ONLINE"),
     WITHHOLD( "代扣还款","WITHHOLD"),
     INITIATIVE( "主动还款","INITIATIVE"),
-    OFFLINE( "线下还款","OFFLINE"),
-    COLLECTION( "催收逾期还款","COLLECTION");
+    OFFLINE( "管理员线下还款","OFFLINE"),
+    COLLECTION( "催收逾期还款","COLLECTION"),
+    REVIEW_COLLECTION( "管理员审批催收还款","REVIEW_COLLECTION");
 
     private String code;
     private String name;

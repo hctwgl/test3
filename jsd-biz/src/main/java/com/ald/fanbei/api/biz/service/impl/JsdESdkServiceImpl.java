@@ -1,5 +1,13 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.springframework.stereotype.Service;
+
 import com.ald.fanbei.api.biz.service.JsdESdkService;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.dal.dao.JsdUserSealDao;
@@ -24,12 +32,6 @@ import com.timevale.esign.sdk.tech.service.factory.AccountServiceFactory;
 import com.timevale.esign.sdk.tech.service.factory.SealServiceFactory;
 import com.timevale.esign.sdk.tech.service.factory.SelfSignServiceFactory;
 import com.timevale.esign.sdk.tech.service.factory.UserSignServiceFactory;
-import org.apache.commons.lang.ObjectUtils;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
 
 @Service("jsdESdkService")
 public class JsdESdkServiceImpl implements JsdESdkService {
