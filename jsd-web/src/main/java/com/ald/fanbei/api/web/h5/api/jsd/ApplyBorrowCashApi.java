@@ -193,12 +193,13 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
      * 构建 商品订单(赊销)
      * @return
      */
-    private JsdBorrowLegalOrderDo buildBorrowLegalOrder(ApplyBorrowCashReq cashReq, Long userId) {
+    private JsdBorrowLegalOrderDo buildBorrowLegalOrder(ApplyBorrowCashReq cashReq, Long userId, TrialBeforeBorrowBo trialBo) {
     	JsdGoodsInfoBo goodsBo = cashReq.goodsInfo;
+    	TrialBeforeBorrowResp resp = trialBo.resp;
     	
         JsdBorrowLegalOrderDo afBorrowLegalOrderDo = new JsdBorrowLegalOrderDo();
         afBorrowLegalOrderDo.setUserId(userId);
-        afBorrowLegalOrderDo.setPriceAmount(new BigDecimal(goodsBo.goodsPrice));
+        afBorrowLegalOrderDo.setPriceAmount(new BigDecimal(resp.totalDiffFee));
         afBorrowLegalOrderDo.setGoodsName(goodsBo.goodsName);
         afBorrowLegalOrderDo.setStatus(JsdBorrowLegalOrderStatus.UNPAID.getCode());
         String orderCashNo = generatorClusterNo.getOrderNo(new Date());

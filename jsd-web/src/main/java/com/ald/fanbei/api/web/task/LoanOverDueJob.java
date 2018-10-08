@@ -288,7 +288,7 @@ public class LoanOverDueJob {
             buildData.put("longitude",map.get("longitude"));//借款经度
             buildData.put("latitude",map.get("latitude"));//借款纬度
             buildData.put("borrowTime",DateUtil.formatDateTime(borrowCashDo.getGmtCreate()));//借款时间
-            buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(borrowCashDo.getGmtPlanRepayment(),new Date())));//逾期天数
+            buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(borrowCashDo.getGmtPlanRepayment()),DateUtil.formatDateToYYYYMMdd(new Date()))));//逾期天数
             buildData.put("borrowAmount",String.valueOf(borrowAmount));//借款金额(委案金额)
             buildData.put("accountAmount",String.valueOf(borrowCashDo.getAmount()));//到账金额
             buildData.put("borrowCash",String.valueOf(borrowCash));//借款费用(手续费加利息)

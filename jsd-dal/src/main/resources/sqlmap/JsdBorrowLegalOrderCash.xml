@@ -480,19 +480,6 @@
 
     </select>
 
-
-    <select id="getBorrowOrderCashsByOrderCashId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">
-        SELECT
-        <include refid="queryFields" />
-        FROM jsd_borrow_legal_order_cash
-        WHERE
-        id = #{rid}
-        AND
-        is_delete = 0
-        ORDER BY id DESC
-
-    </select>
-
     <select id="getBorrowLegalOrderCashDateBeforeToday"
             resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">
         SELECT
