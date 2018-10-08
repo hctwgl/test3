@@ -55,7 +55,6 @@ import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-
 /**
  * 极速贷ServiceImpl
  *
