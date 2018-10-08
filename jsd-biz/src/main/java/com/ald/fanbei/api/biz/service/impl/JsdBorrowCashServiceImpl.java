@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.ald.jsd.mgr.dal.dao.MgrOperateLogDao;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;

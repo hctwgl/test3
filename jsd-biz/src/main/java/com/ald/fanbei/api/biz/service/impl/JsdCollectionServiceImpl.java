@@ -21,14 +21,11 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.enums.JsdRepayCollectionType;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
-import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.alibaba.fastjson.JSON;
 
@@ -48,22 +45,12 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 	@Resource
 	CollectionNoticeUtil collectionNoticeUtil;
 	
-	public void nofityRepayment(JsdBorrowCashRepaymentDo repaymentDo, JsdBorrowLegalOrderRepaymentDo orderRepaymentDo,
-			String curOutTradeNo, String borrowNo, String orderId, Long uid, JsdRepayType type) {
+	public void nofityRepayment(BigDecimal repayAmount, String curOutTradeNo, String borrowNo, Long orderId, Long uid, JsdRepayType repayType, String reviewReuslt) {
 		try{
 			List<HashMap<String,String>> list = new ArrayList<>();
 			JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
-			BigDecimal repayAmount = BigDecimal.ZERO;
-			if(repaymentDo != null){
-				repayAmount = repaymentDo.getRepaymentAmount();
-				noticeRecordDo.setRefId(String.valueOf(repaymentDo.getRid()));
-			}
-			if(orderRepaymentDo != null) {
-				repayAmount = orderRepaymentDo.getRepayAmount().add(repayAmount);
-				noticeRecordDo.setRefId(String.valueOf(orderRepaymentDo.getRid()));
-			}
+			
 			//--------------------start  催收还款接口需要参数---------------------------
-
 			Map<String, String> repayData = new HashMap<String, String>();
 			HashMap<String, String> data = new HashMap<String, String>();
 			//("还款流水")
@@ -74,16 +61,16 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 			repayData.put("orderNo", borrowNo);
 			
 			//根据场景不同，推送催收不同还款类型
-			if(StringUtil.equals(type.getCode(),JsdRepayType.COLLECTION.getCode()) || StringUtil.equals(type.getCode(),JsdRepayType.REVIEW_COLLECTION.getCode())){
-				data.put("dataId", orderId);//源数据id
+			if(StringUtil.equals(repayType.getCode(),JsdRepayType.COLLECTION.getCode()) || StringUtil.equals(repayType.getCode(),JsdRepayType.REVIEW_COLLECTION.getCode())){
+				data.put("dataId", orderId.toString());//源数据id
 				repayData.put("type", JsdRepayCollectionType.OFFLINE.getCode());
 				noticeRecordDo.setType(JsdNoticeType.COLLECT.code);
 			}else {
 				repayData.put("type", JsdRepayCollectionType.APP.getCode());
 				noticeRecordDo.setType(JsdNoticeType.OVERDUEREPAY.code);
-				data.put("dataId", orderId);//源数据id
+				data.put("dataId", orderId.toString());//源数据id
 			}
-			repayData.put("repaymentAcc", userId + "");//还款账户
+			repayData.put("repaymentAcc", uid.toString());//还款账户
 
 			data.put("amount",repayAmount+"");
 			repayData.put("companyId", ConfigProperties.get(Constants.CONFKEY_COLLECTION_COMPANYID));
@@ -95,8 +82,15 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 			//("还款详情, 格式: [{'dataId':'数据编号', 'amount':'还款金额(元, 精确到分)'},...]")
 			repayData.put("details", JSON.toJSONString(list));
 			//--------------------end  催收还款接口需要参数---------------------------
+			
+			
+			//--------------------start 兼容审批模式还款通知 --------------------------
+			if(JsdRepayType.REVIEW_COLLECTION.equals(repayType)) {
+				repayData.put("reviewReuslt", reviewReuslt);
+			}
+			//--------------------end  兼容审批模式还款通知 ---------------------------
 
-			noticeRecordDo.setUserId(userId);
+			noticeRecordDo.setUserId(uid);
 			noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 			noticeRecordDo.setParams(JSON.toJSONString(repayData));
 			jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);

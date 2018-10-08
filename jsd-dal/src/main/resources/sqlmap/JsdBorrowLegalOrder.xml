@@ -325,7 +325,7 @@
         ORDER BY id DESC
     </select>
 
-    <select id="getLastOrderByBorrowIdAndStatus" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo" >
+    <select id="getLastValidOrderByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo" >
         SELECT
         <include refid="queryFields" />
         FROM jsd_borrow_legal_order

@@ -52,4 +52,9 @@ public class JsdBorrowLegalOrderServiceImpl extends ParentServiceImpl<JsdBorrowL
 	public List<JsdBorrowLegalOrderDo> getBorrowOrdersByBorrowId(Long borrowId){
 		return jsdBorrowLegalOrderDao.getBorrowOrdersByBorrowId(borrowId);
 	}
+
+	@Override
+	public JsdBorrowLegalOrderDo getLastValidOrderByBorrowId(Long borrowId) {
+		return jsdBorrowLegalOrderDao.getLastValidOrderByBorrowId(borrowId);
+	}
 }

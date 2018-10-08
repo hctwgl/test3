@@ -21,6 +21,7 @@ import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
 import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
 import com.ald.fanbei.api.biz.service.JsdCollectionRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdCollectionService;
 import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
@@ -68,6 +69,9 @@ public class CollectionMgrController extends BaseController{
     JsdCollectionRepaymentService jsdCollectionRepaymentService;
 	@Resource
 	JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
+	
+	@Resource
+	JsdCollectionService jsdCollectionService;
 	
 	@Resource
     MgrOfflineRepaymentService mgrOfflineRepaymentService;
@@ -220,6 +224,7 @@ public class CollectionMgrController extends BaseController{
     public Resp<?> reviewRepayment(@RequestBody @Valid CollectionRepaymentReviewReq params, HttpServletRequest request){
     	JsdCollectionRepaymentDo collRepayDo = jsdCollectionRepaymentService.getByRepayNo(params.tradeNo);
     	JsdBorrowCashDo cashDo = jsdBorrowCashService.getById(collRepayDo.getBorrowId());
+    	JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderService.getLastValidOrderByBorrowId(collRepayDo.getBorrowId());
     	
     	if(!CommonReviewStatus.WAIT.name().equals(collRepayDo.getReviewStatus())) {
     		return Resp.fail("只有待审核的催收还款请求才可以操作！");
@@ -244,13 +249,18 @@ public class CollectionMgrController extends BaseController{
     			public Integer doInTransaction(TransactionStatus status) {
     				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData, JsdRepayType.REVIEW_COLLECTION, operator);
     				jsdCollectionRepaymentService.updateById(collRepayDo);
-    				// TODO 自行通知还款结果
+    				jsdCollectionService.nofityRepayment(collRepayDo.getRepayAmount(), collRepayDo.getTradeNo(), cashDo.getBorrowNo(), orderDo.getRid(), cashDo.getUserId(), JsdRepayType.REVIEW_COLLECTION, params.reviewStatus);
     				return 1;
     			}
     		});
     	}else if(CommonReviewStatus.REFUSE.name().equals(params.reviewStatus)) {
-    		jsdCollectionRepaymentService.updateById(collRepayDo);
-    		// TODO 自行通知还款结果
+    		transactionTemplate.execute(new TransactionCallback<Integer>() {
+    			public Integer doInTransaction(TransactionStatus status) {
+    				jsdCollectionRepaymentService.updateById(collRepayDo);
+    	    		jsdCollectionService.nofityRepayment(collRepayDo.getRepayAmount(), collRepayDo.getTradeNo(), cashDo.getBorrowNo(), orderDo.getRid(), cashDo.getUserId(), JsdRepayType.REVIEW_COLLECTION, params.reviewStatus);
+    				return 1;
+    			}
+    		});
     	}
     	
     	return Resp.succ();

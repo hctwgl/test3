@@ -275,7 +275,7 @@ public class CuiShouUtils {
         //--------------------start  催收上报接口需要参数---------------------------
         Long borrowId = borrowCashDo.getRid();
         //搭售商品信息
-        JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastOrderByBorrowIdAndStatus(borrowId);
+        JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastValidOrderByBorrowId(borrowId);
         Map<String,String>  param = new HashMap<>();
         param.put("borrowNo",borrowCashDo.getTradeNoXgxy());
         HashMap<String,String> map = xgxyUtil.borrowNoticeRequest(param);
