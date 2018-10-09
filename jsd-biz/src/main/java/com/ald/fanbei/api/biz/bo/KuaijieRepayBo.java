@@ -1,6 +1,6 @@
 package com.ald.fanbei.api.biz.bo;
 
-import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.BorrowCashRepayBo;
+import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.RepayRequestBo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 
 public class KuaijieRepayBo {
@@ -10,13 +10,13 @@ public class KuaijieRepayBo {
 
     }
 
-    public KuaijieRepayBo(JsdBorrowCashRepaymentDo repayment, BorrowCashRepayBo bo) {
+    public KuaijieRepayBo(JsdBorrowCashRepaymentDo repayment, RepayRequestBo bo) {
         this.repayment = repayment;
         this.bo = bo;
     }
 
     private JsdBorrowCashRepaymentDo repayment;
-    private BorrowCashRepayBo bo;
+    private RepayRequestBo bo;
 
     public JsdBorrowCashRepaymentDo getRepayment() {
         return repayment;
@@ -26,11 +26,11 @@ public class KuaijieRepayBo {
         this.repayment = repayment;
     }
 
-    public BorrowCashRepayBo getBo() {
+    public RepayRequestBo getBo() {
         return bo;
     }
 
-    public void setBo(BorrowCashRepayBo bo) {
+    public void setBo(RepayRequestBo bo) {
         this.bo = bo;
     }
 

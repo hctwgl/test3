@@ -268,14 +268,14 @@ public class CuiShouUtils {
             buildData.put("overdueDay",String.valueOf(renewalList.get(count-1).getOverdueDay()));
             buildData.put("borrowTime",DateUtil.formatDateTime(renewalList.get(count-1).getGmtCreate()));//借款时间
         }else {
-            buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(borrowCashDo.getGmtPlanRepayment(),new Date())));//逾期天数
+            buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(borrowCashDo.getGmtPlanRepayment()),DateUtil.formatDateToYYYYMMdd(new Date()))));//逾期天数
             buildData.put("borrowTime",DateUtil.formatDateTime(borrowCashDo.getGmtCreate()));//借款时间
         }
         List<Map<String,String>>  data = new ArrayList<>();
         //--------------------start  催收上报接口需要参数---------------------------
         Long borrowId = borrowCashDo.getRid();
         //搭售商品信息
-        JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastOrderByBorrowIdAndStatus(borrowId);
+        JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastValidOrderByBorrowId(borrowId);
         Map<String,String>  param = new HashMap<>();
         param.put("borrowNo",borrowCashDo.getTradeNoXgxy());
         HashMap<String,String> map = xgxyUtil.borrowNoticeRequest(param);
@@ -333,7 +333,7 @@ public class CuiShouUtils {
         BigDecimal currentAmount = BigDecimal.ZERO;//应还本金
         BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
         //应还本金
-        currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidInterest()).subtract(borrowCashDo.getRepayAmount());
+        currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidOverdue()).subtract(borrowCashDo.getRepayAmount());
         //催收金额
         BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
         //应还金额
@@ -348,7 +348,7 @@ public class CuiShouUtils {
         BigDecimal borrowAmount = borrowCashDo.getAmount();
         if(orderCashDo != null){
             //应还本金
-            currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
+            currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());
             //催收金额
             collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
             //应还金额
@@ -367,6 +367,12 @@ public class CuiShouUtils {
         buildData.put("caseType","jsd");//案件类型
         buildData.put("collectAmount",String.valueOf(collectAmount));//催收金额
         buildData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
+        if(residueAmount.compareTo(BigDecimal.ZERO) < 0){
+            residueAmount = BigDecimal.ZERO;
+        }
+        if(currentAmount.compareTo(BigDecimal.ZERO) < 0){
+            currentAmount = BigDecimal.ZERO;
+        }
         buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
         buildData.put("currentAmount",String.valueOf(currentAmount));//委案未还金额
         buildData.put("dataId",String.valueOf(jsdBorrowLegalOrderDo.getRid()));//源数据id
@@ -392,9 +398,6 @@ public class CuiShouUtils {
 //        logger.info(" collectionPush data = "+data);
         collectionNoticeUtil.noticeCollectOverdue(data);
     }
-
-
-
 
 
     /**

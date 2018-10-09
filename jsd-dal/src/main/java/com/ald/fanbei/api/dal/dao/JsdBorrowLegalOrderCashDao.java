@@ -50,5 +50,4 @@ public interface JsdBorrowLegalOrderCashDao extends BaseDao<JsdBorrowLegalOrderC
 	 * @return
 	 */
 	JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashDateBeforeToday(Long borrowId);
-
 }

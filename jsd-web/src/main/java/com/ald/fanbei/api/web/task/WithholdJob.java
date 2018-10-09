@@ -1,7 +1,24 @@
 package com.ald.fanbei.api.web.task;
 
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.JsdUserBankcardService;
+import com.ald.fanbei.api.biz.service.JsdUserService;
+import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.RepayRequestBo;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
 import com.ald.fanbei.api.common.ConfigProperties;
@@ -15,17 +32,6 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Component
 public class WithholdJob {
@@ -91,7 +97,7 @@ public class WithholdJob {
                 logger.info("withhold fail,Loan is processing,borrowId=" + jsdBorrowCashDo.getRid());
                 continue;
             }
-            JsdBorrowCashRepaymentServiceImpl.BorrowCashRepayBo bo=new JsdBorrowCashRepaymentServiceImpl.BorrowCashRepayBo();
+            RepayRequestBo bo=new RepayRequestBo();
             BigDecimal sumAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getSumRepaidOverdue(),jsdBorrowCashDo.getSumRepaidInterest(), jsdBorrowCashDo.getSumRepaidPoundage(),
                     jsdBorrowCashDo.getOverdueAmount(),jsdBorrowCashDo.getPoundageAmount(),jsdBorrowCashDo.getInterestAmount()).subtract(jsdBorrowCashDo.getRepayAmount());// 当前剩余还款
 

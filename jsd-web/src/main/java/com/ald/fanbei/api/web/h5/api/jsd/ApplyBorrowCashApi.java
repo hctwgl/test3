@@ -94,8 +94,8 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
             TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
 	    	trialBo.req = new TrialBeforeBorrowReq(cashReq.openId, cashReq.amount, cashReq.term, cashReq.unit);
 			trialBo.userId = context.getUserId();
-			trialBo.layerInterestRate = jsdBorrowCashService.getRiskDailyRate(cashReq.openId);
-
+			trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(cashReq.openId);
+        	
         	if("Y".equals(cashReq.isTying) && BorrowVersionType.BEHEAD.name().equals(cashReq.tyingType)){
         		// 砍头模式
         		beheadBorrowCashService.applyBeheadBorrowCash(cashReq, mainCard, trialBo);
@@ -105,18 +105,18 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         		// 赊销模式
         		jsdBorrowCashService.resolve(trialBo);
         		final JsdBorrowCashDo cashDo = buildBorrowCashDo(cashReq, mainCard, trialBo); 				// 主借款
-        		final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(cashReq, context.getUserId());	// 搭售商品订单
+        		final JsdBorrowLegalOrderDo orderDo = buildBorrowLegalOrder(cashReq, context.getUserId(), trialBo);	// 搭售商品订单
         		final JsdBorrowLegalOrderCashDo orderCashDo = buildBorrowLegalOrderCashDo(cashReq, trialBo);// 订单借款
-
+        		
         		transactionTemplate.execute(new TransactionCallback<Long>() {
         			@Override
         			public Long doInTransaction(TransactionStatus arg0) {
         				jsdBorrowCashService.saveRecord(cashDo);
-
+        				
         				Long borrowId = cashDo.getRid();
         				orderDo.setBorrowId(borrowId);
         				jsdBorrowLegalOrderService.saveRecord(orderDo);
-
+        				
         				Long orderId = orderDo.getRid();
         				orderCashDo.setBorrowId(borrowId);
         				orderCashDo.setBorrowLegalOrderId(orderId);
@@ -124,15 +124,15 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         				return borrowId;
         			}
         		});
-
+        		
         		new Thread() { public void run() {
         			try {
-        				UpsDelegatePayRespBo upsResult = upsUtil.jsdDelegatePay(cashDo.getArrivalAmount(), context.getRealName(),
+        				UpsDelegatePayRespBo upsResult = upsUtil.jsdDelegatePay(cashDo.getArrivalAmount(), context.getRealName(), 
         						mainCard.getBankCardNumber(), context.getUserId().toString(), mainCard.getMobile(),
         						mainCard.getBankName(), mainCard.getBankCode(), Constants.DEFAULT_BORROW_PURPOSE, "02",
         						PayOrderSource.JSD_LOAN.getCode(), cashDo.getRid().toString(), context.getIdNumber());
         				cashDo.setTradeNoUps(upsResult.getOrderNo());
-
+        				
         				if (!upsResult.isSuccess()) {
         					jsdBorrowCashService.dealBorrowFail(cashDo, orderDo, orderCashDo, "UPS打款实时反馈失败");
         				}else {
@@ -148,7 +148,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         	else {
         		throw new BizException("applyBorrowCashApi type error, isTying="+cashReq.isTying+", tyingType"+cashReq.tyingType);
         	}
-
+	    	
             
             return resp;
         } finally {
@@ -176,8 +176,8 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         afBorrowCashDo.setPoundageAmount(new BigDecimal(trialResp.serviceAmount));
         afBorrowCashDo.setPoundageRate(new BigDecimal(trialResp.serviceRate));
         afBorrowCashDo.setInterestRate(new BigDecimal(trialResp.interestRate));
-        afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueRate));
-        afBorrowCashDo.setRiskDailyRate(trialBo.layerInterestRate);
+        afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueRate).multiply(new BigDecimal(360)));
+        afBorrowCashDo.setRiskDailyRate(trialBo.riskDailyRate);
         afBorrowCashDo.setProductNo(trialReq.productNo);
         afBorrowCashDo.setTradeNoXgxy(cashReq.borrowNo);
         afBorrowCashDo.setBorrowNo(generatorClusterNo.getLoanNo(new Date()));
@@ -193,12 +193,13 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
      * 构建 商品订单(赊销)
      * @return
      */
-    private JsdBorrowLegalOrderDo buildBorrowLegalOrder(ApplyBorrowCashReq cashReq, Long userId) {
+    private JsdBorrowLegalOrderDo buildBorrowLegalOrder(ApplyBorrowCashReq cashReq, Long userId, TrialBeforeBorrowBo trialBo) {
     	JsdGoodsInfoBo goodsBo = cashReq.goodsInfo;
+    	TrialBeforeBorrowResp resp = trialBo.resp;
     	
         JsdBorrowLegalOrderDo afBorrowLegalOrderDo = new JsdBorrowLegalOrderDo();
         afBorrowLegalOrderDo.setUserId(userId);
-        afBorrowLegalOrderDo.setPriceAmount(new BigDecimal(goodsBo.goodsPrice));
+        afBorrowLegalOrderDo.setPriceAmount(new BigDecimal(resp.totalDiffFee));
         afBorrowLegalOrderDo.setGoodsName(goodsBo.goodsName);
         afBorrowLegalOrderDo.setStatus(JsdBorrowLegalOrderStatus.UNPAID.getCode());
         String orderCashNo = generatorClusterNo.getOrderNo(new Date());

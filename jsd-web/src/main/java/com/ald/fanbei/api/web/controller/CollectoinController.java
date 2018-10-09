@@ -87,5 +87,4 @@ public class CollectoinController {
         return cuiShouUtils.collectUpdateStatus(data,sign);
     }
 
-
 }

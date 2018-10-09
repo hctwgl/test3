@@ -195,7 +195,7 @@ public class LoanOverDueJob {
             //--------------------start  催收上报接口需要参数---------------------------
             Long borrowId = borrowCashDo.getRid();
             //搭售商品信息
-            JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastOrderByBorrowIdAndStatus(borrowId);
+            JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastValidOrderByBorrowId(borrowId);
             Map<String, String> buildData = new HashMap<String, String>();
             param.put("borrowNo",borrowCashDo.getTradeNoXgxy());
             HashMap<String,String> map = xgxyUtil.borrowNoticeRequest(param);
@@ -240,7 +240,7 @@ public class LoanOverDueJob {
             BigDecimal currentAmount = BigDecimal.ZERO;//应还本金
             BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
             //应还本金
-            currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidInterest()).subtract(borrowCashDo.getRepayAmount());
+            currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidOverdue()).subtract(borrowCashDo.getRepayAmount());
             //催收金额
             BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
             //应还金额
@@ -255,7 +255,7 @@ public class LoanOverDueJob {
             BigDecimal borrowAmount = borrowCashDo.getAmount();
             if(orderCashDo != null){
                 //应还本金
-                currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
+                currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());
                 //催收金额
                 collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
                 //应还金额
@@ -288,7 +288,7 @@ public class LoanOverDueJob {
             buildData.put("longitude",map.get("longitude"));//借款经度
             buildData.put("latitude",map.get("latitude"));//借款纬度
             buildData.put("borrowTime",DateUtil.formatDateTime(borrowCashDo.getGmtCreate()));//借款时间
-            buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(borrowCashDo.getGmtPlanRepayment(),new Date())));//逾期天数
+            buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(borrowCashDo.getGmtPlanRepayment()),DateUtil.formatDateToYYYYMMdd(new Date()))));//逾期天数
             buildData.put("borrowAmount",String.valueOf(borrowAmount));//借款金额(委案金额)
             buildData.put("accountAmount",String.valueOf(borrowCashDo.getAmount()));//到账金额
             buildData.put("borrowCash",String.valueOf(borrowCash));//借款费用(手续费加利息)

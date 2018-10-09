@@ -44,4 +44,11 @@ public interface JsdBorrowLegalOrderService extends ParentService<JsdBorrowLegal
      * @return
      */
     List<JsdBorrowLegalOrderDo> getBorrowOrdersByBorrowId(Long borrowId);
+    
+    /**
+     * 根据借款id获取最新一笔有效订单（状态不为 关闭和待支付的）
+     * @param borrowId
+     * @return
+     */
+    JsdBorrowLegalOrderDo getLastValidOrderByBorrowId(Long borrowId);
 }

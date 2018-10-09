@@ -25,6 +25,6 @@ public interface JsdBorrowLegalOrderDao extends BaseDao<JsdBorrowLegalOrderDo, L
 
     List<JsdBorrowLegalOrderDo> getBorrowOrdersByBorrowId(@Param("borrowId")Long borrowId);
 
-    JsdBorrowLegalOrderDo getLastOrderByBorrowIdAndStatus(@Param("borrowId") Long borrowId);
+    JsdBorrowLegalOrderDo getLastValidOrderByBorrowId(@Param("borrowId") Long borrowId);
 
 }
