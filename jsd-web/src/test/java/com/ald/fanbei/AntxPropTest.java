@@ -9,7 +9,7 @@ public class AntxPropTest {
         String decryptStr = AesUtil.decryptFromBase64("OZAtwQcAyH5+BVcIbdZW6euzZCntyUxwH743Udhr9+LU+d0IhGa6JAh4bXHXkgeqEAD/gApVuKDhPmIPoVSEBQ==", "testC1b6x@6aH$2dlw");
         System.out.println(decryptStr);
        
-        String dbUrl = "jdbc:mysql://192.168.112.31:3306/jsd_loan";
+        String dbUrl = "jdbc:mysql://192.168.112.31:3306/dsed_loan";
         String dbuser = "jsd_user";
         String dbpwd = "jsd_Password";
         System.out.println(AesUtil.encryptToBase64(dbUrl, "testC1b6x@6aH$2dlw"));

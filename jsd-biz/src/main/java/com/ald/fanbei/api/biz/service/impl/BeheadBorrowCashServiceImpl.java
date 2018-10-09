@@ -221,7 +221,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         resp.interestAmount = interestAmount.toString();
         resp.serviceRate = borrowRateInfo.serviceRate.setScale(4, RoundingMode.HALF_UP).toString();
         resp.serviceAmount = serviceAmount.toString();
-        resp.overdueRate = borrowOverdueRate.setScale(2, RoundingMode.HALF_UP).toString();
+        resp.overdueRate = borrowOverdueRate.divide(new BigDecimal(360)).setScale(4, RoundingMode.HALF_UP).toString();
         
         //商品价格
         resp.totalDiffFee = actualOrderAmount.toPlainString();
@@ -256,7 +256,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         afBorrowCashDo.setPoundageAmount(new BigDecimal(trialResp.serviceAmount));
         afBorrowCashDo.setPoundageRate(new BigDecimal(trialResp.serviceRate));
         afBorrowCashDo.setInterestRate(new BigDecimal(trialResp.interestRate));
-        afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueRate));
+        afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueRate).multiply(new BigDecimal(360)));
         afBorrowCashDo.setRiskDailyRate(trialBo.riskDailyRate);
         afBorrowCashDo.setProductNo(trialReq.productNo);
         afBorrowCashDo.setTradeNoXgxy(cashReq.borrowNo);
