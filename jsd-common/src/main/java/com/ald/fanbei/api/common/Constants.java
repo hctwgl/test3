@@ -81,6 +81,7 @@ public class Constants {
 	public static final String CONFKEY_UPS_URL = "fbapi.ups.url";
 	public static final String CONFKEY_UPS_PREFFIX = "jsd.ups.preffix";
 	public static final String CONFKEY_UPS_MERNO = "jsd.ups.merno";
+	public static final String CONFKEY_UPS_PRIVATE_KEY = "jsd.ups.private.key";
 
 	public static final String CONFKEY_XGXY_HOST = "jsd.xgxy.host";
 	public static final String CONFKEY_XGXY_AES_PASSWORD = "jsd.xgxy.aes.password";
@@ -100,7 +101,5 @@ public class Constants {
 	public static final String JSD_RATE_INFO = "JSD_RATE_INFO";
 	public static final String JSD_CONFIG_REVIEW_MODE = "JSD_CONFIG_REVIEW_MODE";
 
-	//ups 私钥
-	public static final String UPS_PRIVATE_KEY = "jsdups.private.key";
 
 }
