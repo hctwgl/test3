@@ -101,6 +101,6 @@ public class Constants {
 	public static final String JSD_CONFIG_REVIEW_MODE = "JSD_CONFIG_REVIEW_MODE";
 
 	//ups 私钥
-	public static final String UPS_PRIVATE_KEY = "ups_private_key";
+	public static final String UPS_PRIVATE_KEY = "jsdups.private.key";
 
 }
