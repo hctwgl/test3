@@ -100,4 +100,7 @@ public class Constants {
 	public static final String JSD_RATE_INFO = "JSD_RATE_INFO";
 	public static final String JSD_CONFIG_REVIEW_MODE = "JSD_CONFIG_REVIEW_MODE";
 
+	//ups 私钥
+	public static final String UPS_PRIVATE_KEY = "ups_private_key";
+
 }

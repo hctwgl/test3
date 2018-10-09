@@ -49,6 +49,7 @@
 		<property name="jsd.collection.url" defaultValue="http://192.168.106.92:8280" description="催收通知主机IP" />
 		<property name="jsd.collection.token" defaultValue="eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo" description="催收token" />
 		<property name="jsd.collection.companyId" defaultValue="6" description="催收商户" />
+		<property name="ups_private_key" defaultValue="MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBANdCkyrL6Gv+HWUcfzAhe7spYyY+6Zb0/fSnrWhQNgkY/xnuGDpiWSoApiVnmx+4IusGXIdrI6TZYYKe9er5Qv5ItmQR3mnHkKF8adYuGr7ia92/RjHTnCKMtwNS2u0ebZqMT5kIZR/2NXCV/t5BoiyofX84dDfYpTu/WOxBp3QFAgMBAAECgYEAjO42Yc+MRJ/jaN5mWwGg+2FWW6TW1BFj7viUrHXPWtd1tOlQDXF0RO6V2GljgznQCqVokPRRKs1zbMxb3tIAzD0icpuGWKs6LZDFWtFTb3VCScSONWczQun0Lx7QxjTlySUBZn3ZIQZblGQnvyO5f/nykDAsJUVD2oUoK5Y44kECQQDwIqMebu1NyhU11ltQbIuLdbg/ANqeF/FV6KLAo8ra09ouG2fU+MQ2koGE6LcFtbtUSsvSPPXTa7MzMujRmklVAkEA5Xs6N8+FJ0LjiNPP4gpXQNPkrVjbYtVH4pV/yY3loSvr/VF/A1ktXOm1bVBv63mUWVT3B6iRqEkWzFGin+q/8QJAfvRQ+M38d5vXCteA/0vjmp9qASUab2qJFLohEWeG35oRRz8F7fp3AcMC5pmB6Wri1vWUPFouPNA7tV286NOA4QJAGrhpg/we5f5s3g7Dwu8vT7Ych260ROLOtvxvX7mtBkJF/T4TCwHEPXBdFrhp/8ItWuWAyhx/sVepVuseg35jEQJBAN2l5rMCwLL391pszUr/ZRc8/XFYoLPB1jii9FQGaTtErB5UGTFWGYfAa9WOxJ+OGBc1jGvkHkbvKvLYcZ6o1Ac=" description="ups 私钥 测试环境" />
 	</group>
 
 	<script>
