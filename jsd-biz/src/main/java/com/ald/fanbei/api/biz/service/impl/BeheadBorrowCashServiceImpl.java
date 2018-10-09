@@ -202,7 +202,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         
         BigDecimal interestAmount = borrowinterestLeft.multiply(titularBorrowAmount).setScale(2, RoundingMode.HALF_UP);
         BigDecimal serviceAmount = borrowServiceRateLeft.multiply(titularBorrowAmount).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal totalProfit = bo.riskDailyRate.multiply(titularBorrowAmount).multiply(borrowDay);
+        BigDecimal totalProfit = bo.layerInterestRate.multiply(titularBorrowAmount).multiply(borrowDay);
         
         BigDecimal finalDiffProfit = totalProfit.subtract(interestAmount).subtract(serviceAmount);
         logger.info("resolve borrow amount, openId=" + req.openId + ", actualDiffProfit=" + finalDiffProfit);
@@ -257,7 +257,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         afBorrowCashDo.setPoundageRate(new BigDecimal(trialResp.serviceRate));
         afBorrowCashDo.setInterestRate(new BigDecimal(trialResp.interestRate));
         afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueRate).multiply(new BigDecimal(360)));
-        afBorrowCashDo.setRiskDailyRate(trialBo.riskDailyRate);
+        afBorrowCashDo.setRiskDailyRate(trialBo.layerInterestRate);
         afBorrowCashDo.setProductNo(trialReq.productNo);
         afBorrowCashDo.setTradeNoXgxy(cashReq.borrowNo);
         afBorrowCashDo.setBorrowNo(generatorClusterNo.getLoanNo(new Date()));

@@ -94,7 +94,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
             TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
 	    	trialBo.req = new TrialBeforeBorrowReq(cashReq.openId, cashReq.amount, cashReq.term, cashReq.unit);
 			trialBo.userId = context.getUserId();
-			trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(cashReq.openId);
+			trialBo.layerInterestRate = jsdBorrowCashService.getRiskDailyRate(cashReq.openId);
 
         	if("Y".equals(cashReq.isTying) && BorrowVersionType.BEHEAD.name().equals(cashReq.tyingType)){
         		// 砍头模式
@@ -177,7 +177,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         afBorrowCashDo.setPoundageRate(new BigDecimal(trialResp.serviceRate));
         afBorrowCashDo.setInterestRate(new BigDecimal(trialResp.interestRate));
         afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueRate));
-        afBorrowCashDo.setRiskDailyRate(trialBo.riskDailyRate);
+        afBorrowCashDo.setRiskDailyRate(trialBo.layerInterestRate);
         afBorrowCashDo.setProductNo(trialReq.productNo);
         afBorrowCashDo.setTradeNoXgxy(cashReq.borrowNo);
         afBorrowCashDo.setBorrowNo(generatorClusterNo.getLoanNo(new Date()));
