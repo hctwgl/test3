@@ -342,7 +342,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
         BigDecimal titularInterestAmount = borrowinterestLeft.multiply(titularBorrowAmount);
         BigDecimal titularServiceAmount = borrowISLeft.multiply(titularBorrowAmount).subtract(titularInterestAmount);
-        BigDecimal totalProfit = bo.riskDailyRate.multiply(titularBorrowAmount).multiply(borrowDay);
+        BigDecimal totalProfit = bo.layerInterestRate.multiply(titularBorrowAmount).multiply(borrowDay);
 
         BigDecimal finalDiffProfit = totalProfit.subtract(titularInterestAmount).subtract(titularServiceAmount);
         logger.info("resolve borrow amount, openId=" + req.openId + ", actualDiffProfit=" + finalDiffProfit);
