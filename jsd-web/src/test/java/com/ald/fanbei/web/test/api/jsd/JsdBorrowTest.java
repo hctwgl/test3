@@ -19,12 +19,12 @@ public class JsdBorrowTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-//	String urlBase = "http://localhost:8078";
-    String urlBase = "http://192.168.106.191:8280";
+	String urlBase = "http://localhost:8078";
+//    String urlBase = "http://192.168.106.191:8280";
     
     String userName = "13165995223";
     
-    private static final String AES_KEY = "baac7fc54a2a7e75";
+    private static final String AES_KEY = "9c5dd35d58f8501f";
 
     /**
      * 自动注入登陆令牌，当needLogin为true时，不得注释此方法
@@ -86,17 +86,17 @@ public class JsdBorrowTest extends BaseTest {
     public void pushBorrow() {
         String url = urlBase + "/third/eca/v1/pushBorrow";
         JSONObject params = new JSONObject();
-        params.put("openId", "BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
+        params.put("openId", "C3247B73E5DB8508A19F60EE2E18EEE3");
         params.put("productNo", "2");
-        params.put("borrowNo", "xgxy20231412309067676867");
+        params.put("borrowNo", "xgxy20231412309023345");
         params.put("amount", "5000");
-        params.put("term", "10");
+        params.put("term", "7");
         params.put("unit", "DAY");
         params.put("loanRemark", "买车");
         params.put("repayRemark", "工资");
-        params.put("bankNo", "6212261202028480466");
+        params.put("bankNo", "6217002870026156370");
         params.put("isTying", "Y");
-        params.put("tyingType", "SELL");
+        params.put("tyingType", "BEHEAD");
         
         JSONObject goodsInfo = new JSONObject();
         goodsInfo.put("goodsName", "胸罩");

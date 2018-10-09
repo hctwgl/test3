@@ -84,7 +84,7 @@ public class UpsUtil extends AbstractThird {
 	private static String TRADE_STATUE_DEAL = "20";
 
 	private static String DEFAULT_CERT_TYPE = "01";  //默认证件类型：身份证
-	private static String PRIVATE_KEY = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALAr3ePl3Y2tQhZmQHgxuAptabWihDHZtn449lyTd3VHcH/LajNx1xgpKnEbN1R295OTZ5kzs5YPIEZsSYgqQYkhHIbDHLoJ9GoLR8vbsgxY0o0s7lSOVM3j/SF8jUz/VD6LtnkRnrmY0e6ktTl6bNkBfqeV7lAaiqcx584T2RiRAgMBAAECgYAmyMGE1qo78pTGEaTH0UpPIV9QWYL45pFCoI+8Ocrmyt99gu7SfJF6BDYPyIoZ0kcW+jCojbVPp+zXFCfsDkF27XrMgCfCPpBTlc3KFjAZZUweGkut9aWBYOS7rFkn4HrfEtXN04Y1QYqcnVGYp8BbRImnuf8kr2WP2odQ+f3A8QJBANzqGPxyRP5pREPuI9duBrA7Iv/SMB4DOCRo/O+ICCPlcvLg90RgPfnBZ+y4kBHDRngilZ6b+F046es6D1PEHo8CQQDMJpy1M6027vf2mAsqn5W1jX05o/r3iC46HJ0vmvJ/1CcfPdNlsZZh9YSpZfNo7acsgqzDvod1mLnL+x1VkubfAkB5Da5zZwp3fqdxseTh/+CaYU1kcYD8cTcqfH1dpGURhoHepXfZeAN+AIU6KkiH80GCQzFJoJ4QN0e3JjGP7T/xAkEAoXfsvFkaKHfMAetx8Y11QLqfEAcFyeCZB3d4T53TLY2kP86LtERIuEQTYFR1uEk3zzmv4caBp15bnd2I7xUYqwJAFtIEAmh3v9tIs0trMeGlkDG8RibSTqSVu6/iuCT1u7bFObKRzGZAPKtO9CDSVI4u8VC5L69jv5uDoXCLCDalOw==";
+	private static String PRIVATE_KEY = ConfigProperties.get(Constants.CONFKEY_UPS_PRIVATE_KEY);
 	
 	//orderNo规则  4位业务码  + 4位接口码  + 11位身份标识（手机号或者身份证后11位） + 13位时间戳
     
@@ -179,7 +179,7 @@ public class UpsUtil extends AbstractThird {
 		final JsdUserDo userDo = jsdUserDao.getById(cashDo.getUserId());
 		// 当天借款金额存入缓存
 		long currAllamount = bizCacheUtil.incr(Constants.CACHEKEY_BORROW_CURRDAY_ALLAMOUNT, cashDo.getAmount().longValue(), DateUtil.getTodayLast());
-		logger.info("currday borrow allamount cache : borrowNo="+cashDo.getBorrowNo()+", currAllamount+"+cashDo.getAmount().longValue()+", currAllamount="+currAllamount);
+		logger.info("currday borrow allamount cache : borrowNo="+cashDo.getBorrowNo()+", incrAllamount="+cashDo.getAmount().longValue()+", currAllamount="+ currAllamount);
 		
 		new Thread() { public void run() {
         	try {
