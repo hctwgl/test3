@@ -19,8 +19,8 @@ public class JsdBorrowTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-//	String urlBase = "http://localhost:8078";
-    String urlBase = "http://192.168.106.191:8280";
+	String urlBase = "http://localhost:8078";
+//    String urlBase = "http://192.168.106.191:8280";
     
     String userName = "13165995223";
     
@@ -86,15 +86,15 @@ public class JsdBorrowTest extends BaseTest {
     public void pushBorrow() {
         String url = urlBase + "/third/eca/v1/pushBorrow";
         JSONObject params = new JSONObject();
-        params.put("openId", "BAEBC00F5D5A30EE8B7577CFD2ECE8B6");
+        params.put("openId", "E340B1DE7022073D4185F47B75E3F05E");
         params.put("productNo", "2");
-        params.put("borrowNo", "xgxy20231412309067676867");
-        params.put("amount", "5000");
-        params.put("term", "10");
+        params.put("borrowNo", "xgxy20231412309067676869");
+        params.put("amount", "2000");
+        params.put("term", "7");
         params.put("unit", "DAY");
         params.put("loanRemark", "买车");
         params.put("repayRemark", "工资");
-        params.put("bankNo", "6212261202028480466");
+        params.put("bankNo", "6214855713637987");
         params.put("isTying", "Y");
         params.put("tyingType", "SELL");
         
