@@ -42,6 +42,11 @@ public class CollectoinController {
     @RequestMapping(value = {"/collectImport"}, method = RequestMethod.POST)
     public String collectImport(String data){
     	logger.info(" -------------- collectImport request from cuishou, start, request data=" + data);
+    	try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			logger.error(e.getMessage(), e);
+		}
         return cuiShouUtils.collectImport(data);
     }
 
