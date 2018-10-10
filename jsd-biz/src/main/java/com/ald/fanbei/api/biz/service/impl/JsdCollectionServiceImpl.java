@@ -20,6 +20,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.JsdNoticeType;
 import com.ald.fanbei.api.common.enums.JsdRepayCollectionType;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
+import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -94,6 +95,8 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 			noticeRecordDo.setRid(noticeRecordDo.getRid());
 			noticeRecordDo.setGmtModified(new Date());
 			jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
+		}else {
+			throw new BizException("nofityRepayment error!");
 		}
 	}
 }
