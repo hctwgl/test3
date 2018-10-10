@@ -24,7 +24,7 @@
                 OR u.real_name LIKE '%${searchContent}%')
         </if>
         GROUP BY bc.trade_no_xgxy
-        ORDER BY id DESC) s
+        ORDER BY cb.id DESC) s
     </select>
     
     <select id="countTotalAmtBetweenGmtCreate" resultType="java.lang.Long">
