@@ -111,7 +111,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
 			bo.tradeNo = tradeNo;
-            bo.repayType=JsdRepayType.INITIATIVE.getName();
+            bo.repayType=JsdRepayType.INITIATIVE.name();
             generateRepayRecords(bo);
 			return doRepay(bo,bankPayType);
 		}catch (Exception e) {
@@ -434,7 +434,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		map.put("borrowNo",borrowCashDo.getTradeNoXgxy());
 		map.put("period","1");
 		map.put("amount", String.valueOf(actualAmount));
-		map.put("type",type.getName());
+		map.put("type",type.getXgxyCode());
 		map.put("reason",errorMsg);
 		Date now=new Date();
 		map.put("timestamp", String.valueOf(now.getTime()));
@@ -693,7 +693,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		bo.borrowCashDo = jsdBorrowCashDo;
 		bo.tradeNo = generatorClusterNo.getOfflineRepaymentBorrowCashNo(new Date());
 		bo.tradeNoUps = outTradeNo;
-		bo.repayType = type.getName();
+		bo.repayType = type.name();
 		bo.cardName = channel;
 		bo.bankNo = "";
 		bo.name = type.getCode();
