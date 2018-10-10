@@ -5,23 +5,16 @@
 		<property name="fbapi.check.sign.switch" defaultValue="0" description="检查签名开关，：打开 （检查签名） 0：关闭（不检查签名）" />
 		<property name="fbapi.inveloment.type" defaultValue="test" description="当前环境" />
 		<property name="fbapi.sync.lock.try.times" defaultValue="1" description="同步锁重试次数" /> 
+		
+		<!-- log4j -->
+		<property name="fbapi.log.level" defaultValue="info" description="log4j level" />
+		<property name="fbapi.log.path.root" defaultValue="/home/ald/logs/fanbei" description="log dir" />
+		
 		<!-- db -->
 		<property name="fbapi.db.url" defaultValue="OZAtwQcAyH5+BVcIbdZW6euzZCntyUxwH743Udhr9+LU+d0IhGa6JAh4bXHXkgeqEAD/gApVuKDhPmIPoVSEBQ==" description="dburl" />
 		<property name="fbapi.db.username" defaultValue="BGxKtjbfzgi+lr5EB+LU6Q==" description="db username" />
 		<property name="fbapi.db.password" defaultValue="cJiZKo2M0HcKZdjgGmv/vQ==" description="db password" />
 
-		<property name="fbapi.esign.project.id" defaultValue="1111563517"/>
-		<property name="fbapi.esign.project.secret" defaultValue="95439b0863c241c63a861b87d1e647b7"/>
-		<property name="fbapi.esign.apis.url" defaultValue="http://121.40.164.61:8080/tgmonitor/rest/app!getAPIInfo2"/>
-		<property name="fbapi.esign.http.type" defaultValue="https"/>
-		<property name="fbapi.esign.retry" defaultValue="5"/>
-		<property name="fbapi.esign.algorithm" defaultValue="HMAC-SHA256"/>
-		<property name="fbapi.esign.eviUrl" defaultValue="http://smlcunzheng.tsign.cn:8083/evi-service/evidence/v1/preservation/original/url"/>
-
-		<!-- log4j -->
-		<property name="fbapi.log.level" defaultValue="info" description="log4j level" />
-		<property name="fbapi.log.path.root" defaultValue="/home/ald/logs/fanbei" description="log dir" />
-		
 		<!-- redis -->
 		<property name="fbapi.redis.hostname" defaultValue="IJgdKMamAcP5btliO3edNq7Dc1rJrWG6qZ7zI9RsgCA=" description="redis host" />
 		<property name="fbapi.redis.port" defaultValue="EjxHo0U8fOjuwprOOe5jjg==" description="redis port" />
@@ -32,6 +25,13 @@
 		<property name="fbfile.oss.access.secret" defaultValue="k7QDjE5/1emiZgIjksPg/ULP8DfMCCekqoH9+ZOZGuE=" description="oss access secret" />
 		<property name="fbfile.oss.url.pref" defaultValue="http://51fanbei.oss-cn-hangzhou.aliyuncs.com/" description="oss url" />
 		
+		<property name="fbapi.esign.project.id" defaultValue="1111563517"/>
+		<property name="fbapi.esign.project.secret" defaultValue="95439b0863c241c63a861b87d1e647b7"/>
+		<property name="fbapi.esign.apis.url" defaultValue="http://121.40.164.61:8080/tgmonitor/rest/app!getAPIInfo2"/>
+		<property name="fbapi.esign.http.type" defaultValue="https"/>
+		<property name="fbapi.esign.retry" defaultValue="5"/>
+		<property name="fbapi.esign.algorithm" defaultValue="HMAC-SHA256"/>
+		<property name="fbapi.esign.eviUrl" defaultValue="http://smlcunzheng.tsign.cn:8083/evi-service/evidence/v1/preservation/original/url"/>
 		
 		<property name="fbapi.notify.host" defaultValue="http://192.168.112.40:8080" description="异步回调地址" />
 		<property name="security.overdue.task" defaultValue="off" description="白名单逾期定时器开关" />
