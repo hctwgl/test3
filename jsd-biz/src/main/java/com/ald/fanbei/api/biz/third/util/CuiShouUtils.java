@@ -408,7 +408,6 @@ public class CuiShouUtils {
      */
     public String collectImport(String data) {
         try {
-            logger.info("collectImport  start  time =" +new Date());
             if(StringUtil.isEmpty(data)){
                 thirdLog.error("data is null");
                 return "false";
@@ -418,7 +417,6 @@ public class CuiShouUtils {
             JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(data));
             JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getById(jsdBorrowLegalOrderDo.getBorrowId());
             collectionPush(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,jsdBorrowLegalOrderDo);
-            logger.info("collectImport  End  time =" +new Date());
             return "success";
         } catch (Exception e) {
             thirdLog.error("collectImport error = " + e.getMessage(), e);
