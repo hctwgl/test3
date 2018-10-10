@@ -84,11 +84,11 @@ public class UpsUtil extends AbstractThird {
 	private static String TRADE_STATUE_DEAL = "20";
 
 	private static String DEFAULT_CERT_TYPE = "01";  //默认证件类型：身份证
-	private static String PRIVATE_KEY = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBANXSVyvH4C55YKzvTUCN0fvrpKjIC5lBzDe6QlHCeMZaMmnhJpG/O+aao0q7vwnV08nk14woZEEVHbNHCHcfP+gEIQ52kQvWg0L7DUS4JU73pXRQ6MyLREGHKT6jgo/i1SUhBaaWOGI9w5N2aBxj1DErEzI7TA1h/M3Ban6J5GZrAgMBAAECgYAHPIkquCcEK6Nz9t1cc/BJYF5AQBT0aN+qeylHbxd7Tw4puy78+8XhNhaUrun2QUBbst0Ap1VNRpOsv5ivv2UAO1wHqRS8i2kczkZQj8vcCZsRh3jX4cZru6NoBb6QTTFRS6DRh06iFm0NgBPfzl9PSc3VwGpdj9ZhMO+oTYPBwQJBAPApB74XhZG7DZVpCVD2rGmE0pAlO85+Dxr2Vle+CAgGdtw4QBq89cA/0TvqHPC0xZaYWK0N3OOlRmhO/zRZSXECQQDj7JjxrUaKTdbS7gD88qLZBbk8c07ghO0qDCpp8J2U6D9baVBOrkcz+fTh7B8LzyCo5RY8vk61v/rYqcgk1F+bAkEAvYkELUfPCGZBoCsXSSiEhXpn248nFh5yuWq0VecJ25uObtqN7Qw4PxOeg9SOJoHkdqehRGJuc9LaMDQ4QQ4+YQJAJaIaOsVWgV2K2/cKWLmjY9wLEs0jN/Uax7eMhUOCcWTLmUdRSDyEazOZWHhJRATmKpzwyATQMDhLrdySvGoIgwJBALusECkz5zT4lIujwUNO30LlO8PKPCSKiiQJk4pN60pv2AFX4s2xVdZlXsFJh6btIJ9CGrMvEmogZTIGWq1xOFs=";
-
+	private static String PRIVATE_KEY = ConfigProperties.get(Constants.CONFKEY_UPS_PRIVATE_KEY);
+	
 	//orderNo规则  4位业务码  + 4位接口码  + 11位身份标识（手机号或者身份证后11位） + 13位时间戳
     
-	//调用ups接口使用（单位：
+	//调用ups接口使用（单位：分）
     public static final int KUAIJIE_EXPIRE_MINITES = 15;
     //存储redis使用（单位：秒）（数据缓存时间小于支付订单有效时间，防止订单支付失败（用户临界时间完成支付））
     public static final int KUAIJIE_EXPIRE_SECONDS = 14 * 60;
@@ -179,7 +179,7 @@ public class UpsUtil extends AbstractThird {
 		final JsdUserDo userDo = jsdUserDao.getById(cashDo.getUserId());
 		// 当天借款金额存入缓存
 		long currAllamount = bizCacheUtil.incr(Constants.CACHEKEY_BORROW_CURRDAY_ALLAMOUNT, cashDo.getAmount().longValue(), DateUtil.getTodayLast());
-		logger.info("currday borrow allamount cache : borrowNo="+cashDo.getBorrowNo()+", currAllamount+"+cashDo.getAmount().longValue()+", currAllamount="+currAllamount);
+		logger.info("currday borrow allamount cache : borrowNo="+cashDo.getBorrowNo()+", incrAllamount="+cashDo.getAmount().longValue()+", currAllamount="+ currAllamount);
 		
 		new Thread() { public void run() {
         	try {

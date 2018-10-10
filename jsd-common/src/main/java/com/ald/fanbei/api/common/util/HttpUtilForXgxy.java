@@ -183,10 +183,11 @@ public class HttpUtilForXgxy {
             
         	resp = httpclient.execute(httppost);
         	if(isRaw) {
-        		return EntityUtils.toByteArray(resp.getEntity());
+        		respObj = EntityUtils.toByteArray(resp.getEntity());
         	}else {
-        		return EntityUtils.toString(resp.getEntity());
+        		respObj = EntityUtils.toString(resp.getEntity());
         	}
+        	return respObj;
            
         } catch (Exception e) {
 			throw new IllegalStateException(e);
