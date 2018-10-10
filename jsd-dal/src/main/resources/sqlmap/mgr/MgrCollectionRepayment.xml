@@ -16,6 +16,7 @@
                 OR a.account LIKE '%${searchContent}%'
                 OR a.repay_way LIKE '${searchContent}%')
         </if>
+        ORDER BY id DESC
     </select>
     
     <select id="countTotalAmtBetweenGmtCreate" resultType="java.lang.Long">
