@@ -35,7 +35,7 @@ public class GetProfitApi implements JsdH5Handle {
 
 
     	TrialBeforeBorrowBo bo = new TrialBeforeBorrowBo();
-    	bo.layerInterestRate = jsdBorrowCashService.getRiskDailyRate(context.getOpenId());
+    	bo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(context.getOpenId());
     	bo.userId = context.getUserId();
     	
     	JSONObject dataMap = context.getDataMap();

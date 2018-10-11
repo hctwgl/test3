@@ -32,7 +32,7 @@ public class TrialBeforeBorrowApi implements JsdH5Handle {
     	
     	TrialBeforeBorrowBo bo = new TrialBeforeBorrowBo();
     	bo.req = (TrialBeforeBorrowReq)context.getParamEntity();
-    	bo.layerInterestRate = jsdBorrowCashService.getRiskDailyRate(context.getOpenId());
+    	bo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(context.getOpenId());
     	bo.userId = context.getUserId();
     	
     	if("Y".equals(bo.req.isTying) && BorrowVersionType.SELL.name().equals(bo.req.tyingType)){
