@@ -63,11 +63,11 @@ public class BorrowCashRepaymentDetailApi implements JsdH5Handle {
 
         bo.cashAmount=jsdBorrowCashService.calcuUnrepayAmount(cashDo, orderCashDo);
         bo.cashPoundage=bo.cashPoundage.add(cashDo.getOverdueAmount()).add(cashDo.getPoundageAmount()).add(cashDo.getInterestAmount());
-        bo.principle=bo.principle.add(cashDo.getAmount()).subtract(cashDo.getRepayPrinciple());
+        bo.principle=bo.principle.add(cashDo.getAmount()).add(cashDo.getSumRepaidPoundage().add(cashDo.getSumRepaidInterest()).add(cashDo.getSumRepaidOverdue())).subtract(cashDo.getRepayAmount());
         if(orderCashDo!=null){
             bo.orderAmount=
                     BigDecimalUtil.add(orderCashDo.getAmount(), orderCashDo.getInterestAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getOverdueAmount(),
-                            orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());;
+                            orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());
             bo.orderPoundage=bo.orderPoundage.add(orderCashDo.getInterestAmount()).add(orderCashDo.getOverdueAmount()).add(orderCashDo.getPoundageAmount());
         }
         bo.amount= bo.cashAmount;
