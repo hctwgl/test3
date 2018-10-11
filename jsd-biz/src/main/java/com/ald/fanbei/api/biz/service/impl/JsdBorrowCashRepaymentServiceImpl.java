@@ -672,13 +672,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		final RepayRequestBo bo = this.buildRepayRequestBo(userId, jsdBorrowCashDo, totalAmount, repaymentNo ,type,channel,repayTime,remark);
 
 		this.checkOfflineRepayment(repaymentNo);
-		
-		//防止并发事务BUG
-		transactionTemplate.execute(new TransactionCallback<Long>() { public Long doInTransaction(TransactionStatus status) {
-			generateRepayRecords(bo);
-			dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.repaymentDo, bo.orderRepaymentDo, type);
-			return 1L;
-		}});
+
+		generateRepayRecords(bo);
+		dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.repaymentDo, bo.orderRepaymentDo, type);
 	}
 	private RepayRequestBo buildRepayRequestBo(Long userId, JsdBorrowCashDo jsdBorrowCashDo, String repayAmount, 
 				String outTradeNo, JsdRepayType type, String channel, Date repayTime, String remark){
