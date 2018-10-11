@@ -126,8 +126,8 @@ public class LoanOverDueJob {
         Iterator<JsdBorrowCashDo> iterator = jsdBorrowCashDos.iterator();
         while (iterator.hasNext()){
             JsdBorrowCashDo jsdBorrowCashDo = iterator.next();
-            addUserContancts(jsdBorrowCashDo.getUserId());
             try {
+            	addUserContancts(jsdBorrowCashDo.getUserId());
                 logger.info("calcuOverdueRecords do borrowCashDueJob, borrowCashId="+jsdBorrowCashDo.getRid());
                 if(jsdBorrowCashOverdueLogService.getBorrowCashOverDueLogByNow(String.valueOf(jsdBorrowCashDo.getRid()))>0){
                     logger.warn("calcuOverdueRecords, ignore have dealed borrowCashId "+jsdBorrowCashDo.getRid());
