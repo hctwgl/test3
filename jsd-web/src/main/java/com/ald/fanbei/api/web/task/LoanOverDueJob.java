@@ -122,22 +122,26 @@ public class LoanOverDueJob {
      *
      * @param
      */
-   void dealOverdueRecords(List<JsdBorrowCashDo> jsdBorrowCashDos){
-        for(JsdBorrowCashDo jsdBorrowCashDo:jsdBorrowCashDos){
+    void dealOverdueRecords(List<JsdBorrowCashDo> jsdBorrowCashDos){
+        Iterator<JsdBorrowCashDo> iterator = jsdBorrowCashDos.iterator();
+        while (iterator.hasNext()){
+            JsdBorrowCashDo jsdBorrowCashDo = iterator.next();
             addUserContancts(jsdBorrowCashDo.getUserId());
             try {
                 logger.info("calcuOverdueRecords do borrowCashDueJob, borrowCashId="+jsdBorrowCashDo.getRid());
                 if(jsdBorrowCashOverdueLogService.getBorrowCashOverDueLogByNow(String.valueOf(jsdBorrowCashDo.getRid()))>0){
-                	logger.warn("calcuOverdueRecords, ignore have dealed borrowCashId "+jsdBorrowCashDo.getRid());
+                    logger.warn("calcuOverdueRecords, ignore have dealed borrowCashId "+jsdBorrowCashDo.getRid());
+                    iterator.remove();
                     continue;
                 }
                 BigDecimal currentAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getSumRepaidOverdue(),jsdBorrowCashDo.getSumRepaidInterest(), jsdBorrowCashDo.getSumRepaidPoundage()).subtract(jsdBorrowCashDo.getRepayAmount());// 当前本金
                 JsdBorrowCashRepaymentDo borrowCashRepaymentDo=jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(jsdBorrowCashDo.getRid());
                 if(borrowCashRepaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(borrowCashRepaymentDo.getStatus())) {
                     currentAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getOverdueAmount(), jsdBorrowCashDo.getInterestAmount(), jsdBorrowCashDo.getPoundageAmount(), jsdBorrowCashDo.getSumRepaidInterest(), jsdBorrowCashDo.getSumRepaidOverdue(), jsdBorrowCashDo.getSumRepaidPoundage())
-                    			.subtract(jsdBorrowCashDo.getRepayAmount()).subtract(borrowCashRepaymentDo.getRepaymentAmount());// 当前本金
+                            .subtract(jsdBorrowCashDo.getRepayAmount()).subtract(borrowCashRepaymentDo.getRepaymentAmount());// 当前本金
                 }
                 if (currentAmount.compareTo(BigDecimal.ZERO) == 0) {
+                    iterator.remove();
                     continue;
                 }
                 BigDecimal oldOverdueAmount = jsdBorrowCashDo.getOverdueAmount();//当前逾期
@@ -167,7 +171,7 @@ public class LoanOverDueJob {
             //TODO 通知催收逾期人员通讯录
             //collectionNoticeUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
         }
-   }
+    }
 
 
     void addUserContancts(Long userId){
