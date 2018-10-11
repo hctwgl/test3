@@ -1,7 +1,9 @@
 package com.ald.fanbei.api.web.controller;
 
 
-import com.ald.fanbei.api.biz.third.util.CuiShouUtils;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -9,8 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import com.ald.fanbei.api.biz.third.util.CuiShouUtils;
 
 
 @Controller
@@ -20,7 +21,7 @@ public class CollectoinController {
     @Resource
     CuiShouUtils cuiShouUtils;
 
-    protected static final Logger thirdLog = LoggerFactory.getLogger("DSED_THIRD");
+    private final Logger logger = LoggerFactory.getLogger(CollectoinController.class);
     /**
      * 线下还款
      * @param request
@@ -40,6 +41,7 @@ public class CollectoinController {
     @ResponseBody
     @RequestMapping(value = {"/collectImport"}, method = RequestMethod.POST)
     public String collectImport(String data){
+    	logger.info(" -------------- collectImport request from cuishou, start, request data=" + data);
         return cuiShouUtils.collectImport(data);
     }
 
