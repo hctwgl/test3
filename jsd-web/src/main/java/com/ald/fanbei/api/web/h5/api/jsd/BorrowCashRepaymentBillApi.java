@@ -52,8 +52,8 @@ public class BorrowCashRepaymentBillApi implements JsdH5Handle {
     }
     private Map<String,Object> buildSELLBorrowBill(JsdBorrowCashDo cashDo,JsdBorrowLegalOrderCashDo orderCashDo){
         Map<String, Object> map = new HashMap<String, Object>();
-        BigDecimal unrepayGoodsAmount = orderCashDo.getAmount().add(orderCashDo.getSumRepaidPoundage()).add(orderCashDo.getSumRepaidOverdue())
-        								.add(orderCashDo.getSumRepaidInterest()).subtract(orderCashDo.getRepaidAmount());
+        BigDecimal unrepayGoodsAmount =  BigDecimalUtil.add(orderCashDo.getAmount(), orderCashDo.getInterestAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getOverdueAmount(),
+                orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());
         BigDecimal unrepayGoodsSellAmount = orderCashDo.getOverdueAmount().add(orderCashDo.getInterestAmount()).add(orderCashDo.getPoundageAmount());
         map.put("unrepayGoodsAmount",unrepayGoodsAmount);
         map.put("unrepayGoodsSellAmount",unrepayGoodsSellAmount);

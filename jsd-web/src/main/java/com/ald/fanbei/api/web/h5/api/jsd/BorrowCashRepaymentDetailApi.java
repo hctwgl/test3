@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -64,7 +65,9 @@ public class BorrowCashRepaymentDetailApi implements JsdH5Handle {
         bo.cashPoundage=bo.cashPoundage.add(cashDo.getOverdueAmount()).add(cashDo.getPoundageAmount()).add(cashDo.getInterestAmount());
         bo.principle=bo.principle.add(cashDo.getAmount()).subtract(cashDo.getRepayPrinciple());
         if(orderCashDo!=null){
-            bo.orderAmount=bo.orderAmount.add(orderCashDo.getAmount()).add(orderCashDo.getSumRepaidInterest()).add(orderCashDo.getSumRepaidOverdue()).add(orderCashDo.getSumRepaidPoundage()).subtract(orderCashDo.getRepaidAmount());
+            bo.orderAmount=
+                    BigDecimalUtil.add(orderCashDo.getAmount(), orderCashDo.getInterestAmount(), orderCashDo.getPoundageAmount(), orderCashDo.getOverdueAmount(),
+                            orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());;
             bo.orderPoundage=bo.orderPoundage.add(orderCashDo.getInterestAmount()).add(orderCashDo.getOverdueAmount()).add(orderCashDo.getPoundageAmount());
         }
         bo.amount= bo.cashAmount;
