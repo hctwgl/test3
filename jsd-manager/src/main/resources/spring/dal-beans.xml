@@ -35,7 +35,7 @@
 	</bean>
 	<bean id="appTransactionTemplate"
 		  class="org.springframework.transaction.support.TransactionTemplate">
-		<property name="isolationLevelName" value="TRANSACTION_REPEATABLE_READ" />
+		<property name="isolationLevelName" value="ISOLATION_REPEATABLE_READ" />
 		<property name="transactionManager">
 			<ref bean="appTransactionManager" />
 		</property>
