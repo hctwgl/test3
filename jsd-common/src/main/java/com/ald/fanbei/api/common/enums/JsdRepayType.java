@@ -5,15 +5,15 @@ public enum JsdRepayType {
     INITIATIVE( "主动还款","INITIATIVE"),
     OFFLINE( "管理员线下还款","OFFLINE"),
     COLLECTION( "催收逾期还款","COLLECTION"),
-    REVIEW_COLLECTION( "管理员审批催收还款","REVIEW_COLLECTION");
+    REVIEW_COLLECTION( "管理员审批催收还款","COLLECTION");
 
     private String code;
-    private String name;
+    private String xgxyCode;
 
 
-    JsdRepayType(String code, String name) {
+    JsdRepayType(String code, String xgxyCode) {
         this.code = code;
-        this.name = name;
+        this.xgxyCode = xgxyCode;
     }
 
     public String getCode() {
@@ -24,11 +24,11 @@ public enum JsdRepayType {
         this.code = code;
     }
 
-    public String getName() {
-        return name;
+    public String getXgxyCode() {
+        return xgxyCode;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setXgxyCode(String xgxyCode) {
+        this.xgxyCode = xgxyCode;
     }
 }

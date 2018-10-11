@@ -249,18 +249,14 @@ public class CollectionMgrController extends BaseController{
     			public Integer doInTransaction(TransactionStatus status) {
     				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData, JsdRepayType.REVIEW_COLLECTION, operator);
     				jsdCollectionRepaymentService.updateById(collRepayDo);
-    				jsdCollectionService.nofityRepayment(collRepayDo.getRepayAmount(), collRepayDo.getTradeNo(), cashDo.getBorrowNo(), orderDo.getRid(), cashDo.getUserId(), JsdRepayType.REVIEW_COLLECTION, params.reviewStatus);
     				return 1;
     			}
     		});
+            jsdCollectionService.nofityRepayment(collRepayDo.getRepayAmount(), collRepayDo.getTradeNo(), cashDo.getBorrowNo(), orderDo.getRid(), cashDo.getUserId(), JsdRepayType.REVIEW_COLLECTION, params.reviewStatus);
+            
     	}else if(CommonReviewStatus.REFUSE.name().equals(params.reviewStatus)) {
-    		transactionTemplate.execute(new TransactionCallback<Integer>() {
-    			public Integer doInTransaction(TransactionStatus status) {
-    				jsdCollectionRepaymentService.updateById(collRepayDo);
-    	    		jsdCollectionService.nofityRepayment(collRepayDo.getRepayAmount(), collRepayDo.getTradeNo(), cashDo.getBorrowNo(), orderDo.getRid(), cashDo.getUserId(), JsdRepayType.REVIEW_COLLECTION, params.reviewStatus);
-    				return 1;
-    			}
-    		});
+    		jsdCollectionRepaymentService.updateById(collRepayDo);
+    		jsdCollectionService.nofityRepayment(collRepayDo.getRepayAmount(), collRepayDo.getTradeNo(), cashDo.getBorrowNo(), orderDo.getRid(), cashDo.getUserId(), JsdRepayType.REVIEW_COLLECTION, params.reviewStatus);
     	}
     	
     	return Resp.succ();

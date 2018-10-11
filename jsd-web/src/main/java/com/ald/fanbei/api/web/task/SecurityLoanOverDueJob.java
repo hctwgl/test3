@@ -46,13 +46,14 @@ public class SecurityLoanOverDueJob {
     @Scheduled(cron = "0 0/5 * * * ?")
     public void laonDueJob(){
         try{
+        	logger.info("--------------- securityLoanOverDueJob run start,time=" + new Date());
             JsdResourceDo resDo = jsdResourceService.getByTypeAngSecType(ResourceType.OVERDUE.getCode(), ResourceSecType.OVERDUE_JOB_INTERNAL_UIDS.getCode());
             String userIds = resDo.getValue();
             List<JsdBorrowCashDo> borrowCashDo = borrowCashService.getBorrowCashOverdueByUserIds(userIds.substring(0, userIds.length() - 1));
             loanOverDueJob.dealOverdueRecords(borrowCashDo);
             loanOverDueJob.collectionPush(borrowCashDo);
             loanOverDueJob.addCollectionBorrow(borrowCashDo);
-            logger.info("securityLoanOverDueJob run end,time=" + new Date());
+            logger.info("--------------- securityLoanOverDueJob run end,time=" + new Date());
         } catch (Exception e){
             logger.error("securityLoanOverDueJob  error, case=",e);
         }
