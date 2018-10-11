@@ -120,5 +120,7 @@ public class TrialBeforeBorrowBo {
 		 */
 		public BigDecimal sellOverdueRate;
 
+		public BigDecimal riskDailyRate;
+
 	}
 }
