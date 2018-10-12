@@ -108,7 +108,7 @@ public class LoanOverDueJob {
                         }).start();
 //                        collectionPush(borrowCashDos);
                         //增加已入催数据
-                        addCollectionBorrow(borrowCashDos);
+                        this.addCollectionBorrow(borrowCashDos);
                     }
                 }
                 logger.info("borrowCashDueJob run end,time=" + new Date());
@@ -141,6 +141,7 @@ public class LoanOverDueJob {
                             .subtract(jsdBorrowCashDo.getRepayAmount()).subtract(borrowCashRepaymentDo.getRepaymentAmount());// 当前本金
                 }
                 if (currentAmount.compareTo(BigDecimal.ZERO) == 0) {
+                	logger.warn("calcuOverdueRecords, overdue amount final is 0, ignore borrowCashId "+jsdBorrowCashDo.getRid());
                     iterator.remove();
                     continue;
                 }
@@ -167,27 +168,28 @@ public class LoanOverDueJob {
             } catch (Exception e) {
                 logger.error("LoanOverDueTask calcuOverdueRecords error, legal loanId="+jsdBorrowCashDo.getRid(),e);
             }
-
-            //TODO 通知催收逾期人员通讯录
-            //collectionNoticeUtil.noticeCollect(buildOverdueContactsDo(jsdBorrowCashDos));
         }
     }
 
 
     void addUserContancts(Long userId){
-        JsdUserDo userDo = jsdUserService.getById(userId);
-        String contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
-        if(StringUtils.isNotBlank(contacts)){
-            List<JsdUserContactsDo> userContactsDo= jsdUserContactsService.getUserContactsByUserId(userId);
-            JsdUserContactsDo contactsDo=new JsdUserContactsDo();
-            contactsDo.setUserId(userId);
-            contactsDo.setContactsMobile(contacts);
-            if(userContactsDo.size()==0){
-                jsdUserContactsService.saveRecord(contactsDo);
-            }else {
-                jsdUserContactsService.updateByUserId(contactsDo);
+    	try {
+    		JsdUserDo userDo = jsdUserService.getById(userId);
+            String contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
+            if(StringUtils.isNotBlank(contacts)){
+                List<JsdUserContactsDo> userContactsDo= jsdUserContactsService.getUserContactsByUserId(userId);
+                JsdUserContactsDo contactsDo=new JsdUserContactsDo();
+                contactsDo.setUserId(userId);
+                contactsDo.setContactsMobile(contacts);
+                if(userContactsDo.size()==0){
+                    jsdUserContactsService.saveRecord(contactsDo);
+                }else {
+                    jsdUserContactsService.updateByUserId(contactsDo);
+                }
             }
-        }
+    	}catch (Exception e) {
+    		logger.error("calcuOverdueRecords.addUserContancts error, userId = "+ userId, e);
+		}
     }
 
 
@@ -324,19 +326,23 @@ public class LoanOverDueJob {
 
     public void addCollectionBorrow(List<JsdBorrowCashDo> list){
         for(JsdBorrowCashDo borrowCashDo : list){
-            Long borrowId = borrowCashDo.getRid();
-            JsdCollectionBorrowDo jsdCollectionBorrowDo = jsdCollectionBorrowService.selectByBorrowId(borrowId);
-            JsdCollectionBorrowDo borrowDo = new JsdCollectionBorrowDo();
-            borrowDo.setBorrowId(borrowCashDo.getRid());
-            borrowDo.setReviewStatus(CommonReviewStatus.WAIT.name());
-            borrowDo.setStatus(CollectionBorrowStatus.NOTICED.name());
-            if(jsdCollectionBorrowDo != null){
-                borrowDo.setRid(jsdCollectionBorrowDo.getRid());
-                jsdCollectionBorrowService.updateById(borrowDo);
-            }else {
-                jsdCollectionBorrowService.saveRecord(borrowDo);
-            }
+        	try {
 
+                Long borrowId = borrowCashDo.getRid();
+                JsdCollectionBorrowDo jsdCollectionBorrowDo = jsdCollectionBorrowService.selectByBorrowId(borrowId);
+                JsdCollectionBorrowDo borrowDo = new JsdCollectionBorrowDo();
+                borrowDo.setBorrowId(borrowCashDo.getRid());
+                borrowDo.setReviewStatus(CommonReviewStatus.WAIT.name());
+                borrowDo.setStatus(CollectionBorrowStatus.NOTICED.name());
+                if(jsdCollectionBorrowDo != null){
+                    borrowDo.setRid(jsdCollectionBorrowDo.getRid());
+                    jsdCollectionBorrowService.updateById(borrowDo);
+                }else {
+                    jsdCollectionBorrowService.saveRecord(borrowDo);
+                }
+        	}catch (Exception e) {
+        		logger.error("calcuOverdueRecords.addCollectionBorrow error, borrowCashId = " + borrowCashDo.getRid(), e);
+			}
         }
     }
 
