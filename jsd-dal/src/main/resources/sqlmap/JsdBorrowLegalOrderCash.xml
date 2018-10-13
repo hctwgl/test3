@@ -403,6 +403,7 @@
         status IN ('AWAIT_REPAY','PART_REPAID','FINISHED')
         ORDER BY gmt_create DESC
         LIMIT 1
+        FOR UPDATE
     </select>
     
     <select id="getLastOrderCashByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">
