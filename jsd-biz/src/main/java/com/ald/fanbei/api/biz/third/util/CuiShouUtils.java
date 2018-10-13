@@ -160,11 +160,6 @@ public class CuiShouUtils {
                     userId = jsdBorrowCashDo.getUserId();
                 }
             }
-            if(DateUtil.afterDay(jsdBorrowCashDo.getGmtPlanRepayment(),time)){
-                cuiShouBackMoney.setCode(203);
-                thirdLog.error("time error loanNo =" + orderNo);
-                return cuiShouBackMoney;
-            }
             if(StringUtil.isBlank(totalAmount)){
                 cuiShouBackMoney.setCode(203);
                 thirdLog.error("totalAmount is not exist orderNo =" + orderNo);
