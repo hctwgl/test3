@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +21,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.ald.fanbei.api.biz.bo.KuaijieRepayBo;
 import com.ald.fanbei.api.biz.bo.ups.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
-import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
-import com.ald.fanbei.api.biz.service.JsdCollectionService;
-import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
-import com.ald.fanbei.api.biz.service.JsdUpsPayKuaijieServiceAbstract;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.BankPayChannel;
@@ -100,6 +96,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 	@Resource
 	private JsdCollectionBorrowService jsdCollectionBorrowService;
+
+	@Resource
+	private JsdBorrowCashDao jsdBorrowCashDao;
 	
 
 	@Override
@@ -671,11 +670,22 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				String channel , Date repayTime, String orderNo, final String dataId, String remark) {
 		final RepayRequestBo bo = this.buildRepayRequestBo(userId, jsdBorrowCashDo, totalAmount, repaymentNo ,type,channel,repayTime,remark);
 
+		this.dealOfflineOverdue(jsdBorrowCashDo,totalAmount,repaymentNo,userId,type,channel,repayTime,orderNo,dataId,remark);
+
 		this.checkOfflineRepayment(repaymentNo);
 
 		generateRepayRecords(bo);
 		dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.repaymentDo, bo.orderRepaymentDo, type);
 	}
+	/**
+	 * @Description: 线下还款超时处理（减免逾期）
+	 */
+	private void dealOfflineOverdue(JsdBorrowCashDo jsdBorrowCashDo,String totalAmount, String repaymentNo, Long userId, JsdRepayType type, String channel, Date repayTime, String orderNo, String dataId, String remark) {
+		if(!new Date().before(jsdBorrowCashDo.getGmtPlanRepayment())){
+
+		}
+	}
+
 	private RepayRequestBo buildRepayRequestBo(Long userId, JsdBorrowCashDo jsdBorrowCashDo, String repayAmount, 
 				String outTradeNo, JsdRepayType type, String channel, Date repayTime, String remark){
 		RepayRequestBo bo = new RepayRequestBo();
