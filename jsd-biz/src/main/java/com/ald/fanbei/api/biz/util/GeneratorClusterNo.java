@@ -83,7 +83,7 @@ public class GeneratorClusterNo extends AbstractThird {
 	public String getRepaymentBorrowCashNo(String bankChannel) {// 订单号规则：6位日期_2位订单类型_5位订单序号
 		Date currDate = new Date();
 		String dateStr = DateUtil.formatDate(currDate, DateUtil.FULL_PATTERN);
-		StringBuffer orderSb = new StringBuffer("hq");
+		StringBuffer orderSb = new StringBuffer();
 		if(BankPayChannel.KUAIJIE.getCode().equals(bankChannel)){
 			orderSb.append("kjhq");
 		}
