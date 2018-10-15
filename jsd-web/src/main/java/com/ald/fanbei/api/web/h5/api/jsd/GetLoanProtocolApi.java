@@ -9,6 +9,9 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
+import com.ald.fanbei.api.common.enums.JsdBorrowType;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
@@ -52,16 +55,29 @@ public class GetLoanProtocolApi implements JsdH5Handle {
     	JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
         GetLoanProtocolParam param = (GetLoanProtocolParam) context.getParamEntity();
         List<JsdProctocolBo> protocolVos = new ArrayList<>();;
-    	if(XgxyProtocolType.BORROW.name().equals(param.type)) {
-			protocolVos = jsdBorrowCashService.getBorrowProtocols(param.openId, param.bizNo, param.previewParam);
-    	}else if (XgxyProtocolType.TYING.name().equals(param.type)){
-			protocolVos = jsdBorrowCashService.getAgencyProtocols(param.openId, param.bizNo, param.previewParam);
-        }else if(XgxyProtocolType.DELAY.name().equals(param.type)){
-			protocolVos = jsdBorrowCashService.getRenewalProtocols(param.openId, param.bizNo, param.previewParam);
-        }else {
-    		logger.warn("Don't support " + param.type + " protocol yet!");
-    		throw new BizException(BizExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
-    	}
+		JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(param.bizNo);
+		if(StringUtil.equals(jsdBorrowCashDo.getVersion(), JsdBorrowType.SELL.name())){
+			if(XgxyProtocolType.BORROW.name().equals(param.type)) {
+				protocolVos = jsdBorrowCashService.getBorrowProtocols(param.openId, param.bizNo, param.previewParam);
+			}else if (XgxyProtocolType.TYING.name().equals(param.type)){
+				protocolVos = jsdBorrowCashService.getAgencyProtocols(param.openId, param.bizNo, param.previewParam);
+			}else if(XgxyProtocolType.DELAY.name().equals(param.type)){
+				protocolVos = jsdBorrowCashService.getRenewalProtocols(param.openId, param.bizNo, param.previewParam);
+			}else {
+				logger.warn("Don't support " + param.type + " protocol yet!");
+				throw new BizException(BizExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
+			}
+		}else if(StringUtil.equals(jsdBorrowCashDo.getVersion(), JsdBorrowType.BEHEAD.name())){
+			if(XgxyProtocolType.BORROW.name().equals(param.type)) {
+				protocolVos = jsdBorrowCashService.getBorrowProtocols(param.openId, param.bizNo, param.previewParam);
+			}else if(XgxyProtocolType.DELAY.name().equals(param.type)){
+				protocolVos = jsdBorrowCashService.getRenewalProtocols(param.openId, param.bizNo, param.previewParam);
+			}else {
+				logger.warn("Don't support " + param.type + " protocol yet!");
+				throw new BizException(BizExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
+			}
+		}
+
         resp.setData(protocolVos);
         return resp;
     }
