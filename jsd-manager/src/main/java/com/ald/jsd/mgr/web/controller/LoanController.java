@@ -2,12 +2,14 @@ package com.ald.jsd.mgr.web.controller;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.enums.JsdBorrowType;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -88,7 +90,12 @@ public class LoanController {
         }
         List<JsdBorrowCashRenewalDo> list = jsdBorrowCashRenewalService.getMgrJsdRenewalByBorrowId(jsdBorrowCashDo.getRid());
         loanDetailsReq.setRenewal(list);
-        List<JsdProctocolBo> proctocol = jsdBorrowCashService.getBorrowProtocols(jsdUserDo.getOpenId(),tradeNoXgxy,"");
+        List<JsdProctocolBo> proctocol = new ArrayList<>();
+        if(StringUtil.equals(jsdBorrowCashDo.getVersion(), JsdBorrowType.SELL.name())){
+            proctocol = jsdBorrowCashService.getBorrowProtocols(jsdUserDo.getOpenId(),tradeNoXgxy,"");
+        }else if(StringUtil.equals(jsdBorrowCashDo.getVersion(),JsdBorrowType.BEHEAD.name())){
+            proctocol = jsdBorrowCashService.getBorrowPlusProtocols(jsdUserDo.getOpenId(),tradeNoXgxy,"");
+        }
         loanDetailsReq.setProctocols(proctocol);
         return Resp.succ(loanDetailsReq, "");
     }

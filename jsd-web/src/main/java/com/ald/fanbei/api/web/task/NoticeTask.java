@@ -63,7 +63,7 @@ public class NoticeTask {
     	try {
     		String curHostIp = GetHostIpUtil.getIpAddress();
         	logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-            if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
+//            if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
                 logger.info("start notice task， time="+new Date());
                 List<JsdNoticeRecordDo> noticeRecordDos = jsdNoticeRecordService.getAllFailNoticeRecord();
                 if(noticeRecordDos.size()==0){
@@ -137,7 +137,7 @@ public class NoticeTask {
                     }
                 }
                 logger.info("end notice tasktime="+new Date());
-            }
+//            }
     	}catch (Exception e) {
     		logger.error(e.getMessage(), e);
 		}

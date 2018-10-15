@@ -15,5 +15,4 @@ public class GetLoanProtocolParam {
 	public String type;
 
 	public String previewParam;
-
 }

@@ -540,6 +540,62 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         return protocolVos;
     }
 
+    /**
+     * 获取续期协议(plus)
+     *
+     * @param openId
+     * @param tradeNoXgxy
+     * @param previewJsonStr
+     * @return
+     */
+    public List<JsdProctocolBo> getRenewalPlusProtocols(String openId, String tradeNoXgxy, String previewJsonStr) {
+        JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PLUS_PROTOCOL_RENEWAL.name(), ResourceSecType.PLUS_PROTOCOL_RENEWAL.name());
+        List<JsdProctocolBo> protocolVos = new ArrayList<>();
+
+        JsdProctocolBo protocolVo = new JsdProctocolBo();
+        protocolVo.setProtocolName(resdo.getName());
+        String urlPrefix = getNotifyHost() + resdo.getValue();
+        try {
+            // TODO
+            String urlParams = "?openId=" + openId + "&tradeNoXgxy=" + (tradeNoXgxy == null ? "" : tradeNoXgxy) + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
+            protocolVo.setProtocolUrl(urlPrefix + urlParams);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        protocolVos.add(protocolVo);
+        return protocolVos;
+    }
+
+    /**
+     * 获取借款相关协议(plus)
+     *
+     * @param openId
+     * @param tradeNoXgxy
+     * @param previewJsonStr
+     * @return
+     */
+    @Override
+    public List<JsdProctocolBo> getBorrowPlusProtocols(String openId, String tradeNoXgxy, String previewJsonStr) {
+        List<JsdResourceDo> ress = jsdResourceService.listByType(ResourceType.PLUS_PROTOCOL_BORROW.getCode());
+        List<JsdProctocolBo> protocolVos = new ArrayList<>();
+        for (JsdResourceDo resdo : ress) {
+            JsdProctocolBo protocolVo = new JsdProctocolBo();
+            protocolVo.setProtocolName(resdo.getName());
+            String urlPrefix = getNotifyHost() + resdo.getValue();
+            try {
+                String urlParams = "?openId=" + openId + "&tradeNoXgxy=" + (tradeNoXgxy == null ? "" : tradeNoXgxy) + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
+                protocolVo.setProtocolUrl(urlPrefix + urlParams);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            protocolVos.add(protocolVo);
+        }
+        return protocolVos;
+    }
+
+
     private String getNotifyHost() {
         if (notifyHost == null) {
             notifyHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
