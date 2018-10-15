@@ -134,5 +134,27 @@
         FROM jsd_borrow_cash_overdue_log
         WHERE is_delete=0 AND borrow_id=#{borrowId} AND  to_days(gmt_create)=to_days(now())
     </select>
+
+    <select id="getListCashOverdueLogByBorrowId" resultType="com.ald.fanbei.api.dal.domain.dto.JsdBorrowCashOverdueLogDto">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_cash_overdue_log
+        WHERE is_delete=0
+        AND borrow_id=#{borrowId}
+        AND gmt_create > #{payTime}
+        AND type='CASH'
+        ORDER BY gmt_create DESC
+    </select>
+
+    <select id="getListOrderCashOverdueLogByBorrowId" resultType="com.ald.fanbei.api.dal.domain.dto.JsdBorrowCashOverdueLogDto">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_cash_overdue_log
+        WHERE is_delete=0
+        AND borrow_id=#{borrowId}
+        AND gmt_create > #{payTime}
+        AND type='CASH'
+        ORDER BY gmt_create DESC
+    </select>
     
 </mapper>

@@ -57,6 +57,15 @@ import java.math.BigDecimal;
      */
     private BigDecimal currentAmount;
 
+    private String type;//借款类型
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     /**
      * 获取主键Id
