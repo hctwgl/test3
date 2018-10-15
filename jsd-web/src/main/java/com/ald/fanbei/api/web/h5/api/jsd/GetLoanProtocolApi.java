@@ -69,9 +69,9 @@ public class GetLoanProtocolApi implements JsdH5Handle {
 			}
 		}else if(StringUtil.equals(jsdBorrowCashDo.getVersion(), JsdBorrowType.BEHEAD.name())){
 			if(XgxyProtocolType.BORROW.name().equals(param.type)) {
-				protocolVos = jsdBorrowCashService.getBorrowProtocols(param.openId, param.bizNo, param.previewParam);
+				protocolVos = jsdBorrowCashService.getBorrowPlusProtocols(param.openId, param.bizNo, param.previewParam);
 			}else if(XgxyProtocolType.DELAY.name().equals(param.type)){
-				protocolVos = jsdBorrowCashService.getRenewalProtocols(param.openId, param.bizNo, param.previewParam);
+				protocolVos = jsdBorrowCashService.getRenewalPlusProtocols(param.openId, param.bizNo, param.previewParam);
 			}else {
 				logger.warn("Don't support " + param.type + " protocol yet!");
 				throw new BizException(BizExceptionCode.PROTOCOL_NOT_SUPPORT_YET);

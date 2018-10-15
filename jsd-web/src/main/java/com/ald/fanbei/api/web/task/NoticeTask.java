@@ -58,7 +58,7 @@ public class NoticeTask {
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
     @SuppressWarnings("unchecked")
-	@Scheduled(cron = "* 0/1 * * * ?")
+	@Scheduled(cron = "0 0/1 * * * ?")
     public void notice() {
     	try {
     		String curHostIp = GetHostIpUtil.getIpAddress();
