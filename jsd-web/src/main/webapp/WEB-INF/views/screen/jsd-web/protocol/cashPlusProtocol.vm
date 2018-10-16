@@ -17,8 +17,11 @@
             border-collapse: collapse;
         }
 
-        .text_decor {
-            text-decoration: underline
+        h2 {
+            text-align: center;
+            font-size: .50rem;
+            margin: 10px 0 20px 0;
+            font-weight: bold;
         }
 
         .main {
