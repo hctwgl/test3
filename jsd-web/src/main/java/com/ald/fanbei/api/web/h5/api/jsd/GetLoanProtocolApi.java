@@ -54,6 +54,7 @@ public class GetLoanProtocolApi implements JsdH5Handle {
         GetLoanProtocolParam param = (GetLoanProtocolParam) context.getParamEntity();
         List<JsdProctocolBo> protocolVos = new ArrayList<>();;
 		JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(param.bizNo);
+		logger.info("param = " + JSON.toJSONString(param) + " , jsdBorrowCashDo = " + JSON.toJSONString(jsdBorrowCashDo));
 		if(jsdBorrowCashDo != null){
 			param.tyingType = jsdBorrowCashDo.getVersion();
 		}
