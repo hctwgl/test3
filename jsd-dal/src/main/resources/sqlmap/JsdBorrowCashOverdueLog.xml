@@ -143,6 +143,7 @@
         AND borrow_id=#{borrowId}
         AND gmt_create > #{payTime}
         AND type='CASH'
+        GROUP BY gmt_create
         ORDER BY gmt_create DESC
     </select>
 
@@ -153,7 +154,8 @@
         WHERE is_delete=0
         AND borrow_id=#{borrowId}
         AND gmt_create > #{payTime}
-        AND type='CASH'
+        AND type='ORDER_CASH'
+        GROUP BY gmt_create
         ORDER BY gmt_create DESC
     </select>
     
