@@ -15,8 +15,4 @@ public class GetLoanProtocolParam {
 	public String type;
 
 	public String previewParam;
-
-	public String tyingType;
-
-	public String isTying;
 }

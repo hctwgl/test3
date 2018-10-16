@@ -13,6 +13,7 @@ import com.ald.fanbei.api.common.enums.JsdBorrowType;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.alibaba.fastjson.JSON;
+import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
@@ -54,11 +55,15 @@ public class GetLoanProtocolApi implements JsdH5Handle {
         GetLoanProtocolParam param = (GetLoanProtocolParam) context.getParamEntity();
         List<JsdProctocolBo> protocolVos = new ArrayList<>();;
 		JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(param.bizNo);
+		String tyingType = "";
 		logger.info("param = " + JSON.toJSONString(param) + " , jsdBorrowCashDo = " + JSON.toJSONString(jsdBorrowCashDo));
 		if(jsdBorrowCashDo != null){
-			param.tyingType = jsdBorrowCashDo.getVersion();
+			tyingType = jsdBorrowCashDo.getVersion();
+		}else {
+			JSONObject jsonObject = new JSONObject(param.previewParam);
+			tyingType = jsonObject.getString("tyingType");
 		}
-		if(StringUtil.equals(param.tyingType, JsdBorrowType.SELL.name())){
+		if(StringUtil.equals(tyingType, JsdBorrowType.SELL.name())){
 			if(XgxyProtocolType.BORROW.name().equals(param.type)) {
 				protocolVos = jsdBorrowCashService.getBorrowProtocols(param.openId, param.bizNo, param.previewParam);
 			}else if (XgxyProtocolType.TYING.name().equals(param.type)){
@@ -69,7 +74,7 @@ public class GetLoanProtocolApi implements JsdH5Handle {
 				logger.warn("Don't support " + param.type + " protocol yet!");
 				throw new BizException(BizExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
 			}
-		}else if(StringUtil.equals(param.tyingType, JsdBorrowType.BEHEAD.name())){
+		}else if(StringUtil.equals(tyingType, JsdBorrowType.BEHEAD.name())){
 			if(XgxyProtocolType.BORROW.name().equals(param.type)) {
 				protocolVos = jsdBorrowCashService.getBorrowPlusProtocols(param.openId, param.bizNo, param.previewParam);
 			}else if(XgxyProtocolType.DELAY.name().equals(param.type)){
