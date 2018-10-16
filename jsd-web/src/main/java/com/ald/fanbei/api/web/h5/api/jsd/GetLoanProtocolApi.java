@@ -54,8 +54,10 @@ public class GetLoanProtocolApi implements JsdH5Handle {
         GetLoanProtocolParam param = (GetLoanProtocolParam) context.getParamEntity();
         List<JsdProctocolBo> protocolVos = new ArrayList<>();;
 		JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(param.bizNo);
-		logger.info("jsdBorrowCashDo = " + JSON.toJSONString(jsdBorrowCashDo));
-		if(StringUtil.equals(jsdBorrowCashDo.getVersion(), JsdBorrowType.SELL.name())){
+		if(jsdBorrowCashDo != null){
+			param.tyingType = jsdBorrowCashDo.getVersion();
+		}
+		if(StringUtil.equals(param.tyingType, JsdBorrowType.SELL.name())){
 			if(XgxyProtocolType.BORROW.name().equals(param.type)) {
 				protocolVos = jsdBorrowCashService.getBorrowProtocols(param.openId, param.bizNo, param.previewParam);
 			}else if (XgxyProtocolType.TYING.name().equals(param.type)){
@@ -66,7 +68,7 @@ public class GetLoanProtocolApi implements JsdH5Handle {
 				logger.warn("Don't support " + param.type + " protocol yet!");
 				throw new BizException(BizExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
 			}
-		}else if(StringUtil.equals(jsdBorrowCashDo.getVersion(), JsdBorrowType.BEHEAD.name())){
+		}else if(StringUtil.equals(param.tyingType, JsdBorrowType.BEHEAD.name())){
 			if(XgxyProtocolType.BORROW.name().equals(param.type)) {
 				protocolVos = jsdBorrowCashService.getBorrowPlusProtocols(param.openId, param.bizNo, param.previewParam);
 			}else if(XgxyProtocolType.DELAY.name().equals(param.type)){
