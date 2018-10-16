@@ -12,6 +12,7 @@ import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
 import com.ald.fanbei.api.common.enums.JsdBorrowType;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.alibaba.fastjson.JSON;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
@@ -45,9 +46,6 @@ public class GetLoanProtocolApi implements JsdH5Handle {
     JsdBorrowCashService jsdBorrowCashService;
     @Resource
     JsdResourceService jsdResourceService;
-    @Resource
-    JsdUserService jsdUserService;
-
     private static String notifyHost = null;
     
     @Override
@@ -56,6 +54,7 @@ public class GetLoanProtocolApi implements JsdH5Handle {
         GetLoanProtocolParam param = (GetLoanProtocolParam) context.getParamEntity();
         List<JsdProctocolBo> protocolVos = new ArrayList<>();;
 		JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(param.bizNo);
+		logger.info("jsdBorrowCashDo = " + JSON.toJSONString(jsdBorrowCashDo));
 		if(StringUtil.equals(jsdBorrowCashDo.getVersion(), JsdBorrowType.SELL.name())){
 			if(XgxyProtocolType.BORROW.name().equals(param.type)) {
 				protocolVos = jsdBorrowCashService.getBorrowProtocols(param.openId, param.bizNo, param.previewParam);
