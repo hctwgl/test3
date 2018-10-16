@@ -132,7 +132,7 @@ public enum ResourceSecType {
 		PROTOCOL_AGENCY("PROTOCOL_AGENCY","代买协议"),
 		//续期协议
 		PROTOCOL_RENEWAL("PROTOCOL_RENEWAL", "续期协议"),
-
+		PLUS_PROTOCOL_BORROW_CASH("PLUS_PROTOCOL_BORROW_CASH","四方借款协议(plus)"),
 		PLUS_PROTOCOL_RENEWAL("PLUS_PROTOCOL_RENEWAL", "续期协议(plus)"),
 		;
 

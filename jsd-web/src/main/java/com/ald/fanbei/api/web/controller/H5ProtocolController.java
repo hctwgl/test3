@@ -58,6 +58,8 @@ public class H5ProtocolController {
 	JsdESdkService jsdESdkService;
 	@Resource
 	JsdUserSealService jsdUserSealService;
+	@Resource
+	BeheadBorrowCashRenewalService beheadBorrowCashRenewalService;
 
     private static final BigDecimal NUM100 = new BigDecimal(100);
 
@@ -304,6 +306,13 @@ public class H5ProtocolController {
 				logger.error("获取前海印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
+			companyUserSealDo = jsdUserSealService.getUserSealByUserName("东风贷");
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("ygSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			} else {
+				logger.error("东风贷 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
 		} catch (Exception e) {
 			logger.error("get userSeal  error", e);
 		}
@@ -480,26 +489,26 @@ public class H5ProtocolController {
 			this.inpourUserInfo(model, userDo);
 
 
-			JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_CASH.name());
-			model.put("yfCompany", resdo.getValue1());
+			JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PLUS_PROTOCOL_BORROW.name(), ResourceSecType.PLUS_PROTOCOL_BORROW_CASH.name());
 			model.put("bfCompany", resdo.getValue2());
-			model.put("dfCompany", resdo.getValue3());
 
 
 			BigDecimal amountLower, interestRate, serviceRate;
+			String borrowRemark ="" ,repayRemark = "";
 			if(StringUtils.isNotBlank(tradeNoXgxy)) {
 				JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
 
 				amountLower = cashDo.getAmount();
 				interestRate = cashDo.getInterestRate();
 				serviceRate = cashDo.getPoundageRate();
-
+				borrowRemark = cashDo.getBorrowRemark();
+				repayRemark = cashDo.getRepayRemark();
 				model.put("borrowNo", cashDo.getBorrowNo());
 				model.put("gmtStart", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("gmtPlanRepayment", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-
+				model.put("lendersIdNumber",this.privacyIdNumber(resdo.getValue3()));
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
 			}else{
@@ -521,6 +530,8 @@ public class H5ProtocolController {
 			model.put("serviceRate", serviceRate.multiply(NUM100).setScale(2) + "%");
 			model.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
 			model.put("amountLower", amountLower);
+			model.put("borrowRemark",borrowRemark);
+			model.put("repayRemark",repayRemark);
 
 		}catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -547,7 +558,7 @@ public class H5ProtocolController {
 			}
 			this.inpourUserInfo(model, userDo);
 
-			JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_RENEWAL.name(), ResourceSecType.PROTOCOL_RENEWAL.name());
+			JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PLUS_PROTOCOL_RENEWAL.name(), ResourceSecType.PLUS_PROTOCOL_RENEWAL.name());
 			model.put("yfCompany", resdo.getValue1());
 			model.put("bfCompany", resdo.getValue2());
 
@@ -593,7 +604,7 @@ public class H5ProtocolController {
 				model.put("oriAmountUpper", NumberUtil.number2CNMontrayUnit(cashDo.getAmount()));
 				model.put("oriInterestRate", cashDo.getInterestRate().multiply(NUM100).setScale(2) + "%");
 
-				JSONArray renewalDetail = jsdBorrowCashRenewalService.getRenewalDetail(cashDo);
+				JSONArray renewalDetail = beheadBorrowCashRenewalService.getBeheadRenewalDetail(cashDo);
 				JSONObject info = renewalDetail.getJSONObject(0);
 				// 续期信息
 				model.put("reAmount", info.getString("principalAmount"));
