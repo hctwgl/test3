@@ -33,4 +33,9 @@ public class JsdOfflineOverdueRemoveServiceImpl extends ParentServiceImpl<JsdOff
 	public BaseDao<JsdOfflineOverdueRemoveDo, Long> getDao() {
 		return jsdOfflineOverdueRemoveDao;
 	}
+
+	@Override
+	public JsdOfflineOverdueRemoveDo getInfoByoverdueLogId(String overdueLogId) {
+		return jsdOfflineOverdueRemoveDao.getInfoByoverdueLogId(overdueLogId);
+	}
 }

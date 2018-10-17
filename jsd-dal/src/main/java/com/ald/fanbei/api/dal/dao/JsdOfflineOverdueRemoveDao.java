@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdOfflineOverdueRemoveDo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Dao
@@ -12,6 +13,6 @@ import com.ald.fanbei.api.dal.domain.JsdOfflineOverdueRemoveDo;
  */
 public interface JsdOfflineOverdueRemoveDao extends BaseDao<JsdOfflineOverdueRemoveDo, Long> {
 
-    
+    JsdOfflineOverdueRemoveDo getInfoByoverdueLogId(@Param("overdueLogId") String overdueLogId);
 
 }

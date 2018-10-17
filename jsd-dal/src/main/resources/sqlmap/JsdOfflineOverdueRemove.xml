@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_repay,user_id,overdue_log_id,remove_overdue,new_overdue,current_amount 
+        id rid,type,gmt_create,gmt_repay,user_id,overdue_log_id,remove_overdue,new_overdue,current_amount
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -41,6 +41,9 @@
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdOfflineOverdueRemoveDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO jsd_offline_overdue_remove
         <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="type != null">
+                type,
+            </if>
 	        <if test="gmtCreate != null">        
 	            gmt_create,
 	        </if>
@@ -65,6 +68,9 @@
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="type != null" >
+                #{type,jdbcType=VARCHAR},
+            </if>
 		    <if test="gmtCreate != null" >
 		       #{gmtCreate,jdbcType=TIMESTAMP},
 		    </if>
@@ -136,6 +142,13 @@
         <include refid="queryFields" />
         FROM jsd_offline_overdue_remove
         <include refid="commonCondition"/>
+    </select>
+
+    <select id="getInfoByoverdueLogId" resultType="com.ald.fanbei.api.dal.domain.JsdOfflineOverdueRemoveDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_offline_overdue_remove
+        WHERE is_delete = 0 AND overdue_log_id=#{overdueLogId}
     </select>
     
 </mapper>
