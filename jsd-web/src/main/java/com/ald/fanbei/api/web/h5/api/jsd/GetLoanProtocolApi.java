@@ -81,7 +81,6 @@ public class GetLoanProtocolApi implements JsdH5Handle {
 				protocolVos = jsdBorrowCashService.getRenewalPlusProtocols(param.openId, param.bizNo, param.previewParam);
 			}else {
 				logger.warn("Don't support " + param.type + " protocol yet!");
-				throw new BizException(BizExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
 			}
 		}
 
