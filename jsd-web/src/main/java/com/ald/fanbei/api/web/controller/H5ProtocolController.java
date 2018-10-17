@@ -306,13 +306,6 @@ public class H5ProtocolController {
 				logger.error("获取前海印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
-			companyUserSealDo = jsdUserSealService.getUserSealByUserName("东风贷");
-			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
-				map.put("ygSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
-			} else {
-				logger.error("东风贷 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-			}
 		} catch (Exception e) {
 			logger.error("get userSeal  error", e);
 		}
