@@ -216,7 +216,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         
         //处理借款相关利息
         resp.borrowAmount = titularBorrowAmount.setScale(2, RoundingMode.HALF_UP).toString();
-        resp.arrivalAmount = actualBorrowAmount.setScale(2, RoundingMode.HALF_UP).toString();
+        resp.arrivalAmount = actualBorrowAmount.add(actualOrderAmount).setScale(2, RoundingMode.HALF_UP).toString();
         resp.interestRate = borrowInterestRate.setScale(4, RoundingMode.HALF_UP).toString();
         resp.interestAmount = interestAmount.toString();
         resp.serviceRate = borrowRateInfo.serviceRate.setScale(4, RoundingMode.HALF_UP).toString();
