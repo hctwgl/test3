@@ -39,6 +39,7 @@ public class TrialBeforeBorrowApi implements JsdH5Handle {
     		jsdBorrowCashService.resolve(bo);	// 赊销
     	}else{
     		beheadBorrowCashService.resolve(bo); // 砍头
+			bo.resp.arrivalAmount = bo.resp.borrowAmount;
     	}
     	resp.setData(bo.resp);
     	
