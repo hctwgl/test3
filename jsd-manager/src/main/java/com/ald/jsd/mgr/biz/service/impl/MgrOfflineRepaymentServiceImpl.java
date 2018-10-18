@@ -35,7 +35,7 @@ public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentServic
     @Override
     public void dealOfflineRepayment(Map<String, String> reqData, JsdRepayType repayType, String realName) {
         String borrowNo = reqData.get("borrowNo");
-        Date repaymentDate = new Date(Long.parseLong(reqData.get("repaymentDate"))*1000);
+        Date repaymentDate = new Date(Long.parseLong(reqData.get("repaymentDate")));
         String channel = reqData.get("channel");
         String tradeNo = reqData.get("tradeNo");
         String amount = reqData.get("amount");
