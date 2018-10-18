@@ -145,7 +145,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     List<LoanDto> getRepayList(LoanQuery query);
 
     /**
-     * 获取借款相关协议
+     * 获取借款相关协议(赊销)
      *
      * @param openId
      * @param tradeNoXgxy
@@ -155,7 +155,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     List<JsdProctocolBo> getBorrowProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
 
     /**
-     * 获取搭售代买协议
+     * 获取搭售代买协议(赊销)
      *
      * @param openId
      * @param tradeNoXgxy
@@ -165,7 +165,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     List<JsdProctocolBo> getAgencyProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
 
     /**
-     * 获取续期协议
+     * 获取续期协议(赊销)
      *
      * @param openId
      * @param tradeNoXgxy
@@ -173,4 +173,24 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      * @return
      */
     List<JsdProctocolBo> getRenewalProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
+
+    /**
+     * 获取借款相关协议(plus)
+     *
+     * @param openId
+     * @param tradeNoXgxy
+     * @param previewJsonStr
+     * @return
+     */
+    List<JsdProctocolBo> getBorrowPlusProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
+
+    /**
+     * 获取续期协议(plus)
+     *
+     * @param openId
+     * @param tradeNoXgxy
+     * @param previewJsonStr
+     * @return
+     */
+    List<JsdProctocolBo> getRenewalPlusProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
 }
