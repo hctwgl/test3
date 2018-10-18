@@ -306,6 +306,13 @@ public class H5ProtocolController {
 				logger.error("获取前海印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
+			companyUserSealDo = jsdUserSealService.getUserSealByUserName("杭州朗下网络科技有限公司");
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("lxSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			} else {
+				logger.error("获取郎下印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
 		} catch (Exception e) {
 			logger.error("get userSeal  error", e);
 		}
@@ -484,6 +491,8 @@ public class H5ProtocolController {
 
 			JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PLUS_PROTOCOL_BORROW.name(), ResourceSecType.PLUS_PROTOCOL_BORROW_CASH.name());
 			model.put("bfCompany", resdo.getValue2());
+			model.put("cfCompany", resdo.getValue3());
+
 
 
 			BigDecimal amountLower, interestRate, serviceRate;
