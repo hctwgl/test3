@@ -681,7 +681,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			if (jsdBorrowLegalOrderCashDo == null) {
 				dealBorrowCash(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,totalAmount,userId,repayTime);
 			}else {
-				List<JsdBorrowCashOverdueLogDto> orderCashList = jsdBorrowCashOverdueLogService.getListOrderCashOverdueLogByBorrowId(jsdBorrowCashDo.getRid(), repayTime);
+				List<JsdBorrowCashOverdueLogDto> orderCashList = jsdBorrowCashOverdueLogService.getListOrderCashOverdueLogByBorrowId(jsdBorrowLegalOrderCashDo.getRid(), repayTime);
 				if (orderCashList.size() != 0) {
 					StringBuilder sb = new StringBuilder();
 					BigDecimal removeOverdue = BigDecimal.ZERO;
