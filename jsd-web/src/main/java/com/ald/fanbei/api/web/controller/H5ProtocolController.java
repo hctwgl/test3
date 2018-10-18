@@ -454,7 +454,7 @@ public class H5ProtocolController {
 	        	model.put("reAmountUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("principalAmount")) ));
 	        	model.put("reInterestRate", new BigDecimal(info.getString("interestRate")).multiply(NUM100).setScale(2) + "%" );
 	        	model.put("remark", "续期");
-	        	model.put("reRepayCapital", info.getString("capital"));
+	        	model.put("reRepayCapital", info.getString("payCapital"));
 	        	model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("capital")) ));
 	        	model.put("reServiceRate", new BigDecimal(info.getString("serviceRate")).multiply(NUM100).setScale(2) + "%" );
 
@@ -609,12 +609,13 @@ public class H5ProtocolController {
 
 				JSONArray renewalDetail = beheadBorrowCashRenewalService.getBeheadRenewalDetail(cashDo);
 				JSONObject info = renewalDetail.getJSONObject(0);
+				logger.info("info = " + info);
 				// 续期信息
 				model.put("reAmount", info.getString("principalAmount"));
 				model.put("reAmountUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("principalAmount")) ));
 				model.put("reInterestRate", new BigDecimal(info.getString("interestRate")).multiply(NUM100).setScale(2) + "%" );
 				model.put("remark", "续期");
-				model.put("reRepayCapital", info.getString("capital"));
+				model.put("reRepayCapital", info.getString("payCapital"));
 				model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("capital")) ));
 				model.put("reServiceRate", new BigDecimal(info.getString("serviceRate")).multiply(NUM100).setScale(2) + "%" );
 

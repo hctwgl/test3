@@ -235,7 +235,7 @@
             <p>丙方：$!{bfCompany}</p>
             #if($!{renewalNo})<img src="$!{url}" alt="" style="position:absolute;left:1rem;top:0;width: 2rem;height: 2rem">#end
         </div>
-        签署时间：$!{gmtSign}</p>
+        <p>签署时间：$!{gmtSign}</p>
 
 
 
