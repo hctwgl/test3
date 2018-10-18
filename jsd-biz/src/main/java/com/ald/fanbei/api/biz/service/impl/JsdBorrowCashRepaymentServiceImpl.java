@@ -709,7 +709,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 							jsdOfflineOverdueRemoveDo.setNewOverdue(restOverdue);
 							jsdOfflineOverdueRemoveDo.setOverdueLogId(sb.toString());
 							jsdOfflineOverdueRemoveDo.setRemoveOverdue(removeOverdue);
-							jsdOfflineOverdueRemoveDo.setGmtRepay(DateUtil.formatDateTime(repayTime));
+							jsdOfflineOverdueRemoveDo.setGmtRepay(repayTime);
 							jsdOfflineOverdueRemoveDo.setType("ORDER_CASH");
 							jsdOfflineOverdueRemoveDo.setUserId(userId);
 							jsdOfflineOverdueRemoveDao.saveRecord(jsdOfflineOverdueRemoveDo);
@@ -752,7 +752,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 					jsdOfflineOverdueRemoveDo.setNewOverdue(restOverdue);
 					jsdOfflineOverdueRemoveDo.setOverdueLogId(sb.toString());
 					jsdOfflineOverdueRemoveDo.setRemoveOverdue(removeOverdue);
-					jsdOfflineOverdueRemoveDo.setGmtRepay(DateUtil.formatDateTime(repayTime));
+					jsdOfflineOverdueRemoveDo.setGmtRepay(repayTime);
 					jsdOfflineOverdueRemoveDo.setType("CASH");
 					jsdOfflineOverdueRemoveDo.setUserId(userId);
 					jsdOfflineOverdueRemoveDao.saveRecord(jsdOfflineOverdueRemoveDo);
