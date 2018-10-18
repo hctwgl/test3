@@ -1,36 +1,29 @@
 package com.ald.fanbei.api.web.h5.api.jsd;
 
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
-import com.ald.fanbei.api.common.enums.BorrowVersionType;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-import com.alibaba.fastjson.JSON;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
+import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
-import com.ald.fanbei.api.common.ConfigProperties;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.ResourceSecType;
-import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.BorrowVersionType;
 import com.ald.fanbei.api.common.enums.XgxyProtocolType;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
-import com.ald.fanbei.api.dal.domain.JsdResourceDo;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
 import com.ald.fanbei.api.web.validator.Validator;
 import com.ald.fanbei.api.web.validator.bean.GetLoanProtocolParam;
+import com.alibaba.fastjson.JSON;
 
 
 /**
@@ -46,7 +39,6 @@ public class GetLoanProtocolApi implements JsdH5Handle {
     JsdBorrowCashService jsdBorrowCashService;
     @Resource
     JsdResourceService jsdResourceService;
-    private static String notifyHost = null;
     
     @Override
     public JsdH5HandleResponse process(Context context) {
@@ -85,91 +77,6 @@ public class GetLoanProtocolApi implements JsdH5Handle {
 
         resp.setData(protocolVos);
         return resp;
-    }
-    
-    /**
-     * 获取借款相关协议
-     * @param openId
-     * @param tradeNoXgxy
-     * @param previewJsonStr
-     * @return
-     */
-    private List<JsdProctocolBo> getBorrowProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
-    	List<JsdResourceDo> ress = jsdResourceService.listByType(ResourceType.PROTOCOL_BORROW.getCode());
-    	List<JsdProctocolBo> protocolVos = new ArrayList<>();
-    	for(JsdResourceDo resdo: ress) {
-			JsdProctocolBo protocolVo = new JsdProctocolBo();
-        	protocolVo.setProtocolName(resdo.getName());
-        	String urlPrefix = getNotifyHost()+resdo.getValue();
-			try {
-				String urlParams = "?openId=" + openId  + "&tradeNoXgxy=" + (tradeNoXgxy == null?"":tradeNoXgxy) + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
-				protocolVo.setProtocolUrl(urlPrefix + urlParams);
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-        	
-            protocolVos.add(protocolVo);
-    	}
-    	return protocolVos;
-    }
-    
-    /**
-     * 获取搭售代买协议
-     * @param openId
-     * @param tradeNoXgxy
-     * @param previewJsonStr
-     * @return
-     */
-    private List<JsdProctocolBo> getAgencyProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
-    	JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_AGENCY.name(), ResourceSecType.PROTOCOL_AGENCY.name());
-    	List<JsdProctocolBo> protocolVos = new ArrayList<>();
-
-		JsdProctocolBo protocolVo = new JsdProctocolBo();
-    	protocolVo.setProtocolName(resdo.getName());
-    	String urlPrefix = getNotifyHost()+resdo.getValue();
-		try {
-			String urlParams = "?openId=" + openId  + "&tradeNoXgxy=" + (tradeNoXgxy == null?"":tradeNoXgxy) + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
-			protocolVo.setProtocolUrl(urlPrefix + urlParams);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-    	
-        protocolVos.add(protocolVo);
-    	return protocolVos;
-    }
-    
-    /**
-     * 获取续期协议
-     * @param openId
-     * @param tradeNoXgxy
-     * @param previewJsonStr
-     * @return
-     */
-    private List<JsdProctocolBo> getRenewalProtocols(String openId, String tradeNoXgxy, String previewJsonStr){
-    	JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_RENEWAL.name(), ResourceSecType.PROTOCOL_RENEWAL.name());
-    	List<JsdProctocolBo> protocolVos = new ArrayList<>();
-
-		JsdProctocolBo protocolVo = new JsdProctocolBo();
-    	protocolVo.setProtocolName(resdo.getName());
-    	String urlPrefix = getNotifyHost()+resdo.getValue();
-		try {
-			// TODO
-			String urlParams = "?openId=" + openId  + "&tradeNoXgxy=" + (tradeNoXgxy == null?"":tradeNoXgxy) + "&preview=" + URLEncoder.encode(previewJsonStr, "UTF-8");
-			protocolVo.setProtocolUrl(urlPrefix + urlParams);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-    	
-        protocolVos.add(protocolVo);
-    	return protocolVos;
-    }
-    
-    private String getNotifyHost(){
-        if(notifyHost==null){
-            notifyHost = ConfigProperties.get(Constants.CONFKEY_NOTIFY_HOST);
-            return notifyHost;
-        }
-        return notifyHost;
     }
     
     public static class JsdProctocolVo{
