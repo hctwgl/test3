@@ -214,8 +214,9 @@
     <p>9、协议各方应按法律法规及相关规定各自承担与本协议相关的税费。</p>
 
     <p>甲方（借款人）：<img style="max-width: 2.5rem" src="$!{personUserSeal}"></p>
-    <p>乙方（出借人）：<img style="max-width: 2.5rem" src="$!{lxSeal}"></p>
-    <p>丙方：<img style="max-width: 2.5rem" src="$!{lxSeal}"></p>
+    <p>乙方（出借人）：#if($!{borrowNo})<img style="max-width: 2.5rem" src="$!{url}">#end</p>
+    <p>丙方：#if($!{borrowNo})<img style="max-width: 2.5rem" src="$!{url}">
+    #end</p>
     <p>签署时间：$!{gmtSign}</p>
 </div>
 </body>

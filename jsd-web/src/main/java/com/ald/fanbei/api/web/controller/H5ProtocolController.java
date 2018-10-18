@@ -508,7 +508,7 @@ public class H5ProtocolController {
 				model.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("gmtPlanRepayment", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-				model.put("lendersIdNumber",this.privacyIdNumber(resdo.getValue3()));
+				model.put("url", resdo.getValue1());
 				logger.info("cashDo = " + JSON.toJSONString(cashDo) + "model = " + JSON.toJSONString(model));
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
@@ -551,7 +551,7 @@ public class H5ProtocolController {
 			String openId = request.getParameter("openId");
 			String preview = request.getParameter("preview");
 			String tradeNoXgxy = request.getParameter("tradeNoXgxy");
-
+			logger.info("tradeNoXgxy = " + tradeNoXgxy + " ,preview = " + preview);
 			JsdUserDo userDo = jsdUserService.getByOpenId(openId);
 			if (userDo == null) {
 				logger.error("user not exist" + BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -591,6 +591,8 @@ public class H5ProtocolController {
 				model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%");
 
 				model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("url", resdo.getValue3());
+				logger.info("cashDo = " + JSON.toJSONString(cashDo) +" ,renewalDo = " + JSON.toJSONString(renewalDo) + " ,model = " + JSON.toJSONString(model));
 
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
