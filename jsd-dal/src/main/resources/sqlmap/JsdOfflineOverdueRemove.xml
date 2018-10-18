@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,type,gmt_create,gmt_repay,user_id,overdue_log_id,remove_overdue,new_overdue,current_amount
+        id rid,gmt_create,gmt_repay,user_id,overdue_log_id,remove_overdue,new_overdue,current_amount,type 
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -14,10 +14,10 @@
         <if test="rid !=null">
             AND id  = #{rid,jdbcType=INTEGER}
         </if>
-        <if test="gmtCreate != null">
+        <if test="gmtCreate !=null">
             AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
         </if>
-        <if test="gmtRepay != null">
+        <if test="gmtRepay !=null">
             AND gmt_repay = #{gmtRepay,jdbcType=TIMESTAMP}
         </if>
         <if test="userId != null">
@@ -35,15 +35,15 @@
         <if test="currentAmount != null">
             AND current_amount = #{currentAmount,jdbcType=DECIMAL}
         </if>
+        <if test="type != null">
+            AND type = #{type,jdbcType=VARCHAR}
+        </if>
     </sql>
 
     
     <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdOfflineOverdueRemoveDo" keyProperty="rid" useGeneratedKeys="true">
         INSERT INTO jsd_offline_overdue_remove
         <trim prefix="(" suffix=")" suffixOverrides="," >
-            <if test="type != null">
-                type,
-            </if>
 	        <if test="gmtCreate != null">        
 	            gmt_create,
 	        </if>
@@ -65,12 +65,12 @@
 	        <if test="currentAmount != null">        
 	            current_amount,
 	        </if>
+	        <if test="type != null">        
+	            type,
+	        </if>
         </trim>
         
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-            <if test="type != null" >
-                #{type,jdbcType=VARCHAR},
-            </if>
 		    <if test="gmtCreate != null" >
 		       #{gmtCreate,jdbcType=TIMESTAMP},
 		    </if>
@@ -91,6 +91,9 @@
 		    </if>
 		    <if test="currentAmount != null" >
 		       #{currentAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="type != null" >
+		       #{type,jdbcType=VARCHAR},
 		    </if>
         </trim>
     </insert>
@@ -115,6 +118,9 @@
             </if>
             <if test="currentAmount != null">        
                 current_amount = #{currentAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="type != null">        
+                type = #{type,jdbcType=VARCHAR},
             </if>
             gmt_modified = NOW()
         </set>    
@@ -150,5 +156,5 @@
         FROM jsd_offline_overdue_remove
         WHERE is_delete = 0 AND overdue_log_id=#{overdueLogId}
     </select>
-    
+
 </mapper>

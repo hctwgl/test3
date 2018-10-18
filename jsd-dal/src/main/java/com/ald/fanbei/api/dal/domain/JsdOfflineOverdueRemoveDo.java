@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * 
  * @author yinxiangyu
  * @version 1.0.0 初始化
- * @date 2018-10-13 17:46:16
+ * @date 2018-10-18 18:10:43
  * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
  public class JsdOfflineOverdueRemoveDo extends AbstractSerial {
@@ -25,12 +25,12 @@ import java.math.BigDecimal;
     /**
      * 创建时间时间
      */
-    private String gmtCreate;
+    private Date gmtCreate;
 
     /**
      * 线下还款时间
      */
-    private String gmtRepay;
+    private Date gmtRepay;
 
     /**
      * 用户id
@@ -48,7 +48,7 @@ import java.math.BigDecimal;
     private BigDecimal removeOverdue;
 
     /**
-     * 新逾期费
+     * 新逾期费( 部分还款时 重新计算逾期费 )
      */
     private BigDecimal newOverdue;
 
@@ -57,15 +57,11 @@ import java.math.BigDecimal;
      */
     private BigDecimal currentAmount;
 
-    private String type;//借款类型
+    /**
+     * CASH-现金贷借款，ORDER_CASH-搭售的商品借款
+     */
+    private String type;
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
     /**
      * 获取主键Id
@@ -91,7 +87,7 @@ import java.math.BigDecimal;
      *
      * @return 创建时间时间
      */
-    public String getGmtCreate(){
+    public Date getGmtCreate(){
       return gmtCreate;
     }
 
@@ -100,7 +96,7 @@ import java.math.BigDecimal;
      * 
      * @param gmtCreate 要设置的创建时间时间
      */
-    public void setGmtCreate(String gmtCreate){
+    public void setGmtCreate(Date gmtCreate){
       this.gmtCreate = gmtCreate;
     }
 
@@ -109,7 +105,7 @@ import java.math.BigDecimal;
      *
      * @return 线下还款时间
      */
-    public String getGmtRepay(){
+    public Date getGmtRepay(){
       return gmtRepay;
     }
 
@@ -118,7 +114,7 @@ import java.math.BigDecimal;
      * 
      * @param gmtRepay 要设置的线下还款时间
      */
-    public void setGmtRepay(String gmtRepay){
+    public void setGmtRepay(Date gmtRepay){
       this.gmtRepay = gmtRepay;
     }
 
@@ -177,18 +173,18 @@ import java.math.BigDecimal;
     }
 
     /**
-     * 获取新逾期费
+     * 获取新逾期费( 部分还款时 重新计算逾期费 )
      *
-     * @return 新逾期费
+     * @return 新逾期费( 部分还款时 重新计算逾期费 )
      */
     public BigDecimal getNewOverdue(){
       return newOverdue;
     }
 
     /**
-     * 设置新逾期费
+     * 设置新逾期费( 部分还款时 重新计算逾期费 )
      * 
-     * @param newOverdue 要设置的新逾期费
+     * @param newOverdue 要设置的新逾期费( 部分还款时 重新计算逾期费 )
      */
     public void setNewOverdue(BigDecimal newOverdue){
       this.newOverdue = newOverdue;
@@ -210,6 +206,24 @@ import java.math.BigDecimal;
      */
     public void setCurrentAmount(BigDecimal currentAmount){
       this.currentAmount = currentAmount;
+    }
+
+    /**
+     * 获取CASH-现金贷借款，ORDER_CASH-搭售的商品借款
+     *
+     * @return CASH-现金贷借款，ORDER_CASH-搭售的商品借款
+     */
+    public String getType(){
+      return type;
+    }
+
+    /**
+     * 设置CASH-现金贷借款，ORDER_CASH-搭售的商品借款
+     * 
+     * @param type 要设置的CASH-现金贷借款，ORDER_CASH-搭售的商品借款
+     */
+    public void setType(String type){
+      this.type = type;
     }
 
 }
