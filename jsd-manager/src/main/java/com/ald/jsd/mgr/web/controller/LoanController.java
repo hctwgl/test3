@@ -9,7 +9,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.common.enums.JsdBorrowType;
+import com.ald.fanbei.api.common.enums.BorrowVersionType;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -91,9 +91,9 @@ public class LoanController {
         List<JsdBorrowCashRenewalDo> list = jsdBorrowCashRenewalService.getMgrJsdRenewalByBorrowId(jsdBorrowCashDo.getRid());
         loanDetailsReq.setRenewal(list);
         List<JsdProctocolBo> proctocol = new ArrayList<>();
-        if(StringUtil.equals(jsdBorrowCashDo.getVersion(), JsdBorrowType.SELL.name())){
+        if(StringUtil.equals(jsdBorrowCashDo.getVersion(), BorrowVersionType.SELL.name())){
             proctocol = jsdBorrowCashService.getBorrowProtocols(jsdUserDo.getOpenId(),tradeNoXgxy,"");
-        }else if(StringUtil.equals(jsdBorrowCashDo.getVersion(),JsdBorrowType.BEHEAD.name())){
+        }else if(StringUtil.equals(jsdBorrowCashDo.getVersion(),BorrowVersionType.BEHEAD.name())){
             proctocol = jsdBorrowCashService.getBorrowPlusProtocols(jsdUserDo.getOpenId(),tradeNoXgxy,"");
         }
         loanDetailsReq.setProctocols(proctocol);

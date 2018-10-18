@@ -9,7 +9,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
-import com.ald.fanbei.api.common.enums.JsdBorrowType;
+import com.ald.fanbei.api.common.enums.BorrowVersionType;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.alibaba.fastjson.JSON;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
-import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.ResourceSecType;
@@ -63,7 +62,7 @@ public class GetLoanProtocolApi implements JsdH5Handle {
 			JSONObject jsonObject = new JSONObject(param.previewParam);
 			tyingType = jsonObject.getString("tyingType");
 		}
-		if(StringUtil.equals(tyingType, JsdBorrowType.SELL.name())){
+		if(StringUtil.equals(tyingType, BorrowVersionType.SELL.name())){
 			if(XgxyProtocolType.BORROW.name().equals(param.type)) {
 				protocolVos = jsdBorrowCashService.getBorrowProtocols(param.openId, param.bizNo, param.previewParam);
 			}else if (XgxyProtocolType.TYING.name().equals(param.type)){
@@ -74,7 +73,7 @@ public class GetLoanProtocolApi implements JsdH5Handle {
 				logger.warn("Don't support " + param.type + " protocol yet!");
 				throw new BizException(BizExceptionCode.PROTOCOL_NOT_SUPPORT_YET);
 			}
-		}else if(StringUtil.equals(tyingType, JsdBorrowType.BEHEAD.name())){
+		}else if(StringUtil.equals(tyingType, BorrowVersionType.BEHEAD.name())){
 			if(XgxyProtocolType.BORROW.name().equals(param.type)) {
 				protocolVos = jsdBorrowCashService.getBorrowPlusProtocols(param.openId, param.bizNo, param.previewParam);
 			}else if(XgxyProtocolType.DELAY.name().equals(param.type)){
