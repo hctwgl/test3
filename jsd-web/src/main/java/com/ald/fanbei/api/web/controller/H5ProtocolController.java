@@ -480,7 +480,7 @@ public class H5ProtocolController {
 			String openId = request.getParameter("openId");
 			String preview = request.getParameter("preview");
 			String tradeNoXgxy = request.getParameter("tradeNoXgxy");
-
+			logger.info("tradeNoXgxy = " + tradeNoXgxy + " ,preview = " + preview);
 			JsdUserDo userDo = jsdUserService.getByOpenId(openId);
 			if (userDo == null) {
 				logger.error("user not exist" + BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -492,8 +492,6 @@ public class H5ProtocolController {
 			JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PLUS_PROTOCOL_BORROW.name(), ResourceSecType.PLUS_PROTOCOL_BORROW_CASH.name());
 			model.put("bfCompany", resdo.getValue2());
 			model.put("cfCompany", resdo.getValue3());
-
-
 
 			BigDecimal amountLower, interestRate, serviceRate;
 			String borrowRemark ="" ,repayRemark = "";
@@ -511,6 +509,7 @@ public class H5ProtocolController {
 				model.put("gmtPlanRepayment", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("lendersIdNumber",this.privacyIdNumber(resdo.getValue3()));
+				logger.info("cashDo = " + JSON.toJSONString(cashDo) + "model = " + JSON.toJSONString(model));
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
 			}else{
