@@ -74,7 +74,7 @@ public class GetLoanProtocolApi implements JsdH5Handle {
 				logger.warn("Don't support " + param.type + " protocol yet!");
 			}
 		}
-
+		logger.info("protocolVos = " + JSON.toJSONString(protocolVos));
         resp.setData(protocolVos);
         return resp;
     }
