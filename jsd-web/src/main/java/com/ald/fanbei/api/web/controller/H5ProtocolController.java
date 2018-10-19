@@ -607,7 +607,7 @@ public class H5ProtocolController {
 				model.put("oriAmount", cashDo.getAmount());
 				model.put("oriAmountUpper", NumberUtil.number2CNMontrayUnit(cashDo.getAmount()));
 				model.put("oriInterestRate", cashDo.getInterestRate().multiply(NUM100).setScale(2) + "%");
-
+				model.put("borrowRemark", cashDo.getBorrowRemark());
 				JSONArray renewalDetail = beheadBorrowCashRenewalService.getBeheadRenewalDetail(cashDo);
 				JSONObject info = renewalDetail.getJSONObject(0);
 				logger.info("info = " + info);

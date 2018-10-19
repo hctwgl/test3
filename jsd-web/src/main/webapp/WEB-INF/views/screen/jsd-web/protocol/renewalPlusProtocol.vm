@@ -124,7 +124,7 @@
             </tr>
             <tr>
                 <td>借款用途</td>
-                <td>$!{remark}</td>
+                <td>$!{borrowRemark}</td>
             </tr>
             <tr>
                 <td>还款日</td>
