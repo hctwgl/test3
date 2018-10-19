@@ -574,7 +574,8 @@ public class H5ProtocolController {
 				model.put("oriAmountUpper", NumberUtil.number2CNMontrayUnit(cashDo.getAmount()));
 				model.put("oriInterestRate", cashDo.getInterestRate().multiply(NUM100).setScale(2) + "%");
 				model.put("oriGmtStart", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-				model.put("oriGmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("oriGmtEnd", DateUtil.formatDate(DateUtil.addDays(cashDo.getGmtCreate(),Integer.valueOf(cashDo.getType())), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("borrowRemark", cashDo.getBorrowRemark());
 
 				//续期信息
 				model.put("reAmount", renewalDo.getRenewalAmount());
