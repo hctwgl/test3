@@ -581,10 +581,10 @@ public class H5ProtocolController {
 				model.put("reAmount", renewalDo.getRenewalAmount());
 				model.put("reAmountUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getRenewalAmount()));
 				model.put("reInterestRate", renewalDo.getBaseBankRate().multiply(NUM100).setScale(2) + "%");
-				model.put("reGmtStart", DateUtil.formatDate(renewalDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-				model.put("reGmtEnd", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtCreate(), (int) (renewalDo.getRenewalDay()-1)), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("reGmtStart", DateUtil.formatDate(renewalDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("reGmtEnd", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(), (int) (renewalDo.getRenewalDay()-1)), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("remark", renewalDo.getRemark());
-				model.put("reGmtPlanRepay", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtCreate(),(int) (renewalDo.getRenewalDay()-1)), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("reGmtPlanRepay", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(),(int) (renewalDo.getRenewalDay()-1)), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("reRepayCapital", renewalDo.getCapital());
 				model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getCapital()));
 				model.put("reServiceRate", renewalDo.getPoundageRate().multiply(NUM100).setScale(2) + "%");
@@ -607,7 +607,7 @@ public class H5ProtocolController {
 				model.put("oriAmount", cashDo.getAmount());
 				model.put("oriAmountUpper", NumberUtil.number2CNMontrayUnit(cashDo.getAmount()));
 				model.put("oriInterestRate", cashDo.getInterestRate().multiply(NUM100).setScale(2) + "%");
-
+				model.put("borrowRemark", cashDo.getBorrowRemark());
 				JSONArray renewalDetail = beheadBorrowCashRenewalService.getBeheadRenewalDetail(cashDo);
 				JSONObject info = renewalDetail.getJSONObject(0);
 				logger.info("info = " + info);
