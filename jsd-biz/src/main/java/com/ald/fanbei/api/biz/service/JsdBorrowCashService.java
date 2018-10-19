@@ -24,6 +24,8 @@ import com.alibaba.fastjson.JSONArray;
  */
 public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Long> {
 
+    JsdBorrowCashDo getByRenewalNo(String renewalNo);
+
     JsdBorrowCashDo getByBorrowNo(String borrowNo);
 
     JsdBorrowCashDo getByTradeNoXgxy(String tradeNoXgxy);

@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
@@ -37,16 +39,19 @@ public class GetLoanProtocolApi implements JsdH5Handle {
 
 	@Resource
     JsdBorrowCashService jsdBorrowCashService;
-    @Resource
-    JsdResourceService jsdResourceService;
     
     @Override
     public JsdH5HandleResponse process(Context context) {
     	JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
         GetLoanProtocolParam param = (GetLoanProtocolParam) context.getParamEntity();
         List<JsdProctocolBo> protocolVos = new ArrayList<>();;
-		JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(param.bizNo);
 		String tyingType = "";
+		JsdBorrowCashDo jsdBorrowCashDo = null;
+		if(XgxyProtocolType.DELAY.name().equals(param.type) && StringUtil.isNotBlank(param.bizNo)){
+			jsdBorrowCashDo = jsdBorrowCashService.getByRenewalNo(param.bizNo);
+		}else if(XgxyProtocolType.BORROW.name().equals(param.type) && StringUtil.isNotBlank(param.bizNo)){
+			jsdBorrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(param.bizNo);
+		}
 		logger.info("param = " + JSON.toJSONString(param) + " , jsdBorrowCashDo = " + JSON.toJSONString(jsdBorrowCashDo));
 		if(jsdBorrowCashDo != null){
 			tyingType = jsdBorrowCashDo.getVersion();
@@ -79,21 +84,5 @@ public class GetLoanProtocolApi implements JsdH5Handle {
         return resp;
     }
     
-    public static class JsdProctocolVo{
-    	private String protocolName;
-    	private String protocolUrl;
-    	
-		public String getProtocolName() {
-			return protocolName;
-		}
-		public void setProtocolName(String protocolName) {
-			this.protocolName = protocolName;
-		}
-		public String getProtocolUrl() {
-			return protocolUrl;
-		}
-		public void setProtocolUrl(String protocolUrl) {
-			this.protocolUrl = protocolUrl;
-		}
-    }
+
 }
