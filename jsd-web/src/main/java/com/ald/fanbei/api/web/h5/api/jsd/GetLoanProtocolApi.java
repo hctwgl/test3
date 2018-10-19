@@ -53,8 +53,7 @@ public class GetLoanProtocolApi implements JsdH5Handle {
         
         String tyingType = "";
         if(XgxyProtocolType.DELAY.name().equals(param.type) && StringUtil.isNotBlank(param.bizNo)){
-	        JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalService.getByTradeNoXgxy(param.bizNo);
-	        JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getById(renewalDo.getBorrowId());
+	        JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getByRenewalNo(param.bizNo);
 	        tyingType = jsdBorrowCashDo.getVersion();
 	    } else if(XgxyProtocolType.BORROW.name().equals(param.type) && StringUtil.isNotBlank(param.bizNo)){
 	    	JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(param.bizNo);

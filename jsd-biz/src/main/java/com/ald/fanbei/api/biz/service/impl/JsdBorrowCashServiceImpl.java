@@ -100,6 +100,11 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
+    public JsdBorrowCashDo getByRenewalNo(String borrowNo) {
+        return jsdBorrowCashDao.getByRenewalNo(borrowNo);
+    }
+
+    @Override
     public JsdBorrowCashDo getByTradeNoXgxy(String tradeNoXgxy) {
         return jsdBorrowCashDao.getByTradeNoXgxy(tradeNoXgxy);
     }
