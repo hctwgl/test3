@@ -521,7 +521,7 @@ public class H5ProtocolController {
 				trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
 				jsdBorrowCashService.resolve(trialBo);
 
-				amountLower = new BigDecimal(trialBo.resp.borrowAmount);
+				amountLower = trialBo.req.amount;
 				ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(trialBo.req.nper);
 				interestRate = rateInfo.interestRate;
 				serviceRate = rateInfo.serviceRate;
