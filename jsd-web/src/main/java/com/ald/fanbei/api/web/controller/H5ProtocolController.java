@@ -574,7 +574,7 @@ public class H5ProtocolController {
 				model.put("oriAmountUpper", NumberUtil.number2CNMontrayUnit(cashDo.getAmount()));
 				model.put("oriInterestRate", cashDo.getInterestRate().multiply(NUM100).setScale(2) + "%");
 				model.put("oriGmtStart", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-				model.put("oriGmtEnd", DateUtil.formatDate(DateUtil.addDays(cashDo.getGmtCreate(),Integer.valueOf(cashDo.getType())), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("oriGmtEnd", DateUtil.formatDate(DateUtil.addDays(cashDo.getGmtCreate(),Integer.valueOf(cashDo.getType())-1), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("borrowRemark", cashDo.getBorrowRemark());
 
 				//续期信息
@@ -582,9 +582,9 @@ public class H5ProtocolController {
 				model.put("reAmountUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getRenewalAmount()));
 				model.put("reInterestRate", renewalDo.getBaseBankRate().multiply(NUM100).setScale(2) + "%");
 				model.put("reGmtStart", DateUtil.formatDate(renewalDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-				model.put("reGmtEnd", DateUtil.formatDate(renewalDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("reGmtEnd", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtCreate(),Integer.valueOf(cashDo.getType())-1), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("remark", renewalDo.getRemark());
-				model.put("reGmtPlanRepay", DateUtil.formatDate(renewalDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("reGmtPlanRepay", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtCreate(),Integer.valueOf(cashDo.getType())-1), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("reRepayCapital", renewalDo.getCapital());
 				model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getCapital()));
 				model.put("reServiceRate", renewalDo.getPoundageRate().multiply(NUM100).setScale(2) + "%");
