@@ -702,7 +702,6 @@
             AND a.overdue_status='Y'
             AND a.status !='FINISHED'
             AND a.status !='CLOSED'
-            AND a.gmt_plan_repayment <![CDATA[   <  ]]> NOW()
         </if>
         <if test="searchContent != null and searchContent !=''">
             AND (a.trade_no_xgxy LIKE  CONCAT('%',#{searchContent},'%')
