@@ -204,7 +204,7 @@ public class CollectionMgrController extends BaseController{
     	
     	Map<String, String> userInfo = new HashMap<>();
     	userInfo.put("realName", userDo.getRealName());
-    	userInfo.put("account", userDo.getUserName());
+    	userInfo.put("account", userDo.getUserName().replaceAll("(\\d{3})\\d{4}(\\d{4})","$1****$2"));
     	userInfo.put("idNumber", userDo.getIdNumber());
     	
     	Map<String, Object> reviewInfo = new HashMap<>();

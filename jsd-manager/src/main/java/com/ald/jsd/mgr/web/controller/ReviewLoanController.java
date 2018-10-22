@@ -85,7 +85,7 @@ public class ReviewLoanController {
         //用户信息
         JsdUserDo jsdUserDo = jsdUserService.getById(jsdBorrowCashDo.getUserId());
         reviewLoanDetailsReq.setRealName(jsdUserDo.getRealName());
-        reviewLoanDetailsReq.setMobile(jsdUserDo.getMobile());
+        reviewLoanDetailsReq.setMobile(jsdUserDo.getMobile().replaceAll("(\\d{3})\\d{4}(\\d{4})","$1****$2"));
         reviewLoanDetailsReq.setIdNumber(jsdUserDo.getIdNumber());
         reviewLoanDetailsReq.setGender(jsdUserDo.getGender());
         if (StringUtil.isNotBlank(jsdUserDo.getBirthday())) {
