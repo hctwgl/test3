@@ -306,6 +306,13 @@ public class H5ProtocolController {
 				logger.error("获取前海印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
+//			companyUserSealDo = jsdUserSealService.getUserSealByUserName("杭州朗下网络科技有限公司");
+//			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+//				map.put("lxSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+//			} else {
+//				logger.error("获取郎下印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+//				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+//			}
 		} catch (Exception e) {
 			logger.error("get userSeal  error", e);
 		}
@@ -447,8 +454,8 @@ public class H5ProtocolController {
 	        	model.put("reAmountUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("principalAmount")) ));
 	        	model.put("reInterestRate", new BigDecimal(info.getString("interestRate")).multiply(NUM100).setScale(2) + "%" );
 	        	model.put("remark", "续期");
-	        	model.put("reRepayCapital", info.getString("capital"));
-	        	model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("capital")) ));
+	        	model.put("reRepayCapital", info.getString("payCapital"));
+	        	model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("payCapital")) ));
 	        	model.put("reServiceRate", new BigDecimal(info.getString("serviceRate")).multiply(NUM100).setScale(2) + "%" );
 
 	        	model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%");
@@ -473,7 +480,7 @@ public class H5ProtocolController {
 			String openId = request.getParameter("openId");
 			String preview = request.getParameter("preview");
 			String tradeNoXgxy = request.getParameter("tradeNoXgxy");
-
+			logger.info("tradeNoXgxy = " + tradeNoXgxy + " ,preview = " + preview);
 			JsdUserDo userDo = jsdUserService.getByOpenId(openId);
 			if (userDo == null) {
 				logger.error("user not exist" + BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -484,7 +491,7 @@ public class H5ProtocolController {
 
 			JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PLUS_PROTOCOL_BORROW.name(), ResourceSecType.PLUS_PROTOCOL_BORROW_CASH.name());
 			model.put("bfCompany", resdo.getValue2());
-
+			model.put("cfCompany", resdo.getValue3());
 
 			BigDecimal amountLower, interestRate, serviceRate;
 			String borrowRemark ="" ,repayRemark = "";
@@ -501,7 +508,8 @@ public class H5ProtocolController {
 				model.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("gmtPlanRepayment", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-				model.put("lendersIdNumber",this.privacyIdNumber(resdo.getValue3()));
+				model.put("url", resdo.getValue1());
+				logger.info("cashDo = " + JSON.toJSONString(cashDo) + "model = " + JSON.toJSONString(model));
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
 			}else{
@@ -513,7 +521,7 @@ public class H5ProtocolController {
 				trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
 				jsdBorrowCashService.resolve(trialBo);
 
-				amountLower = new BigDecimal(trialBo.resp.borrowAmount);
+				amountLower = trialBo.req.amount;
 				ResourceRateInfoBo rateInfo = jsdResourceService.getRateInfo(trialBo.req.nper);
 				interestRate = rateInfo.interestRate;
 				serviceRate = rateInfo.serviceRate;
@@ -543,7 +551,7 @@ public class H5ProtocolController {
 			String openId = request.getParameter("openId");
 			String preview = request.getParameter("preview");
 			String tradeNoXgxy = request.getParameter("tradeNoXgxy");
-
+			logger.info("tradeNoXgxy = " + tradeNoXgxy + " ,preview = " + preview);
 			JsdUserDo userDo = jsdUserService.getByOpenId(openId);
 			if (userDo == null) {
 				logger.error("user not exist" + BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
@@ -566,16 +574,17 @@ public class H5ProtocolController {
 				model.put("oriAmountUpper", NumberUtil.number2CNMontrayUnit(cashDo.getAmount()));
 				model.put("oriInterestRate", cashDo.getInterestRate().multiply(NUM100).setScale(2) + "%");
 				model.put("oriGmtStart", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-				model.put("oriGmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("oriGmtEnd", DateUtil.formatDate(DateUtil.addDays(cashDo.getGmtCreate(),Integer.valueOf(cashDo.getType())-1), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("borrowRemark", cashDo.getBorrowRemark());
 
 				//续期信息
 				model.put("reAmount", renewalDo.getRenewalAmount());
 				model.put("reAmountUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getRenewalAmount()));
 				model.put("reInterestRate", renewalDo.getBaseBankRate().multiply(NUM100).setScale(2) + "%");
-				model.put("reGmtStart", DateUtil.formatDate(renewalDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-				model.put("reGmtEnd", DateUtil.formatDate(renewalDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("reGmtStart", DateUtil.formatDate(renewalDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("reGmtEnd", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(), (int) (renewalDo.getRenewalDay()-1)), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("remark", renewalDo.getRemark());
-				model.put("reGmtPlanRepay", DateUtil.formatDate(renewalDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("reGmtPlanRepay", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(),(int) (renewalDo.getRenewalDay()-1)), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("reRepayCapital", renewalDo.getCapital());
 				model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getCapital()));
 				model.put("reServiceRate", renewalDo.getPoundageRate().multiply(NUM100).setScale(2) + "%");
@@ -583,6 +592,8 @@ public class H5ProtocolController {
 				model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%");
 
 				model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("url", resdo.getValue3());
+				logger.info("cashDo = " + JSON.toJSONString(cashDo) +" ,renewalDo = " + JSON.toJSONString(renewalDo) + " ,model = " + JSON.toJSONString(model));
 
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
@@ -596,16 +607,17 @@ public class H5ProtocolController {
 				model.put("oriAmount", cashDo.getAmount());
 				model.put("oriAmountUpper", NumberUtil.number2CNMontrayUnit(cashDo.getAmount()));
 				model.put("oriInterestRate", cashDo.getInterestRate().multiply(NUM100).setScale(2) + "%");
-
+				model.put("borrowRemark", cashDo.getBorrowRemark());
 				JSONArray renewalDetail = beheadBorrowCashRenewalService.getBeheadRenewalDetail(cashDo);
 				JSONObject info = renewalDetail.getJSONObject(0);
+				logger.info("info = " + info);
 				// 续期信息
 				model.put("reAmount", info.getString("principalAmount"));
 				model.put("reAmountUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("principalAmount")) ));
 				model.put("reInterestRate", new BigDecimal(info.getString("interestRate")).multiply(NUM100).setScale(2) + "%" );
 				model.put("remark", "续期");
-				model.put("reRepayCapital", info.getString("capital"));
-				model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("capital")) ));
+				model.put("reRepayCapital", info.getString("payCapital"));
+				model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit( new BigDecimal(info.getString("payCapital")) ));
 				model.put("reServiceRate", new BigDecimal(info.getString("serviceRate")).multiply(NUM100).setScale(2) + "%" );
 
 				model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%");

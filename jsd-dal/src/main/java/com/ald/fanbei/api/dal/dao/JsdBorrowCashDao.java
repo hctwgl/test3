@@ -24,6 +24,8 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
 
     JsdBorrowCashDo getByBorrowNo(@Param("borrowNo") String borrowNo);
 
+    JsdBorrowCashDo getByRenewalNo(@Param("renewalNo") String renewalNo);
+
     JsdBorrowCashDo getByTradeNoXgxy(@Param("tradeNoXgxy") String tradeNoXgxy);
 
     /**

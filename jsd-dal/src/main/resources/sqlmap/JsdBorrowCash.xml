@@ -7,6 +7,10 @@
     <sql id="queryFields">
         id rid,user_id,product_no,borrow_no,trade_no_xgxy,trade_no_ups,type,version,status,review_status,review_remark,amount,arrival_amount,card_number,card_name,overdue_status,overdue_day,overdue_amount,poundage_amount,interest_amount,repay_principle,repay_amount,sum_repaid_interest,sum_repaid_poundage,sum_repaid_overdue,renewal_num,interest_rate,poundage_rate,overdue_rate,risk_daily_rate,gmt_plan_repayment,gmt_arrival,finish_date,remark,gmt_close,gmt_create,gmt_modified,borrow_remark,repay_remark
     </sql>
+
+    <sql id="borrowDo">
+        a.id rid,a.user_id,a.product_no,a.borrow_no,a.trade_no_xgxy,a.trade_no_ups,a.type,a.version,a.status,a.review_status,a.review_remark,a.amount,a.arrival_amount,a.card_number,a.card_name,a.overdue_status,a.overdue_day,a.overdue_amount,a.poundage_amount,a.interest_amount,a.repay_principle,a.repay_amount,a.sum_repaid_interest,a.sum_repaid_poundage,a.sum_repaid_overdue,a.renewal_num,a.interest_rate,a.poundage_rate,a.overdue_rate,a.risk_daily_rate,a.gmt_plan_repayment,a.gmt_arrival,a.finish_date,a.remark,a.gmt_close,a.gmt_create,a.gmt_modified,a.borrow_remark,a.repay_remark
+    </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
@@ -709,4 +713,16 @@
         </if>
         order by a.gmt_plan_repayment desc
     </select>
+
+    <select id="getByRenewalNo" resultType="JsdBorrowCashDo">
+        SELECT
+          <include refid="borrowDo"/>
+        FROM
+        jsd_borrow_cash a ,jsd_borrow_cash_renewal b
+        where a.is_delete = 0 AND b.is_delete = 0
+        AND b.trade_no_xgxy = #{renewalNo}
+        AND a.id = b.borrow_id
+        LIMIT 0,1
+    </select>
+
 </mapper>

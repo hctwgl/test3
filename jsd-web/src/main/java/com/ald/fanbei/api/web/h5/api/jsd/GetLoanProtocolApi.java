@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.common.enums.BorrowVersionType;
@@ -18,6 +19,7 @@ import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.web.common.Context;
 import com.ald.fanbei.api.web.common.JsdH5Handle;
 import com.ald.fanbei.api.web.common.JsdH5HandleResponse;
@@ -37,6 +39,8 @@ public class GetLoanProtocolApi implements JsdH5Handle {
 
 	@Resource
     JsdBorrowCashService jsdBorrowCashService;
+	@Resource
+	JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
     @Resource
     JsdResourceService jsdResourceService;
     
@@ -44,16 +48,23 @@ public class GetLoanProtocolApi implements JsdH5Handle {
     public JsdH5HandleResponse process(Context context) {
     	JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
         GetLoanProtocolParam param = (GetLoanProtocolParam) context.getParamEntity();
-        List<JsdProctocolBo> protocolVos = new ArrayList<>();;
-		JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(param.bizNo);
-		String tyingType = "";
-		logger.info("param = " + JSON.toJSONString(param) + " , jsdBorrowCashDo = " + JSON.toJSONString(jsdBorrowCashDo));
-		if(jsdBorrowCashDo != null){
-			tyingType = jsdBorrowCashDo.getVersion();
-		}else {
-			JSONObject jsonObject = new JSONObject(param.previewParam);
+        
+        List<JsdProctocolBo> protocolVos = new ArrayList<>();
+        
+        String tyingType = "";
+        if(XgxyProtocolType.DELAY.name().equals(param.type) && StringUtil.isNotBlank(param.bizNo)){
+	        JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getByRenewalNo(param.bizNo);
+	        tyingType = jsdBorrowCashDo.getVersion();
+	    } else if(XgxyProtocolType.BORROW.name().equals(param.type) && StringUtil.isNotBlank(param.bizNo)){
+	    	JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(param.bizNo);
+	        tyingType = jsdBorrowCashDo.getVersion();
+	    } else {
+	    	JSONObject jsonObject = new JSONObject(param.previewParam);
 			tyingType = jsonObject.getString("tyingType");
-		}
+	    }
+        
+        logger.info("param = " + JSON.toJSONString(param) + ", tyingType = " + tyingType );
+        
 		if(StringUtil.equals(tyingType, BorrowVersionType.SELL.name())){
 			if(XgxyProtocolType.BORROW.name().equals(param.type)) {
 				protocolVos = jsdBorrowCashService.getBorrowProtocols(param.openId, param.bizNo, param.previewParam);
@@ -74,7 +85,7 @@ public class GetLoanProtocolApi implements JsdH5Handle {
 				logger.warn("Don't support " + param.type + " protocol yet!");
 			}
 		}
-
+		logger.info("protocolVos = " + JSON.toJSONString(protocolVos));
         resp.setData(protocolVos);
         return resp;
     }
