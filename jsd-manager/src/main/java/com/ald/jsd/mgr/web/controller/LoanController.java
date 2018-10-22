@@ -79,7 +79,7 @@ public class LoanController {
         //用户信息
         JsdUserDo jsdUserDo = jsdUserService.getById(jsdBorrowCashDo.getUserId());
         loanDetailsReq.setRealName(jsdUserDo.getRealName());
-        loanDetailsReq.setMobile(jsdUserDo.getMobile());
+        loanDetailsReq.setMobile(jsdUserDo.getMobile().replaceAll("(\\d{3})\\d{4}(\\d{4})","$1****$2"));
         loanDetailsReq.setIdNumber(jsdUserDo.getIdNumber());
         //是否入催
         JsdCollectionBorrowDo jsdCollectionBorrowDo = jsdCollectionBorrowService.selectByBorrowId(jsdBorrowCashDo.getRid());
