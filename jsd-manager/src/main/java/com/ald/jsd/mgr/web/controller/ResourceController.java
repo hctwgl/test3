@@ -8,7 +8,7 @@ import com.ald.jsd.mgr.dal.dao.MgrOperateLogDao;
 import com.ald.jsd.mgr.web.Sessions;
 import com.ald.jsd.mgr.web.dto.req.ResourceReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
-import com.yeepay.g3.utils.common.json.JSONUtils;
+import com.alibaba.fastjson.JSON;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,9 +33,16 @@ public class ResourceController {
     public Resp<Map<String, Object>> getProductConfigureList(HttpServletRequest request){
         Map<String, Object> data=new HashMap<String, Object>();
         JsdResourceDo jsdResourceDo=jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.name(),ResourceType.JSD_RATE_INFO.name());
-        Map map=JSONUtils.jsonToBean(jsdResourceDo.getValue(),Map.class);
-        Map seven= (Map) map.get("7");
-        Map fourteen = (Map) map.get("14");
+        Map map= JSON.parseObject(jsdResourceDo.getValue(),Map.class);
+        Set<String> keys=map.keySet();
+        List<String> list=new ArrayList<>();
+        for (String key : keys) {
+
+        }
+        String  smallDay=Collections.min(list);
+        String bigDay=Collections.max(list);
+        Map seven= (Map) map.get(smallDay);
+        Map fourteen = (Map) map.get(bigDay);
         BigDecimal base=new BigDecimal("100");
         BigDecimal sInterestRate=new BigDecimal((String) seven.get("interestRate"));
         BigDecimal sServiceRate=new BigDecimal((String) seven.get("serviceRate"));
@@ -65,7 +72,7 @@ public class ResourceController {
 
     @RequestMapping(value = {"updateProductConfigure.json"})
     public Resp<JsdResourceDo> updateProductConfigure(@RequestBody String json, HttpServletRequest request){
-        Map map= JSONUtils.jsonToBean(json,Map.class);
+        Map map= JSON.parseObject(json,Map.class);
         BigDecimal base=new BigDecimal(100);
         BigDecimal defaultRate = (new BigDecimal((String)map.get("defaultRate"))).divide(base);
         Long id=Long.parseLong((String)map.get("id"));
@@ -92,12 +99,10 @@ public class ResourceController {
         fourteen.put("serviceRate",fServiceRate.divide(base));
         fourteen.put("overdueRate",fOverdueRate.divide(base));
         //放入值
-        Map map1 = new HashMap();
-        map1.put("7", seven);
-        Map map2 = new HashMap();
-        map2.put("14", fourteen);
-        map1.putAll(map2);
-        String value=JSONUtils.toJsonString(map1);
+        Map loanTerm = new HashMap();
+        loanTerm.put("7", seven);
+        loanTerm.put("14", fourteen);
+        String value=JSON.toJSONString(loanTerm);
         String littleAmount= (String) map.get("littleAmount");
         String bigAmount= (String) map.get("bigAmount");
         String value2=littleAmount+","+bigAmount;
@@ -136,7 +141,7 @@ public class ResourceController {
         data.setRid(resourceReq.id);
         data.setGmtModified(new Date());
         jsdResourceService.updateById(data);
-        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"设置："+JSONUtils.toJsonString(resourceReq));
+        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"设置："+JSON.toJSONString(resourceReq));
         return Resp.succ(data,"");
     }
 }
