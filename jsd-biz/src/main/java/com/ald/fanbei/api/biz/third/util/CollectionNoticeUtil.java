@@ -81,9 +81,9 @@ public class CollectionNoticeUtil extends AbstractThird {
 	 */
 	public boolean consumerRepayment(Map<String, String> reqBo) {
 		try {
-			String url = getReportUrl() + "/report/thirdRepayment";
+			String url = getReportUrl() + "/api/ald/collect/v1/third/repayment2";
 			String reqResult = HttpUtil.post(url, reqBo);
-			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 				return true;
 			}
 			return false;

@@ -134,7 +134,6 @@ public class CuiShouUtils {
             final String repaymentNo = repaymentBo.getRepaymentNo();
             final String repayTime = repaymentBo.getRepayTime();
             final String orderNo = repaymentBo.getOrderNo();
-            Date time = DateUtil.stringToDate(repayTime);
             JSONArray detailsArray = obj.getJSONArray("details");
             String dataId = "";
             Long borrowId = 0l;
