@@ -3,8 +3,6 @@ package com.ald.jsd.mgr.web.controller;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewSwitch;
 import com.ald.fanbei.api.common.enums.ResourceType;
-import com.ald.fanbei.api.common.util.NumberUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.jsd.mgr.dal.dao.MgrOperateLogDao;
 import com.ald.jsd.mgr.web.Sessions;
@@ -86,8 +84,8 @@ public class ResourceController {
     public Resp<JsdResourceDo> updateProductConfigure(@RequestBody String json, HttpServletRequest request){
         Map map= JSON.parseObject(json,Map.class);
         BigDecimal base=new BigDecimal(100);
-        BigDecimal defaultRate = (new BigDecimal((String)map.get("defaultRate"))).divide(base);
-        Long id=Long.parseLong((String)map.get("id"));
+        BigDecimal defaultRate = (new BigDecimal(ObjectUtils.toString(map.get("defaultRate")))).divide(base);
+        Long id=Long.parseLong(ObjectUtils.toString(map.get("id")));
         Set<Map.Entry> keys=map.entrySet();
         List<String> list=new ArrayList<>();
         for (Map.Entry key : keys) {
@@ -111,12 +109,12 @@ public class ResourceController {
         Map seven= (Map) map.get(smallDay);
         Map fourteen = (Map) map.get(bigDay);
         //获取数据
-        BigDecimal sInterestRate=new BigDecimal((String) seven.get("sInterestRate"));
-        BigDecimal sServiceRate=new BigDecimal((String) seven.get("sServiceRate"));
-        BigDecimal sOverdueRate=new BigDecimal((String) seven.get("sOverdueRate"));
-        BigDecimal fInterestRate=new BigDecimal((String) fourteen.get("fInterestRate"));
-        BigDecimal fServiceRate=new BigDecimal((String) fourteen.get("fServiceRate"));
-        BigDecimal fOverdueRate=new BigDecimal((String) fourteen.get("fOverdueRate"));
+        BigDecimal sInterestRate=new BigDecimal(ObjectUtils.toString(seven.get("sInterestRate")));
+        BigDecimal sServiceRate=new BigDecimal(ObjectUtils.toString(seven.get("sServiceRate")));
+        BigDecimal sOverdueRate=new BigDecimal(ObjectUtils.toString(seven.get("sOverdueRate")));
+        BigDecimal fInterestRate=new BigDecimal(ObjectUtils.toString(fourteen.get("fInterestRate")));
+        BigDecimal fServiceRate=new BigDecimal(ObjectUtils.toString(fourteen.get("fServiceRate")));
+        BigDecimal fOverdueRate=new BigDecimal(ObjectUtils.toString(fourteen.get("fOverdueRate")));
         //移除以前的键，不改变数据库的键
         seven.put("interestRate",seven.remove("sInterestRate"));
         seven.put("serviceRate",seven.remove("sServiceRate"));
@@ -135,8 +133,8 @@ public class ResourceController {
         loanTerm.put(smallDay, seven);
         loanTerm.put(bigDay, fourteen);
         String value=JSON.toJSONString(loanTerm);
-        String littleAmount= (String) map.get("littleAmount");
-        String bigAmount= (String) map.get("bigAmount");
+        String littleAmount=ObjectUtils.toString(map.get("littleAmount"));
+        String bigAmount=ObjectUtils.toString(map.get("bigAmount"));
         String value2=littleAmount+","+bigAmount;
         JsdResourceDo jsdResourceDo=new JsdResourceDo();
         jsdResourceDo.setRid(id);
