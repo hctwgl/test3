@@ -334,7 +334,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
         BigDecimal titularBorrowAmount = req.amount; // 并非真实借款额
         BigDecimal borrowDay = new BigDecimal(req.term);
-
+        logger.info("req.term = " + req.term);
         ResourceRateInfoBo borrowRateInfo = jsdResourceService.getRateInfo(req.term);
 
         BigDecimal borrowISRate = borrowRateInfo.interestRate.add(borrowRateInfo.serviceRate);
