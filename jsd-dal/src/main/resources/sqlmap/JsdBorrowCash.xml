@@ -591,7 +591,7 @@
 
     <select id="getReviewLoanList" resultType="LoanDto">
         SELECT
-        a.*,CONCAT(LEFT(b.mobile,3), '****' ,RIGHT(b.mobile,4)) as account,b.real_name
+        a.*,CONCAT(LEFT(b.mobile,3), '****' ,RIGHT(b.mobile,4)) as mobile,b.real_name
         FROM
         jsd_borrow_cash a inner join jsd_user b on a.user_id=b.id where a.is_delete=0
         <if test="status != null and status =='WAIT'">
