@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
@@ -63,7 +64,7 @@ public class WithholdJob {
     ExecutorService executor = Executors.newFixedThreadPool(10);
 
 
-//    @Scheduled(cron = "0 50 23 * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void withhold() {
         String curHostIp = GetHostIpUtil.getIpAddress();
         logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
