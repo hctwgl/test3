@@ -53,12 +53,12 @@ public class ResourceController {
         Map seven= (Map) map.get(smallDay);
         Map fourteen = (Map) map.get(bigDay);
         BigDecimal base=new BigDecimal("100");
-        BigDecimal sInterestRate= (BigDecimal)seven.get("interestRate");
-        BigDecimal sServiceRate=(BigDecimal)(seven.get("serviceRate"));
-        BigDecimal sOverdueRate=(BigDecimal)(seven.get("overdueRate"));
-        BigDecimal fInterestRate=(BigDecimal)(fourteen.get("interestRate"));
-        BigDecimal fServiceRate=(BigDecimal)(fourteen.get("serviceRate"));
-        BigDecimal fOverdueRate=(BigDecimal)(fourteen.get("overdueRate"));
+        BigDecimal sInterestRate=new BigDecimal(ObjectUtils.toString(seven.get("interestRate")));
+        BigDecimal sServiceRate=new BigDecimal(ObjectUtils.toString(seven.get("serviceRate")));
+        BigDecimal sOverdueRate=new BigDecimal(ObjectUtils.toString(seven.get("overdueRate")));
+        BigDecimal fInterestRate=new BigDecimal(ObjectUtils.toString(fourteen.get("interestRate")));
+        BigDecimal fServiceRate=new BigDecimal(ObjectUtils.toString(fourteen.get("serviceRate")));
+        BigDecimal fOverdueRate=new BigDecimal(ObjectUtils.toString(fourteen.get("overdueRate")));
         BigDecimal defaultRate=new BigDecimal(jsdResourceDo.getValue1());
         data.put("sInterestRate",sInterestRate.multiply(base));
         data.put("sServiceRate",sServiceRate.multiply(base));
