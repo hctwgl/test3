@@ -1,6 +1,11 @@
 package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashOverdueLogDo;
+import com.ald.fanbei.api.dal.domain.dto.JsdBorrowCashOverdueLogDto;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Service
@@ -14,4 +19,7 @@ public interface JsdBorrowCashOverdueLogService extends ParentService<JsdBorrowC
 
    int  getBorrowCashOverDueLogByNow(String borrowId);
 
+   List<JsdBorrowCashOverdueLogDto> getListCashOverdueLogByBorrowId(Long borrowId, Date payTime);
+
+   List<JsdBorrowCashOverdueLogDto> getListOrderCashOverdueLogByBorrowId(Long borrowId, Date payTime);
 }

@@ -1,9 +1,11 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashOverdueLogDo;
+import com.ald.fanbei.api.dal.domain.dto.JsdBorrowCashOverdueLogDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Dao
@@ -16,5 +18,10 @@ import java.util.Date;
 public interface JsdBorrowCashOverdueLogDao extends BaseDao<JsdBorrowCashOverdueLogDo, Long> {
 
     int getBorrowCashOverDueLogByNow(@Param("borrowId") String borrowId, @Param("now") Date now);
+
+
+    List<JsdBorrowCashOverdueLogDto> getListCashOverdueLogByBorrowId(@Param("borrowId") Long borrowId, @Param("payTime") Date PayTime);
+
+    List<JsdBorrowCashOverdueLogDto> getListOrderCashOverdueLogByBorrowId(@Param("borrowId") Long borrowId, @Param("payTime") Date PayTime);
 
 }
