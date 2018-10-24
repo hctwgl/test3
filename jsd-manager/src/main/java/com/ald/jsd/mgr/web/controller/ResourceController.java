@@ -73,7 +73,7 @@ public class ResourceController {
         data.put("minLoanTerm",smallDay);
         data.put("maxLoanTerm",bigDay);
         data.put("id",jsdResourceDo.getRid());
-        data.put("productName","极速贷");
+        data.put("productName",jsdResourceDo.getValue4());
         data.put("loanPattern","搭售砍头模式");
         data.put("payRoute","宝付");
         data.put("repaymentStyle","一次性还本付息");
