@@ -202,6 +202,7 @@ public class LoanOverDueJob {
             Long borrowId = borrowCashDo.getRid();
             //搭售商品信息
             JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastValidOrderByBorrowId(borrowId);
+            JsdUserDo userDo= jsdUserService.getById(jsdBorrowLegalOrder.getUserId());
             Map<String, String> buildData = new HashMap<String, String>();
             param.put("borrowNo",borrowCashDo.getTradeNoXgxy());
             HashMap<String,String> map = xgxyUtil.borrowNoticeRequest(param);
@@ -217,7 +218,7 @@ public class LoanOverDueJob {
                 buildData.put("deliveryTime",map.get("gmtSended"));//发货时间
                 buildData.put("gmtConfirmReceived",map.get("gmtReceived"));//确定收货时间
                 buildData.put("logisticsInfo",map.get("traces"));//物流信息
-                buildData.put("idNumberAddress",map.get("idNumberAddress")==null?"":map.get("idNumberAddress").toString());//户籍地址
+                buildData.put("idNumberAddress",map.get("idNumberAddress")==null?userDo.getAddress():map.get("idNumberAddress").toString());//户籍地址
                 buildData.put("company",map.get("company")==null?"":map.get("company").toString());//公司单位
                 buildData.put("job",map.get("job")==null?"":map.get("job").toString());//job
                 buildData.put("marriageState",map.get("marriageState")==null?"":map.get("marriageState").toString());//N未婚Y已婚P订婚
@@ -232,7 +233,6 @@ public class LoanOverDueJob {
                 buildData.put("longitude",map.get("longitude")==null?"":String.valueOf(map.get("longitude")));//借款经度
             }
             //用户信息
-            JsdUserDo userDo= jsdUserService.getById(jsdBorrowLegalOrder.getUserId());
             if(userDo != null){
                 buildData.put("userId",String.valueOf(userDo.getRid()));//userId
                 buildData.put("realName",userDo.getRealName());//姓名
