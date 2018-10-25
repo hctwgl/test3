@@ -87,9 +87,15 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
 
     /**
-     * 获取当前的逾期借款
+     * 获取还款日在此之前借款
      */
     List<JsdBorrowCashDo> getBorrowCashByBeforeToday(int nowPage, int pageSize, Date todayLast);
+
+
+    /**
+     * 获取当前的还款日在此之后借款
+     */
+    List<JsdBorrowCashDo> getBorrowCashRepayByUserIds(String userIds, Date todayLast);
 
     /**
      * 获取当前的测试逾期借款

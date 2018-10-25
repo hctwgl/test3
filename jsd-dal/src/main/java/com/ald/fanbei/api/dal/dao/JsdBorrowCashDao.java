@@ -134,4 +134,12 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      * @return
      */
     List<LoanDto> getRepayList(LoanQuery query);
+
+    /**
+     *获取还款日在当前数据
+     * @param userIds
+     * @param todayLast
+     * @return
+     */
+    List<JsdBorrowCashDo> getBorrowCashRepayByUserIds(@Param("userIds")String userIds,@Param("todayLast") Date todayLast);
 }
