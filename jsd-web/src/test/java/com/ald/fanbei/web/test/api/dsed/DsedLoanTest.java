@@ -26,10 +26,10 @@ public class DsedLoanTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-  String urlBase = "http://localhost:8078";
+  String urlBase = "http://localhost:8088";
 //    String urlBase = "http://192.168.112.40:8080";
     
-    String userName = "18258023758";
+    String userName = "13638668564";
 
 
     /**
@@ -118,15 +118,14 @@ public class DsedLoanTest extends BaseTest {
     public void dsedCollectRepay() throws UnsupportedEncodingException {
         String url = urlBase + "/third/collection/offLineBackMoney";
         Map<String, String> data = new HashMap<>();
-        String salt = "dsedcuishou";
+        String salt = "jsdcuishou";
         data.put("orderNo","333");
         data.put("totalAmount","12.54");
         data.put("repaymentAcc","13989455831");
-        data.put("details","[{'dataId':'1251','amount':'4.27'},{'dataId':'1252','amount':'4.18'},{'dataId':'1253','amount':'4.09'}]");
-        data.put("repayTime","2018-07-18 11:02:46");
-        data.put("companyId","3");
+        data.put("details","[{'dataId':'11542','amount':'1'}]");
+        data.put("repayTime","2018-10-2 11:02:46");
         data.put("type","10");
-        data.put("repaymentNo","333");
+        data.put("repaymentNo","32122233");
         Map<String, String> params = new HashMap<>();
         JSON.toJSONString(data);
         params.put("data",JSON.toJSONString(data));
@@ -135,22 +134,6 @@ public class DsedLoanTest extends BaseTest {
         String sign1 = DigestUtil.encodeHex(pd);
         params.put("sign",sign1);
         HttpUtil.post(url,params);
-
-//        params.put("prdType", "DSED_LOAN");
-//        params.put("amount", 6000 + "");
-//        params.put("userId", "1C9064925F3AAF85BC663FEB1727DD4B");
-//        params.put("period", 3 + "");
-//        params.put("realName", "过帅强");
-//        params.put("loanRemark", "装修");
-//        params.put("repayRemark", "工资");
-//        params.put("bankNo", "6214835896219365");
-//        String data = DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),"aef5c8c6114b8d6a");
-//        Map<String, String> p = new HashMap<>();
-//        p.put("data", data);
-//        p.put("sign", generateSign(params, "aef5c8c6114b8d6a"));
-//        String respResult = HttpUtil.doHttpPostJsonParam(url, JSON.toJSONString(p));
-
-//        System.out.println("request="+ JSON.toJSONString(params) + ", response=" + respResult);
     }
 
 

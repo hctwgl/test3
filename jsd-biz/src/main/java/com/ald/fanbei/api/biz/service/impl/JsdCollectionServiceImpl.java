@@ -68,7 +68,7 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 			data.put("dataId", orderId.toString());//源数据id
 		}
 		repayData.put("repaymentAcc", uid.toString());//还款账户
-
+		repayData.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN));
 		data.put("amount",repayAmount+"");
 		repayData.put("companyId", ConfigProperties.get(Constants.CONFKEY_COLLECTION_COMPANYID));
 		repayData.put("totalAmount", repayAmount+"");

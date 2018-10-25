@@ -81,9 +81,9 @@ public class CollectionNoticeUtil extends AbstractThird {
 	 */
 	public boolean consumerRepayment(Map<String, String> reqBo) {
 		try {
-			String url = getCollectUrl() + "/report/thirdRepayment";
+			String url = getReportUrl() + "/api/ald/collect/v1/third/repayment2";
 			String reqResult = HttpUtil.post(url, reqBo);
-			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 				return true;
 			}
 			return false;
@@ -127,7 +127,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 			byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
 			String sign = DigestUtil.encodeHex(pd);
 			data.put("sign",sign);
-			String url = getCollectUrl() + "/api/collect/third/thirdReconciliateCheck";
+			String url = getReportUrl() + "/api/collect/third/thirdReconciliateCheck";
 			String reqResult =  HttpUtil.post(url, data);
 			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 			}else {
@@ -150,7 +150,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 			byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
 			String sign = DigestUtil.encodeHex(pd);
 			data.put("sign",sign);
-			String url = getCollectUrl() + "/api/collect/third/thridRepaymentCheck";
+			String url = getReportUrl() + "/api/collect/third/thridRepaymentCheck";
 			String reqResult = HttpUtil.post(url, data);
 			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 			}else {
