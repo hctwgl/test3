@@ -282,21 +282,7 @@ public class CuiShouUtils {
             buildData.put("idNumberAddress",map.get("idNumberAddress")==null?"":map.get("idNumberAddress").toString());//户籍地址
             buildData.put("company",map.get("company")==null?"":map.get("company").toString());//公司单位
             buildData.put("job",map.get("job")==null?"":map.get("job").toString());//job
-            String marriageState = "";//N未婚Y已婚P订婚
-            if(map.get("marriageState") != null){
-                if(StringUtil.equals(map.get("marriageState").toString(), MarriageStatus.NO.name())){
-                    marriageState = MarriageStatus.NO.getName();
-                }else if(StringUtil.equals(map.get("marriageState").toString(), MarriageStatus.YES.name())){
-                    marriageState = MarriageStatus.YES.getName();
-                }else if(StringUtil.equals(map.get("marriageState").toString(), MarriageStatus.P.name())){
-                    marriageState = MarriageStatus.P.getName();
-                }else {
-                    marriageState = MarriageStatus.W.getName();
-                }
-            }else {
-                marriageState = MarriageStatus.W.getName();
-            }
-            buildData.put("marriageState",marriageState);
+            buildData.put("marriageState",map.get("marriageState")==null?"":map.get("marriageState").toString());//N未婚Y已婚P订婚
             buildData.put("companyTelephone",map.get("companyTelephone")==null?"":map.get("companyTelephone").toString());//单位电话
             buildData.put("salary",map.get("salary")==null?"":map.get("salary").toString());//税前收入
             buildData.put("channelName",map.get("channelName")==null?"":map.get("channelName").toString());//渠道名称
