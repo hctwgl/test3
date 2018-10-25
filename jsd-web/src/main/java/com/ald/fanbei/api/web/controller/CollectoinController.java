@@ -86,6 +86,7 @@ public class CollectoinController {
     @ResponseBody
     @RequestMapping(value = {"/collectUpdateStatus"}, method = RequestMethod.POST)
     public String collectUpdateStatus(String data,String sign){
+        logger.info("start collectUpdateStatus ------------ data = " + data + ",sign = " + sign);
         return cuiShouUtils.collectUpdateStatus(data,sign);
     }
 
