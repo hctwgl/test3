@@ -350,7 +350,12 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	public void dealRepaymentSucess(String repayNo, String outTradeNo) {
 		final JsdBorrowCashRepaymentDo repaymentDo = jsdBorrowCashRepaymentDao.getByTradeNo(repayNo);
 		final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = jsdBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByTradeNo(repayNo);
-		dealRepaymentSucess(repayNo, outTradeNo, repaymentDo, orderRepaymentDo, JsdRepayType.INITIATIVE);
+		JsdRepayType repayType=JsdRepayType.INITIATIVE;
+		if(JsdRepayType.WITHHOLD.getXgxyCode().equals(repaymentDo.getType())){
+			repayType=JsdRepayType.WITHHOLD;
+		}
+		dealRepaymentSucess(repayNo, outTradeNo, repaymentDo, orderRepaymentDo,repayType);
+
 	}
 
 	@Override
