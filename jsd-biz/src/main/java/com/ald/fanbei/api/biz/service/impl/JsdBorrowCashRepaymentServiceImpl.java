@@ -111,7 +111,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
 			bo.tradeNo = tradeNo;
-            bo.repayType=JsdRepayType.INITIATIVE.name();
             generateRepayRecords(bo);
 			return doRepay(bo,bankPayType);
 		}catch (Exception e) {
@@ -166,7 +165,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				}
 			}
 
-		} else { //还款全部进入订单欠款中
+		} else if(borrowRepayAmount.compareTo(BigDecimal.ZERO)>0){ //还款全部进入订单欠款中
 			orderRepaymentDo = buildOrderRepayment(bo, bo.amount);
 			jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
 		}

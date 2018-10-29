@@ -2,12 +2,16 @@ package com.ald.fanbei.api.web.task;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.JsdRepayType;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,8 +122,15 @@ public class WithholdJob {
                bo.userDo = userDo;
                bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
                JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
-               bo.bankNo=userBankcardDo.getBankCardNumber();
-               Runnable thread= new Runnable() {
+                HashMap<String,Object> map = jsdUserBankcardService.getBankByBankNoAndUserId(bo.userId,userBankcardDo.getBankCardNumber());
+                if (null == map) {
+                    throw new BizException(BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+                }
+                bo.cardName = map.get("bankName").toString();
+                bo.payType = map.get("bankChannel").toString();
+                bo.bankNo=userBankcardDo.getBankCardNumber();
+                bo.repayType=JsdRepayType.WITHHOLD.name();
+                Runnable thread= new Runnable() {
                    @Override
                    public void run() {
                        jsdBorrowCashRepaymentService.repay(bo,RepayType.WITHHOLD.getCode());
