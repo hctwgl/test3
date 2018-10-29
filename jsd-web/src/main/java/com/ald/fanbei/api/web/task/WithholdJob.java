@@ -68,7 +68,7 @@ public class WithholdJob {
     ExecutorService executor = Executors.newFixedThreadPool(10);
 
 
-    @Scheduled(cron = "0 0/10 * * * ?")
+    @Scheduled(cron = "0 50 23 * * ?")
     public void withhold() {
         String curHostIp = GetHostIpUtil.getIpAddress();
         logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
