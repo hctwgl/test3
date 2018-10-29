@@ -122,12 +122,6 @@ public class WithholdJob {
                bo.userDo = userDo;
                bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
                JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
-                HashMap<String,Object> map = jsdUserBankcardService.getBankByBankNoAndUserId(bo.userId,userBankcardDo.getBankCardNumber());
-                if (null == map) {
-                    throw new BizException(BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-                }
-                bo.cardName = map.get("bankName").toString();
-                bo.payType = map.get("bankChannel").toString();
                 bo.bankNo=userBankcardDo.getBankCardNumber();
                 bo.repayType=JsdRepayType.WITHHOLD.name();
                 Runnable thread= new Runnable() {
