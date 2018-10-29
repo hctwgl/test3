@@ -334,8 +334,11 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			if(orderRepaymentDo != null) {
 				changOrderRepaymentStatus(outTradeNo, JsdBorrowLegalRepaymentStatus.NO.getCode(), orderRepaymentDo.getRid());
 			}
-
-			noticeXgxyRepayResult(repaymentDo,orderRepaymentDo,YesNoStatus.NO.getCode(),errorMsg,JsdRepayType.INITIATIVE);
+			JsdRepayType repayType=JsdRepayType.INITIATIVE;
+			if(repaymentDo!=null&&JsdRepayType.WITHHOLD.getXgxyCode().equals(repaymentDo.getType())){
+				repayType=JsdRepayType.WITHHOLD;
+			}
+			noticeXgxyRepayResult(repaymentDo,orderRepaymentDo,YesNoStatus.NO.getCode(),errorMsg,repayType);
 		}
 		catch (Exception e){
 			logger.error("notice eca fail error=",e);
@@ -351,7 +354,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		final JsdBorrowCashRepaymentDo repaymentDo = jsdBorrowCashRepaymentDao.getByTradeNo(repayNo);
 		final JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = jsdBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByTradeNo(repayNo);
 		JsdRepayType repayType=JsdRepayType.INITIATIVE;
-		if(JsdRepayType.WITHHOLD.getXgxyCode().equals(repaymentDo.getType())){
+		if(repaymentDo!=null&&JsdRepayType.WITHHOLD.getXgxyCode().equals(repaymentDo.getType())){
 			repayType=JsdRepayType.WITHHOLD;
 		}
 		dealRepaymentSucess(repayNo, outTradeNo, repaymentDo, orderRepaymentDo,repayType);
