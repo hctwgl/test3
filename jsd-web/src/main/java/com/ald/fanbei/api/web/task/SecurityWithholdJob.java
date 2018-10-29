@@ -25,7 +25,7 @@ import java.util.List;
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component
-@Conditional(SecurityLoanJobCondition.class)
+@Conditional(SecurityWithholdJobCondition.class)
 public class SecurityWithholdJob {
     Logger logger = LoggerFactory.getLogger(SecurityWithholdJob.class);
 
@@ -39,14 +39,14 @@ public class SecurityWithholdJob {
     private WithholdJob withholdJob;
 
 
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0/5 * * * * ?")
     public void laonDueJob(){
         try{
         	logger.info("--------------- securityWithholdJob run start,time=" + new Date());
             JsdResourceDo resDo = jsdResourceService.getByTypeAngSecType(ResourceType.OVERDUE.getCode(), ResourceSecType.OVERDUE_JOB_INTERNAL_UIDS.getCode());
             String userIds = resDo.getValue();
             Date bengin = DateUtil.getTodayLast();
-            List<JsdBorrowCashDo> borrowCashDos= borrowCashService.getBorrowCashRepayByUserIds(userIds.substring(userIds.length()),bengin);
+            List<JsdBorrowCashDo> borrowCashDos= borrowCashService.getBorrowCashRepayByUserIds(userIds.substring(0,userIds.length()-1),bengin);
             withholdJob.dealWithhold(borrowCashDos);
             logger.info("--------------- securityWithholdJob run end,time=" + new Date());
         } catch (Exception e){
