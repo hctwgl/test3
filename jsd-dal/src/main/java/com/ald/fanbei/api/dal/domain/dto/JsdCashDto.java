@@ -31,6 +31,7 @@ public class JsdCashDto extends JsdBorrowCashDo {
 	private Date loanStartTime;//借款开始时间戳（单位：秒）
     private String loanRemark;//借款用途
     private String repayRemark;//还款来源
+
 	/**
 	 * @return the orderNo
 	 */
@@ -163,6 +164,4 @@ public class JsdCashDto extends JsdBorrowCashDo {
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
-	
-    
 }
