@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_offline_overdue_remove表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.JsdOfflineOverdueRemoveDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_repay,user_id,overdue_log_id,remove_overdue,new_overdue,current_amount,type 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtRepay !=null">
+            AND gmt_repay = #{gmtRepay,jdbcType=TIMESTAMP}
+        </if>
+        <if test="userId != null">
+            AND user_id = #{userId,jdbcType=INTEGER}
+        </if>
+        <if test="overdueLogId != null">
+            AND overdue_log_id = #{overdueLogId,jdbcType=VARCHAR}
+        </if>
+        <if test="removeOverdue != null">
+            AND remove_overdue = #{removeOverdue,jdbcType=DECIMAL}
+        </if>
+        <if test="newOverdue != null">
+            AND new_overdue = #{newOverdue,jdbcType=DECIMAL}
+        </if>
+        <if test="currentAmount != null">
+            AND current_amount = #{currentAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="type != null">
+            AND type = #{type,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdOfflineOverdueRemoveDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO jsd_offline_overdue_remove
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtRepay != null">        
+	            gmt_repay,
+	        </if>
+	        <if test="userId != null">        
+	            user_id,
+	        </if>
+	        <if test="overdueLogId != null">        
+	            overdue_log_id,
+	        </if>
+	        <if test="removeOverdue != null">        
+	            remove_overdue,
+	        </if>
+	        <if test="newOverdue != null">        
+	            new_overdue,
+	        </if>
+	        <if test="currentAmount != null">        
+	            current_amount,
+	        </if>
+	        <if test="type != null">        
+	            type,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtRepay != null" >
+		       #{gmtRepay,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="userId != null" >
+		       #{userId,jdbcType=INTEGER},
+		    </if>
+		    <if test="overdueLogId != null" >
+		       #{overdueLogId,jdbcType=VARCHAR},
+		    </if>
+		    <if test="removeOverdue != null" >
+		       #{removeOverdue,jdbcType=DECIMAL},
+		    </if>
+		    <if test="newOverdue != null" >
+		       #{newOverdue,jdbcType=DECIMAL},
+		    </if>
+		    <if test="currentAmount != null" >
+		       #{currentAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="type != null" >
+		       #{type,jdbcType=VARCHAR},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdOfflineOverdueRemoveDo">
+        UPDATE jsd_offline_overdue_remove
+          <set>
+            <if test="gmtRepay != null">        
+                gmt_repay = #{gmtRepay,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null">        
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="overdueLogId != null">        
+                overdue_log_id = #{overdueLogId,jdbcType=VARCHAR},
+            </if>
+            <if test="removeOverdue != null">        
+                remove_overdue = #{removeOverdue,jdbcType=DECIMAL},
+            </if>
+            <if test="newOverdue != null">        
+                new_overdue = #{newOverdue,jdbcType=DECIMAL},
+            </if>
+            <if test="currentAmount != null">        
+                current_amount = #{currentAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="type != null">        
+                type = #{type,jdbcType=VARCHAR},
+            </if>
+            gmt_modified = NOW()
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.JsdOfflineOverdueRemoveDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_offline_overdue_remove
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdOfflineOverdueRemoveDo" parameterType="com.ald.fanbei.api.dal.domain.JsdOfflineOverdueRemoveDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_offline_overdue_remove
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdOfflineOverdueRemoveDo" parameterType="com.ald.fanbei.api.dal.domain.JsdOfflineOverdueRemoveDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_offline_overdue_remove
+        <include refid="commonCondition"/>
+    </select>
+
+    <select id="getInfoByoverdueLogId" resultType="com.ald.fanbei.api.dal.domain.JsdOfflineOverdueRemoveDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_offline_overdue_remove
+        WHERE is_delete = 0 AND overdue_log_id=#{overdueLogId}
+    </select>
+
+</mapper>

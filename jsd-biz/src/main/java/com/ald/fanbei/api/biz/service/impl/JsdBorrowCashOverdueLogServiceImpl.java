@@ -1,9 +1,11 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.dal.domain.dto.JsdBorrowCashOverdueLogDto;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashOverdueLogService;
@@ -38,5 +40,15 @@ public class JsdBorrowCashOverdueLogServiceImpl extends ParentServiceImpl<JsdBor
 		Date date = new Date(System.currentTimeMillis());
 		Date bengin = DateUtil.getStartOfDate(date);
 		return jsdBorrowCashOverdueLogDao.getBorrowCashOverDueLogByNow(borrowId,bengin);
+	}
+
+	@Override
+	public List<JsdBorrowCashOverdueLogDto> getListOrderCashOverdueLogByBorrowId(Long borrowId, Date payTime) {
+		return jsdBorrowCashOverdueLogDao.getListOrderCashOverdueLogByBorrowId(borrowId,payTime);
+	}
+
+	@Override
+	public List<JsdBorrowCashOverdueLogDto> getListCashOverdueLogByBorrowId(Long borrowId, Date payTime) {
+		return jsdBorrowCashOverdueLogDao.getListCashOverdueLogByBorrowId(borrowId,payTime);
 	}
 }

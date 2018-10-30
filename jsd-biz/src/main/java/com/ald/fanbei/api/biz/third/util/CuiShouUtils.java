@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.common.enums.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -25,13 +26,6 @@ import com.ald.fanbei.api.biz.service.JsdCollectionRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.cuishou.CuiShouBackMoney;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.CollectionBorrowStatus;
-import com.ald.fanbei.api.common.enums.CommonReviewStatus;
-import com.ald.fanbei.api.common.enums.GenderType;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.JsdNoticeType;
-import com.ald.fanbei.api.common.enums.JsdRepayType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
@@ -134,7 +128,6 @@ public class CuiShouUtils {
             final String repaymentNo = repaymentBo.getRepaymentNo();
             final String repayTime = repaymentBo.getRepayTime();
             final String orderNo = repaymentBo.getOrderNo();
-            Date time = DateUtil.stringToDate(repayTime);
             JSONArray detailsArray = obj.getJSONArray("details");
             String dataId = "";
             Long borrowId = 0l;
@@ -271,6 +264,7 @@ public class CuiShouUtils {
         Long borrowId = borrowCashDo.getRid();
         //搭售商品信息
         JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastValidOrderByBorrowId(borrowId);
+        JsdUserDo userDo= jsdUserService.getById(jsdBorrowLegalOrder.getUserId());
         Map<String,String>  param = new HashMap<>();
         param.put("borrowNo",borrowCashDo.getTradeNoXgxy());
         HashMap<String,String> map = xgxyUtil.borrowNoticeRequest(param);
@@ -286,9 +280,22 @@ public class CuiShouUtils {
             buildData.put("deliveryTime",map.get("gmtSended"));//发货时间
             buildData.put("gmtConfirmReceived",map.get("gmtReceived"));//确定收货时间
             buildData.put("logisticsInfo",map.get("traces"));//物流信息
+            buildData.put("idNumberAddress",map.get("idNumberAddress")==null?userDo.getAddress():map.get("idNumberAddress").toString());//户籍地址
+            buildData.put("company",map.get("company")==null?"":map.get("company").toString());//公司单位
+            buildData.put("job",map.get("job")==null?"":map.get("job").toString());//job
+            buildData.put("marriageState",map.get("marriageState")==null?"":map.get("marriageState").toString());//N未婚Y已婚P订婚
+            buildData.put("companyTelephone",map.get("companyTelephone")==null?"":map.get("companyTelephone").toString());//单位电话
+            buildData.put("salary",map.get("salary")==null?"":map.get("salary").toString());//税前收入
+            buildData.put("channelName",map.get("channelName")==null?"":map.get("channelName").toString());//渠道名称
+            buildData.put("faceUrl",map.get("faceUrl")==null?"":map.get("faceUrl").toString());//人脸识别图片
+            buildData.put("idBehindUrl",map.get("idBehindUrl")==null?"":map.get("idBehindUrl").toString());//身份证反面照片
+            buildData.put("idFrontUrl",map.get("idFrontUrl")==null?"":map.get("idFrontUrl").toString());//身份证正面照片
+            buildData.put("borrowAddress",map.get("borrowAddress")==null?"":String.valueOf(map.get("borrowAddress")));//借款详细地址
+            buildData.put("latitude",map.get("latitude")==null?"":String.valueOf(map.get("latitude")));//借款纬度
+            buildData.put("longitude",map.get("longitude")==null?"":String.valueOf(map.get("longitude")));//借款经度
         }
         //用户信息
-        JsdUserDo userDo= jsdUserService.getById(jsdBorrowLegalOrder.getUserId());
+
         if(userDo != null){
             buildData.put("userId",String.valueOf(userDo.getRid()));//userId
             buildData.put("realName",userDo.getRealName());//姓名

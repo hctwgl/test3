@@ -8,7 +8,8 @@ import com.ald.jsd.mgr.dal.dao.MgrOperateLogDao;
 import com.ald.jsd.mgr.web.Sessions;
 import com.ald.jsd.mgr.web.dto.req.ResourceReq;
 import com.ald.jsd.mgr.web.dto.resp.Resp;
-import com.yeepay.g3.utils.common.json.JSONUtils;
+import com.alibaba.fastjson.JSON;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,16 +34,31 @@ public class ResourceController {
     public Resp<Map<String, Object>> getProductConfigureList(HttpServletRequest request){
         Map<String, Object> data=new HashMap<String, Object>();
         JsdResourceDo jsdResourceDo=jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.name(),ResourceType.JSD_RATE_INFO.name());
-        Map map=JSONUtils.jsonToBean(jsdResourceDo.getValue(),Map.class);
-        Map seven= (Map) map.get("7");
-        Map fourteen = (Map) map.get("14");
+        Map map= JSON.parseObject(jsdResourceDo.getValue(),Map.class);
+        Set<Map.Entry> keys=map.entrySet();
+        List<String> list=new ArrayList<>();
+        for (Map.Entry key : keys) {
+            String loanTerm=key.getKey().toString();
+            list.add(loanTerm);
+        }
+        String bigDay="";
+        String smallDay="";
+        if(Integer.parseInt(list.get(0))>Integer.parseInt(list.get(1))){
+            bigDay=list.get(0);
+            smallDay=list.get(1);
+        }else{
+            bigDay=list.get(1);
+            smallDay=list.get(0);
+        }
+        Map seven= (Map) map.get(smallDay);
+        Map fourteen = (Map) map.get(bigDay);
         BigDecimal base=new BigDecimal("100");
-        BigDecimal sInterestRate=new BigDecimal((String) seven.get("interestRate"));
-        BigDecimal sServiceRate=new BigDecimal((String) seven.get("serviceRate"));
-        BigDecimal sOverdueRate=new BigDecimal((String) seven.get("overdueRate"));
-        BigDecimal fInterestRate=new BigDecimal((String) fourteen.get("interestRate"));
-        BigDecimal fServiceRate=new BigDecimal((String) fourteen.get("serviceRate"));
-        BigDecimal fOverdueRate=new BigDecimal((String) fourteen.get("overdueRate"));
+        BigDecimal sInterestRate=new BigDecimal(ObjectUtils.toString(seven.get("interestRate")));
+        BigDecimal sServiceRate=new BigDecimal(ObjectUtils.toString(seven.get("serviceRate")));
+        BigDecimal sOverdueRate=new BigDecimal(ObjectUtils.toString(seven.get("overdueRate")));
+        BigDecimal fInterestRate=new BigDecimal(ObjectUtils.toString(fourteen.get("interestRate")));
+        BigDecimal fServiceRate=new BigDecimal(ObjectUtils.toString(fourteen.get("serviceRate")));
+        BigDecimal fOverdueRate=new BigDecimal(ObjectUtils.toString(fourteen.get("overdueRate")));
         BigDecimal defaultRate=new BigDecimal(jsdResourceDo.getValue1());
         data.put("sInterestRate",sInterestRate.multiply(base));
         data.put("sServiceRate",sServiceRate.multiply(base));
@@ -54,9 +70,10 @@ public class ResourceController {
         String[] loanSection=jsdResourceDo.getValue2().split(",");
         data.put("littleAmount",loanSection[0]);
         data.put("bigAmount",loanSection[1]);
-        data.put("loanTerm","7天、14天");
+        data.put("minLoanTerm",smallDay);
+        data.put("maxLoanTerm",bigDay);
         data.put("id",jsdResourceDo.getRid());
-        data.put("productName","极速贷");
+        data.put("productName",jsdResourceDo.getValue4());
         data.put("loanPattern","搭售砍头模式");
         data.put("payRoute","宝付");
         data.put("repaymentStyle","一次性还本付息");
@@ -65,19 +82,39 @@ public class ResourceController {
 
     @RequestMapping(value = {"updateProductConfigure.json"})
     public Resp<JsdResourceDo> updateProductConfigure(@RequestBody String json, HttpServletRequest request){
-        Map map= JSONUtils.jsonToBean(json,Map.class);
+        Map map= JSON.parseObject(json,Map.class);
         BigDecimal base=new BigDecimal(100);
-        BigDecimal defaultRate = (new BigDecimal((String)map.get("defaultRate"))).divide(base);
-        Long id=Long.parseLong((String)map.get("id"));
-        Map seven= (Map) map.get("7");
-        Map fourteen = (Map) map.get("14");
+        BigDecimal defaultRate = (new BigDecimal(ObjectUtils.toString(map.get("defaultRate")))).divide(base);
+        Long id=Long.parseLong(ObjectUtils.toString(map.get("id")));
+        Set<Map.Entry> keys=map.entrySet();
+        List<String> list=new ArrayList<>();
+        for (Map.Entry key : keys) {
+            String loanTerm=key.getKey().toString();
+            try {
+                int num=Integer.valueOf(loanTerm);
+                list.add(String.valueOf(num));
+            }catch (Exception e){
+                continue;
+            }
+        }
+        String bigDay="";
+        String smallDay="";
+        if(Integer.parseInt(list.get(0))>Integer.parseInt(list.get(1))){
+            bigDay=list.get(0);
+            smallDay=list.get(1);
+        }else{
+            bigDay=list.get(1);
+            smallDay=list.get(0);
+        }
+        Map seven= (Map) map.get(smallDay);
+        Map fourteen = (Map) map.get(bigDay);
         //获取数据
-        BigDecimal sInterestRate=new BigDecimal((String) seven.get("sInterestRate"));
-        BigDecimal sServiceRate=new BigDecimal((String) seven.get("sServiceRate"));
-        BigDecimal sOverdueRate=new BigDecimal((String) seven.get("sOverdueRate"));
-        BigDecimal fInterestRate=new BigDecimal((String) fourteen.get("fInterestRate"));
-        BigDecimal fServiceRate=new BigDecimal((String) fourteen.get("fServiceRate"));
-        BigDecimal fOverdueRate=new BigDecimal((String) fourteen.get("fOverdueRate"));
+        BigDecimal sInterestRate=new BigDecimal(ObjectUtils.toString(seven.get("sInterestRate")));
+        BigDecimal sServiceRate=new BigDecimal(ObjectUtils.toString(seven.get("sServiceRate")));
+        BigDecimal sOverdueRate=new BigDecimal(ObjectUtils.toString(seven.get("sOverdueRate")));
+        BigDecimal fInterestRate=new BigDecimal(ObjectUtils.toString(fourteen.get("fInterestRate")));
+        BigDecimal fServiceRate=new BigDecimal(ObjectUtils.toString(fourteen.get("fServiceRate")));
+        BigDecimal fOverdueRate=new BigDecimal(ObjectUtils.toString(fourteen.get("fOverdueRate")));
         //移除以前的键，不改变数据库的键
         seven.put("interestRate",seven.remove("sInterestRate"));
         seven.put("serviceRate",seven.remove("sServiceRate"));
@@ -92,14 +129,12 @@ public class ResourceController {
         fourteen.put("serviceRate",fServiceRate.divide(base));
         fourteen.put("overdueRate",fOverdueRate.divide(base));
         //放入值
-        Map map1 = new HashMap();
-        map1.put("7", seven);
-        Map map2 = new HashMap();
-        map2.put("14", fourteen);
-        map1.putAll(map2);
-        String value=JSONUtils.toJsonString(map1);
-        String littleAmount= (String) map.get("littleAmount");
-        String bigAmount= (String) map.get("bigAmount");
+        Map loanTerm = new HashMap();
+        loanTerm.put(smallDay, seven);
+        loanTerm.put(bigDay, fourteen);
+        String value=JSON.toJSONString(loanTerm);
+        String littleAmount=ObjectUtils.toString(map.get("littleAmount"));
+        String bigAmount=ObjectUtils.toString(map.get("bigAmount"));
         String value2=littleAmount+","+bigAmount;
         JsdResourceDo jsdResourceDo=new JsdResourceDo();
         jsdResourceDo.setRid(id);
@@ -136,7 +171,7 @@ public class ResourceController {
         data.setRid(resourceReq.id);
         data.setGmtModified(new Date());
         jsdResourceService.updateById(data);
-        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"设置："+JSONUtils.toJsonString(resourceReq));
+        mgrOperateLogDao.addOperateLog(Sessions.getRealname(request),"设置："+JSON.toJSONString(resourceReq));
         return Resp.succ(data,"");
     }
 }
