@@ -369,6 +369,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			final RepayDealBo repayDealBo = new RepayDealBo();
 			repayDealBo.curTradeNo = tradeNo;
 			repayDealBo.curOutTradeNo = outTradeNo;
+			repaymentDo.setTradeNoUps(outTradeNo);
 			
 			long resultValue = transactionTemplate.execute(new TransactionCallback<Long>() {
 				@Override
@@ -396,8 +397,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				} catch (Exception e){
 					logger.error("notice eca or collection fail error=" + e.getMessage(), e);
 				}
-			}else {
-
 			}
 
 		}finally {

@@ -79,26 +79,24 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 		//("还款详情, 格式: [{'dataId':'数据编号', 'amount':'还款金额(元, 精确到分)'},...]")
 		repayData.put("details", JSON.toJSONString(list));
 		//--------------------end  催收还款接口需要参数---------------------------
-		
-		
-		//--------------------start 兼容审批模式还款通知 --------------------------
-		if(JsdRepayType.REVIEW_COLLECTION.equals(repayType)) {
-			repayData.put("reviewReuslt", reviewReuslt);
-		}
-		//--------------------end  兼容审批模式还款通知 ---------------------------
 
-		noticeRecordDo.setUserId(uid);
-		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
-		noticeRecordDo.setParams(JSON.toJSONString(repayData));
-		if(list.size()>0){
+
+			//--------------------start 兼容审批模式还款通知 --------------------------
+			if(JsdRepayType.REVIEW_COLLECTION.equals(repayType)) {
+				repayData.put("reviewReuslt", reviewReuslt);
+			}
+			//--------------------end  兼容审批模式还款通知 ---------------------------
+
+			noticeRecordDo.setUserId(uid);
+			noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+			noticeRecordDo.setParams(JSON.toJSONString(repayData));
 			jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
 			if(collectionNoticeUtil.consumerRepayment(repayData)){
 				noticeRecordDo.setRid(noticeRecordDo.getRid());
 				noticeRecordDo.setGmtModified(new Date());
-				jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
-			}else {
-				throw new BizException("nofityRepayment error!");
-			}
+			jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
+		}else {
+			throw new BizException("nofityRepayment error!");
 		}
 	}
 }
