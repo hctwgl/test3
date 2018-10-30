@@ -90,13 +90,15 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 		noticeRecordDo.setUserId(uid);
 		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
 		noticeRecordDo.setParams(JSON.toJSONString(repayData));
-		jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
-		if(collectionNoticeUtil.consumerRepayment(repayData)){
-			noticeRecordDo.setRid(noticeRecordDo.getRid());
-			noticeRecordDo.setGmtModified(new Date());
-			jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
-		}else {
-			throw new BizException("nofityRepayment error!");
+		if(list.size()>0){
+			jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+			if(collectionNoticeUtil.consumerRepayment(repayData)){
+				noticeRecordDo.setRid(noticeRecordDo.getRid());
+				noticeRecordDo.setGmtModified(new Date());
+				jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
+			}else {
+				throw new BizException("nofityRepayment error!");
+			}
 		}
 	}
 }

@@ -491,7 +491,7 @@ public class H5ProtocolController {
 
 			JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PLUS_PROTOCOL_BORROW.name(), ResourceSecType.PLUS_PROTOCOL_BORROW_CASH.name());
 			model.put("bfCompany", resdo.getValue2());
-			model.put("cfCompany", resdo.getValue3());
+			model.put("yfCompany", resdo.getValue3());
 
 			BigDecimal amountLower, interestRate, serviceRate;
 			String borrowRemark ="" ,repayRemark = "";
@@ -508,7 +508,8 @@ public class H5ProtocolController {
 				model.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("gmtPlanRepayment", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-				model.put("url", resdo.getValue1());
+				model.put("bfurl", resdo.getValue1());
+				model.put("yfurl", resdo.getValue4());
 				logger.info("cashDo = " + JSON.toJSONString(cashDo) + "model = " + JSON.toJSONString(model));
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
@@ -582,9 +583,9 @@ public class H5ProtocolController {
 				model.put("reAmountUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getRenewalAmount()));
 				model.put("reInterestRate", renewalDo.getBaseBankRate().multiply(NUM100).setScale(2) + "%");
 				model.put("reGmtStart", DateUtil.formatDate(renewalDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-				model.put("reGmtEnd", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(), (int) (renewalDo.getRenewalDay()-1)), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("reGmtEnd", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(), Math.toIntExact(renewalDo.getRenewalDay())), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("remark", renewalDo.getRemark());
-				model.put("reGmtPlanRepay", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(),(int) (renewalDo.getRenewalDay()-1)), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("reGmtPlanRepay", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(),Math.toIntExact(renewalDo.getRenewalDay())), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("reRepayCapital", renewalDo.getCapital());
 				model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getCapital()));
 				model.put("reServiceRate", renewalDo.getPoundageRate().multiply(NUM100).setScale(2) + "%");
@@ -592,7 +593,8 @@ public class H5ProtocolController {
 				model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%");
 
 				model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-				model.put("url", resdo.getValue3());
+				model.put("bfurl", resdo.getValue3());
+				model.put("yfurl", resdo.getValue4());
 				logger.info("cashDo = " + JSON.toJSONString(cashDo) +" ,renewalDo = " + JSON.toJSONString(renewalDo) + " ,model = " + JSON.toJSONString(model));
 
 				getCompanySeal(model);

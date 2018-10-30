@@ -64,7 +64,7 @@
         甲方（借款人）：$!{realName}<br>
         身份证号：$!{idNumber}<br>
         联系方式：$!{mobile}<br>
-        乙方（出借人）：$!{cfCompany}<br>
+        乙方（出借人）：$!{yfCompany}<br>
         丙方：$!{bfCompany}
         <br><br>
 
@@ -222,12 +222,12 @@
         #if($!{borrowNo})<img style="position:absolute;left:2rem;top:-.2rem;width: 2rem;height: 2rem" src="$!{personUserSeal}">#end
     </div>
     <div style="position:relative;height: 1rem;padding-top: .4rem;">
-        <p>乙方（出借人）：#if($!{borrowNo})$!{cfCompany}#end</p>
-        #if($!{borrowNo})<img src="$!{url}" alt="" style="position:absolute;left:2rem;top:-.2rem;width: 2rem;height: 2rem">#end
+        <p>乙方（出借人）：#if($!{borrowNo})$!{yfCompany}#end</p>
+        #if($!{borrowNo})<img src="$!{yfurl}" alt="" style="position:absolute;left:2rem;top:-.2rem;width: 2rem;height: 2rem">#end
     </div>
     <div style="position:relative;height: 1.2rem;padding-top: .6rem;">
         <p>丙方：#if($!{borrowNo})$!{bfCompany}#end</p>
-        #if($!{borrowNo})<img src="$!{url}" alt="" style="position:absolute;left:1rem;top:0;width: 2rem;height: 2rem">#end
+        #if($!{borrowNo})<img src="$!{bfurl}" alt="" style="position:absolute;left:1rem;top:0;width: 2rem;height: 2rem">#end
     </div>
     <p>签署时间：$!{gmtSign}</p>
 </div>
