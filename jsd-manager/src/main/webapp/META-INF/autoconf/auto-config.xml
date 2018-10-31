@@ -35,6 +35,7 @@
         
         <property name="fbapi.notify.host" defaultValue="http://192.168.112.40:8080" description="异步回调地址" />
         <property name="security.overdue.task" defaultValue="off" description="白名单逾期定时器开关" />
+        <property name="security.withhold.task" defaultValue="off" description="代扣定时器开关" />
         <property name="jsd.task.active.host" defaultValue="192.168.112.40" description="定时器是否执行的依据主机IP" />
         
         <property name="fbapi.ups.url" defaultValue="http://tpayrout.51fanbei.com/ups/main.html" description="ups请求地址" />
