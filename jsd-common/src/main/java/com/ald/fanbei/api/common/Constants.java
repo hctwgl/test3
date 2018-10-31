@@ -76,6 +76,7 @@ public class Constants {
 	
 	public static final String CONFKEY_NOTIFY_HOST = "fbapi.notify.host";
 	public static final String CONFKEY_SECURITY_OVERDUE_TASK = "security.overdue.task";
+	public static final String CONFKEY_SECURITY_WITHHOLD_TASK = "security.withhold.task";
 	public static final String CONFKEY_TASK_ACTIVE_HOST = "jsd.task.active.host";
 	
 	public static final String CONFKEY_UPS_URL = "fbapi.ups.url";

@@ -555,6 +555,14 @@
         and status='TRANSFERRED' limit #{beginIndex}, #{pageSize}
     </select>
 
+    <select id="getBorrowCashRepayByUserIds" resultType="JsdBorrowCashDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_borrow_cash b where b.is_delete=0 and b.gmt_plan_repayment <![CDATA[   <  ]]> #{todayLast}
+        and status='TRANSFERRED' and user_id in (${userIds})
+    </select>
+
     <select id="getBorrowCashOverduePaging" resultType="JsdBorrowCashDo">
         SELECT
         <include refid="queryFields"/>

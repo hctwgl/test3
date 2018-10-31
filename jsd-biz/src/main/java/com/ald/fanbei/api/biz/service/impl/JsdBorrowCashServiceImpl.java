@@ -157,6 +157,11 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
+    public List<JsdBorrowCashDo> getBorrowCashRepayByUserIds(String userIds, Date todayLast) {
+        return jsdBorrowCashDao.getBorrowCashRepayByUserIds(userIds,todayLast);
+    }
+
+    @Override
     public List<JsdBorrowCashDo> getBorrowCashOverdueByUserIds(String userIds) {
         Date date = new Date(System.currentTimeMillis());
         Date bengin = DateUtil.getStartOfDate(date);

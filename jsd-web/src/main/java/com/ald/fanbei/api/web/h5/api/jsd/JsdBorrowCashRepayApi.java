@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.JsdRepayType;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -67,6 +68,7 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
         RepayRequestBo bo = this.extractAndCheck(context, userId);
         bo.userDo = jsdUserDo;
         bo.remoteIp = context.getClientIp();
+        bo.repayType=JsdRepayType.INITIATIVE.name();
         Map<String, Object> hashMap=jsdBorrowCashRepaymentService.repay(bo,bo.payType);
         resp.setData(hashMap);
         return resp;

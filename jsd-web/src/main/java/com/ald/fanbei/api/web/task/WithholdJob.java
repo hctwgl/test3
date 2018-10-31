@@ -2,15 +2,20 @@ package com.ald.fanbei.api.web.task;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.enums.JsdRepayType;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
@@ -63,7 +68,7 @@ public class WithholdJob {
     ExecutorService executor = Executors.newFixedThreadPool(10);
 
 
-//    @Scheduled(cron = "0 50 23 * * ?")
+    @Scheduled(cron = "0 50 23 * * ?")
     public void withhold() {
         String curHostIp = GetHostIpUtil.getIpAddress();
         logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
@@ -93,37 +98,42 @@ public class WithholdJob {
     void  dealWithhold(List<JsdBorrowCashDo> borrowCashDos){
         for(JsdBorrowCashDo jsdBorrowCashDo:borrowCashDos){
             JsdBorrowCashRepaymentDo borrowCashRepaymentDo=jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(jsdBorrowCashDo.getRid());
-            if(borrowCashRepaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(borrowCashRepaymentDo.getStatus())) {
-                logger.info("withhold fail,Loan is processing,borrowId=" + jsdBorrowCashDo.getRid());
-                continue;
-            }
-            RepayRequestBo bo=new RepayRequestBo();
-            BigDecimal sumAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getSumRepaidOverdue(),jsdBorrowCashDo.getSumRepaidInterest(), jsdBorrowCashDo.getSumRepaidPoundage(),
-                    jsdBorrowCashDo.getOverdueAmount(),jsdBorrowCashDo.getPoundageAmount(),jsdBorrowCashDo.getInterestAmount()).subtract(jsdBorrowCashDo.getRepayAmount());// 当前剩余还款
+            try {
+               if(borrowCashRepaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(borrowCashRepaymentDo.getStatus())) {
+                   logger.info("withhold fail,Loan is processing,borrowId=" + jsdBorrowCashDo.getRid());
+                   continue;
+               }
+               RepayRequestBo bo=new RepayRequestBo();
+               BigDecimal sumAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getSumRepaidOverdue(),jsdBorrowCashDo.getSumRepaidInterest(), jsdBorrowCashDo.getSumRepaidPoundage(),
+                       jsdBorrowCashDo.getOverdueAmount(),jsdBorrowCashDo.getPoundageAmount(),jsdBorrowCashDo.getInterestAmount()).subtract(jsdBorrowCashDo.getRepayAmount());// 当前剩余还款
 
-            JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashDateBeforeToday(jsdBorrowCashDo.getRid());
-            if(borrowLegalOrderCashDo!=null){
-                BigDecimal orderAmount = BigDecimalUtil.add(borrowLegalOrderCashDo.getAmount(), borrowLegalOrderCashDo.getSumRepaidInterest(), borrowLegalOrderCashDo.getSumRepaidPoundage(),
-                        borrowLegalOrderCashDo.getOverdueAmount(),borrowLegalOrderCashDo.getInterestAmount(),borrowLegalOrderCashDo.getPoundageAmount()).subtract(borrowLegalOrderCashDo.getRepaidAmount());// 当前剩余还款
-                sumAmount=sumAmount.add(orderAmount);
-            }
-            JsdUserDo userDo=jsdUserService.getById(jsdBorrowCashDo.getUserId());
-            bo.amount=sumAmount;
-            bo.borrowId=jsdBorrowCashDo.getRid();
-            bo.userId = jsdBorrowCashDo.getUserId();
-            bo.borrowNo = jsdBorrowCashDo.getBorrowNo();
-            bo.period = "1";
-            bo.userDo = userDo;
-            bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
-            JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
-            bo.bankNo=userBankcardDo.getBankCardNumber();
-            Runnable thread= new Runnable() {
-                @Override
-                public void run() {
-                    jsdBorrowCashRepaymentService.repay(bo,RepayType.WITHHOLD.getCode());
-                }
-            };
-            executor.submit(thread);
+               JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashDateBeforeToday(jsdBorrowCashDo.getRid());
+               if(borrowLegalOrderCashDo!=null){
+                   BigDecimal orderAmount = BigDecimalUtil.add(borrowLegalOrderCashDo.getAmount(), borrowLegalOrderCashDo.getSumRepaidInterest(), borrowLegalOrderCashDo.getSumRepaidPoundage(),
+                           borrowLegalOrderCashDo.getOverdueAmount(),borrowLegalOrderCashDo.getInterestAmount(),borrowLegalOrderCashDo.getPoundageAmount()).subtract(borrowLegalOrderCashDo.getRepaidAmount());// 当前剩余还款
+                   sumAmount=sumAmount.add(orderAmount);
+               }
+               JsdUserDo userDo=jsdUserService.getById(jsdBorrowCashDo.getUserId());
+               bo.amount=sumAmount;
+               bo.borrowId=jsdBorrowCashDo.getRid();
+               bo.userId = jsdBorrowCashDo.getUserId();
+               bo.borrowNo = jsdBorrowCashDo.getBorrowNo();
+               bo.period = "1";
+               bo.userDo = userDo;
+               bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
+               JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
+                bo.bankNo=userBankcardDo.getBankCardNumber();
+                bo.repayType=JsdRepayType.WITHHOLD.name();
+                Runnable thread= new Runnable() {
+                   @Override
+                   public void run() {
+                       jsdBorrowCashRepaymentService.repay(bo,RepayType.WITHHOLD.getCode());
+                   }
+               };
+               executor.submit(thread);
+           }catch (Exception e){
+               logger.error("withhold  fail, BorrowId="+borrowCashRepaymentDo.getBorrowId(), e);
+           }
         }
 
     }
