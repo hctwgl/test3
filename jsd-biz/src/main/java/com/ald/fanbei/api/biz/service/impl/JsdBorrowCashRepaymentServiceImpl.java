@@ -166,7 +166,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		}
 		bo.repaymentDo=borrowRepaymentDo;
 		bo.orderRepaymentDo=orderRepaymentDo;
-		logger.info("orderRepaymentDo = "+ orderRepaymentDo + "borrowRepaymentDo = " + borrowRepaymentDo );
+		logger.info("orderRepaymentDo = "+ orderRepaymentDo + " ,borrowRepaymentDo = " + borrowRepaymentDo+" ,bo = " +JSON.toJSONString(bo) );
 	}
 
 	private JsdBorrowLegalOrderRepaymentDo buildOrderRepayment(RepayRequestBo bo, BigDecimal repayAmount) {
