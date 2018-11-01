@@ -161,13 +161,12 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 					}
 				}
 
-			} else if(borrowRepayAmount.compareTo(BigDecimal.ZERO)>0){ //还款全部进入订单欠款中
+			} else{ //还款全部进入订单欠款中
 				orderRepaymentDo = buildOrderRepayment(bo, bo.amount);
 				jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
 			}
 			bo.repaymentDo=borrowRepaymentDo;
 			bo.orderRepaymentDo=orderRepaymentDo;
-			logger.info("orderCashDo = "+orderCashDo+",orderRepaymentDo = "+ orderRepaymentDo + " ,borrowRepaymentDo = " + borrowRepaymentDo+" ,bo = " +JSON.toJSONString(bo) );
 		}catch (Exception e){
 			logger.error("generateRepayRecords error",e);
 		}
