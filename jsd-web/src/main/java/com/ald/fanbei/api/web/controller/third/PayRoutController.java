@@ -32,6 +32,10 @@ public class PayRoutController {
 	
 	private static String TRADE_STATUE_SUCC = "00";
 	private static String TRADE_STATUE_FAIL = "10"; // 处理失败
+	
+	private static String RESP_SUCC = "SUCCESS";
+	private static String RESP_ERR = "ERROR";
+	
 
 	@Resource
 	JsdBorrowCashService jsdBorrowCashService;
@@ -56,7 +60,7 @@ public class PayRoutController {
 		for (String paramKey : request.getParameterMap().keySet()) {
 			logger.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
-		return "succ";
+		return "SUCCESS";
 	}
 
 
@@ -66,7 +70,7 @@ public class PayRoutController {
 		for (String paramKey : request.getParameterMap().keySet()) {
 			logger.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
-		return "succ";
+		return "SUCCESS";
 	}
 
 	@RequestMapping(value = { "/authSignValidNotify" }, method = RequestMethod.POST)
@@ -75,7 +79,7 @@ public class PayRoutController {
 		for (String paramKey : request.getParameterMap().keySet()) {
 			logger.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
-		return "succ";
+		return "SUCCESS";
 	}
 
 	@RequestMapping(value = { "/authPay" }, method = RequestMethod.POST)
@@ -84,7 +88,7 @@ public class PayRoutController {
 		for (String paramKey : request.getParameterMap().keySet()) {
 			logger.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
-		return "succ";
+		return "SUCCESS";
 	}
 
 	@RequestMapping(value = { "/authPayConfirm" }, method = RequestMethod.POST)
@@ -93,7 +97,7 @@ public class PayRoutController {
 		for (String paramKey : request.getParameterMap().keySet()) {
 			logger.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
-		return "succ";
+		return "SUCCESS";
 	}
 
 	@RequestMapping(value = { "/signRelease" }, method = RequestMethod.POST)
@@ -102,17 +106,21 @@ public class PayRoutController {
 		for (String paramKey : request.getParameterMap().keySet()) {
 			logger.info("paramKey=" + paramKey + ",paramValue=" + request.getParameterMap().get(paramKey));
 		}
-		return "succ";
+		return "SUCCESS";
 	}
 	
 	@RequestMapping(value = { "/delegatePay" }, method = RequestMethod.POST)
 	@ResponseBody
 	public String delegatePay(HttpServletRequest request, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		
 		String outTradeNo = request.getParameter("orderNo");
 		String tradeState = request.getParameter("tradeState");
 		String merPriv = request.getParameter("merPriv");
 		long result = NumberUtil.objToLongDefault(request.getParameter("reqExt"), 0);
-		logger.info("delegatePay callback, from ups params: " + JSON.toJSONString(request.getParameterMap()));
+		
+		logger.info("delegatePay callback start, from ups params: " + JSON.toJSONString(request.getParameterMap()));
+		String returnCode = RESP_SUCC;
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 打款成功
 				if(PayOrderSource.JSD_LOAN.getCode().equals(merPriv)){
@@ -127,16 +135,20 @@ public class PayRoutController {
 					beheadBorrowCashService.dealBorrowFail(result, outTradeNo, "UPS打款异步反馈失败");
 				}
 			}
-			return "SUCCESS";
 		} catch (Exception e) {
-			logger.error("delegatePay error", e);
-			return "ERROR";
+			logger.error("delegatePay callback error!", e);
+			returnCode = RESP_ERR;
 		}
+		logger.info("delegatePay callback done, request outTradeNo = " + outTradeNo + ", returnCode = " + returnCode + ", MILLS =" + (System.currentTimeMillis() - start));
+		return returnCode;
+		
 	}
 
 	@RequestMapping(value = { "/collect" }, method = RequestMethod.POST)
 	@ResponseBody
 	public String collect(HttpServletRequest request, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		
 		String outTradeNo = request.getParameter("orderNo");
 		String merPriv = request.getParameter("merPriv");
 		String tradeNo = request.getParameter("tradeNo");
@@ -144,7 +156,8 @@ public class PayRoutController {
 		String respCode = StringUtil.null2Str(request.getParameter("respCode"));
 		String respDesc = StringUtil.null2Str(request.getParameter("respDesc"));
 
-		logger.info("collect callback, from ups params: " + JSON.toJSONString(request.getParameterMap()));
+		logger.info("collect callback start, from ups params: " + JSON.toJSONString(request.getParameterMap()));
+		String returnCode = RESP_SUCC;
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代收成功
 				if(PayOrderSource.REPAY_JSD.getCode().equals(merPriv)){
@@ -163,11 +176,12 @@ public class PayRoutController {
 					beheadBorrowCashRenewalService.dealJsdRenewalFail(outTradeNo, tradeNo, true, respCode, respDesc);
 				}
 			}
-			return "SUCCESS";
 		} catch (Exception e) {
-			logger.error("collect error!", e);
-			return "ERROR";
+			logger.error("collect callback error!", e);
+			returnCode = RESP_ERR;
 		}
+		logger.info("collect callback done, request outTradeNo = " + outTradeNo + ", returnCode = " + returnCode + ", MILLS =" + (System.currentTimeMillis() - start));
+		return returnCode;
 	}
 	
 }
