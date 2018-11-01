@@ -36,11 +36,6 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 	@Resource
 	JsdNoticeRecordDao jsdNoticeRecordDao;
 	@Resource
-	JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
-	
-	@Resource
-	JsdNoticeRecordService jsdNoticeRecordService;
-	@Resource
 	CollectionNoticeUtil collectionNoticeUtil;
 	
 	public void nofityRepayment(BigDecimal repayAmount, String curOutTradeNo, String borrowNo, Long orderId, Long uid, JsdRepayType repayType, String reviewReuslt) {

@@ -53,8 +53,6 @@ public class CuiShouUtils {
 
     private final String salt = "jsdcuishou";
 
-    private final String merchantSalt = "jsdpluscuishou";
-
     @Resource
     JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
 
@@ -509,7 +507,7 @@ public class CuiShouUtils {
             String requestReason = request.getParameter("requestReason");//发起平账操作者
             String dataId = request.getParameter("dataId");//唯一交互数据
             String sign = request.getParameter("sign");
-            byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), merchantSalt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+            byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
             logger.info("sign1 = " + sign1 + "sign  = " + sign);
             if (!sign1.equals(sign)) return "false";
@@ -560,7 +558,7 @@ public class CuiShouUtils {
             String payInAccount = request.getParameter("payInAccount");//收款账户
             String payOutAccount = request.getParameter("payOutAccount");//打款账户
             String sign = request.getParameter("sign");
-            byte[] pd = DigestUtil.digestString(tradeNo.getBytes("UTF-8"), merchantSalt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
+            byte[] pd = DigestUtil.digestString(tradeNo.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
             if (!sign1.equals(sign)) return "false";
             if(StringUtil.isEmpty(dataId)){
