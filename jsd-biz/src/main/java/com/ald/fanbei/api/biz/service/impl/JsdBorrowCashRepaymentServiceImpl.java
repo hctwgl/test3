@@ -150,13 +150,11 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		if(borrowRepayAmount.compareTo(BigDecimal.ZERO) > 0) { //还款额大于订单应还总额，拆分还款
 			borrowRepaymentDo = buildRepayment( borrowRepayAmount, bo.repayNo, now, bo.amount,
 					bo.borrowId,  bo.tradeNo, name, bo.userId,bo.repayType,bo.bankNo,bo.payTime,bo.cardName,bo.remark);
-			logger.info("borrowRepaymentDo = "+ borrowRepaymentDo);
 			jsdBorrowCashRepaymentDao.saveRecord(borrowRepaymentDo);
 			bo.repaymentDo=borrowRepaymentDo;
 			if(orderCashDo!=null){
 				if(!JsdBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
 					orderRepaymentDo = buildOrderRepayment(bo, orderRemainShouldRepayAmount);
-					logger.info("orderRepaymentDo = "+ orderRepaymentDo);
 					jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
 					bo.orderRepaymentDo=orderRepaymentDo;
 				}
@@ -164,11 +162,11 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 		} else if(borrowRepayAmount.compareTo(BigDecimal.ZERO)>0){ //还款全部进入订单欠款中
 			orderRepaymentDo = buildOrderRepayment(bo, bo.amount);
-			logger.info("orderRepaymentDo = "+ orderRepaymentDo);
 			jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
 		}
 		bo.repaymentDo=borrowRepaymentDo;
 		bo.orderRepaymentDo=orderRepaymentDo;
+		logger.info("orderRepaymentDo = "+ orderRepaymentDo + "borrowRepaymentDo = " + borrowRepaymentDo );
 	}
 
 	private JsdBorrowLegalOrderRepaymentDo buildOrderRepayment(RepayRequestBo bo, BigDecimal repayAmount) {
