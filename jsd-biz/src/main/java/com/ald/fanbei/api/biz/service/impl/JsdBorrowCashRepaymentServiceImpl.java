@@ -130,43 +130,47 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	}
 
 	private void generateRepayRecords(RepayRequestBo bo) {
-		Date now = new Date();
-		String name = bo.name;
-		JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(bo.borrowId);
-		JsdBorrowCashRepaymentDo borrowRepaymentDo = null;
-		JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = null;
-		BigDecimal orderSumAmount=BigDecimal.ZERO;
-		BigDecimal orderRemainShouldRepayAmount=BigDecimal.ZERO;
-		if(orderCashDo!=null){
-			bo.borrowOrderId = orderCashDo.getBorrowLegalOrderId();
-			bo.borrowLegalOrderCashId=orderCashDo.getRid();
-			orderSumAmount = orderCashDo.getAmount()
-					.add(orderCashDo.getOverdueAmount()).add(orderCashDo.getSumRepaidOverdue())
-					.add(orderCashDo.getPoundageAmount()).add(orderCashDo.getSumRepaidPoundage())
-					.add(orderCashDo.getInterestAmount()).add(orderCashDo.getSumRepaidInterest());
-			orderRemainShouldRepayAmount = orderSumAmount.subtract(orderCashDo.getRepaidAmount()); //剩余应还金额
-		}
-		BigDecimal borrowRepayAmount = bo.amount.subtract(orderRemainShouldRepayAmount);
-		if(borrowRepayAmount.compareTo(BigDecimal.ZERO) > 0) { //还款额大于订单应还总额，拆分还款
-			borrowRepaymentDo = buildRepayment( borrowRepayAmount, bo.repayNo, now, bo.amount,
-					bo.borrowId,  bo.tradeNo, name, bo.userId,bo.repayType,bo.bankNo,bo.payTime,bo.cardName,bo.remark);
-			jsdBorrowCashRepaymentDao.saveRecord(borrowRepaymentDo);
-			bo.repaymentDo=borrowRepaymentDo;
+		try {
+			Date now = new Date();
+			String name = bo.name;
+			JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getBorrowLegalOrderCashByBorrowId(bo.borrowId);
+			JsdBorrowCashRepaymentDo borrowRepaymentDo = null;
+			JsdBorrowLegalOrderRepaymentDo orderRepaymentDo = null;
+			BigDecimal orderSumAmount=BigDecimal.ZERO;
+			BigDecimal orderRemainShouldRepayAmount=BigDecimal.ZERO;
 			if(orderCashDo!=null){
-				if(!JsdBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
-					orderRepaymentDo = buildOrderRepayment(bo, orderRemainShouldRepayAmount);
-					jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
-					bo.orderRepaymentDo=orderRepaymentDo;
-				}
+				bo.borrowOrderId = orderCashDo.getBorrowLegalOrderId();
+				bo.borrowLegalOrderCashId=orderCashDo.getRid();
+				orderSumAmount = orderCashDo.getAmount()
+						.add(orderCashDo.getOverdueAmount()).add(orderCashDo.getSumRepaidOverdue())
+						.add(orderCashDo.getPoundageAmount()).add(orderCashDo.getSumRepaidPoundage())
+						.add(orderCashDo.getInterestAmount()).add(orderCashDo.getSumRepaidInterest());
+				orderRemainShouldRepayAmount = orderSumAmount.subtract(orderCashDo.getRepaidAmount()); //剩余应还金额
 			}
+			BigDecimal borrowRepayAmount = bo.amount.subtract(orderRemainShouldRepayAmount);
+			if(borrowRepayAmount.compareTo(BigDecimal.ZERO) > 0) { //还款额大于订单应还总额，拆分还款
+				borrowRepaymentDo = buildRepayment( borrowRepayAmount, bo.repayNo, now, bo.amount,
+						bo.borrowId,  bo.tradeNo, name, bo.userId,bo.repayType,bo.bankNo,bo.payTime,bo.cardName,bo.remark);
+				jsdBorrowCashRepaymentDao.saveRecord(borrowRepaymentDo);
+				bo.repaymentDo=borrowRepaymentDo;
+				if(orderCashDo!=null){
+					if(!JsdBorrowLegalOrderCashStatus.FINISHED.getCode().equals(orderCashDo.getStatus())) {
+						orderRepaymentDo = buildOrderRepayment(bo, orderRemainShouldRepayAmount);
+						jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
+						bo.orderRepaymentDo=orderRepaymentDo;
+					}
+				}
 
-		} else if(borrowRepayAmount.compareTo(BigDecimal.ZERO)>0){ //还款全部进入订单欠款中
-			orderRepaymentDo = buildOrderRepayment(bo, bo.amount);
-			jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
+			} else if(borrowRepayAmount.compareTo(BigDecimal.ZERO)>0){ //还款全部进入订单欠款中
+				orderRepaymentDo = buildOrderRepayment(bo, bo.amount);
+				jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
+			}
+			bo.repaymentDo=borrowRepaymentDo;
+			bo.orderRepaymentDo=orderRepaymentDo;
+			logger.info("orderCashDo = "+orderCashDo+",orderRepaymentDo = "+ orderRepaymentDo + " ,borrowRepaymentDo = " + borrowRepaymentDo+" ,bo = " +JSON.toJSONString(bo) );
+		}catch (Exception e){
+			logger.error("generateRepayRecords error",e);
 		}
-		bo.repaymentDo=borrowRepaymentDo;
-		bo.orderRepaymentDo=orderRepaymentDo;
-		logger.info("orderRepaymentDo = "+ orderRepaymentDo + " ,borrowRepaymentDo = " + borrowRepaymentDo+" ,bo = " +JSON.toJSONString(bo) );
 	}
 
 	private JsdBorrowLegalOrderRepaymentDo buildOrderRepayment(RepayRequestBo bo, BigDecimal repayAmount) {
