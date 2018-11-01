@@ -112,6 +112,8 @@ public class PayRoutController {
 	@RequestMapping(value = { "/delegatePay" }, method = RequestMethod.POST)
 	@ResponseBody
 	public String delegatePay(HttpServletRequest request, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		
 		String outTradeNo = request.getParameter("orderNo");
 		String tradeState = request.getParameter("tradeState");
 		String merPriv = request.getParameter("merPriv");
@@ -137,7 +139,7 @@ public class PayRoutController {
 			logger.error("delegatePay callback error!", e);
 			returnCode = RESP_ERR;
 		}
-		logger.info("delegatePay callback done, request outTradeNo = " + outTradeNo + ", returnCode = " + returnCode);
+		logger.info("delegatePay callback done, request outTradeNo = " + outTradeNo + ", returnCode = " + returnCode + ", MILLS =" + (System.currentTimeMillis() - start));
 		return returnCode;
 		
 	}
@@ -145,6 +147,8 @@ public class PayRoutController {
 	@RequestMapping(value = { "/collect" }, method = RequestMethod.POST)
 	@ResponseBody
 	public String collect(HttpServletRequest request, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		
 		String outTradeNo = request.getParameter("orderNo");
 		String merPriv = request.getParameter("merPriv");
 		String tradeNo = request.getParameter("tradeNo");
@@ -176,7 +180,7 @@ public class PayRoutController {
 			logger.error("collect callback error!", e);
 			returnCode = RESP_ERR;
 		}
-		logger.info("collect callback done, request outTradeNo = " + outTradeNo + ", returnCode = " + returnCode);
+		logger.info("collect callback done, request outTradeNo = " + outTradeNo + ", returnCode = " + returnCode + ", MILLS =" + (System.currentTimeMillis() - start));
 		return returnCode;
 	}
 	
