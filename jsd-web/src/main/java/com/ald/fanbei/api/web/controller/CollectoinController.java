@@ -65,7 +65,7 @@ public class CollectoinController {
     @ResponseBody
     @RequestMapping(value = {"/collectRepay"}, method = RequestMethod.POST)
     public String collectRepay(HttpServletRequest request){
-        logger.info("start collectRepay , request = " );
+        logger.info("start collectRepay " );
         return cuiShouUtils.collectRepay(request);
     }
 

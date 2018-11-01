@@ -560,7 +560,10 @@ public class CuiShouUtils {
             String sign = request.getParameter("sign");
             byte[] pd = DigestUtil.digestString(tradeNo.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
-            if (!sign1.equals(sign)) return "false";
+            if (!sign1.equals(sign)){
+                logger.info("jsdSign = " + sign1 + " ,requestSign = " +sign);
+                return "false";
+            }
             if(StringUtil.isEmpty(dataId)){
                 logger.info("param is error");
                 return "false";
@@ -595,7 +598,7 @@ public class CuiShouUtils {
             }
             return "success";
         } catch (Exception e) {
-            thirdLog.error("collectImport error = " + e);
+            logger.error("collectRepay error  " , e);
             return "false";
         }
     }
