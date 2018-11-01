@@ -376,8 +376,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			final RepayDealBo repayDealBo = new RepayDealBo();
 			repayDealBo.curTradeNo = tradeNo;
 			repayDealBo.curOutTradeNo = outTradeNo;
-			repaymentDo.setTradeNoUps(outTradeNo==null?"":outTradeNo);
-			
+
 			long resultValue = transactionTemplate.execute(new TransactionCallback<Long>() {
 				@Override
 				public Long doInTransaction(TransactionStatus status) {
@@ -399,7 +398,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			if (resultValue == 1L) {
 				try {
-					this.noticeXgxyRepayResult(repaymentDo, orderRepaymentDo, YesNoStatus.YES.getCode(),"", repayType);
+					this.noticeXgxyRepayResult(repaymentDo, orderRepaymentDo, YesNoStatus.YES.getCode(),"", repayType,outTradeNo);
 					this.notifyCollection(repayDealBo, repaymentDo, orderRepaymentDo, repayType);
 				} catch (Exception e){
 					logger.error("notice eca or collection fail error=" + e.getMessage(), e);
@@ -413,24 +412,24 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			unLockRepay(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
 		}
 	}
-	private void noticeXgxyRepayResult(JsdBorrowCashRepaymentDo repaymentDo,JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, String status,String errorMsg,JsdRepayType type){
+	private void noticeXgxyRepayResult(JsdBorrowCashRepaymentDo repaymentDo,JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, String status,String errorMsg,JsdRepayType type,String outTradeNo){
 		HashMap<String, String> data = null;
 		if(repaymentDo!=null){
-			data = buildNoticeXgxyData(repaymentDo.getTradeNoXgxy(),repaymentDo.getTradeNoUps(),repaymentDo.getBorrowId(),repaymentDo.getActualAmount(),status,errorMsg,type);
+			data = buildNoticeXgxyData(repaymentDo.getTradeNoXgxy(),repaymentDo.getBorrowId(),repaymentDo.getActualAmount(),status,errorMsg,type,outTradeNo);
 		}else if(orderRepaymentDo!=null){
-			data = buildNoticeXgxyData(orderRepaymentDo.getRepayNo(),orderRepaymentDo.getTradeNoUps(),orderRepaymentDo.getBorrowId(),orderRepaymentDo.getActualAmount(),status,errorMsg,type);
+			data = buildNoticeXgxyData(orderRepaymentDo.getRepayNo(),orderRepaymentDo.getBorrowId(),orderRepaymentDo.getActualAmount(),status,errorMsg,type,outTradeNo);
 		}
 		logger.info("noticeXgxyRepayResult data  "+JSON.toJSONString(data));
 
 		// 通知记录
 		jsdNoticeRecordService.dealRepayNoticed(repaymentDo,orderRepaymentDo,data);
 	}
-	private HashMap<String, String> buildNoticeXgxyData(String tradeNoXgxy,String tradeNoUps,Long borrowId,BigDecimal actualAmount, String status,String errorMsg,JsdRepayType type){
+	private HashMap<String, String> buildNoticeXgxyData(String tradeNoXgxy ,Long borrowId,BigDecimal actualAmount, String status,String errorMsg,JsdRepayType type,String outTradeNo){
 		HashMap<String,String> map=new HashMap<>();
 		JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(borrowId);
 		map.put("repayNo",tradeNoXgxy);
 		map.put("status",status);
-		map.put("tradeNo",tradeNoUps);
+		map.put("tradeNo",outTradeNo);
 		map.put("borrowNo",borrowCashDo.getTradeNoXgxy());
 		map.put("period","1");
 		map.put("amount", String.valueOf(actualAmount));
