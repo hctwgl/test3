@@ -380,7 +380,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			final RepayDealBo repayDealBo = new RepayDealBo();
 			repayDealBo.curTradeNo = tradeNo;
 			repayDealBo.curOutTradeNo = outTradeNo;
-			repaymentDo.setTradeNoUps(outTradeNo);
+			repaymentDo.setTradeNoUps(outTradeNo==null?"":outTradeNo);
 			
 			long resultValue = transactionTemplate.execute(new TransactionCallback<Long>() {
 				@Override
