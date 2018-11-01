@@ -489,7 +489,7 @@ public class CuiShouUtils {
         } catch (Exception e) {
             map.put("code","500");
             map.put("info","");
-            thirdLog.error("collectImport error = " + e);
+            thirdLog.error("collectData error = " + e);
             return JSON.toJSONString(map);
         }
     }
