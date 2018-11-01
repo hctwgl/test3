@@ -160,7 +160,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				}
 			}
 
-		} else if(borrowRepayAmount.compareTo(BigDecimal.ZERO)>0){ //还款全部进入订单欠款中
+		} else { //还款全部进入订单欠款中，
 			orderRepaymentDo = buildOrderRepayment(bo, bo.amount);
 			jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
 		}
