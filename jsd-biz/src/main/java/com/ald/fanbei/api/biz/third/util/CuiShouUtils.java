@@ -332,7 +332,7 @@ public class CuiShouUtils {
         BigDecimal currentAmount = BigDecimal.ZERO;//应还本金
         BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
         //应还本金
-        currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidOverdue()).subtract(borrowCashDo.getRepayAmount());
+        currentAmount = BigDecimalUtil.add(borrowCashDo.getArrivalAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidOverdue()).subtract(borrowCashDo.getRepayAmount());
         //催收金额
         BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
         //借款费用
@@ -379,7 +379,7 @@ public class CuiShouUtils {
         buildData.put("longitude",map.get("longitude"));//借款经度
         buildData.put("latitude",map.get("latitude"));//借款纬度
         buildData.put("borrowAmount",String.valueOf(borrowAmount));//借款金额(委案金额)
-        buildData.put("accountAmount",String.valueOf(borrowCashDo.getAmount()));//到账金额
+        buildData.put("accountAmount",String.valueOf(borrowCashDo.getArrivalAmount()));//到账金额
         buildData.put("borrowCash",String.valueOf(borrowCash));//借款费用(手续费加利息)
         buildData.put("appName","jsd");//借款app
         buildData.put("contractPdfUrl","");
