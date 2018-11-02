@@ -31,6 +31,7 @@ public class CollectoinController {
     @ResponseBody
     @RequestMapping(value = {"/offLineBackMoney"}, method = RequestMethod.POST)
     public String offLineBackMoney(HttpServletRequest request){
+        logger.info("offlineRepaymentMoney start , request = " + JSON.toJSONString(request.getParameterMap()));
         return cuiShouUtils.offlineRepaymentMoney(request);
     }
 
@@ -54,6 +55,7 @@ public class CollectoinController {
     @ResponseBody
     @RequestMapping(value = {"/collectReconciliate"}, method = RequestMethod.POST)
     public String collectReconciliate(HttpServletRequest request){
+        logger.info("start collectReconciliate , request = " + JSON.toJSONString(request.getParameterMap()));
         return cuiShouUtils.collectReconciliate(request);
     }
 

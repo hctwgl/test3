@@ -96,14 +96,18 @@ public class CuiShouUtils {
      */
     public String offlineRepaymentMoney(HttpServletRequest request) {
         try {
+            long start = System.currentTimeMillis();
             String sign = request.getParameter("sign");
             String data = request.getParameter("data");
-            logger.info("offlineRepaymentMoney data = " + data +"  ,sign = " + sign);
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
-            if (!sign1.equals(sign)) return JSONObject.toJSONString(new CuiShouBackMoney(201, "sign error"));
+            if (!sign1.equals(sign)) {
+                logger.info("sign error!, requestSign = " + sign +", jsdSign = " + sign1);
+                return JSONObject.toJSONString(new CuiShouBackMoney(201, "sign error"));
+            }
             final JSONObject jsonObject = JSONObject.parseObject(data);
             CuiShouBackMoney result = loanBorrowCashMoney(jsonObject);
+            logger.info("offlineRepaymentMoney end , result = " + JSON.toJSONString(result) +" ,TIMES = " + (System.currentTimeMillis() - start));
             return JSONObject.toJSONString(result);//同步反回接收成功
         } catch (Exception e) {
             thirdLog.error("offlineRepaymentMoney error = " + e);
@@ -184,6 +188,7 @@ public class CuiShouUtils {
      * @return
      */
     public String collectUpdateStatus(String data,String sign) {
+        long start = System.currentTimeMillis();
         try {
             if(StringUtil.isEmpty(data)){
                 thirdLog.error("data is null");
@@ -192,7 +197,10 @@ public class CuiShouUtils {
             logger.info("offlineRepaymentMoney data = " + data +"  ,sign = " + sign);
             byte[] pd = DigestUtil.digestString(data.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
-            if (!sign1.equals(sign)) return "false                                     ";
+            if (!sign1.equals(sign)) {
+                logger.info("sign error!, requestSign = " + sign +", jsdSign = " + sign1);
+                return "false";
+            }
             JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderService.getById(Long.valueOf(data));
             JsdBorrowCashDo cashDo = jsdBorrowCashService.getById(orderDo.getBorrowId());
             JsdBorrowCashDo jsdBorrowCashDo = new JsdBorrowCashDo();
@@ -200,6 +208,7 @@ public class CuiShouUtils {
             jsdBorrowCashDo.setRid(orderDo.getBorrowId());
             int count = jsdBorrowCashService.updateById(jsdBorrowCashDo);
             if(count<1){
+                logger.info("update jsdBorrowCash error!");
                 return "false";
             }
             JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashDateBeforeToday(orderDo.getBorrowId());
@@ -207,6 +216,7 @@ public class CuiShouUtils {
                 jsdBorrowLegalOrderCashDo.setStatus(JsdBorrowCashStatus.FINISHED.name());
                 int orderCount = jsdBorrowLegalOrderCashService.updateById(jsdBorrowLegalOrderCashDo);
                 if(orderCount<1){
+                    logger.info("update jsdBorrowLegalOrderCash error!");
                     return "false";
                 }
             }
@@ -229,9 +239,10 @@ public class CuiShouUtils {
                 noticeRecordDo.setGmtModified(new Date());
                 jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
             }
+            logger.info("collectUpdateStatus end , result = success , TIMES = " + (System.currentTimeMillis() - start));
             return "success";
         } catch (Exception e) {
-            thirdLog.error("collectImport error = " + e);
+            thirdLog.error("collectUpdateStatus error = " + e);
             return "false";
         }
     }
@@ -399,6 +410,7 @@ public class CuiShouUtils {
      * @return
      */
     public String collectImport(String data) {
+        long start = System.currentTimeMillis();
         try {
             if(StringUtil.isEmpty(data)){
                 thirdLog.error("data is null");
@@ -409,6 +421,7 @@ public class CuiShouUtils {
             JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(data));
             JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getById(jsdBorrowLegalOrderDo.getBorrowId());
             collectionPush(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,jsdBorrowLegalOrderDo);
+            logger.info("collectImport end  success !  ,TIMES = " + (System.currentTimeMillis() - start));
             return "success";
         } catch (Exception e) {
             thirdLog.error("collectImport error = " + e.getMessage(), e);
@@ -424,6 +437,7 @@ public class CuiShouUtils {
      * @return
      */
     public String collectData(String data) {
+        long start = System.currentTimeMillis();
         HashMap<String,String> map = new HashMap<>();
         try {
             if(StringUtil.isEmpty(data)){
@@ -451,7 +465,7 @@ public class CuiShouUtils {
                     List<JsdBorrowCashRenewalDo> renewalList =  jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(jsdBorrowLegalOrderDo.getBorrowId());
                     buildData.put("overdueDay",String.valueOf(renewalList.get(count-1).getOverdueDay()));
                 }else {
-                    buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(borrowCashDo.getGmtPlanRepayment(),new Date())));//逾期天数
+                    buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(borrowCashDo.getGmtPlanRepayment()),DateUtil.formatDateToYYYYMMdd(new Date()))));//逾期天数
                 }
                 //案件信息
                 BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
@@ -485,6 +499,7 @@ public class CuiShouUtils {
 
             map.put("code","200");
             map.put("info",JSON.toJSONString(list));
+            logger.info("collectData end  success ! , result = "+ JSON.toJSONString(map) +"TIMES = " + (System.currentTimeMillis() - start));
             return JSON.toJSONString(map);
         } catch (Exception e) {
             map.put("code","500");
@@ -502,6 +517,7 @@ public class CuiShouUtils {
      * @return
      */
     public String collectReconciliate(HttpServletRequest request) {
+        long start = System.currentTimeMillis();
         try {
             String requester = request.getParameter("requester");//发起平账操作者
             String requestReason = request.getParameter("requestReason");//发起平账操作者
@@ -509,8 +525,10 @@ public class CuiShouUtils {
             String sign = request.getParameter("sign");
             byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
             String sign1 = DigestUtil.encodeHex(pd);
-            logger.info("sign1 = " + sign1 + "sign  = " + sign);
-            if (!sign1.equals(sign)) return "false";
+            if (!sign1.equals(sign)) {
+                logger.info("jsdSign = " + sign1 + "requestSign  = " + sign);
+                return "false";
+            }
             if(StringUtil.isEmpty(dataId)){
                 logger.info("param is error");
                 return "false";
@@ -531,6 +549,7 @@ public class CuiShouUtils {
                 logger.info("save is error");
                 return "false";
             }
+            logger.info("collectReconciliate end  success !  TIMES = " + (System.currentTimeMillis() - start));
             return "success";
         } catch (Exception e) {
             thirdLog.error("collectReconciliate error = " , e);
@@ -546,6 +565,7 @@ public class CuiShouUtils {
      * @return
      */
     public String collectRepay(HttpServletRequest request) {
+        long start = System.currentTimeMillis();
         try {
             String requester = request.getParameter("requester");//发起还款操作者
             String repayCert = request.getParameter("repaymentPic");//图片
@@ -596,6 +616,7 @@ public class CuiShouUtils {
                 logger.info("save is error");
                 return "false";
             }
+            logger.info("collectRepay end  success !  , TIMES = " + (System.currentTimeMillis() - start));
             return "success";
         } catch (Exception e) {
             logger.error("collectRepay error  " , e);
