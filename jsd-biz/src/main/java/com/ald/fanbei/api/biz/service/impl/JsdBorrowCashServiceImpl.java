@@ -13,7 +13,6 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.JsdBorrowCashDto;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -618,43 +617,17 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
-    public List<JsdBorrowCashDto> getBorrowCashsInfos(String mobile) {
-        JsdUserDo user = jsdUserDao.getUserInfo(mobile);
-        if (user == null) {
-            return null;
-        }
-        Long uid = user.getRid();
+    public List<JsdBorrowCashDo> getBorrowCashsInfos(Long userId) {
+        List<JsdBorrowCashDo> cashs = new ArrayList<JsdBorrowCashDo>(4);
 
-        List<JsdBorrowCashDto> cashs = new ArrayList<JsdBorrowCashDto>(4);
-
-        List<JsdBorrowCashDto> transedCashDtos = jsdBorrowCashDao.getTransedCashDtosByUserId(uid);
+        List<JsdBorrowCashDo> transedCashDtos = jsdBorrowCashDao.getTransedCashDtosByUserId(userId);
         cashs.addAll(transedCashDtos);
 
-        JsdBorrowCashDto finshCash = jsdBorrowCashDao.getLastFinishCashByUserId(uid);
+        JsdBorrowCashDo finshCash = jsdBorrowCashDao.getLastFinishCashByUserId(userId);
         if (finshCash != null) {
             cashs.add(finshCash);
         }
-
-        for (JsdBorrowCashDto cashDto : cashs) {
-            this.processForDerate(cashDto);
-        }
         return cashs;
-    }
-    private void processForDerate(JsdBorrowCashDto cash) {
-        cash.setShouldRepaySum(caculateShouldRepaySum(cash));
-        cash.setProductName("极速贷");
-        cash.setCompany("绿游");
-        cash.setProductType("现金贷");
-    }
-    private BigDecimal caculateShouldRepaySum(JsdBorrowCashDo cashDo) {
-        BigDecimal amount = cashDo.getAmount();
-        BigDecimal overdueAmount = cashDo.getOverdueAmount();
-        BigDecimal sumRepaidOverdue=cashDo.getSumRepaidOverdue();
-        BigDecimal interestAmount = cashDo.getInterestAmount();
-        BigDecimal sumRepaidInterest=cashDo.getSumRepaidInterest();
-        BigDecimal poundageAmount=cashDo.getPoundageAmount();
-        BigDecimal sumRepaidPoundage=cashDo.getSumRepaidPoundage();
-        return overdueAmount.add(sumRepaidOverdue).add(interestAmount).add(sumRepaidInterest).add(poundageAmount).add(sumRepaidPoundage).add(amount);
     }
 
 }

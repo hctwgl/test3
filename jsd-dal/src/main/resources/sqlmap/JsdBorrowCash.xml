@@ -12,9 +12,6 @@
         a.id rid,a.user_id,a.product_no,a.borrow_no,a.trade_no_xgxy,a.trade_no_ups,a.type,a.version,a.status,a.review_status,a.review_remark,a.amount,a.arrival_amount,a.card_number,a.card_name,a.overdue_status,a.overdue_day,a.overdue_amount,a.poundage_amount,a.interest_amount,a.repay_principle,a.repay_amount,a.sum_repaid_interest,a.sum_repaid_poundage,a.sum_repaid_overdue,a.renewal_num,a.interest_rate,a.poundage_rate,a.overdue_rate,a.risk_daily_rate,a.gmt_plan_repayment,a.gmt_arrival,a.finish_date,a.remark,a.gmt_close,a.gmt_create,a.gmt_modified,a.borrow_remark,a.repay_remark
     </sql>
 
-    <sql id="querySettleFields">
-        b.repay_amount,b.gmt_plan_repayment,b.status,b.gmt_create,b.borrow_no,b.overdue_amount,b.poundage_amount,b.interest_amount,b.sum_repaid_interest,b.sum_repaid_poundage,b.sum_repaid_overdue,b.amount
-    </sql>
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
         WHERE is_delete = 0
@@ -728,25 +725,23 @@
         LIMIT 0,1
     </select>
 
-    <select id="getTransedCashDtosByUserId"  resultType="JsdBorrowCashDto">
+    <select id="getTransedCashDtosByUserId"  resultType="JsdBorrowCashDo" parameterType="java.lang.Long">
         SELECT
-        <include refid="querySettleFields"/>
-        FROM jsd_borrow_cash b
-        LEFT JOIN jsd_user u ON b.user_id = u.id
-        WHERE  b.is_delete = 0
-        AND b.user_id = #{userId}
-        AND b.status = 'TRANSFERRED'
-        ORDER BY b.id DESC
+        <include refid="queryFields"/>
+        FROM jsd_borrow_cash
+        WHERE  is_delete = 0
+        AND user_id = #{userId}
+        AND status = 'APPLY' OR status = 'WAITTRANSED' OR status = 'TRANSFERING' OR status = 'TRANSFERRED'
+        ORDER BY id DESC LIMIT 1
     </select>
 
-    <select id="getLastFinishCashByUserId"  resultType="JsdBorrowCashDto">
+    <select id="getLastFinishCashByUserId"  resultType="JsdBorrowCashDo"  parameterType="java.lang.Long">
         SELECT
-        <include refid="querySettleFields"/>
-        FROM jsd_borrow_cash b
-        LEFT JOIN jsd_user u ON b.user_id = u.id
-        WHERE b.is_delete = 0
-        AND b.user_id = #{userId}
-        AND b.status = 'FINISHED'
-        ORDER BY b.id DESC LIMIT 1
+        <include refid="queryFields"/>
+        FROM jsd_borrow_cash
+        WHERE is_delete = 0
+        AND user_id = #{userId}
+        AND status = 'FINISHED'
+        ORDER BY id DESC LIMIT 1
     </select>
 </mapper>
