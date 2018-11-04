@@ -12,6 +12,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 import com.ald.fanbei.api.dal.query.LoanQuery;
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import com.alibaba.fastjson.JSONArray;
 
 /**
@@ -201,4 +202,20 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      * @return
      */
     List<JsdProctocolBo> getRenewalPlusProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
+
+    /**
+     * 获取结算系统实付数据
+     * @Param list {@link FinaneceDataDo} 对象
+     *@return  <code>List<code/>
+     *
+     * **/
+    List<FinaneceDataDo> getPaymentDetail();
+
+    /**
+     * 获取结算系统应收数据
+     * @Param list {@link FinaneceDataDo} 对象
+     *@return  <code>List<code/>
+     *
+     * **/
+    List<FinaneceDataDo> getPromiseIncomeDetail();
 }

@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -575,6 +576,16 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
         protocolVos.add(protocolVo);
         return protocolVos;
+    }
+
+    @Override
+    public List<FinaneceDataDo> getPaymentDetail() {
+        return jsdBorrowCashDao.getPaymentDetail();
+    }
+
+    @Override
+    public List<FinaneceDataDo> getPromiseIncomeDetail() {
+        return jsdBorrowCashDao.getPromiseIncomeDetail();
     }
 
     /**

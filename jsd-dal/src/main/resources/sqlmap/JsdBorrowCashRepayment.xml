@@ -352,4 +352,13 @@
         ORDER BY
         gmt_create DESC
     </select>
+
+    <select id="getRepayData" resultType="FinaneceDataDo">
+
+SELECT `trade_no` AS 'repayNo',`actual_amount` AS 'actualAmount',`trade_no_ups` AS 'pay_trade_no',`name` AS 'payType',`gmt_create` AS 'actualTime','else' AS tppNid,'JSDREPAY' AS 'productName','CASHINSTALMENT' AS 'productType','JSD' AS liquidationCompany
+  FROM `jsd_borrow_cash_repayment`
+ where `is_delete`= 0
+   AND `status` ='Y'
+   AND `gmt_create` BETWEEN concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 00:00:00") and concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 23:59:59") ;
+    </select>
 </mapper>

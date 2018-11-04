@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.dao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 import com.ald.fanbei.api.dal.query.LoanQuery;
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
@@ -142,4 +143,22 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      * @return
      */
     List<JsdBorrowCashDo> getBorrowCashRepayByUserIds(@Param("userIds")String userIds,@Param("todayLast") Date todayLast);
+
+    /**
+     * 获取结算系统实付数据
+     * @Param list {@link FinaneceDataDo} 对象
+     *@return  <code>List<code/>
+     *
+     * **/
+    List<FinaneceDataDo> getPaymentDetail();
+
+
+    /**
+     * 获取结算系统应收数据
+     * @Param list {@link FinaneceDataDo} 对象
+     *@return  <code>List<code/>
+     *
+     * **/
+    List<FinaneceDataDo> getPromiseIncomeDetail();
+
 }
