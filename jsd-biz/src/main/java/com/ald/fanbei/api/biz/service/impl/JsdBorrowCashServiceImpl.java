@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -628,6 +629,11 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
             cashs.add(finshCash);
         }
         return cashs;
+    }
+
+    @Override
+    public JsdCashDto getGoodsInfoByBorrowNo(String borrowNo) {
+        return jsdBorrowCashDao.getGoodsInfoByBorrowNo(borrowNo);
     }
 
 }

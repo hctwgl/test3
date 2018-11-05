@@ -49,5 +49,6 @@ public interface JsdBorrowCashRepaymentService{
      */
     void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, JsdRepayType type, String channel, Date repayTime, String orderNo, String dataId, String remark);
 
+    List<JsdBorrowCashRepaymentDo> getRepayByBorrowId(Long borrowId);
 
 }

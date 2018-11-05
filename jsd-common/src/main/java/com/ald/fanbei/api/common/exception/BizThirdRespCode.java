@@ -28,6 +28,7 @@ public enum BizThirdRespCode {
     CLEARING_USER_IS_NULL("312","clearing user is null","用户不存在！"),
     CLEARING_IN_ACCOUNT_AMOUNT_ERR("313","clearing in account amount err","入账金额错误！"),
     CLEARING_LOAN_SETTLE_APPLY("314","clearing loan settle is apply","当笔借款为待审核平账中，不可强制结清"),
+    CLEARING_BORROW_IS_NULL("315","clearing borrow is null","借款信息不存在！"),
 
 
 	// BORROW_CASH_CODE 201-299
