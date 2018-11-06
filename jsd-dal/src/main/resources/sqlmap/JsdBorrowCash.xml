@@ -659,7 +659,7 @@
                 jsd_borrow_cash
             WHERE
                 `status` = 'FINISHED'
-            AND to_days(finish_date) = to_days(now())
+            AND to_days(finish_date) = to_days(now()) and is_delete=0
         ) AS repay,
         (
             SELECT
@@ -667,7 +667,7 @@
             FROM
                 jsd_borrow_cash
             WHERE
-                `status` = 'TRANSFERRED'
+                `status` = 'TRANSFERRED' and is_delete=0
                 AND  gmt_plan_repayment <![CDATA[   <  ]]>   DATE_SUB(curdate(),INTERVAL -1 DAY)
         ) AS awaitRepay
     </select>
