@@ -1,14 +1,10 @@
 package com.ald.fanbei.api.web.controller.third;
 
 import com.ald.fanbei.api.biz.bo.ClearingResqBo;
-import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
 import com.ald.fanbei.api.biz.third.util.CuiShouUtils;
-import com.ald.fanbei.api.common.enums.CommonReviewStatus;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.BizThirdRespCode;
 import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.common.util.Base64;
@@ -16,15 +12,12 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
-import com.ald.jsd.mgr.enums.CollectionBorrowStatus;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,7 +35,7 @@ import java.util.*;
  */
 @Controller
 @RequestMapping("/third/finance")
-public class ClearingController {
+public class FinanceController {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -62,8 +55,6 @@ public class ClearingController {
     JsdNoticeRecordService jsdNoticeRecordService;
     @Resource
     CuiShouUtils cuiShouUtils;
-    @Resource
-    TransactionTemplate transactionTemplate;
     @Resource
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
 
@@ -201,37 +192,6 @@ public class ClearingController {
                 }
                 String dataId = String.valueOf(borrowCashDo.getRid() + borrowCashDo.getRenewalNum());
                 jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo, legalOrderCashDo, accountAmount, "", borrowCashDo.getUserId(), JsdRepayType.SETTLE_SYSTEM, null, null, null, dataId, operator+"_"+remark);
-                if(YesNoStatus.YES.getCode().equals(isBalance)){
-                    String reviewRemark = "管理员【" + operator + "】操作强制结清，原因：" + remark;
-
-                    JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(borrowCashDo.getTradeNoXgxy());
-                    JsdBorrowLegalOrderDo legalOrderDo = jsdBorrowLegalOrderService.getLastOrderByBorrowId(cashDo.getRid());
-                    JsdCollectionBorrowDo collBorrowDo = jsdCollectionBorrowService.selectByBorrowId(cashDo.getRid());
-
-                    if(CollectionBorrowStatus.WAIT_FINISH.name().equals(collBorrowDo.getStatus())) {
-                        resqBo.setCode(BizThirdRespCode.CLEARING_LOAN_SETTLE_APPLY.getCode());
-                        resqBo.setMsg(BizThirdRespCode.CLEARING_LOAN_SETTLE_APPLY.getDesc());
-                        return resqBo;
-                    }
-
-                    JsdCollectionBorrowDo collBorrowDoForMod = this.buildCollectionBorrowDoForMod(collBorrowDo.getRid(),
-                            CollectionBorrowStatus.MANUAL_FINISHED.name(), operator, CommonReviewStatus.PASS.name(), reviewRemark);
-
-                    JsdBorrowCashDo cashDoForMod = new JsdBorrowCashDo();
-                    cashDoForMod.setRid(cashDo.getRid());
-                    cashDoForMod.setStatus(JsdBorrowCashStatus.FINISHED.name());
-                    cashDoForMod.setRemark(reviewRemark);
-
-                    transactionTemplate.execute(new TransactionCallback<Integer>() {
-                        public Integer doInTransaction(TransactionStatus status) {
-                            jsdBorrowCashService.updateById(cashDoForMod);
-                            jsdCollectionBorrowService.updateById(collBorrowDoForMod);
-                            cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
-                            jsdNoticeRecordService.dealBorrowNoticed(cashDo, XgxyBorrowNoticeBo.gen(cashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.FINISHED.name(), "强制结清"));
-                            return 1;
-                        }
-                    });
-                }
             }
             return resqBo;
         }catch (Exception e){
@@ -240,16 +200,6 @@ public class ClearingController {
             resqBo.setMsg(BizThirdRespCode.SYSTEM_ERROR.getDesc());
             return resqBo;
         }
-    }
-
-    private JsdCollectionBorrowDo buildCollectionBorrowDoForMod(Long id, String status, String reviewer, String reviewStatus, String reviewRemark) {
-        JsdCollectionBorrowDo collBorrowDoForMod = new JsdCollectionBorrowDo();
-        collBorrowDoForMod.setRid(id);
-        collBorrowDoForMod.setStatus(status);
-        collBorrowDoForMod.setReviewer(reviewer);
-        collBorrowDoForMod.setReviewStatus(reviewStatus);
-        collBorrowDoForMod.setReviewRemark(reviewRemark);
-        return collBorrowDoForMod;
     }
 
     @RequestMapping(value = {"/getBorrowDetail"},method = RequestMethod.POST)

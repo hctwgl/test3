@@ -391,8 +391,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			if (resultValue == 1L) {
 				try {
-//					this.noticeXgxyRepayResult(repaymentDo, orderRepaymentDo, YesNoStatus.YES.getCode(),"", repayType);
-//					this.notifyCollection(repayDealBo, repaymentDo, orderRepaymentDo, repayType);
+					this.noticeXgxyRepayResult(repaymentDo, orderRepaymentDo, YesNoStatus.YES.getCode(),"", repayType);
+					this.notifyCollection(repayDealBo, repaymentDo, orderRepaymentDo, repayType);
 				} catch (Exception e){
 					logger.error("notice eca or collection fail error=" + e.getMessage(), e);
 				}
