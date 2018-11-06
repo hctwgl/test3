@@ -201,7 +201,6 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     /**
      * 如果最近一笔借款为处理中状态，则再向回追溯一条finish的记录.否则查最新的借款为finish的一条记录
-     * @param userName
      * @return
      */
     List<JsdBorrowCashDo> getBorrowCashsInfos(Long userId);
