@@ -327,9 +327,6 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     /**
      * 解析各项利息费用
      *
-     * @param borrowAmount
-     * @param borrowType
-     * @param oriRate
      * @return
      */
     public void resolve(TrialBeforeBorrowBo bo) {
