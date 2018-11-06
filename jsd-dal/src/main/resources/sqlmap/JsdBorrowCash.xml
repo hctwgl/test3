@@ -11,7 +11,10 @@
     <sql id="borrowDo">
         a.id rid,a.user_id,a.product_no,a.borrow_no,a.trade_no_xgxy,a.trade_no_ups,a.type,a.version,a.status,a.review_status,a.review_remark,a.amount,a.arrival_amount,a.card_number,a.card_name,a.overdue_status,a.overdue_day,a.overdue_amount,a.poundage_amount,a.interest_amount,a.repay_principle,a.repay_amount,a.sum_repaid_interest,a.sum_repaid_poundage,a.sum_repaid_overdue,a.renewal_num,a.interest_rate,a.poundage_rate,a.overdue_rate,a.risk_daily_rate,a.gmt_plan_repayment,a.gmt_arrival,a.finish_date,a.remark,a.gmt_close,a.gmt_create,a.gmt_modified,a.borrow_remark,a.repay_remark
     </sql>
-    
+
+    <sql id="queryGoodsInfo">
+        o.order_no,o.goods_name,o.price_amount,o.delivery_user,o.delivery_phone,o.address
+    </sql>
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
         WHERE is_delete = 0
@@ -668,7 +671,6 @@
                 jsd_borrow_cash
             WHERE
                 `status` = 'TRANSFERRED'
-                AND  gmt_plan_repayment <![CDATA[   <  ]]>   DATE_SUB(curdate(),INTERVAL -1 DAY)
         ) AS awaitRepay
     </select>
 
@@ -753,5 +755,32 @@ IF (`status`='FINISHED','已结清','待还款') AS 'status','LVYOU' AS liquidat
  where `is_delete`= 0
    AND `status` IN("TRANSFERRE", "FINISHED")
  AND `gmt_plan_repayment` BETWEEN concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 00:00:00") and concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 23:59:59") ;
+    </select>
+    <select id="getTransedCashDtosByUserId"  resultType="JsdBorrowCashDo" parameterType="java.lang.Long">
+        SELECT
+        <include refid="queryFields"/>
+        FROM jsd_borrow_cash
+        WHERE  is_delete = 0
+        AND user_id = #{userId}
+        AND status = 'APPLY' OR status = 'WAITTRANSED' OR status = 'TRANSFERING' OR status = 'TRANSFERRED'
+        ORDER BY id DESC LIMIT 1
+    </select>
+
+    <select id="getLastFinishCashByUserId"  resultType="JsdBorrowCashDo"  parameterType="java.lang.Long">
+        SELECT
+        <include refid="queryFields"/>
+        FROM jsd_borrow_cash
+        WHERE is_delete = 0
+        AND user_id = #{userId}
+        AND status = 'FINISHED'
+        ORDER BY id DESC LIMIT 1
+    </select>
+
+    <select id="getGoodsInfoByBorrowNo" resultType="JsdCashDto">
+        SELECT
+        <include refid="queryGoodsInfo" />
+        FROM jsd_borrow_cash c LEFT JOIN jsd_borrow_legal_order o
+        ON c.id=o.borrow_id
+        WHERE c.is_delete=0 AND c.borrow_no =#{borrowNo}
     </select>
 </mapper>

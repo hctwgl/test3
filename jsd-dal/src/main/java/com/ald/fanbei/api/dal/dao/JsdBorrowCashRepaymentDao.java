@@ -45,6 +45,8 @@ public interface JsdBorrowCashRepaymentDao extends BaseDao<JsdBorrowCashRepaymen
 
     List<JsdBorrowCashRepaymentDo> getByBorrowTradeNoXgxy(@Param("tradeNoXgxy")String tradeNoXgxy);
 
+    List<JsdBorrowCashRepaymentDo> getRepayByBorrowId(@Param("borrowId")Long borrowId);
+
     /**
      * 获取结算系统实收数据
      * @Param list {@link FinaneceDataDo} 对象

@@ -496,4 +496,16 @@
         ORDER BY id DESC
         LIMIT 1
     </select>
+
+    <select id="getLegalOrderByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_legal_order_cash
+        WHERE
+        borrow_id = #{borrowId}
+        AND
+        is_delete = 0
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
 </mapper>

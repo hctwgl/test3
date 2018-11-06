@@ -399,11 +399,13 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			if (resultValue == 1L) {
 				try {
-					this.noticeXgxyRepayResult(repaymentDo, orderRepaymentDo, YesNoStatus.YES.getCode(),"", repayType,outTradeNo);
+					this.noticeXgxyRepayResult(repaymentDo, orderRepaymentDo, YesNoStatus.YES.getCode(),"", repayType);
 					this.notifyCollection(repayDealBo, repaymentDo, orderRepaymentDo, repayType);
 				} catch (Exception e){
 					logger.error("notice eca or collection fail error=" + e.getMessage(), e);
 				}
+			}else {
+
 			}
 
 		}finally {
@@ -795,11 +797,13 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		return bo;
 	}
 	private void checkOfflineRepayment(String repaymentNo) {
-		if(jsdBorrowCashRepaymentDao.getByTradeNoOut(repaymentNo) != null) {
-			throw new BizException(BizExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
-		}
-		if(jsdBorrowLegalOrderRepaymentDao.getByTradeNoOut(repaymentNo) != null){
-			throw new BizException(BizExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
+		if(repaymentNo!=null && !repaymentNo.equals("")) {
+			if (jsdBorrowCashRepaymentDao.getByTradeNoOut(repaymentNo) != null) {
+				throw new BizException(BizExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
+			}
+			if (jsdBorrowLegalOrderRepaymentDao.getByTradeNoOut(repaymentNo) != null) {
+				throw new BizException(BizExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
+			}
 		}
 	}
 	private long changBorrowRepaymentStatus(String outTradeNo, String status, Long rid,String code,String msg) {
@@ -839,6 +843,13 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		String key = tradeNo + "_success_legalRepay";
 		redisTemplate.delete(key);
 	}
+
+
+	@Override
+	public List<JsdBorrowCashRepaymentDo> getRepayByBorrowId(Long borrowId) {
+		return jsdBorrowCashRepaymentDao.getRepayByBorrowId(borrowId);
+	}
+
 	public static class RepayRequestBo{
 		public Long userId;
 		public BigDecimal repaymentAmount = BigDecimal.ZERO;	// 还款金额

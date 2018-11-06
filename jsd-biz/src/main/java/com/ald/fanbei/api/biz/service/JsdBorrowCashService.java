@@ -10,6 +10,7 @@ import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
 import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
@@ -202,6 +203,16 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      * @return
      */
     List<JsdProctocolBo> getRenewalPlusProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
+
+    /*-------------------------------------------------------第三方接口-----------------------------------------------------------------------------*/
+
+    /**
+     * 如果最近一笔借款为处理中状态，则再向回追溯一条finish的记录.否则查最新的借款为finish的一条记录
+     * @return
+     */
+    List<JsdBorrowCashDo> getBorrowCashsInfos(Long userId);
+
+    JsdCashDto getGoodsInfoByBorrowNo(String borrowNo);
 
     /**
      * 获取结算系统实付数据

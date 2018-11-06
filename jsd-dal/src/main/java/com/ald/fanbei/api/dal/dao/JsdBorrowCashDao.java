@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
 import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
@@ -135,6 +136,14 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      * @return
      */
     List<LoanDto> getRepayList(LoanQuery query);
+
+    /*-------------------------------------------------------第三方接口------------------------------------------------------------------------------*/
+
+    List<JsdBorrowCashDo> getTransedCashDtosByUserId(@Param("userId") Long userId);
+
+    JsdBorrowCashDo getLastFinishCashByUserId(@Param("userId") Long userId);
+
+    JsdCashDto getGoodsInfoByBorrowNo(@Param("borrowNo") String borrowNo);
 
     /**
      *获取还款日在当前数据
