@@ -17,8 +17,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.stereotype.Controller;;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -175,7 +174,7 @@ public class FinanceController {
 
     @RequestMapping(value = {"/inAccount"},method = RequestMethod.POST)
     @ResponseBody
-    public ClearingResqBo offlineRepay(HttpServletRequest request){
+    public ClearingResqBo inAccount(HttpServletRequest request){
         ClearingResqBo resqBo = new ClearingResqBo(BizThirdRespCode.SUCCESS.getCode(), "请求成功");
         try {
             String data = ObjectUtils.toString(request.getParameter("data"));
@@ -189,7 +188,7 @@ public class FinanceController {
                 String borrowNo = object.getString("borrowNo");
                 String accountAmount = object.getString("accountAmount");
                 String operator = object.getString("operator");
-                String isBalance = object.getString("isBalance");
+                String isAllFinish = object.getString("isAllFinish");
                 String remark = object.getString("remark");
                 JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByBorrowNo(borrowNo);
                 JsdBorrowLegalOrderCashDo legalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
@@ -353,6 +352,39 @@ public class FinanceController {
                 jsdCashDto.getPoundageAmount(), jsdCashDto.getSumRepaidPoundage(),legalOrderSumAmount)));
         borrowInfo.put("status", jsdCashDto.getStatus());
         return borrowInfo;
+    }
+    @RequestMapping(value = {"/offlineRepay"}, method = RequestMethod.POST)
+    @ResponseBody
+    public ClearingResqBo offlineRepay(HttpServletRequest request){
+        ClearingResqBo resqBo = new ClearingResqBo(BizThirdRespCode.SUCCESS.getCode(), "请求成功");
+        try {
+            String data = ObjectUtils.toString(request.getParameter("data"));
+            String sign = ObjectUtils.toString(request.getParameter("sign"));
+            if (!checkSign(data, sign)) {
+                resqBo.setCode(BizThirdRespCode.CLEARING_USER_IS_NULL.getCode());
+                resqBo.setMsg(BizThirdRespCode.CLEARING_USER_IS_NULL.getDesc());
+            } else {
+                //解析参数
+                JSONObject object = JSON.parseObject(data);
+                String repayType = object.getString("repayType");
+                String borrowNo = object.getString("borrowNo");
+                String repayAmount = object.getString("repayAmount");
+                String bankCard = object.getString("bankCard");
+                String payTime = object.getString("payTime");
+                String repayTradeNo = object.getString("repayTradeNo");
+                String remark = object.getString("remark");
+                JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(borrowNo);
+                JsdBorrowLegalOrderCashDo legalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
+                String dataId = String.valueOf(borrowCashDo.getRid() + borrowCashDo.getRenewalNum());
+                jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo, legalOrderCashDo, repayAmount, repayTradeNo, borrowCashDo.getUserId(),JsdRepayType.SETTLE_SYSTEM, repayType, new Date(payTime), null, dataId, remark);
+            }
+            return resqBo;
+        }catch (Exception e){
+            logger.error("error message " + e);
+            resqBo.setCode(BizThirdRespCode.SYSTEM_ERROR.getCode());
+            resqBo.setMsg(BizThirdRespCode.SYSTEM_ERROR.getMsg());
+            return resqBo;
+        }
     }
 
     /**
