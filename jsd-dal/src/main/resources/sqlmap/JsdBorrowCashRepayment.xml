@@ -363,7 +363,7 @@
 
     <select id="getRepayData" resultType="FinaneceDataDo">
 
-SELECT `trade_no` AS 'repayNo',`actual_amount` AS 'actualAmount',`trade_no_ups` AS 'pay_trade_no',`name` AS 'payType',`gmt_create` AS 'actualTime','other' AS tppNid,'极速贷还款' AS 'productName','CASHINSTALMENT' AS 'productType','LVYOU' AS liquidationCompany
+SELECT `trade_no` AS 'repayNo',`actual_amount` AS 'actualAmount',`trade_no_ups` AS 'pay_trade_no',`name` AS 'payType',`gmt_create` AS 'actualTime','other' AS tppNid,'极速贷还款' AS 'productName','现金分期' AS 'productType','绿游' AS liquidationCompany
   FROM `jsd_borrow_cash_repayment`
  where `is_delete`= 0
    AND `status` ='Y'
