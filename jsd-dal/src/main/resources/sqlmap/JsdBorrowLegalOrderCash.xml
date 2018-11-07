@@ -503,8 +503,7 @@
         FROM jsd_borrow_legal_order_cash
         WHERE
         borrow_id = #{borrowId}
-        AND
-        is_delete = 0
+        AND is_delete = 0 AND status <![CDATA[!= ]]> 'CLOSED'
         ORDER BY id DESC
         LIMIT 1
     </select>

@@ -212,7 +212,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      */
     List<JsdBorrowCashDo> getBorrowCashsInfos(Long userId);
 
-    JsdCashDto getGoodsInfoByBorrowNo(String borrowNo);
+    JsdCashDto getGoodsInfoByBorrowId(Long borrowId);
 
     /**
      * 获取结算系统实付数据

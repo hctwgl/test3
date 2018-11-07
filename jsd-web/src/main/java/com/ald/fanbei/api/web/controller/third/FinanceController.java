@@ -12,6 +12,7 @@ import com.ald.fanbei.api.common.util.Base64;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
 import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
+import com.ald.jsd.mgr.web.controller.BaseController;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,7 +39,7 @@ import java.util.stream.Collectors;
  */
 @Controller
 @RequestMapping("/third/finance")
-public class FinanceController {
+public class FinanceController extends BaseController{
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -76,8 +78,8 @@ public class FinanceController {
             JSONObject object=JSON.parseObject(data);
             String mobile= object.getString("mobile");
             if(!checkSign(data, sign)){
-                resqBo.setCode(BizThirdRespCode.CLEARING_USER_IS_NULL.getCode());
-                resqBo.setMsg(BizThirdRespCode.CLEARING_USER_IS_NULL.getDesc());
+                resqBo.setCode(BizThirdRespCode.CLEARING_SIGN_STATUS.getCode());
+                resqBo.setMsg(BizThirdRespCode.CLEARING_SIGN_STATUS.getDesc());
             }else {
                 JsdUserDo jsdUserDo=jsdUserService.getUserInfo(mobile);
                 if(jsdUserDo==null){
@@ -90,8 +92,8 @@ public class FinanceController {
                 userInfoMap.put("mobile",jsdUserDo.getMobile());
                 userInfoMap.put("sex",jsdUserDo.getGender());
                 userInfoMap.put("IdNumber",jsdUserDo.getIdNumber());
-                userInfoMap.put("age", jsdUserDo.getBirthday());
-                resqBo.setData(userInfoMap);
+                userInfoMap.put("age", jsdUserDo.getBirthday().replaceAll(".","-"));
+                resqBo.setData(JSON.toJSONString(userInfoMap));
             }
             return resqBo;
         }catch (Exception e){
@@ -113,8 +115,8 @@ public class FinanceController {
             JSONObject object = JSON.parseObject(data);
             String mobile = object.getString("mobile");
             if (!checkSign(data, sign)) {
-                resqBo.setCode(BizThirdRespCode.CLEARING_USER_IS_NULL.getCode());
-                resqBo.setMsg(BizThirdRespCode.CLEARING_USER_IS_NULL.getDesc());
+                resqBo.setCode(BizThirdRespCode.CLEARING_SIGN_STATUS.getCode());
+                resqBo.setMsg(BizThirdRespCode.CLEARING_SIGN_STATUS.getDesc());
             } else {
                 JsdUserDo jsdUserDo = jsdUserService.getUserInfo(mobile);
                 if (jsdUserDo == null) {
@@ -141,12 +143,12 @@ public class FinanceController {
                                                      borrowLegalOrderCash.getPoundageAmount(), borrowLegalOrderCash.getSumRepaidPoundage(),borrowLegalOrderCash.getAmount());
                     }
                     map.put("company", "绿游");
-                    map.put("productType", "极速贷");
+                    map.put("productType", "CASH");
                     map.put("productName", "借吧");
-                    map.put("planRepayTime", String.valueOf(cash.getGmtPlanRepayment()));
+                    map.put("planRepayTime",  DateUtil.formatDate(cash.getGmtPlanRepayment(),"yyyy-MM-dd HH:mm:ss"));
                     map.put("status", cash.getStatus());
                     map.put("orderNo", cash.getBorrowNo());
-                    map.put("tradeTime", String.valueOf(cash.getGmtCreate()));
+                    map.put("tradeTime",  DateUtil.formatDate(cash.getGmtCreate(),"yyyy-MM-dd HH:mm:ss"));
                     map.put("sumAmount", String.valueOf(BigDecimalUtil.add(cash.getAmount(),
                             cash.getOverdueAmount(), cash.getSumRepaidOverdue(),
                             cash.getInterestAmount(), cash.getSumRepaidInterest(),
@@ -161,7 +163,7 @@ public class FinanceController {
                     map.put("overdueAmount",String.valueOf(BigDecimalUtil.add(cash.getOverdueAmount(),cash.getSumRepaidOverdue(),legalOrderOverdueAmount)));
                     borrowList.add(map);
                 }
-                resqBo.setData(borrowList);
+                resqBo.setData(JSON.toJSONString(borrowList));
             }
             return resqBo;
         } catch (Exception e) {
@@ -180,8 +182,8 @@ public class FinanceController {
             String data = ObjectUtils.toString(request.getParameter("data"));
             String sign = ObjectUtils.toString(request.getParameter("sign"));
             if (!checkSign(data, sign)) {
-                resqBo.setCode(BizThirdRespCode.CLEARING_USER_IS_NULL.getCode());
-                resqBo.setMsg(BizThirdRespCode.CLEARING_USER_IS_NULL.getDesc());
+                resqBo.setCode(BizThirdRespCode.CLEARING_SIGN_STATUS.getCode());
+                resqBo.setMsg(BizThirdRespCode.CLEARING_SIGN_STATUS.getDesc());
             } else {
                 //解析参数
                 JSONObject object = JSON.parseObject(data);
@@ -217,8 +219,8 @@ public class FinanceController {
             String data= ObjectUtils.toString(request.getParameter("data"));
             String sign = ObjectUtils.toString(request.getParameter("sign"));
             if(!checkSign(data, sign)){
-                resqBo.setCode(BizThirdRespCode.CLEARING_BORROW_IS_NULL.getCode());
-                resqBo.setMsg(BizThirdRespCode.CLEARING_BORROW_IS_NULL.getDesc());
+                resqBo.setCode(BizThirdRespCode.CLEARING_SIGN_STATUS.getCode());
+                resqBo.setMsg(BizThirdRespCode.CLEARING_SIGN_STATUS.getDesc());
             }else {
                 //解析参数
                 JSONObject object=JSON.parseObject(data);
@@ -236,13 +238,13 @@ public class FinanceController {
                 List<JsdBorrowCashRenewalDo> renewalDetailDos=jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(jsdCashDo.getRid());
                 Map renewalMap= buildRenewalInfos(renewalDetailDos);
                 map.put("repayInfos", buildeRepayInfos(jsdBorrowCashRepaymentDo));
-                map.put("goodsInfo", buildOrderInfo(jsdBorrowCashService.getGoodsInfoByBorrowNo(borrowNo)));
+                map.put("goodsInfo", buildOrderInfo(jsdBorrowCashService.getGoodsInfoByBorrowId(jsdCashDo.getRid())));
                 map.put("borrowInfo", buildBorrowInfo(jsdCashDo,borrowLegalOrderCash));
                 map.put("renewalInfos",renewalMap.get("renewalInfos"));
                 map.put("renewalCount",renewalDetailDos.size());
                 map.put("repayTotalCount",jsdBorrowCashRepaymentDo.size());
                 map.put("renewalAllSumAmount", renewalMap.get("renewalAllSumAmount"));
-                resqBo.setData(map);
+                resqBo.setData(JSON.toJSONString(map));
             }
             return resqBo;
         }catch (Exception e){
@@ -323,7 +325,7 @@ public class FinanceController {
         }
         Map<String,String> borrowInfo=new HashMap<>();
         borrowInfo.put("company", "绿游");
-        borrowInfo.put("productType", "极速贷");
+        borrowInfo.put("productType", "CASH");
         borrowInfo.put("productName", "借吧");
         borrowInfo.put("planRepayTime", String.valueOf(jsdCashDto.getGmtPlanRepayment()));
         if(JsdBorrowCashStatus.FINISHED.name().equals(jsdCashDto.getStatus())){
@@ -361,8 +363,8 @@ public class FinanceController {
             String data = ObjectUtils.toString(request.getParameter("data"));
             String sign = ObjectUtils.toString(request.getParameter("sign"));
             if (!checkSign(data, sign)) {
-                resqBo.setCode(BizThirdRespCode.CLEARING_USER_IS_NULL.getCode());
-                resqBo.setMsg(BizThirdRespCode.CLEARING_USER_IS_NULL.getDesc());
+                resqBo.setCode(BizThirdRespCode.CLEARING_SIGN_STATUS.getCode());
+                resqBo.setMsg(BizThirdRespCode.CLEARING_SIGN_STATUS.getDesc());
             } else {
                 //解析参数
                 JSONObject object = JSON.parseObject(data);
@@ -370,13 +372,13 @@ public class FinanceController {
                 String borrowNo = object.getString("borrowNo");
                 String repayAmount = object.getString("repayAmount");
                 String bankCard = object.getString("bankCard");
-                String payTime = object.getString("payTime");
-                String repayTradeNo = object.getString("repayTradeNo");
+                Date payTime = DateUtil.stringToDate(object.getString("repayTime"));
+                String repayTradeNo = object.getString("tradeNo");
                 String remark = object.getString("remark");
-                JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByTradeNoXgxy(borrowNo);
+                JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByBorrowNo(borrowNo);
                 JsdBorrowLegalOrderCashDo legalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
                 String dataId = String.valueOf(borrowCashDo.getRid() + borrowCashDo.getRenewalNum());
-                jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo, legalOrderCashDo, repayAmount, repayTradeNo, borrowCashDo.getUserId(),JsdRepayType.SETTLE_SYSTEM, repayType, new Date(payTime), null, dataId, remark);
+                jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo, legalOrderCashDo, repayAmount, repayTradeNo, borrowCashDo.getUserId(),JsdRepayType.SETTLE_SYSTEM, repayType, payTime, null, dataId, remark);
             }
             return resqBo;
         }catch (Exception e){
@@ -447,6 +449,6 @@ public class FinanceController {
     }
 
     public String getKey() {
-        return "111111111";
+        return "testC1b6x@6aH$2dlw";
     }
 }

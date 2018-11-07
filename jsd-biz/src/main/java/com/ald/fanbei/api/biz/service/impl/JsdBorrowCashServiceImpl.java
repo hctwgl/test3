@@ -645,8 +645,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
-    public JsdCashDto getGoodsInfoByBorrowNo(String borrowNo) {
-        return jsdBorrowCashDao.getGoodsInfoByBorrowNo(borrowNo);
+    public JsdCashDto getGoodsInfoByBorrowId(Long borrowId) {
+        return jsdBorrowCashDao.getGoodsInfoByBorrowId(borrowId);
     }
 
 }
