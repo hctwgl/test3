@@ -12,7 +12,6 @@ import com.ald.fanbei.api.common.util.Base64;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
 import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
-import com.ald.jsd.mgr.web.controller.BaseController;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.ObjectUtils;
@@ -38,7 +37,7 @@ import java.util.stream.Collectors;
  */
 @Controller
 @RequestMapping("/third/finance")
-public class FinanceController extends BaseController{
+public class FinanceController{
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
