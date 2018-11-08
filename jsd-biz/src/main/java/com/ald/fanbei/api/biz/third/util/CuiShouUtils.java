@@ -110,7 +110,7 @@ public class CuiShouUtils {
             logger.info("offlineRepaymentMoney end , result = " + JSON.toJSONString(result) +" ,TIMES = " + (System.currentTimeMillis() - start));
             return JSONObject.toJSONString(result);//同步反回接收成功
         } catch (Exception e) {
-            thirdLog.error("offlineRepaymentMoney error = " + e);
+            thirdLog.error("offlineRepaymentMoney error = " , e);
             CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney(500, "error");
             return JSON.toJSONString(cuiShouBackMoney);
         }
@@ -170,7 +170,7 @@ public class CuiShouUtils {
             cuiShouBackMoney.setCode(200);
             return cuiShouBackMoney;
         } catch (Exception e) {
-            thirdLog.error("offlineLoanRepaymentNotify error = " + e);
+            thirdLog.error("offlineLoanRepaymentNotify error = " , e);
             cuiShouBackMoney.setCode(500);
             return cuiShouBackMoney;
         }
@@ -242,7 +242,7 @@ public class CuiShouUtils {
             logger.info("collectUpdateStatus end , result = success , TIMES = " + (System.currentTimeMillis() - start));
             return "success";
         } catch (Exception e) {
-            thirdLog.error("collectUpdateStatus error = " + e);
+            thirdLog.error("collectUpdateStatus error = " , e);
             return "false";
         }
     }
@@ -504,7 +504,7 @@ public class CuiShouUtils {
         } catch (Exception e) {
             map.put("code","500");
             map.put("info","");
-            thirdLog.error("collectData error = " + e);
+            thirdLog.error("collectData error = " , e);
             return JSON.toJSONString(map);
         }
     }
