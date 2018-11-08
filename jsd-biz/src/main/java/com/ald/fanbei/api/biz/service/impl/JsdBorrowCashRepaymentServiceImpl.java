@@ -749,8 +749,12 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				BigDecimal restOverdue=jsdBorrowCashDo.getOverdueAmount().subtract(removeOverdue);
 				BigDecimal restAmount=BigDecimalUtil.add(jsdBorrowCashDo.getInterestAmount(),jsdBorrowCashDo.getPoundageAmount(),jsdBorrowCashDo.getOverdueAmount().subtract(removeOverdue),
 						jsdBorrowCashDo.getSumRepaidInterest(),jsdBorrowCashDo.getSumRepaidPoundage(),jsdBorrowCashDo.getSumRepaidOverdue(),jsdBorrowCashDo.getAmount()).subtract(jsdBorrowCashDo.getRepayAmount());
-				BigDecimal restPayAmount=payAmount.subtract(jsdBorrowLegalOrderCashDo.getRepaidAmount());
-				if(restPayAmount.compareTo(restAmount)<0){
+				
+				if(jsdBorrowLegalOrderCashDo != null) {
+					payAmount = payAmount.subtract(jsdBorrowLegalOrderCashDo.getRepaidAmount());
+				}
+				
+				if(payAmount.compareTo(restAmount)<0){
 					logger.info("part offline repay，borrowId="+jsdBorrowCashDo.getRid());
 				}else {
 					JsdBorrowCashDo borrowCashDo = new JsdBorrowCashDo();
