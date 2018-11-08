@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
@@ -166,7 +167,8 @@ public class XgxyUtil extends AbstractThird {
 
 
 
-    public String getUserContactsInfo(String openId) {
+    public HashMap<String,Object> getUserContactsInfo(String openId) {
+        HashMap<String, Object> result = new HashMap<>();
         try {
             Map<String, String> data = new HashMap<>();
             data.put("userId", openId);
@@ -181,16 +183,19 @@ public class XgxyUtil extends AbstractThird {
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/getAddressList";
             String reqResult = HttpUtilForXgxy.post(url, JSON.toJSONString(params), dataStr);
             if (StringUtil.isBlank(reqResult)) {
-                return "";
+                return result;
             }
             XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
             if (XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
-                return (String) resp.getData();
+                JSONObject object = JSON.parseObject(resp.getData());
+                result.put("integrationContact",object.get("IntegrationContact"));
+                result.put("contacts",object.get("contacts"));
+                return result;
             }
         } catch (Exception e) {
             logger.info("overDueNoticeRequest request fail", e);
         }
-        return "";
+        return result;
     }
 
     /**

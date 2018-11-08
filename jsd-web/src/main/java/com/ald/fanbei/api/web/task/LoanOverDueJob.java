@@ -175,12 +175,13 @@ public class LoanOverDueJob {
     void addUserContancts(Long userId){
     	try {
     		JsdUserDo userDo = jsdUserService.getById(userId);
-            String contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
-            if(StringUtils.isNotBlank(contacts)){
+            HashMap<String,Object> contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
+            if(StringUtils.isNotBlank(String.valueOf(contacts))){
                 List<JsdUserContactsDo> userContactsDo= jsdUserContactsService.getUserContactsByUserId(userId);
                 JsdUserContactsDo contactsDo=new JsdUserContactsDo();
                 contactsDo.setUserId(userId);
-                contactsDo.setContactsMobile(contacts);
+                contactsDo.setContactsMobile(contacts.get("contacts").toString());
+                contactsDo.setIntegrationContact(contacts.get("integrationContact").toString());
                 if(userContactsDo.size()==0){
                     jsdUserContactsService.saveRecord(contactsDo);
                 }else {
