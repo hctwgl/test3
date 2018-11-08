@@ -44,7 +44,9 @@ public class GetBorrowStatusApi implements JsdH5Handle {
     		status = XgxyBorrowNotifyStatus.FINISHED.name();
     	}else if(JsdBorrowCashStatus.TRANSFERRED.name().equals(cashDo.getStatus())){
     		status = XgxyBorrowNotifyStatus.SUCCESS.name();
-    	}else {
+    	}else if(JsdBorrowCashStatus.APPLY.name().equals(cashDo.getStatus()) || JsdBorrowCashStatus.TRANSFERING.name().equals(cashDo.getStatus())){
+			status = JsdBorrowCashStatus.TRANSFERING.name();
+		} else {
     		status = XgxyBorrowNotifyStatus.FAILED.name();
     	}
     	map.put("status", status);
