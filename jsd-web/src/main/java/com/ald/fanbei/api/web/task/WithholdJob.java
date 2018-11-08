@@ -56,7 +56,7 @@ public class WithholdJob {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
-    private static String SWITCH="open";
+    private static String SWITCH = "open";
 
     ExecutorService executor = Executors.newFixedThreadPool(10);
 
@@ -65,8 +65,8 @@ public class WithholdJob {
 
     @Scheduled(cron = "0 50 23 * * ?")
     public void withhold() {
-        JsdResourceDo resourceDo=jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceSecType.WITHHOLD_JOB_CONFIG.getCode());
-        if(SWITCH.equals(resourceDo.getValue())){
+        JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceSecType.WITHHOLD_JOB_CONFIG.getCode());
+        if(resourceDo != null && SWITCH.equals(resourceDo.getValue())){
             String curHostIp = GetHostIpUtil.getIpAddress();
             logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
             try {
