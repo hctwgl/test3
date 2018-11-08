@@ -25,7 +25,7 @@ import com.alibaba.fastjson.JSON;
 @Component("collectionNoticeUtil")
 public class CollectionNoticeUtil extends AbstractThird {
 
-	private final String salt = "jsdpluscuishou";
+	private final String salt = "jsdcuishou";
 
 	//收发路径
 	private static String getReportUrl() {

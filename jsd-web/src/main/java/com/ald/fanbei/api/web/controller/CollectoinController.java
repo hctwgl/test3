@@ -4,6 +4,7 @@ package com.ald.fanbei.api.web.controller;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -30,6 +31,7 @@ public class CollectoinController {
     @ResponseBody
     @RequestMapping(value = {"/offLineBackMoney"}, method = RequestMethod.POST)
     public String offLineBackMoney(HttpServletRequest request){
+        logger.info("offlineRepaymentMoney start , request = " + JSON.toJSONString(request.getParameterMap()));
         return cuiShouUtils.offlineRepaymentMoney(request);
     }
 
@@ -53,6 +55,7 @@ public class CollectoinController {
     @ResponseBody
     @RequestMapping(value = {"/collectReconciliate"}, method = RequestMethod.POST)
     public String collectReconciliate(HttpServletRequest request){
+        logger.info("start collectReconciliate , request = " + JSON.toJSONString(request.getParameterMap()));
         return cuiShouUtils.collectReconciliate(request);
     }
 
@@ -64,6 +67,7 @@ public class CollectoinController {
     @ResponseBody
     @RequestMapping(value = {"/collectRepay"}, method = RequestMethod.POST)
     public String collectRepay(HttpServletRequest request){
+        logger.info("start collectRepay " );
         return cuiShouUtils.collectRepay(request);
     }
 
@@ -75,6 +79,7 @@ public class CollectoinController {
     @ResponseBody
     @RequestMapping(value = {"/collectData"}, method = RequestMethod.POST)
     public String collectData(String data){
+        logger.info("start collectData , data = " + data);
         return cuiShouUtils.collectData(data);
     }
 
