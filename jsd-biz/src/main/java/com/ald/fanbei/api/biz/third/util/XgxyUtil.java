@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ald.fanbei.api.biz.bo.xgxy.XgxyReqBo;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Component;
 
@@ -185,9 +186,9 @@ public class XgxyUtil extends AbstractThird {
             if (StringUtil.isBlank(reqResult)) {
                 return result;
             }
-            XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
-            if (XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
-                JSONObject object = JSON.parseObject(resp.getData());
+            XgxyReqBo resp = JSONObject.parseObject(reqResult, XgxyReqBo.class);
+            if (XGXY_REQ_CODE_SUCC.equals(resp.get("code"))) {
+                JSONObject object = JSON.parseObject(resp.get("data").toString());
                 result.put("integrationContact",object.get("IntegrationContact"));
                 result.put("contacts",object.get("contacts"));
                 return result;
