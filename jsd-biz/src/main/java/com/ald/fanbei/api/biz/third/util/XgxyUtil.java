@@ -182,6 +182,7 @@ public class XgxyUtil extends AbstractThird {
             params.put("sign", generateSign(JSONObject.parseObject(dataStr), PRIVATE_KEY));
 
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/getAddressList";
+
             String reqResult = HttpUtilForXgxy.post(url, JSON.toJSONString(params), dataStr);
             if (StringUtil.isBlank(reqResult)) {
                 return result;
@@ -189,7 +190,7 @@ public class XgxyUtil extends AbstractThird {
             XgxyReqBo resp = JSONObject.parseObject(reqResult, XgxyReqBo.class);
             if (XGXY_REQ_CODE_SUCC.equals(resp.get("code"))) {
                 JSONObject object = JSON.parseObject(resp.get("data").toString());
-                result.put("integrationContact",object.get("IntegrationContact"));
+                result.put("integrationContact",object.get("integrationContact"));
                 result.put("contacts",object.get("contacts"));
                 return result;
             }
