@@ -64,9 +64,9 @@ public class BorrowCashRepaymentBillApi implements JsdH5Handle {
         String status = "AWAIT_REPAY";	// 待还款
         if(cashDo.getRepayAmount().compareTo(BigDecimal.ZERO) > 0){
         	status = "PART_REPAY";		// 部分还款
-        	if(JsdBorrowCashStatus.FINISHED.name().equals(cashDo.getStatus())) {
-        		status = "FINISHED";	// 已还清	
-        	}
+        }
+        if(JsdBorrowCashStatus.FINISHED.name().equals(cashDo.getStatus())) {
+            status = "FINISHED";	// 已还清
         }
         JsdBorrowCashRepaymentDo repaymentDo = jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(cashDo.getRid());
         if(repaymentDo!=null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(repaymentDo.getStatus())){
@@ -105,9 +105,9 @@ public class BorrowCashRepaymentBillApi implements JsdH5Handle {
         String status = "AWAIT_REPAY";	// 待还款
         if(cashDo.getRepayAmount().compareTo(BigDecimal.ZERO) > 0){
             status = "PART_REPAY";		// 部分还款
-            if(JsdBorrowCashStatus.FINISHED.name().equals(cashDo.getStatus())) {
-                status = "FINISHED";	// 已还清
-            }
+        }
+        if(JsdBorrowCashStatus.FINISHED.name().equals(cashDo.getStatus())) {
+            status = "FINISHED";	// 已还清
         }
         JsdBorrowCashRepaymentDo repaymentDo = jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(cashDo.getRid());
         if(repaymentDo!=null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(repaymentDo.getStatus())){
