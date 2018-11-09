@@ -466,6 +466,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCvv2(safeCode);
 		reqBo.setValidDate(validDate);
 		reqBo.setSmsFlag("1");
+		reqBo.setBankCode(bankCode);
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "quickPay", orderNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);

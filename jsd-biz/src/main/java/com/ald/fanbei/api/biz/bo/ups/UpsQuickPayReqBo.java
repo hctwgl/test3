@@ -22,6 +22,7 @@ public class UpsQuickPayReqBo extends UpsReqBo {
 	private String expiredTime      ;   //交易过期时间
 	private String productName      ;   //商品名称
 	private String smsFlag;				//是否发送短信验证码（0：不发送短信1：发送短信）---1.7版本
+	private String bankCode;			//银行简码
 
 	private String cvv2;
 	private String validDate;
@@ -121,6 +122,14 @@ public class UpsQuickPayReqBo extends UpsReqBo {
 	public void setSmsFlag(String smsFlag) {
 		this.smsFlag = smsFlag;
 		this.put("smsFlag", smsFlag);
+	}
+
+	public String getBankCode() {
+		return bankCode;
+	}
+	public void setBankCode(String bankCode) {
+		this.bankCode = bankCode;
+		this.put("bankCode", bankCode);
 	}
 	
 	

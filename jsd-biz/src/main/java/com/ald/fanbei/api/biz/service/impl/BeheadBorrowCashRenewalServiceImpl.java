@@ -4,11 +4,15 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
+import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.dal.dao.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,26 +34,12 @@ import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRenewalServiceImpl.JsdRe
 import com.ald.fanbei.api.biz.service.impl.JsdResourceServiceImpl.ResourceRateInfoBo;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.BankPayChannel;
-import com.ald.fanbei.api.common.enums.CollectionBorrowStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
-import com.ald.fanbei.api.common.enums.JsdNoticeType;
-import com.ald.fanbei.api.common.enums.JsdRenewalDetailStatus;
-import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowCashRenewalDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderRepaymentDao;
-import com.ald.fanbei.api.dal.dao.JsdUserBankcardDao;
-import com.ald.fanbei.api.dal.dao.JsdUserDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
@@ -80,11 +70,7 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
     @Resource
     private JsdBorrowCashRenewalDao jsdBorrowCashRenewalDao;
     @Resource
-    private JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
-    @Resource
     private JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
-    @Resource
-    private JsdBorrowLegalOrderRepaymentDao jsdBorrowLegalOrderRepaymentDao;
     @Resource
     private JsdBorrowCashDao jsdBorrowCashDao;
     @Resource
@@ -92,11 +78,9 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
     @Resource
     private TransactionTemplate transactionTemplate;
     @Resource
-    private JsdUserDao jsdUserDao;
+    private JsdNoticeRecordDao jsdNoticeRecordDao;
     @Resource
     private JsdNoticeRecordService jsdNoticeRecordService;
-    @Resource
-    private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
     @Resource
     private JsdResourceService jsdResourceService;
     @Resource
@@ -105,6 +89,8 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
     private XgxyUtil xgxyUtil;
     @Resource
     private RedisTemplate<String, ?> redisTemplate;
+	@Resource
+	CollectionNoticeUtil collectionNoticeUtil;
 
     
     @Override
@@ -341,6 +327,24 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 			//续期成功，调用西瓜信用通知接口
 			JsdBorrowCashRenewalDo renewalDo = jsdBorrowCashRenewalDao.getByTradeNo(renewalNo);
 			notifyXgxyRenewalResult("Y", tradeNoOut, "", renewalDo);
+			List<JsdBorrowLegalOrderDo> list = jsdBorrowLegalOrderDao.getBorrowOrdersByBorrowId(renewalDo.getBorrowId());
+			logger.info("renewalDo = " + renewalDo + ",list = " +list);
+			if(StringUtils.equals(renewalDo.getOverdueStatus(), YesNoStatus.YES.getCode())){
+				Map<String, String> repayData = new HashMap<String, String>();
+				repayData.put("info",String.valueOf(list.get(1).getRid()));
+				JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
+				noticeRecordDo.setType(JsdNoticeType.COLLECT_RENEW.code);
+				noticeRecordDo.setUserId(renewalDo.getUserId());
+				noticeRecordDo.setRefId(String.valueOf(renewalDo.getRid()));
+				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+				noticeRecordDo.setParams(JSON.toJSONString(repayData));
+				jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+				if(collectionNoticeUtil.collectRenewal(repayData)){
+					noticeRecordDo.setRid(noticeRecordDo.getRid());
+					noticeRecordDo.setGmtModified(new Date());
+					jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
+				}
+			}
 		}
 		
 		return result;

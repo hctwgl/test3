@@ -96,8 +96,6 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
     @Resource
     private TransactionTemplate transactionTemplate;
     @Resource
-    private JsdUserDao jsdUserDao;
-    @Resource
 	JsdNoticeRecordDao jsdNoticeRecordDao;
     @Resource
     private JsdNoticeRecordService jsdNoticeRecordService;
@@ -370,18 +368,18 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 			logger.info("renewalDo = " + renewalDo + ",list = " +list);
 			if(StringUtils.equals(renewalDo.getOverdueStatus(), YesNoStatus.YES.getCode())){
 				Map<String, String> repayData = new HashMap<String, String>();
-				repayData.put("info",String.valueOf(list.get(1).getRid()));
-				JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
-				noticeRecordDo.setType(JsdNoticeType.COLLECT_RENEW.code);
-				noticeRecordDo.setUserId(renewalDo.getUserId());
-				noticeRecordDo.setRefId(String.valueOf(renewalDo.getRid()));
-				noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
-				noticeRecordDo.setParams(JSON.toJSONString(repayData));
-				jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
-				if(collectionNoticeUtil.collectRenewal(repayData)){
-					noticeRecordDo.setRid(noticeRecordDo.getRid());
-					noticeRecordDo.setGmtModified(new Date());
-					jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
+					repayData.put("info",String.valueOf(list.get(1).getRid()));
+					JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
+					noticeRecordDo.setType(JsdNoticeType.COLLECT_RENEW.code);
+					noticeRecordDo.setUserId(renewalDo.getUserId());
+					noticeRecordDo.setRefId(String.valueOf(renewalDo.getRid()));
+					noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+					noticeRecordDo.setParams(JSON.toJSONString(repayData));
+					jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+					if(collectionNoticeUtil.collectRenewal(repayData)){
+						noticeRecordDo.setRid(noticeRecordDo.getRid());
+						noticeRecordDo.setGmtModified(new Date());
+						jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
 				}
 			}
 
