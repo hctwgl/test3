@@ -670,7 +670,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				String channel , Date repayTime, String orderNo, final String dataId, String remark) {
 		final RepayRequestBo bo = this.buildRepayRequestBo(userId, jsdBorrowCashDo, totalAmount, repaymentNo ,type,channel,repayTime,remark);
 
-		this.checkOfflineRepayment(repaymentNo);
+		if(!checkOfflineRepayment(repaymentNo)){
+			throw new BizException(BizExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
+		}
 		dealOfflineOverdue(jsdBorrowCashDo, jsdBorrowLegalOrderCashDo, totalAmount, userId, repayTime);
 		generateRepayRecords(bo);
 		dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.repaymentDo, bo.orderRepaymentDo, type);
@@ -791,13 +793,14 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
         bo.remark = remark;
 		return bo;
 	}
-	private void checkOfflineRepayment(String repaymentNo) {
+	private Boolean checkOfflineRepayment(String repaymentNo) {
 		if(jsdBorrowCashRepaymentDao.getByTradeNoOut(repaymentNo) != null) {
-			throw new BizException(BizExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
+			return false;
 		}
 		if(jsdBorrowLegalOrderRepaymentDao.getByTradeNoOut(repaymentNo) != null){
-			throw new BizException(BizExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
+			return false;
 		}
+		return true;
 	}
 	private long changBorrowRepaymentStatus(String outTradeNo, String status, Long rid,String code,String msg) {
 		JsdBorrowCashRepaymentDo repayment = new JsdBorrowCashRepaymentDo();
