@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -124,16 +125,27 @@ public class CollectionMgrController extends BaseController{
     	cashDoForMod.setStatus(JsdBorrowCashStatus.FINISHED.name());
     	cashDoForMod.setRemark(reviewRemark);
     	
-    	transactionTemplate.execute(new TransactionCallback<Integer>() {
+    	Integer resultValue = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			public Integer doInTransaction(TransactionStatus status) {
-				jsdBorrowCashService.updateById(cashDoForMod);
-				jsdCollectionBorrowService.updateById(collBorrowDoForMod);
-				cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
-				jsdNoticeRecordService.dealBorrowNoticed(cashDo, XgxyBorrowNoticeBo.gen(cashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.FINISHED.name(), "强制结清"));
-				return 1;
+                try {
+                    jsdBorrowCashService.updateById(cashDoForMod);
+                    jsdCollectionBorrowService.updateById(collBorrowDoForMod);
+                    return 1;
+                } catch (Exception e) {
+                    status.setRollbackOnly();
+                    logger.info("manual error", e);
+                    throw e;
+                }
 			}
 		});
-    	
+    	if(resultValue == 1){
+            try {
+                cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
+                jsdNoticeRecordService.dealBorrowNoticed(cashDo, XgxyBorrowNoticeBo.gen(cashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.FINISHED.name(), "强制结清"));
+            } catch (Exception e){
+                logger.error("notice eca or collection fail error=" + e.getMessage(), e);
+            }
+        }
     	return Resp.succ();
     }
     @RequestMapping(value = { "/borrow/review.json" })
