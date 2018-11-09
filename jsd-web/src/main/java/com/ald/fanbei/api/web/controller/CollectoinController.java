@@ -115,7 +115,7 @@ public class CollectoinController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = {"/collectUpdateStatus"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"/addUserContancts"}, method = RequestMethod.POST)
     public void addUserContancts(Long userId){
         try {
             JsdUserDo userDo = jsdUserService.getById(userId);
