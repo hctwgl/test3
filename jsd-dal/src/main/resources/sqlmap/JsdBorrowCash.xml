@@ -764,7 +764,7 @@ IF (`status`='FINISHED','已结清','待还款') AS 'status','绿游' AS liquida
         FROM jsd_borrow_cash
         WHERE  is_delete = 0
         AND user_id = #{userId}
-        AND status = 'APPLY' OR status = 'WAITTRANSED' OR status = 'TRANSFERING' OR status = 'TRANSFERRED'
+        AND (status = 'APPLY' OR status = 'WAITTRANSED' OR status = 'TRANSFERING' OR status = 'TRANSFERRED')
         ORDER BY id DESC LIMIT 1
     </select>
 
