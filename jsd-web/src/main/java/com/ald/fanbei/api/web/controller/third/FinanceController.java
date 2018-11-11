@@ -1,33 +1,52 @@
 package com.ald.fanbei.api.web.controller.third;
 
-import com.ald.fanbei.api.biz.bo.ClearingResqBo;
-import com.ald.fanbei.api.biz.bo.FinanceSystemRespBo;
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.JsdRepayType;
-import com.ald.fanbei.api.common.exception.BizThirdRespCode;
-import com.ald.fanbei.api.common.util.*;
-import com.ald.fanbei.api.common.util.Base64;
-import com.ald.fanbei.api.dal.domain.*;
-import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
-import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.ald.fanbei.api.biz.bo.ClearingResqBo;
+import com.ald.fanbei.api.biz.bo.FinanceSystemRespBo;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
+import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
+import com.ald.fanbei.api.biz.service.JsdUserService;
+import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
+import com.ald.fanbei.api.common.enums.JsdRepayType;
+import com.ald.fanbei.api.common.exception.BizThirdRespCode;
+import com.ald.fanbei.api.common.util.AesUtil;
+import com.ald.fanbei.api.common.util.Base64;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.DigestUtil;
+import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
+import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
+import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @author yinxiangyu 2018年10月26日 下午15:14:32

@@ -44,9 +44,6 @@ public class JsdUserServiceImpl extends ParentServiceImpl<JsdUserDo, Long> imple
 
 	@Override
 	public JsdUserDo getUserInfo(String mobile) {
-		if(jsdUserDao.getUserInfo(mobile)==null){
-			return null;
-		}
 		return jsdUserDao.getUserInfo(mobile);
 	}
 }
