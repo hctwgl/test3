@@ -34,12 +34,12 @@ public class GetProfitApi implements JsdH5Handle {
     public JsdH5HandleResponse process(Context context) {
     	JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
 
-
+		JSONObject dataMap = context.getDataMap();
     	TrialBeforeBorrowBo bo = new TrialBeforeBorrowBo();
-    	bo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(context.getOpenId());
+    	bo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(context.getOpenId(),dataMap.getString("term"));
     	bo.userId = context.getUserId();
     	
-    	JSONObject dataMap = context.getDataMap();
+
     	String type = dataMap.getString("type");
     	String tyingType = dataMap.getString("ni");
     	if("BORROW".equals(type)) {

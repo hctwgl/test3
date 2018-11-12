@@ -270,7 +270,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
      * @return
      */
     @Override
-    public BigDecimal getRiskDailyRate(String openId) {
+    public BigDecimal getRiskDailyRate(String openId,String days) {
         BigDecimal riskRateDaily = BigDecimal.valueOf(0.02); // 0913产品与风控分析确定值
 
         // 默认利润率 取后台配置
@@ -282,18 +282,18 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         }
 
         try {
-            String riskRateDailyFromCache = bizCacheUtil.hget(Constants.CACHEKEY_RISK_LAYER_RATE, openId);
+            String riskRateDailyFromCache = bizCacheUtil.hget(Constants.CACHEKEY_RISK_LAYER_RATE, openId+"_"+days);
             if (StringUtils.isNotBlank(riskRateDailyFromCache)) {
                 logger.info("getRiskDailyRate, openId=" + openId + ", risk from cache is " + riskRateDailyFromCache);
                 riskRateDaily = new BigDecimal(riskRateDailyFromCache);
             } else {
-                String riskRate = xgxyUtil.getOriRateNoticeRequest(openId); //风控返回的数据为日利率，并除以1000
+                String riskRate = xgxyUtil.getOriRateNoticeRequest(openId,days); //风控返回的数据为日利率，并除以1000
                 if (StringUtils.isNotBlank(riskRate)) {
                     if (BigDecimal.ZERO.compareTo(new BigDecimal(riskRate)) == 0) {
                         logger.error("getRiskDailyRate, openId=" + openId + ", riskRate from xgxy is 0.00 !");
                     } else {
                         riskRateDaily = new BigDecimal(riskRate).divide(BigDecimal.valueOf(1000), 6, RoundingMode.HALF_UP);
-                        bizCacheUtil.hset(Constants.CACHEKEY_RISK_LAYER_RATE, openId, riskRateDaily.toPlainString(), DateUtil.getTodayLast());
+                        bizCacheUtil.hset(Constants.CACHEKEY_RISK_LAYER_RATE, openId+"_"+days, riskRateDaily.toPlainString(), DateUtil.getTodayLast());
                     }
                 } else {
                     logger.error("getRiskDailyRate, openId=" + openId + ", riskRate from xgxy is null!");

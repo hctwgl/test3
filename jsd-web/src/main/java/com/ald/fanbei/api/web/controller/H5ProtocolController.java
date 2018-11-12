@@ -113,7 +113,7 @@ public class H5ProtocolController {
             	trialBo.req.openId = openId;
             	trialBo.req.term = trialBo.req.nper;
             	trialBo.userId = userDo.getRid();
-            	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
+            	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId,trialBo.req.term);
             	jsdBorrowCashService.resolve(trialBo);
 
             	amountLower = new BigDecimal(trialBo.resp.borrowAmount);
@@ -190,7 +190,7 @@ public class H5ProtocolController {
             	trialBo.req.openId = openId;
             	trialBo.req.term = trialBo.req.nper;
             	trialBo.userId = userDo.getRid();
-            	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
+            	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId,trialBo.req.term);
             	jsdBorrowCashService.resolve(trialBo);
 
             	amountLower = new BigDecimal(trialBo.resp.totalDiffFee);
@@ -254,7 +254,7 @@ public class H5ProtocolController {
 	        	trialBo.req.openId = openId;
 	        	trialBo.req.term = trialBo.req.nper;
 	        	trialBo.userId = userDo.getRid();
-	        	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
+	        	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId,trialBo.req.term);
 	        	jsdBorrowCashService.resolve(trialBo);
 
 	        	TrialBeforeBorrowResp resp = trialBo.resp;
@@ -519,7 +519,7 @@ public class H5ProtocolController {
 				trialBo.req.openId = openId;
 				trialBo.req.term = trialBo.req.nper;
 				trialBo.userId = userDo.getRid();
-				trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
+				trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId,trialBo.req.term);
 				jsdBorrowCashService.resolve(trialBo);
 
 				amountLower = trialBo.req.amount;

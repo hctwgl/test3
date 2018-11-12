@@ -58,11 +58,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
     @Resource
     JsdBorrowCashService jsdBorrowCashService;
     @Resource
-    JsdResourceService jsdResourceService;
-    @Resource
     JsdUserBankcardService jsdUserBankcardService;
-    @Resource
-    JsdUserService jsdUserService;
     @Resource
     JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
     @Resource
@@ -94,7 +90,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
             TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
 	    	trialBo.req = new TrialBeforeBorrowReq(cashReq.openId, cashReq.amount, cashReq.term, cashReq.unit);
 			trialBo.userId = context.getUserId();
-			trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(cashReq.openId);
+			trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(cashReq.openId,cashReq.term);
         	
         	if("Y".equals(cashReq.isTying) && BorrowVersionType.BEHEAD.name().equals(cashReq.tyingType)){
         		// 砍头模式
