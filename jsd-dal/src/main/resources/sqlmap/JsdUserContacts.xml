@@ -118,6 +118,8 @@
         <include refid="queryFields" />
         FROM jsd_user_contacts
         where is_delete=0 and user_id = #{userId}
+        order by id desc
+        limit 0,1
     </select>
 
 

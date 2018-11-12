@@ -180,7 +180,6 @@ public class XgxyUtil extends AbstractThird {
             params.put("appId", APPID);
             params.put("data", JsdAesUtil.encryptToBase64Third(dataStr, PRIVATE_KEY));
             params.put("sign", generateSign(JSONObject.parseObject(dataStr), PRIVATE_KEY));
-
             String url = getXgxyUrl() + "/isp/open/third/edspay/v1/getAddressList";
 
             String reqResult = HttpUtilForXgxy.post(url, JSON.toJSONString(params), dataStr);

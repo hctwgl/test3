@@ -181,7 +181,7 @@ public class LoanOverDueJob {
                 JsdUserContactsDo contactsDo=new JsdUserContactsDo();
                 contactsDo.setUserId(userId);
                 contactsDo.setContactsMobile(contacts.get("contacts").toString());
-                contactsDo.setIntegrationContact(contacts.get("integrationContact").toString());
+                contactsDo.setMxreportUrl(contacts.get("mxreportUrl").toString());
                 if(userContactsDo.size()==0){
                     jsdUserContactsService.saveRecord(contactsDo);
                 }else {
