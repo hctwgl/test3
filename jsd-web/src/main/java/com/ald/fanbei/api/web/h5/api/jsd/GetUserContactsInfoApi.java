@@ -38,7 +38,7 @@ public class GetUserContactsInfoApi implements JsdH5Handle {
         for (JsdUserContactsDo contactsDo:contacts){
             Map<String,String> map=new HashMap<>();
             map.put(String.valueOf(contactsDo.getUserId()),contactsDo.getContactsMobile());
-            map.put("integrationContact",contactsDo.getIntegrationContact());
+            map.put("mxreportUrl",contactsDo.getMxreportUrl());
             con.add(map);
         }
         data.put("contacts",con);

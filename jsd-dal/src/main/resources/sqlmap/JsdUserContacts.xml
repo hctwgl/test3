@@ -5,7 +5,7 @@
     
     <!--基本的sql查询字段 公共引用...-->
     <sql id="queryFields">
-        id rid,gmt_create,gmt_modified,user_id,contacts_mobile,integration_contact
+        id rid,gmt_create,gmt_modified,user_id,contacts_mobile,mxreport_url
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
@@ -44,8 +44,8 @@
 	        <if test="contactsMobile != null">        
 	            contacts_mobile,
 	        </if>
-            <if test="integrationContact != null">
-                integration_contact,
+            <if test="mxreportUrl != null">
+                mxreport_url,
             </if>
         </trim>
         
@@ -62,8 +62,8 @@
 		    <if test="contactsMobile != null" >
 		       #{contactsMobile,jdbcType=VARCHAR},
 		    </if>
-            <if test="integrationContact != null">
-                #{integrationContact,jdbcType=VARCHAR},
+            <if test="mxreportUrl != null">
+                #{mxreportUrl,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -83,8 +83,8 @@
             <if test="contactsMobile != null and contactsMobile != '' ">
                 contacts_mobile = #{contactsMobile,jdbcType=VARCHAR},
             </if>
-            <if test="integrationContact != null and integrationContact != ''">
-                integration_contact = #{integrationContact,jdbcType=VARCHAR}
+            <if test="mxreportUrl != null and integrationContact != ''">
+                mxreport_url = #{mxreportUrl,jdbcType=VARCHAR}
             </if>
         </set>
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
@@ -138,8 +138,8 @@
             <if test="contactsMobile != null and contactsMobile != '' ">
                 ,contacts_mobile = #{contactsMobile,jdbcType=VARCHAR}
             </if>
-            <if test="integrationContact != null and integrationContact != '' ">
-                ,integration_contact = #{integrationContact,jdbcType=VARCHAR}
+            <if test="mxreportUrl != null and mxreportUrl != '' ">
+                ,mxreport_url = #{mxreportUrl,jdbcType=VARCHAR}
             </if>
         </set>
         WHERE is_delete = 0 AND user_id = #{userId}

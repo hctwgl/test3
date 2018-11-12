@@ -49,6 +49,6 @@ import java.util.Date;
    /**
     * 通话时长
     */
-   private String integrationContact;
+   private String mxreportUrl;
 
 }
