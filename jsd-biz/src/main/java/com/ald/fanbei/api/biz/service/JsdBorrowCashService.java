@@ -36,7 +36,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     void transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo);
 
-    BigDecimal getRiskDailyRate(String openId,String days);
+    BigDecimal getRiskDailyRate(String openId,String days,String unit);
 
     /**
      * 计算账单总应还额

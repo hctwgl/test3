@@ -90,7 +90,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
             TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
 	    	trialBo.req = new TrialBeforeBorrowReq(cashReq.openId, cashReq.amount, cashReq.term, cashReq.unit);
 			trialBo.userId = context.getUserId();
-			trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(cashReq.openId,cashReq.term);
+			trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(cashReq.openId,cashReq.term,cashReq.unit);
         	
         	if("Y".equals(cashReq.isTying) && BorrowVersionType.BEHEAD.name().equals(cashReq.tyingType)){
         		// 砍头模式

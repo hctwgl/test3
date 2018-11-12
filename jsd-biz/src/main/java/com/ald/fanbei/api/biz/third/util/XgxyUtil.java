@@ -199,13 +199,14 @@ public class XgxyUtil extends AbstractThird {
      * @param
      * @return
      */
-    public String getOriRateNoticeRequest(String openId,String days) {
+    public String getOriRateNoticeRequest(String openId,String days,String unit) {
 
         try {
             Map<String, Object> params = new HashMap<>();
             Map<String, Object> data = new HashMap<>();
             data.put("openId", openId);
             data.put("term", days);
+            data.put("unit", unit);
             data.put("timestamp",System.currentTimeMillis()+"");
             String dataStr = JSON.toJSONString(data);
 

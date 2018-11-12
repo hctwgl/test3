@@ -270,7 +270,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
      * @return
      */
     @Override
-    public BigDecimal getRiskDailyRate(String openId,String days) {
+    public BigDecimal getRiskDailyRate(String openId,String days,String unit) {
         BigDecimal riskRateDaily = BigDecimal.valueOf(0.02); // 0913产品与风控分析确定值
 
         // 默认利润率 取后台配置
@@ -287,7 +287,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
                 logger.info("getRiskDailyRate, openId=" + openId + ", risk from cache is " + riskRateDailyFromCache);
                 riskRateDaily = new BigDecimal(riskRateDailyFromCache);
             } else {
-                String riskRate = xgxyUtil.getOriRateNoticeRequest(openId,days); //风控返回的数据为日利率，并除以1000
+                String riskRate = xgxyUtil.getOriRateNoticeRequest(openId,days,unit); //风控返回的数据为日利率，并除以1000
                 if (StringUtils.isNotBlank(riskRate)) {
                     if (BigDecimal.ZERO.compareTo(new BigDecimal(riskRate)) == 0) {
                         logger.error("getRiskDailyRate, openId=" + openId + ", riskRate from xgxy is 0.00 !");
