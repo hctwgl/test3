@@ -743,7 +743,7 @@
       SELECT `borrow_no` AS 'borrowNo',`trade_no_ups` AS 'pay_trade_no',`arrival_amount` AS 'actualAmount',`gmt_arrival` AS 'actualTime','other' AS tppNid,'JSD' AS 'productName','现金分期' AS 'productType','绿游' AS liquidationCompany
   FROM `jsd_borrow_cash`
  where `is_delete`= 0
-   AND `status` IN("TRANSFERRE", "FINISHED")
+   AND `status` IN("TRANSFERRED", "FINISHED")
  AND `gmt_arrival` BETWEEN concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 00:00:00") and concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 23:59:59") ;
     </select>
 
@@ -755,7 +755,7 @@ repay_amount AS 'repayAmount',(`amount`+interest_amount+`poundage_amount`+`overd
 IF (`status`='FINISHED','已结清','待还款') AS 'status','绿游' AS liquidationCompany
   FROM `jsd_borrow_cash`
  where `is_delete`= 0
-   AND `status` IN("TRANSFERRE", "FINISHED")
+   AND `status` IN("TRANSFERRED", "FINISHED")
  AND `gmt_plan_repayment` BETWEEN concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 00:00:00") and concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 23:59:59") ;
     </select>
     <select id="getTransedCashDtosByUserId"  resultType="JsdBorrowCashDo" parameterType="java.lang.Long">
@@ -764,7 +764,7 @@ IF (`status`='FINISHED','已结清','待还款') AS 'status','绿游' AS liquida
         FROM jsd_borrow_cash
         WHERE  is_delete = 0
         AND user_id = #{userId}
-        AND status = 'APPLY' OR status = 'WAITTRANSED' OR status = 'TRANSFERING' OR status = 'TRANSFERRED'
+        AND (status = 'APPLY' OR status = 'WAITTRANSED' OR status = 'TRANSFERING' OR status = 'TRANSFERRED')
         ORDER BY id DESC LIMIT 1
     </select>
 
