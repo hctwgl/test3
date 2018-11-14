@@ -428,7 +428,7 @@
 
 
     <select id="getRenewalData" resultType="FinaneceDataDo">
-      SELECT `trade_no` AS 'repayNo',`actual_amount` AS 'actualAmount',`trade_no_ups` AS 'pay_trade_no','线上' AS 'payType',`gmt_create` AS 'actualTime','other' AS tppNid,'极速贷续借' AS 'productName','现金贷' AS 'productType','绿游' AS liquidationCompany
+      SELECT `trade_no` AS 'repayNo',`actual_amount` AS 'actualAmount',`trade_no_ups` AS 'pay_trade_no','app还款' AS 'payType',`gmt_create` AS 'actualTime','other' AS tppNid,'极速贷续借' AS 'productName','现金贷' AS 'productType','绿游' AS liquidationCompany
     FROM `jsd_borrow_cash_renewal`
     where `is_delete`= 0
    AND `status` ='Y'
