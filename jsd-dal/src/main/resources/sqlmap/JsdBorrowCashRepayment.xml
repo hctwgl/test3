@@ -378,7 +378,7 @@
          where
             a.STATUS= 'Y'
            AND name LIKE '%还款%'  AND a.`gmt_create` BETWEEN CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 00:00:00") AND CONCAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 23:59:59")
-           
+
      </select>
 
 
