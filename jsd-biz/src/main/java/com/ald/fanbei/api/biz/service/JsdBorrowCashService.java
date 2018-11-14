@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.alibaba.fastjson.JSONArray;
+import com.itextpdf.text.DocumentException;
 
 /**
  * 极速贷Service
@@ -34,7 +36,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     String getCurrentLastBorrowNo(String orderNoPre);
 
-    void transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo);
+    String transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo) throws IOException, DocumentException;
 
     BigDecimal getRiskDailyRate(String openId,String days,String unit);
 
@@ -58,7 +60,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     void resolve(TrialBeforeBorrowBo bo);
 
-    void dealBorrowSucc(Long cashId, String outTradeNo);
+    void dealBorrowSucc(Long cashId, String outTradeNo) throws IOException, DocumentException;
 
     void dealBorrowFail(Long cashId, String outTradeNo, String failMsg);
 

@@ -7,6 +7,7 @@ import com.timevale.esign.sdk.tech.bean.result.AddSealResult;
 import com.timevale.esign.sdk.tech.bean.result.FileDigestSignResult;
 import com.timevale.esign.sdk.tech.bean.result.GetAccountProfileResult;
 
+import java.net.BindException;
 import java.util.List;
 import java.util.Map;
 
@@ -17,13 +18,7 @@ import java.util.Map;
  */
 public interface JsdESdkService {
 
-//    Result init(Map<String,Object> map);//初始化
-
     FileDigestSignResult userStreamSign(Map<String, Object> map, byte[] stream);//签章
-
-    FileDigestSignResult secondPartySign(Map<String, Object> map, byte[] secondStream);//乙方签章
-
-    FileDigestSignResult secondStreamSign(Map<String, Object> map, byte[] secondStream);//签章
 
     FileDigestSignResult thirdStreamSign(Map<String, Object> map, byte[] stream);//签章
 
@@ -37,11 +32,13 @@ public interface JsdESdkService {
 
     JsdUserSealDo selectUserSealByCardId(String id);
 
-    List<JsdUserSealDo> selectByUserType(String type);
-
     AddSealResult createOrganizeSeal(String accountId, String templateType, String color, String hText, String qText);
 
     AddSealResult createUserSeal(String accountId, String templateType, String color);
+
+    JsdUserSealDo getSealPersonal(JsdUserDo dsedUserDo) throws BindException;
+
+    int insertUserSeal(JsdUserSealDo record);
 
 
 

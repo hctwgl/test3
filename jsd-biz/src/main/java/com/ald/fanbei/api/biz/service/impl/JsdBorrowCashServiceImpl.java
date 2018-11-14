@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -11,6 +12,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.JsdLegalContractPdfCreateService;
+import com.itextpdf.text.DocumentException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -79,7 +82,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
     @Resource
     JsdNoticeRecordService jsdNoticeRecordService;
-
+    @Resource
+    JsdLegalContractPdfCreateService jsdLegalContractPdfCreateService;
     @Resource
     XgxyUtil xgxyUtil;
     @Resource
@@ -88,6 +92,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     TransactionTemplate transactionTemplate;
     @Resource
     UpsUtil upsUtil;
+
 
     @Override
     public BaseDao<JsdBorrowCashDo, Long> getDao() {
@@ -250,8 +255,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
 
-    public void transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo) {
-        transactionTemplate.execute(new TransactionCallback<String>() {
+    public String transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo) {
+        String result = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus ts) {
                 jsdBorrowCashDao.updateById(cashDo);
@@ -260,6 +265,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
                 return "success";
             }
         });
+        return result;
     }
 
 
@@ -407,7 +413,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
 
     @Override
-    public void dealBorrowSucc(Long cashId, String outTradeNo) {
+    public void dealBorrowSucc(Long cashId, String outTradeNo) throws IOException, DocumentException {
         JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
         if (cashDo == null) {
             throw new BizException("dealBorrowSucc, can't find refer borrowCash by id=" + cashId);
@@ -435,8 +441,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         orderDo.setStatus(JsdBorrowLegalOrderStatus.AWAIT_DELIVER.name());
         orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.name());
         orderCashDo.setGmtPlanRepay(repaymentDate);
-        this.transUpdate(cashDo, orderDo, orderCashDo);
-
+        String result = this.transUpdate(cashDo, orderDo, orderCashDo);
+        if(StringUtils.equals(result,"success")){
+            jsdLegalContractPdfCreateService.platformServiceProtocol(cashDo.getTradeNoXgxy());
+        }
         jsdNoticeRecordService.dealBorrowNoticed(cashDo, this.buildXgxyPay(cashDo, "放款成功", XgxyBorrowNotifyStatus.SUCCESS.name()));
     }
 
