@@ -636,9 +636,15 @@ public class H5ProtocolController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = {"protocolPdf"}, method = RequestMethod.POST)
-	public void protocolPdf( String data) throws IOException, DocumentException {
-		jsdLegalContractPdfCreateService.platformServiceProtocol(data);
+	@RequestMapping(value = {"protocolSellPdf"}, method = RequestMethod.POST)
+	public void protocolSellPdf( String data) throws IOException, DocumentException {
+		jsdLegalContractPdfCreateService.platformServiceSellProtocol(data);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = {"protocolBeheadPdf"}, method = RequestMethod.POST)
+	public void protocolBeheadPdf( String data) throws IOException, DocumentException {
+		jsdLegalContractPdfCreateService.platformServiceBeheadProtocol(data);
 	}
 
 

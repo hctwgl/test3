@@ -13,6 +13,7 @@ import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.dal.dao.JsdContractPdfDao;
 import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.fastjson.JSON;
 import com.itextpdf.text.DocumentException;
 import com.timevale.esign.sdk.tech.bean.result.FileDigestSignResult;
 import org.apache.commons.io.IOUtils;
@@ -59,14 +60,31 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
     }
 
     @Override
-    public void platformServiceProtocol(String tradeNoXgxy) throws IOException, DocumentException {
+    public void platformServiceSellProtocol(String tradeNoXgxy) throws IOException, DocumentException {
         long time = new Date().getTime();
         HashMap<String, Object> data = new HashMap<>();
         String html = VelocityUtil.getHtml(platformProtocol(data, tradeNoXgxy, "template/cashProtocol.vm"));
         String outFilePath = src + data.get("realName") + "platform" + time + ".pdf";
         try {
             HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
-            getPlatformServiceProtocolPdf(data, outFilePath);
+            getPlatformServiceSellProtocolPdf(data, outFilePath);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            File file = new File(outFilePath);
+            file.delete();
+        }
+    }
+
+    @Override
+    public void platformServiceBeheadProtocol(String tradeNoXgxy) throws IOException, DocumentException {
+        long time = new Date().getTime();
+        HashMap<String, Object> data = new HashMap<>();
+        String html = VelocityUtil.getHtml(platformBeheadProtocol(data, tradeNoXgxy, "template/cashPlusProtocol.vm"));
+        String outFilePath = src + data.get("realName") + "platform" + time + ".pdf";
+        try {
+            HtmlToPdfUtil.htmlContentWithCssToPdf(html, outFilePath, null);
+            getPlatformServiceBeheadProtocolPdf(data, outFilePath);
         } catch (Exception e) {
             throw e;
         } finally {
@@ -112,7 +130,50 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
         return data;
     }
 
-    private String getPlatformServiceProtocolPdf(Map<String, Object> data, String outFilePath) throws IOException {
+    public Map platformBeheadProtocol(HashMap<String, Object> data, String tradeNoXgxy, String pdfTemplate) throws IOException {
+        JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PLUS_PROTOCOL_BORROW.name(), ResourceSecType.PLUS_PROTOCOL_BORROW_CASH.name());
+        data.put("bfCompany", resdo.getValue2());
+        data.put("yfCompany", resdo.getValue3());
+        JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
+        JsdUserDo userDo = jsdUserService.getById(cashDo.getUserId());
+        if (userDo == null) {
+            logger.error("user not exist" + BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+            throw new BizException(BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        JsdUserSealDo afUserSealDo = jsdESdkService.getSealPersonal(userDo);
+        data.put("personUserSeal", afUserSealDo.getUserSeal());
+        data.put("accountId", afUserSealDo.getUserAccountId());
+        data.put("idNumber", userDo.getIdNumber());
+        data.put("realName", userDo.getRealName());
+        data.put("email", userDo.getEmail());	//电子邮箱
+        data.put("mobile", userDo.getMobile());	// 联系电话
+        BigDecimal amountLower, interestRate, serviceRate;
+        String borrowRemark ="" ,repayRemark = "";
+        amountLower = cashDo.getAmount();
+        interestRate = cashDo.getInterestRate();
+        serviceRate = cashDo.getPoundageRate();
+        borrowRemark = cashDo.getBorrowRemark();
+        repayRemark = cashDo.getRepayRemark();
+        data.put("borrowNo", cashDo.getBorrowNo());
+        data.put("gmtStart", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+        data.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+        data.put("gmtPlanRepayment", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+        data.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+        data.put("bfurl", resdo.getValue1());
+        data.put("yfurl", resdo.getValue4());
+        data.put("key", "platform");
+        data.put("templateSrc",pdfTemplate);
+        data.put("interestRate", interestRate.multiply(NUM100).setScale(2) + "%");
+        data.put("serviceRate", serviceRate.multiply(NUM100).setScale(2) + "%");
+        data.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
+        data.put("amountLower", amountLower);
+        data.put("borrowRemark",borrowRemark);
+        data.put("repayRemark",repayRemark);
+
+        return data;
+    }
+
+    private String getPlatformServiceSellProtocolPdf(Map<String, Object> data, String outFilePath) throws IOException {
         data.put("userPath", outFilePath);
         byte[] stream = null;
         ByteArrayOutputStream bos = getByteArrayOutputStream(outFilePath);
@@ -125,6 +186,41 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
         data.put("thirdPartyKey","chuXiang");
         getData(data,jsdUserSealService.getUserSealByUserName("浙江楚橡信息科技有限公司"));
         stream = jsdESdkService.thirdStreamSign(data,stream).getStream();//楚橡
+
+        File file = getFinalFile(outFilePath, stream);
+
+        OssUploadResult ossUploadResult = null;
+        InputStream input = null;
+        try {
+            input = new FileInputStream(file);
+            MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "application/pdf", IOUtils.toByteArray(input));
+            ossUploadResult = ossFileUploadService.uploadFileToOss(multipartFile);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            input.close();
+        }
+        logger.info("ossUploadResult=" + ossUploadResult.getUrl());
+
+        saveContractPdf(ossUploadResult.getUrl(), "4", Long.parseLong(String.valueOf(data.get("borrowId"))));
+        return ossUploadResult.getUrl();
+    }
+
+
+
+    private String getPlatformServiceBeheadProtocolPdf(Map<String, Object> data, String outFilePath) throws IOException {
+        data.put("userPath", outFilePath);
+        byte[] stream = null;
+        ByteArrayOutputStream bos = getByteArrayOutputStream(outFilePath);
+        stream = bos.toByteArray();
+        stream = borrowerCreateSealByStream(stream, data);//借款人签章
+
+        data.put("thirdPartyKey","tanGeZhi");
+        getData(data,jsdUserSealService.getUserSealByUserName("浙江弹个指网络科技有限公司"));
+        stream = jsdESdkService.thirdStreamSign(data,stream).getStream();
+        data.put("thirdPartyKey","langXia");
+        getData(data,jsdUserSealService.getUserSealByUserName("杭州朗下网络科技有限公司"));
+        stream = jsdESdkService.thirdStreamSign(data,stream).getStream();
 
         File file = getFinalFile(outFilePath, stream);
 

@@ -13,6 +13,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.JsdLegalContractPdfCreateService;
+import com.ald.fanbei.api.common.enums.*;
 import com.itextpdf.text.DocumentException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -35,12 +36,6 @@ import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
-import com.ald.fanbei.api.common.enums.ResourceSecType;
-import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -335,9 +330,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     /**
      * 解析各项利息费用
      *
-     * @param borrowAmount
-     * @param borrowType
-     * @param oriRate
+     * @param bo
      * @return
      */
     public void resolve(TrialBeforeBorrowBo bo) {
@@ -443,7 +436,12 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         orderCashDo.setGmtPlanRepay(repaymentDate);
         String result = this.transUpdate(cashDo, orderDo, orderCashDo);
         if(StringUtils.equals(result,"success")){
-            jsdLegalContractPdfCreateService.platformServiceProtocol(cashDo.getTradeNoXgxy());
+            if(StringUtils.equals(cashDo.getVersion(), BorrowVersionType.SELL.name())){
+                jsdLegalContractPdfCreateService.platformServiceSellProtocol(cashDo.getTradeNoXgxy());
+            }else if(StringUtils.equals(cashDo.getVersion(), BorrowVersionType.BEHEAD.name())){
+                jsdLegalContractPdfCreateService.platformServiceBeheadProtocol(cashDo.getTradeNoXgxy());
+            }
+
         }
         jsdNoticeRecordService.dealBorrowNoticed(cashDo, this.buildXgxyPay(cashDo, "放款成功", XgxyBorrowNotifyStatus.SUCCESS.name()));
     }

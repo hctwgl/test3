@@ -45,7 +45,7 @@ public class JobThreadPoolUtils {
         @Override
         public void run() {
             try {
-                jsdLegalContractPdfCreateService.platformServiceProtocol(tradeNoXgxy);
+                jsdLegalContractPdfCreateService.platformServiceSellProtocol(tradeNoXgxy);
             } catch (IOException e) {
                 e.printStackTrace();
                 logger.error("JobThreadPoolUtils error =>{}",e);

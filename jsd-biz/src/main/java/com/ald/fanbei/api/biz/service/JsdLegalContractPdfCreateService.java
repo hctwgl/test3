@@ -14,7 +14,9 @@ import java.util.List;
  */
 public interface JsdLegalContractPdfCreateService {
 
-    void platformServiceProtocol(String tradeNoXgxy) throws IOException, DocumentException;
+    void platformServiceSellProtocol(String tradeNoXgxy) throws IOException, DocumentException;
+
+    void platformServiceBeheadProtocol(String tradeNoXgxy) throws IOException, DocumentException;
 
 
 }

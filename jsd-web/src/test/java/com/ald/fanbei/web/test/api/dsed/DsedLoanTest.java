@@ -45,9 +45,9 @@ public class DsedLoanTest extends BaseTest {
      */
     @Test
     public void getHomeInfo() throws UnsupportedEncodingException {
-        String url = urlBase + "/jsd-web/protocol/protocolPdf";
+        String url = urlBase + "/jsd-web/protocol/protocolBeheadPdf";
         Map<String, String> p = new HashMap<>();
-        p.put("data","loan1113eca782100000018");
+        p.put("data","loan1031eca283100000009");
         String respResult = HttpUtil.post(url, p);
 
 
