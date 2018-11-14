@@ -740,7 +740,7 @@
 
     <select id="getPaymentDetail" resultType="FinaneceDataDo">
 
-      SELECT `borrow_no` AS 'borrowNo',`trade_no_ups` AS 'pay_trade_no',`arrival_amount` AS 'actualAmount',`gmt_arrival` AS 'actualTime','other' AS tppNid,'极速贷' AS 'productName','现金分期' AS 'productType','绿游' AS liquidationCompany
+      SELECT `borrow_no` AS 'borrowNo',`trade_no_ups` AS 'pay_trade_no',`arrival_amount` AS 'actualAmount',`gmt_arrival` AS 'actualTime','other' AS tppNid,'极速贷' AS 'productName','现金贷' AS 'productType','绿游' AS liquidationCompany
   FROM `jsd_borrow_cash`
  where `is_delete`= 0
    AND `status` IN("TRANSFERRED", "FINISHED")
@@ -749,14 +749,21 @@
 
 
     <select id="getPromiseIncomeDetail" resultType="FinaneceDataDo">
-        SELECT `borrow_no` AS 'borrowNo',concat(`type`,'天') AS 'periods',gmt_plan_repayment AS 'gmtPlanRepay',(`amount`+interest_amount+`poundage_amount`+`overdue_amount`+`sum_repaid_interest` +`sum_repaid_poundage` +`sum_repaid_overdue`)  AS 'predictAmount',
+
+
+SELECT * FROM
+ (SELECT `id` ,`borrow_no` AS 'borrowNo',concat(`type`,'天') AS 'periods',gmt_plan_repayment AS 'gmtPlanRepay',(`amount`+interest_amount+`poundage_amount`+`overdue_amount`+`sum_repaid_interest` +`sum_repaid_poundage` +`sum_repaid_overdue`)  AS 'predictAmount',
 repay_amount AS 'repayAmount',(`amount`+interest_amount+`poundage_amount`+`overdue_amount`+`sum_repaid_interest` +`sum_repaid_poundage` +`sum_repaid_overdue`)-repay_amount AS 'noneAmount',`amount` as 'amount',
-`interest_amount` +`sum_repaid_interest` AS 'retaAmount',`poundage_amount` +`sum_repaid_poundage` as 'poundageAmount',`overdue_amount` +`sum_repaid_overdue` AS 'overdueAmount',`amount` -`arrival_amount` AS 'shopAmount',
-IF (`status`='FINISHED','已结清','待还款') AS 'status','极速贷' AS 'productName','现金分期' AS 'productType','绿游' AS liquidationCompany
+`interest_amount` +`sum_repaid_interest` AS 'retaAmount',`poundage_amount` +`sum_repaid_poundage` as 'poundageAmount',`overdue_amount` +`sum_repaid_overdue` AS 'overdueAmount',
+IF (`status`='FINISHED','已结清','待还款') AS 'status','极速贷' AS 'productName','现金贷' AS 'productType','绿游' AS liquidationCompany
   FROM `jsd_borrow_cash`
  where `is_delete`= 0
    AND `status` IN("TRANSFERRED", "FINISHED")
- AND `gmt_plan_repayment` BETWEEN concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 00:00:00") and concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 23:59:59") ;
+ AND `gmt_plan_repayment` BETWEEN concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 00:00:00") and concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 23:59:59")
+) a
+LEFT JOIN
+(SELECT borrow_id,amount AS 'shopAmount' FROM `jsd_borrow_legal_order_cash` WHERE `status` NOT IN ("CLOSED","APPLYING")  GROUP BY `borrow_id`) b on a.id=b.borrow_id
+     
     </select>
     <select id="getTransedCashDtosByUserId"  resultType="JsdBorrowCashDo" parameterType="java.lang.Long">
         SELECT
