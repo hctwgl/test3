@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.dal.dao.JsdContractPdfDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -59,7 +60,8 @@ public class LoanOverDueJob {
     JsdUserContactsService jsdUserContactsService;
     @Resource
     private JsdBorrowCashService borrowCashService;
-
+    @Resource
+    JsdContractPdfDao jsdContractPdfDao;
     @Resource
     private JsdBorrowCashOverdueLogService jsdBorrowCashOverdueLogService;
     @Resource
@@ -317,7 +319,15 @@ public class LoanOverDueJob {
             buildData.put("accountAmount",String.valueOf(borrowCashDo.getArrivalAmount()));//到账金额
             buildData.put("borrowCash",String.valueOf(borrowCash));//借款费用(手续费加利息)
             buildData.put("appName","jsd");//借款app
-            buildData.put("contractPdfUrl","");
+            JsdContractPdfDo jsdContractPdfDo = new JsdContractPdfDo();
+            jsdContractPdfDo.setType((byte) 4);
+            jsdContractPdfDo.setTypeId(borrowCashDo.getRid());
+            JsdContractPdfDo contractPdfDo = jsdContractPdfDao.selectByTypeId(jsdContractPdfDo);
+            if(null != contractPdfDo){
+                buildData.put("contractPdfUrl",contractPdfDo.getContractPdfUrl());
+            }else {
+                buildData.put("contractPdfUrl","");
+            }
             buildData.put("payTime",DateUtil.formatDateTime(borrowCashDo.getGmtArrival()));//打款时间
             buildData.put("type","");
             List<Map<String, String>> arrayList = new ArrayList<>();
