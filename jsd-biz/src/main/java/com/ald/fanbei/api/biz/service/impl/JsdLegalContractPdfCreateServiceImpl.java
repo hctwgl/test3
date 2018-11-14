@@ -76,8 +76,6 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
     }
 
     public Map platformProtocol(HashMap<String, Object> data, String tradeNoXgxy, String pdfTemplate) throws IOException {
-
-
         JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PROTOCOL_BORROW.name(), ResourceSecType.PROTOCOL_BORROW_CASH.name());
         data.put("yfCompany", resdo.getValue1());
         data.put("bfCompany", resdo.getValue2());
@@ -110,7 +108,7 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
         data.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
         data.put("amountLower", amountLower);
         data.put("key", "platform");
-        data.put("selfKey", "ald");
+        data.put("templateSrc",pdfTemplate);
         return data;
     }
 
@@ -121,10 +119,12 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
         stream = bos.toByteArray();
         stream = borrowerCreateSealByStream(stream, data);//借款人签章
 
+        data.put("thirdPartyKey","lvYou");
+        getData(data,jsdUserSealService.getUserSealByUserName("杭州绿游网络科技有限公司"));
         stream = jsdESdkService.thirdStreamSign(data,stream).getStream();//绿游
-
-
-        stream = jsdESdkService.thirdStreamSign(data,stream).getStream();//楚相
+        data.put("thirdPartyKey","chuXiang");
+        getData(data,jsdUserSealService.getUserSealByUserName("浙江楚橡信息科技有限公司"));
+        stream = jsdESdkService.thirdStreamSign(data,stream).getStream();//楚橡
 
         File file = getFinalFile(outFilePath, stream);
 
@@ -201,6 +201,12 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
             throw new BizException(BizExceptionCode.PERSON_SEAL_CREATE_FAILED);
         }
         map.put("personUserSeal", "data:image/png;base64," + afUserSealDo.getUserSeal());
+    }
+
+    private void getData(Map<String, Object> data,JsdUserSealDo jsdUserSealDo){
+        data.put("thirdAccoundId",jsdUserSealDo.getUserAccountId());
+        data.put("thirdSeal",jsdUserSealDo.getUserSeal());
+
     }
 
 }

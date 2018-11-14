@@ -25,7 +25,7 @@ public class DsedLoanTest extends BaseTest {
     /**
      * 自测根据自己的业务修改下列属性 TODO
      */
-//	String urlBase = "https://testapi.51fanbei.com";
+//	String urlBase = "http://yjsd.51fanbei.com";
   String urlBase = "http://localhost:8088";
 //    String urlBase = "http://192.168.112.40:8080";
     
@@ -45,8 +45,10 @@ public class DsedLoanTest extends BaseTest {
      */
     @Test
     public void getHomeInfo() throws UnsupportedEncodingException {
-        int a = Math.toIntExact(90l);
-        int b = a;
+        String url = urlBase + "/jsd-web/protocol/protocolPdf";
+        Map<String, String> p = new HashMap<>();
+        p.put("data","loan1113eca782100000018");
+        String respResult = HttpUtil.post(url, p);
 
 
     }
@@ -121,13 +123,14 @@ public class DsedLoanTest extends BaseTest {
         String url = urlBase + "/third/collection/offLineBackMoney";
         Map<String, String> data = new HashMap<>();
         String salt = "jsdcuishou";
-        data.put("orderNo","333");
-        data.put("totalAmount","12.54");
-        data.put("repaymentAcc","13989455831");
-        data.put("details","[{'dataId':'11542','amount':'1'}]");
-        data.put("repayTime","2018-10-2 11:02:46");
-        data.put("type","10");
-        data.put("repaymentNo","32122233");
+        data.put("orderNo","267914");
+        data.put("totalAmount","1914.00");
+        data.put("repaymentAcc","无卡号");
+        data.put("details","[{'dataId':'4112','amount':'1914.00'}]");
+        data.put("repayTime","2018-11-12 00:00:00");
+        data.put("type","20");
+        data.put("repaymentNo","20181112200040011100620007857014");
+        data.put("isAllRepay","N");
         Map<String, String> params = new HashMap<>();
         JSON.toJSONString(data);
         params.put("data",JSON.toJSONString(data));

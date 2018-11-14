@@ -184,8 +184,6 @@ public class JsdESdkServiceImpl implements JsdESdkService {
         // 待签署文 档路径
         String srcFile = ObjectUtils.toString(map.get("PDFPath"), "").toString();// 待签署文档路径
         logger.info("sign doc: " + srcFile);
-        String dstFile = ObjectUtils.toString(map.get("userPath"), "").toString();// 签署后文档保存路径
-        String fileName = ObjectUtils.toString(map.get("fileName"), "爱上街合同").toString();// 文档显示名字
         String type = ObjectUtils.toString(map.get("signType"), "Key").toString();// 签章类型
         SignType signType = null;
         String sealData = ObjectUtils.toString(map.get("personUserSeal"), "").toString();// 签章数据
@@ -194,7 +192,6 @@ public class JsdESdkServiceImpl implements JsdESdkService {
         float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "70").toString());
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("key"), "（借款人）：").toString();
-        String posPage = ObjectUtils.toString(map.get("posPage"), "6").toString();
         if ("Single".equalsIgnoreCase(type)) {
             signType = SignType.Single;
         } else if ("Multi".equalsIgnoreCase(type)) {
@@ -221,8 +218,8 @@ public class JsdESdkServiceImpl implements JsdESdkService {
     @Override
     public FileDigestSignResult thirdStreamSign(Map<String, Object> map, byte[] stream) {//钱包字节流签章
         String type = ObjectUtils.toString(map.get("signType"), "Key").toString();// 签章类型
-        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "").toString());
-        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "").toString());
+        int posType = Integer.valueOf(ObjectUtils.toString(map.get("posType"), "1").toString());
+        float width = Float.valueOf(ObjectUtils.toString(map.get("sealWidth"), "70").toString());
         boolean isQrcodeSign = false;
         String key = ObjectUtils.toString(map.get("thirdPartyKey"), "").toString();
         String accountId = ObjectUtils.toString(map.get("thirdAccoundId"), "");

@@ -9,10 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.dal.domain.*;
+import com.itextpdf.text.DocumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -30,6 +32,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 
 /**
@@ -60,6 +63,8 @@ public class H5ProtocolController {
 	JsdUserSealService jsdUserSealService;
 	@Resource
 	BeheadBorrowCashRenewalService beheadBorrowCashRenewalService;
+	@Resource
+	JsdLegalContractPdfCreateService jsdLegalContractPdfCreateService;
 
     private static final BigDecimal NUM100 = new BigDecimal(100);
 
@@ -628,6 +633,12 @@ public class H5ProtocolController {
 		}catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+
+	@ResponseBody
+	@RequestMapping(value = {"protocolPdf"}, method = RequestMethod.POST)
+	public void protocolPdf( String data) throws IOException, DocumentException {
+		jsdLegalContractPdfCreateService.platformServiceProtocol(data);
 	}
 
 

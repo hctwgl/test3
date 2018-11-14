@@ -2,11 +2,11 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="UTF-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"></meta>
     <title>借款协议</title>
-    <style>
+    <style type="text/css">
         table,
         table tr th,
         table tr td {
@@ -45,7 +45,7 @@
     </style>
 </head>
 
-<body>
+<body style="background-color: #fff;font-family: SimSun;">
 <div class="main">
     <h2>借款协议</h2>
     <p class="test_right">协议编号：$!{borrowNo}</p>
@@ -70,7 +70,7 @@
     <p>1.5支付机构：指为借款人及出借人提供交易资金结算等服务的机构。本协议项下提供前述服务的机构为第三方支付机构或资金存管合作银行。</p>
     <p>1.6 借款本金：借款人在丙方平台发布借款需求时所设定的借款金额。借款本金以丙方平台具体展示及记录为准。</p>
     <p>1.7 指定账户：与履行本协议项下权利义务相关的账户，包括但不限于平台账户和银行账户两类账户类型。具体适用的账户类型视实际情况确定。</p>
-    <p>&nbsp;&nbsp;&nbsp;根据就甲方通过丙方平台提出借款需求，丙方介绍甲方在丁方运营的借款撮合平台向乙方借款，乙方了解甲方借款需求并同意出借款项，同时由丙方、丁方为甲方、乙方借款提供居间服务。经各方协商一致，现就上述借款事宜订立如下协议，以期共同遵守。</p>
+    <p>根据就甲方通过丙方平台提出借款需求，丙方介绍甲方在丁方运营的借款撮合平台向乙方借款，乙方了解甲方借款需求并同意出借款项，同时由丙方、丁方为甲方、乙方借款提供居间服务。经各方协商一致，现就上述借款事宜订立如下协议，以期共同遵守。</p>
 
 
     <span>二、借款基本信息</span>
@@ -202,13 +202,13 @@
     <p>9.1 本协议的签订、履行、终止、解释均适用中华人民共和国法律。</p>
     <p>9.2 凡因执行本协议或与本协议有关的一切争议，应先进行友好协商，协商不成的均提请至衢州仲裁委员会进行仲裁，并适用其网络仲裁规则（包括适用互联网金融仲裁特别规定条款），衢州仲裁委员会的裁决为终局裁决，对四方均具有法律拘束力。</p>
     <p>9.3 各方约定，甲方在本协议中写明的手机号码、电子邮箱、联系地址及其他登记在甲方名下的手机号码等联系方式，均为各方之间涉诉纠纷相关材料有效送达地址。如一方需变更电子邮箱或者手机号码的，应当以书面通知并得到对方确认，否则短信、电子邮件等发送原约定邮箱或手机号码，发出即视为送达。各方特别约定在仲裁过程中衢州仲裁委员会除可通过短信、电子邮件进行送达外亦可通过短信链接的方式进行仲裁文书电子送达，短信发出即视为短信内容（含链接内容）已送达，短信接收方可点击链接进行查看或登陆衢州仲裁委员会网络仲裁平台（http://odr.qzzcwyh.com）查看。</p>
-    <br>
-    <p>甲方 （借款人）：<img style="max-width: 2.5rem" src="$!{personUserSeal}"><br/>
+    <br/>
+    <p style="margin-bottom: 30px;">甲方 （借款人）：<p style="color: white">platform</p></p>
         乙方 （借款人）：详见出借人列表附件<br/>
-        丙方 <img style="max-width: 2.5rem" src="$!{lvSeal}"><br/>
-        丁方 <img style="max-width: 2.5rem" src="$!{cxSeal}"><br/>
-        签署时间：$!{gmtSign}<br/>
-        签署地点：$!{gmtLocation}</p>
+    <p style="margin-bottom: 30px;">丙方：<p style="color: white">lvYou</p></p>
+    <p style="margin-bottom: 30px;">丁方：<p style="color: white">chuXiang</p></p>
+    <p>签署时间：$!{gmtSign}</p>
+    <p>签署地点：$!{gmtLocation}</p>
 </div>
 </body>
 
