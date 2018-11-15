@@ -18,6 +18,7 @@ import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 import com.ald.fanbei.api.dal.query.JsdViewAssetQuery;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.beanutils.ConvertUtils;
@@ -149,7 +150,15 @@ public class JsdAssetPackageDetailServiceImpl extends ParentServiceImpl<JsdAsset
 
 						BigDecimal realMinAmount = BigDecimal.ZERO;
 						BigDecimal realMaxAmount = BigDecimal.ZERO;
+						logger.info("overdueDebtList="+JSON.toJSONString(minDebtList));
+						List<String> existMinBorrowNos=new ArrayList<>();
 						for (JsdViewAssetDo afViewAssetBorrowCashDo : minDebtList) {
+
+							if (existMinBorrowNos.contains(afViewAssetBorrowCashDo.getBorrowNo())) {
+								logger.info("duplicate borrowNo="+afViewAssetBorrowCashDo.getBorrowNo());
+								continue;
+							}
+
 							realMinAmount = realMinAmount.add(afViewAssetBorrowCashDo.getAmount());
 							EdspayGetCreditRespBo edspayGetCreditRespBo = buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo,minBorrowTime,maxBorrowTime);
 							creditInfos.add(edspayGetCreditRespBo);
@@ -165,8 +174,16 @@ public class JsdAssetPackageDetailServiceImpl extends ParentServiceImpl<JsdAsset
 							jsdAssetPackageDetailDao.saveRecord(afAssetPackageDetailDo);
 							//标记重新分配记录
 							jsdAssetPackageDetailDao.updateReDisTri(afViewAssetBorrowCashDo.getBorrowNo());
+							existMinBorrowNos.add(afViewAssetBorrowCashDo.getBorrowNo());
 						}
+
+						logger.info("overdueDebtList="+JSON.toJSONString(maxDebtList));
+						List<String> existMaxBorrowNos=new ArrayList<>();
 						for (JsdViewAssetDo afViewAssetBorrowCashDo : maxDebtList) {
+							if (existMaxBorrowNos.contains(afViewAssetBorrowCashDo.getBorrowNo())) {
+								logger.info("duplicate borrowNo="+afViewAssetBorrowCashDo.getBorrowNo());
+								continue;
+							}
 							realMaxAmount = realMaxAmount.add(afViewAssetBorrowCashDo.getAmount());
 							EdspayGetCreditRespBo edspayGetCreditRespBo=buildCreditBorrowCashRespBo(afAssetPackageDo,bankInfo,afViewAssetBorrowCashDo,minBorrowTime,maxBorrowTime);
 							creditInfos.add(edspayGetCreditRespBo);
@@ -182,6 +199,7 @@ public class JsdAssetPackageDetailServiceImpl extends ParentServiceImpl<JsdAsset
 							jsdAssetPackageDetailDao.saveRecord(afAssetPackageDetailDo);
 							//标记重新分配记录
 							jsdAssetPackageDetailDao.updateReDisTri(afViewAssetBorrowCashDo.getBorrowNo());
+							existMaxBorrowNos.add(afViewAssetBorrowCashDo.getBorrowNo());
 						}
 
 						//更新实际金额
