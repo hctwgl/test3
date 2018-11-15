@@ -55,7 +55,7 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
         if (null != System.getProperty("os.name") && System.getProperty("os.name").toLowerCase().contains("windows")) {
             src = "E:/";
         } else {
-            src = "/home/aladin/project/ygCodeUse/PDF/";
+            src = "/home/aladin/project/jsdCodeUse/PDF/";
         }
     }
 
