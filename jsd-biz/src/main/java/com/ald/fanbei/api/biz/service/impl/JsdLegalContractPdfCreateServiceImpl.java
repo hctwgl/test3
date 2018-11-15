@@ -116,6 +116,7 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
         amountLower = cashDo.getAmount();
         interestRate = cashDo.getInterestRate();
         serviceRate = cashDo.getPoundageRate();
+        data.put("borrowRemark",cashDo.getBorrowRemark());
         data.put("borrowNo", cashDo.getBorrowNo());
         data.put("gmtStart", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
         data.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));

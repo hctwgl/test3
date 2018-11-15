@@ -230,6 +230,7 @@
         #if($!{borrowNo})<img src="$!{bfurl}" alt="" style="position:absolute;left:1rem;top:0;width: 2rem;height: 2rem">#end
     </div>
     <p>签署时间：$!{gmtSign}</p>
+    <p>签署地点：杭州市滨江区</p>
 </div>
 </body>
 

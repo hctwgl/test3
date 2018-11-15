@@ -221,6 +221,7 @@
     <p style="margin-bottom: 30px;">乙方（出借人）：<p style="color: white">tanGeZhi</p></p>
     <p style="margin-bottom: 30px;">丙方：<p style="color: white">langXia</p></p>
     <p>签署时间：$!{gmtSign}</p>
+    <p>签署地点：杭州市滨江区</p>
 </div>
 </body>
 

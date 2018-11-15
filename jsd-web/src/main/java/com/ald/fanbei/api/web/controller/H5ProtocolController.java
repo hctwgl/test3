@@ -94,8 +94,7 @@ public class H5ProtocolController {
             model.put("yfCompany", resdo.getValue1());
             model.put("bfCompany", resdo.getValue2());
             model.put("dfCompany", resdo.getValue3());
-
-
+			String borrowRemark ="" ,repayRemark = "";
             BigDecimal amountLower, interestRate, serviceRate;
             if(StringUtils.isNotBlank(tradeNoXgxy)) {
             	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
@@ -103,7 +102,8 @@ public class H5ProtocolController {
             	amountLower = cashDo.getAmount();
             	interestRate = cashDo.getInterestRate();
             	serviceRate = cashDo.getPoundageRate();
-
+				repayRemark = cashDo.getRepayRemark();
+				borrowRemark = cashDo.getBorrowRemark();
             	model.put("borrowNo", cashDo.getBorrowNo());
             	model.put("gmtStart", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
                 model.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
@@ -126,7 +126,8 @@ public class H5ProtocolController {
             	interestRate = rateInfo.interestRate;
             	serviceRate = rateInfo.serviceRate;
             }
-
+			model.put("borrowRemark",borrowRemark);
+			model.put("repayRemark",repayRemark);
             model.put("interestRate", interestRate.multiply(NUM100).setScale(2) + "%");
             model.put("serviceRate", serviceRate.multiply(NUM100).setScale(2) + "%");
             model.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
