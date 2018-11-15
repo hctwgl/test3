@@ -38,5 +38,11 @@
 			<version>2.3.20</version>
 		</dependency>
 
+		<dependency>
+			<groupId>fakepath</groupId>
+			<artifactId>bcprov-ext-jdk15on</artifactId>
+			<version>1.54</version>
+		</dependency>
+
 	</dependencies>
 </project>
