@@ -13,6 +13,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.JsdLegalContractPdfCreateService;
+import com.ald.fanbei.api.biz.third.util.JobThreadPoolUtils;
 import com.ald.fanbei.api.common.enums.*;
 import com.itextpdf.text.DocumentException;
 import org.apache.commons.lang.StringUtils;
@@ -87,6 +88,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     TransactionTemplate transactionTemplate;
     @Resource
     UpsUtil upsUtil;
+    @Resource
+    JobThreadPoolUtils jobThreadPoolUtils;
 
 
     @Override
@@ -436,12 +439,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         orderCashDo.setGmtPlanRepay(repaymentDate);
         String result = this.transUpdate(cashDo, orderDo, orderCashDo);
         if(StringUtils.equals(result,"success")){
-            if(StringUtils.equals(cashDo.getVersion(), BorrowVersionType.SELL.name())){
-                jsdLegalContractPdfCreateService.platformServiceSellProtocol(cashDo.getTradeNoXgxy());
-            }else if(StringUtils.equals(cashDo.getVersion(), BorrowVersionType.BEHEAD.name())){
-                jsdLegalContractPdfCreateService.platformServiceBeheadProtocol(cashDo.getTradeNoXgxy());
-            }
-
+            jobThreadPoolUtils.platformServiceSellProtocol(cashDo.getTradeNoXgxy());
         }
         jsdNoticeRecordService.dealBorrowNoticed(cashDo, this.buildXgxyPay(cashDo, "放款成功", XgxyBorrowNotifyStatus.SUCCESS.name()));
     }

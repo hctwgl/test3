@@ -31,30 +31,50 @@ public class JobThreadPoolUtils {
             threadPool = Executors.newFixedThreadPool(16);
         }
     }
-
-    public void PlatformServiceProtocolPdf(String tradeNoXgxy){
-        PlatformServiceProtocolTask platformServiceProtocolTask = new PlatformServiceProtocolTask(tradeNoXgxy);
-        threadPool.execute(platformServiceProtocolTask);
-    }
-
-    class PlatformServiceProtocolTask implements Runnable {
-        private String tradeNoXgxy;
-        public PlatformServiceProtocolTask(String tradeNoXgxy) {
-            this.tradeNoXgxy=tradeNoXgxy;
-        }
-        @Override
-        public void run() {
-            try {
-                jsdLegalContractPdfCreateService.platformServiceSellProtocol(tradeNoXgxy);
-            } catch (IOException e) {
-                e.printStackTrace();
-                logger.error("JobThreadPoolUtils error =>{}",e);
-            } catch (DocumentException e) {
-                e.printStackTrace();
-                logger.error("JobThreadPoolUtils error =>{}",e);
+    /**
+     * 赊销生成pdf
+     * @param tradeNoXgxy
+     */
+    public void platformServiceSellProtocol(String tradeNoXgxy){
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    jsdLegalContractPdfCreateService.platformServiceSellProtocol(tradeNoXgxy);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    logger.error("JobThreadPoolUtils error =>{}",e);
+                } catch (DocumentException e) {
+                    e.printStackTrace();
+                    logger.error("JobThreadPoolUtils error =>{}",e);
+                }
             }
-        }
+        });
     }
+
+
+    /**
+     * 砍头生成pdf
+     * @param tradeNoXgxy
+     */
+    public void platformServiceBeheadProtocol(String tradeNoXgxy){
+        threadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    jsdLegalContractPdfCreateService.platformServiceBeheadProtocol(tradeNoXgxy);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    logger.error("JobThreadPoolUtils error =>{}",e);
+                } catch (DocumentException e) {
+                    e.printStackTrace();
+                    logger.error("JobThreadPoolUtils error =>{}",e);
+                }
+            }
+        });
+    }
+
+
 
     /**
      * 异步处理业务逻辑
