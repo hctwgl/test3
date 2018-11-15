@@ -255,19 +255,26 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 	@Override
 	protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo) {
-		KuaijieRepayBo kuaijieBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
-		if (kuaijieBo.getRepayment() != null) {
+		KuaijieRepayBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
+		if (kuaijieLoanBo.getRepayment() != null) {
+			changBorrowRepaymentStatus(payTradeNo, JsdBorrowCashRepaymentStatus.PROCESS.getCode(), kuaijieLoanBo.getRepayment().getRid(),"","");
 		}
 	}
 
 	@Override
 	protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-
+		KuaijieRepayBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
+		if (kuaijieLoanBo.getRepayment() != null) {
+			changBorrowRepaymentStatus(payTradeNo, JsdBorrowCashRepaymentStatus.PROCESS.getCode(), kuaijieLoanBo.getRepayment().getRid(),"","");
+		}
 	}
 
 	@Override
 	protected void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-
+		KuaijieRepayBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
+		if (kuaijieLoanBo.getRepayment() != null) {
+			changBorrowRepaymentStatus(payTradeNo, JsdBorrowCashRepaymentStatus.PROCESS.getCode(), kuaijieLoanBo.getRepayment().getRid(),"","");
+		}
 	}
 
 	@Override
