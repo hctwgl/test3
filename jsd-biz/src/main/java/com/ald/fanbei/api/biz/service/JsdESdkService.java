@@ -43,6 +43,12 @@ public interface JsdESdkService {
 
     AddSealResult createUserSeal(String accountId, String templateType, String color);
 
+    JsdUserSealDo getSealPersonal(JsdUserDo dsedUserDo);
 
+    FileDigestSignResult userSign(Map<String, Object> map);//签章
+
+    FileDigestSignResult selfStreamSign(String fileName, String type, String accountId, int posType, float width, String key, String posPage, boolean isQrcodeSign, byte[] stream);//签章
+
+    FileDigestSignResult streamSign(String fileName, String type, String sealData, String accountId, int posType, float width, String key, String posPage, boolean isQrcodeSign, byte[] stream);//签章
 
 }
