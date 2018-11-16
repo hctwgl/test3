@@ -70,10 +70,10 @@ public class EdsPayProtocolUtil extends AbstractThird {
             //请求时间校验
             Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp, 0L);
             int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp, DateUtil.getCurrSecondTimeStamp(), 60);
-            if (result > 0) {
+            /*if (result > 0) {
                 notifyRespBo.resetRespInfo(BizAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
                 return notifyRespBo;
-            }
+            }*/
             //签名验证相关值处理
             String realDataJson = "";
 
@@ -172,10 +172,10 @@ public class EdsPayProtocolUtil extends AbstractThird {
             //请求时间校验
             Long reqTimeStamp = NumberUtil.objToLongDefault(timestamp, 0L);
             int result = DateUtil.judgeDiffTimeStamp(reqTimeStamp, DateUtil.getCurrSecondTimeStamp(), 60);
-            if (result > 0) {
+            /*if (result > 0) {
                 notifyRespBo.resetRespInfo(BizAssetSideRespCode.VALIDATE_TIMESTAMP_ERROR);
                 return notifyRespBo;
-            }
+            }*/
             //签名验证相关值处理
             String realDataJson = "";
             List<EdspayBackSealReqBo> edspayBackSealReqBoList = null;
