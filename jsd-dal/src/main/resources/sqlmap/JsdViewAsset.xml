@@ -275,7 +275,7 @@
 
     <select id="getSumMinAmount" resultType="java.math.BigDecimal">
     	SELECT
-			IFNULL(SUM(amount),0)
+			IFNULL(SUM(arrival_amount),0)
 		FROM
 			jsd_view_asset
 		WHERE
@@ -286,7 +286,7 @@
 
     <select id="getSumMaxAmount" resultType="java.math.BigDecimal">
     	SELECT
-			IFNULL(SUM(amount),0)
+			IFNULL(SUM(arrival_amount),0)
 		FROM
 			jsd_view_asset
 		WHERE

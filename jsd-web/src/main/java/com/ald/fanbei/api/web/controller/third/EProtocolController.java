@@ -42,6 +42,7 @@ public class EProtocolController {
     @ResponseBody
     public AssetSideRespBo giveBackCreditInfo(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) {
         JSONObject jsonObj = JSON.parseObject(requestData);
+        logger.info("EdspayController giveBackPdfInfo,requestData="+jsonObj);
         String sendTime = StringUtil.null2Str(jsonObj.get("sendTime"));
         String data = StringUtil.null2Str(jsonObj.get("data"));
         String sign = StringUtil.null2Str(jsonObj.get("sign"));
@@ -63,6 +64,7 @@ public class EProtocolController {
     @ResponseBody
     public AssetSideRespBo giveBackSealInfo(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) {
         JSONObject jsonObj = JSON.parseObject(requestData);
+        logger.info("EdspayController giveBackSealInfo,requestData="+jsonObj);
         String sendTime = StringUtil.null2Str(jsonObj.get("sendTime"));
         String data = StringUtil.null2Str(jsonObj.get("data"));
         String sign = StringUtil.null2Str(jsonObj.get("sign"));

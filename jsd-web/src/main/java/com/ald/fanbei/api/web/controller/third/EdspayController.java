@@ -42,6 +42,7 @@ public class EdspayController {
 	@ResponseBody
 	public AssetSideRespBo giveBackCreditInfo(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) {
 		JSONObject jsonObj = JSON.parseObject(requestData);
+		logger.info("EdspayController giveBackCreditInfo,requestData="+jsonObj);
 		String sendTime = StringUtil.null2Str(jsonObj.get("sendTime"));
 		String data = StringUtil.null2Str(jsonObj.get("data"));
 		String sign = StringUtil.null2Str(jsonObj.get("sign"));
@@ -61,7 +62,9 @@ public class EdspayController {
 	 */
 	@RequestMapping(value = { "/getBatchCreditInfo" }, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public AssetSideRespBo getBatchCreditInfo(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) {		JSONObject jsonObj = JSON.parseObject(requestData);
+	public AssetSideRespBo getBatchCreditInfo(@RequestBody String requestData, HttpServletRequest request, HttpServletResponse response) {
+		JSONObject jsonObj = JSON.parseObject(requestData);
+		logger.info("EdspayController getBatchCreditInfo,requestData="+jsonObj);
 		String sendTime = StringUtil.null2Str(jsonObj.get("sendTime"));
 		String data = StringUtil.null2Str(jsonObj.get("data"));
 		String sign = StringUtil.null2Str(jsonObj.get("sign"));
