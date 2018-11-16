@@ -433,7 +433,7 @@ public class JsdAssetPackageDetailServiceImpl extends ParentServiceImpl<JsdAsset
 		}else {
 			creditRespBo.setRepaymentSource("工资收入");
 		}
-		creditRespBo.setDebtType(AfAssetPackageBusiType.BORROWCASH.getCode());
+		creditRespBo.setDebtType(AfAssetPackageBusiType.XGJSD.getCode());
 		creditRespBo.setIsPeriod(0);
 		creditRespBo.setTotalPeriod(1);
 		creditRespBo.setLoanerType(0);
