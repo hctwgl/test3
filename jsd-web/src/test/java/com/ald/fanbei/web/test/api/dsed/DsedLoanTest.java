@@ -25,8 +25,8 @@ public class DsedLoanTest extends BaseTest {
     /**
      * 自测根据自己的业务修改下列属性 TODO
      */
-//	String urlBase = "http://yjsd.51fanbei.com";
-  String urlBase = "http://localhost:8088";
+	String urlBase = "https://yjsd.51fanbei.com";
+//  String urlBase = "http://localhost:8088";
 //    String urlBase = "http://192.168.112.40:8080";
     
     String userName = "13638668564";
@@ -44,10 +44,10 @@ public class DsedLoanTest extends BaseTest {
      * 获取借钱首页详情
      */
     @Test
-    public void getHomeInfo() throws UnsupportedEncodingException {
-        String url = urlBase + "/jsd-web/protocol/protocolBeheadPdf";
+    public void getHomeInfo()   {
+        String url = urlBase + "/jsd-web/protocol/protocolSellPdf";
         Map<String, String> p = new HashMap<>();
-        p.put("data","loan1031eca283100000009");
+        p.put("data","loan1104aishangjie121100000102");
         String respResult = HttpUtil.post(url, p);
 
 
