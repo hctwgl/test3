@@ -320,7 +320,7 @@
 
     <update id="updateStatus" parameterType="java.lang.String" >
         UPDATE jsd_borrow_legal_order_repayment SET gmt_modified = NOW(), status='P'
-        WHERE trade_no=#{tradeNo}
+        WHERE trade_no=#{tradeNo} and status='A'
     </update>
     <select id="getLastByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo">
         SELECT
