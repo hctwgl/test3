@@ -18,5 +18,6 @@ public interface JsdLegalContractPdfCreateService {
 
     void platformServiceBeheadProtocol(String tradeNoXgxy) throws IOException, DocumentException;
 
+    String getProtocalLegalWithOutLenderByType(Integer debtType, String orderNo, String protocolUrl, String borrowerName, List<EdspayInvestorInfoBo> investorList) throws IOException;
 
 }

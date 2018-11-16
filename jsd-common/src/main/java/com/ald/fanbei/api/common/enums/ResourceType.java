@@ -87,6 +87,12 @@ public enum ResourceType {
 	PROTOCOL_RENEWAL("PROTOCOL_RENEWAL", "续期协议"),
 	PLUS_PROTOCOL_RENEWAL("PLUS_PROTOCOL_RENEWAL", "续期协议(plus)"),
 	PLUS_PROTOCOL_BORROW("PLUS_PROTOCOL_BORROW", "借款协议配置(plus)"),
+	ASSET_PUSH_WHITE("ASSET_PUSH_WHITE","债权实时推送白名单"),
+
+	BORROWCASH_BANK_INFOS("BORROWCASH_BANK_INFOS", "极速贷债权对应开户行信息配置"),
+	BORROW_BANK_INFOS("BORROW_BANK_INFOS", "分期债权对应开户行信息配置"),
+	LOAN_BANK_INFOS("LOAN_BANK_INFOS", "白领贷债权对应开户行信息配置"),
+	XGJSD_BANK_INFOS("XGJSD_BANK_INFOS", "西瓜极速贷债权对应开户行信息配置")
 	;
 
 

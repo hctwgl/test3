@@ -26,6 +26,7 @@ public interface JsdESdkService {
 
     AddAccountResult addUserSealAccount(Map<String, String> map);//创建个人账户
 
+
     GetAccountProfileResult getUserSealAccount(Map<String, String> map);//创建个人账户
 
     JsdUserSealDo selectUserSealByUserId(Long id);
@@ -41,5 +42,10 @@ public interface JsdESdkService {
     int insertUserSeal(JsdUserSealDo record);
 
 
+    FileDigestSignResult userSign(Map<String, Object> map);//签章
+
+    FileDigestSignResult selfStreamSign(String fileName, String type, String accountId, int posType, float width, String key, String posPage, boolean isQrcodeSign, byte[] stream);//签章
+
+    FileDigestSignResult streamSign(String fileName, String type, String sealData, String accountId, int posType, float width, String key, String posPage, boolean isQrcodeSign, byte[] stream);//签章
 
 }
