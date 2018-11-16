@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_asset_package_detail表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.JsdAssetPackageDetailDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,borrow_cash_id,borrow_no,asset_package_id,status,remark,borrow_rate,profit_rate,loan_time 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="borrowCashId != null">
+            AND borrow_cash_id = #{borrowCashId,jdbcType=INTEGER}
+        </if>
+        <if test="borrowNo != null">
+            AND borrow_no = #{borrowNo,jdbcType=VARCHAR}
+        </if>
+        <if test="assetPackageId != null">
+            AND asset_package_id = #{assetPackageId,jdbcType=INTEGER}
+        </if>
+        <if test="status != null">
+            AND status = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="remark != null">
+            AND remark = #{remark,jdbcType=VARCHAR}
+        </if>
+        <if test="borrowRate != null">
+            AND borrow_rate = #{borrowRate,jdbcType=DECIMAL}
+        </if>
+        <if test="profitRate != null">
+            AND profit_rate = #{profitRate,jdbcType=DECIMAL}
+        </if>
+        <if test="loanTime !=null">
+            AND loan_time = #{loanTime,jdbcType=TIMESTAMP}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDetailDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO jsd_asset_package_detail
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="borrowCashId != null">        
+	            borrow_cash_id,
+	        </if>
+	        <if test="borrowNo != null">        
+	            borrow_no,
+	        </if>
+	        <if test="assetPackageId != null">        
+	            asset_package_id,
+	        </if>
+	        <if test="status != null">        
+	            status,
+	        </if>
+	        <if test="remark != null">        
+	            remark,
+	        </if>
+	        <if test="borrowRate != null">        
+	            borrow_rate,
+	        </if>
+	        <if test="profitRate != null">        
+	            profit_rate,
+	        </if>
+	        <if test="loanTime != null">        
+	            loan_time,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="borrowCashId != null" >
+		       #{borrowCashId,jdbcType=INTEGER},
+		    </if>
+		    <if test="borrowNo != null" >
+		       #{borrowNo,jdbcType=VARCHAR},
+		    </if>
+		    <if test="assetPackageId != null" >
+		       #{assetPackageId,jdbcType=INTEGER},
+		    </if>
+		    <if test="status != null" >
+		       #{status,jdbcType=VARCHAR},
+		    </if>
+		    <if test="remark != null" >
+		       #{remark,jdbcType=VARCHAR},
+		    </if>
+		    <if test="borrowRate != null" >
+		       #{borrowRate,jdbcType=DECIMAL},
+		    </if>
+		    <if test="profitRate != null" >
+		       #{profitRate,jdbcType=DECIMAL},
+		    </if>
+		    <if test="loanTime != null" >
+		       #{loanTime,jdbcType=TIMESTAMP},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDetailDo">
+        UPDATE jsd_asset_package_detail
+          <set>
+            <if test="borrowCashId != null">        
+                borrow_cash_id = #{borrowCashId,jdbcType=INTEGER},
+            </if>
+            <if test="borrowNo != null">        
+                borrow_no = #{borrowNo,jdbcType=VARCHAR},
+            </if>
+            <if test="assetPackageId != null">        
+                asset_package_id = #{assetPackageId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">        
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">        
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="borrowRate != null">        
+                borrow_rate = #{borrowRate,jdbcType=DECIMAL},
+            </if>
+            <if test="profitRate != null">        
+                profit_rate = #{profitRate,jdbcType=DECIMAL},
+            </if>
+            <if test="loanTime != null">        
+                loan_time = #{loanTime,jdbcType=TIMESTAMP},
+            </if>
+            gmt_modified = NOW()
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDetailDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_asset_package_detail
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDetailDo" parameterType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDetailDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_asset_package_detail
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDetailDo" parameterType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDetailDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_asset_package_detail
+        <include refid="commonCondition"/>
+    </select>
+
+
+    <update id="updateReDisTri" parameterType="java.lang.String">
+		  UPDATE jsd_asset_package_detail set status='R',gmt_modified=now()
+			where status = 'Y' and is_delete=1 and borrow_no=#{borrowNo}
+	</update>
+
+    <select id="getByBorrowNo" resultType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDetailDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_asset_package_detail
+        WHERE is_delete = 0 AND borrow_no=#{borrowNo}
+        LIMIT 0,1
+    </select>
+
+
+    <update id="invalidPackageDetail"  parameterType="java.lang.String">
+        UPDATE jsd_asset_package_detail set
+                gmt_modified = now(),
+                status = 'N',
+                is_delete=1
+        WHERE  borrow_no = #{borrowNo} and status ='Y'
+    </update>
+    
+</mapper>

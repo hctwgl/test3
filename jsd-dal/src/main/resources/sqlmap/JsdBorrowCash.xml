@@ -734,4 +734,21 @@
         LIMIT 0,1
     </select>
 
+    <select id="getOverdueInfoByUserId" resultType="com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto">
+		SELECT
+			COUNT(1) overdueNums,ifnull(sum(amount),0) overdueAmount
+		FROM
+			jsd_borrow_cash
+		WHERE
+			`status` IN ('TRANSFERRED', 'FINISHED') and overdue_status='Y'
+		 and user_id = #{userId}
+	</select>
+
+
+    <select id="getBorrowById" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM jsd_borrow_cash WHERE is_delete = 0 AND id = #{id}
+    </select>
+
 </mapper>

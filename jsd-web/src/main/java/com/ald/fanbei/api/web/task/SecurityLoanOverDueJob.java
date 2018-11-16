@@ -43,7 +43,7 @@ public class SecurityLoanOverDueJob {
     @Resource
     GetHostIpUtil getHostIpUtil;
 
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "* 0/1 * * * ?")
     public void laonDueJob(){
         try{
         	logger.info("--------------- securityLoanOverDueJob run start,time=" + new Date());
