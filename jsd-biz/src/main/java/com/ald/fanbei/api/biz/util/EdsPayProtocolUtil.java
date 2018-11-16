@@ -96,7 +96,6 @@ public class EdsPayProtocolUtil extends AbstractThird {
                 notifyRespBo.resetRespInfo(BizAssetSideRespCode.VALIDATE_SIGNATURE_ERROR);
                 return notifyRespBo;
             }
-//			edspayBackPdfReqBo = new EdspayBackPdfReqBo();
             //签名成功,业务处理
             String orderNo = edspayBackPdfReqBo.getOrderNo();
             String protocolUrl = edspayBackPdfReqBo.getProtocolUrl();

@@ -17,19 +17,11 @@ import java.util.Map;
  */
 public interface JsdESdkService {
 
-//    Result init(Map<String,Object> map);//初始化
-
-    FileDigestSignResult userStreamSign(Map<String, Object> map, byte[] stream);//签章
-
-    FileDigestSignResult secondPartySign(Map<String, Object> map, byte[] secondStream);//乙方签章
-
-    FileDigestSignResult secondStreamSign(Map<String, Object> map, byte[] secondStream);//签章
-
-    FileDigestSignResult thirdStreamSign(Map<String, Object> map, byte[] stream);//签章
-
     FileDigestSignResult selfStreamSign(Map<String, Object> map, byte[] stream);//签章
 
     AddAccountResult addUserSealAccount(Map<String, String> map);//创建个人账户
+
+    FileDigestSignResult userStreamSign(Map<String, Object> map, byte[] stream);//签章
 
     GetAccountProfileResult getUserSealAccount(Map<String, String> map);//创建个人账户
 
