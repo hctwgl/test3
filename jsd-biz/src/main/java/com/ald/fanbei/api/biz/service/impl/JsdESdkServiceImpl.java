@@ -368,67 +368,77 @@ public class JsdESdkServiceImpl implements JsdESdkService {
     }
 
     @Override
-    public JsdUserSealDo getSealPersonal(JsdUserDo dsedUserDo) {
+    public JsdUserSealDo getSealPersonal(JsdUserDo jsdUserDo) {
 
         JsdUserSealDo afUserSealDo = new JsdUserSealDo();
-        JsdUserSealDo afUserSealDo1 = new JsdUserSealDo();
-        if ("edspay".equals(dsedUserDo.getMajiabaoName()) || dsedUserDo.getRid() == null) {//e都市钱包用户
-            afUserSealDo = selectUserSealByCardId(dsedUserDo.getIdNumber());
-        } else {
-            afUserSealDo = selectUserSealByUserId(dsedUserDo.getRid());
-        }
-        if (null == afUserSealDo) {// 第一次创建个人印章
-            Map<String, String> map = new HashMap<>();
-            map.put("name", dsedUserDo.getRealName() == null ? dsedUserDo.getRealName():dsedUserDo.getRealName());
-            map.put("idno", dsedUserDo.getIdNumber());
-            map.put("email", dsedUserDo.getEmail());
-            map.put("mobile", dsedUserDo.getMobile());
-            AddAccountResult addAccountResult = addPerson(map);
-            if (null != addAccountResult && 150016 == addAccountResult.getErrCode()) {// 账户已存在(该证件号已被使用)
-                GetAccountProfileResult getAccountProfileResult = getPerson(map);
-                addAccountResult.setAccountId(getAccountProfileResult.getAccountInfo().getAccountUid());
-            } else if (null == addAccountResult || !"成功".equals(addAccountResult.getMsg())
-                    || 0 != addAccountResult.getErrCode()) {
-                logger.error("personAccount create error = > {}",addAccountResult.getMsg() + "name="+dsedUserDo.getRealName());
-                throw new BizException(BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
-            }
-            afUserSealDo1.setUserAccountId(addAccountResult.getAccountId());
-            if (dsedUserDo.getMajiabaoName() != null && "edspay".equals(dsedUserDo.getMajiabaoName())) {
-                afUserSealDo1.setUserType("3");//钱包用户
-            } else {
-                afUserSealDo1.setUserType("2");//反呗用户
-            }
-            AddSealResult addSealResult = createSealPersonal(addAccountResult.getAccountId(), "RECTANGLE", "RED");
-            if (!addSealResult.isErrShow()) {
-                afUserSealDo1.setUserId(dsedUserDo.getRid());
-                afUserSealDo1.setUserSeal(addSealResult.getSealData());
-                if (dsedUserDo.getMajiabaoName() != null && "edspay".equals(dsedUserDo.getMajiabaoName())) {
-                    afUserSealDo1.setEdspayUserCardId(dsedUserDo.getIdNumber());
-                    afUserSealDo1.setUserName(dsedUserDo.getRealName());
-                }
-                // afUserSealDo1.setUserSeal("data:image/png;base64,"+addSealResult.getSealData());
-                // userSeal = addSealResult.getSealData();
-            }
-            int num = insertUserSeal(afUserSealDo1);
-            return afUserSealDo1;
-        }
+        JsdUserSealDo userSealDo = new JsdUserSealDo();
+        if ("edspay".equals(jsdUserDo.getMajiabaoName()) || jsdUserDo.getRid() == null) {//e都市钱包用户
+            afUserSealDo = selectUserSealByCardId(jsdUserDo.getIdNumber());
+            if (null == afUserSealDo) {// 第一次创建个人印章
+                Map<String, String> map = new HashMap<>();
+                AddAccountResult addAccountResult = getAddAccountResult(jsdUserDo, map);//添加账号
 
+                userSealDo.setUserAccountId(addAccountResult.getAccountId());
+                userSealDo.setUserType("3");//钱包用户
+                AddSealResult addSealResult = createSealPersonal(addAccountResult.getAccountId(), "RECTANGLE", "RED");//添加用户签章
+                if (!addSealResult.isErrShow()) {
+                    userSealDo.setUserId(jsdUserDo.getRid());
+                    userSealDo.setUserSeal(addSealResult.getSealData());
+                    userSealDo.setEdspayUserCardId(jsdUserDo.getIdNumber());
+                    userSealDo.setUserName(jsdUserDo.getRealName());
+                }
+                int num = insertUserSeal(userSealDo);
+                return userSealDo;
+            }
+        } else {
+            afUserSealDo = selectUserSealByUserId(jsdUserDo.getRid());
+            if (null == afUserSealDo) {// 第一次创建个人印章
+                Map<String, String> map = new HashMap<>();
+                AddAccountResult addAccountResult = getAddAccountResult(jsdUserDo, map);//添加账号
+                userSealDo.setUserAccountId(addAccountResult.getAccountId());
+                userSealDo.setUserType("2");//反呗用户
+                AddSealResult addSealResult = createSealPersonal(addAccountResult.getAccountId(), "RECTANGLE", "RED");//添加用户签章
+                if (!addSealResult.isErrShow()) {
+                    userSealDo.setUserId(jsdUserDo.getRid());
+                    userSealDo.setUserSeal(addSealResult.getSealData());
+                }
+                int num = insertUserSeal(userSealDo);
+                return userSealDo;
+            }
+        }
         if (null != afUserSealDo.getUserAccountId() && null == afUserSealDo.getUserSeal()) {// 有账户没印章
             AddSealResult addSealResult = createSealPersonal(afUserSealDo.getUserAccountId().toString(), "SQUARE",
-                    "RED");
+                    "RED");//添加用户签章
             if (!addSealResult.isErrShow()) {
-                afUserSealDo1.setUserId(dsedUserDo.getRid());
-                afUserSealDo1.setUserSeal(addSealResult.getSealData());
-                afUserSealDo1.setUserAccountId(afUserSealDo.getUserAccountId());
-                if (dsedUserDo.getMajiabaoName() != null && "edspay".equals(dsedUserDo.getMajiabaoName())) {
-                    afUserSealDo1.setEdspayUserCardId(dsedUserDo.getIdNumber());
-                    afUserSealDo1.setUserName(dsedUserDo.getRealName());
+                userSealDo.setUserId(jsdUserDo.getRid());
+                userSealDo.setUserSeal(addSealResult.getSealData());
+                userSealDo.setUserAccountId(afUserSealDo.getUserAccountId());
+                if (jsdUserDo.getMajiabaoName() != null && "edspay".equals(jsdUserDo.getMajiabaoName())) {
+                    userSealDo.setEdspayUserCardId(jsdUserDo.getIdNumber());
+                    userSealDo.setUserName(jsdUserDo.getRealName());
                 }
-                afUserSealDao.updateByUserId(afUserSealDo1);
+                afUserSealDao.updateByUserId(userSealDo);
             }
-            return afUserSealDo1;
+            return userSealDo;
         }
         return afUserSealDo;
+    }
+
+    private AddAccountResult getAddAccountResult(JsdUserDo jsdUserDo, Map<String, String> map) {
+        map.put("name", jsdUserDo.getRealName() == null ? jsdUserDo.getRealName():jsdUserDo.getRealName());
+        map.put("idno", jsdUserDo.getIdNumber());
+        map.put("email", jsdUserDo.getEmail());
+        map.put("mobile", jsdUserDo.getMobile());
+        AddAccountResult addAccountResult = addPerson(map);
+        if (null != addAccountResult && 150016 == addAccountResult.getErrCode()) {// 账户已存在(该证件号已被使用)
+            GetAccountProfileResult getAccountProfileResult = getPerson(map);
+            addAccountResult.setAccountId(getAccountProfileResult.getAccountInfo().getAccountUid());
+        } else if (null == addAccountResult || !"成功".equals(addAccountResult.getMsg())
+                || 0 != addAccountResult.getErrCode()) {
+            logger.error("personAccount create error = > {}",addAccountResult.getMsg() + "name="+jsdUserDo.getRealName());
+            throw new BizException(BizExceptionCode.USER_ACCOUNT_NOT_EXIST_ERROR);
+        }
+        return addAccountResult;
     }
 
 
