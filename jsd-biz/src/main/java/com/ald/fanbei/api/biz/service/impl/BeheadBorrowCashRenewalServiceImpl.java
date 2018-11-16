@@ -308,6 +308,7 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 					borrowCashDo.setSumRepaidPoundage(borrowCashDo.getSumRepaidPoundage().add(borrowCashDo.getPoundageAmount()));// 累计续期手续费
 					borrowCashDo.setPoundageAmount(poundage);
 					borrowCashDo.setRenewalNum(borrowCashDo.getRenewalNum() + 1);// 累计续期次数
+					logger.info("dealJsdRenewalSucess V2 borrowCashDo =" + borrowCashDo);
 					jsdBorrowCashDao.updateById(borrowCashDo);
 					// ---<
 					
