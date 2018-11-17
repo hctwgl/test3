@@ -370,6 +370,6 @@
         SELECT
         <include refid="querySettleFields" />
         FROM jsd_user
-        WHERE is_delete = 0 AND mobile = #{mobile}
+        WHERE is_delete = 0 AND user_name = #{mobile}
     </select>
 </mapper>

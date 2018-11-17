@@ -749,8 +749,6 @@
 
 
     <select id="getPromiseIncomeDetail" resultType="FinaneceDataDo">
-
-
             SELECT * FROM
              (SELECT `id` ,`borrow_no` AS 'borrowNo',concat(`type`,'天') AS 'periods',gmt_plan_repayment AS 'gmtPlanRepay',(`amount`+interest_amount+`poundage_amount`+`overdue_amount`+`sum_repaid_interest` +`sum_repaid_poundage` +`sum_repaid_overdue`)  AS 'predictAmount',
             repay_amount AS 'repayAmount',(`amount`+interest_amount+`poundage_amount`+`overdue_amount`+`sum_repaid_interest` +`sum_repaid_poundage` +`sum_repaid_overdue`)-repay_amount AS 'noneAmount',`amount` as 'amount',
