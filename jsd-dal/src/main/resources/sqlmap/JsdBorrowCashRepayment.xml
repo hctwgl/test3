@@ -370,7 +370,7 @@
     or `name`= '代扣还款', 'app还款', '线下还款') AS 'payType',
          `gmt_create` AS 'actualTime',
          'other' AS tppNid,
-         '极速贷还款' AS 'productName',
+         '极速贷' AS 'productName',
          '现金贷' AS 'productType',
          '绿游' AS liquidationCompany
   FROM `jsd_borrow_cash_repayment`
