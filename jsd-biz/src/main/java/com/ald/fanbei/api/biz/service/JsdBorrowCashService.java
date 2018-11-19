@@ -203,4 +203,8 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      * @return
      */
     List<JsdProctocolBo> getRenewalPlusProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
+
+    JsdBorrowCashDo getBorrowByRid(Long id);
+
+
 }

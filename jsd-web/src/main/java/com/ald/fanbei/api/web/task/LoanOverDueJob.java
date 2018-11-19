@@ -130,7 +130,7 @@ public class LoanOverDueJob {
         Iterator<JsdBorrowCashDo> iterator = jsdBorrowCashDos.iterator();
         while (iterator.hasNext()){
             JsdBorrowCashDo jsdBorrowCashDo = iterator.next();
-            jsdBorrowCashDo = borrowCashService.getById(jsdBorrowCashDo.getRid());
+            jsdBorrowCashDo = borrowCashService.getBorrowByRid(jsdBorrowCashDo.getRid());
             if (jsdBorrowCashDo.getGmtPlanRepayment().after(new Date())) {
                 logger.warn("calcuOverdueRecords, gmtPlanRepayment after  "+jsdBorrowCashDo.getRid());
                 iterator.remove();

@@ -147,4 +147,6 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
     AfUserBorrowCashOverdueInfoDto getOverdueInfoByUserId(@Param("userId") Long userId);
 
     JsdBorrowCashDo getBorrowById(@Param("id")Long id);
+
+    JsdBorrowCashDo getBorrowByRid(@Param("id")Long id);
 }

@@ -751,4 +751,11 @@
         FROM jsd_borrow_cash WHERE is_delete = 0 AND id = #{id}
     </select>
 
+    <select id="getBorrowByRid" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM jsd_borrow_cash WHERE is_delete = 0 AND id = #{id}
+        FOR UPDATE
+    </select>
+
 </mapper>

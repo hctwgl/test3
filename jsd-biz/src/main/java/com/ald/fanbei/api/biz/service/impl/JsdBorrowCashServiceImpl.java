@@ -628,4 +628,9 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         xgxyPayBo.setTimestamp(System.currentTimeMillis());
         return xgxyPayBo;
     }
+
+    @Override
+    public JsdBorrowCashDo getBorrowByRid(Long id){
+        return jsdBorrowCashDao.getBorrowByRid(id);
+    }
 }
