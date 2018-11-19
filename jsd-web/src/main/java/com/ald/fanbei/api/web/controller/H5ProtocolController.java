@@ -527,11 +527,11 @@ public class H5ProtocolController {
 				logger.info("cashDo = " + JSON.toJSONString(cashDo) + "model = " + JSON.toJSONString(model));
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
-				if(StringUtils.equals(resdo.getValue4(), ProductType.DFD.name())){
+				if(StringUtils.equals(resdo.getValue5(), ProductType.DFD.name())){
 					model.put("bfCompanyPic",model.get("lxSeal"));
 					model.put("yfCompanyPic",model.get("tgzSeal"));
 				}
-				if(StringUtils.equals(resdo.getValue4(), ProductType.JGD.name())){
+				if(StringUtils.equals(resdo.getValue5(), ProductType.JGD.name())){
 					model.put("bfCompanyPic",model.get("lySeal"));
 					model.put("yfCompanyPic",model.get("jtSeal"));
 				}
@@ -621,11 +621,11 @@ public class H5ProtocolController {
 
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
-				if(StringUtils.equals(resdo.getValue4(), ProductType.DFD.name())){
+				if(StringUtils.equals(resdo.getValue5(), ProductType.DFD.name())){
 					model.put("bfCompanyPic",model.get("lxSeal"));
 					model.put("yfCompanyPic",model.get("tgzSeal"));
 				}
-				if(StringUtils.equals(resdo.getValue4(), ProductType.JGD.name())){
+				if(StringUtils.equals(resdo.getValue5(), ProductType.JGD.name())){
 					model.put("bfCompanyPic",model.get("lySeal"));
 					model.put("yfCompanyPic",model.get("qhSeal"));
 				}
