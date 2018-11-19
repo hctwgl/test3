@@ -152,7 +152,7 @@ public class FinanceController{
                     }
                     map.put("company", "绿游");
                     map.put("productType", "CASH");
-                    map.put("productName", "借吧");
+                    map.put("productName", "极速贷");
                     map.put("planRepayTime",  DateUtil.formatDate(cash.getGmtPlanRepayment(),"yyyy-MM-dd HH:mm:ss"));
                     map.put("status", cash.getStatus());
                     map.put("orderNo", cash.getBorrowNo());
@@ -333,7 +333,7 @@ public class FinanceController{
         Map<String,String> borrowInfo=new HashMap<>();
         borrowInfo.put("company", "绿游");
         borrowInfo.put("productType", "CASH");
-        borrowInfo.put("productName", "借吧");
+        borrowInfo.put("productName", "极速贷");
         borrowInfo.put("planRepayTime", DateUtil.formatDate(jsdCashDto.getGmtPlanRepayment(),"yyyy-MM-dd HH:mm:ss"));
         if(JsdBorrowCashStatus.FINISHED.name().equals(jsdCashDto.getStatus())){
             borrowInfo.put("npered","1");
