@@ -371,7 +371,7 @@
         <include refid="querySettleFields" />
         FROM jsd_user
         WHERE is_delete = 0 AND mobile = #{mobile}
-        ORDER BY gmt_modified DESC
+        ORDER BY gmt_create DESC
         LIMIT 0,1
     </select>
 </mapper>
