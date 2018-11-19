@@ -234,6 +234,7 @@ public class FinanceController{
                 JSONObject object=JSON.parseObject(data);
                 String borrowNo= object.getString("borrowNo");
                 JsdBorrowCashDo jsdBorrowCashDo=jsdBorrowCashService.getByBorrowNo(borrowNo);
+                logger.info("jsdBorrowCashDo:"+jsdBorrowCashDo);
                 if(jsdBorrowCashDo==null){
                     resqBo.setCode(BizThirdRespCode.CLEARING_BORROW_IS_NULL.getCode());
                     resqBo.setMsg(BizThirdRespCode.CLEARING_BORROW_IS_NULL.getDesc());
@@ -241,10 +242,12 @@ public class FinanceController{
                 }
                 Map<String, Object> map = new HashMap<>();
                 JsdBorrowLegalOrderCashDo borrowLegalOrderCash = jsdBorrowLegalOrderCashService.getLegalOrderByBorrowId(jsdBorrowCashDo.getRid());
+                logger.info("borrowLegalOrderCash:"+borrowLegalOrderCash);
                 List<JsdBorrowCashRepaymentDo> jsdBorrowCashRepaymentDo=jsdBorrowCashRepaymentService.getRepayByBorrowId(jsdBorrowCashDo.getRid());
                 List<JsdBorrowCashRenewalDo> renewalDetailDos=jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(jsdBorrowCashDo.getRid());
                 Map renewalMap= buildRenewalInfos(renewalDetailDos);
                 map.put("repayInfos", buildeRepayInfos(jsdBorrowCashRepaymentDo));
+                logger.info("getGoodsInfoByBorrowId:"+jsdBorrowCashService.getGoodsInfoByBorrowId(jsdBorrowCashDo.getRid()));
                 map.put("goodsInfo", buildOrderInfo(jsdBorrowCashService.getGoodsInfoByBorrowId(jsdBorrowCashDo.getRid())));
                 map.put("borrowInfo", buildBorrowInfo(jsdBorrowCashDo,borrowLegalOrderCash));
                 map.put("renewalInfos",renewalMap.get("renewalInfos"));
