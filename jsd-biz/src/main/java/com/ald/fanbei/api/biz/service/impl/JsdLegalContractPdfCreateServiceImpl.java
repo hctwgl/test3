@@ -496,10 +496,10 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
         stream = bos.toByteArray();
         stream = borrowerCreateSealByStream(stream, data);//借款人签章
 
-        data.put("thirdPartyKey","tanGeZhi");
+        data.put("thirdPartyKey","yfCompanyPic");
         getData(data,jsdUserSealService.getUserSealByUserName("浙江弹个指网络科技有限公司"));
         stream = jsdESdkService.thirdStreamSign(data,stream).getStream();
-        data.put("thirdPartyKey","langXia");
+        data.put("thirdPartyKey","bfCompanyPic");
         getData(data,jsdUserSealService.getUserSealByUserName("杭州朗下网络科技有限公司"));
         stream = jsdESdkService.thirdStreamSign(data,stream).getStream();
 

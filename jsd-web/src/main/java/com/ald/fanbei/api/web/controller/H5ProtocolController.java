@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.ProductType;
 import com.ald.fanbei.api.dal.domain.*;
 import com.itextpdf.text.DocumentException;
 import org.apache.commons.lang.StringUtils;
@@ -526,6 +527,14 @@ public class H5ProtocolController {
 				logger.info("cashDo = " + JSON.toJSONString(cashDo) + "model = " + JSON.toJSONString(model));
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
+				if(StringUtils.equals(resdo.getValue4(), ProductType.DFD.name())){
+					model.put("bfCompanyPic",model.get("lxSeal"));
+					model.put("yfCompanyPic",model.get("tgzSeal"));
+				}
+				if(StringUtils.equals(resdo.getValue4(), ProductType.JGD.name())){
+					model.put("bfCompanyPic",model.get("lySeal"));
+					model.put("yfCompanyPic",model.get("jtSeal"));
+				}
 			}else{
 				TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
 				trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
@@ -612,6 +621,14 @@ public class H5ProtocolController {
 
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
+				if(StringUtils.equals(resdo.getValue4(), ProductType.DFD.name())){
+					model.put("bfCompanyPic",model.get("lxSeal"));
+					model.put("yfCompanyPic",model.get("tgzSeal"));
+				}
+				if(StringUtils.equals(resdo.getValue4(), ProductType.JGD.name())){
+					model.put("bfCompanyPic",model.get("lySeal"));
+					model.put("yfCompanyPic",model.get("qhSeal"));
+				}
 			}else{
 				JSONObject obj = JSON.parseObject(preview);
 				String borrowNoXgxy = obj.getString("borrowNo");

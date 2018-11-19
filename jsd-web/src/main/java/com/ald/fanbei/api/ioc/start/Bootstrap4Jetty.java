@@ -8,7 +8,7 @@ import com.ald.fanbei.api.ioc.start.server.JettyServerStart;
  */
 public class Bootstrap4Jetty {
 	
-	public static final int PORT = 8098;
+	public static final int PORT = 8078;
 	public static final String ENV_TYPE = "test"; // test,pre_env,online
 	public static final String ROOT_PATH;
 	public static final String PARENT_ROOT_PATH;
