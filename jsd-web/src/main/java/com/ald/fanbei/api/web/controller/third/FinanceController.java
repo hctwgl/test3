@@ -274,7 +274,7 @@ public class FinanceController{
             renewalMap.put("renewalId", String.valueOf(renewalDetailDo.getRid()));
             renewalMap.put("renewalAmount", String.valueOf(renewalDetailDo.getRenewalAmount()));
             renewalMap.put("renewalSumAmount", String.valueOf(renewalSumAmount));
-            renewalMap.put("renewalRepayCapital", String.valueOf(renewalDetailDo.getRid()));
+            renewalMap.put("renewalRepayCapital", String.valueOf(renewalDetailDo.getCapital()));
             renewalMap.put("renewalRepayLastAmount", String.valueOf(renewalDetailDo.getActualAmount()));
             renewalMap.put("renewalTime", DateUtil.formatDate(renewalDetailDo.getGmtCreate(),"yyyy-MM-dd HH:mm:ss"));
             renewalAllSumAmount=renewalAllSumAmount.add(renewalSumAmount);
