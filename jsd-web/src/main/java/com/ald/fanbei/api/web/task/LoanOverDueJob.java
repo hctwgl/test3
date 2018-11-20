@@ -101,7 +101,7 @@ public class LoanOverDueJob {
                 }else {
                     logger.info("borrowCashDueJob run start,time=" + new Date());
                     for(int i = 0; i < totalPageNum; i++){
-                        List<JsdBorrowCashDo> borrowCashDos=borrowCashService.getBorrowCashOverdue(totalPageNum*i,pageSize);
+                        List<JsdBorrowCashDo> borrowCashDos=borrowCashService.getBorrowCashOverdue(pageSize*i,pageSize);
                         //计算逾期
                         this.dealOverdueRecords(borrowCashDos);
                         //通知催收逾期人员通讯录
@@ -130,12 +130,6 @@ public class LoanOverDueJob {
         Iterator<JsdBorrowCashDo> iterator = jsdBorrowCashDos.iterator();
         while (iterator.hasNext()){
             JsdBorrowCashDo jsdBorrowCashDo = iterator.next();
-            jsdBorrowCashDo = borrowCashService.getBorrowByRid(jsdBorrowCashDo.getRid());
-            if (jsdBorrowCashDo.getGmtPlanRepayment().after(new Date())) {
-                logger.warn("calcuOverdueRecords, gmtPlanRepayment after  "+jsdBorrowCashDo.getRid());
-                iterator.remove();
-                continue;
-            }
             try {
             	addUserContancts(jsdBorrowCashDo.getUserId());
                 logger.info("calcuOverdueRecords do borrowCashDueJob, borrowCashId="+jsdBorrowCashDo.getRid());
