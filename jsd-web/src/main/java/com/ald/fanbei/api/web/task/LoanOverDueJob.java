@@ -162,10 +162,12 @@ public class LoanOverDueJob {
                     BigDecimal orderAmount = BigDecimalUtil.add(borrowLegalOrderCashDo.getAmount(), borrowLegalOrderCashDo.getSumRepaidInterest(), borrowLegalOrderCashDo.getSumRepaidPoundage()).subtract(borrowLegalOrderCashDo.getRepaidAmount());// 当前本金
                     BigDecimal oldOverdueorderAmount = borrowLegalOrderCashDo.getOverdueAmount();//当前逾期
                     BigDecimal newOverdueorderAmount = orderAmount.multiply(borrowLegalOrderCashDo.getOverdueRate().divide(new BigDecimal(360),6,BigDecimal.ROUND_HALF_UP)).setScale(2,BigDecimal.ROUND_HALF_UP);
-                    borrowLegalOrderCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
-                    borrowLegalOrderCashDo.setOverdueDay((short) (borrowLegalOrderCashDo.getOverdueDay()+1));
-                    borrowLegalOrderCashDo.setOverdueAmount(oldOverdueorderAmount.add(newOverdueorderAmount));
-                    jsdBorrowLegalOrderCashService.updateById(borrowLegalOrderCashDo);
+                    JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = new JsdBorrowLegalOrderCashDo();
+                    jsdBorrowLegalOrderCashDo.setRid(borrowLegalOrderCashDo.getRid());
+                    jsdBorrowLegalOrderCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
+                    jsdBorrowLegalOrderCashDo.setOverdueDay((short) (borrowLegalOrderCashDo.getOverdueDay()+1));
+                    jsdBorrowLegalOrderCashDo.setOverdueAmount(oldOverdueorderAmount.add(newOverdueorderAmount));
+                    jsdBorrowLegalOrderCashService.updateById(jsdBorrowLegalOrderCashDo);
                     jsdBorrowCashOverdueLogService.saveRecord(buildLoanOverdueLog(borrowLegalOrderCashDo.getRid(),orderAmount,newOverdueorderAmount,borrowLegalOrderCashDo.getUserId(), OverdueLogType.ORDER_CASH.name()) );
                 }
                 //新增逾期日志
