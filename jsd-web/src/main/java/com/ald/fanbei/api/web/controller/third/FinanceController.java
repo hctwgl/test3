@@ -383,7 +383,7 @@ public class FinanceController{
                 String repayAmount = object.getString("repayAmount");
                 String bankCard = object.getString("bankCard");
                 Date payTime = DateUtil.stringToDate(object.getString("repayTime"));
-                String repayTradeNo = object.getString("tradeNo");
+                String repayTradeNo = object.getString("repayTradeNo");
                 String remark = object.getString("remark");
                 JsdBorrowCashDo borrowCashDo = jsdBorrowCashService.getByBorrowNo(borrowNo);
                 JsdBorrowLegalOrderCashDo legalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
