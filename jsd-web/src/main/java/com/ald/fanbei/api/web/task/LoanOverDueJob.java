@@ -101,7 +101,7 @@ public class LoanOverDueJob {
                 }else {
                     logger.info("borrowCashDueJob run start,time=" + new Date());
                     for(int i = 0; i < totalPageNum; i++){
-                        List<JsdBorrowCashDo> borrowCashDos=borrowCashService.getBorrowCashOverdue(totalPageNum*i,pageSize);
+                        List<JsdBorrowCashDo> borrowCashDos=borrowCashService.getBorrowCashOverdue(pageSize*i,pageSize);
                         //计算逾期
                         this.dealOverdueRecords(borrowCashDos);
                         //通知催收逾期人员通讯录
