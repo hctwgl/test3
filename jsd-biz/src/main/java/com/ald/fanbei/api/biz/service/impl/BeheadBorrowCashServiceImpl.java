@@ -330,9 +330,9 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         
         orderDo.setStatus(JsdBorrowLegalOrderStatus.AWAIT_DELIVER.name());
         String result = this.transUpdate(cashDo, orderDo);
-//        if(StringUtils.equals(result,"success")){
-//            jobThreadPoolUtils.platformServiceBeheadProtocol(cashDo.getTradeNoXgxy());
-//        }
+        if(StringUtils.equals(result,"success")){
+            jobThreadPoolUtils.platformServiceBeheadProtocol(cashDo.getTradeNoXgxy());
+        }
         jsdNoticeRecordService.dealBorrowNoticed(cashDo, this.buildXgxyPay(cashDo, "放款成功", XgxyBorrowNotifyStatus.SUCCESS.name()));
 	}
 
