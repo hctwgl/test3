@@ -560,6 +560,7 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
             afContractPdfDo.setId(pdf.getId());
             result = jsdContractPdfDao.updateById(afContractPdfDo);
         }
+        logger.info("saveContractPdf result = " + result);
         return result;
     }
 
