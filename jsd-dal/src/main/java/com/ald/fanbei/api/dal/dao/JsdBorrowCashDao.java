@@ -2,6 +2,7 @@ package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
@@ -170,4 +171,10 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      * **/
     List<FinaneceDataDo> getPromiseIncomeDetail();
 
+
+    AfUserBorrowCashOverdueInfoDto getOverdueInfoByUserId(@Param("userId") Long userId);
+
+    JsdBorrowCashDo getBorrowById(@Param("id")Long id);
+
+    JsdBorrowCashDo getBorrowByRid(@Param("id")Long id);
 }

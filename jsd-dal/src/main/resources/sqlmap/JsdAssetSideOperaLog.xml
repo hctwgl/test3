@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_asset_side_opera_log表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.JsdAssetSideOperaLogDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,asset_side_id,gmt_create,change_type,amount,ref_package_id,ref_detail_ids,remarks 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="assetSideId != null">
+            AND asset_side_id = #{assetSideId,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="changeType != null">
+            AND change_type = #{changeType,jdbcType=VARCHAR}
+        </if>
+        <if test="amount != null">
+            AND amount = #{amount,jdbcType=DECIMAL}
+        </if>
+        <if test="refPackageId != null">
+            AND ref_package_id = #{refPackageId,jdbcType=VARCHAR}
+        </if>
+        <if test="refDetailIds != null">
+            AND ref_detail_ids = #{refDetailIds,jdbcType=VARCHAR}
+        </if>
+        <if test="remarks != null">
+            AND remarks = #{remarks,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdAssetSideOperaLogDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO jsd_asset_side_opera_log
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="assetSideId != null">        
+	            asset_side_id,
+	        </if>
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="changeType != null">        
+	            change_type,
+	        </if>
+	        <if test="amount != null">        
+	            amount,
+	        </if>
+	        <if test="refPackageId != null">        
+	            ref_package_id,
+	        </if>
+	        <if test="refDetailIds != null">        
+	            ref_detail_ids,
+	        </if>
+	        <if test="remarks != null">        
+	            remarks,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="assetSideId != null" >
+		       #{assetSideId,jdbcType=INTEGER},
+		    </if>
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="changeType != null" >
+		       #{changeType,jdbcType=VARCHAR},
+		    </if>
+		    <if test="amount != null" >
+		       #{amount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="refPackageId != null" >
+		       #{refPackageId,jdbcType=VARCHAR},
+		    </if>
+		    <if test="refDetailIds != null" >
+		       #{refDetailIds,jdbcType=VARCHAR},
+		    </if>
+		    <if test="remarks != null" >
+		       #{remarks,jdbcType=VARCHAR},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdAssetSideOperaLogDo">
+        UPDATE jsd_asset_side_opera_log
+          <set>
+            <if test="assetSideId != null">        
+                asset_side_id = #{assetSideId,jdbcType=INTEGER},
+            </if>
+            <if test="changeType != null">        
+                change_type = #{changeType,jdbcType=VARCHAR},
+            </if>
+            <if test="amount != null">        
+                amount = #{amount,jdbcType=DECIMAL},
+            </if>
+            <if test="refPackageId != null">        
+                ref_package_id = #{refPackageId,jdbcType=VARCHAR},
+            </if>
+            <if test="refDetailIds != null">        
+                ref_detail_ids = #{refDetailIds,jdbcType=VARCHAR},
+            </if>
+            <if test="remarks != null">        
+                remarks = #{remarks,jdbcType=VARCHAR},
+            </if>
+            gmt_modified = NOW()
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.JsdAssetSideOperaLogDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_asset_side_opera_log
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdAssetSideOperaLogDo" parameterType="com.ald.fanbei.api.dal.domain.JsdAssetSideOperaLogDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_asset_side_opera_log
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdAssetSideOperaLogDo" parameterType="com.ald.fanbei.api.dal.domain.JsdAssetSideOperaLogDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_asset_side_opera_log
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>

@@ -47,8 +47,6 @@ import com.alibaba.fastjson.JSONObject;
 
 @Component("cuiShouUtils")
 public class CuiShouUtils {
-    protected static final Logger thirdLog = LoggerFactory.getLogger("DSED_THIRD");
-
     protected static final Logger logger = LoggerFactory.getLogger("DSED_THIRD");
 
     private final String salt = "jsdcuishou";
@@ -110,7 +108,7 @@ public class CuiShouUtils {
             logger.info("offlineRepaymentMoney end , result = " + JSON.toJSONString(result) +" ,TIMES = " + (System.currentTimeMillis() - start));
             return JSONObject.toJSONString(result);//同步反回接收成功
         } catch (Exception e) {
-            thirdLog.error("offlineRepaymentMoney error = " + e);
+            logger.info("offlineRepaymentMoney error = " , e);
             CuiShouBackMoney cuiShouBackMoney = new CuiShouBackMoney(500, "error");
             return JSON.toJSONString(cuiShouBackMoney);
         }
@@ -138,7 +136,7 @@ public class CuiShouUtils {
             JsdBorrowCashDo jsdBorrowCashDo = new JsdBorrowCashDo();
             if(detailsArray == null || StringUtil.isEmpty(detailsArray.toJSONString())){
                 cuiShouBackMoney.setCode(205);
-                thirdLog.error("param is null error orderNo =" + orderNo);
+                logger.info("param is null error orderNo =" + orderNo);
                 return cuiShouBackMoney;
             }
             if(detailsArray != null && detailsArray.size()>0){
@@ -146,7 +144,7 @@ public class CuiShouUtils {
                 JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getById(Long.parseLong(dataId));
                 if(jsdBorrowLegalOrderDo == null){
                     cuiShouBackMoney.setCode(205);
-                    thirdLog.error("param is null error orderNo =" + orderNo);
+                    logger.info("param is null error orderNo =" + orderNo);
                     return cuiShouBackMoney;
                 }else {
                     jsdBorrowLegalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(jsdBorrowLegalOrderDo.getRid());
@@ -157,20 +155,20 @@ public class CuiShouUtils {
             }
             if(StringUtil.isBlank(totalAmount)){
                 cuiShouBackMoney.setCode(203);
-                thirdLog.error("totalAmount is not exist orderNo =" + orderNo);
+                logger.info("totalAmount is not exist orderNo =" + orderNo);
                 return cuiShouBackMoney;
             }
             if (StringUtil.isAllNotEmpty(orderNo, repaymentNo)) {
                 jsdBorrowCashRepaymentService.offlineRepay(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,totalAmount, repaymentNo, userId, JsdRepayType.COLLECTION,null, DateUtil.stringToDate(repayTime), orderNo,dataId,null);
             } else {
                 cuiShouBackMoney.setCode(303);
-                thirdLog.error("orderNo and repaymentNo is error orderNo =" + orderNo);
+                logger.info("orderNo and repaymentNo is error orderNo =" + orderNo);
                 return cuiShouBackMoney;
             }
             cuiShouBackMoney.setCode(200);
             return cuiShouBackMoney;
         } catch (Exception e) {
-            thirdLog.error("offlineLoanRepaymentNotify error = " + e);
+            logger.info("offlineLoanRepaymentNotify error = " , e);
             cuiShouBackMoney.setCode(500);
             return cuiShouBackMoney;
         }
@@ -191,7 +189,7 @@ public class CuiShouUtils {
         long start = System.currentTimeMillis();
         try {
             if(StringUtil.isEmpty(data)){
-                thirdLog.error("data is null");
+                logger.info("data is null");
                 return "false";
             }
             logger.info("offlineRepaymentMoney data = " + data +"  ,sign = " + sign);
@@ -242,7 +240,7 @@ public class CuiShouUtils {
             logger.info("collectUpdateStatus end , result = success , TIMES = " + (System.currentTimeMillis() - start));
             return "success";
         } catch (Exception e) {
-            thirdLog.error("collectUpdateStatus error = " + e);
+            logger.info("collectUpdateStatus error = " , e);
             return "false";
         }
     }
@@ -398,7 +396,6 @@ public class CuiShouUtils {
 
         //--------------------end  催收上报接口需要参数---------------------------
         data.add(buildData);
-//        logger.info(" collectionPush data = "+data);
         collectionNoticeUtil.noticeCollectOverdue(data);
     }
 
@@ -413,7 +410,7 @@ public class CuiShouUtils {
         long start = System.currentTimeMillis();
         try {
             if(StringUtil.isEmpty(data)){
-                thirdLog.error("data is null");
+                logger.error("data is null");
                 return "false";
             }
             //上报
@@ -424,7 +421,7 @@ public class CuiShouUtils {
             logger.info("collectImport end  success !  ,TIMES = " + (System.currentTimeMillis() - start));
             return "success";
         } catch (Exception e) {
-            thirdLog.error("collectImport error = " + e.getMessage(), e);
+            logger.error("collectImport error = " + e.getMessage(), e);
             return "false";
         }
     }
@@ -443,7 +440,7 @@ public class CuiShouUtils {
             if(StringUtil.isEmpty(data)){
                 map.put("code","500");
                 map.put("info","");
-                thirdLog.error("data is null");
+                logger.error("data is null");
                 return JSON.toJSONString(map);
             }
             List<HashMap<String,String>> list = new ArrayList<>();
@@ -504,7 +501,7 @@ public class CuiShouUtils {
         } catch (Exception e) {
             map.put("code","500");
             map.put("info","");
-            thirdLog.error("collectData error = " + e);
+            logger.info("collectData error = " , e);
             return JSON.toJSONString(map);
         }
     }
@@ -552,7 +549,7 @@ public class CuiShouUtils {
             logger.info("collectReconciliate end  success !  TIMES = " + (System.currentTimeMillis() - start));
             return "success";
         } catch (Exception e) {
-            thirdLog.error("collectReconciliate error = " , e);
+            logger.info("collectReconciliate error = " , e);
             return "false";
         }
     }
