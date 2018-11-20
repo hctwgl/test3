@@ -452,6 +452,7 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
         data.put("amountLower", amountLower);
         data.put("borrowRemark",borrowRemark);
         data.put("repayRemark",repayRemark);
+        data.put("borrowId",cashDo.getRid());
 
         return data;
     }
@@ -555,14 +556,12 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
         afContractPdfDo.setContractPdfUrl(url);
         afContractPdfDo.setTypeId(loanId);
         JsdContractPdfDo pdf = jsdContractPdfDao.selectByTypeId(afContractPdfDo);
-        logger.info("saveContractPdf pdf = " + pdf +"afContractPdfDo = " + JSON.toJSONString(afContractPdfDo));
         if (pdf == null) {
             result = jsdContractPdfDao.insert(afContractPdfDo);
         } else {
             afContractPdfDo.setId(pdf.getId());
             result = jsdContractPdfDao.updateById(afContractPdfDo);
         }
-        logger.info("saveContractPdf result = " + result);
         return result;
     }
 
