@@ -164,6 +164,7 @@ public class CollectoinController {
     public String manualPushRepayment(@RequestBody JSONObject data){
         logger.info("start manualPushRepayment ------------ data = " + data.toJSONString());
         Boolean isPush = data.getBoolean("isPush");
+        String reviewReuslt = data.getString("reviewReuslt");
         JsdBorrowCashRepaymentDo jsdBorrowCashRepaymentDo = jsdBorrowCashRepaymentDao.getByTradeNo(data.getString("tradeNo"));
         JsdBorrowLegalOrderRepaymentDo jsdBorrowLegalOrderRepaymentDo = jsdBorrowLegalOrderRepaymentDao.getBorrowLegalOrderRepaymentByTradeNo(data.getString("tradeNo"));
         JsdBorrowCashDo jsdBorrowCashDo = jsdBorrowCashService.getBorrowByRid(jsdBorrowCashRepaymentDo.getBorrowId());
@@ -178,7 +179,7 @@ public class CollectoinController {
         Long userId = jsdBorrowCashRepaymentDo.getUserId();
         logger.info("manualPushRepayment ------------ repayAmount = " + repayAmount+", outTradeNo = "+outTradeNo+", borrowNo = "+borrowNo+", orderId = "+orderId+", userId = "+userId);
         if(isPush){
-            jsdCollectionService.nofityRepayment(repayAmount, outTradeNo, borrowNo, orderId, userId, JsdRepayType.OFFLINE, null);
+            jsdCollectionService.nofityRepayment(repayAmount, outTradeNo, borrowNo, orderId, userId, JsdRepayType.OFFLINE, reviewReuslt);
         }
         return "true";
     }
