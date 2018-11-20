@@ -7,6 +7,7 @@ import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.biz.util.HtmlToPdfUtil;
 import com.ald.fanbei.api.biz.util.OssUploadResult;
 import com.ald.fanbei.api.biz.util.PdfCreateUtil;
+import com.ald.fanbei.api.common.enums.ProductType;
 import com.ald.fanbei.api.common.enums.ResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.BizException;
@@ -21,6 +22,7 @@ import com.itextpdf.text.DocumentException;
 import com.timevale.esign.sdk.tech.bean.result.FileDigestSignResult;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
@@ -440,8 +442,7 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
         data.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
         data.put("gmtPlanRepayment", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
         data.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-        data.put("bfurl", resdo.getValue1());
-        data.put("yfurl", resdo.getValue4());
+        data.put("productType",resdo.getValue5());
         data.put("key", "platform");
         data.put("templateSrc",pdfTemplate);
         data.put("interestRate", interestRate.multiply(NUM100).setScale(2) + "%");
@@ -495,13 +496,23 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
         ByteArrayOutputStream bos = getByteArrayOutputStream(outFilePath);
         stream = bos.toByteArray();
         stream = borrowerCreateSealByStream(stream, data);//借款人签章
+        if(StringUtils.equals(ProductType.DFD.name(),data.get("productType").toString())){
+            data.put("thirdPartyKey","yfCompanyPic");
+            getData(data,jsdUserSealService.getUserSealByUserName("浙江弹个指网络科技有限公司"));
+            stream = jsdESdkService.thirdStreamSign(data,stream).getStream();
+            data.put("thirdPartyKey","bfCompanyPic");
+            getData(data,jsdUserSealService.getUserSealByUserName("杭州朗下网络科技有限公司"));
+            stream = jsdESdkService.thirdStreamSign(data,stream).getStream();
+        }
+        if(StringUtils.equals(ProductType.JGD.name(),data.get("productType").toString())){
+            data.put("thirdPartyKey","yfCompanyPic");
+            getData(data,jsdUserSealService.getUserSealByUserName("金泰嘉鼎（深圳）资产管理有限公司"));
+            stream = jsdESdkService.thirdStreamSign(data,stream).getStream();
+            data.put("thirdPartyKey","bfCompanyPic");
+            getData(data,jsdUserSealService.getUserSealByUserName("杭州绿游网络科技有限公司"));
+            stream = jsdESdkService.thirdStreamSign(data,stream).getStream();
+        }
 
-        data.put("thirdPartyKey","yfCompanyPic");
-        getData(data,jsdUserSealService.getUserSealByUserName("浙江弹个指网络科技有限公司"));
-        stream = jsdESdkService.thirdStreamSign(data,stream).getStream();
-        data.put("thirdPartyKey","bfCompanyPic");
-        getData(data,jsdUserSealService.getUserSealByUserName("杭州朗下网络科技有限公司"));
-        stream = jsdESdkService.thirdStreamSign(data,stream).getStream();
 
         File file = getFinalFile(outFilePath, stream);
 
