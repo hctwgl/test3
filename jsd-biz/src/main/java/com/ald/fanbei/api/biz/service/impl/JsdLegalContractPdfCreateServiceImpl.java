@@ -18,6 +18,7 @@ import com.ald.fanbei.api.dal.dao.JsdContractPdfDao;
 import com.ald.fanbei.api.dal.dao.JsdEdspayUserInfoDao;
 import com.ald.fanbei.api.dal.dao.JsdUserSealDao;
 import com.ald.fanbei.api.dal.domain.*;
+import com.alibaba.fastjson.JSON;
 import com.itextpdf.text.DocumentException;
 import com.timevale.esign.sdk.tech.bean.result.FileDigestSignResult;
 import org.apache.commons.io.IOUtils;
@@ -554,6 +555,7 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
         afContractPdfDo.setContractPdfUrl(url);
         afContractPdfDo.setTypeId(loanId);
         JsdContractPdfDo pdf = jsdContractPdfDao.selectByTypeId(afContractPdfDo);
+        logger.info("saveContractPdf pdf = " + pdf +"afContractPdfDo = " + JSON.toJSONString(afContractPdfDo));
         if (pdf == null) {
             result = jsdContractPdfDao.insert(afContractPdfDo);
         } else {
