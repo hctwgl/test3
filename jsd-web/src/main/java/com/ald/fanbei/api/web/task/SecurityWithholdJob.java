@@ -39,16 +39,23 @@ public class SecurityWithholdJob {
     private WithholdJob withholdJob;
 
 
+
+    private static String SWITCH = "open";
+
     @Scheduled(cron = "0/5 * * * * ?")
     public void laonDueJob(){
+        logger.info("--------------- securityWithholdJob run start,time=" + new Date());
         try{
-        	logger.info("--------------- securityWithholdJob run start,time=" + new Date());
-            JsdResourceDo resDo = jsdResourceService.getByTypeAngSecType(ResourceType.OVERDUE.getCode(), ResourceSecType.OVERDUE_JOB_INTERNAL_UIDS.getCode());
-            String userIds = resDo.getValue();
-            Date bengin = DateUtil.getTodayLast();
-            List<JsdBorrowCashDo> borrowCashDos= borrowCashService.getBorrowCashRepayByUserIds(userIds.substring(0,userIds.length()-1),bengin);
-            withholdJob.dealWithhold(borrowCashDos);
+            JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceSecType.WITHHOLD_JOB_CONFIG.getCode());
+            if(resourceDo != null && SWITCH.equals(resourceDo.getValue())){
+                JsdResourceDo resDo = jsdResourceService.getByTypeAngSecType(ResourceType.OVERDUE.getCode(), ResourceSecType.OVERDUE_JOB_INTERNAL_UIDS.getCode());
+                String userIds = resDo.getValue();
+                Date bengin = DateUtil.getTodayLast();
+                List<JsdBorrowCashDo> borrowCashDos= borrowCashService.getBorrowCashRepayByUserIds(userIds.substring(0,userIds.length()-1),bengin);
+                withholdJob.dealWithhold(borrowCashDos);
+            }
             logger.info("--------------- securityWithholdJob run end,time=" + new Date());
+
         } catch (Exception e){
             logger.error("securityWithholdJob  error, case=",e);
         }
