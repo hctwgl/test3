@@ -377,7 +377,7 @@ public class CuiShouUtils {
         buildData.put("residueAmount",String.valueOf(jsdBorrowCashService.calcuUnrepayAmount(borrowCashDo, orderCashDo)));//剩余应还
         buildData.put("currentAmount",String.valueOf(currentAmount));//委案未还金额
         buildData.put("dataId",String.valueOf(jsdBorrowLegalOrderDo.getRid()));//源数据id
-//        buildData.put("planRepaymenTime",DateUtil.formatDateTime(borrowCashDo.getGmtPlanRepayment()));//计划还款时间
+        buildData.put("planRepaymenTime",DateUtil.formatDateTime(borrowCashDo.getGmtPlanRepayment()));//计划还款时间
         buildData.put("overdueAmount",String.valueOf(overdueAmount));//逾期金额
         //借款详情
         buildData.put("borrowNo",borrowCashDo.getBorrowNo());//借款编号
