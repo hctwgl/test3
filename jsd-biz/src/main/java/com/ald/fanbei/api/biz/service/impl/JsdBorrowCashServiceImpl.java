@@ -437,9 +437,9 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.name());
         orderCashDo.setGmtPlanRepay(repaymentDate);
         String result = this.transUpdate(cashDo, orderDo, orderCashDo);
-//        if(StringUtils.equals(result,"success")){
-//            jobThreadPoolUtils.platformServiceSellProtocol(cashDo.getTradeNoXgxy());
-//        }
+        if(StringUtils.equals(result,"success")){
+            jobThreadPoolUtils.platformServiceSellProtocol(cashDo.getTradeNoXgxy());
+        }
         jsdNoticeRecordService.dealBorrowNoticed(cashDo, this.buildXgxyPay(cashDo, "放款成功", XgxyBorrowNotifyStatus.SUCCESS.name()));
     }
 
