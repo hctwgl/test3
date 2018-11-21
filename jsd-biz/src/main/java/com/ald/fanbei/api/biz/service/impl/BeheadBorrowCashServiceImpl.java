@@ -225,7 +225,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         resp.serviceRate = borrowRateInfo.serviceRate.setScale(4, RoundingMode.HALF_UP).toString();
         resp.serviceAmount = serviceAmount.toString();
         resp.overdueRate = borrowOverdueRate.divide(new BigDecimal(360),4, RoundingMode.HALF_UP).setScale(4, RoundingMode.HALF_UP).toString();
-        
+        resp.overdueYearRate = borrowOverdueRate.toString();
         //商品价格
         resp.totalDiffFee = actualOrderAmount.toPlainString();
         
