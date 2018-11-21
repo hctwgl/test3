@@ -9,8 +9,7 @@ import java.util.concurrent.Executors;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.enums.ResourceSecType;
-import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -23,8 +22,6 @@ import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
 import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
-import com.ald.fanbei.api.common.enums.RepayType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 
@@ -120,6 +117,7 @@ public class WithholdJob {
             bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
             JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
             bo.bankNo=userBankcardDo.getBankCardNumber();
+            bo.repayType=JsdRepayType.WITHHOLD.name();
             Runnable thread= new Runnable() {
                 @Override
                 public void run() {
