@@ -198,6 +198,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 		BigDecimal borrowServiceRate = borrowRateInfo.serviceRate;
         BigDecimal borrowInterestRate = borrowRateInfo.interestRate;
         BigDecimal borrowOverdueRate = borrowRateInfo.overdueRate;
+        logger.info("resolve borrowRateInfo = "+borrowRateInfo +"borrowOverdueRate = "+ borrowOverdueRate);
         
         // 借款 利息 与 服务费 乘法表达式可复用左侧
         BigDecimal borrowinterestLeft = borrowInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).multiply(borrowDay);
