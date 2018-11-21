@@ -4,10 +4,13 @@ package com.ald.fanbei.api.web.controller;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdUserContactsService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdUserContactsDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
@@ -32,6 +35,8 @@ public class CollectoinController {
     CuiShouUtils cuiShouUtils;
     @Resource
     JsdUserService jsdUserService;
+    @Resource
+    JsdBorrowCashService jsdBorrowCashService;
     @Resource
     XgxyUtil xgxyUtil;
     @Resource
@@ -135,5 +140,17 @@ public class CollectoinController {
             logger.error("calcuOverdueRecords.addUserContancts error, userId = "+ userId, e);
         }
     }
+    @ResponseBody
+    @RequestMapping(value = {"/updateOverdueStatus"}, method = RequestMethod.POST)
+    public void updateOverdueStatus(String borrowNo){
+        if(StringUtils.isNotBlank(borrowNo)){
+            JsdBorrowCashDo borrowCashDo = new JsdBorrowCashDo();
+            JsdBorrowCashDo cashDo = jsdBorrowCashService.getByBorrowNo(borrowNo);
+            borrowCashDo.setRid(cashDo.getRid());
+            borrowCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
+            jsdBorrowCashService.updateById(borrowCashDo);
+        }
+    }
+
 
 }
