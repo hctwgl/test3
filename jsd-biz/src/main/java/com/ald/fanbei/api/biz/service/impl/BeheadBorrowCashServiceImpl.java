@@ -198,7 +198,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 		BigDecimal borrowServiceRate = borrowRateInfo.serviceRate;
         BigDecimal borrowInterestRate = borrowRateInfo.interestRate;
         BigDecimal borrowOverdueRate = borrowRateInfo.overdueRate;
-
+        
         // 借款 利息 与 服务费 乘法表达式可复用左侧
         BigDecimal borrowinterestLeft = borrowInterestRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).multiply(borrowDay);
         BigDecimal borrowServiceRateLeft = borrowServiceRate.divide(BigDecimal.valueOf(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).multiply(borrowDay);
@@ -224,8 +224,8 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         resp.interestAmount = interestAmount.toString();
         resp.serviceRate = borrowRateInfo.serviceRate.setScale(4, RoundingMode.HALF_UP).toString();
         resp.serviceAmount = serviceAmount.toString();
-        resp.overdueRate = borrowOverdueRate.divide(new BigDecimal(360),6,RoundingMode.HALF_UP).setScale(4, RoundingMode.HALF_UP).toString();
-        
+        resp.overdueRate = borrowOverdueRate.divide(new BigDecimal(360),4, RoundingMode.HALF_UP).setScale(4, RoundingMode.HALF_UP).toString();
+        resp.overdueYearRate = borrowOverdueRate.toString();
         //商品价格
         resp.totalDiffFee = actualOrderAmount.toPlainString();
         
