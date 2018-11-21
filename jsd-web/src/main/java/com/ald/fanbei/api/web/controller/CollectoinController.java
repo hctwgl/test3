@@ -140,17 +140,7 @@ public class CollectoinController {
             logger.error("calcuOverdueRecords.addUserContancts error, userId = "+ userId, e);
         }
     }
-    @ResponseBody
-    @RequestMapping(value = {"/updateOverdueStatus"}, method = RequestMethod.POST)
-    public void updateOverdueStatus(String borrowNo){
-        if(StringUtils.isNotBlank(borrowNo)){
-            JsdBorrowCashDo borrowCashDo = new JsdBorrowCashDo();
-            JsdBorrowCashDo cashDo = jsdBorrowCashService.getByBorrowNo(borrowNo);
-            borrowCashDo.setRid(cashDo.getRid());
-            borrowCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
-            jsdBorrowCashService.updateById(borrowCashDo);
-        }
-    }
+
 
 
 }
