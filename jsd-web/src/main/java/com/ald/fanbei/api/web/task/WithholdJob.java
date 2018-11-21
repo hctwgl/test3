@@ -77,7 +77,7 @@ public class WithholdJob {
                     } else {
                         logger.info("withhold run start,time=" + new Date());
                         for (int i = 0; i < totalPageNum; i++) {
-                            List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getBorrowCashByBeforeToday(totalPageNum * i, pageSize,bengin);
+                            List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getBorrowCashByBeforeToday(pageSize * i, pageSize,bengin);
                             dealWithhold(borrowCashDos);
                         }
                     }
