@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.common.util.CommonUtil;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.JsdUserService;
@@ -39,5 +40,10 @@ public class JsdUserServiceImpl extends ParentServiceImpl<JsdUserDo, Long> imple
 	@Override
 	public int updateUser(JsdUserDo userDo) {
 		return jsdUserDao.updateUser(userDo);
+	}
+
+	@Override
+	public JsdUserDo getUserInfo(String mobile) {
+		return jsdUserDao.getUserInfo(mobile);
 	}
 }

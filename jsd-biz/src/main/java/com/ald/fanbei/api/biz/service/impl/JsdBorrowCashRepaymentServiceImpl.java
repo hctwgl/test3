@@ -13,6 +13,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.JsdBorrowCashOverdueLogDto;
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -257,7 +258,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo) {
 		KuaijieRepayBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
 		if (kuaijieLoanBo.getRepayment() != null) {
-			changBorrowRepaymentStatus(payTradeNo, JsdBorrowCashRepaymentStatus.PROCESS.getCode(), kuaijieLoanBo.getRepayment().getRid(),"","");
+			changBorrowRepaymentStatus(payTradeNo, JsdBorrowCashRepaymentStatus.SMS.getCode(), kuaijieLoanBo.getRepayment().getRid(),"","");
 		}
 	}
 
@@ -410,6 +411,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				} catch (Exception e){
 					logger.error("notice eca or collection fail error=" + e.getMessage(), e);
 				}
+			}else {
+
 			}
 
 		}finally {
@@ -684,6 +687,12 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		generateRepayRecords(bo);
 		dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.repaymentDo, bo.orderRepaymentDo, type);
 	}
+
+	@Override
+	public List<FinaneceDataDo> getRepayData() {
+		return jsdBorrowCashRepaymentDao.getRepayData();
+	}
+
 	/**
 	 * @Description: 线下还款超时处理（减免逾期）
 	 */
@@ -801,11 +810,11 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		return bo;
 	}
 	private Boolean checkOfflineRepayment(String repaymentNo) {
-		if(jsdBorrowCashRepaymentDao.getByTradeNoOut(repaymentNo) != null) {
+		if(repaymentNo!=null && !repaymentNo.equals("")) {if(jsdBorrowCashRepaymentDao.getByTradeNoOut(repaymentNo) != null) {
 			return false;
 		}
 		if(jsdBorrowLegalOrderRepaymentDao.getByTradeNoOut(repaymentNo) != null){
-			return false;
+			return false;}
 		}
 		return true;
 	}
@@ -846,6 +855,13 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		String key = tradeNo + "_success_legalRepay";
 		redisTemplate.delete(key);
 	}
+
+
+	@Override
+	public List<JsdBorrowCashRepaymentDo> getRepayByBorrowId(Long borrowId) {
+		return jsdBorrowCashRepaymentDao.getRepayByBorrowId(borrowId);
+	}
+
 	public static class RepayRequestBo{
 		public Long userId;
 		public BigDecimal repaymentAmount = BigDecimal.ZERO;	// 还款金额
