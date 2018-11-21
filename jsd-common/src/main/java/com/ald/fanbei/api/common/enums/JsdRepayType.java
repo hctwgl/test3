@@ -5,7 +5,8 @@ public enum JsdRepayType {
     INITIATIVE( "主动还款","INITIATIVE"),
     OFFLINE( "管理员线下还款","OFFLINE"),
     COLLECTION( "催收逾期还款","COLLECTION"),
-    REVIEW_COLLECTION( "管理员审批催收还款","COLLECTION");
+    REVIEW_COLLECTION( "管理员审批催收还款","REVIEW_COLLECTION"),
+    SETTLE_SYSTEM("清结算系统还款","SETTLESYSTEM");
 
     private String code;
     private String xgxyCode;

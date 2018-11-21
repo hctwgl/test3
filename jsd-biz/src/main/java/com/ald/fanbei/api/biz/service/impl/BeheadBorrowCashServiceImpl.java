@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.third.util.JobThreadPoolUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -80,7 +82,8 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
     JsdBorrowLegalOrderInfoDao jsdBorrowLegalOrderInfoDao;
     @Resource
     JsdUserDao jsdUserDao;
-
+    @Resource
+    JobThreadPoolUtils jobThreadPoolUtils;
     @Resource
     XgxyUtil xgxyUtil;
     @Resource
@@ -287,8 +290,8 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
     }
     
 	
-	private void transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo) {
-    	transactionTemplate.execute(new TransactionCallback<String>() {
+	private String transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo) {
+    	String result = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus ts) {
             	jsdBorrowCashDao.updateById(cashDo);
@@ -296,6 +299,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
                 return "success";
             }
         });
+    	return result;
     }
 
 	
@@ -325,8 +329,10 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         cashDo.setTradeNoUps(outTradeNo);
         
         orderDo.setStatus(JsdBorrowLegalOrderStatus.AWAIT_DELIVER.name());
-        this.transUpdate(cashDo, orderDo);
-        
+        String result = this.transUpdate(cashDo, orderDo);
+//        if(StringUtils.equals(result,"success")){
+//            jobThreadPoolUtils.platformServiceBeheadProtocol(cashDo.getTradeNoXgxy());
+//        }
         jsdNoticeRecordService.dealBorrowNoticed(cashDo, this.buildXgxyPay(cashDo, "放款成功", XgxyBorrowNotifyStatus.SUCCESS.name()));
 	}
 

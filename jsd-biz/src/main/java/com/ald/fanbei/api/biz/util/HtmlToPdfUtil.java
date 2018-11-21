@@ -166,7 +166,7 @@ public final class HtmlToPdfUtil {
             if (null != getCurrentOperatingSystem() && getCurrentOperatingSystem().contains("windows")){
                 fontResolver.addFont("c:/Windows/Fonts/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
             }else {
-                fontResolver.addFont("/home/aladin/project/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+                fontResolver.addFont("/home/aladin/project/jsdCodeUse/simsun.ttc", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             }
 
             // 解析html生成pdf

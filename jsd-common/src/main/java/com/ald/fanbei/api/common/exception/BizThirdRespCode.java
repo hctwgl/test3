@@ -22,10 +22,20 @@ public enum BizThirdRespCode {
     COLLECTION_REQUEST_SIGN("304","sign is fail","验签失败"),
     COLLECTION_THIRD_NO_EXIST("305","collection thirdno exist","第三方交易单号已被使用，不要进行重复操作"),
     COLLECTION_CONTRACT_PDF_CREATE_ERROR("306", "collection contract pdf create error", "原有借款协议生成失败"),
+
+    //CLEARING_CODE
+    CLEARING_SIGN_STATUS("310","clearing sign error","验签不通过！"),
+    CLEARING_USER_IS_NULL("312","clearing user is null","用户不存在！"),
+    CLEARING_IN_ACCOUNT_AMOUNT_ERR("313","clearing in account amount err","入账金额错误！"),
+    CLEARING_LOAN_SETTLE_APPLY("314","clearing loan settle is apply","当笔借款为待审核平账中，不可强制结清"),
+    CLEARING_BORROW_IS_NULL("315","clearing borrow is null","借款信息不存在！"),
+
+
 	// BORROW_CASH_CODE 201-299
     BORROW_CASH_HAVE_FINISHED("201", "borrowcash have finished", "借款已还款完成"),
     BORROW_CASH_NOT_EXISTS("202", "borrowcash not exists", "借款记录不存在"),
 	NEW_BORROW_CASH_NOT_PROCESS("203", "new borrowcash not process", "新类型借款暂不处理");
+
 
     /**
      * 错误码

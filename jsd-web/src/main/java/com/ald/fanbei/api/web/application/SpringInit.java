@@ -122,11 +122,16 @@ public class SpringInit implements ApplicationListener<ContextRefreshedEvent> {
             map1.put("organCode", "335417385");
             map1.put("userId", -7l);
             createCompanySeal(qhSeal, map1);
-//            JsdUserSealDo lxSeal = afESdkService.selectUserSealByUserId(-8l);//深圳前海资生管家互联网金融服务有限公司
-//            map1.put("name", "杭州朗下网络科技有限公司");
-//            map1.put("organCode", "91330108");
-//            map1.put("userId", -8l);
-//            createCompanySeal(lxSeal, map1);
+            JsdUserSealDo lxSeal = afESdkService.selectUserSealByUserId(-8l);//深圳前海资生管家互联网金融服务有限公司
+            map1.put("name", "杭州朗下网络科技有限公司");
+            map1.put("organCode", "MA2CCCMG0");
+            map1.put("userId", -8l);
+            createCompanySeal(lxSeal, map1);
+            JsdUserSealDo tgSeal = afESdkService.selectUserSealByUserId(-9l);//深圳前海资生管家互联网金融服务有限公司
+            map1.put("name", "浙江弹个指网络科技有限公司");
+            map1.put("organCode", "MA2CCJE40");
+            map1.put("userId", -9l);
+            createCompanySeal(tgSeal, map1);
 
         }
         logger.info("初始化执行完成...projectId =>{},projectSecret=>{}", projectId, projectSecret);

@@ -13,6 +13,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.JsdBorrowCashOverdueLogDto;
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,7 +161,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				}
 			}
 
-		} else if(borrowRepayAmount.compareTo(BigDecimal.ZERO)>0){ //还款全部进入订单欠款中
+		} else { //还款全部进入订单欠款中，
 			orderRepaymentDo = buildOrderRepayment(bo, bo.amount);
 			jsdBorrowLegalOrderRepaymentDao.saveRecord(orderRepaymentDo);
 		}
@@ -255,19 +256,26 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 	@Override
 	protected void quickPaySendSmmSuccess(String payTradeNo, String payBizObject, UpsCollectRespBo respBo) {
-		KuaijieRepayBo kuaijieBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
-		if (kuaijieBo.getRepayment() != null) {
+		KuaijieRepayBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
+		if (kuaijieLoanBo.getRepayment() != null) {
+			changBorrowRepaymentStatus(payTradeNo, JsdBorrowCashRepaymentStatus.SMS.getCode(), kuaijieLoanBo.getRepayment().getRid(),"","");
 		}
 	}
 
 	@Override
 	protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-
+		KuaijieRepayBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
+		if (kuaijieLoanBo.getRepayment() != null) {
+			changBorrowRepaymentStatus(payTradeNo, JsdBorrowCashRepaymentStatus.PROCESS.getCode(), kuaijieLoanBo.getRepayment().getRid(),"","");
+		}
 	}
 
 	@Override
 	protected void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-
+		KuaijieRepayBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
+		if (kuaijieLoanBo.getRepayment() != null) {
+			changBorrowRepaymentStatus(payTradeNo, JsdBorrowCashRepaymentStatus.PROCESS.getCode(), kuaijieLoanBo.getRepayment().getRid(),"","");
+		}
 	}
 
 	@Override
@@ -333,7 +341,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			if(repaymentDo!=null&&JsdRepayType.WITHHOLD.getXgxyCode().equals(repaymentDo.getType())){
 				repayType=JsdRepayType.WITHHOLD;
 			}
-			noticeXgxyRepayResult(repaymentDo,orderRepaymentDo,YesNoStatus.NO.getCode(),errorMsg,repayType);
+			noticeXgxyRepayResult(repaymentDo,orderRepaymentDo,YesNoStatus.NO.getCode(),errorMsg,repayType,"");
 		}
 		catch (Exception e){
 			logger.error("notice eca fail error=",e);
@@ -376,7 +384,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			final RepayDealBo repayDealBo = new RepayDealBo();
 			repayDealBo.curTradeNo = tradeNo;
 			repayDealBo.curOutTradeNo = outTradeNo;
-			
+
 			long resultValue = transactionTemplate.execute(new TransactionCallback<Long>() {
 				@Override
 				public Long doInTransaction(TransactionStatus status) {
@@ -398,7 +406,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			if (resultValue == 1L) {
 				try {
-					this.noticeXgxyRepayResult(repaymentDo, orderRepaymentDo, YesNoStatus.YES.getCode(),"", repayType);
+					this.noticeXgxyRepayResult(repaymentDo, orderRepaymentDo, YesNoStatus.YES.getCode(),"", repayType,outTradeNo);
 					this.notifyCollection(repayDealBo, repaymentDo, orderRepaymentDo, repayType);
 				} catch (Exception e){
 					logger.error("notice eca or collection fail error=" + e.getMessage(), e);
@@ -414,24 +422,24 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			unLockRepay(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
 		}
 	}
-	private void noticeXgxyRepayResult(JsdBorrowCashRepaymentDo repaymentDo,JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, String status,String errorMsg,JsdRepayType type){
+	private void noticeXgxyRepayResult(JsdBorrowCashRepaymentDo repaymentDo,JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, String status,String errorMsg,JsdRepayType type,String outTradeNo){
 		HashMap<String, String> data = null;
 		if(repaymentDo!=null){
-			data = buildNoticeXgxyData(repaymentDo.getTradeNoXgxy(),repaymentDo.getTradeNoUps(),repaymentDo.getBorrowId(),repaymentDo.getActualAmount(),status,errorMsg,type);
+			data = buildNoticeXgxyData(repaymentDo.getTradeNoXgxy(),repaymentDo.getBorrowId(),repaymentDo.getActualAmount(),status,errorMsg,type,outTradeNo);
 		}else if(orderRepaymentDo!=null){
-			data = buildNoticeXgxyData(orderRepaymentDo.getRepayNo(),orderRepaymentDo.getTradeNoUps(),orderRepaymentDo.getBorrowId(),orderRepaymentDo.getActualAmount(),status,errorMsg,type);
+			data = buildNoticeXgxyData(orderRepaymentDo.getRepayNo(),orderRepaymentDo.getBorrowId(),orderRepaymentDo.getActualAmount(),status,errorMsg,type,outTradeNo);
 		}
 		logger.info("noticeXgxyRepayResult data  "+JSON.toJSONString(data));
 
 		// 通知记录
 		jsdNoticeRecordService.dealRepayNoticed(repaymentDo,orderRepaymentDo,data);
 	}
-	private HashMap<String, String> buildNoticeXgxyData(String tradeNoXgxy,String tradeNoUps,Long borrowId,BigDecimal actualAmount, String status,String errorMsg,JsdRepayType type){
+	private HashMap<String, String> buildNoticeXgxyData(String tradeNoXgxy ,Long borrowId,BigDecimal actualAmount, String status,String errorMsg,JsdRepayType type,String outTradeNo){
 		HashMap<String,String> map=new HashMap<>();
 		JsdBorrowCashDo borrowCashDo = jsdBorrowCashDao.getById(borrowId);
 		map.put("repayNo",tradeNoXgxy);
 		map.put("status",status);
-		map.put("tradeNo",tradeNoUps);
+		map.put("tradeNo",outTradeNo);
 		map.put("borrowNo",borrowCashDo.getTradeNoXgxy());
 		map.put("period","1");
 		map.put("amount", String.valueOf(actualAmount));
@@ -672,11 +680,19 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				String channel , Date repayTime, String orderNo, final String dataId, String remark) {
 		final RepayRequestBo bo = this.buildRepayRequestBo(userId, jsdBorrowCashDo, totalAmount, repaymentNo ,type,channel,repayTime,remark);
 
-		this.checkOfflineRepayment(repaymentNo);
+		if(!checkOfflineRepayment(repaymentNo)){
+			throw new BizException(BizExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
+		}
 		dealOfflineOverdue(jsdBorrowCashDo, jsdBorrowLegalOrderCashDo, totalAmount, userId, repayTime);
 		generateRepayRecords(bo);
 		dealRepaymentSucess(bo.tradeNo, repaymentNo, bo.repaymentDo, bo.orderRepaymentDo, type);
 	}
+
+	@Override
+	public List<FinaneceDataDo> getRepayData() {
+		return jsdBorrowCashRepaymentDao.getRepayData();
+	}
+
 	/**
 	 * @Description: 线下还款超时处理（减免逾期）
 	 */
@@ -742,8 +758,12 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				BigDecimal restOverdue=jsdBorrowCashDo.getOverdueAmount().subtract(removeOverdue);
 				BigDecimal restAmount=BigDecimalUtil.add(jsdBorrowCashDo.getInterestAmount(),jsdBorrowCashDo.getPoundageAmount(),jsdBorrowCashDo.getOverdueAmount().subtract(removeOverdue),
 						jsdBorrowCashDo.getSumRepaidInterest(),jsdBorrowCashDo.getSumRepaidPoundage(),jsdBorrowCashDo.getSumRepaidOverdue(),jsdBorrowCashDo.getAmount()).subtract(jsdBorrowCashDo.getRepayAmount());
-				BigDecimal restPayAmount=payAmount.subtract(jsdBorrowLegalOrderCashDo.getRepaidAmount());
-				if(restPayAmount.compareTo(restAmount)<0){
+				
+				if(jsdBorrowLegalOrderCashDo != null) {
+					payAmount = payAmount.subtract(jsdBorrowLegalOrderCashDo.getRepaidAmount());
+				}
+				
+				if(payAmount.compareTo(restAmount)<0){
 					logger.info("part offline repay，borrowId="+jsdBorrowCashDo.getRid());
 				}else {
 					JsdBorrowCashDo borrowCashDo = new JsdBorrowCashDo();
@@ -789,13 +809,14 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
         bo.remark = remark;
 		return bo;
 	}
-	private void checkOfflineRepayment(String repaymentNo) {
-		if(jsdBorrowCashRepaymentDao.getByTradeNoOut(repaymentNo) != null) {
-			throw new BizException(BizExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
+	private Boolean checkOfflineRepayment(String repaymentNo) {
+		if(repaymentNo!=null && !repaymentNo.equals("")) {if(jsdBorrowCashRepaymentDao.getByTradeNoOut(repaymentNo) != null) {
+			return false;
 		}
 		if(jsdBorrowLegalOrderRepaymentDao.getByTradeNoOut(repaymentNo) != null){
-			throw new BizException(BizExceptionCode.BORROW_CASH_REPAY_REPEAT_ERROR);
+			return false;}
 		}
+		return true;
 	}
 	private long changBorrowRepaymentStatus(String outTradeNo, String status, Long rid,String code,String msg) {
 		JsdBorrowCashRepaymentDo repayment = new JsdBorrowCashRepaymentDo();
@@ -834,6 +855,13 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		String key = tradeNo + "_success_legalRepay";
 		redisTemplate.delete(key);
 	}
+
+
+	@Override
+	public List<JsdBorrowCashRepaymentDo> getRepayByBorrowId(Long borrowId) {
+		return jsdBorrowCashRepaymentDao.getRepayByBorrowId(borrowId);
+	}
+
 	public static class RepayRequestBo{
 		public Long userId;
 		public BigDecimal repaymentAmount = BigDecimal.ZERO;	// 还款金额

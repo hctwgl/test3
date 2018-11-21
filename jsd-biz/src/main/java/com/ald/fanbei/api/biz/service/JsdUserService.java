@@ -16,4 +16,6 @@ public interface JsdUserService extends ParentService<JsdUserDo, Long>{
 
 	int updateUser(JsdUserDo userDo);
 
+	JsdUserDo getUserInfo(String mobile);
+
 }

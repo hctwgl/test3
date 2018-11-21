@@ -2,6 +2,7 @@ package com.ald.jsd.mgr.web.controller;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.common.exception.BizException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
@@ -61,5 +62,16 @@ public class ExecptionHandler{
 	   logger.error("System Exception! Msg=" + e.getMessage(), e);
 	   return Resp.fail(null, RespCode.SYS_ERROR.code, "系统开小差了，请联系管理员");
    }
+
+	/**
+	 * @param exception UnexpectedTypeException
+	 * @param response
+	 * @return
+	 */
+	@ExceptionHandler(BizException.class)
+	public Resp<?> bizException(BizException e, HttpServletResponse response){
+		logger.error("System Exception! Msg=" + e.getMessage(), e);
+		return Resp.fail(null, e.getErrorCode().getErrorCode(), e.getErrorCode().getDesc());
+	}
 	
 }

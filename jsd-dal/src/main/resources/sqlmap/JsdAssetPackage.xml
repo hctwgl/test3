@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_asset_package表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.JsdAssetPackageDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,type,status,asset_name,asset_no,asset_side_id,valid_status,begin_time,end_time,total_money,real_total_money,min_money,min_num,max_money,max_num,borrow_rate,annual_rate,repayment_method,send_mode,download_url,remark,busi_type 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="type != null">
+            AND type = #{type,jdbcType=INTEGER}
+        </if>
+        <if test="status != null">
+            AND status = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="assetName != null">
+            AND asset_name = #{assetName,jdbcType=VARCHAR}
+        </if>
+        <if test="assetNo != null">
+            AND asset_no = #{assetNo,jdbcType=VARCHAR}
+        </if>
+        <if test="assetSideId != null">
+            AND asset_side_id = #{assetSideId,jdbcType=INTEGER}
+        </if>
+        <if test="validStatus != null">
+            AND valid_status = #{validStatus,jdbcType=VARCHAR}
+        </if>
+        <if test="beginTime !=null">
+            AND begin_time = #{beginTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="endTime !=null">
+            AND end_time = #{endTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="totalMoney != null">
+            AND total_money = #{totalMoney,jdbcType=DECIMAL}
+        </if>
+        <if test="realTotalMoney != null">
+            AND real_total_money = #{realTotalMoney,jdbcType=DECIMAL}
+        </if>
+        <if test="minMoney != null">
+            AND min_money = #{minMoney,jdbcType=DECIMAL}
+        </if>
+        <if test="minNum != null">
+            AND min_num = #{minNum,jdbcType=INTEGER}
+        </if>
+        <if test="maxMoney != null">
+            AND max_money = #{maxMoney,jdbcType=DECIMAL}
+        </if>
+        <if test="maxNum != null">
+            AND max_num = #{maxNum,jdbcType=INTEGER}
+        </if>
+        <if test="borrowRate != null">
+            AND borrow_rate = #{borrowRate,jdbcType=DECIMAL}
+        </if>
+        <if test="annualRate != null">
+            AND annual_rate = #{annualRate,jdbcType=DECIMAL}
+        </if>
+        <if test="repaymentMethod != null">
+            AND repayment_method = #{repaymentMethod,jdbcType=INTEGER}
+        </if>
+        <if test="sendMode != null">
+            AND send_mode = #{sendMode,jdbcType=INTEGER}
+        </if>
+        <if test="downloadUrl != null">
+            AND download_url = #{downloadUrl,jdbcType=VARCHAR}
+        </if>
+        <if test="remark != null">
+            AND remark = #{remark,jdbcType=VARCHAR}
+        </if>
+        <if test="busiType != null">
+            AND busi_type = #{busiType,jdbcType=INTEGER}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO jsd_asset_package
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="type != null">        
+	            type,
+	        </if>
+	        <if test="status != null">        
+	            status,
+	        </if>
+	        <if test="assetName != null">        
+	            asset_name,
+	        </if>
+	        <if test="assetNo != null">        
+	            asset_no,
+	        </if>
+	        <if test="assetSideId != null">        
+	            asset_side_id,
+	        </if>
+	        <if test="validStatus != null">        
+	            valid_status,
+	        </if>
+	        <if test="beginTime != null">        
+	            begin_time,
+	        </if>
+	        <if test="endTime != null">        
+	            end_time,
+	        </if>
+	        <if test="totalMoney != null">        
+	            total_money,
+	        </if>
+	        <if test="realTotalMoney != null">        
+	            real_total_money,
+	        </if>
+	        <if test="minMoney != null">        
+	            min_money,
+	        </if>
+	        <if test="minNum != null">        
+	            min_num,
+	        </if>
+	        <if test="maxMoney != null">        
+	            max_money,
+	        </if>
+	        <if test="maxNum != null">        
+	            max_num,
+	        </if>
+	        <if test="borrowRate != null">        
+	            borrow_rate,
+	        </if>
+	        <if test="annualRate != null">        
+	            annual_rate,
+	        </if>
+	        <if test="repaymentMethod != null">        
+	            repayment_method,
+	        </if>
+	        <if test="sendMode != null">        
+	            send_mode,
+	        </if>
+	        <if test="downloadUrl != null">        
+	            download_url,
+	        </if>
+	        <if test="remark != null">        
+	            remark,
+	        </if>
+	        <if test="busiType != null">        
+	            busi_type,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="type != null" >
+		       #{type,jdbcType=INTEGER},
+		    </if>
+		    <if test="status != null" >
+		       #{status,jdbcType=VARCHAR},
+		    </if>
+		    <if test="assetName != null" >
+		       #{assetName,jdbcType=VARCHAR},
+		    </if>
+		    <if test="assetNo != null" >
+		       #{assetNo,jdbcType=VARCHAR},
+		    </if>
+		    <if test="assetSideId != null" >
+		       #{assetSideId,jdbcType=INTEGER},
+		    </if>
+		    <if test="validStatus != null" >
+		       #{validStatus,jdbcType=VARCHAR},
+		    </if>
+		    <if test="beginTime != null" >
+		       #{beginTime,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="endTime != null" >
+		       #{endTime,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="totalMoney != null" >
+		       #{totalMoney,jdbcType=DECIMAL},
+		    </if>
+		    <if test="realTotalMoney != null" >
+		       #{realTotalMoney,jdbcType=DECIMAL},
+		    </if>
+		    <if test="minMoney != null" >
+		       #{minMoney,jdbcType=DECIMAL},
+		    </if>
+		    <if test="minNum != null" >
+		       #{minNum,jdbcType=INTEGER},
+		    </if>
+		    <if test="maxMoney != null" >
+		       #{maxMoney,jdbcType=DECIMAL},
+		    </if>
+		    <if test="maxNum != null" >
+		       #{maxNum,jdbcType=INTEGER},
+		    </if>
+		    <if test="borrowRate != null" >
+		       #{borrowRate,jdbcType=DECIMAL},
+		    </if>
+		    <if test="annualRate != null" >
+		       #{annualRate,jdbcType=DECIMAL},
+		    </if>
+		    <if test="repaymentMethod != null" >
+		       #{repaymentMethod,jdbcType=INTEGER},
+		    </if>
+		    <if test="sendMode != null" >
+		       #{sendMode,jdbcType=INTEGER},
+		    </if>
+		    <if test="downloadUrl != null" >
+		       #{downloadUrl,jdbcType=VARCHAR},
+		    </if>
+		    <if test="remark != null" >
+		       #{remark,jdbcType=VARCHAR},
+		    </if>
+		    <if test="busiType != null" >
+		       #{busiType,jdbcType=INTEGER},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDo">
+        UPDATE jsd_asset_package
+          <set>
+            <if test="type != null">        
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">        
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="assetName != null">        
+                asset_name = #{assetName,jdbcType=VARCHAR},
+            </if>
+            <if test="assetNo != null">        
+                asset_no = #{assetNo,jdbcType=VARCHAR},
+            </if>
+            <if test="assetSideId != null">        
+                asset_side_id = #{assetSideId,jdbcType=INTEGER},
+            </if>
+            <if test="validStatus != null">        
+                valid_status = #{validStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="beginTime != null">        
+                begin_time = #{beginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">        
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="totalMoney != null">        
+                total_money = #{totalMoney,jdbcType=DECIMAL},
+            </if>
+            <if test="realTotalMoney != null">        
+                real_total_money = #{realTotalMoney,jdbcType=DECIMAL},
+            </if>
+            <if test="minMoney != null">        
+                min_money = #{minMoney,jdbcType=DECIMAL},
+            </if>
+            <if test="minNum != null">        
+                min_num = #{minNum,jdbcType=INTEGER},
+            </if>
+            <if test="maxMoney != null">        
+                max_money = #{maxMoney,jdbcType=DECIMAL},
+            </if>
+            <if test="maxNum != null">        
+                max_num = #{maxNum,jdbcType=INTEGER},
+            </if>
+            <if test="borrowRate != null">        
+                borrow_rate = #{borrowRate,jdbcType=DECIMAL},
+            </if>
+            <if test="annualRate != null">        
+                annual_rate = #{annualRate,jdbcType=DECIMAL},
+            </if>
+            <if test="repaymentMethod != null">        
+                repayment_method = #{repaymentMethod,jdbcType=INTEGER},
+            </if>
+            <if test="sendMode != null">        
+                send_mode = #{sendMode,jdbcType=INTEGER},
+            </if>
+            <if test="downloadUrl != null">        
+                download_url = #{downloadUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">        
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="busiType != null">        
+                busi_type = #{busiType,jdbcType=INTEGER},
+            </if>
+            gmt_modified = NOW()
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_asset_package
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDo" parameterType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_asset_package
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDo" parameterType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_asset_package
+        <include refid="commonCondition"/>
+    </select>
+
+
+    <update id="updateRealTotalMoneyById"  parameterType="com.ald.fanbei.api.dal.domain.JsdAssetPackageDo">
+        UPDATE jsd_asset_package set
+                gmt_modified = now(),
+                real_total_money = real_total_money + #{realTotalMoney,jdbcType=DECIMAL}
+        WHERE is_delete = 0 and id = #{rid ,jdbcType=BIGINT} and <![CDATA[  real_total_money + #{realTotalMoney,jdbcType=DECIMAL} >=0 ]]>
+    </update>
+
+
+    <select id="getCurrDayHaveGetTotalBorrowAmount" resultType="java.math.BigDecimal">
+    	SELECT
+			IFNULL(SUM(real_total_money),0)
+		FROM
+			jsd_asset_package
+		WHERE
+			gmt_create <![CDATA[ >= ]]> CURRENT_DATE()
+		AND
+			asset_side_id = #{assetSideId ,jdbcType=BIGINT} and is_delete=0 and valid_status='Y' and busi_type=1
+    </select>
+
+    <select id="getCurrDayHaveGetTotalBorrowCashAmount" resultType="java.math.BigDecimal">
+    	SELECT
+			IFNULL(SUM(real_total_money),0)
+		FROM
+			jsd_asset_package
+		WHERE
+			gmt_create <![CDATA[ >= ]]> CURRENT_DATE()
+		AND
+			asset_side_id = #{assetSideId ,jdbcType=BIGINT} and is_delete=0 and valid_status='Y' and busi_type=0
+    </select>
+    
+</mapper>

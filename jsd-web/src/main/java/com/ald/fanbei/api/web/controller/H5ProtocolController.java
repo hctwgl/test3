@@ -8,11 +8,14 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.ProductType;
 import com.ald.fanbei.api.dal.domain.*;
+import com.itextpdf.text.DocumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -30,6 +33,7 @@ import com.ald.fanbei.api.common.util.NumberUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 
 /**
@@ -60,6 +64,8 @@ public class H5ProtocolController {
 	JsdUserSealService jsdUserSealService;
 	@Resource
 	BeheadBorrowCashRenewalService beheadBorrowCashRenewalService;
+	@Resource
+	JsdLegalContractPdfCreateService jsdLegalContractPdfCreateService;
 
     private static final BigDecimal NUM100 = new BigDecimal(100);
 
@@ -89,8 +95,7 @@ public class H5ProtocolController {
             model.put("yfCompany", resdo.getValue1());
             model.put("bfCompany", resdo.getValue2());
             model.put("dfCompany", resdo.getValue3());
-
-
+			String borrowRemark ="" ,repayRemark = "";
             BigDecimal amountLower, interestRate, serviceRate;
             if(StringUtils.isNotBlank(tradeNoXgxy)) {
             	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(tradeNoXgxy);
@@ -98,7 +103,8 @@ public class H5ProtocolController {
             	amountLower = cashDo.getAmount();
             	interestRate = cashDo.getInterestRate();
             	serviceRate = cashDo.getPoundageRate();
-
+				repayRemark = cashDo.getRepayRemark();
+				borrowRemark = cashDo.getBorrowRemark();
             	model.put("borrowNo", cashDo.getBorrowNo());
             	model.put("gmtStart", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
                 model.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
@@ -113,7 +119,7 @@ public class H5ProtocolController {
             	trialBo.req.openId = openId;
             	trialBo.req.term = trialBo.req.nper;
             	trialBo.userId = userDo.getRid();
-            	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
+            	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId,trialBo.req.term,trialBo.req.unit);
             	jsdBorrowCashService.resolve(trialBo);
 
             	amountLower = new BigDecimal(trialBo.resp.borrowAmount);
@@ -121,7 +127,8 @@ public class H5ProtocolController {
             	interestRate = rateInfo.interestRate;
             	serviceRate = rateInfo.serviceRate;
             }
-
+			model.put("borrowRemark",borrowRemark);
+			model.put("repayRemark",repayRemark);
             model.put("interestRate", interestRate.multiply(NUM100).setScale(2) + "%");
             model.put("serviceRate", serviceRate.multiply(NUM100).setScale(2) + "%");
             model.put("amountCapital", NumberUtil.number2CNMontrayUnit(amountLower));
@@ -190,7 +197,7 @@ public class H5ProtocolController {
             	trialBo.req.openId = openId;
             	trialBo.req.term = trialBo.req.nper;
             	trialBo.userId = userDo.getRid();
-            	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
+            	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId,trialBo.req.term,trialBo.req.unit);
             	jsdBorrowCashService.resolve(trialBo);
 
             	amountLower = new BigDecimal(trialBo.resp.totalDiffFee);
@@ -254,7 +261,7 @@ public class H5ProtocolController {
 	        	trialBo.req.openId = openId;
 	        	trialBo.req.term = trialBo.req.nper;
 	        	trialBo.userId = userDo.getRid();
-	        	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
+	        	trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId,trialBo.req.term,trialBo.req.unit);
 	        	jsdBorrowCashService.resolve(trialBo);
 
 	        	TrialBeforeBorrowResp resp = trialBo.resp;
@@ -306,13 +313,20 @@ public class H5ProtocolController {
 				logger.error("获取前海印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
 			}
-//			companyUserSealDo = jsdUserSealService.getUserSealByUserName("杭州朗下网络科技有限公司");
-//			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
-//				map.put("lxSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
-//			} else {
-//				logger.error("获取郎下印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-//				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
-//			}
+			companyUserSealDo = jsdUserSealService.getUserSealByUserName("杭州朗下网络科技有限公司");
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("lxSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			} else {
+				logger.error("获取郎下印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
+			companyUserSealDo = jsdUserSealService.getUserSealByUserName("浙江弹个指网络科技有限公司");
+			if (null != companyUserSealDo && null != companyUserSealDo.getUserSeal()) {
+				map.put("tgzSeal", "data:image/png;base64," + companyUserSealDo.getUserSeal());
+			} else {
+				logger.error("获取弹个指印章失败 => {}" + BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+				throw new BizException(BizExceptionCode.COMPANY_SEAL_CREATE_FAILED);
+			}
 		} catch (Exception e) {
 			logger.error("get userSeal  error", e);
 		}
@@ -491,7 +505,7 @@ public class H5ProtocolController {
 
 			JsdResourceDo resdo = jsdResourceService.getByTypeAngSecType(ResourceType.PLUS_PROTOCOL_BORROW.name(), ResourceSecType.PLUS_PROTOCOL_BORROW_CASH.name());
 			model.put("bfCompany", resdo.getValue2());
-			model.put("cfCompany", resdo.getValue3());
+			model.put("yfCompany", resdo.getValue3());
 
 			BigDecimal amountLower, interestRate, serviceRate;
 			String borrowRemark ="" ,repayRemark = "";
@@ -508,17 +522,26 @@ public class H5ProtocolController {
 				model.put("gmtEnd", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("gmtPlanRepayment", DateUtil.formatDate(cashDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-				model.put("url", resdo.getValue1());
+				model.put("bfurl", resdo.getValue1());
+				model.put("yfurl", resdo.getValue4());
 				logger.info("cashDo = " + JSON.toJSONString(cashDo) + "model = " + JSON.toJSONString(model));
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
+				if(StringUtils.equals(resdo.getValue5(), ProductType.DFD.name())){
+					model.put("bfCompanyPic",model.get("lxSeal"));
+					model.put("yfCompanyPic",model.get("tgzSeal"));
+				}
+				if(StringUtils.equals(resdo.getValue5(), ProductType.JGD.name())){
+					model.put("bfCompanyPic",model.get("lySeal"));
+					model.put("yfCompanyPic",model.get("jtSeal"));
+				}
 			}else{
 				TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
 				trialBo.req = JSON.parseObject(preview, TrialBeforeBorrowReq.class);
 				trialBo.req.openId = openId;
 				trialBo.req.term = trialBo.req.nper;
 				trialBo.userId = userDo.getRid();
-				trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId);
+				trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(openId,trialBo.req.term,trialBo.req.unit);
 				jsdBorrowCashService.resolve(trialBo);
 
 				amountLower = trialBo.req.amount;
@@ -582,21 +605,31 @@ public class H5ProtocolController {
 				model.put("reAmountUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getRenewalAmount()));
 				model.put("reInterestRate", renewalDo.getBaseBankRate().multiply(NUM100).setScale(2) + "%");
 				model.put("reGmtStart", DateUtil.formatDate(renewalDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-				model.put("reGmtEnd", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(), (int) (renewalDo.getRenewalDay()-1)), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("reGmtEnd", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(), Math.toIntExact(renewalDo.getRenewalDay())), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("remark", renewalDo.getRemark());
-				model.put("reGmtPlanRepay", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(),(int) (renewalDo.getRenewalDay()-1)), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("reGmtPlanRepay", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(),Math.toIntExact(renewalDo.getRenewalDay())), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("reRepayCapital", renewalDo.getCapital());
 				model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getCapital()));
 				model.put("reServiceRate", renewalDo.getPoundageRate().multiply(NUM100).setScale(2) + "%");
+				logger.info(" renewalPlusProtocol reServiceRate = "+renewalDo.getPoundageRate().multiply(NUM100).setScale(2));
 
 				model.put("overdueRateDaily", cashDo.getOverdueRate().multiply(NUM100).divide(new BigDecimal(Constants.ONE_YEAY_DAYS), 12, RoundingMode.HALF_UP).setScale(2) + "%");
 
 				model.put("gmtSign", DateUtil.formatDate(cashDo.getGmtCreate(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
-				model.put("url", resdo.getValue3());
+				model.put("bfurl", resdo.getValue3());
+				model.put("yfurl", resdo.getValue4());
 				logger.info("cashDo = " + JSON.toJSONString(cashDo) +" ,renewalDo = " + JSON.toJSONString(renewalDo) + " ,model = " + JSON.toJSONString(model));
 
 				getCompanySeal(model);
 				getUserSeal(model,userDo);
+				if(StringUtils.equals(resdo.getValue5(), ProductType.DFD.name())){
+					model.put("bfCompanyPic",model.get("lxSeal"));
+					model.put("yfCompanyPic",model.get("tgzSeal"));
+				}
+				if(StringUtils.equals(resdo.getValue5(), ProductType.JGD.name())){
+					model.put("bfCompanyPic",model.get("lySeal"));
+					model.put("yfCompanyPic",model.get("qhSeal"));
+				}
 			}else{
 				JSONObject obj = JSON.parseObject(preview);
 				String borrowNoXgxy = obj.getString("borrowNo");
@@ -626,6 +659,18 @@ public class H5ProtocolController {
 		}catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+
+	@ResponseBody
+	@RequestMapping(value = {"protocolSellPdf"}, method = RequestMethod.POST)
+	public void protocolSellPdf( String data) throws IOException, DocumentException {
+		jsdLegalContractPdfCreateService.platformServiceSellProtocol(data);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = {"protocolBeheadPdf"}, method = RequestMethod.POST)
+	public void protocolBeheadPdf( String data) throws IOException, DocumentException {
+		jsdLegalContractPdfCreateService.platformServiceBeheadProtocol(data);
 	}
 
 

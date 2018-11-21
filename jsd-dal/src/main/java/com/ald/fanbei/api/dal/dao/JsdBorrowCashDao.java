@@ -1,8 +1,11 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
+import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 import com.ald.fanbei.api.dal.query.LoanQuery;
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
@@ -135,6 +138,14 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      */
     List<LoanDto> getRepayList(LoanQuery query);
 
+    /*-------------------------------------------------------第三方接口------------------------------------------------------------------------------*/
+
+    List<JsdBorrowCashDo> getTransedCashDtosByUserId(@Param("userId") Long userId);
+
+    JsdBorrowCashDo getLastFinishCashByUserId(@Param("userId") Long userId);
+
+    JsdCashDto getGoodsInfoByBorrowId(@Param("borrowId") Long borrowId);
+
     /**
      *获取还款日在当前数据
      * @param userIds
@@ -142,4 +153,28 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      * @return
      */
     List<JsdBorrowCashDo> getBorrowCashRepayByUserIds(@Param("userIds")String userIds,@Param("todayLast") Date todayLast);
+
+    /**
+     * 获取结算系统实付数据
+     * @Param list {@link FinaneceDataDo} 对象
+     *@return  <code>List<code/>
+     *
+     * **/
+    List<FinaneceDataDo> getPaymentDetail();
+
+
+    /**
+     * 获取结算系统应收数据
+     * @Param list {@link FinaneceDataDo} 对象
+     *@return  <code>List<code/>
+     *
+     * **/
+    List<FinaneceDataDo> getPromiseIncomeDetail();
+
+
+    AfUserBorrowCashOverdueInfoDto getOverdueInfoByUserId(@Param("userId") Long userId);
+
+    JsdBorrowCashDo getBorrowById(@Param("id")Long id);
+
+    JsdBorrowCashDo getBorrowByRid(@Param("id")Long id);
 }
