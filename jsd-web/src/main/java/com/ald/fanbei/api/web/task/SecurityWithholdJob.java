@@ -39,7 +39,7 @@ public class SecurityWithholdJob {
     private WithholdJob withholdJob;
 
 
-//    @Scheduled(cron = "0/5 * * * * ?")
+    @Scheduled(cron = "0/5 * * * * ?")
     public void laonDueJob(){
         try{
         	logger.info("--------------- securityWithholdJob run start,time=" + new Date());
