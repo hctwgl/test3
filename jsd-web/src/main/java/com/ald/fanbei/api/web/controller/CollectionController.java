@@ -5,10 +5,12 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.service.JsdUserContactsService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdUserContactsDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
@@ -34,11 +36,11 @@ public class CollectionController {
     @Resource
     JsdUserService jsdUserService;
     @Resource
-    JsdBorrowCashService jsdBorrowCashService;
-    @Resource
     XgxyUtil xgxyUtil;
     @Resource
     JsdUserContactsService jsdUserContactsService;
+    @Resource
+    JsdNoticeRecordService jsdNoticeRecordService;
 
     private final Logger logger = LoggerFactory.getLogger(CollectionController.class);
     /**
@@ -139,6 +141,15 @@ public class CollectionController {
         }
     }
 
-
+    @ResponseBody
+    @RequestMapping(value = {"/addUserContancts"}, method = RequestMethod.POST)
+    public void updateNotice(String params,Long rid){
+        JsdNoticeRecordDo jsdNoticeRecordDo = new JsdNoticeRecordDo();
+        jsdNoticeRecordDo.setRid(rid);
+        jsdNoticeRecordDo.setParams(params);
+        jsdNoticeRecordDo.setStatus("FAIL");
+        jsdNoticeRecordDo.setTimes("5");
+        jsdNoticeRecordService.updateById(jsdNoticeRecordDo);
+    }
 
 }
