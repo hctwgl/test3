@@ -8,9 +8,7 @@ import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdUserContactsService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdUserContactsDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
@@ -29,7 +27,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/third/collection/")
-public class CollectoinController {
+public class CollectionController {
 
     @Resource
     CuiShouUtils cuiShouUtils;
@@ -42,7 +40,7 @@ public class CollectoinController {
     @Resource
     JsdUserContactsService jsdUserContactsService;
 
-    private final Logger logger = LoggerFactory.getLogger(CollectoinController.class);
+    private final Logger logger = LoggerFactory.getLogger(CollectionController.class);
     /**
      * 线下还款
      * @param request

@@ -8,22 +8,17 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.print.DocFlavor;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.dal.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.RepaymentBo;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
-import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
-import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderService;
-import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
-import com.ald.fanbei.api.biz.service.JsdCollectionRepaymentService;
-import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.cuishou.CuiShouBackMoney;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -32,14 +27,6 @@ import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
-import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
-import com.ald.fanbei.api.dal.domain.JsdCollectionRepaymentDo;
-import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
-import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -64,25 +51,20 @@ public class CuiShouUtils {
     JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
     @Resource
     JsdNoticeRecordDao jsdNoticeRecordDao;
-
     @Resource
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
-
     @Resource
     JsdUserService jsdUserService;
-
     @Resource
     CollectionNoticeUtil collectionNoticeUtil;
-
     @Resource
     JsdCollectionBorrowService jsdCollectionBorrowService;
-
     @Resource
     JsdCollectionRepaymentService jsdCollectionRepaymentService;
-
     @Resource
     JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
-
+    @Resource
+    JsdResourceService jsdResourceService;
     @Resource
     XgxyUtil xgxyUtil;
 
@@ -247,6 +229,7 @@ public class CuiShouUtils {
 
 
     public void  collectionPush(JsdBorrowCashDo borrowCashDo,JsdBorrowLegalOrderCashDo orderCashDo,JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo){
+        JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.COLLECT.name(),ResourceSecType.COLLECT_PRODUCT.name());
         List<JsdBorrowLegalOrderDo> orderList =  jsdBorrowLegalOrderService.getBorrowOrdersByBorrowId(borrowCashDo.getRid());
         Map<String, String> buildData = new HashMap<String, String>();
         int count = 0;
@@ -340,6 +323,7 @@ public class CuiShouUtils {
         BigDecimal repayAmount = BigDecimal.ZERO;
         BigDecimal currentAmount = BigDecimal.ZERO;//应还本金
         BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
+        BigDecimal residueAmount = BigDecimal.ZERO;//剩余应还
         //应还本金
         currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidOverdue()).subtract(borrowCashDo.getRepayAmount());
         //催收金额
@@ -352,6 +336,8 @@ public class CuiShouUtils {
         repayAmount = borrowCashDo.getRepayAmount();
         //借款金额
         BigDecimal borrowAmount = borrowCashDo.getAmount();
+        //滞纳金
+        BigDecimal lateFee = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(),borrowCashDo.getSumRepaidOverdue());
         if(orderCashDo != null){
             //应还本金
             currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());
@@ -365,16 +351,22 @@ public class CuiShouUtils {
             repayAmount = borrowCashDo.getRepayAmount().add(orderCashDo.getRepaidAmount());
             //借款金额
             borrowAmount = borrowAmount.add(orderCashDo.getAmount());
+            //滞纳金
+            lateFee = BigDecimalUtil.add(lateFee,orderCashDo.getOverdueAmount(),orderCashDo.getSumRepaidOverdue());
         }
-        buildData.put("productId","1");//产品id
-        buildData.put("caseName","jsd");//案件名称
-        buildData.put("caseType","jsd");//案件类型
+        buildData.put("lateFee", String.valueOf(lateFee));
+        buildData.put("productId",resourceDo.getValue2());//产品id
+        buildData.put("caseName",resourceDo.getValue()+"_"+borrowCashDo.getType());//案件名称
+        buildData.put("caseType",resourceDo.getValue1());//案件类型
         buildData.put("collectAmount",String.valueOf(collectAmount));//催收金额
         buildData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
         if(currentAmount.compareTo(BigDecimal.ZERO) < 0){
             currentAmount = BigDecimal.ZERO;
         }
-        buildData.put("residueAmount",String.valueOf(jsdBorrowCashService.calcuUnrepayAmount(borrowCashDo, orderCashDo)));//剩余应还
+        if((residueAmount = jsdBorrowCashService.calcuUnrepayAmount(borrowCashDo, orderCashDo)).compareTo(BigDecimal.ZERO) < 0){
+            residueAmount = BigDecimal.ZERO;
+        }
+        buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
         buildData.put("currentAmount",String.valueOf(currentAmount));//委案未还金额
         buildData.put("dataId",String.valueOf(jsdBorrowLegalOrderDo.getRid()));//源数据id
 //        buildData.put("planRepaymenTime",DateUtil.formatDateTime(borrowCashDo.getGmtPlanRepayment()));//计划还款时间
@@ -487,7 +479,11 @@ public class CuiShouUtils {
                 buildData.put("borrowAmount",String.valueOf(borrowAmount));//委案本金
                 buildData.put("collectAmount",String.valueOf(collectAmount));//催收金额
                 buildData.put("overdueAmount",String.valueOf(overdueAmount));//滞纳金
-                buildData.put("residueAmount",String.valueOf(jsdBorrowCashService.calcuUnrepayAmount(borrowCashDo, orderCashDo)));//剩余应还
+                BigDecimal residueAmount = BigDecimal.ZERO;
+                if((residueAmount = jsdBorrowCashService.calcuUnrepayAmount(borrowCashDo, orderCashDo)).compareTo(BigDecimal.ZERO) < 0){
+                    residueAmount = BigDecimal.ZERO;
+                }
+                buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
                 buildData.put("repayAmount",String.valueOf(repayAmount));//已还金额
                 buildData.put("status",borrowCashDo.getStatus());//状态
                 buildData.put("dataId",arr[i]);//状态

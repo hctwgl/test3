@@ -81,6 +81,8 @@ public class LoanOverDueJob {
     JsdCollectionBorrowService jsdCollectionBorrowService;
     @Resource
     JobThreadPoolUtils jobThreadPoolUtils;
+    @Resource
+    JsdResourceService jsdResourceService;
 
 
 
@@ -216,7 +218,7 @@ public class LoanOverDueJob {
         List<Map<String,String>>  data = new ArrayList<>();
         Map<String,String>  param = new HashMap<>();
         for(JsdBorrowCashDo borrowCashDo : list){
-
+            JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.COLLECT.name(),ResourceSecType.COLLECT_PRODUCT.name());
             //--------------------start  催收上报接口需要参数---------------------------
             Long borrowId = borrowCashDo.getRid();
             //搭售商品信息
@@ -307,9 +309,9 @@ public class LoanOverDueJob {
                 //借款金额
                 borrowAmount = borrowAmount.add(orderCashDo.getAmount());
             }
-            buildData.put("productId","1");//产品id
-            buildData.put("caseName","jsd");//案件名称
-            buildData.put("caseType","jsd");//案件类型
+            buildData.put("productId",resourceDo.getValue2());//产品id
+            buildData.put("caseName",resourceDo.getValue()+"_"+borrowCashDo.getType());//案件名称
+            buildData.put("caseType",resourceDo.getValue1());//案件类型
             buildData.put("collectAmount",String.valueOf(collectAmount));//催收金额
             buildData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
             buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
