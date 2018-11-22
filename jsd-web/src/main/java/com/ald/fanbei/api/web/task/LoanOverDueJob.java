@@ -293,6 +293,8 @@ public class LoanOverDueJob {
             repayAmount = borrowCashDo.getRepayAmount();
             //借款金额
             BigDecimal borrowAmount = borrowCashDo.getAmount();
+            //滞纳金
+            BigDecimal lateFee = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(),borrowCashDo.getSumRepaidOverdue());
             if(orderCashDo != null){
                 //应还本金
                 currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());
@@ -308,10 +310,13 @@ public class LoanOverDueJob {
                 repayAmount = borrowCashDo.getRepayAmount().add(orderCashDo.getRepaidAmount());
                 //借款金额
                 borrowAmount = borrowAmount.add(orderCashDo.getAmount());
+                //滞纳金
+                lateFee = BigDecimalUtil.add(lateFee,orderCashDo.getOverdueAmount(),orderCashDo.getSumRepaidOverdue());
             }
             buildData.put("productId",resourceDo.getValue2());//产品id
             buildData.put("caseName",resourceDo.getValue()+"_"+borrowCashDo.getType());//案件名称
             buildData.put("caseType",resourceDo.getValue1());//案件类型
+            buildData.put("lateFee",String.valueOf(lateFee));
             buildData.put("collectAmount",String.valueOf(collectAmount));//催收金额
             buildData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
             buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
@@ -361,7 +366,6 @@ public class LoanOverDueJob {
             //--------------------end  催收上报接口需要参数---------------------------
             data.add(buildData);
         }
-        logger.info("data = " + data);
         collectionNoticeUtil.noticeCollectOverdue(data);
     }
 
