@@ -214,7 +214,7 @@ public class LoanOverDueJob {
             logger.error("collectionPush needn't, list size is 0");
  		   	return;
         }
-    	
+
         List<Map<String,String>>  data = new ArrayList<>();
         Map<String,String>  param = new HashMap<>();
         for(JsdBorrowCashDo borrowCashDo : list){
