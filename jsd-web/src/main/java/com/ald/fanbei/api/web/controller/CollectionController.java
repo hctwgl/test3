@@ -10,6 +10,7 @@ import com.ald.fanbei.api.biz.service.JsdUserContactsService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdUserContactsDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
@@ -40,7 +41,7 @@ public class CollectionController {
     @Resource
     JsdUserContactsService jsdUserContactsService;
     @Resource
-    JsdNoticeRecordService jsdNoticeRecordService;
+    JsdNoticeRecordDao jsdNoticeRecordDao;
 
     private final Logger logger = LoggerFactory.getLogger(CollectionController.class);
     /**
@@ -142,14 +143,14 @@ public class CollectionController {
     }
 
     @ResponseBody
-    @RequestMapping(value = {"/addUserContancts"}, method = RequestMethod.POST)
+    @RequestMapping(value = {"/updateNotice"}, method = RequestMethod.POST)
     public void updateNotice(String params,Long rid){
         JsdNoticeRecordDo jsdNoticeRecordDo = new JsdNoticeRecordDo();
         jsdNoticeRecordDo.setRid(rid);
         jsdNoticeRecordDo.setParams(params);
         jsdNoticeRecordDo.setStatus("FAIL");
         jsdNoticeRecordDo.setTimes("5");
-        jsdNoticeRecordService.updateById(jsdNoticeRecordDo);
+        jsdNoticeRecordDao.updateById(jsdNoticeRecordDo);
     }
 
 }
