@@ -48,7 +48,7 @@ public class UntieBankCardApi implements JsdH5Handle {
         HashMap<String,Object> map = jsdUserBankcardService.getBankByBankNoAndUserId(userId,cashReq.bankNo);
         UpsSignReleaseRespBo upsResult = upsUtil.signRelease(userId+"", map.get("bankCode").toString(),
                 jsdUserDo.getRealName(), map.get("mobile").toString(), jsdUserDo.getIdNumber(),
-                map.get("cardNumber").toString(), "02");
+                map.get("bankCardNumber").toString(), "02");
         if(!upsResult.isSuccess()){
             throw new BizException("sign release error", BizExceptionCode.SIGN_RELEASE_ERROR);
         }

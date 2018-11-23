@@ -11,7 +11,7 @@ public class UntieBankCardBo {
 	public Long userId;
     public UntieBankCardReq req;
 	
-	@Component("untieBorrowCashReq")
+	@Component("untieBankCardReq")
 	public static class UntieBankCardReq{
 		@NotNull
 		public String openId;
