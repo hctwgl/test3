@@ -529,7 +529,6 @@
         FROM jsd_borrow_cash
         WHERE is_delete = 0 AND trade_no_xgxy=#{tradeNoXgxy}
         LIMIT 1
-        FOR  UPDATE
     </select>
 
     <select id="getCurrentLastBorrowNo" resultType="java.lang.String">
