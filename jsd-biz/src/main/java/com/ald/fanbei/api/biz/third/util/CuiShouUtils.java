@@ -304,9 +304,10 @@ public class CuiShouUtils {
             buildData.put("gender",gender);//性别(非必填)
             buildData.put("birthday",userDo.getBirthday());//生日(非必填)
         }
+        BigDecimal lateFee = BigDecimal.ZERO;//滞纳金
         //续期信息
         List<Map<String, String>> arrayList = new ArrayList<>();
-        List<JsdBorrowCashRenewalDo> list = jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(borrowCashDo.getRid());
+        List<JsdBorrowCashRenewalDo> list = jsdBorrowCashRenewalService.getJsdRenewalByBorrowIdAndStatus(borrowCashDo.getRid());
         for (JsdBorrowCashRenewalDo renewalDo : list){
             Map<String, String> renewalData = new HashMap<String, String>();
             renewalData.put("tradeNo",renewalDo.getTradeNo());//续期编号
@@ -316,6 +317,7 @@ public class CuiShouUtils {
             renewalData.put("renewalPoundage",String.valueOf(renewalDo.getNextPoundage()));//续期手续费
             renewalData.put("renewalStatus",renewalDo.getStatus());//状态
             renewalData.put("renewalTime",DateUtil.formatDateTime(renewalDo.getGmtCreate()));//续期时间
+            lateFee = BigDecimalUtil.add(lateFee,renewalDo.getPriorOverdue());
             arrayList.add(renewalData);
         }
         buildData.put("renewalData",JSON.toJSONString(arrayList));
@@ -337,7 +339,7 @@ public class CuiShouUtils {
         //借款金额
         BigDecimal borrowAmount = borrowCashDo.getAmount();
         //滞纳金
-        BigDecimal lateFee = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(),borrowCashDo.getSumRepaidOverdue());
+         lateFee = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(),borrowCashDo.getSumRepaidOverdue());
         if(orderCashDo != null){
             //应还本金
             currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());
