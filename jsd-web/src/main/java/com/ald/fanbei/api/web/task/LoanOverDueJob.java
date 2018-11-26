@@ -316,7 +316,6 @@ public class LoanOverDueJob {
             buildData.put("productId",resourceDo.getValue2());//产品id
             buildData.put("caseName",resourceDo.getValue()+"_"+borrowCashDo.getType());//案件名称
             buildData.put("caseType",resourceDo.getValue1());//案件类型
-            buildData.put("lateFee",String.valueOf(lateFee));
             buildData.put("collectAmount",String.valueOf(collectAmount));//催收金额
             buildData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
             buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
@@ -350,7 +349,7 @@ public class LoanOverDueJob {
             buildData.put("payTime",DateUtil.formatDateTime(borrowCashDo.getGmtArrival()));//打款时间
             buildData.put("type","");
             List<Map<String, String>> arrayList = new ArrayList<>();
-            List<JsdBorrowCashRenewalDo> renewalList = jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(borrowCashDo.getRid());
+            List<JsdBorrowCashRenewalDo> renewalList = jsdBorrowCashRenewalService.getJsdRenewalByBorrowIdAndStatus(borrowCashDo.getRid());
             for (JsdBorrowCashRenewalDo renewalDo : renewalList){
                 Map<String, String> renewalData = new HashMap<String, String>();
                 renewalData.put("tradeNo",renewalDo.getTradeNo());//续期编号
@@ -360,9 +359,11 @@ public class LoanOverDueJob {
                 renewalData.put("renewalPoundage",String.valueOf(renewalDo.getNextPoundage()));//续期手续费
                 renewalData.put("renewalStatus",renewalDo.getStatus());//状态
                 renewalData.put("renewalTime",DateUtil.formatDateTime(renewalDo.getGmtCreate()));//续期时间
+                lateFee = BigDecimalUtil.add(lateFee,renewalDo.getPriorOverdue());
                 arrayList.add(renewalData);
             }
             buildData.put("renewalData",JSON.toJSONString(arrayList));
+            buildData.put("lateFee",String.valueOf(lateFee));
             //--------------------end  催收上报接口需要参数---------------------------
             data.add(buildData);
         }
