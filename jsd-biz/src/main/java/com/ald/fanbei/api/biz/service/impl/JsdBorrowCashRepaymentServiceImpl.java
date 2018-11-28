@@ -704,7 +704,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			if (jsdBorrowLegalOrderCashDo == null) {
 				dealBorrowCash(jsdBorrowCashDo,jsdBorrowLegalOrderCashDo,totalAmount,userId,repayTime);
 			}else {
-				List<JsdBorrowCashOverdueLogDto> orderCashList = jsdBorrowCashOverdueLogService.getListOrderCashOverdueLogByBorrowId(jsdBorrowLegalOrderCashDo.getRid(), repayTime);
+				List<JsdBorrowCashOverdueLogDto> orderCashList = jsdBorrowCashOverdueLogService.getListOrderCashOverdueLogByBorrowId(jsdBorrowLegalOrderCashDo.getRid(), DateUtil.getEndOfDate(repayTime));
 				if (orderCashList.size() != 0) {
 					StringBuilder sb = new StringBuilder();
 					BigDecimal removeOverdue = BigDecimal.ZERO;
@@ -746,7 +746,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 	private void dealBorrowCash(JsdBorrowCashDo jsdBorrowCashDo,JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo,String totalAmount, Long userId, Date repayTime) {
 		BigDecimal payAmount = new BigDecimal(totalAmount);
-		List<JsdBorrowCashOverdueLogDto> cashList = jsdBorrowCashOverdueLogService.getListCashOverdueLogByBorrowId(jsdBorrowCashDo.getRid(), repayTime);
+		List<JsdBorrowCashOverdueLogDto> cashList = jsdBorrowCashOverdueLogService.getListCashOverdueLogByBorrowId(jsdBorrowCashDo.getRid(), DateUtil.getEndOfDate(repayTime));
 		if (cashList.size() != 0) {
 			StringBuilder sb = new StringBuilder();
 			BigDecimal removeOverdue = BigDecimal.ZERO;
