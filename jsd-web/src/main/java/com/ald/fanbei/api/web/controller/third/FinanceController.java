@@ -316,6 +316,8 @@ public class FinanceController{
     }
 
     private Map buildBorrowInfo(JsdBorrowCashDo jsdCashDto,JsdBorrowLegalOrderCashDo borrowLegalOrderCash) {
+        JsdResourceDo resourceDo= jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG,Constants.JSD_FINANCE_CONFIG);
+        Map<String,String> configData= (Map<String, String>) JSON.parse(resourceDo.getValue());
         BigDecimal legalOrderSumAmount=BigDecimal.ZERO;
         BigDecimal legalOrderOverdueAmount=BigDecimal.ZERO;
         BigDecimal legalOrderRepayAmount=BigDecimal.ZERO;
@@ -332,9 +334,9 @@ public class FinanceController{
             legalAmount=borrowLegalOrderCash.getAmount();
         }
         Map<String,String> borrowInfo=new HashMap<>();
-        borrowInfo.put("company", "绿游");
-        borrowInfo.put("productType", "CASH");
-        borrowInfo.put("productName", "极速贷");
+        borrowInfo.put("company", configData.get("company"));
+        borrowInfo.put("productType", configData.get("productType"));
+        borrowInfo.put("productName", configData.get("productName"));
         borrowInfo.put("planRepayTime", DateUtil.formatDate(jsdCashDto.getGmtPlanRepayment(),"yyyy-MM-dd HH:mm:ss"));
         if(JsdBorrowCashStatus.FINISHED.name().equals(jsdCashDto.getStatus())){
             borrowInfo.put("npered","1");
