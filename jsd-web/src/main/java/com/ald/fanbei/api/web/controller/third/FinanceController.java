@@ -15,8 +15,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
+import org.noggit.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -62,7 +64,7 @@ public class FinanceController{
     @Resource
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
     @Resource
-    JsdBorrowLegalOrderRepaymentService jsdBorrowLegalOrderRepaymentService;
+    JsdResourceService jsdResourceService;
 
     private static final String SING="FINANACE_JSD";
     private static final String DATA_TYPE1="ACTUAL_PAID";	//实付数据
@@ -128,6 +130,8 @@ public class FinanceController{
                 }
                 List<JsdBorrowCashDo> borrowCash = jsdBorrowCashService.getBorrowCashsInfos(jsdUserDo.getRid());
                 List borrowList = new ArrayList();
+                JsdResourceDo resourceDo= jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG,Constants.JSD_FINANCE_CONFIG);
+                Map<String,String> configData= (Map<String, String>) JSON.parse(resourceDo.getValue());
                 for (JsdBorrowCashDo cash : borrowCash) {
                     JsdBorrowLegalOrderCashDo borrowLegalOrderCash = jsdBorrowLegalOrderCashService.getLegalOrderByBorrowId(cash.getRid());
                     Map<String, String> map = new HashMap<>();
@@ -137,16 +141,16 @@ public class FinanceController{
                     BigDecimal legalOrderNoReductionAmount=BigDecimal.ZERO;
                     if(borrowLegalOrderCash!=null){
                         legalOrderSumAmount = BigDecimalUtil.add(borrowLegalOrderCash.getAmount(), borrowLegalOrderCash.getOverdueAmount(), borrowLegalOrderCash.getSumRepaidOverdue(),
-                                    borrowLegalOrderCash.getInterestAmount(), borrowLegalOrderCash.getSumRepaidInterest(),
-                                    borrowLegalOrderCash.getPoundageAmount(), borrowLegalOrderCash.getSumRepaidPoundage());
+                                borrowLegalOrderCash.getInterestAmount(), borrowLegalOrderCash.getSumRepaidInterest(),
+                                borrowLegalOrderCash.getPoundageAmount(), borrowLegalOrderCash.getSumRepaidPoundage());
                         legalOrderOverdueAmount = BigDecimalUtil.add(borrowLegalOrderCash.getOverdueAmount(),borrowLegalOrderCash.getSumRepaidOverdue());
                         legalOrderRepayAmount = BigDecimalUtil.add(borrowLegalOrderCash.getRepaidAmount());
                         legalOrderNoReductionAmount= BigDecimalUtil.add(borrowLegalOrderCash.getInterestAmount(), borrowLegalOrderCash.getSumRepaidInterest(),
-                                                     borrowLegalOrderCash.getPoundageAmount(), borrowLegalOrderCash.getSumRepaidPoundage(),borrowLegalOrderCash.getAmount());
+                                borrowLegalOrderCash.getPoundageAmount(), borrowLegalOrderCash.getSumRepaidPoundage(),borrowLegalOrderCash.getAmount());
                     }
-                    map.put("company", "绿游");
-                    map.put("productType", "CASH");
-                    map.put("productName", "极速贷");
+                    map.put("company", configData.get("company"));
+                    map.put("productType", configData.get("productType"));
+                    map.put("productName", configData.get("productName"));
                     map.put("planRepayTime",  DateUtil.formatDate(cash.getGmtPlanRepayment(),"yyyy-MM-dd HH:mm:ss"));
                     map.put("status", cash.getStatus());
                     map.put("orderNo", cash.getBorrowNo());
@@ -161,7 +165,7 @@ public class FinanceController{
                     map.put("noReductionAmount",String.valueOf(BigDecimalUtil.add(cash.getAmount(),
                             cash.getInterestAmount(), cash.getSumRepaidInterest(),
                             cash.getPoundageAmount(), cash.getSumRepaidPoundage(),legalOrderNoReductionAmount)));
-                    map.put("companyId","JSD");
+                    map.put("companyId",configData.get("companyId"));
                     map.put("overdueAmount",String.valueOf(BigDecimalUtil.add(cash.getOverdueAmount(),cash.getSumRepaidOverdue(),legalOrderOverdueAmount)));
                     borrowList.add(map);
                 }
@@ -237,11 +241,10 @@ public class FinanceController{
                 Map<String, Object> map = new HashMap<>();
                 JsdBorrowLegalOrderCashDo borrowLegalOrderCash = jsdBorrowLegalOrderCashService.getLegalOrderByBorrowId(jsdBorrowCashDo.getRid());
                 logger.info("borrowLegalOrderCash:"+borrowLegalOrderCash);
-                List<JsdBorrowLegalOrderRepaymentDo> jsdOrderCashRepaymentDo=jsdBorrowLegalOrderRepaymentService.getRepayByBorrowId(jsdBorrowCashDo.getRid());
                 List<JsdBorrowCashRepaymentDo> jsdBorrowCashRepaymentDo=jsdBorrowCashRepaymentService.getRepayByBorrowId(jsdBorrowCashDo.getRid());
                 List<JsdBorrowCashRenewalDo> renewalDetailDos=jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(jsdBorrowCashDo.getRid());
                 Map renewalMap= buildRenewalInfos(renewalDetailDos);
-                map.put("repayInfos", buildeRepayInfos(jsdBorrowCashRepaymentDo,jsdOrderCashRepaymentDo));
+                map.put("repayInfos", buildeRepayInfos(jsdBorrowCashRepaymentDo));
                 logger.info("getGoodsInfoByBorrowId:"+jsdBorrowCashService.getGoodsInfoByBorrowId(jsdBorrowCashDo.getRid()));
                 map.put("goodsInfo", buildOrderInfo(jsdBorrowCashService.getGoodsInfoByBorrowId(jsdBorrowCashDo.getRid())));
                 map.put("borrowInfo", buildBorrowInfo(jsdBorrowCashDo,borrowLegalOrderCash));
@@ -296,22 +299,9 @@ public class FinanceController{
         return goodsInfo;
     }
 
-    private List buildeRepayInfos(List<JsdBorrowCashRepaymentDo> jsdBorrowCashRepaymentDo,List<JsdBorrowLegalOrderRepaymentDo> jsdOrderCashRepaymentDo) {
-        List list=new ArrayList();
-        if(jsdOrderCashRepaymentDo.size()>0){
-            Iterator<JsdBorrowLegalOrderRepaymentDo> iterator=jsdOrderCashRepaymentDo.iterator();
-            while(iterator.hasNext()){
-                JsdBorrowLegalOrderRepaymentDo  repaymentOrderCashDo=iterator.next();
-                Map<String,String> map=new HashMap<>();
-                map.put("repayId", String.valueOf(repaymentOrderCashDo.getRid()));
-                map.put("accountTime", DateUtil.formatDate(repaymentOrderCashDo.getGmtCreate(),"yyyy-MM-dd HH:mm:ss") );
-                map.put("repayAmount", String.valueOf(repaymentOrderCashDo.getRepayAmount()));
-                map.put("name", repaymentOrderCashDo.getName());
-                map.put("remark", repaymentOrderCashDo.getRemark());
-                list.add(map);
-            }
-        }
+    private List buildeRepayInfos(List<JsdBorrowCashRepaymentDo> jsdBorrowCashRepaymentDo) {
         Iterator<JsdBorrowCashRepaymentDo> iterator=jsdBorrowCashRepaymentDo.iterator();
+        List list=new ArrayList();
         while(iterator.hasNext()){
             JsdBorrowCashRepaymentDo  repaymentBorrowCashDo=iterator.next();
             Map<String,String> map=new HashMap<>();
