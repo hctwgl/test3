@@ -156,7 +156,7 @@ public class LoanOverDueJob {
                 jsdBorrowCashDo.setOverdueDay(jsdBorrowCashDo.getOverdueDay()+1);
                 jsdBorrowCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
                 borrowCashDo.setOverdueAmount(oldOverdueAmount.add(newOverdueAmount));
-                borrowCashDo.setOverdueDay(jsdBorrowCashDo.getOverdueDay()+1);
+                borrowCashDo.setOverdueDay(jsdBorrowCashDo.getOverdueDay());
                 borrowCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
                 borrowCashDo.setRid(jsdBorrowCashDo.getRid());
                 borrowCashService.updateById(borrowCashDo);
@@ -171,7 +171,7 @@ public class LoanOverDueJob {
                     JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = new JsdBorrowLegalOrderCashDo();
                     jsdBorrowLegalOrderCashDo.setRid(borrowLegalOrderCashDo.getRid());
                     jsdBorrowLegalOrderCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
-                    jsdBorrowLegalOrderCashDo.setOverdueDay((short) (borrowLegalOrderCashDo.getOverdueDay()+1));
+                    jsdBorrowLegalOrderCashDo.setOverdueDay((short) (borrowLegalOrderCashDo.getOverdueDay()));
                     jsdBorrowLegalOrderCashDo.setOverdueAmount(oldOverdueorderAmount.add(newOverdueorderAmount));
                     jsdBorrowLegalOrderCashService.updateById(jsdBorrowLegalOrderCashDo);
                     jsdBorrowCashOverdueLogService.saveRecord(buildLoanOverdueLog(borrowLegalOrderCashDo.getRid(),orderAmount,newOverdueorderAmount,borrowLegalOrderCashDo.getUserId(), OverdueLogType.ORDER_CASH.name()) );
