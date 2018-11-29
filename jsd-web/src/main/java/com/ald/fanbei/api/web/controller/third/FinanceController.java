@@ -14,7 +14,11 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
+import org.noggit.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -24,11 +28,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ald.fanbei.api.biz.bo.ClearingResqBo;
 import com.ald.fanbei.api.biz.bo.FinanceSystemRespBo;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
-import com.ald.fanbei.api.biz.service.JsdBorrowLegalOrderCashService;
-import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.common.exception.BizThirdRespCode;
@@ -38,11 +37,6 @@ import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
 import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import com.alibaba.fastjson.JSON;
@@ -69,6 +63,8 @@ public class FinanceController{
     JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
     @Resource
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
+    @Resource
+    JsdResourceService jsdResourceService;
 
     private static final String SING="FINANACE_JSD";
     private static final String DATA_TYPE1="ACTUAL_PAID";	//实付数据
@@ -134,6 +130,8 @@ public class FinanceController{
                 }
                 List<JsdBorrowCashDo> borrowCash = jsdBorrowCashService.getBorrowCashsInfos(jsdUserDo.getRid());
                 List borrowList = new ArrayList();
+                JsdResourceDo resourceDo= jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG,Constants.JSD_FINANCE_CONFIG);
+                Map<String,String> configData= (Map<String, String>) JSON.parse(resourceDo.getValue());
                 for (JsdBorrowCashDo cash : borrowCash) {
                     JsdBorrowLegalOrderCashDo borrowLegalOrderCash = jsdBorrowLegalOrderCashService.getLegalOrderByBorrowId(cash.getRid());
                     Map<String, String> map = new HashMap<>();
@@ -150,9 +148,9 @@ public class FinanceController{
                         legalOrderNoReductionAmount= BigDecimalUtil.add(borrowLegalOrderCash.getInterestAmount(), borrowLegalOrderCash.getSumRepaidInterest(),
                                                      borrowLegalOrderCash.getPoundageAmount(), borrowLegalOrderCash.getSumRepaidPoundage(),borrowLegalOrderCash.getAmount());
                     }
-                    map.put("company", "绿游");
-                    map.put("productType", "CASH");
-                    map.put("productName", "极速贷");
+                    map.put("company", configData.get("company"));
+                    map.put("productType", configData.get("productType"));
+                    map.put("productName", configData.get("productName"));
                     map.put("planRepayTime",  DateUtil.formatDate(cash.getGmtPlanRepayment(),"yyyy-MM-dd HH:mm:ss"));
                     map.put("status", cash.getStatus());
                     map.put("orderNo", cash.getBorrowNo());
@@ -167,7 +165,7 @@ public class FinanceController{
                     map.put("noReductionAmount",String.valueOf(BigDecimalUtil.add(cash.getAmount(),
                             cash.getInterestAmount(), cash.getSumRepaidInterest(),
                             cash.getPoundageAmount(), cash.getSumRepaidPoundage(),legalOrderNoReductionAmount)));
-                    map.put("companyId","JSD");
+                    map.put("companyId",configData.get("companyId"));
                     map.put("overdueAmount",String.valueOf(BigDecimalUtil.add(cash.getOverdueAmount(),cash.getSumRepaidOverdue(),legalOrderOverdueAmount)));
                     borrowList.add(map);
                 }
