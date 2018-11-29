@@ -9,6 +9,7 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderRepaymentDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
 
+import java.util.List;
 
 
 /**
@@ -38,5 +39,10 @@ public class JsdBorrowLegalOrderRepaymentServiceImpl extends ParentServiceImpl<J
 	@Override
 	public JsdBorrowLegalOrderRepaymentDo getByTradeNoXgxy(String tradeNoXgxy) {
 		return jsdBorrowLegalOrderRepaymentDao.getByTradeNoXgxy(tradeNoXgxy);
+	}
+
+	@Override
+	public List<JsdBorrowLegalOrderRepaymentDo> getRepayByBorrowId(Long borrowId) {
+		return jsdBorrowLegalOrderRepaymentDao.getRepayByBorrowId(borrowId);
 	}
 }
