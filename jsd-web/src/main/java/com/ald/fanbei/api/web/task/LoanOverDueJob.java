@@ -81,13 +81,15 @@ public class LoanOverDueJob {
     JsdCollectionBorrowService jsdCollectionBorrowService;
     @Resource
     JobThreadPoolUtils jobThreadPoolUtils;
+    @Resource
+    JsdResourceService jsdResourceService;
 
 
 
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 10 0 * * ?")
     public void laonDueJob(){
         try{
         	String curHostIp = GetHostIpUtil.getIpAddress();
@@ -212,11 +214,11 @@ public class LoanOverDueJob {
             logger.error("collectionPush needn't, list size is 0");
  		   	return;
         }
-    	
+
         List<Map<String,String>>  data = new ArrayList<>();
         Map<String,String>  param = new HashMap<>();
         for(JsdBorrowCashDo borrowCashDo : list){
-
+            JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.COLLECT.name(),ResourceSecType.COLLECT_PRODUCT.name());
             //--------------------start  催收上报接口需要参数---------------------------
             Long borrowId = borrowCashDo.getRid();
             //搭售商品信息
@@ -291,6 +293,8 @@ public class LoanOverDueJob {
             repayAmount = borrowCashDo.getRepayAmount();
             //借款金额
             BigDecimal borrowAmount = borrowCashDo.getAmount();
+            //滞纳金
+            BigDecimal lateFee = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(),borrowCashDo.getSumRepaidOverdue());
             if(orderCashDo != null){
                 //应还本金
                 currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());
@@ -306,10 +310,12 @@ public class LoanOverDueJob {
                 repayAmount = borrowCashDo.getRepayAmount().add(orderCashDo.getRepaidAmount());
                 //借款金额
                 borrowAmount = borrowAmount.add(orderCashDo.getAmount());
+                //滞纳金
+                lateFee = BigDecimalUtil.add(lateFee,orderCashDo.getOverdueAmount(),orderCashDo.getSumRepaidOverdue());
             }
-            buildData.put("productId","1");//产品id
-            buildData.put("caseName","jsd");//案件名称
-            buildData.put("caseType","jsd");//案件类型
+            buildData.put("productId",resourceDo.getValue2());//产品id
+            buildData.put("caseName",resourceDo.getValue()+"_"+borrowCashDo.getType());//案件名称
+            buildData.put("caseType",resourceDo.getValue1());//案件类型
             buildData.put("collectAmount",String.valueOf(collectAmount));//催收金额
             buildData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
             buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
@@ -343,7 +349,7 @@ public class LoanOverDueJob {
             buildData.put("payTime",DateUtil.formatDateTime(borrowCashDo.getGmtArrival()));//打款时间
             buildData.put("type","");
             List<Map<String, String>> arrayList = new ArrayList<>();
-            List<JsdBorrowCashRenewalDo> renewalList = jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(borrowCashDo.getRid());
+            List<JsdBorrowCashRenewalDo> renewalList = jsdBorrowCashRenewalService.getJsdRenewalByBorrowIdAndStatus(borrowCashDo.getRid());
             for (JsdBorrowCashRenewalDo renewalDo : renewalList){
                 Map<String, String> renewalData = new HashMap<String, String>();
                 renewalData.put("tradeNo",renewalDo.getTradeNo());//续期编号
@@ -353,13 +359,14 @@ public class LoanOverDueJob {
                 renewalData.put("renewalPoundage",String.valueOf(renewalDo.getNextPoundage()));//续期手续费
                 renewalData.put("renewalStatus",renewalDo.getStatus());//状态
                 renewalData.put("renewalTime",DateUtil.formatDateTime(renewalDo.getGmtCreate()));//续期时间
+                lateFee = BigDecimalUtil.add(lateFee,renewalDo.getPriorOverdue());
                 arrayList.add(renewalData);
             }
             buildData.put("renewalData",JSON.toJSONString(arrayList));
+            buildData.put("lateFee",String.valueOf(lateFee));
             //--------------------end  催收上报接口需要参数---------------------------
             data.add(buildData);
         }
-        logger.info("data = " + data);
         collectionNoticeUtil.noticeCollectOverdue(data);
     }
 

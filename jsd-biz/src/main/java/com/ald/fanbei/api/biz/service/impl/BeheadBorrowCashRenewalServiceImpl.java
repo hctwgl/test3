@@ -457,7 +457,8 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 		renewalDo.setGmtModified(new Date());
 
 		Date curr = DateUtil.getStartOfDate(new Date(System.currentTimeMillis()));
-		Integer overdueday = NumberUtil.objToInteger(DateUtil.getNumberOfDayBetween(curr, borrowCashDo.getGmtPlanRepayment()));
+
+		Integer overdueday = Math.toIntExact(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(borrowCashDo.getGmtPlanRepayment()), DateUtil.formatDateToYYYYMMdd(new Date())));
 		if(overdueday<0) overdueday=0;
 		renewalDo.setOverdueDay(overdueday);
 		renewalDo.setOverdueStatus(curr.after(borrowCashDo.getGmtPlanRepayment())?"Y":"N");

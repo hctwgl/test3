@@ -88,9 +88,13 @@ public class TrialBeforeBorrowBo {
 		 */
 		public String serviceAmount;
 		/**
-		 * 借款逾期费率
+		 * 借款逾期费率日化
 		 */
 		public String overdueRate;
+		/**
+		 * 借款逾期费率年化
+		 */
+		public String overdueYearRate;
 		
 		public BigDecimal[] billAmount;
 		public String remark;

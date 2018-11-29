@@ -4,10 +4,14 @@ package com.ald.fanbei.api.web.controller;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.service.JsdUserContactsService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
+import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.ald.fanbei.api.dal.domain.JsdUserContactsDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.alibaba.fastjson.JSON;
@@ -26,7 +30,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/third/collection/")
-public class CollectoinController {
+public class CollectionController {
 
     @Resource
     CuiShouUtils cuiShouUtils;
@@ -36,8 +40,10 @@ public class CollectoinController {
     XgxyUtil xgxyUtil;
     @Resource
     JsdUserContactsService jsdUserContactsService;
+    @Resource
+    JsdNoticeRecordDao jsdNoticeRecordDao;
 
-    private final Logger logger = LoggerFactory.getLogger(CollectoinController.class);
+    private final Logger logger = LoggerFactory.getLogger(CollectionController.class);
     /**
      * 线下还款
      * @param request
@@ -134,6 +140,17 @@ public class CollectoinController {
         }catch (Exception e) {
             logger.error("calcuOverdueRecords.addUserContancts error, userId = "+ userId, e);
         }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = {"/updateNotice"}, method = RequestMethod.POST)
+    public void updateNotice(String params,Long rid){
+        JsdNoticeRecordDo jsdNoticeRecordDo = new JsdNoticeRecordDo();
+        jsdNoticeRecordDo.setRid(rid);
+        jsdNoticeRecordDo.setParams(params);
+        jsdNoticeRecordDo.setStatus("FAIL");
+        jsdNoticeRecordDo.setTimes("5");
+        jsdNoticeRecordDao.updateById(jsdNoticeRecordDo);
     }
 
 }

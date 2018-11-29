@@ -60,7 +60,7 @@ public class WithholdJob {
 
 
 
-    @Scheduled(cron = "0 50 23 * * ?")
+    @Scheduled(cron = "0 10 23 * * ?")
     public void withhold() {
         JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceSecType.WITHHOLD_JOB_CONFIG.getCode());
         if(resourceDo != null && SWITCH.equals(resourceDo.getValue())){
@@ -77,7 +77,7 @@ public class WithholdJob {
                     } else {
                         logger.info("withhold run start,time=" + new Date());
                         for (int i = 0; i < totalPageNum; i++) {
-                            List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getBorrowCashByBeforeToday(totalPageNum * i, pageSize,bengin);
+                            List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getBorrowCashByBeforeToday(pageSize * i, pageSize,bengin);
                             dealWithhold(borrowCashDos);
                         }
                     }
@@ -117,7 +117,7 @@ public class WithholdJob {
             bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
             JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
             bo.bankNo=userBankcardDo.getBankCardNumber();
-            bo.repayType=JsdRepayType.WITHHOLD.name();
+            bo.repayType= JsdRepayType.WITHHOLD.name();
             Runnable thread= new Runnable() {
                 @Override
                 public void run() {
