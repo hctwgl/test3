@@ -60,4 +60,9 @@ public interface JsdBorrowCashRepaymentService{
      *
      * **/
     List<FinaneceDataDo> getRepayData();
+
+
+    List<JsdBorrowCashRepaymentDo> getWithholdFailRepaymentCashByBorrowIdAndCardNumber(Long borrowId,String cardNumber);
+
+    void  dealWithhold(List<JsdBorrowCashDo> borrowCashDos,String cardType,String failCount);
 }

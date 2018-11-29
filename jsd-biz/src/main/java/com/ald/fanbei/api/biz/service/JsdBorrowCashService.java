@@ -235,4 +235,29 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     JsdBorrowCashDo getBorrowByRid(Long id);
 
 
+    /**
+     * 获取指定逾期日期区间的数据量
+     *
+     * @return
+     */
+    int getBorrowCashByOverdueCountBySection(Date startOverdue,Date endOverdue);
+
+    /**
+     * 获取逾期区间的数据
+     */
+    List<JsdBorrowCashDo> getBorrowCashOverdueBySection(int nowPage, int pageSize,Date startTime,Date endTime);
+
+    /**
+     * 获取还款日在当天的数据量
+     *
+     * @return
+     */
+    int getBorrowCashByTodayCount(Date todayLast);
+
+
+    /**
+     * 获取还款日在当天数据
+     */
+    List<JsdBorrowCashDo> getBorrowCashByToday(int nowPage, int pageSize, Date todayLast);
+
 }

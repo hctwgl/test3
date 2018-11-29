@@ -1,15 +1,16 @@
 package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.JsdBorrowCashOverdueLogDto;
@@ -27,15 +28,6 @@ import com.ald.fanbei.api.biz.bo.KuaijieRepayBo;
 import com.ald.fanbei.api.biz.bo.ups.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.BankPayChannel;
-import com.ald.fanbei.api.common.enums.CollectionBorrowStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
-import com.ald.fanbei.api.common.enums.JsdRepayType;
-import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -97,6 +89,24 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 	@Resource
 	private JsdOfflineOverdueRemoveService jsdOfflineOverdueRemoveService;
+
+	@Resource
+	private JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
+
+	@Resource
+	private JsdBorrowLegalOrderRepaymentService jsdBorrowLegalOrderRepaymentService;
+
+	@Resource
+	private JsdUserBankcardService jsdUserBankcardService;
+
+	@Resource
+	private JsdUserService jsdUserService;
+
+
+	@Resource
+	private XgxyUtil xgxyUtil;
+
+	ExecutorService executor = Executors.newFixedThreadPool(20);
 
 	@Override
 	public Map<String, Object> repay(RepayRequestBo bo, String bankPayType) {
@@ -692,7 +702,10 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	public List<FinaneceDataDo> getRepayData() {
 		return jsdBorrowCashRepaymentDao.getRepayData();
 	}
-
+	@Override
+	public List<JsdBorrowCashRepaymentDo> getWithholdFailRepaymentCashByBorrowIdAndCardNumber(Long borrowId, String cardNumber) {
+		return jsdBorrowCashRepaymentDao.getWithholdFailRepaymentCashByBorrowIdAndCardNumber(borrowId,cardNumber);
+	}
 	/**
 	 * @Description: 线下还款超时处理（减免逾期）
 	 */
@@ -744,6 +757,102 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		}
     }
 
+	public  void  dealWithhold(List<JsdBorrowCashDo> borrowCashDos,String cardType,String failCount){
+		for(JsdBorrowCashDo jsdBorrowCashDo:borrowCashDos){
+			JsdBorrowCashRepaymentDo borrowCashRepaymentDo=jsdBorrowCashRepaymentDao.getLastRepaymentBorrowCashByBorrowId(jsdBorrowCashDo.getRid());
+			if(borrowCashRepaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(borrowCashRepaymentDo.getStatus())) {
+				logger.info("withhold fail,Loan is processing,borrowId=" + jsdBorrowCashDo.getRid());
+				continue;
+			}
+			JsdBorrowCashDo borrowCashDo=jsdBorrowCashDao.getBorrowByRid(jsdBorrowCashDo.getRid());
+			if(borrowCashDo != null && JsdBorrowCashStatus.FINISHED.name().equals(borrowCashDo.getStatus())){
+				logger.info("withhold fail,Loan is finish,borrowId=" + jsdBorrowCashDo.getRid());
+				continue;
+			}
+			JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo=new JsdBorrowCashRepaymentServiceImpl.RepayRequestBo();
+			BigDecimal sumAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getSumRepaidOverdue(),jsdBorrowCashDo.getSumRepaidInterest(), jsdBorrowCashDo.getSumRepaidPoundage(),
+					jsdBorrowCashDo.getOverdueAmount(),jsdBorrowCashDo.getPoundageAmount(),jsdBorrowCashDo.getInterestAmount()).subtract(jsdBorrowCashDo.getRepayAmount());// 当前剩余还款
+
+			JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashDateBeforeToday(jsdBorrowCashDo.getRid());
+			if(borrowLegalOrderCashDo!=null){
+				BigDecimal orderAmount = BigDecimalUtil.add(borrowLegalOrderCashDo.getAmount(), borrowLegalOrderCashDo.getSumRepaidInterest(), borrowLegalOrderCashDo.getSumRepaidPoundage(),
+						borrowLegalOrderCashDo.getOverdueAmount(),borrowLegalOrderCashDo.getInterestAmount(),borrowLegalOrderCashDo.getPoundageAmount()).subtract(borrowLegalOrderCashDo.getRepaidAmount());// 当前剩余还款
+				sumAmount=sumAmount.add(orderAmount);
+			}
+			JsdUserDo userDo=jsdUserService.getById(jsdBorrowCashDo.getUserId());
+			bo.amount=sumAmount;
+			bo.borrowId=jsdBorrowCashDo.getRid();
+			bo.userId = jsdBorrowCashDo.getUserId();
+			bo.borrowNo = jsdBorrowCashDo.getBorrowNo();
+			bo.period = "1";
+			bo.userDo = userDo;
+			bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
+			bo.repayType= JsdRepayType.WITHHOLD.name();
+			JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
+			bo.bankNo=userBankcardDo.getBankCardNumber();
+			Runnable thread= new Runnable() {
+				Map<String, Object> result=null;
+				@Override
+				public void run() {
+					try {
+						result=repay(bo,RepayType.WITHHOLD.getCode());
+					}catch (Exception e){
+						List<JsdBorrowCashRepaymentDo> cashRepaymentDos= jsdBorrowCashRepaymentDao.getWithholdFailRepaymentCashByBorrowIdAndCardNumber(bo.borrowId,bo.bankNo);
+						List<JsdUserBankcardDo> userBankcardDos= jsdUserBankcardService.getUserBankCardInfoByUserId(bo.userId);
+						if("main".equals(cardType) || userBankcardDos.size()==1){
+							if(Integer.parseInt(failCount)==0 || StringUtil.isBlank(failCount)){
+								logger.info("withhold fail is no msg notice");
+							}else if(cashRepaymentDos.size()>=Integer.parseInt(failCount)){
+								//通知短信失败
+								noticeSmsToXgxy(bo);
+							}
+						}else  if("all".equals(cardType)){
+							String status= nextWithhold(bo);
+							if(Integer.parseInt(failCount)==0 || StringUtil.isBlank(failCount)){
+								logger.info("withhold fail is no notice");
+							}else if(!"SUCCESS".equals(status)){
+								if(cashRepaymentDos.size()==Integer.parseInt(failCount)){
+									//通知短信失败
+									noticeSmsToXgxy(bo);
+								}
+							}
+						}
+						logger.info("withhold repay fail case="+e);
+					}
+
+				}
+			};
+			executor.submit(thread);
+		}
+
+	}
+	private String nextWithhold( JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo){
+		List<JsdUserBankcardDo> userBankcardDos=jsdUserBankcardService.getUserNoMainBankCardInfoByUserId(bo.userId);
+		Iterator iterator=userBankcardDos.iterator();
+		while (iterator.hasNext()){
+			JsdUserBankcardDo noMainUserBank= (JsdUserBankcardDo) iterator.next();
+			bo.bankNo=noMainUserBank.getBankCardNumber();
+			try {
+				Map<String, Object> resultNext=repay(bo,RepayType.WITHHOLD.getCode());
+				if("SUCCESS".equals(resultNext.get("status"))){
+					return "SUCCESS";
+				}
+			}catch (Exception e){
+				continue;
+			}
+		}
+		return "FAIL";
+	}
+
+	private boolean noticeSmsToXgxy(JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo){
+		HashMap<String, String> data=new HashMap<>();
+		data.put("smsType",RepayType.WITHHOLD.getCode());
+		data.put("tradeNo",bo.tradeNo);
+		data.put("borrowNo",bo.borrowNo);
+		data.put("amount", String.valueOf(bo.amount));
+
+		return  xgxyUtil.smsNoticeRequest(data);
+	}
 	private void dealBorrowCash(JsdBorrowCashDo jsdBorrowCashDo,JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo,String totalAmount, Long userId, Date repayTime) {
 		BigDecimal payAmount = new BigDecimal(totalAmount);
 		List<JsdBorrowCashOverdueLogDto> cashList = jsdBorrowCashOverdueLogService.getListCashOverdueLogByBorrowId(jsdBorrowCashDo.getRid(), DateUtil.getEndOfDate(repayTime));

@@ -32,6 +32,7 @@ public interface JsdUserBankcardService extends ParentService<JsdUserBankcardDo,
 
     JsdUserBankcardDo getMainBankByUserId(Long userId);
 
+    List<JsdUserBankcardDo> getUserNoMainBankCardInfoByUserId(Long userId);
 
 
 

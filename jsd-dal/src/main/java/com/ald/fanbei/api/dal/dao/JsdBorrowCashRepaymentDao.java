@@ -55,4 +55,5 @@ public interface JsdBorrowCashRepaymentDao extends BaseDao<JsdBorrowCashRepaymen
      * **/
     List<FinaneceDataDo> getRepayData();
 
+    List<JsdBorrowCashRepaymentDo> getWithholdFailRepaymentCashByBorrowIdAndCardNumber(@Param("borrowId") Long borrowId,@Param("cardNumber") String cardNumber);
 }

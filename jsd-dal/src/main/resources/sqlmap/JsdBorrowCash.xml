@@ -816,4 +816,34 @@
         FOR UPDATE
     </select>
 
+    <select id="getBorrowCashByOverdueCountBySection" resultType="java.lang.Integer">
+		SELECT
+			count(*)
+		FROM
+			jsd_borrow_cash b where b.is_delete=0   BETWEEN #{startOverdue} AND  #{endOverdue}
+			 and status ='TRANSFERRED'
+	</select>
+
+    <select id="getBorrowCashOverdueBySection" resultType="JsdBorrowCashDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_borrow_cash b where b.is_delete=0  between #{startTime} and #{endTime}
+        and status='TRANSFERRED' limit #{beginIndex}, #{pageSize}
+    </select>
+
+    <select id="getBorrowCashByTodayCount" resultType="java.lang.Integer">
+		SELECT
+			count(*)
+		FROM
+			jsd_borrow_cash b where b.is_delete=0 and  Date(b.gmt_plan_repayment) = #{todayLast}  and status ='TRANSFERRED'
+	</select>
+
+    <select id="getBorrowCashByToday" resultType="JsdBorrowCashDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_borrow_cash b where b.is_delete=0 and Date(b.gmt_plan_repayment) = #{todayLast}
+        and status='TRANSFERRED' limit #{beginIndex}, #{pageSize}
+    </select>
 </mapper>
