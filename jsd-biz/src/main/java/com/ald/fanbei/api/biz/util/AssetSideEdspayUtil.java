@@ -241,8 +241,8 @@ public class AssetSideEdspayUtil extends AbstractThird {
 					return notifyRespBo;
 				}
 			//	creditInfoList = jsdAssetPackageDetailService.getLoanBatchCreditInfo(bankInfo,afAssetSideInfoDo,edspayGetCreditReqBo.getMoney(), startTime, endTime);
-			}else if (debtType == 4){
-				//西瓜极速贷2.0
+			}else if (debtType == 4 || debtType == 5){
+				//西瓜极速贷2.0/极光贷
 				FanbeiBorrowBankInfoBo bankInfo = getAssetSideBankInfo(getAssetSideBankInfo(DebtType.XGJSD.getCode()));
 				if(bankInfo==null){
 					notifyRespBo.resetRespInfo(BizAssetSideRespCode.VALIDATE_APPID_ERROR);

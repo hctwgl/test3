@@ -269,7 +269,7 @@ public class JsdAssetPackageDetailServiceImpl extends ParentServiceImpl<JsdAsset
 						}
 						BigDecimal cancelMoney = BigDecimal.ZERO;
 						//区分现金贷和消费分期
-						if (debtType == 4) {
+						if (debtType == 4||debtType == 5) {
 							//西瓜极速贷2.0
 							JsdBorrowCashDo BorrowDo = jsdBorrowCashDao.getBorrowById(afAssetPackageDetail.getBorrowCashId());
 							if(BorrowDo==null){
@@ -466,7 +466,7 @@ public class JsdAssetPackageDetailServiceImpl extends ParentServiceImpl<JsdAsset
 					return 0;
 				}
 
-				if (debtType == 4) {
+				if (debtType == 4 || debtType == 5) {
 					//消费分期
 					JsdBorrowCashDo BorrowDo = jsdBorrowCashDao.getBorrowById(afAssetPackageDetail.getBorrowCashId());
 					if (BorrowDo == null) {
