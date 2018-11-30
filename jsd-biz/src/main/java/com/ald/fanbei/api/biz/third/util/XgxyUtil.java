@@ -83,7 +83,7 @@ public class XgxyUtil extends AbstractThird {
             p.put("data", JsdAesUtil.encryptToBase64Third(dataStr, PRIVATE_KEY));
             p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
             p.put("appId", APPID);
-            String url = "http://172.20.20.125:1112"+"/isp/open/third/eca/v1/smsNotify";
+            String url = getXgxyUrl()+"/isp/open/third/eca/v1/smsNotify";
             String reqResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p), JSON.toJSONString(data));
             if (StringUtil.isBlank(reqResult)) {
                 return false;
