@@ -347,11 +347,10 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			if(orderRepaymentDo != null) {
 				changOrderRepaymentStatus(outTradeNo, JsdBorrowLegalRepaymentStatus.NO.getCode(), orderRepaymentDo.getRid());
 			}
-			JsdRepayType repayType=JsdRepayType.INITIATIVE;
-			if(repaymentDo!=null&&JsdRepayType.WITHHOLD.getXgxyCode().equals(repaymentDo.getType())){
-				repayType=JsdRepayType.WITHHOLD;
+			JsdRepayType repayType=JsdRepayType.findRoleTypeByXgxyCode(repaymentDo.getType());
+			if(!JsdRepayType.WITHHOLD.getXgxyCode().equals(repaymentDo.getType())){
+				noticeXgxyRepayResult(repaymentDo,orderRepaymentDo,YesNoStatus.NO.getCode(),errorMsg,repayType,"");
 			}
-			noticeXgxyRepayResult(repaymentDo,orderRepaymentDo,YesNoStatus.NO.getCode(),errorMsg,repayType,"");
 		}
 		catch (Exception e){
 			logger.error("notice eca fail error=",e);

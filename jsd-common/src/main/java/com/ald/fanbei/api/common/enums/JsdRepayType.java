@@ -17,6 +17,14 @@ public enum JsdRepayType {
         this.xgxyCode = xgxyCode;
     }
 
+    public static JsdRepayType findRoleTypeByXgxyCode(String value) {
+        for (JsdRepayType roleType : JsdRepayType.values()) {
+            if (roleType.getXgxyCode().equals(value)) {
+                return roleType;
+            }
+        }
+        return null;
+    }
     public String getCode() {
         return code;
     }
