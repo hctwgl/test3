@@ -9,29 +9,10 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.ups.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.bo.ups.UpsAuthSignReqBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsAuthSignRespBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsAuthSignValidReqBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsAuthSignValidRespBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsCollectBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsCollectReqBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsCollectRespBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsDelegatePayReqBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsDelegatePayRespBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsQueryAuthSignReqBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsQueryAuthSignRespBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsQueryTradeReqBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsQueryTradeRespBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsQuickPayConfirmReqBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsQuickPayReqBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsReqBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsResendSmsReqBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsResendSmsRespBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsSignReleaseReqBo;
-import com.ald.fanbei.api.biz.bo.ups.UpsSignReleaseRespBo;
 import com.ald.fanbei.api.biz.service.BeheadBorrowCashService;
 import com.ald.fanbei.api.biz.third.AbstractThird;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
@@ -483,6 +464,62 @@ public class UpsUtil extends AbstractThird {
 			return authSignResp;
 		}
 	}
+
+	/**
+	 * 协议支付
+	 * @param orderNo
+	 * @param amount
+	 * @param userNo
+	 * @param realName
+	 * @param phone
+	 * @param bankCode
+	 * @param cardNo
+	 * @param certNo
+	 * @param purpose
+	 * @param remark
+	 * @param clientType
+	 * @param merPriv
+	 * @param productName
+	 * @param safeCode
+	 * @param validDate
+	 * @return
+	 */
+	public UpsCollectRespBo protocolPay(String orderNo,BigDecimal amount,String userNo,String realName,String phone,String bankCode,
+									 String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String productName,String safeCode ,String validDate){
+		amount = setActualAmount(amount);
+		UpsProtocolPayReqBo reqBo = new UpsProtocolPayReqBo();
+		setPubParam(reqBo,"protocolPay",orderNo,clientType);
+		reqBo.setMerPriv(merPriv);
+		reqBo.setAmount(amount.toString());
+		reqBo.setUserNo(UPS_PREFFIX + userNo);
+		reqBo.setPhone(phone);
+		reqBo.setRealName(realName);
+		reqBo.setCardNo(cardNo);
+		reqBo.setCertType(DEFAULT_CERT_TYPE);
+		reqBo.setCertNo(certNo);
+		reqBo.setProductName(productName);
+		reqBo.setExpiredTime(String.valueOf( KUAIJIE_EXPIRE_MINITES));
+		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
+		reqBo.setCvv2(safeCode);
+		reqBo.setValidDate(validDate);
+		reqBo.setBankCode(bankCode);
+		reqBo.setPurpose("支付");
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "protocolPay", orderNo, "", merPriv, userNo));
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+		if(StringUtil.isBlank(reqResult)){
+			throw new BizException(BizExceptionCode.UPS_COLLECT_ERROR);
+		}
+		UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult,UpsCollectRespBo.class);
+		if(authSignResp != null && authSignResp.getTradeState()!=null && (
+				TRADE_STATUE_SUCC.equals(authSignResp.getTradeState())||TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))){
+			authSignResp.setSuccess(true);
+			return authSignResp;
+		} else {
+			authSignResp.setSuccess(false);
+			return authSignResp;
+		}
+	}
 	
 	/**
 	 * 短信重发
@@ -533,6 +570,33 @@ public class UpsUtil extends AbstractThird {
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
 		if(StringUtil.isBlank(reqResult)){
 			throw new BizException(BizExceptionCode.UPS_QUICK_PAY_CONFIRM_ERROR);
+		}
+		UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult,UpsCollectRespBo.class);
+		if(authSignResp != null && authSignResp.getTradeState()!=null && (
+				TRADE_STATUE_SUCC.equals(authSignResp.getTradeState())||TRADE_STATUE_DEAL.equals(authSignResp.getTradeState()))){
+			authSignResp.setSuccess(true);
+			return authSignResp;
+		} else {
+			authSignResp.setSuccess(false);
+			return authSignResp;
+		}
+	}
+
+	/**
+	 * 协议支付确认支付
+	 *
+	 */
+	public UpsCollectRespBo protocolPayConfirm(String oldTradeNo,String userNo,String smsCode,String clientType, String merPriv){
+		String tradeNo = generatorClusterNo.getLoanNo(new Date());
+		UpsQuickPayConfirmReqBo reqBo = new UpsQuickPayConfirmReqBo();
+		setPubParam(reqBo,"protocolPayValid",tradeNo,clientType);
+		reqBo.setOldOrderNo(oldTradeNo);
+		reqBo.setSmsCode(smsCode);
+		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
+		jsdUpsLogDao.saveRecord(buildDsedUpsLog("", "", "protocolPayValid", tradeNo, "", merPriv, userNo));
+		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);
+		if(StringUtil.isBlank(reqResult)){
+			throw new BizException(BizExceptionCode.UPS_PROTOCOL_PAY_CONFIRM_ERROR);
 		}
 		UpsCollectRespBo authSignResp = JSONObject.parseObject(reqResult,UpsCollectRespBo.class);
 		if(authSignResp != null && authSignResp.getTradeState()!=null && (
