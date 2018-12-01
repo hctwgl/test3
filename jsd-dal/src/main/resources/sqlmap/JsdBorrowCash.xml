@@ -828,7 +828,7 @@
         SELECT
         <include refid="queryFields"/>
         FROM
-        jsd_borrow_cash b where b.is_delete=0  and gmt_plan_repayment between #{startTime} and #{endTime}
+        jsd_borrow_cash b where b.is_delete=0  and gmt_plan_repayment between #{endTime} and #{startTime}
         and status='TRANSFERRED' limit #{beginIndex}, #{pageSize}
     </select>
 
