@@ -801,7 +801,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 						if("main".equals(cardType) || userBankcardDos.size()==1){
 							if(Integer.parseInt(failCount)==0 || StringUtil.isBlank(failCount)){
 								logger.info("withhold fail is no msg notice");
-							}else if(cashRepaymentDos.size()>=Integer.parseInt(failCount)){
+							}else if(cashRepaymentDos.size()==Integer.parseInt(failCount)){
 								//通知短信失败
 								noticeSmsToXgxy(bo);
 							}
