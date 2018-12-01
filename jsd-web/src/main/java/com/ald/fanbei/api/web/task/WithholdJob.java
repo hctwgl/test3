@@ -101,15 +101,15 @@ public class WithholdJob {
             while (overdueIterator.hasNext()){
                 String withholdTime= String.valueOf(overdueIterator.next());
                 if(currentTime.equals(withholdTime)){
-                    Runnable threadO= new Runnable() {
-                        @Override
-                        public void run() {
-                            withholdOverdueDay.withhold(config,bengin);
-                        }
-                    };
-                    executor.submit(threadO);
-                }
 
+                }
+                Runnable threadO= new Runnable() {
+                    @Override
+                    public void run() {
+                        withholdOverdueDay.withhold(config,bengin);
+                    }
+                };
+                executor.submit(threadO);
             }
         }
        logger.info("withhold overdue job end!");
