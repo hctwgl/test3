@@ -60,7 +60,8 @@ public class WithholdJob {
                 JSONObject overdueSection=JSONObject.fromObject(config.get("overdueSection"));
                 BigDecimal minSection=new BigDecimal(String.valueOf(overdueSection.get("minSection")));
                 BigDecimal maxSection=new BigDecimal(String.valueOf(overdueSection.get("maxSection")));
-                if(minSection.compareTo(BigDecimal.ZERO)<0||maxSection.compareTo(BigDecimal.ZERO)<=0){
+                if(minSection.compareTo(BigDecimal.ZERO)<0||maxSection.compareTo(BigDecimal.ZERO)<=0
+                 ||minSection.compareTo(maxSection)>0 ){
                     logger.info("withhold overdue section is zero or null");
                 }else {
                     excutorWithholdOverdue(config,currentTime,bengin);
