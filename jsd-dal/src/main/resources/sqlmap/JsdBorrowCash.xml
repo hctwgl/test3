@@ -820,15 +820,15 @@
 		SELECT
 			count(*)
 		FROM
-			jsd_borrow_cash b where b.is_delete=0   BETWEEN #{startOverdue} AND  #{endOverdue}
-			 and status ='TRANSFERRED'
+			jsd_borrow_cash b where b.is_delete=0 and status ='TRANSFERRED'  and gmt_plan_repayment  BETWEEN  #{startOverdue} AND  #{endOverdue}
+
 	</select>
 
     <select id="getBorrowCashOverdueBySection" resultType="JsdBorrowCashDo">
         SELECT
         <include refid="queryFields"/>
         FROM
-        jsd_borrow_cash b where b.is_delete=0  between #{startTime} and #{endTime}
+        jsd_borrow_cash b where b.is_delete=0  and gmt_plan_repayment between #{startTime} and #{endTime}
         and status='TRANSFERRED' limit #{beginIndex}, #{pageSize}
     </select>
 
