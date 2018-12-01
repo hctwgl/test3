@@ -809,11 +809,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 							String status= nextWithhold(bo);
 							if(Integer.parseInt(failCount)==0 || StringUtil.isBlank(failCount)){
 								logger.info("withhold fail is no notice");
-							}else if(!"SUCCESS".equals(status)){
-								if(cashRepaymentDos.size()==Integer.parseInt(failCount)){
-									//通知短信失败
-									noticeSmsToXgxy(bo);
-								}
+							}else if(!"SUCCESS".equals(status)&&cashRepaymentDos.size()==Integer.parseInt(failCount)){
+								//通知短信失败
+								noticeSmsToXgxy(bo);
 							}
 						}
 						logger.info("withhold repay fail case="+e);
