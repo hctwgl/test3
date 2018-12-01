@@ -35,8 +35,8 @@ public class WithholdOverdueDay {
             String minSection= (String) overdueSection.get("minSection");
             String maxSection= (String) overdueSection.get("maxSection");
             Date now=DateUtil.getStartOfDate(new Date());
-            Date startTime=DateUtil.addDays(now,Integer.parseInt(minSection)==0?0:-Integer.parseInt(minSection));
-            Date endTime=DateUtil.addDays(DateUtil.getStartOfDate(new Date()),-(Integer.parseInt(maxSection)));
+            Date endTime=DateUtil.addDays(now,Integer.parseInt(minSection)==0?0:-Integer.parseInt(minSection));
+            Date startTime=DateUtil.addDays(DateUtil.getStartOfDate(new Date()),-(Integer.parseInt(maxSection)));
             int pageSize = 200;
             int totalRecord = jsdBorrowCashService.getBorrowCashByOverdueCountBySection(startTime,endTime);
             int totalPageNum = (totalRecord + pageSize - 1) / pageSize;
