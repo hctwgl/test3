@@ -803,7 +803,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 								logger.info("withhold fail is no msg notice");
 							}else if(cashRepaymentDos.size()==Integer.parseInt(failCount)){
 								//通知短信失败
-								noticeSmsToXgxy(bo);
+								noticeSmsToXgxy(bo,jsdBorrowCashDo.getTradeNoXgxy());
 							}
 						}else  if("all".equals(cardType)){
 							String status= nextWithhold(bo);
@@ -811,7 +811,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 								logger.info("withhold fail is no notice");
 							}else if(!"SUCCESS".equals(status)&&cashRepaymentDos.size()==Integer.parseInt(failCount)){
 								//通知短信失败
-								noticeSmsToXgxy(bo);
+								noticeSmsToXgxy(bo,jsdBorrowCashDo.getTradeNoXgxy());
 							}
 						}
 						logger.info("withhold repay fail case="+e);
@@ -841,11 +841,11 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		return "FAIL";
 	}
 
-	private boolean noticeSmsToXgxy(JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo){
+	private boolean noticeSmsToXgxy(JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo,String xgxyTradeNo){
 		HashMap<String, String> data=new HashMap<>();
 		data.put("smsType",RepayType.WITHHOLD.getCode());
 		data.put("tradeNo",bo.tradeNo);
-		data.put("borrowNo",bo.borrowNo);
+		data.put("borrowNo",xgxyTradeNo);
 		data.put("amount", String.valueOf(bo.amount));
 
 		return  xgxyUtil.smsNoticeRequest(data);
