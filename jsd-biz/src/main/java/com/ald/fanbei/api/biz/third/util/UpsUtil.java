@@ -504,6 +504,7 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setValidDate(validDate);
 		reqBo.setBankCode(bankCode);
 		reqBo.setPurpose("支付");
+		reqBo.setReturnUrl("");
 		reqBo.setSignInfo(SignUtil.sign(createLinkString(reqBo), PRIVATE_KEY));
 		jsdUpsLogDao.saveRecord(buildDsedUpsLog(bankCode, cardNo, "protocolPay", orderNo, "", merPriv, userNo));
 		String reqResult = HttpUtil.post(getUpsUrl(), reqBo);

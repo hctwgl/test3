@@ -24,6 +24,7 @@ public class UpsProtocolPayReqBo extends UpsReqBo {
 	private String smsFlag;				//是否发送短信验证码（0：不发送短信1：发送短信）---1.7版本
 	private String bankCode;			//银行简码
 	private String purpose;				//分业务
+	private String returnUrl;			//同步返回地址
 
 
 	private String cvv2;
@@ -142,7 +143,13 @@ public class UpsProtocolPayReqBo extends UpsReqBo {
 		this.put("purpose", purpose);
 	}
 
-
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
+		this.put("returnUrl", returnUrl);
+	}
 
 	
 	
