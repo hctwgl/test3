@@ -60,7 +60,7 @@ public class SecurityWithholdJob {
 
     private static String SWITCH = "open";
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void laonDueJob(){
         logger.info("--------------- securityWithholdJob run start,time=" + new Date());
         try{
