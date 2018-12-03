@@ -217,6 +217,7 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 				return resultMap;
 			}else {
 				//不需要短信
+				protocolConfirmPre(payTradeNo, bank.get("bankChannel").toString(), payBizObject);
 //				doUpsPay(bank.get("bankChannel").toString(), bank, payTradeNo, actualAmount, userId, realName,
 //						idNumber, "", payBizObject,purpose, remark, merPriv);
 				Map<String, Object> resultMap = new HashMap<String, Object>();
