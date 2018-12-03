@@ -142,7 +142,12 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 			map = sendKuaiJieSms(bank, renewalDo.getTradeNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(), 
 					userDo.getIdNumber(), JSON.toJSONString(bizObject), "beheadBorrowCashRenewalService",Constants.DEFAULT_PAY_PURPOSE, name, 
 				PayOrderSource.RENEW_JSD_V2.getCode());
-		} else {// 代扣
+		}else if(BankPayChannel.XIEYI.getCode().equals(bo.bankChannel)){//协议支付
+			map = sendProtocolSms(bank, renewalDo.getTradeNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(),
+					userDo.getIdNumber(), JSON.toJSONString(bizObject), "beheadBorrowCashRenewalService",Constants.DEFAULT_PAY_PURPOSE, name,
+					PayOrderSource.RENEW_JSD_V2.getCode());
+		}
+	    else {// 代扣
 			map = doUpsPay(bo.bankChannel, bank, renewalDo.getTradeNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(),
 					userDo.getIdNumber(), "", JSON.toJSONString(bizObject),Constants.DEFAULT_PAY_PURPOSE, name, PayOrderSource.RENEW_JSD_V2.getCode());
 	    }
@@ -175,10 +180,11 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 	}
 
 	@Override
-	protected void protocolConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
-		logger.info("protocolConfirmPre payTradeNo = "+ payTradeNo + " ,bankChannel = " + bankChannel + ",payBizObject = " + payBizObject );
-		KuaijieRepayBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
-
+	protected void protocolConfirmPre(String renewalNo, String bankChannel, String payBizObject) {
+		KuaijieJsdRenewalPayBo renewalPayBo = JSON.parseObject(payBizObject,KuaijieJsdRenewalPayBo.class);
+		if (renewalPayBo != null) {
+			dealChangStatus(renewalNo, "",JsdBorrowCashRepaymentStatus.PROCESS.getCode(), renewalPayBo.getRenewal().getRid(),"","");
+		}
 	}
 
 	@Override

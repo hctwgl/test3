@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ald.fanbei.api.common.enums.PayOrderSource;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -216,6 +217,8 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 				return resultMap;
 			}else {
 				//不需要短信
+				doUpsPay(bank.get("bankChannel").toString(), bank, payTradeNo, actualAmount, userId, realName,
+						idNumber, "", payBizObject,purpose, remark, merPriv);
 				Map<String, Object> resultMap = new HashMap<String, Object>();
 				resultMap.put("repaySMS", "N");
 				return resultMap;
