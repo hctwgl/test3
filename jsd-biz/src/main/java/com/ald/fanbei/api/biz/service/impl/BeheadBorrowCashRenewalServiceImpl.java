@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.KuaijieRepayBo;
 import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.*;
@@ -171,6 +172,13 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 		if(renewalPayBo!=null){
 			dealChangStatus(renewalNo, "", JsdRenewalDetailStatus.SMS.getCode(), renewalPayBo.getRenewal().getRid(), "", "");
 		} 
+	}
+
+	@Override
+	protected void protocolConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
+		logger.info("protocolConfirmPre payTradeNo = "+ payTradeNo + " ,bankChannel = " + bankChannel + ",payBizObject = " + payBizObject );
+		KuaijieRepayBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
+
 	}
 
 	@Override
