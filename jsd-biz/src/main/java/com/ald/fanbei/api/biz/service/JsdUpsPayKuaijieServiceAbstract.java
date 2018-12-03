@@ -91,6 +91,7 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 			kuaijieConfirmPre(payTradeNo, bankPayType, payBizObject);
 			respBo = upsUtil.quickPayConfirm(payTradeNo, String.valueOf(userId), smsCode, "02", "REPAYMENT"); // TODO
 		}else if(StringUtil.equals(RepayType.XIEYI.getCode(), bank.get("bankChannel").toString()) || StringUtil.equals(RepayType.XIEYI.getCode(), bankPayType)){
+			logger.info("protocolConfirmPre payTradeNo = "+ payTradeNo + " ,bankPayType = " + bankPayType + ",payBizObject = " + payBizObject );
 			protocolConfirmPre(payTradeNo, bankPayType, payBizObject);
 			respBo = upsUtil.protocolPayConfirm(payTradeNo, String.valueOf(userId), smsCode, "02", "REPAYMENT");
 		}
