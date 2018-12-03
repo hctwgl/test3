@@ -69,12 +69,12 @@ public class SecurityWithholdJob {
                 JsdResourceDo resDo = jsdResourceService.getByTypeAngSecType(ResourceType.WITHHOLD.getCode(), ResourceSecType.WITHHOLD_JOB_INTERNAL_UIDS.getCode());
                 String userIds = resDo.getValue();
                 Date bengin = DateUtil.getTodayLast();
+                String currentTime= DateUtil.formatDate(new Date(),"HH:mm");
                 Map<String,String> config= (Map<String, String>) JSON.parse(resourceDo.getValue2());
                 logger.info("withhold current job start!");
                 Collection currentWithholdTime=JSONArray.toCollection(JSONArray.fromObject(config.get("currentWithholdTime")),List.class);
                 String cardType=config.get("cardType");
                 String failCount=config.get("failCount");
-                String currentTime= DateUtil.formatDate(new Date(),"HH:mm");
                 if(currentWithholdTime.size()!=0){
                     Iterator currentIterator=currentWithholdTime.iterator();
                     while (currentIterator.hasNext()){
@@ -82,7 +82,7 @@ public class SecurityWithholdJob {
                         Runnable threadC= new Runnable() {
                             @Override
                             public void run() {
-                                List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getTodayBorrowCashRepayByUserIds(userIds,currentTime);
+                                List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getTodayBorrowCashRepayByUserIds(userIds,bengin);
                                 jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType,failCount);
                             }
                         };

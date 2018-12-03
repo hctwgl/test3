@@ -170,8 +170,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         return jsdBorrowCashDao.getBorrowCashOverdueByUserIds(bengin, userIds);
     }
 
-    public  List<JsdBorrowCashDo> getTodayBorrowCashRepayByUserIds(String userIds, String todayLast){
-        return jsdBorrowCashDao.getTodayBorrowCashRepayByUserIds(userIds,todayLast);
+    public  List<JsdBorrowCashDo> getTodayBorrowCashRepayByUserIds(String userIds, Date todayLast){
+        return jsdBorrowCashDao.getTodayBorrowCashRepayByUserIds(userIds,DateUtil.formatDate(todayLast,"yyyy-MM-dd"));
 
     }
     @Override
