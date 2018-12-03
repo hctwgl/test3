@@ -20,6 +20,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,6 +52,8 @@ public class SecurityWithholdJob {
     @Resource
     private WithholdOverdueDay withholdOverdueDay;
 
+    @Resource
+    private JsdBorrowCashService jsdBorrowCashService;
     ExecutorService executor = Executors.newFixedThreadPool(8);
 
 
@@ -63,13 +66,15 @@ public class SecurityWithholdJob {
         try{
             JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceSecType.WITHHOLD_JOB_CONFIG_YF.getCode());
             if(resourceDo != null && SWITCH.equals(resourceDo.getValue())){
-                JsdResourceDo resDo = jsdResourceService.getByTypeAngSecType(ResourceType.OVERDUE.getCode(), ResourceSecType.OVERDUE_JOB_INTERNAL_UIDS.getCode());
+                JsdResourceDo resDo = jsdResourceService.getByTypeAngSecType(ResourceType.WITHHOLD.getCode(), ResourceSecType.WITHHOLD_JOB_INTERNAL_UIDS.getCode());
                 String userIds = resDo.getValue();
                 Date bengin = DateUtil.getTodayLast();
                 String currentTime= DateUtil.formatDate(new Date(),"HH:mm");
                 Map<String,String> config= (Map<String, String>) JSON.parse(resourceDo.getValue2());
                 logger.info("withhold current job start!");
                 Collection currentWithholdTime=JSONArray.toCollection(JSONArray.fromObject(config.get("currentWithholdTime")),List.class);
+                String cardType=config.get("cardType");
+                String failCount=config.get("failCount");
                 if(currentWithholdTime.size()!=0){
                     Iterator currentIterator=currentWithholdTime.iterator();
                     while (currentIterator.hasNext()){
@@ -77,22 +82,27 @@ public class SecurityWithholdJob {
                         Runnable threadC= new Runnable() {
                             @Override
                             public void run() {
-                                withholdCurrentDay.withhold(config,bengin);
+                                List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getTodayBorrowCashRepayByUserIds(userIds,bengin);
+                                jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType,failCount);
                             }
                         };
                         executor.submit(threadC);
                     }
                 }
                 logger.info("withhold current job end!");
+
                 JSONObject overdueSection=JSONObject.fromObject(config.get("overdueSection"));
-                String minSection= (String) overdueSection.get("minSection");
-                String maxSection= (String) overdueSection.get("maxSection");
-                if(StringUtil.isEmpty(minSection) || StringUtil.isEmpty(maxSection)
-                        || "0".equals(maxSection)){
+                Integer minSection=Integer.parseInt((String) overdueSection.get("minSection"));
+                Integer maxSection= Integer.parseInt((String) overdueSection.get("maxSection"));
+                if(minSection<0||maxSection<=0
+                        ||minSection.compareTo(maxSection)>0){
                     logger.info("withhold overdue section is zero or null");
                 }else {
                     logger.info("withhold overdue job start!");
                     Collection overdueWithholdTime=JSONArray.toCollection(JSONArray.fromObject(config.get("overdueWithholdTime")),List.class);
+                    Date now=DateUtil.getStartOfDate(new Date());
+                    Date endTime=DateUtil.addDays(now,minSection==0?0:(-minSection+1));
+                    Date startTime=DateUtil.addDays(DateUtil.getStartOfDate(new Date()),-(maxSection));
                     if(overdueWithholdTime.size()!=0){
                         Iterator overdueIterator=overdueWithholdTime.iterator();
                         while (overdueIterator.hasNext()){
@@ -100,7 +110,8 @@ public class SecurityWithholdJob {
                             Runnable threadO= new Runnable() {
                                 @Override
                                 public void run() {
-                                    withholdOverdueDay.withhold(config,bengin);
+                                    List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getOverSectionBorrowCashRepayByUserIds(userIds,startTime,endTime);
+                                    jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType,failCount);
                                 }
                             };
                             executor.submit(threadO);

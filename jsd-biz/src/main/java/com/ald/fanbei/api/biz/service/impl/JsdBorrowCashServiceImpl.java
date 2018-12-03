@@ -170,6 +170,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         return jsdBorrowCashDao.getBorrowCashOverdueByUserIds(bengin, userIds);
     }
 
+    public  List<JsdBorrowCashDo> getTodayBorrowCashRepayByUserIds(String userIds, Date todayLast){
+        return jsdBorrowCashDao.getTodayBorrowCashRepayByUserIds(userIds,todayLast);
+
+    }
     @Override
     public List<LoanDto> getReviewLoanList(LoanQuery query) {
         return jsdBorrowCashDao.getReviewLoanList(query);
@@ -680,5 +684,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     @Override
     public List<JsdBorrowCashDo> getBorrowCashByToday(int nowPage, int pageSize, Date todayLast) {
         return jsdBorrowCashDao.getBorrowCashByToday(nowPage, pageSize, DateUtil.formatDate(todayLast,"yyyy-MM-dd"));
+    }
+
+    public List<JsdBorrowCashDo> getOverSectionBorrowCashRepayByUserIds(String userIds,Date startTime,Date endTime){
+        return jsdBorrowCashDao.getOverSectionBorrowCashRepayByUserIds(userIds,startTime,endTime);
+
     }
 }

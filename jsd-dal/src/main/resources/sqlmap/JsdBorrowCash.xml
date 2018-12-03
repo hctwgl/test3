@@ -846,4 +846,20 @@
         jsd_borrow_cash b where b.is_delete=0 and Date(b.gmt_plan_repayment) = #{todayLast}
         and status='TRANSFERRED' limit #{beginIndex}, #{pageSize}
     </select>
+
+    <select id="getTodayBorrowCashRepayByUserIds" resultType="JsdBorrowCashDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_borrow_cash b where b.is_delete=0 and Date(b.gmt_plan_repayment) = #{todayLast}
+        and status='TRANSFERRED' and user_id in (${userIds})
+    </select>
+
+    <select id="getOverSectionBorrowCashRepayByUserIds" resultType="JsdBorrowCashDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_borrow_cash b where b.is_delete=0  and gmt_plan_repayment BETWEEN  #{startTime} AND  #{endTime}
+        and status='TRANSFERRED' and user_id in (${userIds})
+    </select>
 </mapper>

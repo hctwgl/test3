@@ -211,5 +211,8 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
      */
     List<JsdBorrowCashDo> getBorrowCashByToday(@Param("beginIndex")int nowPage, @Param("pageSize")int pageSize, @Param("todayLast")String todayLast);
 
+    List<JsdBorrowCashDo> getTodayBorrowCashRepayByUserIds(@Param("userIds")String userIds, @Param("todayLast")Date todayLast);
+
+    List<JsdBorrowCashDo> getOverSectionBorrowCashRepayByUserIds(@Param("userIds")String userIds,@Param("startTime")Date startTime,@Param("endTime")Date endTime);
 
 }
