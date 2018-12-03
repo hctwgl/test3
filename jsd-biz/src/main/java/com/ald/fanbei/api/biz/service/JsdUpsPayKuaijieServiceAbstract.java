@@ -82,6 +82,7 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 										   String realName, String idNumber, String smsCode, String payBizObject, String purpose, String remark, String merPriv) {
 		// 获取用户绑定银行卡信息
 		// 调用ups进行支付
+		logger.info("protocolConfirmPre payTradeNo = "+ payTradeNo + " ,bankPayType = " + bankPayType + ",payBizObject = " + payBizObject );
 		UpsCollectRespBo respBo = null;
 		if(StringUtil.equals(RepayType.WITHHOLD.getCode(), bank.get("bankChannel").toString()) || StringUtil.equals(RepayType.WITHHOLD.getCode(), bankPayType)){
 			daikouConfirmPre(payTradeNo, bankPayType, payBizObject);
@@ -91,7 +92,6 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 			kuaijieConfirmPre(payTradeNo, bankPayType, payBizObject);
 			respBo = upsUtil.quickPayConfirm(payTradeNo, String.valueOf(userId), smsCode, "02", "REPAYMENT"); // TODO
 		}else if(StringUtil.equals(RepayType.XIEYI.getCode(), bank.get("bankChannel").toString()) || StringUtil.equals(RepayType.XIEYI.getCode(), bankPayType)){
-			logger.info("protocolConfirmPre payTradeNo = "+ payTradeNo + " ,bankPayType = " + bankPayType + ",payBizObject = " + payBizObject );
 			protocolConfirmPre(payTradeNo, bankPayType, payBizObject);
 			respBo = upsUtil.protocolPayConfirm(payTradeNo, String.valueOf(userId), smsCode, "02", "REPAYMENT");
 		}
