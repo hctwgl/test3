@@ -1,11 +1,7 @@
 package com.ald.fanbei.api.biz.third.util;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -488,7 +484,12 @@ public class UpsUtil extends AbstractThird {
 									 String cardNo,String certNo,String purpose,String remark,String clientType,String merPriv,String productName,String safeCode ,String validDate){
 		amount = setActualAmount(amount);
 		UpsProtocolPayReqBo reqBo = new UpsProtocolPayReqBo();
-		setPubParam(reqBo,"protocolPay",orderNo,clientType);
+		reqBo.setVersion("10");
+		reqBo.setService("protocolPay");
+		reqBo.setMerNo(UPS_MERNO);
+		reqBo.setOrderNo(orderNo);
+		reqBo.setClientType(clientType);
+		reqBo.setReqExt("");
 		reqBo.setMerPriv(merPriv);
 		reqBo.setAmount(amount.toString());
 		reqBo.setUserNo(UPS_PREFFIX + userNo);
@@ -497,7 +498,6 @@ public class UpsUtil extends AbstractThird {
 		reqBo.setCardNo(cardNo);
 		reqBo.setCertType(DEFAULT_CERT_TYPE);
 		reqBo.setCertNo(certNo);
-		reqBo.setExpiredTime(String.valueOf( KUAIJIE_EXPIRE_MINITES));
 		reqBo.setNotifyUrl(getNotifyHost() + "/third/ups/collect");
 		reqBo.setCvv2(safeCode);
 		reqBo.setValidDate(validDate);
