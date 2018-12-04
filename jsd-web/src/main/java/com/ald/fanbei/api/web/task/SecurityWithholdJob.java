@@ -41,7 +41,7 @@ public class SecurityWithholdJob {
 
     @Resource
     private JsdResourceService jsdResourceService;
-    ;
+
 
     @Resource
     private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
