@@ -817,12 +817,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 					try {
 						result=repay(bo,RepayType.WITHHOLD.getCode());
 					}catch (Exception e){
-						List<JsdBorrowCashRepaymentDo> cashRepaymentDos= jsdBorrowCashRepaymentDao.getWithholdFailRepaymentCashByBorrowIdAndCardNumber(bo.borrowId,bo.bankNo);
-						List<JsdUserBankcardDo> userBankcardDos= jsdUserBankcardService.getUserBankCardInfoByUserId(bo.userId);
 						if("all".equals(cardType)){
 							nextWithhold(bo);
 						}
-						logger.info("withhold repay fail case="+e);
 					}
 
 				}
