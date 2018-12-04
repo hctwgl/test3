@@ -304,7 +304,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 
 	
 	@Override
-	public void dealBorrowSucc(Long cashId, String outTradeNo) {
+	public void dealBorrowSucc(Long cashId, String outTradeNo,String tradeDate) {
 		JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
 		if(cashDo == null) {
 			throw new BizException("behead dealBorrowSucc, can't find refer borrowCash by id=" + cashId);
@@ -320,7 +320,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 		
 		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(cashId);
 		
-		Date currDate = new Date(System.currentTimeMillis());
+		Date currDate = DateUtil.parseDate(tradeDate,"yyyy-MM-dd HH:mm:ss");
 		Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(currDate);
         Date repaymentDate = DateUtil.addDays(arrivalEnd, Integer.valueOf(cashDo.getType()) - 1);
 		cashDo.setGmtArrival(currDate);
