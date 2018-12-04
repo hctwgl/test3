@@ -757,10 +757,11 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
     }
 
 	public  void  dealWithhold(List<JsdBorrowCashDo> borrowCashDos,String cardType,String failCount){
+		logger.info("dealWithhold start");
 		for(JsdBorrowCashDo jsdBorrowCashDo:borrowCashDos){
 			JsdBorrowCashRepaymentDo borrowCashRepaymentDo=jsdBorrowCashRepaymentDao.getLastRepaymentBorrowCashByBorrowId(jsdBorrowCashDo.getRid());
 			if(borrowCashRepaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(borrowCashRepaymentDo.getStatus())) {
-				logger.info("withhold fail,Loan is processing,borrowId=" + jsdBorrowCashDo.getRid());
+				logger.info("withhold fail,repayment is processing,repaymentId=" + borrowCashRepaymentDo.getRid());
 				continue;
 			}
 			JsdBorrowCashDo borrowCashDo=jsdBorrowCashDao.getBorrowByRid(jsdBorrowCashDo.getRid());
@@ -821,6 +822,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			};
 			executor.submit(thread);
 		}
+		logger.info("dealWithhold end");
 
 	}
 	private String nextWithhold( JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo){

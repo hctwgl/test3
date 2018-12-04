@@ -71,7 +71,6 @@ public class SecurityWithholdJob {
                 Date bengin = DateUtil.getTodayLast();
                 String currentTime= DateUtil.formatDate(new Date(),"HH:mm");
                 Map<String,String> config= (Map<String, String>) JSON.parse(resourceDo.getValue2());
-                logger.info("withhold current job start!");
                 Collection currentWithholdTime=JSONArray.toCollection(JSONArray.fromObject(config.get("currentWithholdTime")),List.class);
                 String cardType=config.get("cardType");
                 String failCount=config.get("failCount");
@@ -89,7 +88,6 @@ public class SecurityWithholdJob {
                         executor.submit(threadC);
                     }
                 }
-                logger.info("withhold current job end!");
 
                 JSONObject overdueSection=JSONObject.fromObject(config.get("overdueSection"));
                 Integer minSection=Integer.parseInt((String) overdueSection.get("minSection"));
@@ -98,7 +96,6 @@ public class SecurityWithholdJob {
                         ||minSection.compareTo(maxSection)>0){
                     logger.info("withhold overdue section is zero or null");
                 }else {
-                    logger.info("withhold overdue job start!");
                     Collection overdueWithholdTime=JSONArray.toCollection(JSONArray.fromObject(config.get("overdueWithholdTime")),List.class);
                     Date now=DateUtil.getStartOfDate(new Date());
                     Date endTime=DateUtil.addDays(now,minSection==0?0:(-minSection+1));
@@ -118,7 +115,6 @@ public class SecurityWithholdJob {
 
                         }
                     }
-                    logger.info("withhold overdue job end!");
 
                 }
             }

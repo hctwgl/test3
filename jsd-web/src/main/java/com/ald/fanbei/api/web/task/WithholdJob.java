@@ -73,7 +73,6 @@ public class WithholdJob {
     }
 
     void excutorWithholdCurrent(Map<String,String> config,String currentTime,Date bengin){
-        logger.info("withhold current job start!");
         Collection currentWithholdTime=JSONArray.toCollection(JSONArray.fromObject(config.get("currentWithholdTime")),List.class);
         if(currentWithholdTime.size()!=0){
             Iterator currentIterator=currentWithholdTime.iterator();
@@ -91,11 +90,9 @@ public class WithholdJob {
 
             }
         }
-        logger.info("withhold current job end!");
     }
 
     void excutorWithholdOverdue(Map<String,String> config,String currentTime,Date bengin){
-        logger.info("withhold overdue job start!");
         Collection overdueWithholdTime=JSONArray.toCollection(JSONArray.fromObject(config.get("overdueWithholdTime")),List.class);
         if(overdueWithholdTime.size()!=0){
             Iterator overdueIterator=overdueWithholdTime.iterator();
