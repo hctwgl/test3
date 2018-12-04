@@ -365,14 +365,14 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
                         logger.info("withhold fail is no msg notice");
                     }else if(cashRepaymentDos.size()==Integer.parseInt(failCount)){
                         //通知短信失败
-                        noticeSmsToXgxy(repaymentDo.getTradeNo(), String.valueOf(repaymentDo.getRepaymentAmount()),borrowCashDo.getBorrowNo());
+                        noticeSmsToXgxy(repaymentDo.getTradeNo(), String.valueOf(repaymentDo.getRepaymentAmount()),borrowCashDo.getTradeNoXgxy());
                     }
                 }else {
                     if(Integer.parseInt(failCount)==0 || StringUtil.isBlank(failCount)){
                         logger.info("withhold fail is no notice");
                     }else if(cashRepaymentDos.size()==Integer.parseInt(failCount)){
                         //通知短信失败
-                        noticeSmsToXgxy(repaymentDo.getTradeNo(), String.valueOf(repaymentDo.getRepaymentAmount()),borrowCashDo.getBorrowNo());
+                        noticeSmsToXgxy(repaymentDo.getTradeNo(), String.valueOf(repaymentDo.getRepaymentAmount()),borrowCashDo.getTradeNoXgxy());
                     }
                 }
             }
