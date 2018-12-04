@@ -781,7 +781,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		}
     }
 
-	public  void  dealWithhold(List<JsdBorrowCashDo> borrowCashDos,String cardType,String failCount){
+	public  void  dealWithhold(List<JsdBorrowCashDo> borrowCashDos,String cardType){
 		logger.info("dealWithhold start");
 		for(JsdBorrowCashDo jsdBorrowCashDo:borrowCashDos){
 			JsdBorrowCashDo borrowCashDo=jsdBorrowCashDao.getBorrowByRid(jsdBorrowCashDo.getRid());
