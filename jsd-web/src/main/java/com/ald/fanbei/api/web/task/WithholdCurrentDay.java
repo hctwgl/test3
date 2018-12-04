@@ -37,7 +37,7 @@ public class WithholdCurrentDay {
                 logger.info("withhold run start,time=" + new Date());
                 for (int i = 0; i < totalPageNum; i++) {
                     List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getBorrowCashByToday(pageSize * i, pageSize,bengin);
-                    jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType,failCount);
+                    jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType);
                 }
             }
             logger.info("withhold run end,time=" + new Date());

@@ -46,7 +46,7 @@ public class WithholdOverdueDay {
                 logger.info("withholdOverdue run start,time=" + new Date());
                 for (int i = 0; i < totalPageNum; i++) {
                     List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getBorrowCashOverdueBySection(pageSize * i, pageSize,startTime,endTime);
-                    jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType,failCount);
+                    jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType);
                 }
             }
             logger.info("withholdOverdue run end,time=" + new Date());
