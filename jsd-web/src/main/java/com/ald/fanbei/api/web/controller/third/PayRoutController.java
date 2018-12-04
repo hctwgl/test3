@@ -167,7 +167,7 @@ public class PayRoutController {
 				}else if(PayOrderSource.RENEW_JSD_V2.getCode().equals(merPriv)){
 					beheadBorrowCashRenewalService.dealJsdRenewalSucess(outTradeNo, tradeNo);
 				}
-			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
+			} else  {// 只处理代收失败的
 				if(PayOrderSource.REPAY_JSD.getCode().equals(merPriv)){
 					jsdBorrowCashRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true,"", respDesc);
 				}else if(PayOrderSource.RENEW_JSD.getCode().equals(merPriv)){
