@@ -15,6 +15,7 @@ import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.JsdBorrowCashOverdueLogDto;
 import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
+import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -350,7 +351,31 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			JsdRepayType repayType=JsdRepayType.findRoleTypeByXgxyCode(repaymentDo.getType());
 			if(!JsdRepayType.WITHHOLD.getXgxyCode().equals(repaymentDo.getType())){
 				noticeXgxyRepayResult(repaymentDo,orderRepaymentDo,YesNoStatus.NO.getCode(),errorMsg,repayType,"");
-			}
+			}else {
+                JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceSecType.WITHHOLD_JOB_CONFIG_YF.getCode());
+                Map<String,String> config= (Map<String, String>) JSON.parse(resourceDo.getValue2());
+                Collection currentWithholdTime=JSONArray.toCollection(JSONArray.fromObject(config.get("currentWithholdTime")),List.class);
+                String cardType=config.get("cardType");
+                String failCount=config.get("failCount");
+                List<JsdBorrowCashRepaymentDo> cashRepaymentDos= jsdBorrowCashRepaymentDao.getWithholdFailRepaymentCashByBorrowIdAndCardNumber(repaymentDo.getBorrowId(),repaymentDo.getCardNumber());
+                List<JsdUserBankcardDo> userBankcardDos= jsdUserBankcardService.getUserBankCardInfoByUserId(repaymentDo.getUserId());
+               JsdBorrowCashDo borrowCashDo =jsdBorrowCashDao.getBorrowById(repaymentDo.getBorrowId());
+                if("main".equals(cardType) || userBankcardDos.size()==1){
+                    if(Integer.parseInt(failCount)==0 || StringUtil.isBlank(failCount)){
+                        logger.info("withhold fail is no msg notice");
+                    }else if(cashRepaymentDos.size()==Integer.parseInt(failCount)){
+                        //通知短信失败
+                        noticeSmsToXgxy(repaymentDo.getTradeNo(), String.valueOf(repaymentDo.getRepaymentAmount()),borrowCashDo.getBorrowNo());
+                    }
+                }else {
+                    if(Integer.parseInt(failCount)==0 || StringUtil.isBlank(failCount)){
+                        logger.info("withhold fail is no notice");
+                    }else if(cashRepaymentDos.size()==Integer.parseInt(failCount)){
+                        //通知短信失败
+                        noticeSmsToXgxy(repaymentDo.getTradeNo(), String.valueOf(repaymentDo.getRepaymentAmount()),borrowCashDo.getBorrowNo());
+                    }
+                }
+            }
 		}
 		catch (Exception e){
 			logger.error("notice eca fail error=",e);
@@ -794,21 +819,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 					}catch (Exception e){
 						List<JsdBorrowCashRepaymentDo> cashRepaymentDos= jsdBorrowCashRepaymentDao.getWithholdFailRepaymentCashByBorrowIdAndCardNumber(bo.borrowId,bo.bankNo);
 						List<JsdUserBankcardDo> userBankcardDos= jsdUserBankcardService.getUserBankCardInfoByUserId(bo.userId);
-						if("main".equals(cardType) || userBankcardDos.size()==1){
-							if(Integer.parseInt(failCount)==0 || StringUtil.isBlank(failCount)){
-								logger.info("withhold fail is no msg notice");
-							}else if(cashRepaymentDos.size()==Integer.parseInt(failCount)){
-								//通知短信失败
-								noticeSmsToXgxy(bo,jsdBorrowCashDo.getTradeNoXgxy());
-							}
-						}else  if("all".equals(cardType)){
-							String status= nextWithhold(bo);
-							if(Integer.parseInt(failCount)==0 || StringUtil.isBlank(failCount)){
-								logger.info("withhold fail is no notice");
-							}else if(!"SUCCESS".equals(status)&&cashRepaymentDos.size()==Integer.parseInt(failCount)){
-								//通知短信失败
-								noticeSmsToXgxy(bo,jsdBorrowCashDo.getTradeNoXgxy());
-							}
+						if("all".equals(cardType)){
+							nextWithhold(bo);
 						}
 						logger.info("withhold repay fail case="+e);
 					}
@@ -820,30 +832,26 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		logger.info("dealWithhold end");
 
 	}
-	private String nextWithhold( JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo){
+	private void nextWithhold( JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo){
 		List<JsdUserBankcardDo> userBankcardDos=jsdUserBankcardService.getUserNoMainBankCardInfoByUserId(bo.userId);
 		Iterator iterator=userBankcardDos.iterator();
 		while (iterator.hasNext()){
 			JsdUserBankcardDo noMainUserBank= (JsdUserBankcardDo) iterator.next();
 			bo.bankNo=noMainUserBank.getBankCardNumber();
 			try {
-				Map<String, Object> resultNext=repay(bo,RepayType.WITHHOLD.getCode());
-				if("SUCCESS".equals(resultNext.get("status"))){
-					return "SUCCESS";
-				}
+				repay(bo,RepayType.WITHHOLD.getCode());
 			}catch (Exception e){
 				continue;
 			}
 		}
-		return "FAIL";
 	}
 
-	private boolean noticeSmsToXgxy(JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo,String xgxyTradeNo){
+	private boolean noticeSmsToXgxy(String tradeNo,String amount,String xgxyTradeNo){
 		HashMap<String, String> data=new HashMap<>();
 		data.put("smsType",RepayType.WITHHOLD.getCode());
-		data.put("tradeNo",bo.tradeNo);
+		data.put("tradeNo",tradeNo);
 		data.put("borrowNo",xgxyTradeNo);
-		data.put("amount", String.valueOf(bo.amount));
+		data.put("amount", amount);
 
 		return  xgxyUtil.smsNoticeRequest(data);
 	}

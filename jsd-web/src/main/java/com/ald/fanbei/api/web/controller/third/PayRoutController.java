@@ -4,6 +4,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.common.enums.RepayType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -20,6 +23,8 @@ import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
+
+import java.util.HashMap;
 
 /**
  * @author chenjinhu 2017年2月20日 下午2:59:32 @类现描述：
@@ -51,6 +56,9 @@ public class PayRoutController {
 	
 	@Resource
 	BeheadBorrowCashRenewalService beheadBorrowCashRenewalService;
+
+	@Resource
+	private XgxyUtil xgxyUtil;
 
 
 
@@ -183,5 +191,9 @@ public class PayRoutController {
 		logger.info("collect callback done, request outTradeNo = " + outTradeNo + ", returnCode = " + returnCode + ", MILLS =" + (System.currentTimeMillis() - start));
 		return returnCode;
 	}
+
+
 	
 }
+
+
