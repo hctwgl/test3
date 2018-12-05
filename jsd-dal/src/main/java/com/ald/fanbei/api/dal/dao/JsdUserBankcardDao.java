@@ -29,7 +29,7 @@ public interface JsdUserBankcardDao extends BaseDao<JsdUserBankcardDo, Long> {
 
 	int updateUserBankcard(JsdUserBankcardDo userBankcardDo);
 
-	int getUserBankByCardNo(String cardNumber);
+	int getUserBankByCardNo(@Param("cardNumber")String cardNumber,@Param("userId")Long userId);
 
 	JsdUserBankcardDo getByBindNo(String bindNo);
 

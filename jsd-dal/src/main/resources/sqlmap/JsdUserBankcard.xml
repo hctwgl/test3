@@ -317,6 +317,8 @@
 			bank_card_number = #{cardNumber}
 		AND
 			status = 'B'
+		AND
+			user_id = #{userId}
 	</select>
 
 
