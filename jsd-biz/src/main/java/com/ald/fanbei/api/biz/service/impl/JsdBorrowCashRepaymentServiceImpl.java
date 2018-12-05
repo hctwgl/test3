@@ -17,6 +17,7 @@ import com.ald.fanbei.api.dal.domain.dto.JsdBorrowCashOverdueLogDto;
 import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringUtils;
+import org.noggit.JSONUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -284,6 +285,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	@Override
 	protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
 		KuaijieRepayBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
+		logger.info(JSONUtil.toJSON(kuaijieLoanBo));
 		if (kuaijieLoanBo.getRepayment() != null) {
 			changBorrowRepaymentStatus(payTradeNo, JsdBorrowCashRepaymentStatus.PROCESS.getCode(), kuaijieLoanBo.getRepayment().getRid(),"","");
 		}
