@@ -103,6 +103,12 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	@Resource
 	private JsdUserService jsdUserService;
 
+	@Resource
+	private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
+
+	@Resource
+	private JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
+
 
 	@Resource
 	private XgxyUtil xgxyUtil;
@@ -112,9 +118,11 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	@Override
 	public Map<String, Object> repay(RepayRequestBo bo, String bankPayType) {
 		try {
+
 			if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
 				lockRepay(bo.userId);
 			}
+
 
 			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
 			bo.tradeNo = tradeNo;
@@ -784,6 +792,18 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	public  void  dealWithhold(List<JsdBorrowCashDo> borrowCashDos,String cardType){
 		logger.info("dealWithhold start");
 		for(JsdBorrowCashDo jsdBorrowCashDo:borrowCashDos){
+			JsdBorrowCashRepaymentDo repaymentDo= jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(jsdBorrowCashDo.getRid());
+			if(repaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(repaymentDo.getStatus())) {
+				continue;
+			}
+			JsdBorrowLegalOrderRepaymentDo orderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getLastByBorrowId(jsdBorrowCashDo.getRid());
+			if(orderRepaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(orderRepaymentDo.getStatus())) {
+				continue;
+			}
+			JsdBorrowCashRenewalDo renewalDo= jsdBorrowCashRenewalService.getLastJsdRenewalByBorrowId(jsdBorrowCashDo.getRid());
+			if (renewalDo != null && JsdRenewalDetailStatus.PROCESS.getCode().equals(renewalDo.getStatus())) {
+				continue;
+			}
 			JsdBorrowCashDo borrowCashDo=jsdBorrowCashDao.getBorrowByRid(jsdBorrowCashDo.getRid());
 			if(borrowCashDo != null && JsdBorrowCashStatus.FINISHED.name().equals(borrowCashDo.getStatus())){
 				logger.info("withhold fail,Loan is finish,borrowId=" + jsdBorrowCashDo.getRid());
