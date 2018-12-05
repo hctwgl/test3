@@ -114,23 +114,29 @@ public class ConfirmSmsApi implements JsdH5Handle {
 
 		Map<String, Object> map = new HashMap<String, Object>();
  		if(SmsCodeType.REPAY.getCode().equals(type)){
- 			if(repaymentDo!=null){
- 				busiFlag=repaymentDo.getTradeNo();
- 			}else {
- 				busiFlag=legalOrderRepaymentDo.getTradeNo();
- 			}
-			Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + busiFlag);
-			if (beanName == null) {
-				// 未获取到缓存数据，支付订单过期
-				throw new BizException(BizExceptionCode.UPS_CACHE_EXPIRE);
-			}
+			try{
+				if(repaymentDo!=null){
+					busiFlag=repaymentDo.getTradeNo();
+				}else {
+					busiFlag=legalOrderRepaymentDo.getTradeNo();
+				}
+				Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + busiFlag);
+				if (beanName == null) {
+					// 未获取到缓存数据，支付订单过期
+					throw new BizException(BizExceptionCode.UPS_CACHE_EXPIRE);
+				}
 
-			switch (beanName.toString()) {
-				case "jsdBorrowCashRepaymentService":
-					map = jsdBorrowCashRepaymentService.doUpsPay(busiFlag, smsCode);
-					break;
-				default:
-					throw new BizException("ups kuaijie not support", BizExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
+				switch (beanName.toString()) {
+					case "jsdBorrowCashRepaymentService":
+						map = jsdBorrowCashRepaymentService.doUpsPay(busiFlag, smsCode);
+						break;
+					default:
+						throw new BizException("ups kuaijie not support", BizExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
+				}
+			}catch (Exception e){
+				throw new BizException("ups kuaijie fail  case:", e);
+			}finally {
+
 			}
 			
 		}else if(SmsCodeType.DELAY.getCode().equals(type)){
