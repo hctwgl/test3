@@ -299,15 +299,15 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 	@Override
 	protected Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo) {
-		KuaijieRepayBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
-		if(kuaijieRepaymentBo.getRepayment()!=null){
-			jsdBorrowCashRepaymentDao.status2Process(payTradeNo, kuaijieRepaymentBo.getRepayment().getRid());// 更新状态
-		}
-		jsdBorrowLegalOrderRepaymentDao.updateStatus(payTradeNo);
-		return getResultMap(kuaijieRepaymentBo.getBo(), respBo,bankChannel);
+//		KuaijieRepayBo kuaijieRepaymentBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
+//		if(kuaijieRepaymentBo.getRepayment()!=null){
+//			jsdBorrowCashRepaymentDao.status2Process(payTradeNo, kuaijieRepaymentBo.getRepayment().getRid());// 更新状态
+//		}
+//		jsdBorrowLegalOrderRepaymentDao.updateStatus(payTradeNo);
+		return getResultMap(bankChannel);
 	}
 
-	private Map<String, Object> getResultMap(RepayRequestBo bo, UpsCollectRespBo respBo,String bankChannel) {
+	private Map<String, Object> getResultMap(String bankChannel) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		if(!BankPayChannel.KUAIJIE.getCode().equals(bankChannel)){
 			data.put("repaySMS", "N");
