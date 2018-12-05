@@ -285,7 +285,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	@Override
 	protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
 		KuaijieRepayBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
-		logger.info(JSONUtil.toJSON(kuaijieLoanBo));
+		logger.info(JSONUtil.toJSON(kuaijieLoanBo)+kuaijieLoanBo.getRepayment().getRid());
 		if (kuaijieLoanBo.getRepayment() != null) {
 			changBorrowRepaymentStatus(payTradeNo, JsdBorrowCashRepaymentStatus.PROCESS.getCode(), kuaijieLoanBo.getRepayment().getRid(),"","");
 		}

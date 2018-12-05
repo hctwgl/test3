@@ -81,7 +81,6 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 		// 获取用户绑定银行卡信息
 		// 调用ups进行支付
 		UpsCollectRespBo respBo = null;
-		logger.info(" doUpsPay start, bankPayType:"+bankPayType);
 		if(StringUtil.equals(RepayType.WITHHOLD.getCode(), bank.get("bankChannel").toString()) || StringUtil.equals(RepayType.WITHHOLD.getCode(), bankPayType)){
 			logger.info("withhold repay");
 			daikouConfirmPre(payTradeNo, bankPayType, payBizObject);
