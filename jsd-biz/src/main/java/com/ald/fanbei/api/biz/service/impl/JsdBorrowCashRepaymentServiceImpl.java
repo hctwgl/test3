@@ -289,6 +289,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		if (kuaijieLoanBo.getRepayment() != null) {
 			logger.info("update status is p");
 			changBorrowRepaymentStatus(payTradeNo, JsdBorrowCashRepaymentStatus.PROCESS.getCode(), kuaijieLoanBo.getRepayment().getRid(),"","");
+		}else {
+			logger.info("update status is pooooo");
+
 		}
 	}
 
