@@ -19,7 +19,7 @@ public interface JsdUserBankcardDao extends BaseDao<JsdUserBankcardDo, Long> {
 
 	HashMap<String, Object> getUserBankInfoByBankNo(String bankNo);
 
-	JsdUserBankcardDo getByBankNo(String bankNo);
+	JsdUserBankcardDo getByBankNo(@Param("bankNo")String bankNo,@Param("userId")Long userId);
 
 	HashMap<String, Object> getPayTypeByBankNoAndUserId(@Param("userId") Long userId, @Param("bankNo")String bankNo);
 

@@ -229,6 +229,7 @@
         AND b.bank_card_number=#{bankNo}
         AND
         b.status='B'
+        and b.user_id = #{userId}
     </select>
     
     <select id="getPayTypeByBankNoAndUserId" resultType="java.util.HashMap" >

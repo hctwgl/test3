@@ -163,7 +163,7 @@ public class UpsUtil extends AbstractThird {
 			return;
 		}
 
-		JsdUserBankcardDo mainCard = jsdUserBankcardDao.getByBankNo(cashDo.getCardNumber());
+		JsdUserBankcardDo mainCard = jsdUserBankcardDao.getByBankNo(cashDo.getCardNumber(),cashDo.getUserId());
 		cashDo.setReviewStatus(JsdBorrowCashReviewStatus.PASS.name());
 		jsdBorrowCashDao.updateReviewStatus(JsdBorrowCashReviewStatus.PASS.name(), cashDo.getRid());
 		
