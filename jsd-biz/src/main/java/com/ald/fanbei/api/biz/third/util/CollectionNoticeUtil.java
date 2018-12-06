@@ -121,7 +121,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 	 * @param data 包含{dataId-即商品订单orderId ，reviewResult: PASS通过，REFUSE拒绝}
 	 * @return
 	 */
-	public void collectReconciliateNotice(Map<String, String> data) {
+	public boolean collectReconciliateNotice(Map<String, String> data) {
 		try {
 			String dataId = data.get("dataId").toString();
 			data.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN));
@@ -130,10 +130,10 @@ public class CollectionNoticeUtil extends AbstractThird {
 			data.put("sign",sign);
 			String url = getReportUrl() + "/api/ald/collect/v1/third/PzCheck";
 			String reqResult =  HttpUtil.post(url, data);
-			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
-			}else {
-				throw new BizException("collectReconciliateNotice response fail ");
+			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+				return true;
 			}
+			return false;
 		} catch (Exception e) {
 			logger.error("collectReconciliateNotice error:", e);
 			throw new BizException("collectReconciliateNotice fail Exception is " + e + ",consumerRepayment send again");
