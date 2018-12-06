@@ -206,10 +206,10 @@ public class JsdTest extends BaseTest {
         Map<String,String> params = new HashMap<>();
         params.put("amount", 2000+"");
         params.put("period", 1+"");
-        params.put("bankNo", "6228485625585543010");
-        params.put("borrowNo", "loan1206eca783500000008");
-        params.put("repayNo", "dk2018120319493900144");
-        params.put("openId","84A32F040ECFD9FAC1E55E3CC5902C0B");
+        params.put("bankNo", "6216696200001010621");
+        params.put("borrowNo", "loan1203eca267900000010");
+        params.put("repayNo", "dk2018120311375500133");
+        params.put("openId","5769BCAB017D030484348D6CB803F080");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);

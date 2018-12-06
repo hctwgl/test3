@@ -119,8 +119,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	@Override
 	public Map<String, Object> repay(RepayRequestBo bo, String bankPayType) {
 
-		//校验借款是否被代扣锁住
-		jsdBorrowCashRepaymentService.checkBorrowIsLock(bo.userId);
 		try {
 			if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
 				lockRepay(bo.userId);
@@ -128,11 +126,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
 			bo.tradeNo = tradeNo;
             generateRepayRecords(bo);
-            try {
-				Thread.sleep(10000000);
-			}catch (InterruptedException e){
-
-			}
 			return doRepay(bo,bankPayType);
 		}catch (Exception e) {
 			logger.info("repay method error", e);

@@ -45,7 +45,7 @@ public class WithholdJob {
     ExecutorService executor = Executors.newFixedThreadPool(8);
 
 
-    @Scheduled(cron = "0 0/2 * * * ?")
+    @Scheduled(cron = "0 0/1 * * * ?")
     public void withhold() {
         Date date = new Date(System.currentTimeMillis());
         Date bengin = DateUtil.getEndOfDate(date);
