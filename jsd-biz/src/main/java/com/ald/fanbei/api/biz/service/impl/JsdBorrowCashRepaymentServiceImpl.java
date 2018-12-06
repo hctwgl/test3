@@ -120,6 +120,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	public Map<String, Object> repay(RepayRequestBo bo, String bankPayType) {
 		try {
 
+			//校验借款是否被代扣锁住
+			jsdBorrowCashRepaymentService.checkBorrowIsLock(bo.userId);
+
 			if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
 				lockRepay(bo.userId);
 			}
@@ -134,6 +137,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			throw e;
 		}finally {
 			unLockRepay(bo.userId);
+			jsdBorrowCashRepaymentService.unLockBorrow(bo.userId);
 		}
 	}
 	private Map<String, Object> doRepay(RepayRequestBo bo,String bankChannel) {
@@ -810,6 +814,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			if (renewalDo != null && JsdRenewalDetailStatus.PROCESS.getCode().equals(renewalDo.getStatus())) {
 				continue;
 			}
+			//控制极端场景下代扣数据锁定时产生结清数据
 			JsdBorrowCashDo borrowCashDo=jsdBorrowCashDao.getBorrowByRid(jsdBorrowCashDo.getRid());
 			if(borrowCashDo != null && JsdBorrowCashStatus.FINISHED.name().equals(borrowCashDo.getStatus())){
 				logger.info("withhold fail,Loan is finish,borrowId=" + jsdBorrowCashDo.getRid());
@@ -866,6 +871,39 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			}catch (Exception e){
 				continue;
 			}
+		}
+	}
+
+	public void checkBorrowIsLock(Long userId){
+		String key = userId + "_withhold_loanRepay";
+		long count = redisTemplate.opsForValue().increment(key, 1);
+		if (count != 1) {
+			throw new BizException(BizExceptionCode.HAVE_A_REPAYMENT_PROCESSING_WITHHOLD.getDesc());
+		}
+	}
+	public void lockBorrowList(List<JsdBorrowCashDo> borrowCashDos){
+		Iterator iterator=borrowCashDos.iterator();
+		while(iterator.hasNext()){
+			JsdBorrowCashDo  borrow= (JsdBorrowCashDo) iterator.next();
+			jsdBorrowCashRepaymentService.lockBorrow(borrow.getUserId());
+		}
+	}
+	/**
+	 * 锁住借款
+	 */
+	public  void lockBorrow(Long userId){
+		String key = userId + "_withhold_loanRepay";
+		long count = redisTemplate.opsForValue().increment(key, 1);
+		if (count == 1) {
+			redisTemplate.expire(key, 1800, TimeUnit.SECONDS);
+		}
+	}
+
+	public void unLockBorrow(Long userId){
+		String key = userId + "_withhold_loanRepay";
+		long count = redisTemplate.opsForValue().increment(key, 1);
+        if(count!=1){
+			redisTemplate.delete(key);
 		}
 	}
 

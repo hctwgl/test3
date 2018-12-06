@@ -86,6 +86,9 @@ public enum BizExceptionCode {
     UPS_ERROR_5002("UPS_ERROR_5002",5002,"","银行卡交易失败，您可换卡或稍后重试"),
 
     HAVE_A_REPAYMENT_PROCESSING("HAVE_A_REPAYMENT_PROCESSING",6001,"have a repayment processing","有一笔还款在处理中"),
+
+    HAVE_A_REPAYMENT_PROCESSING_WITHHOLD("HAVE_A_REPAYMENT_PROCESSING_WITHHOLD",6010,"have a repayment processing withold","您的借款正在进行代扣，请稍后操作"),
+
     HAVE_A_RENEWAL_PROCESSING("HAVE_A_RENEWAL_PROCESSING",6002,"have a renewal processing","有一笔续期在处理中"),
     FUNCTIONAL_MAINTENANCE("FUNCTIONAL_MAINTENANCE",6003,"functional maintenance","功能维护中"),
     GET_JSD_RATE_ERROR("GET_JSD_RATE_ERROR",6004,"get jsd rate error","获取利率失败，请联系客服"),

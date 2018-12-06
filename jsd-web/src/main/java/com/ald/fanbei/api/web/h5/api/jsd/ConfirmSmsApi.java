@@ -121,6 +121,8 @@ public class ConfirmSmsApi implements JsdH5Handle {
 		Map<String, Object> map = new HashMap<String, Object>();
  		if(SmsCodeType.REPAY.getCode().equals(type)){
 			try{
+				//校验借款是否被代扣锁住
+				repaymentService.checkBorrowIsLock(userId);
 				lockRepay(userId);
 				if(repaymentDo!=null){
 					busiFlag=repaymentDo.getTradeNo();
@@ -144,6 +146,7 @@ public class ConfirmSmsApi implements JsdH5Handle {
 				throw new BizException("ups kuaijie fail  case:", e);
 			}finally {
 				unLockRepay(userId);
+				repaymentService.unLockBorrow(userId);
 			}
 			
 		}else if(SmsCodeType.DELAY.getCode().equals(type)){

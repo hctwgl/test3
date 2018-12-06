@@ -3,6 +3,8 @@ package com.ald.fanbei.api.web.task;
 
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import net.sf.json.JSONObject;
@@ -12,8 +14,10 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Component("withholdOverdueDay")
 public class WithholdOverdueDay {
@@ -46,6 +50,8 @@ public class WithholdOverdueDay {
                 logger.info("withholdOverdue run start,time=" + new Date());
                 for (int i = 0; i < totalPageNum; i++) {
                     List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getBorrowCashOverdueBySection(pageSize * i, pageSize,startTime,endTime);
+                    //锁住代扣还款用户
+                    jsdBorrowCashRepaymentService.lockBorrowList(borrowCashDos);
                     jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType);
                 }
             }
@@ -57,6 +63,9 @@ public class WithholdOverdueDay {
 
 
     }
+
+
+
 
 
 }
