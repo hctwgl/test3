@@ -45,7 +45,7 @@ public class WithholdJob {
     ExecutorService executor = Executors.newFixedThreadPool(8);
 
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0/2 * * * ?")
     public void withhold() {
         Date date = new Date(System.currentTimeMillis());
         Date bengin = DateUtil.getEndOfDate(date);
@@ -79,14 +79,15 @@ public class WithholdJob {
             while (currentIterator.hasNext()){
                 String withholdTime= String.valueOf(currentIterator.next());
                 if(currentTime.equals(withholdTime)){
-                    Runnable threadC= new Runnable() {
-                        @Override
-                        public void run() {
-                            withholdCurrentDay.withhold(config,bengin);
-                        }
-                    };
-                    executor.submit(threadC);
+
                 }
+                Runnable threadC= new Runnable() {
+                    @Override
+                    public void run() {
+                        withholdCurrentDay.withhold(config,bengin);
+                    }
+                };
+                executor.submit(threadC);
 
             }
         }

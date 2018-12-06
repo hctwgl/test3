@@ -71,7 +71,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	private JsdCollectionService jsdCollectionService;
 	
 	@Resource
-	private RedisTemplate<String, ?> redisTemplate;
+	private RedisTemplate<String, String> redisTemplate;
 	@Resource
 	private GeneratorClusterNo generatorClusterNo;
 	@Resource
@@ -121,13 +121,18 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 		//校验借款是否被代扣锁住
 		jsdBorrowCashRepaymentService.checkBorrowIsLock(bo.userId);
-		if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
-			lockRepay(bo.userId);
-		}
 		try {
+			if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
+				lockRepay(bo.userId);
+			}
 			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
 			bo.tradeNo = tradeNo;
             generateRepayRecords(bo);
+            try {
+				Thread.sleep(10000000);
+			}catch (InterruptedException e){
+
+			}
 			return doRepay(bo,bankPayType);
 		}catch (Exception e) {
 			logger.info("repay method error", e);
@@ -799,60 +804,64 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	public  void  dealWithhold(List<JsdBorrowCashDo> borrowCashDos,String cardType){
 		logger.info("dealWithhold start");
 		for(JsdBorrowCashDo jsdBorrowCashDo:borrowCashDos){
-			JsdBorrowCashRepaymentDo repaymentDo= jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(jsdBorrowCashDo.getRid());
-			if(repaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(repaymentDo.getStatus())) {
-				continue;
-			}
-			JsdBorrowLegalOrderRepaymentDo orderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getLastByBorrowId(jsdBorrowCashDo.getRid());
-			if(orderRepaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(orderRepaymentDo.getStatus())) {
-				continue;
-			}
-			JsdBorrowCashRenewalDo renewalDo= jsdBorrowCashRenewalService.getLastJsdRenewalByBorrowId(jsdBorrowCashDo.getRid());
-			if (renewalDo != null && JsdRenewalDetailStatus.PROCESS.getCode().equals(renewalDo.getStatus())) {
-				continue;
-			}
-			//控制极端场景下代扣数据锁定时产生结清数据
-			JsdBorrowCashDo borrowCashDo=jsdBorrowCashDao.getBorrowByRid(jsdBorrowCashDo.getRid());
-			if(borrowCashDo != null && JsdBorrowCashStatus.FINISHED.name().equals(borrowCashDo.getStatus())){
-				logger.info("withhold fail,Loan is finish,borrowId=" + jsdBorrowCashDo.getRid());
-				continue;
-			}
-			JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo=new JsdBorrowCashRepaymentServiceImpl.RepayRequestBo();
-			BigDecimal sumAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getSumRepaidOverdue(),jsdBorrowCashDo.getSumRepaidInterest(), jsdBorrowCashDo.getSumRepaidPoundage(),
-					jsdBorrowCashDo.getOverdueAmount(),jsdBorrowCashDo.getPoundageAmount(),jsdBorrowCashDo.getInterestAmount()).subtract(jsdBorrowCashDo.getRepayAmount());// 当前剩余还款
-
-			JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashDateBeforeToday(jsdBorrowCashDo.getRid());
-			if(borrowLegalOrderCashDo!=null){
-				BigDecimal orderAmount = BigDecimalUtil.add(borrowLegalOrderCashDo.getAmount(), borrowLegalOrderCashDo.getSumRepaidInterest(), borrowLegalOrderCashDo.getSumRepaidPoundage(),
-						borrowLegalOrderCashDo.getOverdueAmount(),borrowLegalOrderCashDo.getInterestAmount(),borrowLegalOrderCashDo.getPoundageAmount()).subtract(borrowLegalOrderCashDo.getRepaidAmount());// 当前剩余还款
-				sumAmount=sumAmount.add(orderAmount);
-			}
-			JsdUserDo userDo=jsdUserService.getById(jsdBorrowCashDo.getUserId());
-			bo.amount=sumAmount;
-			bo.borrowId=jsdBorrowCashDo.getRid();
-			bo.userId = jsdBorrowCashDo.getUserId();
-			bo.borrowNo = jsdBorrowCashDo.getBorrowNo();
-			bo.period = "1";
-			bo.userDo = userDo;
-			bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
-			bo.repayType= JsdRepayType.WITHHOLD.name();
-			JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
-			bo.bankNo=userBankcardDo.getBankCardNumber();
-			Runnable thread= new Runnable() {
-				Map<String, Object> result=null;
-				@Override
-				public void run() {
-					try {
-						result=repay(bo,RepayType.WITHHOLD.getCode());
-					}catch (Exception e){
-						if("all".equals(cardType)){
-							nextWithhold(bo);
-						}
-					}
-
+			try {
+				JsdBorrowCashRepaymentDo repaymentDo= jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(jsdBorrowCashDo.getRid());
+				if(repaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(repaymentDo.getStatus())) {
+					continue;
 				}
+				JsdBorrowLegalOrderRepaymentDo orderRepaymentDo=jsdBorrowLegalOrderRepaymentService.getLastByBorrowId(jsdBorrowCashDo.getRid());
+				if(orderRepaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(orderRepaymentDo.getStatus())) {
+					continue;
+				}
+				JsdBorrowCashRenewalDo renewalDo= jsdBorrowCashRenewalService.getLastJsdRenewalByBorrowId(jsdBorrowCashDo.getRid());
+				if (renewalDo != null && JsdRenewalDetailStatus.PROCESS.getCode().equals(renewalDo.getStatus())) {
+					continue;
+				}
+				//控制极端场景下代扣数据锁定时产生结清数据
+				JsdBorrowCashDo borrowCashDo=jsdBorrowCashDao.getBorrowByRid(jsdBorrowCashDo.getRid());
+				if(borrowCashDo != null && JsdBorrowCashStatus.FINISHED.name().equals(borrowCashDo.getStatus())){
+					logger.info("withhold fail,Loan is finish,borrowId=" + jsdBorrowCashDo.getRid());
+					continue;
+				}
+				JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo=new JsdBorrowCashRepaymentServiceImpl.RepayRequestBo();
+				BigDecimal sumAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getSumRepaidOverdue(),jsdBorrowCashDo.getSumRepaidInterest(), jsdBorrowCashDo.getSumRepaidPoundage(),
+						jsdBorrowCashDo.getOverdueAmount(),jsdBorrowCashDo.getPoundageAmount(),jsdBorrowCashDo.getInterestAmount()).subtract(jsdBorrowCashDo.getRepayAmount());// 当前剩余还款
+
+				JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashDateBeforeToday(jsdBorrowCashDo.getRid());
+				if(borrowLegalOrderCashDo!=null){
+					BigDecimal orderAmount = BigDecimalUtil.add(borrowLegalOrderCashDo.getAmount(), borrowLegalOrderCashDo.getSumRepaidInterest(), borrowLegalOrderCashDo.getSumRepaidPoundage(),
+							borrowLegalOrderCashDo.getOverdueAmount(),borrowLegalOrderCashDo.getInterestAmount(),borrowLegalOrderCashDo.getPoundageAmount()).subtract(borrowLegalOrderCashDo.getRepaidAmount());// 当前剩余还款
+					sumAmount=sumAmount.add(orderAmount);
+				}
+				JsdUserDo userDo=jsdUserService.getById(jsdBorrowCashDo.getUserId());
+				bo.amount=sumAmount;
+				bo.borrowId=jsdBorrowCashDo.getRid();
+				bo.userId = jsdBorrowCashDo.getUserId();
+				bo.borrowNo = jsdBorrowCashDo.getBorrowNo();
+				bo.period = "1";
+				bo.userDo = userDo;
+				bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
+				bo.repayType= JsdRepayType.WITHHOLD.name();
+				JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
+				bo.bankNo=userBankcardDo.getBankCardNumber();
+				Runnable thread= new Runnable() {
+					Map<String, Object> result=null;
+					@Override
+					public void run() {
+						try {
+							result=repay(bo,RepayType.WITHHOLD.getCode());
+						}catch (Exception e){
+							if("all".equals(cardType)){
+								nextWithhold(bo);
+							}
+						}
+
+					}
+				};
+				executor.submit(thread);
+			}catch (Exception e){
+				logger.info("withhold fail case exception");
 			};
-			executor.submit(thread);
 		}
 		logger.info("dealWithhold end");
 
@@ -873,10 +882,11 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 	public void checkBorrowIsLock(Long userId){
 		String key = userId + "_withhold_loanRepay";
-		long count = redisTemplate.opsForValue().increment(key, 1);
-		if (count != 1) {
-			throw new BizException(BizExceptionCode.HAVE_A_REPAYMENT_PROCESSING_WITHHOLD.getDesc());
-		}
+		String value = redisTemplate.opsForValue().get(key);
+		if(StringUtil.isNotBlank(value)){
+            throw new BizException(BizExceptionCode.HAVE_A_REPAYMENT_PROCESSING_WITHHOLD.getDesc());
+        }
+
 	}
 	public void lockBorrowList(List<JsdBorrowCashDo> borrowCashDos){
 		Iterator iterator=borrowCashDos.iterator();
@@ -890,16 +900,14 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	 */
 	public  void lockBorrow(Long userId){
 		String key = userId + "_withhold_loanRepay";
-		long count = redisTemplate.opsForValue().increment(key, 1);
-		if (count == 1) {
-			redisTemplate.expire(key, 1800, TimeUnit.SECONDS);
-		}
+	    redisTemplate.opsForValue().set(key,DateUtil.formatDate(new Date(),DateUtil.FULL_PATTERN_INCLUDE_SSS),1800, TimeUnit.SECONDS);
+
 	}
 
 	public void unLockBorrow(Long userId){
 		String key = userId + "_withhold_loanRepay";
-		long count = redisTemplate.opsForValue().increment(key, 1);
-        if(count==1){
+		String value = redisTemplate.opsForValue().get(key);
+        if(StringUtil.isNotBlank(value)){
 			redisTemplate.delete(key);
 		}
 	}
