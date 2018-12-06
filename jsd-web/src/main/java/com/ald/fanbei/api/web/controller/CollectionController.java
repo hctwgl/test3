@@ -4,16 +4,12 @@ package com.ald.fanbei.api.web.controller;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
-import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
-import com.ald.fanbei.api.biz.service.JsdUserContactsService;
-import com.ald.fanbei.api.biz.service.JsdUserService;
+import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
-import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
-import com.ald.fanbei.api.dal.domain.JsdUserContactsDo;
-import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import com.ald.fanbei.api.dal.domain.*;
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -42,6 +38,12 @@ public class CollectionController {
     JsdUserContactsService jsdUserContactsService;
     @Resource
     JsdNoticeRecordDao jsdNoticeRecordDao;
+    @Resource
+    JsdBorrowCashOverdueLogService jsdBorrowCashOverdueLogService;
+    @Resource
+    JsdBorrowCashService jsdBorrowCashService;
+    @Resource
+    JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
 
     private final Logger logger = LoggerFactory.getLogger(CollectionController.class);
     /**
@@ -151,6 +153,21 @@ public class CollectionController {
         jsdNoticeRecordDo.setStatus("FAIL");
         jsdNoticeRecordDo.setTimes("5");
         jsdNoticeRecordDao.updateById(jsdNoticeRecordDo);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = {"/collectImporting"}, method = RequestMethod.POST)
+    public String collectImporting(HttpServletRequest request){
+        String payTime = request.getParameter("payTime");
+        List<JsdBorrowCashOverdueLogDo> list = jsdBorrowCashOverdueLogService.getListCashOverdueLog(DateUtil.parseDate(payTime,"yyyy-MM-dd HH:mm:ss"));
+        for( JsdBorrowCashOverdueLogDo cashOverdueLogDo : list){
+            JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getLastOrderByBorrowId(cashOverdueLogDo.getBorrowId());
+            if(null != jsdBorrowLegalOrderDo){
+                cuiShouUtils.collectImport(jsdBorrowLegalOrderDo.getRid()+"");
+            }
+        }
+
+        return "";
     }
 
 }

@@ -24,4 +24,5 @@ public interface JsdBorrowCashOverdueLogDao extends BaseDao<JsdBorrowCashOverdue
 
     List<JsdBorrowCashOverdueLogDto> getListOrderCashOverdueLogByBorrowId(@Param("borrowId") Long borrowId, @Param("payTime") Date PayTime);
 
+    List<JsdBorrowCashOverdueLogDo> getListCashOverdueLog(@Param("payTime")Date payTime);
 }
