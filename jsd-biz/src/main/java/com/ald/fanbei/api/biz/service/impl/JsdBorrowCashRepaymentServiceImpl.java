@@ -900,7 +900,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	public void unLockBorrow(Long userId){
 		String key = userId + "_withhold_loanRepay";
 		long count = redisTemplate.opsForValue().increment(key, 1);
-        if(count!=1){
+        if(count==1){
 			redisTemplate.delete(key);
 		}
 	}
