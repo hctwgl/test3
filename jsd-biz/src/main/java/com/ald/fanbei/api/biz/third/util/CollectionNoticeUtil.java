@@ -124,6 +124,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 	public void collectReconciliateNotice(Map<String, String> data) {
 		try {
 			String dataId = data.get("dataId").toString();
+			data.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN));
 			byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
 			String sign = DigestUtil.encodeHex(pd);
 			data.put("sign",sign);
