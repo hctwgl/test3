@@ -127,7 +127,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 			byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
 			String sign = DigestUtil.encodeHex(pd);
 			data.put("sign",sign);
-			String url = getReportUrl() + "/api/collect/third/thirdReconciliateCheck";
+			String url = getReportUrl() + "/api/ald/collect/v1/third/PzCheck";
 			String reqResult =  HttpUtil.post(url, data);
 			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 			}else {
