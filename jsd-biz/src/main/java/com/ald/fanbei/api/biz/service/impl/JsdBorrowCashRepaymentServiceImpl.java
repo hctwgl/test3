@@ -119,7 +119,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	@Override
 	public Map<String, Object> repay(RepayRequestBo bo, String bankPayType) {
 
-
 		//校验借款是否被代扣锁住
 		jsdBorrowCashRepaymentService.checkBorrowIsLock(bo.userId);
 		if (!BankPayChannel.KUAIJIE.getCode().equals(bankPayType)) {
