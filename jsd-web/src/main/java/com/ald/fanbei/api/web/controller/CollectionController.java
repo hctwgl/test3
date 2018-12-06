@@ -157,8 +157,7 @@ public class CollectionController {
 
     @ResponseBody
     @RequestMapping(value = {"/collectImporting"}, method = RequestMethod.POST)
-    public String collectImporting(HttpServletRequest request){
-        String payTime = request.getParameter("payTime");
+    public String collectImporting(String payTime){
         List<JsdBorrowCashOverdueLogDo> list = jsdBorrowCashOverdueLogService.getListCashOverdueLog(DateUtil.parseDate(payTime,"yyyy-MM-dd HH:mm:ss"));
         for( JsdBorrowCashOverdueLogDo cashOverdueLogDo : list){
             JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getLastOrderByBorrowId(cashOverdueLogDo.getBorrowId());
