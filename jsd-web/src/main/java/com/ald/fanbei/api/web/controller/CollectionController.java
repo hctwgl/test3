@@ -160,7 +160,8 @@ public class CollectionController {
     public String collectImporting(String payTime){
         List<JsdBorrowCashOverdueLogDo> list = jsdBorrowCashOverdueLogService.getListCashOverdueLog(DateUtil.parseDate(payTime,"yyyy-MM-dd HH:mm:ss"));
         for( JsdBorrowCashOverdueLogDo cashOverdueLogDo : list){
-            JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = jsdBorrowLegalOrderService.getLastOrderByBorrowId(cashOverdueLogDo.getBorrowId());
+            List<JsdBorrowLegalOrderDo> orderslist = jsdBorrowLegalOrderService.getBorrowOrdersByBorrowId(cashOverdueLogDo.getBorrowId());
+            JsdBorrowLegalOrderDo jsdBorrowLegalOrderDo = orderslist.get(0);
             if(null != jsdBorrowLegalOrderDo){
                 cuiShouUtils.collectImport(jsdBorrowLegalOrderDo.getRid()+"");
             }
