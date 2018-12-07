@@ -12,6 +12,10 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
+import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
 import com.ald.fanbei.api.biz.service.JsdLegalContractPdfCreateService;
 import com.ald.fanbei.api.biz.third.util.JobThreadPoolUtils;
 import com.ald.fanbei.api.common.enums.*;
@@ -41,14 +45,6 @@ import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
-import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.alibaba.fastjson.JSONArray;
@@ -78,6 +74,9 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
     @Resource
     JsdNoticeRecordService jsdNoticeRecordService;
+    @Resource
+    JsdUserDao jsdUserDao;
+
     @Resource
     JsdLegalContractPdfCreateService jsdLegalContractPdfCreateService;
     @Resource
@@ -375,8 +374,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         resp.interestAmount = actualBorrowInterestAmount.toString();
         resp.serviceRate = borrowRateInfo.serviceRate.setScale(4, RoundingMode.HALF_UP).toString();
         resp.serviceAmount = actualBorrowServiceAmount.toString();
-        resp.overdueRate = borrowOverdueRate.divide(new BigDecimal(360)).setScale(4, RoundingMode.HALF_UP).toString();
-
+        resp.overdueRate = borrowOverdueRate.divide(new BigDecimal(360),4, RoundingMode.HALF_UP).setScale(4, RoundingMode.HALF_UP).toString();
+        resp.overdueYearRate = borrowOverdueRate.toString();
         //处理搭售商品相关利息
         ResourceRateInfoBo orderRateInfo = jsdResourceService.getOrderRateInfo(req.term);
         BigDecimal orderInterestRate = orderRateInfo.interestRate;
@@ -438,9 +437,9 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.name());
         orderCashDo.setGmtPlanRepay(repaymentDate);
         String result = this.transUpdate(cashDo, orderDo, orderCashDo);
-//        if(StringUtils.equals(result,"success")){
-//            jobThreadPoolUtils.platformServiceSellProtocol(cashDo.getTradeNoXgxy());
-//        }
+        if(StringUtils.equals(result,"success")){
+            jobThreadPoolUtils.platformServiceSellProtocol(cashDo.getTradeNoXgxy());
+        }
         jsdNoticeRecordService.dealBorrowNoticed(cashDo, this.buildXgxyPay(cashDo, "放款成功", XgxyBorrowNotifyStatus.SUCCESS.name()));
     }
 
@@ -581,6 +580,16 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         return protocolVos;
     }
 
+    @Override
+    public List<FinaneceDataDo> getPaymentDetail() {
+        return jsdBorrowCashDao.getPaymentDetail();
+    }
+
+    @Override
+    public List<FinaneceDataDo> getPromiseIncomeDetail() {
+        return jsdBorrowCashDao.getPromiseIncomeDetail();
+    }
+
     /**
      * 获取借款相关协议(plus)
      *
@@ -628,6 +637,26 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         xgxyPayBo.setTimestamp(System.currentTimeMillis());
         return xgxyPayBo;
     }
+
+    @Override
+    public List<JsdBorrowCashDo> getBorrowCashsInfos(Long userId) {
+        List<JsdBorrowCashDo> cashs = new ArrayList<JsdBorrowCashDo>(4);
+
+        List<JsdBorrowCashDo> transedCashDtos = jsdBorrowCashDao.getTransedCashDtosByUserId(userId);
+        cashs.addAll(transedCashDtos);
+
+        JsdBorrowCashDo finshCash = jsdBorrowCashDao.getLastFinishCashByUserId(userId);
+        if (finshCash != null) {
+            cashs.add(finshCash);
+        }
+        return cashs;
+    }
+
+    @Override
+    public JsdCashDto getGoodsInfoByBorrowId(Long borrowId) {
+        return jsdBorrowCashDao.getGoodsInfoByBorrowId(borrowId);
+    }
+
 
     @Override
     public JsdBorrowCashDo getBorrowByRid(Long id){

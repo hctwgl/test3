@@ -169,7 +169,7 @@ public class CollectionMgrController extends BaseController{
     				operator, params.reviewStatus, reviewRemark);
     		transactionTemplate.execute(status -> {
 				jsdCollectionBorrowService.updateById(collBorrowDoForMod);
-	    		collectionNoticeUtil.collectReconciliateNotice(MapUtils.cstStrKeyMap("dataId", legalOrderDo.getRid(), "reviewResult", params.reviewStatus));
+	    		collectionNoticeUtil.collectReconciliateNotice(MapUtils.cstStrKeyMap("dataId", legalOrderDo.getRid(), "reviewResult", params.reviewStatus, "remark", params.reviewRemark));
 				return 1;
     		});
     	}else if(CommonReviewStatus.PASS.name().equals(params.reviewStatus)) {
@@ -180,16 +180,18 @@ public class CollectionMgrController extends BaseController{
     		cashDoForMod.setRid(cashDo.getRid());
         	cashDoForMod.setStatus(JsdBorrowCashStatus.FINISHED.name());
         	cashDoForMod.setRemark(reviewRemark);
-        	
-        	transactionTemplate.execute(status -> {
+
+			Integer resultValue =  transactionTemplate.execute(status -> {
 				jsdBorrowCashService.updateById(cashDoForMod);
 				jsdCollectionBorrowService.updateById(collBorrowDoForMod);
-				jsdNoticeRecordService.dealBorrowNoticed(cashDo, XgxyBorrowNoticeBo.gen(cashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.FINISHED.name(), "审核强制结清"));
-				
-				cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
-				collectionNoticeUtil.collectReconciliateNotice(MapUtils.cstStrKeyMap("dataId", legalOrderDo.getRid(), "reviewResult", params.reviewStatus));
 				return 1;
     		});
+
+			if(resultValue == 1){
+				jsdNoticeRecordService.dealBorrowNoticed(cashDo, XgxyBorrowNoticeBo.gen(cashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.FINISHED.name(), "审核强制结清"));
+				cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
+				collectionNoticeUtil.collectReconciliateNotice(MapUtils.cstStrKeyMap("dataId", legalOrderDo.getRid(), "reviewResult", params.reviewStatus, "remark", params.reviewRemark));
+			}
     	}
     	
     	return Resp.succ();
@@ -259,11 +261,11 @@ public class CollectionMgrController extends BaseController{
             
             transactionTemplate.execute(new TransactionCallback<Integer>() {
     			public Integer doInTransaction(TransactionStatus status) {
-    				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData, JsdRepayType.REVIEW_COLLECTION, operator);
     				jsdCollectionRepaymentService.updateById(collRepayDo);
     				return 1;
     			}
     		});
+			mgrOfflineRepaymentService.dealOfflineRepayment(offlineData, JsdRepayType.REVIEW_COLLECTION, operator);
             jsdCollectionService.nofityRepayment(collRepayDo.getRepayAmount(), collRepayDo.getTradeNo(), cashDo.getBorrowNo(), orderDo.getRid(), cashDo.getUserId(), JsdRepayType.REVIEW_COLLECTION, params.reviewStatus);
             
     	}else if(CommonReviewStatus.REFUSE.name().equals(params.reviewStatus)) {

@@ -7,7 +7,7 @@
     <sql id="queryFields">
         id rid,gmt_create,gmt_modified,user_id,borrow_id,order_no,status,goods_id,price_amount,gmt_deliver,gmt_confirm_received,gmt_closed,closed_detail,address,goods_name,logistics_info,logistics_company,logistics_no,delivery_user,delivery_phone,smart_address_score 
     </sql>
-    
+
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
     	WHERE is_delete = 0
@@ -335,5 +335,5 @@
         ORDER BY id DESC LIMIT 1
     </select>
 
-    
+
 </mapper>

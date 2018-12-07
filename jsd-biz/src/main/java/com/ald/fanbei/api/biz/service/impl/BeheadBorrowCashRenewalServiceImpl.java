@@ -134,7 +134,7 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 		JsdBorrowCashRenewalDo renewalDo = bo.renewalDo;
 		JsdUserDo userDo = bo.userDo; 
 		
-		HashMap<String,Object> bank = jsdUserBankcardDao.getUserBankInfoByBankNo(bo.bankNo);
+		HashMap<String,Object> bank = jsdUserBankcardDao.getUserBankInfoByBankNo(bo.bankNo,userDo.getRid());
 		KuaijieJsdRenewalPayBo bizObject = new KuaijieJsdRenewalPayBo(bo.renewalDo, bo);
 	    
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bo.bankChannel)) {// 快捷支付
@@ -457,7 +457,8 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 		renewalDo.setGmtModified(new Date());
 
 		Date curr = DateUtil.getStartOfDate(new Date(System.currentTimeMillis()));
-		Integer overdueday = NumberUtil.objToInteger(DateUtil.getNumberOfDayBetween(curr, borrowCashDo.getGmtPlanRepayment()));
+
+		Integer overdueday = Math.toIntExact(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(borrowCashDo.getGmtPlanRepayment()), DateUtil.formatDateToYYYYMMdd(new Date())));
 		if(overdueday<0) overdueday=0;
 		renewalDo.setOverdueDay(overdueday);
 		renewalDo.setOverdueStatus(curr.after(borrowCashDo.getGmtPlanRepayment())?"Y":"N");

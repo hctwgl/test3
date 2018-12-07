@@ -50,4 +50,11 @@ public interface JsdBorrowLegalOrderCashDao extends BaseDao<JsdBorrowLegalOrderC
 	 * @return
 	 */
 	JsdBorrowLegalOrderCashDo getBorrowLegalOrderCashDateBeforeToday(Long borrowId);
+	/**
+	 * 查询订单借款表中对应借款id的最新借款
+	 * @param borrowId
+	 * @return
+	 */
+	JsdBorrowLegalOrderCashDo getLegalOrderByBorrowId(@Param("borrowId")Long borrowId);
+
 }

@@ -50,14 +50,14 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 		repayData.put("orderNo", borrowNo);
 		
 		//根据场景不同，推送催收不同还款类型
-		if(JsdRepayType.COLLECTION.equals(repayType) || JsdRepayType.REVIEW_COLLECTION.equals(repayType)){
-			data.put("dataId", orderId.toString());//源数据id
-			repayData.put("type", JsdRepayCollectionType.OFFLINE.getCode());
-			noticeRecordDo.setType(JsdNoticeType.COLLECT.code);
-		}else {
+		if(JsdRepayType.INITIATIVE.equals(repayType) || JsdRepayType.WITHHOLD.equals(repayType)){
 			repayData.put("type", JsdRepayCollectionType.APP.getCode());
 			noticeRecordDo.setType(JsdNoticeType.OVERDUEREPAY.code);
 			data.put("dataId", orderId.toString());//源数据id
+		}else {
+			data.put("dataId", orderId.toString());//源数据id
+			repayData.put("type", JsdRepayCollectionType.OFFLINE.getCode());
+			noticeRecordDo.setType(JsdNoticeType.COLLECT.code);
 		}
 		repayData.put("repaymentAcc", uid.toString());//还款账户
 		repayData.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN));

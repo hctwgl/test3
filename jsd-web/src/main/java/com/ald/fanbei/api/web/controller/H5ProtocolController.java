@@ -532,7 +532,7 @@ public class H5ProtocolController {
 					model.put("yfCompanyPic",model.get("tgzSeal"));
 				}
 				if(StringUtils.equals(resdo.getValue5(), ProductType.JGD.name())){
-					model.put("bfCompanyPic",model.get("lySeal"));
+					model.put("bfCompanyPic",model.get("lvSeal"));
 					model.put("yfCompanyPic",model.get("jtSeal"));
 				}
 			}else{
@@ -627,7 +627,7 @@ public class H5ProtocolController {
 					model.put("yfCompanyPic",model.get("tgzSeal"));
 				}
 				if(StringUtils.equals(resdo.getValue5(), ProductType.JGD.name())){
-					model.put("bfCompanyPic",model.get("lySeal"));
+					model.put("bfCompanyPic",model.get("lvSeal"));
 					model.put("yfCompanyPic",model.get("qhSeal"));
 				}
 			}else{

@@ -143,14 +143,14 @@ public class JsdGatewayController {
             dataMap = JSON.parseObject(decryptData);
             Object openId = dataMap.get("openId");
             if(openId == null) {
-            	throw new BizException("OpenId can't be null!");
+            	throw new BizException("OpenId can not be null!");
             }
             
             JsdUserDo userDo = jsdUserService.getByOpenId(openId.toString());
             
             contextBuilder.method(method);
             if (userDo == null) {
-            	throw new BizException("Can't find refer user by openId " + openId);
+            	throw new BizException("Can not find refer user by openId " + openId);
             } else {
             	contextBuilder.userName(userDo.getMobile());
             	contextBuilder.userId(userDo.getRid());

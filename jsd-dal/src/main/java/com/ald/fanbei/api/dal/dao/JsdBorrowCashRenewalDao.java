@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 
 import java.util.List;
 
@@ -25,5 +26,13 @@ public interface JsdBorrowCashRenewalDao extends BaseDao<JsdBorrowCashRenewalDo,
 	List<JsdBorrowCashRenewalDo> getJsdRenewalByBorrowIdAndStatus(Long borrowId);
 
 	List<JsdBorrowCashRenewalDo> getMgrJsdRenewalByBorrowId(Long borrowId);
+
+	/**
+	 * 获取结算系统实收数据
+	 * @Param list {@link FinaneceDataDo} 对象
+	 *@return  <code>List<code/>
+	 *
+	 * **/
+	List<FinaneceDataDo> getRenewalData();
 
 }

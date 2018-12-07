@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,7 +120,7 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 		JsdBorrowCashRenewalDo renewalDo = bo.renewalDo;
 		JsdUserDo userDo = bo.userDo; 
 		
-		HashMap<String,Object> bank = jsdUserBankcardDao.getUserBankInfoByBankNo(bo.bankNo);
+		HashMap<String,Object> bank = jsdUserBankcardDao.getUserBankInfoByBankNo(bo.bankNo,userDo.getRid());
 	    KuaijieJsdRenewalPayBo bizObject = new KuaijieJsdRenewalPayBo(bo.renewalDo, bo);
 	    
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bo.bankChannel)) {// 快捷支付
@@ -652,5 +653,10 @@ public class JsdBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceAbst
 	@Override
 	public List<JsdBorrowCashRenewalDo> getMgrJsdRenewalByBorrowId(Long borrowId) {
 		return jsdBorrowCashRenewalDao.getMgrJsdRenewalByBorrowId(borrowId);
+	}
+
+	@Override
+	public List<FinaneceDataDo> getRenewalData() {
+		return jsdBorrowCashRenewalDao.getRenewalData();
 	}
 }

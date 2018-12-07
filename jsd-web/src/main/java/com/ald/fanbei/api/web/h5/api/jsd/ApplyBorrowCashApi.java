@@ -85,7 +85,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         	
 	        jsdBorrowCashService.checkCanBorrow(context.getUserId(), cashReq.amount);
 	        
-            JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(cashReq.bankNo);
+            JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(cashReq.bankNo,context.getUserId());
            
             TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
 	    	trialBo.req = new TrialBeforeBorrowReq(cashReq.openId, cashReq.amount, cashReq.term, cashReq.unit);
@@ -172,7 +172,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         afBorrowCashDo.setPoundageAmount(new BigDecimal(trialResp.serviceAmount));
         afBorrowCashDo.setPoundageRate(new BigDecimal(trialResp.serviceRate));
         afBorrowCashDo.setInterestRate(new BigDecimal(trialResp.interestRate));
-        afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueRate).multiply(new BigDecimal(360)));
+        afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueYearRate));
         afBorrowCashDo.setRiskDailyRate(trialBo.riskDailyRate);
         afBorrowCashDo.setProductNo(trialReq.productNo);
         afBorrowCashDo.setTradeNoXgxy(cashReq.borrowNo);

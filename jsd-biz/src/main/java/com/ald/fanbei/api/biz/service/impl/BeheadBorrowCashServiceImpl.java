@@ -224,8 +224,8 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         resp.interestAmount = interestAmount.toString();
         resp.serviceRate = borrowRateInfo.serviceRate.setScale(4, RoundingMode.HALF_UP).toString();
         resp.serviceAmount = serviceAmount.toString();
-        resp.overdueRate = borrowOverdueRate.divide(new BigDecimal(360)).setScale(4, RoundingMode.HALF_UP).toString();
-        
+        resp.overdueRate = borrowOverdueRate.divide(new BigDecimal(360),4, RoundingMode.HALF_UP).setScale(4, RoundingMode.HALF_UP).toString();
+        resp.overdueYearRate = borrowOverdueRate.toString();
         //商品价格
         resp.totalDiffFee = actualOrderAmount.toPlainString();
         
@@ -259,7 +259,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         afBorrowCashDo.setPoundageAmount(new BigDecimal(trialResp.serviceAmount));
         afBorrowCashDo.setPoundageRate(new BigDecimal(trialResp.serviceRate));
         afBorrowCashDo.setInterestRate(new BigDecimal(trialResp.interestRate));
-        afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueRate).multiply(new BigDecimal(360)));
+        afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueYearRate));
         afBorrowCashDo.setRiskDailyRate(trialBo.riskDailyRate);
         afBorrowCashDo.setProductNo(trialReq.productNo);
         afBorrowCashDo.setTradeNoXgxy(cashReq.borrowNo);
@@ -330,9 +330,10 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         
         orderDo.setStatus(JsdBorrowLegalOrderStatus.AWAIT_DELIVER.name());
         String result = this.transUpdate(cashDo, orderDo);
-//        if(StringUtils.equals(result,"success")){
-//            jobThreadPoolUtils.platformServiceBeheadProtocol(cashDo.getTradeNoXgxy());
-//        }
+        logger.info(" dealBorrowSucc result = " + result);
+        if(StringUtils.equals(result,"success")){
+            jobThreadPoolUtils.platformServiceBeheadProtocol(cashDo.getTradeNoXgxy());
+        }
         jsdNoticeRecordService.dealBorrowNoticed(cashDo, this.buildXgxyPay(cashDo, "放款成功", XgxyBorrowNotifyStatus.SUCCESS.name()));
 	}
 

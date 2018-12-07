@@ -21,7 +21,7 @@ public enum ResourceSecType {
 		NAVIGATION_CATEGORY("NAVIGATION_CATEGORY", "商品分类"),
 		INTEREST_RATE("INTEREST_RATE","利率（年化）"),
 
-
+		COLLECT_PRODUCT("COLLECT_PRODUCT","催收产品配置"),
 		//活动相关
 	    OppoReservationActivity("OPPO_RESERVATION_ACTIVITY", "OPPO预约活动"),
 	    ASSET_PUSH_RECEIVE("EDSPAY","债权实时债权接收方"),
