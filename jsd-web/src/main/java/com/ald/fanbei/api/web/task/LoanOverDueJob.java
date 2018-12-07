@@ -368,6 +368,7 @@ public class LoanOverDueJob {
                 //--------------------end  催收上报接口需要参数---------------------------
                 data.add(buildData);
             }catch (Exception e){
+                logger.info("collectionPush is error ",e);
                 e.printStackTrace();
             }
         }
