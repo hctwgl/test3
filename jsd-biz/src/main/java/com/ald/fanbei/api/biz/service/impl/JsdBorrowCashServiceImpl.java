@@ -424,8 +424,12 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
         JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(cashId);
         JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(cashId);
-
-        Date currDate = DateUtil.parseDate(tradeDate,"yyyy-MM-dd HH:mm:ss");
+        Date currDate;
+        if(StringUtils.isBlank(tradeDate)){
+            currDate = new Date();
+        }else {
+            currDate = DateUtil.parseDate(tradeDate,"yyyy-MM-dd HH:mm:ss");
+        }
         Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(currDate);
         Date repaymentDate = DateUtil.addDays(arrivalEnd, Integer.valueOf(cashDo.getType()) - 1);
         cashDo.setGmtArrival(currDate);
