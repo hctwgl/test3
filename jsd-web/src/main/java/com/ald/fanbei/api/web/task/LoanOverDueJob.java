@@ -222,6 +222,7 @@ public class LoanOverDueJob {
             try{
                 //--------------------start  催收上报接口需要参数---------------------------
                 Long borrowId = borrowCashDo.getRid();
+                logger.info("collectionPush borrowId = " + borrowId);
                 //搭售商品信息
                 JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastValidOrderByBorrowId(borrowId);
                 JsdUserDo userDo= jsdUserService.getById(jsdBorrowLegalOrder.getUserId());
