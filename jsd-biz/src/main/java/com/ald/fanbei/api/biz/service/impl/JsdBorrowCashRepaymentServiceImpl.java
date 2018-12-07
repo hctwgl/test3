@@ -795,7 +795,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
     }
 
 	public  void  dealWithhold(List<JsdBorrowCashDo> borrowCashDos,String cardType){
-		logger.info("dealWithhold start");
 		for(JsdBorrowCashDo jsdBorrowCashDo:borrowCashDos){
 			try {
 				JsdBorrowCashRepaymentDo repaymentDo= jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(jsdBorrowCashDo.getRid());
@@ -856,7 +855,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				logger.info("withhold fail case exception");
 			};
 		}
-		logger.info("dealWithhold end");
 
 	}
 	private void nextWithhold( JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo){
@@ -893,7 +891,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	 */
 	public  void lockBorrow(Long userId){
 		String key = userId + "_withhold_loanRepay";
-	    redisTemplate.opsForValue().set(key,DateUtil.formatDate(new Date(),DateUtil.FULL_PATTERN_INCLUDE_SSS),1800, TimeUnit.SECONDS);
+	    redisTemplate.opsForValue().set(key,DateUtil.formatDate(new Date(),DateUtil.DATE_TIME_SHORT),1800, TimeUnit.SECONDS);
 
 	}
 
@@ -901,8 +899,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		String key = userId + "_withhold_loanRepay";
 		String value = redisTemplate.opsForValue().get(key);
         if(StringUtil.isNotBlank(value)){
-			redisTemplate.delete(key);
-		}
+            redisTemplate.delete(key);
+        }
 	}
 
 	private boolean noticeSmsToXgxy(String tradeNo,String amount,String xgxyTradeNo){

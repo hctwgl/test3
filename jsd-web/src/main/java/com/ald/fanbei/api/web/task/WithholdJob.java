@@ -56,7 +56,13 @@ public class WithholdJob {
             if (StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)) {
                String currentTime= DateUtil.formatDate(new Date(),"HH:mm");
                Map<String,String> config= (Map<String, String>) JSON.parse(resourceDo.getValue2());
-               excutorWithholdCurrent(config,currentTime,bengin);
+               Runnable threadC= new Runnable() {
+                    @Override
+                    public void run() {
+                        excutorWithholdCurrent(config,currentTime,bengin);
+                    }
+                };
+                executor.submit(threadC);
                 JSONObject overdueSection=JSONObject.fromObject(config.get("overdueSection"));
                 BigDecimal minSection=new BigDecimal(String.valueOf(overdueSection.get("minSection")));
                 BigDecimal maxSection=new BigDecimal(String.valueOf(overdueSection.get("maxSection")));
@@ -64,7 +70,13 @@ public class WithholdJob {
                  ||minSection.compareTo(maxSection)>0 ){
                     logger.info("withhold overdue section is zero or null");
                 }else {
-                    excutorWithholdOverdue(config,currentTime,bengin);
+                    Runnable threadO= new Runnable() {
+                        @Override
+                        public void run() {
+                            excutorWithholdOverdue(config,currentTime,bengin);
+                        }
+                    };
+                    executor.submit(threadO);
                 }
             }
 
@@ -79,15 +91,8 @@ public class WithholdJob {
             while (currentIterator.hasNext()){
                 String withholdTime= String.valueOf(currentIterator.next());
                 if(currentTime.equals(withholdTime)){
-
+                    withholdCurrentDay.withhold(config,bengin);
                 }
-                Runnable threadC= new Runnable() {
-                    @Override
-                    public void run() {
-                        withholdCurrentDay.withhold(config,bengin);
-                    }
-                };
-                executor.submit(threadC);
 
             }
         }
@@ -100,13 +105,7 @@ public class WithholdJob {
             while (overdueIterator.hasNext()){
                 String withholdTime= String.valueOf(overdueIterator.next());
                 if(currentTime.equals(withholdTime)){
-                    Runnable threadO= new Runnable() {
-                        @Override
-                        public void run() {
-                            withholdOverdueDay.withhold(config,bengin);
-                        }
-                    };
-                    executor.submit(threadO);
+                    withholdOverdueDay.withhold(config,bengin);
                 }
 
 

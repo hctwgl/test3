@@ -30,7 +30,7 @@ public enum BizExceptionCode {
     LOAN_UPS_DRIECT_FAIL("LOAN_UPS_DRIECT_FAIL",2107,"loan ups driect fail","请求打款实时失败"),
     LOAN_CONCURRENT_LIMIT("LOAN_CONCURRENT_LIMIT",2110,"loan concurrent limit","同一时刻只能发起一笔贷款申请"),
     LOAN_PERIOD_CAN_NOT_REPAY_ERROR("LOAN_PERIOD_CAN_NOT_REPAY_ERROR",2014,"loan period can not repay error","当前借款未到还款时间"),
-    LOAN_REPAY_PROCESS_ERROR("LOAN_REPAY_PROCESS_ERROR",2018,"loan repay not exist","您有一笔还款正在处理中，请稍后重试"),
+    LOAN_REPAY_PROCESS_ERROR("LOAN_REPAY_PROCESS_ERROR",2018,"have a repay is process","您有一笔还款正在处理中，请稍后重试"),
 
     BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR("BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR",2020,"borrow cash repay more than borrow cash","还款金额大于借款金额"),
 

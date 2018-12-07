@@ -829,7 +829,7 @@
         <include refid="queryFields"/>
         FROM
         jsd_borrow_cash b where b.is_delete=0  and gmt_plan_repayment BETWEEN  #{startTime} AND  #{endTime}
-        and status='TRANSFERRED' limit #{beginIndex}, #{pageSize}
+        and status='TRANSFERRED'
     </select>
 
     <select id="getBorrowCashByTodayCount" resultType="java.lang.Integer">
@@ -844,7 +844,7 @@
         <include refid="queryFields"/>
         FROM
         jsd_borrow_cash b where b.is_delete=0 and Date(b.gmt_plan_repayment) = #{todayLast}
-        and status='TRANSFERRED' limit #{beginIndex}, #{pageSize}
+        and status='TRANSFERRED'
     </select>
 
     <select id="getTodayBorrowCashRepayByUserIds" resultType="JsdBorrowCashDo">

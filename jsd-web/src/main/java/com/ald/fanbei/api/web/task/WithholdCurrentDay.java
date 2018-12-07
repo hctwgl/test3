@@ -28,18 +28,14 @@ public class WithholdCurrentDay {
         try {
             String cardType=config.get("cardType");
             String failCount=config.get("failCount");
-            int pageSize = 200;
             int totalRecord = jsdBorrowCashService.getBorrowCashByTodayCount(bengin);
-            int totalPageNum = (totalRecord + pageSize - 1) / pageSize;
             if (totalRecord == 0) {
                 logger.info("withhold run finished,Loan Due size is 0.time=" + new Date());
             } else {
                 logger.info("withhold run start,time=" + new Date());
-                for (int i = 0; i < totalPageNum; i++) {
-                    List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getBorrowCashByToday(pageSize * i, pageSize,bengin);
-                    jsdBorrowCashRepaymentService.lockBorrowList(borrowCashDos);
-                    jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType);
-                }
+                List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getBorrowCashByToday(bengin);
+                jsdBorrowCashRepaymentService.lockBorrowList(borrowCashDos);
+                jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType);
             }
             logger.info("withhold run end,time=" + new Date());
         } catch (Exception e) {

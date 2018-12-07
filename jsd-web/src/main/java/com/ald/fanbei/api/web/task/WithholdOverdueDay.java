@@ -41,19 +41,15 @@ public class WithholdOverdueDay {
             Date now=DateUtil.getStartOfDate(new Date());
             Date endTime=DateUtil.addDays(now,Integer.parseInt(minSection)==0?0:(-Integer.parseInt(minSection)+1));
             Date startTime=DateUtil.addDays(DateUtil.getStartOfDate(new Date()),-(Integer.parseInt(maxSection)));
-            int pageSize = 200;
             int totalRecord = jsdBorrowCashService.getBorrowCashByOverdueCountBySection(startTime,endTime);
-            int totalPageNum = (totalRecord + pageSize - 1) / pageSize;
             if (totalRecord == 0) {
                 logger.info("withholdOverdue run finished,Loan Due size is 0.time=" + new Date());
             } else {
                 logger.info("withholdOverdue run start,time=" + new Date());
-                for (int i = 0; i < totalPageNum; i++) {
-                    List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getBorrowCashOverdueBySection(pageSize * i, pageSize,startTime,endTime);
-                    //锁住代扣还款用户
-                    jsdBorrowCashRepaymentService.lockBorrowList(borrowCashDos);
-                    jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType);
-                }
+                List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getBorrowCashOverdueBySection(startTime,endTime);
+                //锁住代扣还款用户
+                jsdBorrowCashRepaymentService.lockBorrowList(borrowCashDos);
+                jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType);
             }
             logger.info("withholdOverdue run end,time=" + new Date());
         } catch (Exception e) {

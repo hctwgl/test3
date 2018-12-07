@@ -249,7 +249,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     /**
      * 获取逾期区间的数据
      */
-    List<JsdBorrowCashDo> getBorrowCashOverdueBySection(int nowPage, int pageSize,Date startTime,Date endTime);
+    List<JsdBorrowCashDo> getBorrowCashOverdueBySection(Date startTime,Date endTime);
 
     /**
      * 获取还款日在当天的数据量
@@ -262,7 +262,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     /**
      * 获取还款日在当天数据
      */
-    List<JsdBorrowCashDo> getBorrowCashByToday(int nowPage, int pageSize, Date todayLast);
+    List<JsdBorrowCashDo> getBorrowCashByToday( Date todayLast);
 
     /**
      * 获取逾期区间的数据baimingdan

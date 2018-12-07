@@ -187,13 +187,11 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
 
     /**
      * 获取逾期当天数据
-     * @param nowPage
-     * @param pageSize
      * @param startTime
      * @param endTime
      * @return
      */
-    List<JsdBorrowCashDo> getBorrowCashOverdueBySection(@Param("beginIndex")int nowPage, @Param("pageSize")int pageSize, @Param("startTime")Date startTime,@Param("endTime") Date endTime);
+    List<JsdBorrowCashDo> getBorrowCashOverdueBySection( @Param("startTime")Date startTime,@Param("endTime") Date endTime);
 
     /**
      * 获取逾期当天数据量
@@ -204,12 +202,10 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
 
     /**
      * 获取还款日当天数据
-     * @param nowPage
-     * @param pageSize
      * @param todayLast
      * @return
      */
-    List<JsdBorrowCashDo> getBorrowCashByToday(@Param("beginIndex")int nowPage, @Param("pageSize")int pageSize, @Param("todayLast")String todayLast);
+    List<JsdBorrowCashDo> getBorrowCashByToday(@Param("todayLast")String todayLast);
 
     List<JsdBorrowCashDo> getTodayBorrowCashRepayByUserIds(@Param("userIds")String userIds, @Param("todayLast")String todayLast);
 

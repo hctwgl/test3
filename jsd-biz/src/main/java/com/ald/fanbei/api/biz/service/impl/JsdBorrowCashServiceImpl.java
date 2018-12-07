@@ -672,8 +672,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
-    public List<JsdBorrowCashDo> getBorrowCashOverdueBySection(int nowPage, int pageSize, Date startTime, Date endTime) {
-        return jsdBorrowCashDao.getBorrowCashOverdueBySection( nowPage,  pageSize,  startTime,  endTime);
+    public List<JsdBorrowCashDo> getBorrowCashOverdueBySection(Date startTime, Date endTime) {
+        return jsdBorrowCashDao.getBorrowCashOverdueBySection(startTime,  endTime);
     }
 
     @Override
@@ -682,8 +682,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
-    public List<JsdBorrowCashDo> getBorrowCashByToday(int nowPage, int pageSize, Date todayLast) {
-        return jsdBorrowCashDao.getBorrowCashByToday(nowPage, pageSize, DateUtil.formatDate(todayLast,"yyyy-MM-dd"));
+    public List<JsdBorrowCashDo> getBorrowCashByToday(Date todayLast) {
+        return jsdBorrowCashDao.getBorrowCashByToday( DateUtil.formatDate(todayLast,"yyyy-MM-dd"));
     }
 
     public List<JsdBorrowCashDo> getOverSectionBorrowCashRepayByUserIds(String userIds,Date startTime,Date endTime){
