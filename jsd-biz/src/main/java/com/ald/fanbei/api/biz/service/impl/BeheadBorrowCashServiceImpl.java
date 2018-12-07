@@ -324,6 +324,8 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
             currDate = new Date();
         }else {
             currDate = DateUtil.parseDate(tradeDate,"yyyy-MM-dd HH:mm:ss");
+            currDate = DateUtil.afterDay(currDate,new Date())?new Date():currDate;
+            currDate = DateUtil.beforeDay(currDate,cashDo.getGmtCreate())?new Date():currDate;
         }
 		Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(currDate);
         Date repaymentDate = DateUtil.addDays(arrivalEnd, Integer.valueOf(cashDo.getType()) - 1);
