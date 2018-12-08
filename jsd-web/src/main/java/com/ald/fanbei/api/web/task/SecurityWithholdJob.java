@@ -118,7 +118,6 @@ public class SecurityWithholdJob {
 
                 }
             }
-            logger.info("--------------- securityWithholdJob run end,time=" + new Date());
         } catch (Exception e){
             logger.error("securityWithholdJob  error, case=",e);
         }

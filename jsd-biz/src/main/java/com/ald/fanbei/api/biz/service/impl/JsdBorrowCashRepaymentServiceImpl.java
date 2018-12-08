@@ -852,7 +852,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				};
 				executor.submit(thread);
 			}catch (Exception e){
-				logger.info("withhold fail case exception");
+				logger.info("withhold fail case exception="+e);
 			};
 		}
 

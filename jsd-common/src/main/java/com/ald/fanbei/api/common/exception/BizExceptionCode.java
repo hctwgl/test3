@@ -36,7 +36,7 @@ public enum BizExceptionCode {
 
     HAVE_A_PROCESS_RENEWAL_DETAIL("HAVE_A_PROCESS_RENEWAL_DETAIL",2021,"borrow a process renewal record","存在处理中续期记录,请稍后重试"),
 
-    LEGAL_REPAY_PROCESS_ERROR("LEGAL_REPAY_PROCESS_ERROR",2122,"legal order repay not exist","您有一笔商品还款正在处理中，请稍后重试"),
+    LEGAL_REPAY_PROCESS_ERROR("LEGAL_REPAY_PROCESS_ERROR",2122,"legal order repay is process","您有一笔商品还款正在处理中，请稍后重试"),
 
     JSD_BORROW_IS_NULL("JSD_BORROW_IS_NULL", 2126, "borrow is null", "借款信息是空"),
 

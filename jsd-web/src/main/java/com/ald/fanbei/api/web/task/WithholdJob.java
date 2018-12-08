@@ -108,11 +108,8 @@ public class WithholdJob {
                     withholdOverdueDay.withhold(config,bengin);
                 }
 
-
             }
         }
-       logger.info("withhold overdue job end!");
-
     }
 
 

@@ -26,6 +26,7 @@ public class WithholdCurrentDay {
 
     public void  withhold(Map<String,String> config,Date bengin) {
         try {
+            logger.info("withhold current run start,time=" + new Date());
             String cardType=config.get("cardType");
             String failCount=config.get("failCount");
             int totalRecord = jsdBorrowCashService.getBorrowCashByTodayCount(bengin);
@@ -37,7 +38,7 @@ public class WithholdCurrentDay {
                 jsdBorrowCashRepaymentService.lockBorrowList(borrowCashDos);
                 jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType);
             }
-            logger.info("withhold run end,time=" + new Date());
+            logger.info("withhold current run end,time=" + new Date());
         } catch (Exception e) {
             logger.error("withhold  error, case=", e);
         }

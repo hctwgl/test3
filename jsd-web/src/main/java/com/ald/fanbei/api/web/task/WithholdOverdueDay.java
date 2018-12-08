@@ -33,6 +33,7 @@ public class WithholdOverdueDay {
 
     public void  withhold(Map<String,String> config,Date bengin) {
         try {
+            logger.info("withhold overdue run start,time=" + new Date());
             String cardType=config.get("cardType");
             String failCount=config.get("failCount");
             JSONObject overdueSection=JSONObject.fromObject(config.get("overdueSection"));
@@ -45,13 +46,12 @@ public class WithholdOverdueDay {
             if (totalRecord == 0) {
                 logger.info("withholdOverdue run finished,Loan Due size is 0.time=" + new Date());
             } else {
-                logger.info("withholdOverdue run start,time=" + new Date());
                 List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getBorrowCashOverdueBySection(startTime,endTime);
                 //锁住代扣还款用户
                 jsdBorrowCashRepaymentService.lockBorrowList(borrowCashDos);
                 jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType);
             }
-            logger.info("withholdOverdue run end,time=" + new Date());
+            logger.info("withhold  overdue run end,time=" + new Date());
         } catch (Exception e) {
             logger.error("withholdOverdue  error, case=", e);
         }
