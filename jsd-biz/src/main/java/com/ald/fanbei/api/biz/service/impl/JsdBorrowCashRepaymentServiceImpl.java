@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.bo.ProtocolRepayBo;
 import com.ald.fanbei.api.biz.service.*;
+import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.*;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.dal.domain.dto.JsdBorrowCashOverdueLogDto;
@@ -28,15 +29,6 @@ import com.ald.fanbei.api.biz.bo.KuaijieRepayBo;
 import com.ald.fanbei.api.biz.bo.ups.UpsCollectRespBo;
 import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.BankPayChannel;
-import com.ald.fanbei.api.common.enums.CollectionBorrowStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashRepaymentStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowLegalRepaymentStatus;
-import com.ald.fanbei.api.common.enums.JsdRepayType;
-import com.ald.fanbei.api.common.enums.PayOrderSource;
-import com.ald.fanbei.api.common.enums.YesNoStatus;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -73,31 +65,26 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	private JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
 	@Resource
 	private JsdBorrowLegalOrderRepaymentDao jsdBorrowLegalOrderRepaymentDao;
-
 	@Resource
 	private JsdCollectionService jsdCollectionService;
-	
 	@Resource
 	private RedisTemplate<String, ?> redisTemplate;
 	@Resource
 	private GeneratorClusterNo generatorClusterNo;
 	@Resource
 	private TransactionTemplate transactionTemplate;
-
 	@Resource
 	private JsdNoticeRecordService jsdNoticeRecordService;
-
 	@Resource
 	private JsdCollectionBorrowService jsdCollectionBorrowService;
-
 	@Resource
 	private JsdBorrowCashOverdueLogService jsdBorrowCashOverdueLogService;
-
 	@Resource
 	private JsdOfflineOverdueRemoveDao jsdOfflineOverdueRemoveDao;
-
 	@Resource
 	private JsdOfflineOverdueRemoveService jsdOfflineOverdueRemoveService;
+	@Resource
+	JsdResourceService jsdResourceService;
 
 	@Override
 	public Map<String, Object> repay(RepayRequestBo bo, String bankPayType) {
@@ -120,6 +107,11 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	private Map<String, Object> doRepay(RepayRequestBo bo,String bankChannel) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HashMap<String, Object> bank = jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
+		JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.UPS_PAY_TYPE.getCode(),ResourceSecType.PAY_TYPE.getCode());
+		if(null != resourceDo && StringUtils.equals(resourceDo.getValue(),Constants.INVELOMENT_TYPE_PRE_ENV)){
+			bankChannel = BankPayChannel.XIEYI.getCode();
+			bank.put("bankChannel",bankChannel);
+		}
 		KuaijieRepayBo bizObject = new KuaijieRepayBo(bo.repaymentDo,bo);
 		if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 			resultMap = sendKuaiJieSms(bank, bo.tradeNo, bo.amount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(),
