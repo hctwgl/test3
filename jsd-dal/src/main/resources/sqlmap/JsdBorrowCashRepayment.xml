@@ -236,6 +236,9 @@
             <if test="gmtCreate != null">        
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},                
             </if>
+              <if test="payTime != null">
+                  pay_time = #{payTime,jdbcType=TIMESTAMP},
+              </if>
                 gmt_modified = NOW()         
         </set>    
         WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
