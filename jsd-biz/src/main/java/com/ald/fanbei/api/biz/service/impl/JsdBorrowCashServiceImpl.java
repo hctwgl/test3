@@ -408,7 +408,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
 
     @Override
-    public void dealBorrowSucc(Long cashId, String outTradeNo) throws IOException, DocumentException {
+    public void dealBorrowSucc(Long cashId, String outTradeNo,String tradeDate) throws IOException, DocumentException {
         JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
         if (cashDo == null) {
             throw new BizException("dealBorrowSucc, can't find refer borrowCash by id=" + cashId);
@@ -424,8 +424,14 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
         JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(cashId);
         JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(cashId);
-
-        Date currDate = new Date(System.currentTimeMillis());
+        Date currDate;
+        if(StringUtils.isBlank(tradeDate)){
+            currDate = new Date();
+        }else {
+            currDate = DateUtil.parseDate(tradeDate,"yyyy-MM-dd HH:mm:ss");
+            currDate = DateUtil.afterDay(currDate,new Date())?new Date():currDate;
+            currDate = DateUtil.beforeDay(currDate,cashDo.getGmtCreate())?new Date():currDate;
+        }
         Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(currDate);
         Date repaymentDate = DateUtil.addDays(arrivalEnd, Integer.valueOf(cashDo.getType()) - 1);
         cashDo.setGmtArrival(currDate);

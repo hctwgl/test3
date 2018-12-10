@@ -62,7 +62,7 @@ public class BorrowCashRepaymentBillApi implements JsdH5Handle {
         Map<String,Object> borrowBillDetail=new HashMap<>();
         
         String status = "AWAIT_REPAY";	// 待还款
-        if(cashDo.getRepayAmount().compareTo(BigDecimal.ZERO) > 0){
+        if(cashDo.getRepayAmount().compareTo(BigDecimal.ZERO) > 0 || orderCashDo.getRepaidAmount().compareTo(BigDecimal.ZERO) > 0){
         	status = "PART_REPAY";		// 部分还款
         }
         if(JsdBorrowCashStatus.FINISHED.name().equals(cashDo.getStatus())) {

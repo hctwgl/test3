@@ -6,7 +6,7 @@ package com.ald.fanbei.api.biz.bo.ups;
  *@version 
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
-public class UpsQuickPayReqBo extends UpsReqBo {
+public class UpsProtocolPayReqBo extends UpsProtocolReqBo{
 	/**
 	 * 
 	 */
@@ -19,13 +19,9 @@ public class UpsQuickPayReqBo extends UpsReqBo {
 	private String certType			;	//证件类型
 	private String certNo			;	//证件号
 	private String notifyUrl		;   //异步通知地址
-	private String expiredTime      ;   //交易过期时间
-	private String productName      ;   //商品名称
-	private String smsFlag;				//是否发送短信验证码（0：不发送短信1：发送短信）---1.7版本
 	private String bankCode;			//银行简码
 	private String purpose;				//分业务
-
-
+	private String returnUrl;			//同步返回地址
 	private String cvv2;
 	private String validDate;
 
@@ -103,28 +99,6 @@ public class UpsQuickPayReqBo extends UpsReqBo {
 		this.notifyUrl = notifyUrl;
 		this.put("notifyUrl", notifyUrl);
 	}
-	public String getExpiredTime() {
-		return expiredTime;
-	}
-	public void setExpiredTime(String expiredTime) {
-		this.expiredTime = expiredTime;
-		this.put("expiredTime", expiredTime);
-	}
-	public String getProductName() {
-		return productName;
-	}
-	public void setProductName(String productName) {
-		this.productName = productName;
-		this.put("productName", productName);
-	}
-
-	public String getSmsFlag() {
-		return smsFlag;
-	}
-	public void setSmsFlag(String smsFlag) {
-		this.smsFlag = smsFlag;
-		this.put("smsFlag", smsFlag);
-	}
 
 	public String getBankCode() {
 		return bankCode;
@@ -142,7 +116,13 @@ public class UpsQuickPayReqBo extends UpsReqBo {
 		this.put("purpose", purpose);
 	}
 
-
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
+		this.put("returnUrl", returnUrl);
+	}
 
 	
 	

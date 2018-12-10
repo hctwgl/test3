@@ -29,6 +29,7 @@ public class UpsCollectRespBo extends UpsRespBo implements Serializable{
 	private String tradeState	;  //交易状态
 	private String tradeDesc		;  //交易状态描述
 	private String tradeNo			;//交易号
+	private String needCode;		 //是否需要发送短信，10发，20不发
 	private Long tradeTime = new Date().getTime();
 	
 	public String getAmount() {
@@ -132,6 +133,12 @@ public class UpsCollectRespBo extends UpsRespBo implements Serializable{
 	}
 	public void setTradeTime(Long tradeTime) {
 	    this.tradeTime = tradeTime;
+	}
+	public String getNeedCode() {
+		return needCode;
+	}
+	public void setNeedCode(String needCode) {
+		this.needCode = needCode;
 	}
 	
 }

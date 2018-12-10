@@ -22,4 +22,6 @@ public interface JsdBorrowCashOverdueLogService extends ParentService<JsdBorrowC
    List<JsdBorrowCashOverdueLogDto> getListCashOverdueLogByBorrowId(Long borrowId, Date payTime);
 
    List<JsdBorrowCashOverdueLogDto> getListOrderCashOverdueLogByBorrowId(Long borrowId, Date payTime);
+
+   List<JsdBorrowCashOverdueLogDo> getListCashOverdueLog(Date payTime);
 }
