@@ -143,8 +143,6 @@ public class ConfirmSmsApi implements JsdH5Handle {
 				}
 			}catch (Exception e){
 				throw new BizException("ups kuaijie fail  case:", e);
-			}finally {
-				repaymentService.unLockBorrow(userId);
 			}
 			
 		}else if(SmsCodeType.DELAY.getCode().equals(type)){
