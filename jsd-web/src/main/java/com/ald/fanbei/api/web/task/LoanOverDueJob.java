@@ -388,11 +388,8 @@ public class LoanOverDueJob {
                 borrowDo.setBorrowId(borrowCashDo.getRid());
                 borrowDo.setReviewStatus(CommonReviewStatus.WAIT.name());
                 borrowDo.setStatus(CollectionBorrowStatus.NOTICED.name());
-                if(jsdCollectionBorrowDo != null){
-                    borrowDo.setRid(jsdCollectionBorrowDo.getRid());
-                    jsdCollectionBorrowService.updateById(borrowDo);
-                }else {
-                    jsdCollectionBorrowService.saveRecord(borrowDo);
+                if(jsdCollectionBorrowDo == null){
+                   jsdCollectionBorrowService.saveRecord(borrowDo);
                 }
         	}catch (Exception e) {
         		logger.error("calcuOverdueRecords.addCollectionBorrow error, borrowCashId = " + borrowCashDo.getRid(), e);
