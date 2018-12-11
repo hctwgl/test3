@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
 
+import java.util.List;
+
 /**
  * 极速贷Service
  * 
@@ -14,4 +16,6 @@ public interface JsdBorrowLegalOrderRepaymentService extends ParentService<JsdBo
     JsdBorrowLegalOrderRepaymentDo getLastByBorrowId(Long borrowId);
 
     JsdBorrowLegalOrderRepaymentDo getByTradeNoXgxy(String tradeNoXgxy);
+
+    List<JsdBorrowLegalOrderRepaymentDo> getRepayByBorrowId(Long borrowId);
 }

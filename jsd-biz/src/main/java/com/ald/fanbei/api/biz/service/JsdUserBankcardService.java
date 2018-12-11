@@ -15,7 +15,7 @@ import com.ald.fanbei.api.dal.domain.JsdUserBankcardDo;
  */
 public interface JsdUserBankcardService extends ParentService<JsdUserBankcardDo, Long>{
 
-	JsdUserBankcardDo getByBankNo(String bankNo);
+	JsdUserBankcardDo getByBankNo(String bankNo,Long userId);
 
     HashMap<String,Object> getBankByBankNoAndUserId(Long userId,String bankNo);
 
@@ -25,7 +25,7 @@ public interface JsdUserBankcardService extends ParentService<JsdUserBankcardDo,
 
     int updateUserBankcard(JsdUserBankcardDo userBankcardDo);
 
-    int getUserBankByCardNo(String cardNumber);
+    int getUserBankByCardNo(String cardNumber,Long userId);
 
     JsdUserBankcardDo getByBindNo(String bindNO);
 

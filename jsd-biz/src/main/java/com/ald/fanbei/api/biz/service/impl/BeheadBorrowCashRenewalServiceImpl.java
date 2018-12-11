@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.bo.KuaijieRepayBo;
 import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.dal.dao.*;
@@ -134,14 +135,19 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 		JsdBorrowCashRenewalDo renewalDo = bo.renewalDo;
 		JsdUserDo userDo = bo.userDo; 
 		
-		HashMap<String,Object> bank = jsdUserBankcardDao.getUserBankInfoByBankNo(bo.bankNo);
+		HashMap<String,Object> bank = jsdUserBankcardDao.getUserBankInfoByBankNo(bo.bankNo,userDo.getRid());
 		KuaijieJsdRenewalPayBo bizObject = new KuaijieJsdRenewalPayBo(bo.renewalDo, bo);
 	    
 	    if (BankPayChannel.KUAIJIE.getCode().equals(bo.bankChannel)) {// 快捷支付
 			map = sendKuaiJieSms(bank, renewalDo.getTradeNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(), 
 					userDo.getIdNumber(), JSON.toJSONString(bizObject), "beheadBorrowCashRenewalService",Constants.DEFAULT_PAY_PURPOSE, name, 
 				PayOrderSource.RENEW_JSD_V2.getCode());
-		} else {// 代扣
+		}else if(BankPayChannel.XIEYI.getCode().equals(bo.bankChannel)){//协议支付
+			map = sendProtocolSms(bank, renewalDo.getTradeNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(),
+					userDo.getIdNumber(), JSON.toJSONString(bizObject), "beheadBorrowCashRenewalService",Constants.DEFAULT_PAY_PURPOSE, name,
+					PayOrderSource.RENEW_JSD_V2.getCode());
+		}
+	    else {// 代扣
 			map = doUpsPay(bo.bankChannel, bank, renewalDo.getTradeNo(), renewalDo.getActualAmount(), userDo.getRid(), userDo.getRealName(),
 					userDo.getIdNumber(), "", JSON.toJSONString(bizObject),Constants.DEFAULT_PAY_PURPOSE, name, PayOrderSource.RENEW_JSD_V2.getCode());
 	    }
@@ -171,6 +177,14 @@ public class BeheadBorrowCashRenewalServiceImpl extends JsdUpsPayKuaijieServiceA
 		if(renewalPayBo!=null){
 			dealChangStatus(renewalNo, "", JsdRenewalDetailStatus.SMS.getCode(), renewalPayBo.getRenewal().getRid(), "", "");
 		} 
+	}
+
+	@Override
+	protected void protocolConfirmPre(String renewalNo, String bankChannel, String payBizObject) {
+		KuaijieJsdRenewalPayBo renewalPayBo = JSON.parseObject(payBizObject,KuaijieJsdRenewalPayBo.class);
+		if (renewalPayBo != null) {
+			dealChangStatus(renewalNo, "",JsdBorrowCashRepaymentStatus.PROCESS.getCode(), renewalPayBo.getRenewal().getRid(),"","");
+		}
 	}
 
 	@Override

@@ -86,6 +86,8 @@ public class GeneratorClusterNo extends AbstractThird {
 		StringBuffer orderSb = new StringBuffer();
 		if(BankPayChannel.KUAIJIE.getCode().equals(bankChannel)){
 			orderSb.append("kjhq");
+		}else if(BankPayChannel.XIEYI.getCode().equals(bankChannel)){
+			orderSb.append("xyhq");
 		}
 		orderSb.append(dateStr).append(String.format("%05d", bizCacheUtil.incr(Constants.CACHEKEY_REPAY_NO)));
 		return orderSb.toString();

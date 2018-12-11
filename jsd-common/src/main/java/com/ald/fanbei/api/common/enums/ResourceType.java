@@ -94,7 +94,8 @@ public enum ResourceType {
 	BORROWCASH_BANK_INFOS("BORROWCASH_BANK_INFOS", "极速贷债权对应开户行信息配置"),
 	BORROW_BANK_INFOS("BORROW_BANK_INFOS", "分期债权对应开户行信息配置"),
 	LOAN_BANK_INFOS("LOAN_BANK_INFOS", "白领贷债权对应开户行信息配置"),
-	XGJSD_BANK_INFOS("XGJSD_BANK_INFOS", "西瓜极速贷债权对应开户行信息配置")
+	XGJSD_BANK_INFOS("XGJSD_BANK_INFOS", "西瓜极速贷债权对应开户行信息配置"),
+	UPS_PAY_TYPE("UPS_PAY_TYPE", "兼容预发和线上ups支付方式")
 	;
 
 

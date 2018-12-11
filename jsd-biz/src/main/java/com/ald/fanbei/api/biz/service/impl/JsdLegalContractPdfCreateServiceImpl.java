@@ -146,7 +146,7 @@ public class JsdLegalContractPdfCreateServiceImpl implements JsdLegalContractPdf
     public String getProtocalLegalWithOutLenderByType(Integer debtType, String orderNo, String protocolUrl, String borrowerName, List<EdspayInvestorInfoBo> investorList) throws IOException {
         Map<String, Object> map = new HashMap();
         map.put("personKey", borrowerName);//借款人印章定位关键字
-        if (debtType == 4) {//白领贷借款
+        if (debtType == 4 ||debtType == 5) {//白领贷借款
             JsdBorrowCashDo loanDo = jsdBorrowCashService.getByBorrowNo(orderNo);
             if (loanDo == null) {
                 logger.error("白领贷借款信息不存在 => {}", orderNo);

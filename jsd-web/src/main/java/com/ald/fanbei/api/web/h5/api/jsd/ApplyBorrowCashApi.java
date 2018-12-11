@@ -85,7 +85,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         	
 	        jsdBorrowCashService.checkCanBorrow(context.getUserId(), cashReq.amount);
 	        
-            JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(cashReq.bankNo);
+            JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(cashReq.bankNo,context.getUserId());
            
             TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
 	    	trialBo.req = new TrialBeforeBorrowReq(cashReq.openId, cashReq.amount, cashReq.term, cashReq.unit);

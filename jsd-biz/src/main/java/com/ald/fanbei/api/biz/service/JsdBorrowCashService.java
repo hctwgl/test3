@@ -62,7 +62,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     void resolve(TrialBeforeBorrowBo bo);
 
-    void dealBorrowSucc(Long cashId, String outTradeNo) throws IOException, DocumentException;
+    void dealBorrowSucc(Long cashId, String outTradeNo,String tradeDate) throws IOException, DocumentException;
 
     void dealBorrowFail(Long cashId, String outTradeNo, String failMsg);
 

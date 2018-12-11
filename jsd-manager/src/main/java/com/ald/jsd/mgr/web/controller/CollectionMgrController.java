@@ -169,7 +169,7 @@ public class CollectionMgrController extends BaseController{
     				operator, params.reviewStatus, reviewRemark);
     		transactionTemplate.execute(status -> {
 				jsdCollectionBorrowService.updateById(collBorrowDoForMod);
-	    		collectionNoticeUtil.collectReconciliateNotice(MapUtils.cstStrKeyMap("dataId", legalOrderDo.getRid(), "reviewResult", params.reviewStatus));
+	    		collectionNoticeUtil.collectReconciliateNotice(MapUtils.cstStrKeyMap("dataId", legalOrderDo.getRid(), "reviewResult", params.reviewStatus, "remark", params.reviewRemark));
 				return 1;
     		});
     	}else if(CommonReviewStatus.PASS.name().equals(params.reviewStatus)) {
@@ -190,7 +190,7 @@ public class CollectionMgrController extends BaseController{
 			if(resultValue == 1){
 				jsdNoticeRecordService.dealBorrowNoticed(cashDo, XgxyBorrowNoticeBo.gen(cashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.FINISHED.name(), "审核强制结清"));
 				cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
-				collectionNoticeUtil.collectReconciliateNotice(MapUtils.cstStrKeyMap("dataId", legalOrderDo.getRid(), "reviewResult", params.reviewStatus));
+				collectionNoticeUtil.collectReconciliateNotice(MapUtils.cstStrKeyMap("dataId", legalOrderDo.getRid(), "reviewResult", params.reviewStatus, "remark", params.reviewRemark));
 			}
     	}
     	

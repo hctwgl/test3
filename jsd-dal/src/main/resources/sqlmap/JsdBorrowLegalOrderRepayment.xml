@@ -354,4 +354,12 @@
         LIMIT 1
     </select>
 
+    <select id="getRepayByBorrowId" resultType="JsdBorrowLegalOrderRepaymentDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM jsd_borrow_legal_order_repayment
+        WHERE is_delete=0
+        AND borrow_id=#{borrowId}
+        AND status <![CDATA[!= ]]> 'N'
+    </select>
 </mapper>
