@@ -122,12 +122,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			String tradeNo = generatorClusterNo.getRepaymentBorrowCashNo(bankPayType);
 			bo.tradeNo = tradeNo;
             generateRepayRecords(bo);
-            try {
-				Thread.sleep(30000);
-			}catch (Exception w){
-
-			}
-
 			return doRepay(bo,bankPayType);
 		}catch (Exception e) {
 			logger.info("repay method error", e);
