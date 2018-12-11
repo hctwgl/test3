@@ -25,7 +25,7 @@ import com.alibaba.fastjson.JSON;
 @Component("collectionNoticeUtil")
 public class CollectionNoticeUtil extends AbstractThird {
 
-	private final String salt = "jsdpluscuishou";
+	private final String salt = "jsdcuishou";
 
 	//收发路径
 	private static String getReportUrl() {
@@ -81,9 +81,9 @@ public class CollectionNoticeUtil extends AbstractThird {
 	 */
 	public boolean consumerRepayment(Map<String, String> reqBo) {
 		try {
-			String url = getCollectUrl() + "/report/thirdRepayment";
+			String url = getReportUrl() + "/api/ald/collect/v1/third/repayment2";
 			String reqResult = HttpUtil.post(url, reqBo);
-			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 				return true;
 			}
 			return false;
@@ -121,18 +121,19 @@ public class CollectionNoticeUtil extends AbstractThird {
 	 * @param data 包含{dataId-即商品订单orderId ，reviewResult: PASS通过，REFUSE拒绝}
 	 * @return
 	 */
-	public void collectReconciliateNotice(Map<String, String> data) {
+	public boolean collectReconciliateNotice(Map<String, String> data) {
 		try {
 			String dataId = data.get("dataId").toString();
+			data.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN));
 			byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
 			String sign = DigestUtil.encodeHex(pd);
 			data.put("sign",sign);
-			String url = getCollectUrl() + "/api/collect/third/thirdReconciliateCheck";
+			String url = getReportUrl() + "/api/ald/collect/v1/third/PzCheck";
 			String reqResult =  HttpUtil.post(url, data);
-			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
-			}else {
-				throw new BizException("collectReconciliateNotice response fail ");
+			if (StringUtil.equals(reqResult.toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
+				return true;
 			}
+			return false;
 		} catch (Exception e) {
 			logger.error("collectReconciliateNotice error:", e);
 			throw new BizException("collectReconciliateNotice fail Exception is " + e + ",consumerRepayment send again");
@@ -150,7 +151,7 @@ public class CollectionNoticeUtil extends AbstractThird {
 			byte[] pd = DigestUtil.digestString(dataId.getBytes("UTF-8"), salt.getBytes(), Constants.DEFAULT_DIGEST_TIMES, Constants.SHA1);
 			String sign = DigestUtil.encodeHex(pd);
 			data.put("sign",sign);
-			String url = getCollectUrl() + "/api/collect/third/thridRepaymentCheck";
+			String url = getReportUrl() + "/api/collect/third/thridRepaymentCheck";
 			String reqResult = HttpUtil.post(url, data);
 			if (StringUtil.equals(JSON.parseObject(reqResult).get("data").toString().toUpperCase(), JsdNoticeStatus.SUCCESS.code)) {
 			}else {

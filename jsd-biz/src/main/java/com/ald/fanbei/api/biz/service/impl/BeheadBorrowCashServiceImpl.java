@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.third.util.JobThreadPoolUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -80,7 +82,8 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
     JsdBorrowLegalOrderInfoDao jsdBorrowLegalOrderInfoDao;
     @Resource
     JsdUserDao jsdUserDao;
-
+    @Resource
+    JobThreadPoolUtils jobThreadPoolUtils;
     @Resource
     XgxyUtil xgxyUtil;
     @Resource
@@ -221,8 +224,8 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         resp.interestAmount = interestAmount.toString();
         resp.serviceRate = borrowRateInfo.serviceRate.setScale(4, RoundingMode.HALF_UP).toString();
         resp.serviceAmount = serviceAmount.toString();
-        resp.overdueRate = borrowOverdueRate.divide(new BigDecimal(360)).setScale(4, RoundingMode.HALF_UP).toString();
-        
+        resp.overdueRate = borrowOverdueRate.divide(new BigDecimal(360),4, RoundingMode.HALF_UP).setScale(4, RoundingMode.HALF_UP).toString();
+        resp.overdueYearRate = borrowOverdueRate.toString();
         //商品价格
         resp.totalDiffFee = actualOrderAmount.toPlainString();
         
@@ -256,7 +259,7 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         afBorrowCashDo.setPoundageAmount(new BigDecimal(trialResp.serviceAmount));
         afBorrowCashDo.setPoundageRate(new BigDecimal(trialResp.serviceRate));
         afBorrowCashDo.setInterestRate(new BigDecimal(trialResp.interestRate));
-        afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueRate).multiply(new BigDecimal(360)));
+        afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueYearRate));
         afBorrowCashDo.setRiskDailyRate(trialBo.riskDailyRate);
         afBorrowCashDo.setProductNo(trialReq.productNo);
         afBorrowCashDo.setTradeNoXgxy(cashReq.borrowNo);
@@ -287,8 +290,8 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
     }
     
 	
-	private void transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo) {
-    	transactionTemplate.execute(new TransactionCallback<String>() {
+	private String transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo) {
+    	String result = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus ts) {
             	jsdBorrowCashDao.updateById(cashDo);
@@ -296,11 +299,12 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
                 return "success";
             }
         });
+    	return result;
     }
 
 	
 	@Override
-	public void dealBorrowSucc(Long cashId, String outTradeNo) {
+	public void dealBorrowSucc(Long cashId, String outTradeNo,String tradeDate) {
 		JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
 		if(cashDo == null) {
 			throw new BizException("behead dealBorrowSucc, can't find refer borrowCash by id=" + cashId);
@@ -315,8 +319,14 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
 		}
 		
 		JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(cashId);
-		
-		Date currDate = new Date(System.currentTimeMillis());
+        Date currDate;
+        if(StringUtils.isBlank(tradeDate)){
+            currDate = new Date();
+        }else {
+            currDate = DateUtil.parseDate(tradeDate,"yyyy-MM-dd HH:mm:ss");
+            currDate = DateUtil.afterDay(currDate,new Date())?new Date():currDate;
+            currDate = DateUtil.beforeDay(currDate,cashDo.getGmtCreate())?new Date():currDate;
+        }
 		Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(currDate);
         Date repaymentDate = DateUtil.addDays(arrivalEnd, Integer.valueOf(cashDo.getType()) - 1);
 		cashDo.setGmtArrival(currDate);
@@ -325,8 +335,11 @@ public class BeheadBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCash
         cashDo.setTradeNoUps(outTradeNo);
         
         orderDo.setStatus(JsdBorrowLegalOrderStatus.AWAIT_DELIVER.name());
-        this.transUpdate(cashDo, orderDo);
-        
+        String result = this.transUpdate(cashDo, orderDo);
+        logger.info(" dealBorrowSucc result = " + result);
+        if(StringUtils.equals(result,"success")){
+            jobThreadPoolUtils.platformServiceBeheadProtocol(cashDo.getTradeNoXgxy());
+        }
         jsdNoticeRecordService.dealBorrowNoticed(cashDo, this.buildXgxyPay(cashDo, "放款成功", XgxyBorrowNotifyStatus.SUCCESS.name()));
 	}
 

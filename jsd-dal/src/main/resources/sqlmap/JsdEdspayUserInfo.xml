@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_edspay_user_info表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.JsdEdspayUserInfoDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,user_name,type,type_id,amount,edspay_user_card_id,protocol_url,mobile 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="userName != null">
+            AND user_name = #{userName,jdbcType=VARCHAR}
+        </if>
+        <if test="type != null">
+            AND type = #{type,jdbcType=INTEGER}
+        </if>
+        <if test="typeId != null">
+            AND type_id = #{typeId,jdbcType=INTEGER}
+        </if>
+        <if test="amount != null">
+            AND amount = #{amount,jdbcType=DECIMAL}
+        </if>
+        <if test="edspayUserCardId != null">
+            AND edspay_user_card_id = #{edspayUserCardId,jdbcType=VARCHAR}
+        </if>
+        <if test="protocolUrl != null">
+            AND protocol_url = #{protocolUrl,jdbcType=VARCHAR}
+        </if>
+        <if test="mobile != null">
+            AND mobile = #{mobile,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdEdspayUserInfoDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO jsd_edspay_user_info
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="userName != null">        
+	            user_name,
+	        </if>
+	        <if test="type != null">        
+	            type,
+	        </if>
+	        <if test="typeId != null">        
+	            type_id,
+	        </if>
+	        <if test="amount != null">        
+	            amount,
+	        </if>
+	        <if test="edspayUserCardId != null">        
+	            edspay_user_card_id,
+	        </if>
+	        <if test="protocolUrl != null">        
+	            protocol_url,
+	        </if>
+	        <if test="mobile != null">        
+	            mobile,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="userName != null" >
+		       #{userName,jdbcType=VARCHAR},
+		    </if>
+		    <if test="type != null" >
+		       #{type,jdbcType=INTEGER},
+		    </if>
+		    <if test="typeId != null" >
+		       #{typeId,jdbcType=INTEGER},
+		    </if>
+		    <if test="amount != null" >
+		       #{amount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="edspayUserCardId != null" >
+		       #{edspayUserCardId,jdbcType=VARCHAR},
+		    </if>
+		    <if test="protocolUrl != null" >
+		       #{protocolUrl,jdbcType=VARCHAR},
+		    </if>
+		    <if test="mobile != null" >
+		       #{mobile,jdbcType=VARCHAR},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdEdspayUserInfoDo">
+        UPDATE jsd_edspay_user_info
+          <set>
+            <if test="userName != null">        
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">        
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="typeId != null">        
+                type_id = #{typeId,jdbcType=INTEGER},
+            </if>
+            <if test="amount != null">        
+                amount = #{amount,jdbcType=DECIMAL},
+            </if>
+            <if test="edspayUserCardId != null">        
+                edspay_user_card_id = #{edspayUserCardId,jdbcType=VARCHAR},
+            </if>
+            <if test="protocolUrl != null">        
+                protocol_url = #{protocolUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">        
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            gmt_modified = NOW()
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.JsdEdspayUserInfoDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_edspay_user_info
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdEdspayUserInfoDo" parameterType="com.ald.fanbei.api.dal.domain.JsdEdspayUserInfoDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_edspay_user_info
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdEdspayUserInfoDo" parameterType="com.ald.fanbei.api.dal.domain.JsdEdspayUserInfoDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_edspay_user_info
+        <include refid="commonCondition"/>
+    </select>
+
+    <select id="getInfoByTypeAndTypeId" resultType="com.ald.fanbei.api.dal.domain.JsdEdspayUserInfoDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_edspay_user_info
+        WHERE is_delete = 0 AND type= #{type} and type_id = #{typeId}
+        LIMIT 0,1
+    </select>
+    
+</mapper>

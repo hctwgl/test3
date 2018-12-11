@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.alibaba.fastjson.JSON;
 import org.springframework.stereotype.Component;
 
 import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
@@ -33,18 +34,17 @@ public class GetProfitApi implements JsdH5Handle {
     public JsdH5HandleResponse process(Context context) {
     	JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
 
-
+		JSONObject dataMap = context.getDataMap();
     	TrialBeforeBorrowBo bo = new TrialBeforeBorrowBo();
-    	bo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(context.getOpenId());
+    	bo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(context.getOpenId(),dataMap.getString("term"),dataMap.getString("unit"));
     	bo.userId = context.getUserId();
     	
-    	JSONObject dataMap = context.getDataMap();
+
     	String type = dataMap.getString("type");
     	String tyingType = dataMap.getString("ni");
     	if("BORROW".equals(type)) {
     		bo.req = new TrialBeforeBorrowReq(context.getOpenId(), new BigDecimal(dataMap.getString("amount")),
     				dataMap.getString("term"), dataMap.getString("unit"));
-    		
     		if(BorrowVersionType.SELL.name().equals(tyingType)){
         		jsdBorrowCashService.resolve(bo);	// 赊销
         	}else{

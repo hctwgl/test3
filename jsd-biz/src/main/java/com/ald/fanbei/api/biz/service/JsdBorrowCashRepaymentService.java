@@ -9,6 +9,8 @@ import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
+
 /**
  * 极速贷Service
  * 
@@ -26,7 +28,7 @@ public interface JsdBorrowCashRepaymentService{
 
     void dealRepaymentFail(String outTradeNo, String tradeNo,boolean isNeedMsgNotice,String code,String errorMsg);
 
-    void dealRepaymentSucess(String tradeNo, String outTradeNo);
+    void dealRepaymentSucess(String tradeNo, String outTradeNo,String tradeDate);
 
     JsdBorrowCashRepaymentDo  getByTradeNoXgxy(String tradeNoXgxy);
 
@@ -49,5 +51,13 @@ public interface JsdBorrowCashRepaymentService{
      */
     void offlineRepay(JsdBorrowCashDo jsdBorrowCashDo, JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo, String totalAmount, String repaymentNo, Long userId, JsdRepayType type, String channel, Date repayTime, String orderNo, String dataId, String remark);
 
+    List<JsdBorrowCashRepaymentDo> getRepayByBorrowId(Long borrowId);
 
+    /**
+     * 获取结算系统实收数据
+     * @Param list {@link FinaneceDataDo} 对象
+     *@return  <code>List<code/>
+     *
+     * **/
+    List<FinaneceDataDo> getRepayData();
 }

@@ -58,11 +58,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
     @Resource
     JsdBorrowCashService jsdBorrowCashService;
     @Resource
-    JsdResourceService jsdResourceService;
-    @Resource
     JsdUserBankcardService jsdUserBankcardService;
-    @Resource
-    JsdUserService jsdUserService;
     @Resource
     JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
     @Resource
@@ -89,12 +85,12 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         	
 	        jsdBorrowCashService.checkCanBorrow(context.getUserId(), cashReq.amount);
 	        
-            JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(cashReq.bankNo);
+            JsdUserBankcardDo mainCard = jsdUserBankcardService.getByBankNo(cashReq.bankNo,context.getUserId());
            
             TrialBeforeBorrowBo trialBo = new TrialBeforeBorrowBo();
 	    	trialBo.req = new TrialBeforeBorrowReq(cashReq.openId, cashReq.amount, cashReq.term, cashReq.unit);
 			trialBo.userId = context.getUserId();
-			trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(cashReq.openId);
+			trialBo.riskDailyRate = jsdBorrowCashService.getRiskDailyRate(cashReq.openId,cashReq.term,cashReq.unit);
         	
         	if("Y".equals(cashReq.isTying) && BorrowVersionType.BEHEAD.name().equals(cashReq.tyingType)){
         		// 砍头模式
@@ -176,7 +172,7 @@ public class ApplyBorrowCashApi implements JsdH5Handle {
         afBorrowCashDo.setPoundageAmount(new BigDecimal(trialResp.serviceAmount));
         afBorrowCashDo.setPoundageRate(new BigDecimal(trialResp.serviceRate));
         afBorrowCashDo.setInterestRate(new BigDecimal(trialResp.interestRate));
-        afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueRate).multiply(new BigDecimal(360)));
+        afBorrowCashDo.setOverdueRate(new BigDecimal(trialResp.overdueYearRate));
         afBorrowCashDo.setRiskDailyRate(trialBo.riskDailyRate);
         afBorrowCashDo.setProductNo(trialReq.productNo);
         afBorrowCashDo.setTradeNoXgxy(cashReq.borrowNo);

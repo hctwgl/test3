@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,9 +11,12 @@ import com.ald.fanbei.api.biz.bo.jsd.TrialBeforeBorrowBo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
+import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
 import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 import com.ald.fanbei.api.dal.query.LoanQuery;
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import com.alibaba.fastjson.JSONArray;
+import com.itextpdf.text.DocumentException;
 
 /**
  * 极速贷Service
@@ -34,9 +38,9 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     String getCurrentLastBorrowNo(String orderNoPre);
 
-    void transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo);
+    String transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo) throws IOException, DocumentException;
 
-    BigDecimal getRiskDailyRate(String openId);
+    BigDecimal getRiskDailyRate(String openId,String days,String unit);
 
     /**
      * 计算账单总应还额
@@ -58,7 +62,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     void resolve(TrialBeforeBorrowBo bo);
 
-    void dealBorrowSucc(Long cashId, String outTradeNo);
+    void dealBorrowSucc(Long cashId, String outTradeNo,String tradeDate) throws IOException, DocumentException;
 
     void dealBorrowFail(Long cashId, String outTradeNo, String failMsg);
 
@@ -87,9 +91,15 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
 
     /**
-     * 获取当前的逾期借款
+     * 获取还款日在此之前借款
      */
     List<JsdBorrowCashDo> getBorrowCashByBeforeToday(int nowPage, int pageSize, Date todayLast);
+
+
+    /**
+     * 获取当前的还款日在此之后借款
+     */
+    List<JsdBorrowCashDo> getBorrowCashRepayByUserIds(String userIds, Date todayLast);
 
     /**
      * 获取当前的测试逾期借款
@@ -195,4 +205,34 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      * @return
      */
     List<JsdProctocolBo> getRenewalPlusProtocols(String openId, String tradeNoXgxy, String previewJsonStr);
+
+    /*-------------------------------------------------------第三方接口-----------------------------------------------------------------------------*/
+
+    /**
+     * 如果最近一笔借款为处理中状态，则再向回追溯一条finish的记录.否则查最新的借款为finish的一条记录
+     * @return
+     */
+    List<JsdBorrowCashDo> getBorrowCashsInfos(Long userId);
+
+    JsdCashDto getGoodsInfoByBorrowId(Long borrowId);
+
+    /**
+     * 获取结算系统实付数据
+     * @Param list {@link FinaneceDataDo} 对象
+     *@return  <code>List<code/>
+     *
+     * **/
+    List<FinaneceDataDo> getPaymentDetail();
+
+    /**
+     * 获取结算系统应收数据
+     * @Param list {@link FinaneceDataDo} 对象
+     *@return  <code>List<code/>
+     *
+     * **/
+    List<FinaneceDataDo> getPromiseIncomeDetail();
+
+    JsdBorrowCashDo getBorrowByRid(Long id);
+
+
 }

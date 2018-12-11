@@ -60,7 +60,7 @@ public class JsdApplyBindBankCardMsgApi implements JsdH5Handle {
         logger.info("jsdApplyBindBankCardMsgApi context=" + JSON.toJSONString(context));
 
         //判断是否已经被绑定
-        if (jsdUserBankcardService.getUserBankByCardNo(bankNo) > 0) {
+        if (jsdUserBankcardService.getUserBankByCardNo(bankNo,userid) > 0) {
             return new JsdH5HandleResponse(1545, BizExceptionCode.DSED_BANK_BINDED.getDesc());
         }
         //是否是设主卡

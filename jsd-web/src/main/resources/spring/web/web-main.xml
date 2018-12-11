@@ -99,6 +99,7 @@
                 <entry key="/third/eca/v1/getBorrowFeeDetail" value-ref="trialBeforeBorrowApi" />
 				<entry key="/third/eca/v1/pushBorrow" value-ref="applyBorrowCashApi" />
 				<entry key="/third/eca/v1/getProfit" value-ref="getProfitApi" />
+				<entry key="/third/eca/v1/untieBankCard" value-ref="untieBankCardApi" />
 				<!-- 协议 -->
 				<entry key="/third/eca/v1/getProtocolInfo" value-ref="getLoanProtocolApi" />
                 

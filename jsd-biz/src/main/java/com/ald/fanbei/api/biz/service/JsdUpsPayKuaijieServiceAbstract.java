@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ald.fanbei.api.common.enums.PayOrderSource;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,8 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 
 	protected abstract void kuaijieConfirmPre(String payTradeNo, String bankChannel, String payBizObject);
 
+	protected abstract void protocolConfirmPre(String payTradeNo, String bankChannel, String payBizObject);
+
 	protected abstract Map<String, Object> upsPaySuccess(String payTradeNo, String bankChannel, String payBizObject, UpsCollectRespBo respBo, String cardNo);
 
 	protected abstract void roolbackBizData(String payTradeNo, String payBizObject, String errorMsg, UpsCollectRespBo respBo);
@@ -54,7 +57,7 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 		String payBizObject = getPayBizObject(payTradeNo);
 		if (upsCollectBo != null && StringUtils.isNotBlank(payBizObject)) {
 			// 调用支付业务
-			return doUpsPay(BankPayChannel.KUAIJIE.getCode(), upsCollectBo.getBank(), payTradeNo, upsCollectBo.getAmount(), Long.valueOf(upsCollectBo.getUserNo()),
+			return doUpsPay(upsCollectBo.getBankPayType(), upsCollectBo.getBank(), payTradeNo, upsCollectBo.getAmount(), Long.valueOf(upsCollectBo.getUserNo()),
 					upsCollectBo.getRealName(), upsCollectBo.getCertNo(), smsCode, payBizObject, upsCollectBo.getPurpose(), upsCollectBo.getRemark(),
 					upsCollectBo.getMerPriv());
 
@@ -80,6 +83,7 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 										   String realName, String idNumber, String smsCode, String payBizObject, String purpose, String remark, String merPriv) {
 		// 获取用户绑定银行卡信息
 		// 调用ups进行支付
+		logger.info("protocolConfirmPre payTradeNo = "+ payTradeNo + " ,bankPayType = " + bankPayType + ",payBizObject = " + payBizObject );
 		UpsCollectRespBo respBo = null;
 		if(StringUtil.equals(RepayType.WITHHOLD.getCode(), bank.get("bankChannel").toString()) || StringUtil.equals(RepayType.WITHHOLD.getCode(), bankPayType)){
 			daikouConfirmPre(payTradeNo, bankPayType, payBizObject);
@@ -88,6 +92,9 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 		}else if(StringUtil.equals(RepayType.KUAIJIE.getCode(), bank.get("bankChannel").toString())){
 			kuaijieConfirmPre(payTradeNo, bankPayType, payBizObject);
 			respBo = upsUtil.quickPayConfirm(payTradeNo, String.valueOf(userId), smsCode, "02", "REPAYMENT"); // TODO
+		}else if(StringUtil.equals(RepayType.XIEYI.getCode(), bank.get("bankChannel").toString()) || StringUtil.equals(RepayType.XIEYI.getCode(), bankPayType)){
+			protocolConfirmPre(payTradeNo, bankPayType, payBizObject);
+			respBo = upsUtil.protocolPayConfirm(payTradeNo, String.valueOf(userId), smsCode, "02", "REPAYMENT");
 		}
 		// 处理支付结果
 		logger.info(" fail respBo = "+respBo);
@@ -135,13 +142,12 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 		if (!respBo.isSuccess()) {
 			// 获取短信码失败
 			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
-//			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
 			clearCache(payTradeNo);
 			throw new BizException(BizExceptionCode.getByCode(errorMsg.name()));
 		} else {
 			// 添加数据到redis缓存
 			UpsCollectBo upsCollectBo = new UpsCollectBo(bank, payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(),
-					bank.get("bankCardNumber").toString(), idNumber, Constants.DEFAULT_PAY_PURPOSE, remark, "02", merPriv, BankPayChannel.KUAIJIE.getCode(),
+					bank.get("bankCardNumber").toString(), idNumber, Constants.DEFAULT_PAY_PURPOSE, remark, "02", merPriv, BankPayChannel.XIEYI.getCode(),
 					"jsd_loan");
 			// 支付请求对应的处理bean
 			bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + payTradeNo, beanName, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
@@ -163,6 +169,65 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 	}
 
 	/**
+	 * 协议支付
+	 * @param bank
+	 * @param payTradeNo
+	 * @param actualAmount
+	 * @param userId
+	 * @param realName
+	 * @param idNumber
+	 * @param payBizObject
+	 * @param beanName
+	 * @param purpose
+	 * @param remark
+	 * @param merPriv
+	 * @return
+	 */
+	protected Map<String, Object> sendProtocolSms(HashMap<String,Object> bank, String payTradeNo, BigDecimal actualAmount, Long userId, String realName,
+												 String idNumber, String payBizObject, String beanName, String purpose, String remark, String merPriv) {
+		// 申请发送支付确认短信
+		UpsCollectRespBo respBo = (UpsCollectRespBo) upsUtil.protocolPay(payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(),
+				bank.get("bankCode").toString(), bank.get("bankCardNumber").toString(), idNumber, purpose, remark, "02", merPriv, "jsd_loan",
+				bank.get("safeCode").toString(), bank.get("validDate").toString());
+
+		if(!respBo.isSuccess()){
+			// 提交是否需要短信失败
+			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
+			clearCache(payTradeNo);
+			throw new BizException(BizExceptionCode.getByCode(errorMsg.name()));
+		}else {
+			if(StringUtils.equals(respBo.getNeedCode(),"10")){//需要短信
+				// 添加数据到redis缓存
+				UpsCollectBo upsCollectBo = new UpsCollectBo(bank, payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(),
+						bank.get("bankCardNumber").toString(), idNumber, Constants.DEFAULT_PAY_PURPOSE, remark, "02", merPriv, BankPayChannel.KUAIJIE.getCode(),
+						"jsd_loan");
+				// 支付请求对应的处理bean
+				bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + payTradeNo, beanName, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
+				// 支付请求数据
+				bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_HEADER + payTradeNo, JSON.toJSONString(upsCollectBo), UpsUtil.KUAIJIE_EXPIRE_SECONDS);
+				// 支付响应数据
+				bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_RESPONSE_HEADER + payTradeNo, JSON.toJSONString(respBo), UpsUtil.KUAIJIE_EXPIRE_SECONDS);
+				// 支付相关业务数据（由子类业务处理）
+				bizCacheUtil.saveObject(UpsUtil.KUAIJIE_TRADE_OBJECT_HEADER + payTradeNo, payBizObject, UpsUtil.KUAIJIE_EXPIRE_SECONDS);
+
+				quickPaySendSmmSuccess(payTradeNo, payBizObject, respBo);
+				//发送短信
+				Map<String, Object> resultMap = new HashMap<String, Object>();
+				resultMap.put("repaySMS", "Y");
+				return resultMap;
+			}else {
+				//不需要短信
+				protocolConfirmPre(payTradeNo, bank.get("bankChannel").toString(), payBizObject);
+				Map<String, Object> resultMap = new HashMap<String, Object>();
+				resultMap.put("repaySMS", "N");
+				return resultMap;
+			}
+		}
+	}
+
+
+
+	/**
 	 * 获取缓存的支付相关信息
 	 *
 	 * @param payTradeNo
@@ -177,41 +242,8 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 		}
 		return null;
 	}
-//
-//	/**
-//	 * 获取缓存的支付结果信息
-//	 *
-//	 * @param payTradeNo
-//	 * @return
-//	 * @author gaojb
-//	 * @Time 2018年4月3日 下午2:34:33
-//	 */
-//	protected UpsCollectRespBo getTradeResponse(String payTradeNo) {
-//		// 支付响应数据
-//		Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_RESPONSE_HEADER + payTradeNo);
-//		if (cacheObject != null) {
-//			return (UpsCollectRespBo) JSON.parseObject(cacheObject.toString(), UpsCollectRespBo.class);
-//		}
-//		return null;
-//	}
-//
-//	/**
-//	 * 获取缓存的业务数据
-//	 *
-//	 * @param payTradeNo
-//	 * @return
-//	 * @author gaojb
-//	 * @Time 2018年4月3日 下午2:34:55
-//	 */
-//	protected <T> T getPayBizObject(String payTradeNo, Class<T> clazz) {
-//		// 支付相关业务数据（由子类业务处理）
-//		Object cacheObject = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_OBJECT_HEADER + payTradeNo);
-//		if (cacheObject != null) {
-//			return JSON.parseObject(cacheObject.toString(), clazz);
-//		}
-//		return null;
-//	}
-//
+
+
 	/**
 	 * 获取缓存的业务数据
 	 *

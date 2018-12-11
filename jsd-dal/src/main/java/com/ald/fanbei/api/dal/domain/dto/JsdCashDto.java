@@ -18,151 +18,59 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 public class JsdCashDto extends JsdBorrowCashDo {
 
 	private static final long serialVersionUID = -3162832676757115210L;
-	
-	//实时推送的都市e贷债权相关信息
-	private String orderNo;//借款订单号
-	private Long userId;//借款人Id
-	private String realName;//借款人姓名
-	private String cardId;//借款人身份证号
-	private String mobile;//借款人手机号码
-	private String bankNo;//银行卡号
-	private String cardName;//银行卡所属行
-	private BigDecimal amount;//用户实际到账金额
-	private Date loanStartTime;//借款开始时间戳（单位：秒）
-    private String loanRemark;//借款用途
-    private String repayRemark;//还款来源
-	/**
-	 * @return the orderNo
-	 */
+
+	private String orderNo;// 商品订单号
+	private BigDecimal priceAmount;//订单价格
+	private String goodsName;//商品名称
+	private String deliveryUser;//收件人姓名
+	private String deliveryPhone;//收货手机号
+	private String address;//收货地址
+
 	public String getOrderNo() {
 		return orderNo;
 	}
-	/**
-	 * @param orderNo the orderNo to set
-	 */
+
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
 	}
-	/**
-	 * @return the userId
-	 */
-	public Long getUserId() {
-		return userId;
+
+	public BigDecimal getPriceAmount() {
+		return priceAmount;
 	}
-	/**
-	 * @param userId the userId to set
-	 */
-	public void setUserId(Long userId) {
-		this.userId = userId;
+
+	public void setPriceAmount(BigDecimal priceAmount) {
+		this.priceAmount = priceAmount;
 	}
-	/**
-	 * @return the realName
-	 */
-	public String getRealName() {
-		return realName;
+
+	public String getGoodsName() {
+		return goodsName;
 	}
-	/**
-	 * @param realName the realName to set
-	 */
-	public void setRealName(String realName) {
-		this.realName = realName;
+
+	public void setGoodsName(String goodsName) {
+		this.goodsName = goodsName;
 	}
-	/**
-	 * @return the cardId
-	 */
-	public String getCardId() {
-		return cardId;
+
+	public String getDeliveryUser() {
+		return deliveryUser;
 	}
-	/**
-	 * @param cardId the cardId to set
-	 */
-	public void setCardId(String cardId) {
-		this.cardId = cardId;
+
+	public void setDeliveryUser(String deliveryUser) {
+		this.deliveryUser = deliveryUser;
 	}
-	/**
-	 * @return the mobile
-	 */
-	public String getMobile() {
-		return mobile;
+
+	public String getDeliveryPhone() {
+		return deliveryPhone;
 	}
-	/**
-	 * @param mobile the mobile to set
-	 */
-	public void setMobile(String mobile) {
-		this.mobile = mobile;
+
+	public void setDeliveryPhone(String deliveryPhone) {
+		this.deliveryPhone = deliveryPhone;
 	}
-	/**
-	 * @return the bankNo
-	 */
-	public String getBankNo() {
-		return bankNo;
+
+	public String getAddress() {
+		return address;
 	}
-	/**
-	 * @param bankNo the bankNo to set
-	 */
-	public void setBankNo(String bankNo) {
-		this.bankNo = bankNo;
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
-	/**
-	 * @return the cardName
-	 */
-	public String getCardName() {
-		return cardName;
-	}
-	/**
-	 * @param cardName the cardName to set
-	 */
-	public void setCardName(String cardName) {
-		this.cardName = cardName;
-	}
-	/**
-	 * @return the loanStartTime
-	 */
-	public Date getLoanStartTime() {
-		return loanStartTime;
-	}
-	/**
-	 * @param loanStartTime the loanStartTime to set
-	 */
-	public void setLoanStartTime(Date loanStartTime) {
-		this.loanStartTime = loanStartTime;
-	}
-	/**
-	 * @return the loanRemark
-	 */
-	public String getLoanRemark() {
-		return loanRemark;
-	}
-	/**
-	 * @param loanRemark the loanRemark to set
-	 */
-	public void setLoanRemark(String loanRemark) {
-		this.loanRemark = loanRemark;
-	}
-	/**
-	 * @return the repayRemark
-	 */
-	public String getRepayRemark() {
-		return repayRemark;
-	}
-	/**
-	 * @param repayRemark the repayRemark to set
-	 */
-	public void setRepayRemark(String repayRemark) {
-		this.repayRemark = repayRemark;
-	}
-	/**
-	 * @return the amount
-	 */
-	public BigDecimal getAmount() {
-		return amount;
-	}
-	/**
-	 * @param amount the amount to set
-	 */
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
-	}
-	
-    
 }

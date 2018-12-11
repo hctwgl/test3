@@ -320,7 +320,7 @@
 
     <update id="updateStatus" parameterType="java.lang.String" >
         UPDATE jsd_borrow_legal_order_repayment SET gmt_modified = NOW(), status='P'
-        WHERE trade_no=#{tradeNo}
+        WHERE trade_no=#{tradeNo} and status='A'
     </update>
     <select id="getLastByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo">
         SELECT
@@ -354,4 +354,12 @@
         LIMIT 1
     </select>
 
+    <select id="getRepayByBorrowId" resultType="JsdBorrowLegalOrderRepaymentDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM jsd_borrow_legal_order_repayment
+        WHERE is_delete=0
+        AND borrow_id=#{borrowId}
+        AND status <![CDATA[!= ]]> 'N'
+    </select>
 </mapper>

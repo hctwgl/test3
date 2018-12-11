@@ -23,6 +23,7 @@ public enum BizExceptionCode {
     UPS_COLLECT_ERROR("UPS_COLLECT_ERROR",1560,"ups collect error","单笔代收失败"),
     UPS_CACHE_EXPIRE("UPS_CACHE_EXPIRE",1580,"repayment has expired and closed.","支付请求已经关闭,请重新支付"),
     UPS_QUICK_PAY_CONFIRM_ERROR("UPS_QUICK_PAY_CONFIRM_ERROR",1760,"ups quick pay confirm error","快捷支付确认支付失败"),
+    UPS_PROTOCOL_PAY_CONFIRM_ERROR("UPS_PROTOCOL_PAY_CONFIRM_ERROR",1760,"ups protocol pay confirm error","协议支付确认支付失败"),
     SIGN_RELEASE_ERROR("SIGN_RELEASE_ERROR",1568,"sign release error","银行卡解绑失败"),
     UPS_ORDERNO_BUILD_ERROR("UPS_ORDERNO_BUILD_ERROR",1561,"ups order build error","构建订单错误"),
     BORROW_STATS_IS_NOT_TRANSFERRED("BORROW_STATS_IS_NOT_TRANSFERRED",1540,"borrow stats is not transferred","借款正在审核中"),

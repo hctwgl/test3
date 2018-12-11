@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -11,6 +12,14 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
+import com.ald.fanbei.api.dal.dao.*;
+import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
+import com.ald.fanbei.api.biz.service.JsdLegalContractPdfCreateService;
+import com.ald.fanbei.api.biz.third.util.JobThreadPoolUtils;
+import com.ald.fanbei.api.common.enums.*;
+import com.itextpdf.text.DocumentException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -32,24 +41,10 @@ import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashReviewStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowCashStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderCashStatus;
-import com.ald.fanbei.api.common.enums.JsdBorrowLegalOrderStatus;
-import com.ald.fanbei.api.common.enums.ResourceSecType;
-import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.exception.BizExceptionCode;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.dal.dao.BaseDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderCashDao;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
-import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderCashDo;
-import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
-import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.alibaba.fastjson.JSONArray;
@@ -79,7 +74,11 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
     @Resource
     JsdNoticeRecordService jsdNoticeRecordService;
+    @Resource
+    JsdUserDao jsdUserDao;
 
+    @Resource
+    JsdLegalContractPdfCreateService jsdLegalContractPdfCreateService;
     @Resource
     XgxyUtil xgxyUtil;
     @Resource
@@ -88,6 +87,9 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     TransactionTemplate transactionTemplate;
     @Resource
     UpsUtil upsUtil;
+    @Resource
+    JobThreadPoolUtils jobThreadPoolUtils;
+
 
     @Override
     public BaseDao<JsdBorrowCashDo, Long> getDao() {
@@ -154,6 +156,11 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     @Override
     public List<JsdBorrowCashDo> getBorrowCashByBeforeToday(int nowPage, int pageSize, Date todayLast) {
         return jsdBorrowCashDao.getBorrowCashByBeforeToday(nowPage, pageSize, todayLast);
+    }
+
+    @Override
+    public List<JsdBorrowCashDo> getBorrowCashRepayByUserIds(String userIds, Date todayLast) {
+        return jsdBorrowCashDao.getBorrowCashRepayByUserIds(userIds,todayLast);
     }
 
     @Override
@@ -245,8 +252,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
 
-    public void transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo) {
-        transactionTemplate.execute(new TransactionCallback<String>() {
+    public String transUpdate(final JsdBorrowCashDo cashDo, final JsdBorrowLegalOrderDo orderDo, final JsdBorrowLegalOrderCashDo orderCashDo) {
+        String result = transactionTemplate.execute(new TransactionCallback<String>() {
             @Override
             public String doInTransaction(TransactionStatus ts) {
                 jsdBorrowCashDao.updateById(cashDo);
@@ -255,6 +262,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
                 return "success";
             }
         });
+        return result;
     }
 
 
@@ -265,7 +273,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
      * @return
      */
     @Override
-    public BigDecimal getRiskDailyRate(String openId) {
+    public BigDecimal getRiskDailyRate(String openId,String days,String unit) {
         BigDecimal riskRateDaily = BigDecimal.valueOf(0.02); // 0913产品与风控分析确定值
 
         // 默认利润率 取后台配置
@@ -277,18 +285,18 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         }
 
         try {
-            String riskRateDailyFromCache = bizCacheUtil.hget(Constants.CACHEKEY_RISK_LAYER_RATE, openId);
+            String riskRateDailyFromCache = bizCacheUtil.hget(Constants.CACHEKEY_RISK_LAYER_RATE, openId+"_"+days);
             if (StringUtils.isNotBlank(riskRateDailyFromCache)) {
                 logger.info("getRiskDailyRate, openId=" + openId + ", risk from cache is " + riskRateDailyFromCache);
                 riskRateDaily = new BigDecimal(riskRateDailyFromCache);
             } else {
-                String riskRate = xgxyUtil.getOriRateNoticeRequest(openId); //风控返回的数据为日利率，并除以1000
+                String riskRate = xgxyUtil.getOriRateNoticeRequest(openId,days,unit); //风控返回的数据为日利率，并除以1000
                 if (StringUtils.isNotBlank(riskRate)) {
                     if (BigDecimal.ZERO.compareTo(new BigDecimal(riskRate)) == 0) {
                         logger.error("getRiskDailyRate, openId=" + openId + ", riskRate from xgxy is 0.00 !");
                     } else {
                         riskRateDaily = new BigDecimal(riskRate).divide(BigDecimal.valueOf(1000), 6, RoundingMode.HALF_UP);
-                        bizCacheUtil.hset(Constants.CACHEKEY_RISK_LAYER_RATE, openId, riskRateDaily.toPlainString(), DateUtil.getTodayLast());
+                        bizCacheUtil.hset(Constants.CACHEKEY_RISK_LAYER_RATE, openId+"_"+days, riskRateDaily.toPlainString(), DateUtil.getTodayLast());
                     }
                 } else {
                     logger.error("getRiskDailyRate, openId=" + openId + ", riskRate from xgxy is null!");
@@ -324,9 +332,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     /**
      * 解析各项利息费用
      *
-     * @param borrowAmount
-     * @param borrowType
-     * @param oriRate
+     * @param bo
      * @return
      */
     public void resolve(TrialBeforeBorrowBo bo) {
@@ -368,8 +374,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         resp.interestAmount = actualBorrowInterestAmount.toString();
         resp.serviceRate = borrowRateInfo.serviceRate.setScale(4, RoundingMode.HALF_UP).toString();
         resp.serviceAmount = actualBorrowServiceAmount.toString();
-        resp.overdueRate = borrowOverdueRate.divide(new BigDecimal(360)).setScale(4, RoundingMode.HALF_UP).toString();
-
+        resp.overdueRate = borrowOverdueRate.divide(new BigDecimal(360),4, RoundingMode.HALF_UP).setScale(4, RoundingMode.HALF_UP).toString();
+        resp.overdueYearRate = borrowOverdueRate.toString();
         //处理搭售商品相关利息
         ResourceRateInfoBo orderRateInfo = jsdResourceService.getOrderRateInfo(req.term);
         BigDecimal orderInterestRate = orderRateInfo.interestRate;
@@ -383,7 +389,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         resp.sellInterestFee = actualOrderInterestAmount.toString();
         resp.sellInterestRate = orderInterestRate.setScale(4, RoundingMode.HALF_UP);
         resp.sellServiceFee = actualOrderServiceAmount.toString();
-        resp.sellServiceRate = orderRateInfo.serviceRate.setScale(2, RoundingMode.HALF_UP);
+        resp.sellServiceRate = orderRateInfo.serviceRate.setScale(4, RoundingMode.HALF_UP);
         resp.sellOverdueRate = orderOverdueRate.divide(new BigDecimal(360)).setScale(4, RoundingMode.HALF_UP);
         resp.riskDailyRate= bo.riskDailyRate;
         BigDecimal totalAmount = BigDecimalUtil.add(actualBorrowAmount, actualBorrowInterestAmount, actualBorrowServiceAmount,
@@ -402,7 +408,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
 
     @Override
-    public void dealBorrowSucc(Long cashId, String outTradeNo) {
+    public void dealBorrowSucc(Long cashId, String outTradeNo,String tradeDate) throws IOException, DocumentException {
         JsdBorrowCashDo cashDo = jsdBorrowCashDao.getById(cashId);
         if (cashDo == null) {
             throw new BizException("dealBorrowSucc, can't find refer borrowCash by id=" + cashId);
@@ -418,8 +424,14 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
         JsdBorrowLegalOrderDo orderDo = jsdBorrowLegalOrderDao.getLastOrderByBorrowId(cashId);
         JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashDao.getLastOrderCashByBorrowId(cashId);
-
-        Date currDate = new Date(System.currentTimeMillis());
+        Date currDate;
+        if(StringUtils.isBlank(tradeDate)){
+            currDate = new Date();
+        }else {
+            currDate = DateUtil.parseDate(tradeDate,"yyyy-MM-dd HH:mm:ss");
+            currDate = DateUtil.afterDay(currDate,new Date())?new Date():currDate;
+            currDate = DateUtil.beforeDay(currDate,cashDo.getGmtCreate())?new Date():currDate;
+        }
         Date arrivalEnd = DateUtil.getEndOfDatePrecisionSecond(currDate);
         Date repaymentDate = DateUtil.addDays(arrivalEnd, Integer.valueOf(cashDo.getType()) - 1);
         cashDo.setGmtArrival(currDate);
@@ -430,8 +442,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         orderDo.setStatus(JsdBorrowLegalOrderStatus.AWAIT_DELIVER.name());
         orderCashDo.setStatus(JsdBorrowLegalOrderCashStatus.AWAIT_REPAY.name());
         orderCashDo.setGmtPlanRepay(repaymentDate);
-        this.transUpdate(cashDo, orderDo, orderCashDo);
-
+        String result = this.transUpdate(cashDo, orderDo, orderCashDo);
+        if(StringUtils.equals(result,"success")){
+            jobThreadPoolUtils.platformServiceSellProtocol(cashDo.getTradeNoXgxy());
+        }
         jsdNoticeRecordService.dealBorrowNoticed(cashDo, this.buildXgxyPay(cashDo, "放款成功", XgxyBorrowNotifyStatus.SUCCESS.name()));
     }
 
@@ -572,6 +586,16 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         return protocolVos;
     }
 
+    @Override
+    public List<FinaneceDataDo> getPaymentDetail() {
+        return jsdBorrowCashDao.getPaymentDetail();
+    }
+
+    @Override
+    public List<FinaneceDataDo> getPromiseIncomeDetail() {
+        return jsdBorrowCashDao.getPromiseIncomeDetail();
+    }
+
     /**
      * 获取借款相关协议(plus)
      *
@@ -618,5 +642,30 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         xgxyPayBo.setGmtArrival(cashDo.getGmtArrival());
         xgxyPayBo.setTimestamp(System.currentTimeMillis());
         return xgxyPayBo;
+    }
+
+    @Override
+    public List<JsdBorrowCashDo> getBorrowCashsInfos(Long userId) {
+        List<JsdBorrowCashDo> cashs = new ArrayList<JsdBorrowCashDo>(4);
+
+        List<JsdBorrowCashDo> transedCashDtos = jsdBorrowCashDao.getTransedCashDtosByUserId(userId);
+        cashs.addAll(transedCashDtos);
+
+        JsdBorrowCashDo finshCash = jsdBorrowCashDao.getLastFinishCashByUserId(userId);
+        if (finshCash != null) {
+            cashs.add(finshCash);
+        }
+        return cashs;
+    }
+
+    @Override
+    public JsdCashDto getGoodsInfoByBorrowId(Long borrowId) {
+        return jsdBorrowCashDao.getGoodsInfoByBorrowId(borrowId);
+    }
+
+
+    @Override
+    public JsdBorrowCashDo getBorrowByRid(Long id){
+        return jsdBorrowCashDao.getBorrowByRid(id);
     }
 }

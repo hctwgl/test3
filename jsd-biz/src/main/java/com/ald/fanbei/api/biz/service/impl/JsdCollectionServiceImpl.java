@@ -13,7 +13,6 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.ald.fanbei.api.biz.service.JsdCollectionService;
-import com.ald.fanbei.api.biz.service.JsdNoticeRecordService;
 import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
 import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
@@ -23,8 +22,6 @@ import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.DigestUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
 import com.ald.fanbei.api.dal.dao.JsdNoticeRecordDao;
 import com.ald.fanbei.api.dal.domain.JsdNoticeRecordDo;
 import com.alibaba.fastjson.JSON;
@@ -35,11 +32,6 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 	
 	@Resource
 	JsdNoticeRecordDao jsdNoticeRecordDao;
-	@Resource
-	JsdBorrowLegalOrderDao jsdBorrowLegalOrderDao;
-	
-	@Resource
-	JsdNoticeRecordService jsdNoticeRecordService;
 	@Resource
 	CollectionNoticeUtil collectionNoticeUtil;
 	
@@ -58,17 +50,17 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 		repayData.put("orderNo", borrowNo);
 		
 		//根据场景不同，推送催收不同还款类型
-		if(StringUtil.equals(repayType.getCode(),JsdRepayType.COLLECTION.getCode()) || StringUtil.equals(repayType.getCode(),JsdRepayType.REVIEW_COLLECTION.getCode())){
-			data.put("dataId", orderId.toString());//源数据id
-			repayData.put("type", JsdRepayCollectionType.OFFLINE.getCode());
-			noticeRecordDo.setType(JsdNoticeType.COLLECT.code);
-		}else {
+		if(JsdRepayType.INITIATIVE.equals(repayType) || JsdRepayType.WITHHOLD.equals(repayType)){
 			repayData.put("type", JsdRepayCollectionType.APP.getCode());
 			noticeRecordDo.setType(JsdNoticeType.OVERDUEREPAY.code);
 			data.put("dataId", orderId.toString());//源数据id
+		}else {
+			data.put("dataId", orderId.toString());//源数据id
+			repayData.put("type", JsdRepayCollectionType.OFFLINE.getCode());
+			noticeRecordDo.setType(JsdNoticeType.COLLECT.code);
 		}
 		repayData.put("repaymentAcc", uid.toString());//还款账户
-
+		repayData.put("token",ConfigProperties.get(Constants.CONFKEY_COLLECTION_TOKEN));
 		data.put("amount",repayAmount+"");
 		repayData.put("companyId", ConfigProperties.get(Constants.CONFKEY_COLLECTION_COMPANYID));
 		repayData.put("totalAmount", repayAmount+"");
@@ -79,21 +71,21 @@ public class JsdCollectionServiceImpl implements JsdCollectionService{
 		//("还款详情, 格式: [{'dataId':'数据编号', 'amount':'还款金额(元, 精确到分)'},...]")
 		repayData.put("details", JSON.toJSONString(list));
 		//--------------------end  催收还款接口需要参数---------------------------
-		
-		
-		//--------------------start 兼容审批模式还款通知 --------------------------
-		if(JsdRepayType.REVIEW_COLLECTION.equals(repayType)) {
-			repayData.put("reviewReuslt", reviewReuslt);
-		}
-		//--------------------end  兼容审批模式还款通知 ---------------------------
 
-		noticeRecordDo.setUserId(uid);
-		noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
-		noticeRecordDo.setParams(JSON.toJSONString(repayData));
-		jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
-		if(collectionNoticeUtil.consumerRepayment(repayData)){
-			noticeRecordDo.setRid(noticeRecordDo.getRid());
-			noticeRecordDo.setGmtModified(new Date());
+
+			//--------------------start 兼容审批模式还款通知 --------------------------
+			if(JsdRepayType.REVIEW_COLLECTION.equals(repayType)) {
+				repayData.put("reviewReuslt", reviewReuslt);
+			}
+			//--------------------end  兼容审批模式还款通知 ---------------------------
+
+			noticeRecordDo.setUserId(uid);
+			noticeRecordDo.setTimes(Constants.NOTICE_FAIL_COUNT);
+			noticeRecordDo.setParams(JSON.toJSONString(repayData));
+			jsdNoticeRecordDao.addNoticeRecord(noticeRecordDo);
+			if(collectionNoticeUtil.consumerRepayment(repayData)){
+				noticeRecordDo.setRid(noticeRecordDo.getRid());
+				noticeRecordDo.setGmtModified(new Date());
 			jsdNoticeRecordDao.updateNoticeRecordStatus(noticeRecordDo);
 		}else {
 			throw new BizException("nofityRepayment error!");
