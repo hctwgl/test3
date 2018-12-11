@@ -54,7 +54,8 @@ public class WithholdJob {
             String curHostIp = GetHostIpUtil.getIpAddress();
             logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
             if (StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)) {
-               String currentTime= DateUtil.formatDate(new Date(),"HH:mm");
+                logger.info("start withhold resource=" + resourceDo.getValue());
+                String currentTime= DateUtil.formatDate(new Date(),"HH:mm");
                Map<String,String> config= (Map<String, String>) JSON.parse(resourceDo.getValue2());
                Runnable threadC= new Runnable() {
                     @Override
