@@ -144,8 +144,6 @@ public class ConfirmSmsApi implements JsdH5Handle {
 					throw new BizException("ups kuaijie not support", BizExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);}
 			}catch (Exception e){
 				throw new BizException("ups kuaijie fail  case:", e);
-			}finally {
-				repaymentService.unLockBorrow(userId);
 			}
 			
 		}else if(SmsCodeType.DELAY.getCode().equals(type)){
