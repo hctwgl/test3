@@ -290,10 +290,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	protected void daikouConfirmPre(String payTradeNo, String bankChannel, String payBizObject) {
 		KuaijieRepayBo kuaijieLoanBo = JSON.parseObject(payBizObject, KuaijieRepayBo.class);
 		if (kuaijieLoanBo.getRepayment() != null) {
-			logger.info("update status is p");
 			changBorrowRepaymentStatus(payTradeNo, JsdBorrowCashRepaymentStatus.PROCESS.getCode(), kuaijieLoanBo.getRepayment().getRid(),"","","");
 		}else {
-			logger.info("update status is pooooo");
 		}
 	}
 
