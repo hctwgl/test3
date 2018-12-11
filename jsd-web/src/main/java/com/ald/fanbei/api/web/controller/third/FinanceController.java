@@ -208,7 +208,7 @@ public class FinanceController{
                     return resqBo;
                 }
                 String dataId = String.valueOf(borrowCashDo.getRid() + borrowCashDo.getRenewalNum());
-                jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo, legalOrderCashDo, accountAmount, "", borrowCashDo.getUserId(), JsdRepayType.SETTLE_SYSTEM, null, null, null, dataId, operator+"_"+remark);
+                jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo, legalOrderCashDo, accountAmount, "", borrowCashDo.getUserId(), JsdRepayType.SETTLE_SYSTEM, "", new Date(), "", dataId, operator+"_"+remark);
             }
             return resqBo;
         }catch (Exception e){
