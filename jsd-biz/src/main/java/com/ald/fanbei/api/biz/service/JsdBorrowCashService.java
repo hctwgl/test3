@@ -102,6 +102,10 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     List<JsdBorrowCashDo> getBorrowCashRepayByUserIds(String userIds, Date todayLast);
 
     /**
+     * 获取当前的还款日借款
+     */
+    List<JsdBorrowCashDo> getTodayBorrowCashRepayByUserIds(String userIds, Date todayLast);
+    /**
      * 获取当前的测试逾期借款
      */
     List<JsdBorrowCashDo> getBorrowCashOverdueByUserIds(String userIds);
@@ -234,5 +238,35 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
 
     JsdBorrowCashDo getBorrowByRid(Long id);
 
+
+    /**
+     * 获取指定逾期日期区间的数据量
+     *
+     * @return
+     */
+    int getBorrowCashByOverdueCountBySection(Date startOverdue,Date endOverdue);
+
+    /**
+     * 获取逾期区间的数据
+     */
+    List<JsdBorrowCashDo> getBorrowCashOverdueBySection(Date startTime,Date endTime);
+
+    /**
+     * 获取还款日在当天的数据量
+     *
+     * @return
+     */
+    int getBorrowCashByTodayCount(Date todayLast);
+
+
+    /**
+     * 获取还款日在当天数据
+     */
+    List<JsdBorrowCashDo> getBorrowCashByToday( Date todayLast);
+
+    /**
+     * 获取逾期区间的数据baimingdan
+     */
+    List<JsdBorrowCashDo> getOverSectionBorrowCashRepayByUserIds(String userIds,Date startTime,Date endTime);
 
 }

@@ -204,12 +204,12 @@ public class JsdTest extends BaseTest {
     public void repayLoan() {
         String url = urlBase + "/third/eca/v1/pushRepayment";
         Map<String,String> params = new HashMap<>();
-        params.put("amount", 0.1+"");
+        params.put("amount", 1+"");
         params.put("period", 1+"");
-        params.put("bankNo", "6212261202028480466");
-        params.put("borrowNo", "loan0919eca283100000004");
-        params.put("repayNo", "repay0911eca267900000192");
-        params.put("openId","BC539267586FB64E8990BB3113FCA5BC");
+        params.put("bankNo", "6216696200001010635");
+        params.put("borrowNo", "loan1207eca267900000006");
+        params.put("repayNo", "dk2018120311375500125");
+        params.put("openId","5769BCAB017D030484348D6CB803F080");
         String data = JsdSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(params)),AES_KEY);
         Map<String, String> p = new HashMap<>();
         p.put("data", data);

@@ -350,4 +350,19 @@
         AND
         is_main='Y'
     </select>
+
+    <select id="getUserNoMainBankCardInfoByUserId" resultType="JsdUserBankcardDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_user_bankcard
+        WHERE
+        is_delete=0
+        AND
+        user_id = #{userId}
+        AND
+        is_main='N'
+        AND
+        status = 'B'
+    </select>
 </mapper>

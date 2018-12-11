@@ -6,6 +6,7 @@ package com.ald.fanbei.api.web.h5.api.jsd;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
@@ -13,6 +14,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -97,6 +99,10 @@ public class ConfirmSmsApi implements JsdH5Handle {
     @Resource
 	XgxyUtil xgxyUtil;
 
+
+	@Resource
+	private RedisTemplate<String, ?> redisTemplate;
+
     @Override
     public JsdH5HandleResponse process(Context context) {
 		JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
@@ -114,16 +120,19 @@ public class ConfirmSmsApi implements JsdH5Handle {
 
 		Map<String, Object> map = new HashMap<String, Object>();
  		if(SmsCodeType.REPAY.getCode().equals(type)){
- 			if(repaymentDo!=null){
- 				busiFlag=repaymentDo.getTradeNo();
- 			}else {
- 				busiFlag=legalOrderRepaymentDo.getTradeNo();
- 			}
-			Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + busiFlag);
-			if (beanName == null) {
-				// 未获取到缓存数据，支付订单过期
-				throw new BizException(BizExceptionCode.UPS_CACHE_EXPIRE);
-			}
+			//校验借款是否被代扣锁住
+			repaymentService.checkBorrowIsLock(userId);
+			try{
+				if(repaymentDo!=null){
+					busiFlag=repaymentDo.getTradeNo();
+				}else {
+					busiFlag=legalOrderRepaymentDo.getTradeNo();
+				}
+				Object beanName = bizCacheUtil.getObject(UpsUtil.KUAIJIE_TRADE_BEAN_ID + busiFlag);
+				if (beanName == null) {
+					// 未获取到缓存数据，支付订单过期
+					throw new BizException(BizExceptionCode.UPS_CACHE_EXPIRE);
+				}
 
 
 
@@ -132,7 +141,11 @@ public class ConfirmSmsApi implements JsdH5Handle {
 					map = jsdBorrowCashRepaymentService.doUpsPay(busiFlag, smsCode);
 					break;
 				default:
-					throw new BizException("ups kuaijie not support", BizExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);
+					throw new BizException("ups kuaijie not support", BizExceptionCode.UPS_KUAIJIE_NOT_SUPPORT);}
+			}catch (Exception e){
+				throw new BizException("ups kuaijie fail  case:", e);
+			}finally {
+				repaymentService.unLockBorrow(userId);
 			}
 			
 		}else if(SmsCodeType.DELAY.getCode().equals(type)){
@@ -205,4 +218,19 @@ public class ConfirmSmsApi implements JsdH5Handle {
 		resp.setData(map);
 		return resp;
     }
+    /*
+     * 锁住还款
+	 */
+	private void lockRepay(Long userId) {
+		String key = userId + "_success_loanRepay";
+		long count = redisTemplate.opsForValue().increment(key, 1);
+		redisTemplate.expire(key, 300, TimeUnit.SECONDS);
+		if (count != 1) {
+			throw new BizException(BizExceptionCode.LOAN_REPAY_PROCESS_ERROR);
+		}
+	}
+	private void unLockRepay(Long userId) {
+		String key = userId + "_success_loanRepay";
+		redisTemplate.delete(key);
+	}
 }

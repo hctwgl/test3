@@ -122,7 +122,11 @@ public enum ResourceSecType {
 	
 		OVERDUE_JOB_INTERNAL_UIDS("OVERDUE_JOB_INTERNAL_UIDS", "公司内部专用定时器用户名单"),
 
-	   WITHHOLD_JOB_CONFIG("WITHHOLD_JOB_CONFIG", "代扣任务相关配置"),
+	    WITHHOLD_JOB_INTERNAL_UIDS("WITHHOLD_JOB_INTERNAL_UIDS", "公司内部专用定时器用户名单"),
+
+
+	WITHHOLD_JOB_CONFIG("WITHHOLD_JOB_CONFIG", "代扣任务相关配置"),
+    	WITHHOLD_JOB_CONFIG_YF("WITHHOLD_JOB_CONFIG_YF", "代扣任务相关配置"),
 
 
 	    //借钱协议

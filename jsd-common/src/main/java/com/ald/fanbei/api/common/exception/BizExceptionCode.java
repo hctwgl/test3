@@ -31,13 +31,13 @@ public enum BizExceptionCode {
     LOAN_UPS_DRIECT_FAIL("LOAN_UPS_DRIECT_FAIL",2107,"loan ups driect fail","请求打款实时失败"),
     LOAN_CONCURRENT_LIMIT("LOAN_CONCURRENT_LIMIT",2110,"loan concurrent limit","同一时刻只能发起一笔贷款申请"),
     LOAN_PERIOD_CAN_NOT_REPAY_ERROR("LOAN_PERIOD_CAN_NOT_REPAY_ERROR",2014,"loan period can not repay error","当前借款未到还款时间"),
-    LOAN_REPAY_PROCESS_ERROR("LOAN_REPAY_PROCESS_ERROR",2018,"loan repay not exist","您有一笔还款正在处理中，请稍后重试"),
+    LOAN_REPAY_PROCESS_ERROR("LOAN_REPAY_PROCESS_ERROR",2018,"have a repay is process","您有一笔还款正在处理中，请稍后重试"),
 
     BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR("BORROW_CASH_REPAY_AMOUNT_MORE_BORROW_ERROR",2020,"borrow cash repay more than borrow cash","还款金额大于借款金额"),
 
     HAVE_A_PROCESS_RENEWAL_DETAIL("HAVE_A_PROCESS_RENEWAL_DETAIL",2021,"borrow a process renewal record","存在处理中续期记录,请稍后重试"),
 
-    LEGAL_REPAY_PROCESS_ERROR("LEGAL_REPAY_PROCESS_ERROR",2122,"legal order repay not exist","您有一笔商品还款正在处理中，请稍后重试"),
+    LEGAL_REPAY_PROCESS_ERROR("LEGAL_REPAY_PROCESS_ERROR",2122,"legal order repay is process","您有一笔商品还款正在处理中，请稍后重试"),
 
     JSD_BORROW_IS_NULL("JSD_BORROW_IS_NULL", 2126, "borrow is null", "借款信息是空"),
 
@@ -87,6 +87,9 @@ public enum BizExceptionCode {
     UPS_ERROR_5002("UPS_ERROR_5002",5002,"","银行卡交易失败，您可换卡或稍后重试"),
 
     HAVE_A_REPAYMENT_PROCESSING("HAVE_A_REPAYMENT_PROCESSING",6001,"have a repayment processing","有一笔还款在处理中"),
+
+    HAVE_A_REPAYMENT_PROCESSING_WITHHOLD("HAVE_A_REPAYMENT_PROCESSING_WITHHOLD",6010,"have a repayment processing withold","您的借款正在进行代扣，请半小时后稍后操作"),
+
     HAVE_A_RENEWAL_PROCESSING("HAVE_A_RENEWAL_PROCESSING",6002,"have a renewal processing","有一笔续期在处理中"),
     FUNCTIONAL_MAINTENANCE("FUNCTIONAL_MAINTENANCE",6003,"functional maintenance","功能维护中"),
     GET_JSD_RATE_ERROR("GET_JSD_RATE_ERROR",6004,"get jsd rate error","获取利率失败，请联系客服"),

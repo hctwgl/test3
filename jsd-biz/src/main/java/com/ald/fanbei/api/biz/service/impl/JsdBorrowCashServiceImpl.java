@@ -170,6 +170,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         return jsdBorrowCashDao.getBorrowCashOverdueByUserIds(bengin, userIds);
     }
 
+    public  List<JsdBorrowCashDo> getTodayBorrowCashRepayByUserIds(String userIds, Date todayLast){
+        return jsdBorrowCashDao.getTodayBorrowCashRepayByUserIds(userIds,DateUtil.formatDate(todayLast,"yyyy-MM-dd"));
+
+    }
     @Override
     public List<LoanDto> getReviewLoanList(LoanQuery query) {
         return jsdBorrowCashDao.getReviewLoanList(query);
@@ -667,5 +671,29 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     @Override
     public JsdBorrowCashDo getBorrowByRid(Long id){
         return jsdBorrowCashDao.getBorrowByRid(id);
+    }
+    @Override
+    public int getBorrowCashByOverdueCountBySection(Date startOverdue, Date endOverdue) {
+        return jsdBorrowCashDao.getBorrowCashByOverdueCountBySection(startOverdue,endOverdue);
+    }
+
+    @Override
+    public List<JsdBorrowCashDo> getBorrowCashOverdueBySection(Date startTime, Date endTime) {
+        return jsdBorrowCashDao.getBorrowCashOverdueBySection(startTime,  endTime);
+    }
+
+    @Override
+    public int getBorrowCashByTodayCount(Date todayLast) {
+        return jsdBorrowCashDao.getBorrowCashByTodayCount(DateUtil.formatDate(todayLast,"yyyy-MM-dd"));
+    }
+
+    @Override
+    public List<JsdBorrowCashDo> getBorrowCashByToday(Date todayLast) {
+        return jsdBorrowCashDao.getBorrowCashByToday( DateUtil.formatDate(todayLast,"yyyy-MM-dd"));
+    }
+
+    public List<JsdBorrowCashDo> getOverSectionBorrowCashRepayByUserIds(String userIds,Date startTime,Date endTime){
+        return jsdBorrowCashDao.getOverSectionBorrowCashRepayByUserIds(userIds,startTime,endTime);
+
     }
 }
