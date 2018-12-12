@@ -370,7 +370,13 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				Collection currentWithholdTime=JSONArray.toCollection(JSONArray.fromObject(config.get("currentWithholdTime")),List.class);
 				String cardType=config.get("cardType");
 				if("all".equals(cardType)){
-					nextWithhold(repaymentDo);
+                    JsdUserBankcardDo currentBankcard=jsdUserBankcardService.getByBankNo(repaymentDo.getCardNumber(),repaymentDo.getUserId());
+                    logger.info("currentBankcard="+currentBankcard.getBankCardNumber());
+                    JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getNextBankCard(currentBankcard.getRid(),repaymentDo.getUserId());
+                    logger.info("userBankcardDo="+userBankcardDo.getBankCardNumber());
+                    if(userBankcardDo!=null){
+                        nextWithhold(repaymentDo,userBankcardDo.getBankCardNumber());
+                    }
 				}
 				String failCount=config.get("failCount");
 				List<JsdBorrowCashRepaymentDo> cashRepaymentDos= jsdBorrowCashRepaymentDao.getWithholdFailRepaymentCashByBorrowIdAndCardNumber(repaymentDo.getBorrowId(),repaymentDo.getCardNumber());
@@ -401,7 +407,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		}
 
 	}
-	void nextWithhold(JsdBorrowCashRepaymentDo repaymentDo){
+	void nextWithhold(JsdBorrowCashRepaymentDo repaymentDo,String bankCardNumber){
 		JsdBorrowCashDo borrowCashDo=jsdBorrowCashDao.getBorrowById(repaymentDo.getBorrowId());
 		JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo=new JsdBorrowCashRepaymentServiceImpl.RepayRequestBo();
 		JsdUserDo userDo=jsdUserService.getById(borrowCashDo.getUserId());
@@ -413,11 +419,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		bo.userDo = userDo;
 		bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
 		bo.repayType= JsdRepayType.WITHHOLD.name();
-		JsdUserBankcardDo currentBankcard=jsdUserBankcardService.getByBankNo(repaymentDo.getCardNumber(),repaymentDo.getUserId());
-		logger.info("currentBankcard="+currentBankcard.getBankCardNumber());
-		JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getNextBankCard(currentBankcard.getRid(),repaymentDo.getUserId());
-		logger.info("userBankcardDo="+userBankcardDo.getBankCardNumber());
-		bo.bankNo=userBankcardDo.getBankCardNumber();
+		bo.bankNo=bankCardNumber;
 		repay(bo,RepayType.WITHHOLD.getCode());
 	}
 	@Override
