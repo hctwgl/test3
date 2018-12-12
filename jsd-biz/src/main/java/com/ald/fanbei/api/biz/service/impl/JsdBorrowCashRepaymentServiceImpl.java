@@ -858,13 +858,18 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				bo.userDo = userDo;
 				bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
 				bo.repayType= JsdRepayType.WITHHOLD.name();
-				JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
-				bo.bankNo=userBankcardDo.getBankCardNumber();
 				Runnable thread= new Runnable() {
 					Map<String, Object> result=null;
 					@Override
 					public void run() {
-						result=repay(bo,RepayType.WITHHOLD.getCode());
+                        JsdUserBankcardDo userBankcardDo=null;
+					    if("all".equals(cardType)){
+                            jsdUserBankcardService.getLastBankCard(jsdBorrowCashDo.getUserId());
+                        }else {
+                            userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
+                        }
+                        bo.bankNo=userBankcardDo.getBankCardNumber();
+                        result=repay(bo,RepayType.WITHHOLD.getCode());
 					}
 				};
 				executor.submit(thread);

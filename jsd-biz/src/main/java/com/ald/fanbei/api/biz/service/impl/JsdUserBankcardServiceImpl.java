@@ -84,5 +84,9 @@ public class JsdUserBankcardServiceImpl extends ParentServiceImpl<JsdUserBankcar
 	public JsdUserBankcardDo getNextBankCard(Long id,Long userId){
 		return  jsdUserBankcardDao.getNextBankCard(id,userId);
 	}
+	public JsdUserBankcardDo getLastBankCard(Long userId){
+		return  jsdUserBankcardDao.getLastBankCard(userId);
+	}
+
 
 }

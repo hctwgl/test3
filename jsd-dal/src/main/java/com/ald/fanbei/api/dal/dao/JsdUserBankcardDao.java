@@ -38,4 +38,6 @@ public interface JsdUserBankcardDao extends BaseDao<JsdUserBankcardDo, Long> {
 	List<JsdUserBankcardDo> getUserNoMainBankCardInfoByUserId(@Param("userId")Long userId);
 
 	JsdUserBankcardDo getNextBankCard(@Param("id")Long id,@Param("userId")Long userI);
+
+	JsdUserBankcardDo getLastBankCard(@Param("userId")Long userId);
 }
