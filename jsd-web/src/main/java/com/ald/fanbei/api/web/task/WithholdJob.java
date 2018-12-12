@@ -42,8 +42,6 @@ public class WithholdJob {
 
     private static String SWITCH = "open";
 
-    ExecutorService executor = Executors.newFixedThreadPool(4);
-
 
     @Scheduled(cron = "0 0/1 * * * ?")
     public void withhold() {
@@ -77,16 +75,15 @@ public class WithholdJob {
         Collection currentWithholdTime=JSONArray.toCollection(JSONArray.fromObject(config.get("currentWithholdTime")),List.class);
         if(currentWithholdTime.size()!=0){
             Iterator currentIterator=currentWithholdTime.iterator();
-            while (currentIterator.hasNext()){
-                String withholdTime= String.valueOf(currentIterator.next());
-                if(currentTime.equals(withholdTime)){
-                    Runnable threadC= new Runnable() {
+            while (currentIterator.hasNext()) {
+                String withholdTime = String.valueOf(currentIterator.next());
+                if (currentTime.equals(withholdTime)) {
+                    new Runnable() {
                         @Override
                         public void run() {
-                            withholdCurrentDay.withhold(config,bengin);
+                            withholdCurrentDay.withhold(config, bengin);
                         }
-                    };
-                    executor.submit(threadC);
+                    }.run();
                 }
             }
         }
@@ -99,13 +96,12 @@ public class WithholdJob {
             while (overdueIterator.hasNext()){
                 String withholdTime= String.valueOf(overdueIterator.next());
                 if(currentTime.equals(withholdTime)){
-                    Runnable threadO= new Runnable() {
+                   new Runnable() {
                         @Override
                         public void run() {
                             withholdOverdueDay.withhold(config,bengin);
                         }
-                    };
-                    executor.submit(threadO);
+                    }.run();
                 }
 
             }
