@@ -374,6 +374,9 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				Map<String,String> config= (Map<String, String>) JSON.parse(resourceDo.getValue2());
 				Collection currentWithholdTime=JSONArray.toCollection(JSONArray.fromObject(config.get("currentWithholdTime")),List.class);
 				String cardType=config.get("cardType");
+				if("all".equals(cardType)){
+					nextWithhold(repaymentDo);
+				}
 				String failCount=config.get("failCount");
 				List<JsdBorrowCashRepaymentDo> cashRepaymentDos= jsdBorrowCashRepaymentDao.getWithholdFailRepaymentCashByBorrowIdAndCardNumber(repaymentDo.getBorrowId(),repaymentDo.getCardNumber());
 				List<JsdUserBankcardDo> userBankcardDos= jsdUserBankcardService.getUserBankCardInfoByUserId(repaymentDo.getUserId());
@@ -403,7 +406,22 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		}
 
 	}
-
+	void nextWithhold(JsdBorrowCashRepaymentDo repaymentDo){
+		JsdBorrowCashDo borrowCashDo=jsdBorrowCashDao.getBorrowById(repaymentDo.getBorrowId());
+		JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo=new JsdBorrowCashRepaymentServiceImpl.RepayRequestBo();
+		JsdUserDo userDo=jsdUserService.getById(borrowCashDo.getUserId());
+		bo.amount=repaymentDo.getRepaymentAmount();
+		bo.borrowId=borrowCashDo.getRid();
+		bo.userId = repaymentDo.getUserId();
+		bo.borrowNo = borrowCashDo.getBorrowNo();
+		bo.period = "1";
+		bo.userDo = userDo;
+		bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
+		bo.repayType= JsdRepayType.WITHHOLD.name();
+		JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getNextBankCard(repaymentDo.getRid());
+		bo.bankNo=userBankcardDo.getBankCardNumber();
+		repay(bo,RepayType.WITHHOLD.getCode());
+	}
 	@Override
 	public void dealRepaymentSucess(String repayNo, String outTradeNo,String tradeDate) {
 		final JsdBorrowCashRepaymentDo repaymentDo = jsdBorrowCashRepaymentDao.getByTradeNo(repayNo);
@@ -846,14 +864,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 					Map<String, Object> result=null;
 					@Override
 					public void run() {
-						try {
-							result=repay(bo,RepayType.WITHHOLD.getCode());
-						}catch (Exception e){
-							if("all".equals(cardType)){
-								nextWithhold(bo);
-							}
-						}
-
+						result=repay(bo,RepayType.WITHHOLD.getCode());
 					}
 				};
 				executor.submit(thread);
@@ -863,19 +874,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		}
 
 	}
-	private void nextWithhold( JsdBorrowCashRepaymentServiceImpl.RepayRequestBo bo){
-		List<JsdUserBankcardDo> userBankcardDos=jsdUserBankcardService.getUserNoMainBankCardInfoByUserId(bo.userId);
-		Iterator iterator=userBankcardDos.iterator();
-		while (iterator.hasNext()){
-			JsdUserBankcardDo noMainUserBank= (JsdUserBankcardDo) iterator.next();
-			bo.bankNo=noMainUserBank.getBankCardNumber();
-			try {
-				repay(bo,RepayType.WITHHOLD.getCode());
-			}catch (Exception e){
-				continue;
-			}
-		}
-	}
+
 
 	public void checkBorrowIsLock(Long userId){
 		String key = userId + "_withhold_loanRepay";

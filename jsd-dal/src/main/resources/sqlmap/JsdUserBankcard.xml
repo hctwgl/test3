@@ -365,4 +365,21 @@
         AND
         status = 'B'
     </select>
+
+    <select id="getNextBankCard" resultType="JsdUserBankcardDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_user_bankcard
+        WHERE
+        is_delete=0
+        AND
+        id > #{id}
+        AND
+        is_main='N'
+        AND
+        status = 'B'
+        ORDER BY id LIMIT 1
+    </select>
+
 </mapper>
