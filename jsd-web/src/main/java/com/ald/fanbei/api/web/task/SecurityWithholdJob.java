@@ -82,6 +82,7 @@ public class SecurityWithholdJob {
                             @Override
                             public void run() {
                                 List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getTodayBorrowCashRepayByUserIds(userIds,bengin);
+                                jsdBorrowCashRepaymentService.lockBorrowList(borrowCashDos);
                                 jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType);
                             }
                         };
@@ -108,6 +109,7 @@ public class SecurityWithholdJob {
                                 @Override
                                 public void run() {
                                     List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getOverSectionBorrowCashRepayByUserIds(userIds,startTime,endTime);
+                                    jsdBorrowCashRepaymentService.lockBorrowList(borrowCashDos);
                                     jsdBorrowCashRepaymentService.dealWithhold(borrowCashDos,cardType);
                                 }
                             };
