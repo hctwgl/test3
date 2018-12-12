@@ -371,9 +371,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 				String cardType=config.get("cardType");
 				if("all".equals(cardType)){
                     JsdUserBankcardDo currentBankcard=jsdUserBankcardService.getByBankNo(repaymentDo.getCardNumber(),repaymentDo.getUserId());
-                    logger.info("currentBankcard="+currentBankcard.getBankCardNumber());
                     JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getNextBankCard(currentBankcard.getRid(),repaymentDo.getUserId());
-                    logger.info("userBankcardDo="+userBankcardDo.getBankCardNumber());
                     if(userBankcardDo!=null){
                         nextWithhold(repaymentDo,userBankcardDo.getBankCardNumber());
                     }
