@@ -63,6 +63,8 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
     public JsdH5HandleResponse process(Context context) {
         JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
         Long userId = context.getUserId();
+        //校验借款是否被代扣锁住
+        jsdBorrowCashRepaymentService.checkBorrowIsLock(userId);
         JsdUserDo jsdUserDo = jsdUserService.getById(userId);
 
         RepayRequestBo bo = this.extractAndCheck(context, userId);

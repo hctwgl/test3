@@ -1,29 +1,28 @@
 package com.ald.fanbei.api.web.task;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import javax.annotation.Resource;
-
-import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.dal.domain.*;
+import com.ald.fanbei.api.biz.service.JsdResourceService;
+import com.ald.fanbei.api.biz.util.GetHostIpUtil;
+import com.ald.fanbei.api.common.ConfigProperties;
+import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.enums.ResourceSecType;
+import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.dal.domain.JsdResourceDo;
+import com.alibaba.fastjson.JSON;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl.RepayRequestBo;
-import com.ald.fanbei.api.biz.util.GeneratorClusterNo;
-import com.ald.fanbei.api.biz.util.GetHostIpUtil;
-import com.ald.fanbei.api.common.ConfigProperties;
-import com.ald.fanbei.api.common.Constants;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
-import com.ald.fanbei.api.common.util.DateUtil;
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Component
 public class WithholdJob {
@@ -31,22 +30,10 @@ public class WithholdJob {
     Logger logger = LoggerFactory.getLogger(WithholdJob.class);
 
     @Resource
-    private JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
+    private WithholdCurrentDay withholdCurrentDay;
 
     @Resource
-    private JsdBorrowCashService jsdBorrowCashService;
-
-    @Resource
-    private JsdBorrowLegalOrderCashService jsdBorrowLegalOrderCashService;
-
-    @Resource
-    private JsdUserService jsdUserService;
-
-    @Resource
-    private JsdUserBankcardService jsdUserBankcardService;
-
-    @Resource
-    GeneratorClusterNo generatorClusterNo;
+    private WithholdOverdueDay withholdOverdueDay;
 
     @Resource
     JsdResourceService jsdResourceService;
@@ -55,77 +42,76 @@ public class WithholdJob {
 
     private static String SWITCH = "open";
 
-    ExecutorService executor = Executors.newFixedThreadPool(10);
+    ExecutorService executor = Executors.newFixedThreadPool(8);
 
 
-
-
-    @Scheduled(cron = "0 10 23 * * ?")
+    @Scheduled(cron = "0 0/1 * * * ?")
     public void withhold() {
+        Date date = new Date(System.currentTimeMillis());
+        Date bengin = DateUtil.getEndOfDate(date);
         JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceSecType.WITHHOLD_JOB_CONFIG.getCode());
         if(resourceDo != null && SWITCH.equals(resourceDo.getValue())){
             String curHostIp = GetHostIpUtil.getIpAddress();
             logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-            try {
-                if (StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)) {
-                    Date bengin = DateUtil.getTodayLast();
-                    int pageSize = 200;
-                    int totalRecord = jsdBorrowCashService.getBorrowCashByBeforeTodayCount(bengin);
-                    int totalPageNum = (totalRecord + pageSize - 1) / pageSize;
-                    if (totalRecord == 0) {
-                        logger.info("withhold run finished,Loan Due size is 0.time=" + new Date());
-                    } else {
-                        logger.info("withhold run start,time=" + new Date());
-                        for (int i = 0; i < totalPageNum; i++) {
-                            List<JsdBorrowCashDo> borrowCashDos = jsdBorrowCashService.getBorrowCashByBeforeToday(pageSize * i, pageSize,bengin);
-                            dealWithhold(borrowCashDos);
-                        }
+            if (StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)) {
+               String currentTime= DateUtil.formatDate(new Date(),"HH:mm");
+               Map<String,String> config= (Map<String, String>) JSON.parse(resourceDo.getValue2());
+               Runnable threadC= new Runnable() {
+                    @Override
+                    public void run() {
+                        excutorWithholdCurrent(config,currentTime,bengin);
                     }
-                    logger.info("withhold run end,time=" + new Date());
+                };
+                executor.submit(threadC);
+                JSONObject overdueSection=JSONObject.fromObject(config.get("overdueSection"));
+                BigDecimal minSection=new BigDecimal(String.valueOf(overdueSection.get("minSection")));
+                BigDecimal maxSection=new BigDecimal(String.valueOf(overdueSection.get("maxSection")));
+                if(minSection.compareTo(BigDecimal.ZERO)<0||maxSection.compareTo(BigDecimal.ZERO)<=0
+                 ||minSection.compareTo(maxSection)>0 ){
+                    logger.info("withhold overdue section is zero or null");
+                }else {
+                    Runnable threadO= new Runnable() {
+                        @Override
+                        public void run() {
+                            excutorWithholdOverdue(config,currentTime,bengin);
+                        }
+                    };
+                    executor.submit(threadO);
                 }
-            } catch (Exception e) {
-                logger.error("withhold  error, case=", e);
             }
+
         }
 
     }
 
-    void  dealWithhold(List<JsdBorrowCashDo> borrowCashDos){
-        for(JsdBorrowCashDo jsdBorrowCashDo:borrowCashDos){
-            JsdBorrowCashRepaymentDo borrowCashRepaymentDo=jsdBorrowCashRepaymentService.getLastRepaymentBorrowCashByBorrowId(jsdBorrowCashDo.getRid());
-            if(borrowCashRepaymentDo != null && JsdBorrowCashRepaymentStatus.PROCESS.getCode().equals(borrowCashRepaymentDo.getStatus())) {
-                logger.info("withhold fail,Loan is processing,borrowId=" + jsdBorrowCashDo.getRid());
-                continue;
-            }
-            RepayRequestBo bo=new RepayRequestBo();
-            BigDecimal sumAmount = BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getSumRepaidOverdue(),jsdBorrowCashDo.getSumRepaidInterest(), jsdBorrowCashDo.getSumRepaidPoundage(),
-                    jsdBorrowCashDo.getOverdueAmount(),jsdBorrowCashDo.getPoundageAmount(),jsdBorrowCashDo.getInterestAmount()).subtract(jsdBorrowCashDo.getRepayAmount());// 当前剩余还款
-
-            JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo=jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashDateBeforeToday(jsdBorrowCashDo.getRid());
-            if(borrowLegalOrderCashDo!=null){
-                BigDecimal orderAmount = BigDecimalUtil.add(borrowLegalOrderCashDo.getAmount(), borrowLegalOrderCashDo.getSumRepaidInterest(), borrowLegalOrderCashDo.getSumRepaidPoundage(),
-                        borrowLegalOrderCashDo.getOverdueAmount(),borrowLegalOrderCashDo.getInterestAmount(),borrowLegalOrderCashDo.getPoundageAmount()).subtract(borrowLegalOrderCashDo.getRepaidAmount());// 当前剩余还款
-                sumAmount=sumAmount.add(orderAmount);
-            }
-            JsdUserDo userDo=jsdUserService.getById(jsdBorrowCashDo.getUserId());
-            bo.amount=sumAmount;
-            bo.borrowId=jsdBorrowCashDo.getRid();
-            bo.userId = jsdBorrowCashDo.getUserId();
-            bo.borrowNo = jsdBorrowCashDo.getBorrowNo();
-            bo.period = "1";
-            bo.userDo = userDo;
-            bo.name = Constants.DEFAULT_WITHHOLD_NAME_BORROW_CASH;
-            JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
-            bo.bankNo=userBankcardDo.getBankCardNumber();
-            bo.repayType= JsdRepayType.WITHHOLD.name();
-            Runnable thread= new Runnable() {
-                @Override
-                public void run() {
-                    jsdBorrowCashRepaymentService.repay(bo,RepayType.WITHHOLD.getCode());
+    void excutorWithholdCurrent(Map<String,String> config,String currentTime,Date bengin){
+        Collection currentWithholdTime=JSONArray.toCollection(JSONArray.fromObject(config.get("currentWithholdTime")),List.class);
+        if(currentWithholdTime.size()!=0){
+            Iterator currentIterator=currentWithholdTime.iterator();
+            while (currentIterator.hasNext()){
+                String withholdTime= String.valueOf(currentIterator.next());
+                if(currentTime.equals(withholdTime)){
+                    withholdCurrentDay.withhold(config,bengin);
                 }
-            };
-            executor.submit(thread);
-        }
 
+            }
+        }
     }
+
+    void excutorWithholdOverdue(Map<String,String> config,String currentTime,Date bengin){
+        Collection overdueWithholdTime=JSONArray.toCollection(JSONArray.fromObject(config.get("overdueWithholdTime")),List.class);
+        if(overdueWithholdTime.size()!=0){
+            Iterator overdueIterator=overdueWithholdTime.iterator();
+            while (overdueIterator.hasNext()){
+                String withholdTime= String.valueOf(overdueIterator.next());
+                if(currentTime.equals(withholdTime)){
+                    withholdOverdueDay.withhold(config,bengin);
+                }
+
+            }
+        }
+    }
+
+
+
 }

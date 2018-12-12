@@ -86,10 +86,12 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 		logger.info("protocolConfirmPre payTradeNo = "+ payTradeNo + " ,bankPayType = " + bankPayType + ",payBizObject = " + payBizObject );
 		UpsCollectRespBo respBo = null;
 		if(StringUtil.equals(RepayType.WITHHOLD.getCode(), bank.get("bankChannel").toString()) || StringUtil.equals(RepayType.WITHHOLD.getCode(), bankPayType)){
+			logger.info("withhold repay");
 			daikouConfirmPre(payTradeNo, bankPayType, payBizObject);
 			respBo = upsUtil.collect(payTradeNo, actualAmount, userId + "", realName, bank.get("mobile").toString(), bank.get("bankCode").toString(), bank.get("bankCardNumber").toString(),
 					idNumber, purpose, remark, "02", merPriv);
 		}else if(StringUtil.equals(RepayType.KUAIJIE.getCode(), bank.get("bankChannel").toString())){
+			logger.info("kuaijie repay");
 			kuaijieConfirmPre(payTradeNo, bankPayType, payBizObject);
 			respBo = upsUtil.quickPayConfirm(payTradeNo, String.valueOf(userId), smsCode, "02", "REPAYMENT"); // TODO
 		}else if(StringUtil.equals(RepayType.XIEYI.getCode(), bank.get("bankChannel").toString()) || StringUtil.equals(RepayType.XIEYI.getCode(), bankPayType)){
@@ -122,7 +124,7 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 	/**
 	 * TODO 进行快捷支付，获取验证短息码
 	 *
-	 * @param cardId
+	 * @param
 	 * @param payTradeNo
 	 * @param actualAmount
 	 * @param userId
