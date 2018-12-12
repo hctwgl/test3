@@ -26,8 +26,9 @@ public enum BizExceptionCode {
     UPS_PROTOCOL_PAY_CONFIRM_ERROR("UPS_PROTOCOL_PAY_CONFIRM_ERROR",1760,"ups protocol pay confirm error","协议支付确认支付失败"),
     SIGN_RELEASE_ERROR("SIGN_RELEASE_ERROR",1568,"sign release error","银行卡解绑失败"),
     UPS_ORDERNO_BUILD_ERROR("UPS_ORDERNO_BUILD_ERROR",1561,"ups order build error","构建订单错误"),
-    BORROW_STATS_IS_NOT_TRANSFERRED("BORROW_STATS_IS_NOT_TRANSFERRED",1540,"borrow stats is not transferred","借款正在审核中"),
-    
+    BORROW_STATS_IS_NOT_TRANSFERRED("BORROW_STATS_IS_NOT_TRANSFERRED",1540,"borrow stats is not transferred",""),
+    BORROW_STATS_IS_FINISHED("BORROW_STATS_IS_FINISHED",1541,"borrow stats is finished",""),
+
     LOAN_UPS_DRIECT_FAIL("LOAN_UPS_DRIECT_FAIL",2107,"loan ups driect fail","请求打款实时失败"),
     LOAN_CONCURRENT_LIMIT("LOAN_CONCURRENT_LIMIT",2110,"loan concurrent limit","同一时刻只能发起一笔贷款申请"),
     LOAN_PERIOD_CAN_NOT_REPAY_ERROR("LOAN_PERIOD_CAN_NOT_REPAY_ERROR",2014,"loan period can not repay error","当前借款未到还款时间"),
@@ -88,7 +89,7 @@ public enum BizExceptionCode {
 
     HAVE_A_REPAYMENT_PROCESSING("HAVE_A_REPAYMENT_PROCESSING",6001,"have a repayment processing","有一笔还款在处理中"),
 
-    HAVE_A_REPAYMENT_PROCESSING_WITHHOLD("HAVE_A_REPAYMENT_PROCESSING_WITHHOLD",6010,"have a repayment processing withold","您的借款正在进行代扣，请半小时后稍后操作"),
+    HAVE_A_REPAYMENT_PROCESSING_WITHHOLD("HAVE_A_REPAYMENT_PROCESSING_WITHHOLD",6010,"have a repayment processing withold","还款已提交,请稍后查询!"),
 
     HAVE_A_RENEWAL_PROCESSING("HAVE_A_RENEWAL_PROCESSING",6002,"have a renewal processing","有一笔续期在处理中"),
     FUNCTIONAL_MAINTENANCE("FUNCTIONAL_MAINTENANCE",6003,"functional maintenance","功能维护中"),

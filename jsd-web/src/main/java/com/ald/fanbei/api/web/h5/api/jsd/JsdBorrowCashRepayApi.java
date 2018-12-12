@@ -114,6 +114,9 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
     	  throw new BizException("borrow cash not exist",BizExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
       }
       bo.borrowId=cashDo.getRid();
+      if(!StringUtils.equals(cashDo.getStatus(), JsdBorrowCashStatus.FINISHED.name())){
+            throw new BizException("borrow stats is finish",BizExceptionCode.BORROW_STATS_IS_NOT_TRANSFERRED);
+      }
       if(!StringUtils.equals(cashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.name())){
             throw new BizException("borrow stats is not transfered",BizExceptionCode.BORROW_STATS_IS_NOT_TRANSFERRED);
       }
