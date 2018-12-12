@@ -376,6 +376,8 @@
         AND
         id > #{id}
         AND
+        user_id = #{userId}
+        AND
         is_main='N'
         AND
         status = 'B'

@@ -420,7 +420,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		bo.repayType= JsdRepayType.WITHHOLD.name();
 		JsdUserBankcardDo currentBankcard=jsdUserBankcardService.getByBankNo(repaymentDo.getCardNumber(),repaymentDo.getUserId());
 		logger.info("currentBankcard="+currentBankcard.getBankCardNumber());
-		JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getNextBankCard(currentBankcard.getRid());
+		JsdUserBankcardDo userBankcardDo=jsdUserBankcardService.getNextBankCard(currentBankcard.getRid(),repaymentDo.getUserId());
 		logger.info("userBankcardDo="+userBankcardDo.getBankCardNumber());
 		bo.bankNo=userBankcardDo.getBankCardNumber();
 		repay(bo,RepayType.WITHHOLD.getCode());

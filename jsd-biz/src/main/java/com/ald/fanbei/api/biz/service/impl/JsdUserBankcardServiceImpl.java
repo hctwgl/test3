@@ -79,9 +79,10 @@ public class JsdUserBankcardServiceImpl extends ParentServiceImpl<JsdUserBankcar
 
 	}
 
+
 	@Override
-	public JsdUserBankcardDo getNextBankCard(Long id){
-		return  jsdUserBankcardDao.getNextBankCard(id);
+	public JsdUserBankcardDo getNextBankCard(Long id,Long userId){
+		return  jsdUserBankcardDao.getNextBankCard(id,userId);
 	}
 
 }
