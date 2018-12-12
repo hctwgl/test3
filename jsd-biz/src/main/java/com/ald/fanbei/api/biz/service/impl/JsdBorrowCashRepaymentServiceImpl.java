@@ -126,7 +126,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			throw e;
 		}finally {
 			unLockRepay(bo.userId);
-			jsdBorrowCashRepaymentService.unLockBorrow(bo.userId);
 		}
 	}
 	private Map<String, Object> doRepay(RepayRequestBo bo,String bankChannel) {
@@ -402,6 +401,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		}finally {
 			// 解锁还款
 			unLockRepay(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
+			jsdBorrowCashRepaymentService.unLockBorrow(repaymentDo.getUserId());
+
 		}
 
 	}
@@ -488,6 +489,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			// 解锁还款
 			unLockRepay(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
+			jsdBorrowCashRepaymentService.unLockBorrow(repaymentDo.getUserId());
+
 		}
 	}
 	private void noticeXgxyRepayResult(JsdBorrowCashRepaymentDo repaymentDo,JsdBorrowLegalOrderRepaymentDo orderRepaymentDo, String status,String errorMsg,JsdRepayType type,String outTradeNo, String code){
