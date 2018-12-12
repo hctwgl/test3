@@ -120,7 +120,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			bo.tradeNo = tradeNo;
             generateRepayRecords(bo);
             try {
-				Thread.sleep(10000);
+				Thread.sleep(30000);
 			}catch (Exception e){
 
 			}
