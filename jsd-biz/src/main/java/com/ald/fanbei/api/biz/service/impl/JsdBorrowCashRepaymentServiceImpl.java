@@ -132,11 +132,6 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 	private Map<String, Object> doRepay(RepayRequestBo bo,String bankChannel) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HashMap<String, Object> bank = jsdUserBankcardDao.getPayTypeByBankNoAndUserId(bo.userId,bo.bankNo);
-		JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.UPS_PAY_TYPE.getCode(),ResourceSecType.PAY_TYPE.getCode());
-		if(null != resourceDo && StringUtils.equals(resourceDo.getValue(),Constants.INVELOMENT_TYPE_PRE_ENV)){
-			bankChannel = BankPayChannel.XIEYI.getCode();
-			bank.put("bankChannel",bankChannel);
-		}
 		KuaijieRepayBo bizObject = new KuaijieRepayBo(bo.repaymentDo,bo);
 		if (BankPayChannel.KUAIJIE.getCode().equals(bankChannel)) {// 快捷支付
 			resultMap = sendKuaiJieSms(bank, bo.tradeNo, bo.amount, bo.userId, bo.userDo.getRealName(), bo.userDo.getIdNumber(),
