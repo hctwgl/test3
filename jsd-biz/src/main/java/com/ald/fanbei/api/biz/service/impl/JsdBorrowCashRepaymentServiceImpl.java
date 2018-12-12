@@ -864,7 +864,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 					public void run() {
                         JsdUserBankcardDo userBankcardDo=null;
 					    if("all".equals(cardType)){
-                            jsdUserBankcardService.getLastBankCard(jsdBorrowCashDo.getUserId());
+							userBankcardDo= jsdUserBankcardService.getLastBankCard(jsdBorrowCashDo.getUserId());
                         }else {
                             userBankcardDo=jsdUserBankcardService.getMainBankByUserId(jsdBorrowCashDo.getUserId());
                         }
