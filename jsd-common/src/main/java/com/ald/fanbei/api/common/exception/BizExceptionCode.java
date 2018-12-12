@@ -26,9 +26,8 @@ public enum BizExceptionCode {
     UPS_PROTOCOL_PAY_CONFIRM_ERROR("UPS_PROTOCOL_PAY_CONFIRM_ERROR",1760,"ups protocol pay confirm error","协议支付确认支付失败"),
     SIGN_RELEASE_ERROR("SIGN_RELEASE_ERROR",1568,"sign release error","银行卡解绑失败"),
     UPS_ORDERNO_BUILD_ERROR("UPS_ORDERNO_BUILD_ERROR",1561,"ups order build error","构建订单错误"),
-    BORROW_STATS_IS_NOT_TRANSFERRED("BORROW_STATS_IS_NOT_TRANSFERRED",1540,"borrow stats is not transferred",""),
-    BORROW_STATS_IS_FINISHED("BORROW_STATS_IS_FINISHED",1541,"borrow stats is finished",""),
-
+    BORROW_STATS_IS_NOT_TRANSFERRED("BORROW_STATS_IS_NOT_TRANSFERRED",1540,"borrow stats is not transferred","借款正在审核中"),
+    BORROW_STATS_IS_FINISHED("BORROW_STATS_IS_FINISHED",1541,"borrow stats is finished","该笔借款已结清"),
     LOAN_UPS_DRIECT_FAIL("LOAN_UPS_DRIECT_FAIL",2107,"loan ups driect fail","请求打款实时失败"),
     LOAN_CONCURRENT_LIMIT("LOAN_CONCURRENT_LIMIT",2110,"loan concurrent limit","同一时刻只能发起一笔贷款申请"),
     LOAN_PERIOD_CAN_NOT_REPAY_ERROR("LOAN_PERIOD_CAN_NOT_REPAY_ERROR",2014,"loan period can not repay error","当前借款未到还款时间"),
