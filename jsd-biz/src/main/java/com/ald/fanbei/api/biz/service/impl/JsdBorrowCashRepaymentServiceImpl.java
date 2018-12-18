@@ -489,7 +489,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			// 解锁还款
 			unLockRepay(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
-			jsdBorrowCashRepaymentService.unLockBorrow(repaymentDo.getUserId());
+			jsdBorrowCashRepaymentService.unLockBorrow(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
 
 		}
 	}
