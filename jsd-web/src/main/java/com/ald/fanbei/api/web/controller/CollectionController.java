@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ald.fanbei.api.biz.third.util.CuiShouUtils;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -139,12 +140,13 @@ public class CollectionController {
     public void addUserContancts(Long userId){
         try {
             JsdUserDo userDo = jsdUserService.getById(userId);
-            String contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
-            if(StringUtils.isNotBlank(contacts)){
+            HashMap<String,Object> contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
+            if(StringUtils.isNotBlank(String.valueOf(contacts))){
                 List<JsdUserContactsDo> userContactsDo= jsdUserContactsService.getUserContactsByUserId(userId);
                 JsdUserContactsDo contactsDo=new JsdUserContactsDo();
                 contactsDo.setUserId(userId);
-                contactsDo.setContactsMobile(StringUtil.filterEmoji(contacts));
+                contactsDo.setContactsMobile(contacts.get("contacts").toString());
+                contactsDo.setMxreportUrl(contacts.get("mxreportUrl").toString());
                 if(userContactsDo.size()==0){
                     jsdUserContactsService.saveRecord(contactsDo);
                 }else {
