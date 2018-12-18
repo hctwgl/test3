@@ -14,7 +14,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum RepayType {
 
-    WITHHOLD("WITHHOLD", "代扣"), KUAIJIE("KUAIJIE", "快捷支付(有短信)");
+    WITHHOLD("WITHHOLD", "代扣"), KUAIJIE("KUAIJIE", "快捷支付(有短信)"),XIEYI("XIEYI", "协议支付");
     private String    code;
 
     private String name;

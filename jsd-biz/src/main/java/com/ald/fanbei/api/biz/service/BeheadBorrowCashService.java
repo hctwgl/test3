@@ -24,7 +24,7 @@ public interface BeheadBorrowCashService extends ParentService<JsdBorrowCashDo, 
 	 */
 	void applyBeheadBorrowCash(ApplyBorrowCashReq cashReq, JsdUserBankcardDo mainCard, TrialBeforeBorrowBo trialBo);
     
-    void dealBorrowSucc(Long cashId, String outTradeNo);
+    void dealBorrowSucc(Long cashId, String outTradeNo,String tradeDate);
     void dealBorrowFail(Long cashId, String outTradeNo, String failMsg);
     void dealBorrowFail(JsdBorrowCashDo cashDo, JsdBorrowLegalOrderDo orderDo, String failMsg);
 

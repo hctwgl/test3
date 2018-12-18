@@ -63,6 +63,8 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
     public JsdH5HandleResponse process(Context context) {
         JsdH5HandleResponse resp = new JsdH5HandleResponse(200, "成功");
         Long userId = context.getUserId();
+        //校验借款是否被代扣锁住
+        jsdBorrowCashRepaymentService.checkBorrowIsLock(userId);
         JsdUserDo jsdUserDo = jsdUserService.getById(userId);
 
         RepayRequestBo bo = this.extractAndCheck(context, userId);
@@ -112,6 +114,9 @@ public class JsdBorrowCashRepayApi implements JsdH5Handle {
     	  throw new BizException("borrow cash not exist",BizExceptionCode.BORROW_CASH_NOT_EXIST_ERROR);
       }
       bo.borrowId=cashDo.getRid();
+      if(StringUtils.equals(cashDo.getStatus(), JsdBorrowCashStatus.FINISHED.name())){
+            throw new BizException("borrow stats is finish",BizExceptionCode.BORROW_STATS_IS_FINISHED);
+      }
       if(!StringUtils.equals(cashDo.getStatus(), JsdBorrowCashStatus.TRANSFERRED.name())){
             throw new BizException("borrow stats is not transfered",BizExceptionCode.BORROW_STATS_IS_NOT_TRANSFERRED);
       }

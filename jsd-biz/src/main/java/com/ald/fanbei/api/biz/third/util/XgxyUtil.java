@@ -71,7 +71,36 @@ public class XgxyUtil extends AbstractThird {
         return false;
     }
 
+    /**
+     * 短信通知
+     *
+     * @param data
+     * @return
+     */
+    public boolean smsNoticeRequest(HashMap<String, String> data) {
+        try {
+            Map<String, String> p = new HashMap<>();
+            data.put("timestamp",String.valueOf(new Date().getTime()));
+            String dataStr = JSON.toJSONString(data);
+            p.put("data", JsdAesUtil.encryptToBase64Third(dataStr, PRIVATE_KEY));
+            p.put("sign", generateSign(JSONObject.parseObject(JSON.toJSONString(data)),PRIVATE_KEY));
+            p.put("appId", APPID);
+            String url = getXgxyUrl()+"/isp/open/third/eca/v1/smsNotify";
+            String reqResult = HttpUtilForXgxy.post(url, JSON.toJSONString(p), JSON.toJSONString(data));
+            if (StringUtil.isBlank(reqResult)) {
+                return false;
+            }
+            XgxyResqBo resp = JSONObject.parseObject(reqResult, XgxyResqBo.class);
+            if (XGXY_REQ_CODE_SUCC.equals(resp.getCode())) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.info("smsNoticeRequest request fail", e);
+        }
 
+        return false;
+
+    }
     /**
      * 还款通知请求
      *
@@ -205,12 +234,14 @@ public class XgxyUtil extends AbstractThird {
      * @param
      * @return
      */
-    public String getOriRateNoticeRequest(String openId) {
+    public String getOriRateNoticeRequest(String openId,String days,String unit) {
 
         try {
             Map<String, Object> params = new HashMap<>();
             Map<String, Object> data = new HashMap<>();
             data.put("openId", openId);
+            data.put("term", days);
+            data.put("unit", unit);
             data.put("timestamp",System.currentTimeMillis()+"");
             String dataStr = JSON.toJSONString(data);
 

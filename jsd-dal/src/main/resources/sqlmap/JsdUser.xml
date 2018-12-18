@@ -7,7 +7,11 @@
     <sql id="queryFields">
         id rid,gmt_create,gmt_modified,user_name,password,salt,gender,nick,avatar,real_name,mobile,email,birthday,province,city,county,address,recommend_id,fail_count,recommend_code,status,register_channel_id,register_channel_point_id,majiabao_name,open_id,id_number 
     </sql>
-    
+
+    <!--清结算系统查询字段-->
+    <sql id="querySettleFields">
+        id rid,real_name,mobile,gender,id_number,birthday
+    </sql>
     <!-- 基本的sql查询条件公共引用 -->
     <sql id="commonCondition">
     	WHERE is_delete = 0
@@ -362,5 +366,12 @@
         LIMIT 0,1
     </select>
     
-    
+    <select id="getUserInfo" resultType="com.ald.fanbei.api.dal.domain.JsdUserDo" parameterType="java.lang.String">
+        SELECT
+        <include refid="querySettleFields" />
+        FROM jsd_user
+        WHERE is_delete = 0 AND mobile = #{mobile}
+        ORDER BY gmt_create DESC
+        LIMIT 0,1
+    </select>
 </mapper>

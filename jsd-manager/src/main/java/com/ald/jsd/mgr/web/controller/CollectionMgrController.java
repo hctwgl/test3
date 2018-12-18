@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.ald.fanbei.api.common.enums.YesNoStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -124,16 +125,27 @@ public class CollectionMgrController extends BaseController{
     	cashDoForMod.setStatus(JsdBorrowCashStatus.FINISHED.name());
     	cashDoForMod.setRemark(reviewRemark);
     	
-    	transactionTemplate.execute(new TransactionCallback<Integer>() {
+    	Integer resultValue = transactionTemplate.execute(new TransactionCallback<Integer>() {
 			public Integer doInTransaction(TransactionStatus status) {
-				jsdBorrowCashService.updateById(cashDoForMod);
-				jsdCollectionBorrowService.updateById(collBorrowDoForMod);
-				cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
-				jsdNoticeRecordService.dealBorrowNoticed(cashDo, XgxyBorrowNoticeBo.gen(cashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.FINISHED.name(), "强制结清"));
-				return 1;
+                try {
+                    jsdBorrowCashService.updateById(cashDoForMod);
+                    jsdCollectionBorrowService.updateById(collBorrowDoForMod);
+                    return 1;
+                } catch (Exception e) {
+                    status.setRollbackOnly();
+                    logger.info("manual error", e);
+                    throw e;
+                }
 			}
 		});
-    	
+    	if(resultValue == 1){
+            try {
+                cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
+                jsdNoticeRecordService.dealBorrowNoticed(cashDo, XgxyBorrowNoticeBo.gen(cashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.FINISHED.name(), "强制结清"));
+            } catch (Exception e){
+                logger.error("notice eca or collection fail error=" + e.getMessage(), e);
+            }
+        }
     	return Resp.succ();
     }
     @RequestMapping(value = { "/borrow/review.json" })
@@ -157,7 +169,7 @@ public class CollectionMgrController extends BaseController{
     				operator, params.reviewStatus, reviewRemark);
     		transactionTemplate.execute(status -> {
 				jsdCollectionBorrowService.updateById(collBorrowDoForMod);
-	    		collectionNoticeUtil.collectReconciliateNotice(MapUtils.cstStrKeyMap("dataId", legalOrderDo.getRid(), "reviewResult", params.reviewStatus));
+	    		collectionNoticeUtil.collectReconciliateNotice(MapUtils.cstStrKeyMap("dataId", legalOrderDo.getRid(), "reviewResult", params.reviewStatus, "remark", params.reviewRemark));
 				return 1;
     		});
     	}else if(CommonReviewStatus.PASS.name().equals(params.reviewStatus)) {
@@ -168,16 +180,18 @@ public class CollectionMgrController extends BaseController{
     		cashDoForMod.setRid(cashDo.getRid());
         	cashDoForMod.setStatus(JsdBorrowCashStatus.FINISHED.name());
         	cashDoForMod.setRemark(reviewRemark);
-        	
-        	transactionTemplate.execute(status -> {
+
+			Integer resultValue =  transactionTemplate.execute(status -> {
 				jsdBorrowCashService.updateById(cashDoForMod);
 				jsdCollectionBorrowService.updateById(collBorrowDoForMod);
-				jsdNoticeRecordService.dealBorrowNoticed(cashDo, XgxyBorrowNoticeBo.gen(cashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.FINISHED.name(), "审核强制结清"));
-				
-				cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
-				collectionNoticeUtil.collectReconciliateNotice(MapUtils.cstStrKeyMap("dataId", legalOrderDo.getRid(), "reviewResult", params.reviewStatus));
 				return 1;
     		});
+
+			if(resultValue == 1){
+				jsdNoticeRecordService.dealBorrowNoticed(cashDo, XgxyBorrowNoticeBo.gen(cashDo.getTradeNoXgxy(), XgxyBorrowNotifyStatus.FINISHED.name(), "审核强制结清"));
+				cuiShouUtils.collectImport(legalOrderDo.getRid().toString());
+				collectionNoticeUtil.collectReconciliateNotice(MapUtils.cstStrKeyMap("dataId", legalOrderDo.getRid(), "reviewResult", params.reviewStatus, "remark", params.reviewRemark));
+			}
     	}
     	
     	return Resp.succ();
@@ -247,11 +261,11 @@ public class CollectionMgrController extends BaseController{
             
             transactionTemplate.execute(new TransactionCallback<Integer>() {
     			public Integer doInTransaction(TransactionStatus status) {
-    				mgrOfflineRepaymentService.dealOfflineRepayment(offlineData, JsdRepayType.REVIEW_COLLECTION, operator);
     				jsdCollectionRepaymentService.updateById(collRepayDo);
     				return 1;
     			}
     		});
+			mgrOfflineRepaymentService.dealOfflineRepayment(offlineData, JsdRepayType.REVIEW_COLLECTION, operator);
             jsdCollectionService.nofityRepayment(collRepayDo.getRepayAmount(), collRepayDo.getTradeNo(), cashDo.getBorrowNo(), orderDo.getRid(), cashDo.getUserId(), JsdRepayType.REVIEW_COLLECTION, params.reviewStatus);
             
     	}else if(CommonReviewStatus.REFUSE.name().equals(params.reviewStatus)) {

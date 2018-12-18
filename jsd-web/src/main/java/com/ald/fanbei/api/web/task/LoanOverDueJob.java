@@ -9,7 +9,9 @@ import javax.annotation.Resource;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
+import com.ald.fanbei.api.biz.third.util.JobThreadPoolUtils;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.dal.dao.JsdContractPdfDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
@@ -59,7 +61,8 @@ public class LoanOverDueJob {
     JsdUserContactsService jsdUserContactsService;
     @Resource
     private JsdBorrowCashService borrowCashService;
-
+    @Resource
+    JsdContractPdfDao jsdContractPdfDao;
     @Resource
     private JsdBorrowCashOverdueLogService jsdBorrowCashOverdueLogService;
     @Resource
@@ -76,19 +79,23 @@ public class LoanOverDueJob {
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
     @Resource
     JsdCollectionBorrowService jsdCollectionBorrowService;
+    @Resource
+    JobThreadPoolUtils jobThreadPoolUtils;
+    @Resource
+    JsdResourceService jsdResourceService;
 
 
 
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 10 0 * * ?")
     public void laonDueJob(){
         try{
-        	String curHostIp = GetHostIpUtil.getIpAddress();
-        	logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
+            String curHostIp = GetHostIpUtil.getIpAddress();
+            logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
             if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
-        		int pageSize = 200;
+                int pageSize = 200;
                 int totalRecord = borrowCashService.getBorrowCashOverdueCount();
                 int totalPageNum = (totalRecord + pageSize - 1) / pageSize;
                 if (totalRecord == 0) {
@@ -96,23 +103,22 @@ public class LoanOverDueJob {
                 }else {
                     logger.info("borrowCashDueJob run start,time=" + new Date());
                     for(int i = 0; i < totalPageNum; i++){
-                        List<JsdBorrowCashDo> borrowCashDos=borrowCashService.getBorrowCashOverdue(totalPageNum*i,pageSize);
+                        List<JsdBorrowCashDo> borrowCashDos=borrowCashService.getBorrowCashOverdue(pageSize*i,pageSize);
                         //计算逾期
                         this.dealOverdueRecords(borrowCashDos);
                         //通知催收逾期人员通讯录
-                        new Thread(new Runnable() {
+                        jobThreadPoolUtils.getThreadPool().execute(new Runnable() {
                             @Override
                             public void run() {
                                 collectionPush(borrowCashDos);
                             }
-                        }).start();
-//                        collectionPush(borrowCashDos);
+                        });
                         //增加已入催数据
                         this.addCollectionBorrow(borrowCashDos);
                     }
                 }
                 logger.info("borrowCashDueJob run end,time=" + new Date());
-        	}
+            }
         } catch (Exception e){
             logger.error("borrowCashDueJob  error, case=",e);
         }
@@ -127,7 +133,7 @@ public class LoanOverDueJob {
         while (iterator.hasNext()){
             JsdBorrowCashDo jsdBorrowCashDo = iterator.next();
             try {
-            	addUserContancts(jsdBorrowCashDo.getUserId());
+                addUserContancts(jsdBorrowCashDo.getUserId());
                 logger.info("calcuOverdueRecords do borrowCashDueJob, borrowCashId="+jsdBorrowCashDo.getRid());
                 if(jsdBorrowCashOverdueLogService.getBorrowCashOverDueLogByNow(String.valueOf(jsdBorrowCashDo.getRid()))>0){
                     logger.warn("calcuOverdueRecords, ignore have dealed borrowCashId "+jsdBorrowCashDo.getRid());
@@ -141,16 +147,21 @@ public class LoanOverDueJob {
                             .subtract(jsdBorrowCashDo.getRepayAmount()).subtract(borrowCashRepaymentDo.getRepaymentAmount());// 当前本金
                 }
                 if (currentAmount.compareTo(BigDecimal.ZERO) == 0) {
-                	logger.warn("calcuOverdueRecords, overdue amount final is 0, ignore borrowCashId "+jsdBorrowCashDo.getRid());
+                    logger.warn("calcuOverdueRecords, overdue amount final is 0, ignore borrowCashId "+jsdBorrowCashDo.getRid());
                     iterator.remove();
                     continue;
                 }
                 BigDecimal oldOverdueAmount = jsdBorrowCashDo.getOverdueAmount();//当前逾期
                 BigDecimal newOverdueAmount = currentAmount.multiply(jsdBorrowCashDo.getOverdueRate().divide(new BigDecimal(360),6,BigDecimal.ROUND_HALF_UP)).setScale(2,BigDecimal.ROUND_HALF_UP);
+                JsdBorrowCashDo borrowCashDo = new JsdBorrowCashDo();
                 jsdBorrowCashDo.setOverdueAmount(oldOverdueAmount.add(newOverdueAmount));
                 jsdBorrowCashDo.setOverdueDay(jsdBorrowCashDo.getOverdueDay()+1);
                 jsdBorrowCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
-                borrowCashService.updateById(jsdBorrowCashDo);
+                borrowCashDo.setOverdueAmount(oldOverdueAmount.add(newOverdueAmount));
+                borrowCashDo.setOverdueDay(jsdBorrowCashDo.getOverdueDay());
+                borrowCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
+                borrowCashDo.setRid(jsdBorrowCashDo.getRid());
+                borrowCashService.updateById(borrowCashDo);
                 JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo=jsdBorrowLegalOrderCashService.getOverdueBorrowLegalOrderCashByBorrowId(jsdBorrowCashDo.getRid());
                 if(borrowLegalOrderCashDo!=null){
                     BigDecimal orderAmount = BigDecimalUtil.add(borrowLegalOrderCashDo.getAmount(), borrowLegalOrderCashDo.getSumRepaidInterest(), borrowLegalOrderCashDo.getSumRepaidPoundage()).subtract(borrowLegalOrderCashDo.getRepaidAmount());// 当前本金
@@ -159,7 +170,12 @@ public class LoanOverDueJob {
                     borrowLegalOrderCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
                     borrowLegalOrderCashDo.setOverdueDay((short) (borrowLegalOrderCashDo.getOverdueDay()+1));
                     borrowLegalOrderCashDo.setOverdueAmount(oldOverdueorderAmount.add(newOverdueorderAmount));
-                    jsdBorrowLegalOrderCashService.updateById(borrowLegalOrderCashDo);
+                    JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = new JsdBorrowLegalOrderCashDo();
+                    jsdBorrowLegalOrderCashDo.setRid(borrowLegalOrderCashDo.getRid());
+                    jsdBorrowLegalOrderCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
+                    jsdBorrowLegalOrderCashDo.setOverdueDay((short) (borrowLegalOrderCashDo.getOverdueDay()));
+                    jsdBorrowLegalOrderCashDo.setOverdueAmount(oldOverdueorderAmount.add(newOverdueorderAmount));
+                    jsdBorrowLegalOrderCashService.updateById(jsdBorrowLegalOrderCashDo);
                     jsdBorrowCashOverdueLogService.saveRecord(buildLoanOverdueLog(borrowLegalOrderCashDo.getRid(),orderAmount,newOverdueorderAmount,borrowLegalOrderCashDo.getUserId(), OverdueLogType.ORDER_CASH.name()) );
                 }
                 //新增逾期日志
@@ -173,179 +189,198 @@ public class LoanOverDueJob {
 
 
     void addUserContancts(Long userId){
-    	try {
-    		JsdUserDo userDo = jsdUserService.getById(userId);
-            HashMap<String,Object> contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
-            if(StringUtils.isNotBlank(String.valueOf(contacts))){
+        try {
+            JsdUserDo userDo = jsdUserService.getById(userId);
+            String contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
+            if(StringUtils.isNotBlank(contacts)){
                 List<JsdUserContactsDo> userContactsDo= jsdUserContactsService.getUserContactsByUserId(userId);
                 JsdUserContactsDo contactsDo=new JsdUserContactsDo();
                 contactsDo.setUserId(userId);
-                contactsDo.setContactsMobile(contacts.get("contacts").toString());
-                contactsDo.setMxreportUrl(contacts.get("mxreportUrl").toString());
+                contactsDo.setContactsMobile(StringUtil.filterEmoji(contacts));
                 if(userContactsDo.size()==0){
                     jsdUserContactsService.saveRecord(contactsDo);
                 }else {
                     jsdUserContactsService.updateByUserId(contactsDo);
                 }
             }
-    	}catch (Exception e) {
-    		logger.error("calcuOverdueRecords.addUserContancts error, userId = "+ userId, e);
-		}
+        }catch (Exception e) {
+            logger.error("calcuOverdueRecords.addUserContancts error, userId = "+ userId, e);
+        }
     }
 
 
     void  collectionPush(List<JsdBorrowCashDo> list){
-    	if(list.size() == 0){
+        if(list.size() == 0){
             logger.error("collectionPush needn't, list size is 0");
- 		   	return;
+            return;
         }
-    	
+
         List<Map<String,String>>  data = new ArrayList<>();
         Map<String,String>  param = new HashMap<>();
+        JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.COLLECT.name(),ResourceSecType.COLLECT_PRODUCT.name());
         for(JsdBorrowCashDo borrowCashDo : list){
-
-            //--------------------start  催收上报接口需要参数---------------------------
-            Long borrowId = borrowCashDo.getRid();
-            //搭售商品信息
-            JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastValidOrderByBorrowId(borrowId);
-            JsdUserDo userDo= jsdUserService.getById(jsdBorrowLegalOrder.getUserId());
-            Map<String, String> buildData = new HashMap<String, String>();
-            param.put("borrowNo",borrowCashDo.getTradeNoXgxy());
-            HashMap<String,String> map = xgxyUtil.borrowNoticeRequest(param);
-            if(jsdBorrowLegalOrder != null){
-                buildData.put("goodsName",jsdBorrowLegalOrder.getGoodsName());//商品名称
-                buildData.put("goodsPrice",String.valueOf(jsdBorrowLegalOrder.getPriceAmount()));//商品价格
-                buildData.put("orderStatus",map.get("orderStatus"));//订单状态
-                buildData.put("expressNo",map.get("shipperNumber"));//快递单号
-                buildData.put("expressCompany",map.get("shipperName"));//物流公司
-                buildData.put("consigneeName",map.get("consignee"));//收货人姓名
-                buildData.put("consigneePhone",map.get("mobile"));//收货人手机号码
-                buildData.put("consigneeAddress",map.get("fullAddress"));//收货地址
-                buildData.put("deliveryTime",map.get("gmtSended"));//发货时间
-                buildData.put("gmtConfirmReceived",map.get("gmtReceived"));//确定收货时间
-                buildData.put("logisticsInfo",map.get("traces"));//物流信息
-                buildData.put("idNumberAddress",map.get("idNumberAddress")==null?userDo.getAddress():map.get("idNumberAddress").toString());//户籍地址
-                buildData.put("company",map.get("company")==null?"":map.get("company").toString());//公司单位
-                buildData.put("job",map.get("job")==null?"":map.get("job").toString());//job
-                buildData.put("marriageState",map.get("marriageState")==null?"":map.get("marriageState").toString());//N未婚Y已婚P订婚
-                buildData.put("companyTelephone",map.get("companyTelephone")==null?"":map.get("companyTelephone").toString());//单位电话
-                buildData.put("salary",map.get("salary")==null?"":map.get("salary").toString());//税前收入
-                buildData.put("channelName",map.get("channelName")==null?"":map.get("channelName").toString());//渠道名称
-                buildData.put("faceUrl",map.get("faceUrl")==null?"":map.get("faceUrl").toString());//人脸识别图片
-                buildData.put("idBehindUrl",map.get("idBehindUrl")==null?"":map.get("idBehindUrl").toString());//身份证反面照片
-                buildData.put("idFrontUrl",map.get("idFrontUrl")==null?"":map.get("idFrontUrl").toString());//身份证正面照片
-                buildData.put("borrowAddress",map.get("borrowAddress")==null?"":String.valueOf(map.get("borrowAddress")));//借款详细地址
-                buildData.put("latitude",map.get("latitude")==null?"":String.valueOf(map.get("latitude")));//借款纬度
-                buildData.put("longitude",map.get("longitude")==null?"":String.valueOf(map.get("longitude")));//借款经度
-            }
-            //用户信息
-            if(userDo != null){
-                buildData.put("userId",String.valueOf(userDo.getRid()));//userId
-                buildData.put("realName",userDo.getRealName());//姓名
-                buildData.put("userName",userDo.getMobile());//账号
-                buildData.put("idNumber",userDo.getIdNumber());//身份证号码
-                buildData.put("phoneNumber",userDo.getMobile());//电话号码
-                buildData.put("address",userDo.getAddress());//户籍地址
-                String gender = userDo.getGender();
-                if(StringUtil.equals(gender, GenderType.M.getCode())){
-                    gender = GenderType.M.getName();
-                }else if(StringUtil.equals(gender,GenderType.F.getCode())){
-                    gender = GenderType.F.getName();
-                }else {
-                    gender = GenderType.U.getName();
+            try {
+                //--------------------start  催收上报接口需要参数---------------------------
+                Long borrowId = borrowCashDo.getRid();
+                logger.info("collectionPush is borrowId = " + borrowId);
+                //搭售商品信息
+                JsdBorrowLegalOrderDo jsdBorrowLegalOrder = jsdBorrowLegalOrderDao.getLastValidOrderByBorrowId(borrowId);
+                JsdUserDo userDo= jsdUserService.getById(jsdBorrowLegalOrder.getUserId());
+                Map<String, String> buildData = new HashMap<String, String>();
+                param.put("borrowNo",borrowCashDo.getTradeNoXgxy());
+                HashMap<String,String> map = xgxyUtil.borrowNoticeRequest(param);
+                if(jsdBorrowLegalOrder != null){
+                    buildData.put("goodsName",jsdBorrowLegalOrder.getGoodsName());//商品名称
+                    buildData.put("goodsPrice",String.valueOf(jsdBorrowLegalOrder.getPriceAmount()));//商品价格
+                    buildData.put("orderStatus",map.get("orderStatus"));//订单状态
+                    buildData.put("expressNo",map.get("shipperNumber"));//快递单号
+                    buildData.put("expressCompany",map.get("shipperName"));//物流公司
+                    buildData.put("consigneeName",map.get("consignee"));//收货人姓名
+                    buildData.put("consigneePhone",map.get("mobile"));//收货人手机号码
+                    buildData.put("consigneeAddress",map.get("fullAddress"));//收货地址
+                    buildData.put("deliveryTime",map.get("gmtSended"));//发货时间
+                    buildData.put("gmtConfirmReceived",map.get("gmtReceived"));//确定收货时间
+                    buildData.put("logisticsInfo",map.get("traces"));//物流信息
+                    buildData.put("idNumberAddress",map.get("idNumberAddress")==null?userDo.getAddress():map.get("idNumberAddress").toString());//户籍地址
+                    buildData.put("company",map.get("company")==null?"":map.get("company").toString());//公司单位
+                    buildData.put("job",map.get("job")==null?"":map.get("job").toString());//job
+                    buildData.put("marriageState",map.get("marriageState")==null?"":map.get("marriageState").toString());//N未婚Y已婚P订婚
+                    buildData.put("companyTelephone",map.get("companyTelephone")==null?"":map.get("companyTelephone").toString());//单位电话
+                    buildData.put("salary",map.get("salary")==null?"":map.get("salary").toString());//税前收入
+                    buildData.put("channelName",map.get("channelName")==null?"":map.get("channelName").toString());//渠道名称
+                    buildData.put("faceUrl",map.get("faceUrl")==null?"":map.get("faceUrl").toString());//人脸识别图片
+                    buildData.put("idBehindUrl",map.get("idBehindUrl")==null?"":map.get("idBehindUrl").toString());//身份证反面照片
+                    buildData.put("idFrontUrl",map.get("idFrontUrl")==null?"":map.get("idFrontUrl").toString());//身份证正面照片
+                    buildData.put("borrowAddress",map.get("borrowAddress")==null?"":String.valueOf(map.get("borrowAddress")));//借款详细地址
+                    buildData.put("latitude",map.get("latitude")==null?"":String.valueOf(map.get("latitude")));//借款纬度
+                    buildData.put("longitude",map.get("longitude")==null?"":String.valueOf(map.get("longitude")));//借款经度
                 }
-                buildData.put("gender",gender);//性别(非必填)
-                buildData.put("birthday",userDo.getBirthday());//生日(非必填)
-            }
-            //案件信息
-            JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(jsdBorrowLegalOrder.getRid());
+                //用户信息
+                if(userDo != null){
+                    buildData.put("userId",String.valueOf(userDo.getRid()));//userId
+                    buildData.put("realName",userDo.getRealName());//姓名
+                    buildData.put("userName",userDo.getMobile());//账号
+                    buildData.put("idNumber",userDo.getIdNumber());//身份证号码
+                    buildData.put("phoneNumber",userDo.getMobile());//电话号码
+                    buildData.put("address",userDo.getAddress());//户籍地址
+                    String gender = userDo.getGender();
+                    if(StringUtil.equals(gender, GenderType.M.getCode())){
+                        gender = GenderType.M.getName();
+                    }else if(StringUtil.equals(gender,GenderType.F.getCode())){
+                        gender = GenderType.F.getName();
+                    }else {
+                        gender = GenderType.U.getName();
+                    }
+                    buildData.put("gender",gender);//性别(非必填)
+                    buildData.put("birthday",userDo.getBirthday());//生日(非必填)
+                }
+                //案件信息
+                JsdBorrowLegalOrderCashDo orderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByOrderId(jsdBorrowLegalOrder.getRid());
 
-            BigDecimal repayAmount = BigDecimal.ZERO;
-            BigDecimal residueAmount = BigDecimal.ZERO;//应还金额
-            BigDecimal currentAmount = BigDecimal.ZERO;//应还本金
-            BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
-            //应还本金
-            currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidOverdue()).subtract(borrowCashDo.getRepayAmount());
-            //催收金额
-            BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
-            //应还金额
-            residueAmount = collectAmount.subtract(borrowCashDo.getRepayAmount());
-            //借款费用
-            BigDecimal borrowCash = BigDecimalUtil.add(borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidPoundage(),borrowCashDo.getSumRepaidInterest());
-            //逾期金额
-            overdueAmount = borrowCashDo.getOverdueAmount();
-            //还款金额
-            repayAmount = borrowCashDo.getRepayAmount();
-            //借款金额
-            BigDecimal borrowAmount = borrowCashDo.getAmount();
-            if(orderCashDo != null){
+                BigDecimal repayAmount = BigDecimal.ZERO;
+                BigDecimal residueAmount = BigDecimal.ZERO;//应还金额
+                BigDecimal currentAmount = BigDecimal.ZERO;//应还本金
+                BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
                 //应还本金
-                currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());
+                currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidOverdue()).subtract(borrowCashDo.getRepayAmount());
                 //催收金额
-                collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
+                BigDecimal collectAmount = BigDecimalUtil.add(borrowCashDo.getAmount(),borrowCashDo.getOverdueAmount(),borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getSumRepaidOverdue(),borrowCashDo.getSumRepaidPoundage());
                 //应还金额
-                residueAmount = BigDecimalUtil.add(residueAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount()).subtract(orderCashDo.getRepaidAmount());
+                residueAmount = collectAmount.subtract(borrowCashDo.getRepayAmount());
                 //借款费用
-                borrowCash = BigDecimalUtil.add(borrowCash,orderCashDo.getPoundageAmount(),orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getSumRepaidInterest());
+                BigDecimal borrowCash = BigDecimalUtil.add(borrowCashDo.getInterestAmount(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidPoundage(),borrowCashDo.getSumRepaidInterest());
                 //逾期金额
-                overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(), orderCashDo.getOverdueAmount());
+                overdueAmount = borrowCashDo.getOverdueAmount();
                 //还款金额
-                repayAmount = borrowCashDo.getRepayAmount().add(orderCashDo.getRepaidAmount());
+                repayAmount = borrowCashDo.getRepayAmount();
                 //借款金额
-                borrowAmount = borrowAmount.add(orderCashDo.getAmount());
+                BigDecimal borrowAmount = borrowCashDo.getAmount();
+                //滞纳金
+                BigDecimal lateFee = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(),borrowCashDo.getSumRepaidOverdue());
+                if(orderCashDo != null){
+                    //应还本金
+                    currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());
+                    //催收金额
+                    collectAmount = BigDecimalUtil.add(collectAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount());
+                    //应还金额
+                    residueAmount = BigDecimalUtil.add(residueAmount,orderCashDo.getAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidOverdue(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getOverdueAmount()).subtract(orderCashDo.getRepaidAmount());
+                    //借款费用
+                    borrowCash = BigDecimalUtil.add(borrowCash,orderCashDo.getPoundageAmount(),orderCashDo.getInterestAmount(),orderCashDo.getSumRepaidPoundage(),orderCashDo.getSumRepaidInterest());
+                    //逾期金额
+                    overdueAmount = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(), orderCashDo.getOverdueAmount());
+                    //还款金额
+                    repayAmount = borrowCashDo.getRepayAmount().add(orderCashDo.getRepaidAmount());
+                    //借款金额
+                    borrowAmount = borrowAmount.add(orderCashDo.getAmount());
+                    //滞纳金
+                    lateFee = BigDecimalUtil.add(lateFee,orderCashDo.getOverdueAmount(),orderCashDo.getSumRepaidOverdue());
+                }
+                buildData.put("productId",resourceDo.getValue2());//产品id
+                buildData.put("caseName",resourceDo.getValue()+"_"+borrowCashDo.getType());//案件名称
+                buildData.put("caseType",resourceDo.getValue1());//案件类型
+                buildData.put("collectAmount",String.valueOf(collectAmount));//催收金额
+                buildData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
+                buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
+                buildData.put("currentAmount",String.valueOf(currentAmount));//委案未还金额
+                buildData.put("dataId",String.valueOf(jsdBorrowLegalOrder.getRid()));//源数据id
+                buildData.put("planRepaymenTime",DateUtil.formatDateTime(borrowCashDo.getGmtPlanRepayment()));//计划还款时间
+                buildData.put("overdueAmount",String.valueOf(overdueAmount));//逾期金额
+                //借款详情
+                buildData.put("borrowNo",borrowCashDo.getBorrowNo());//借款编号
+                buildData.put("borrowStatus",borrowCashDo.getStatus());//借款状态
+                buildData.put("borrowCycle",borrowCashDo.getType());//借款周期
+                buildData.put("cardNumber",borrowCashDo.getCardNumber());//收款账号
+                buildData.put("borrowAddress",map.get("borrowAddress"));//借款地址
+                buildData.put("longitude",map.get("longitude"));//借款经度
+                buildData.put("latitude",map.get("latitude"));//借款纬度
+                buildData.put("borrowTime",DateUtil.formatDateTime(borrowCashDo.getGmtCreate()));//借款时间
+                buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(borrowCashDo.getGmtPlanRepayment()),DateUtil.formatDateToYYYYMMdd(new Date()))));//逾期天数
+                buildData.put("borrowAmount",String.valueOf(borrowAmount));//借款金额(委案金额)
+                buildData.put("accountAmount",String.valueOf(borrowCashDo.getArrivalAmount()));//到账金额
+                buildData.put("borrowCash",String.valueOf(borrowCash));//借款费用(手续费加利息)
+                buildData.put("appName","jsd");//借款app
+                JsdContractPdfDo jsdContractPdfDo = new JsdContractPdfDo();
+                jsdContractPdfDo.setType((byte) 4);
+                jsdContractPdfDo.setTypeId(borrowCashDo.getRid());
+                JsdContractPdfDo contractPdfDo = jsdContractPdfDao.selectByTypeId(jsdContractPdfDo);
+                if(null != contractPdfDo){
+                    buildData.put("contractPdfUrl",contractPdfDo.getContractPdfUrl());
+                }else {
+                    buildData.put("contractPdfUrl","");
+                }
+                buildData.put("payTime",DateUtil.formatDateTime(borrowCashDo.getGmtArrival()));//打款时间
+                buildData.put("type","");
+                List<Map<String, String>> arrayList = new ArrayList<>();
+                List<JsdBorrowCashRenewalDo> renewalList = jsdBorrowCashRenewalService.getJsdRenewalByBorrowIdAndStatus(borrowCashDo.getRid());
+                for (JsdBorrowCashRenewalDo renewalDo : renewalList){
+                    Map<String, String> renewalData = new HashMap<String, String>();
+                    renewalData.put("tradeNo",renewalDo.getTradeNo());//续期编号
+                    renewalData.put("renewalAmount",String.valueOf(renewalDo.getRenewalAmount()));//续期本金
+                    renewalData.put("renewalRepayAmount",String.valueOf(renewalDo.getCapital()));//本期已还本金（
+                    renewalData.put("priorFee",String.valueOf(BigDecimalUtil.add(renewalDo.getPriorOverdue(),renewalDo.getPriorInterest(),renewalDo.getPriorPoundage())));//上期费用
+                    renewalData.put("renewalPoundage",String.valueOf(renewalDo.getNextPoundage()));//续期手续费
+                    renewalData.put("renewalStatus",renewalDo.getStatus());//状态
+                    renewalData.put("renewalTime",DateUtil.formatDateTime(renewalDo.getGmtCreate()));//续期时间
+                    lateFee = BigDecimalUtil.add(lateFee,renewalDo.getPriorOverdue());
+                    arrayList.add(renewalData);
+                }
+                buildData.put("renewalData",JSON.toJSONString(arrayList));
+                buildData.put("lateFee",String.valueOf(lateFee));
+                //--------------------end  催收上报接口需要参数---------------------------
+                data.add(buildData);
+            }catch (Exception e){
+                logger.info("collectionPush is error " + borrowCashDo.getRid(),e);
+                e.printStackTrace();
             }
-            buildData.put("productId","1");//产品id
-            buildData.put("caseName","jsd");//案件名称
-            buildData.put("caseType","jsd");//案件类型
-            buildData.put("collectAmount",String.valueOf(collectAmount));//催收金额
-            buildData.put("repaymentAmount",String.valueOf(repayAmount));//累计还款金额
-            buildData.put("residueAmount",String.valueOf(residueAmount));//剩余应还
-            buildData.put("currentAmount",String.valueOf(currentAmount));//委案未还金额
-            buildData.put("dataId",String.valueOf(jsdBorrowLegalOrder.getRid()));//源数据id
-            buildData.put("planRepaymenTime",DateUtil.formatDateTime(borrowCashDo.getGmtPlanRepayment()));//计划还款时间
-            buildData.put("overdueAmount",String.valueOf(overdueAmount));//逾期金额
-            //借款详情
-            buildData.put("borrowNo",borrowCashDo.getBorrowNo());//借款编号
-            buildData.put("borrowStatus",borrowCashDo.getStatus());//借款状态
-            buildData.put("borrowCycle",borrowCashDo.getType());//借款周期
-            buildData.put("cardNumber",borrowCashDo.getCardNumber());//收款账号
-            buildData.put("borrowAddress",map.get("borrowAddress"));//借款地址
-            buildData.put("longitude",map.get("longitude"));//借款经度
-            buildData.put("latitude",map.get("latitude"));//借款纬度
-            buildData.put("borrowTime",DateUtil.formatDateTime(borrowCashDo.getGmtCreate()));//借款时间
-            buildData.put("overdueDay",String.valueOf(DateUtil.getNumberOfDatesBetween(DateUtil.formatDateToYYYYMMdd(borrowCashDo.getGmtPlanRepayment()),DateUtil.formatDateToYYYYMMdd(new Date()))));//逾期天数
-            buildData.put("borrowAmount",String.valueOf(borrowAmount));//借款金额(委案金额)
-            buildData.put("accountAmount",String.valueOf(borrowCashDo.getArrivalAmount()));//到账金额
-            buildData.put("borrowCash",String.valueOf(borrowCash));//借款费用(手续费加利息)
-            buildData.put("appName","jsd");//借款app
-            buildData.put("contractPdfUrl","");
-            buildData.put("payTime",DateUtil.formatDateTime(borrowCashDo.getGmtArrival()));//打款时间
-            buildData.put("type","");
-            List<Map<String, String>> arrayList = new ArrayList<>();
-            List<JsdBorrowCashRenewalDo> renewalList = jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(borrowCashDo.getRid());
-            for (JsdBorrowCashRenewalDo renewalDo : renewalList){
-                Map<String, String> renewalData = new HashMap<String, String>();
-                renewalData.put("tradeNo",renewalDo.getTradeNo());//续期编号
-                renewalData.put("renewalAmount",String.valueOf(renewalDo.getRenewalAmount()));//续期本金
-                renewalData.put("renewalRepayAmount",String.valueOf(renewalDo.getCapital()));//本期已还本金（
-                renewalData.put("priorFee",String.valueOf(BigDecimalUtil.add(renewalDo.getPriorOverdue(),renewalDo.getPriorInterest(),renewalDo.getPriorPoundage())));//上期费用
-                renewalData.put("renewalPoundage",String.valueOf(renewalDo.getNextPoundage()));//续期手续费
-                renewalData.put("renewalStatus",renewalDo.getStatus());//状态
-                renewalData.put("renewalTime",DateUtil.formatDateTime(renewalDo.getGmtCreate()));//续期时间
-                arrayList.add(renewalData);
-            }
-            buildData.put("renewalData",JSON.toJSONString(arrayList));
-            //--------------------end  催收上报接口需要参数---------------------------
-            data.add(buildData);
+
         }
-        logger.info("data = " + data);
         collectionNoticeUtil.noticeCollectOverdue(data);
     }
 
 
     public void addCollectionBorrow(List<JsdBorrowCashDo> list){
         for(JsdBorrowCashDo borrowCashDo : list){
-        	try {
+            try {
 
                 Long borrowId = borrowCashDo.getRid();
                 JsdCollectionBorrowDo jsdCollectionBorrowDo = jsdCollectionBorrowService.selectByBorrowId(borrowId);
@@ -353,27 +388,24 @@ public class LoanOverDueJob {
                 borrowDo.setBorrowId(borrowCashDo.getRid());
                 borrowDo.setReviewStatus(CommonReviewStatus.WAIT.name());
                 borrowDo.setStatus(CollectionBorrowStatus.NOTICED.name());
-                if(jsdCollectionBorrowDo != null){
-                    borrowDo.setRid(jsdCollectionBorrowDo.getRid());
-                    jsdCollectionBorrowService.updateById(borrowDo);
-                }else {
+                if(jsdCollectionBorrowDo == null){
                     jsdCollectionBorrowService.saveRecord(borrowDo);
                 }
-        	}catch (Exception e) {
-        		logger.error("calcuOverdueRecords.addCollectionBorrow error, borrowCashId = " + borrowCashDo.getRid(), e);
-			}
+            }catch (Exception e) {
+                logger.error("calcuOverdueRecords.addCollectionBorrow error, borrowCashId = " + borrowCashDo.getRid(), e);
+            }
         }
     }
 
 
-   private JsdBorrowCashOverdueLogDo buildLoanOverdueLog(Long borrowId, BigDecimal currentAmount, BigDecimal interest, Long userId, String type){
-       JsdBorrowCashOverdueLogDo overdueLog = new JsdBorrowCashOverdueLogDo();
-       overdueLog.setBorrowId(borrowId);
-       overdueLog.setCurrentAmount(currentAmount);
-       overdueLog.setInterest(interest);
-       overdueLog.setUserId(userId);
-       overdueLog.setType(type);
-       return overdueLog;
-   }
+    private JsdBorrowCashOverdueLogDo buildLoanOverdueLog(Long borrowId, BigDecimal currentAmount, BigDecimal interest, Long userId, String type){
+        JsdBorrowCashOverdueLogDo overdueLog = new JsdBorrowCashOverdueLogDo();
+        overdueLog.setBorrowId(borrowId);
+        overdueLog.setCurrentAmount(currentAmount);
+        overdueLog.setInterest(interest);
+        overdueLog.setUserId(userId);
+        overdueLog.setType(type);
+        return overdueLog;
+    }
 
 }

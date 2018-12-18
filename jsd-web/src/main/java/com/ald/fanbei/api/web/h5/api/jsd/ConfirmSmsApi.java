@@ -6,6 +6,7 @@ package com.ald.fanbei.api.web.h5.api.jsd;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
 
@@ -13,6 +14,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -114,6 +116,8 @@ public class ConfirmSmsApi implements JsdH5Handle {
 
 		Map<String, Object> map = new HashMap<String, Object>();
  		if(SmsCodeType.REPAY.getCode().equals(type)){
+             //校验借款是否被代扣锁住
+			repaymentService.checkBorrowIsLock(userId);
  			if(repaymentDo!=null){
  				busiFlag=repaymentDo.getTradeNo();
  			}else {
@@ -124,6 +128,8 @@ public class ConfirmSmsApi implements JsdH5Handle {
 				// 未获取到缓存数据，支付订单过期
 				throw new BizException(BizExceptionCode.UPS_CACHE_EXPIRE);
 			}
+
+
 
 			switch (beanName.toString()) {
 				case "jsdBorrowCashRepaymentService":

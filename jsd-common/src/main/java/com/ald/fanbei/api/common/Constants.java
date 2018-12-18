@@ -102,5 +102,13 @@ public class Constants {
 	public static final String JSD_RATE_INFO = "JSD_RATE_INFO";
 	public static final String JSD_CONFIG_REVIEW_MODE = "JSD_CONFIG_REVIEW_MODE";
 
+	public static final String JSD_FINANCE_CONFIG = "JSD_FINANCE_CONFIG";
+
+
+	//资产包
+	public static final String CACHEKEY_ASSETPACKAGE_LOCK = "ala_asset_package_lock";
+	public static final String CACHEKEY_ASSETPACKAGE_LOCK_VALUE = "ala_asset_package_lock_value";
+
+	public static final Integer AVG_BORROWCASH_AMOUNT = 1400;//现金贷平均每单金额
 
 }

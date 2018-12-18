@@ -214,6 +214,7 @@
         AND b.bank_card_number=#{bankNo}
         AND
         b.status='B'
+        and b.user_id = #{userId}
     </select>
 
 
@@ -229,6 +230,7 @@
         AND b.bank_card_number=#{bankNo}
         AND
         b.status='B'
+        and b.user_id = #{userId}
     </select>
     
     <select id="getPayTypeByBankNoAndUserId" resultType="java.util.HashMap" >
@@ -317,6 +319,8 @@
 			bank_card_number = #{cardNumber}
 		AND
 			status = 'B'
+		AND
+			user_id = #{userId}
 	</select>
 
 
@@ -346,4 +350,51 @@
         AND
         is_main='Y'
     </select>
+
+    <select id="getUserNoMainBankCardInfoByUserId" resultType="JsdUserBankcardDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_user_bankcard
+        WHERE
+        is_delete=0
+        AND
+        user_id = #{userId}
+        AND
+        is_main='N'
+        AND
+        status = 'B'
+    </select>
+
+    <select id="getNextBankCard" resultType="JsdUserBankcardDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_user_bankcard
+        WHERE
+        is_delete=0
+        AND
+        id > #{id}
+        AND
+        user_id = #{userId}
+        AND
+        status = 'B'
+        ORDER BY id LIMIT 1
+    </select>
+
+    <select id="getLastBankCard" resultType="JsdUserBankcardDo">
+        SELECT
+        <include refid="queryFields"/>
+        FROM
+        jsd_user_bankcard
+        WHERE
+        is_delete=0
+        AND
+        user_id = #{userId}
+        AND
+        status = 'B'
+        ORDER BY id LIMIT 1
+    </select>
+
+
 </mapper>

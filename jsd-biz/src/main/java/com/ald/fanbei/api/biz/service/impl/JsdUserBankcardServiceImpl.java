@@ -53,8 +53,8 @@ public class JsdUserBankcardServiceImpl extends ParentServiceImpl<JsdUserBankcar
 	}
 
 	@Override
-	public int getUserBankByCardNo(String cardNumber) {
-		return jsdUserBankcardDao.getUserBankByCardNo(cardNumber);
+	public int getUserBankByCardNo(String cardNumber,Long userId) {
+		return jsdUserBankcardDao.getUserBankByCardNo(cardNumber,userId);
 	}
 
 	@Override
@@ -70,8 +70,23 @@ public class JsdUserBankcardServiceImpl extends ParentServiceImpl<JsdUserBankcar
 	}
 
 	@Override
-	public JsdUserBankcardDo getByBankNo(String bankNo) {
-		return jsdUserBankcardDao.getByBankNo(bankNo);
+	public JsdUserBankcardDo getByBankNo(String bankNo,Long userId) {
+		return jsdUserBankcardDao.getByBankNo(bankNo,userId);
 	}
+	@Override
+	public List<JsdUserBankcardDo> getUserNoMainBankCardInfoByUserId(Long userId){
+		return jsdUserBankcardDao.getUserNoMainBankCardInfoByUserId(userId);
+
+	}
+
+
+	@Override
+	public JsdUserBankcardDo getNextBankCard(Long id,Long userId){
+		return  jsdUserBankcardDao.getNextBankCard(id,userId);
+	}
+	public JsdUserBankcardDo getLastBankCard(Long userId){
+		return  jsdUserBankcardDao.getLastBankCard(userId);
+	}
+
 
 }

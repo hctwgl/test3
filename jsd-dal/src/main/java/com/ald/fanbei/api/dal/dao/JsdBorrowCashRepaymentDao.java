@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
@@ -43,4 +44,16 @@ public interface JsdBorrowCashRepaymentDao extends BaseDao<JsdBorrowCashRepaymen
     JsdBorrowCashRepaymentDo getByTradeNoOut(@Param("tradeNoUps") String tradeNoUps);
 
     List<JsdBorrowCashRepaymentDo> getByBorrowTradeNoXgxy(@Param("tradeNoXgxy")String tradeNoXgxy);
+
+    List<JsdBorrowCashRepaymentDo> getRepayByBorrowId(@Param("borrowId")Long borrowId);
+
+    /**
+     * 获取结算系统实收数据
+     * @Param list {@link FinaneceDataDo} 对象
+     *@return  <code>List<code/>
+     *
+     * **/
+    List<FinaneceDataDo> getRepayData();
+
+    List<JsdBorrowCashRepaymentDo> getWithholdFailRepaymentCashByBorrowIdAndCardNumber(@Param("borrowId") Long borrowId,@Param("cardNumber") String cardNumber);
 }

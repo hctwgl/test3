@@ -4,6 +4,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRepaymentServiceImpl;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
+import com.ald.fanbei.api.common.enums.RepayType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -20,6 +23,8 @@ import com.ald.fanbei.api.common.enums.PayOrderSource;
 import com.ald.fanbei.api.common.util.NumberUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.alibaba.fastjson.JSON;
+
+import java.util.HashMap;
 
 /**
  * @author chenjinhu 2017年2月20日 下午2:59:32 @类现描述：
@@ -51,6 +56,9 @@ public class PayRoutController {
 	
 	@Resource
 	BeheadBorrowCashRenewalService beheadBorrowCashRenewalService;
+
+	@Resource
+	private XgxyUtil xgxyUtil;
 
 
 
@@ -117,6 +125,7 @@ public class PayRoutController {
 		String outTradeNo = request.getParameter("orderNo");
 		String tradeState = request.getParameter("tradeState");
 		String merPriv = request.getParameter("merPriv");
+		String tradeDate = request.getParameter("tradeDate");
 		long result = NumberUtil.objToLongDefault(request.getParameter("reqExt"), 0);
 		
 		logger.info("delegatePay callback start, from ups params: " + JSON.toJSONString(request.getParameterMap()));
@@ -124,9 +133,9 @@ public class PayRoutController {
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 打款成功
 				if(PayOrderSource.JSD_LOAN.getCode().equals(merPriv)){
-					jsdBorrowCashService.dealBorrowSucc(result, outTradeNo);
+					jsdBorrowCashService.dealBorrowSucc(result, outTradeNo,tradeDate);
 				}else if(PayOrderSource.JSD_LOAN_V2.getCode().equals(merPriv)){
-					beheadBorrowCashService.dealBorrowSucc(result, outTradeNo);
+					beheadBorrowCashService.dealBorrowSucc(result, outTradeNo,tradeDate);
 				}
     		} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 打款失败
     			if(PayOrderSource.JSD_LOAN.getCode().equals(merPriv)){
@@ -155,21 +164,22 @@ public class PayRoutController {
 		String tradeState = request.getParameter("tradeState");
 		String respCode = StringUtil.null2Str(request.getParameter("respCode"));
 		String respDesc = StringUtil.null2Str(request.getParameter("respDesc"));
+		String tradeDate = request.getParameter("tradeDate");
 
 		logger.info("collect callback start, from ups params: " + JSON.toJSONString(request.getParameterMap()));
 		String returnCode = RESP_SUCC;
 		try {
 			if (TRADE_STATUE_SUCC.equals(tradeState)) {// 代收成功
 				if(PayOrderSource.REPAY_JSD.getCode().equals(merPriv)){
-					jsdBorrowCashRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo);
+					jsdBorrowCashRepaymentService.dealRepaymentSucess(outTradeNo, tradeNo,tradeDate);
 				}else if(PayOrderSource.RENEW_JSD.getCode().equals(merPriv)){
 					jsdBorrowCashRenewalService.dealJsdRenewalSucess(outTradeNo, tradeNo);
 				}else if(PayOrderSource.RENEW_JSD_V2.getCode().equals(merPriv)){
 					beheadBorrowCashRenewalService.dealJsdRenewalSucess(outTradeNo, tradeNo);
 				}
-			} else if (TRADE_STATUE_FAIL.equals(tradeState)) {// 只处理代收失败的
+			} else  {// 只处理代收失败的
 				if(PayOrderSource.REPAY_JSD.getCode().equals(merPriv)){
-					jsdBorrowCashRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true,"", respDesc);
+					jsdBorrowCashRepaymentService.dealRepaymentFail(outTradeNo, tradeNo, true,respCode, respDesc);
 				}else if(PayOrderSource.RENEW_JSD.getCode().equals(merPriv)){
 					jsdBorrowCashRenewalService.dealJsdRenewalFail(outTradeNo, tradeNo, true, respCode, respDesc);
 				}else if(PayOrderSource.RENEW_JSD_V2.getCode().equals(merPriv)){
@@ -183,5 +193,9 @@ public class PayRoutController {
 		logger.info("collect callback done, request outTradeNo = " + outTradeNo + ", returnCode = " + returnCode + ", MILLS =" + (System.currentTimeMillis() - start));
 		return returnCode;
 	}
+
+
 	
 }
+
+

@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 极速贷用户信息Dao
@@ -15,5 +16,7 @@ public interface JsdUserDao extends BaseDao<JsdUserDo, Long> {
 	JsdUserDo getByOpenId(String openId);
 
 	int updateUser(JsdUserDo userDo);
+
+	JsdUserDo getUserInfo(@Param("mobile") String mobile);
 
 }

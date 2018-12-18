@@ -21,7 +21,7 @@ public enum ResourceSecType {
 		NAVIGATION_CATEGORY("NAVIGATION_CATEGORY", "商品分类"),
 		INTEREST_RATE("INTEREST_RATE","利率（年化）"),
 
-
+		COLLECT_PRODUCT("COLLECT_PRODUCT","催收产品配置"),
 		//活动相关
 	    OppoReservationActivity("OPPO_RESERVATION_ACTIVITY", "OPPO预约活动"),
 	    ASSET_PUSH_RECEIVE("EDSPAY","债权实时债权接收方"),
@@ -122,7 +122,14 @@ public enum ResourceSecType {
 	
 		OVERDUE_JOB_INTERNAL_UIDS("OVERDUE_JOB_INTERNAL_UIDS", "公司内部专用定时器用户名单"),
 
-	//借钱协议
+	    WITHHOLD_JOB_INTERNAL_UIDS("WITHHOLD_JOB_INTERNAL_UIDS", "公司内部专用定时器用户名单"),
+
+
+	WITHHOLD_JOB_CONFIG("WITHHOLD_JOB_CONFIG", "代扣任务相关配置"),
+    	WITHHOLD_JOB_CONFIG_YF("WITHHOLD_JOB_CONFIG_YF", "代扣任务相关配置"),
+
+
+	    //借钱协议
 		PROTOCOL_BORROW_CASH("PROTOCOL_BORROW_CASH","四方借款协议"),
 		PROTOCOL_BORROW_PLATFORM("PROTOCOL_BORROW_PLATFORM","平台服务协议"),
 		PROTOCOL_BORROW_RISK_NOTICE("PROTOCOL_BORROW_RISK_NOTICE","风险提示函"),
@@ -134,6 +141,7 @@ public enum ResourceSecType {
 		PROTOCOL_RENEWAL("PROTOCOL_RENEWAL", "续期协议"),
 		PLUS_PROTOCOL_BORROW_CASH("PLUS_PROTOCOL_BORROW_CASH","四方借款协议(plus)"),
 		PLUS_PROTOCOL_RENEWAL("PLUS_PROTOCOL_RENEWAL", "续期协议(plus)"),
+	    PAY_TYPE("PAY_TYPE", "兼容预发和线上ups支付方式")
 		;
 
 	 	private String code;

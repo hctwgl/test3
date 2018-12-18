@@ -6,6 +6,7 @@ import java.util.Map;
 import com.ald.fanbei.api.biz.service.impl.JsdBorrowCashRenewalServiceImpl.JsdRenewalDealBo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
+import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import com.alibaba.fastjson.JSONArray;
 
 /**
@@ -40,4 +41,12 @@ public interface JsdBorrowCashRenewalService {
 
 
 	List<JsdBorrowCashRenewalDo> getMgrJsdRenewalByBorrowId(Long borrowId);
+
+	/**
+	 * 获取结算系统实收数据
+	 * @Param list {@link FinaneceDataDo} 对象
+	 *@return  <code>List<code/>
+	 *
+	 * **/
+	List<FinaneceDataDo> getRenewalData();
 }

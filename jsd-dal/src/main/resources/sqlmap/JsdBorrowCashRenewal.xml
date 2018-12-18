@@ -426,4 +426,13 @@
         ORDER BY gmt_create DESC
     </select>
 
+
+    <select id="getRenewalData" resultType="FinaneceDataDo">
+      SELECT `trade_no` AS 'repayNo',`actual_amount` AS 'actualAmount',`trade_no_ups` AS 'pay_trade_no','app还款' AS 'payType',`gmt_create` AS 'actualTime','other' AS tppNid,'极速贷' AS 'productName','现金贷' AS 'productType','绿游' AS liquidationCompany
+    FROM `jsd_borrow_cash_renewal`
+    where `is_delete`= 0
+   AND `status` ='Y'
+   AND `gmt_create` BETWEEN concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 00:00:00") and concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 23:59:59") ;
+
+    </select>
 </mapper>
