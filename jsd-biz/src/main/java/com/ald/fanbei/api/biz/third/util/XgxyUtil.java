@@ -217,7 +217,7 @@ public class XgxyUtil extends AbstractThird {
             }
             XgxyReqBo resp = JSONObject.parseObject(reqResult, XgxyReqBo.class);
             if (XGXY_REQ_CODE_SUCC.equals(resp.get("code"))) {
-                JSONObject object = JSON.parseObject(resp.get("data").toString());
+                JSONObject object = JSON.parseObject(JSON.toJSONString(resp.get("data")));
                 result.put("mxreportUrl",object.get("mxreportUrl"));
                 result.put("contacts",object.get("contacts"));
                 return result;
