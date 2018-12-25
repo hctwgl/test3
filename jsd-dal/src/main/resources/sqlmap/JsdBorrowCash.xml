@@ -790,6 +790,7 @@
         FROM jsd_borrow_cash c LEFT JOIN jsd_borrow_legal_order o
         ON c.id=o.borrow_id
         WHERE o.is_delete=0 AND c.id =#{borrowId}
+        AND status NOT IN ('CLOSED','UNPAID')
         ORDER BY o.id DESC LIMIT 1
     </select>
     <select id="getOverdueInfoByUserId" resultType="com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto">

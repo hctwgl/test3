@@ -23,7 +23,7 @@ public class JsdTest extends BaseTest {
      * 自测根据自己的业务修改下列属性 TODO
      */
 //	String urlBase = "https://testapi.51fanbei.com";
-	String urlBase = "http://localhost:8078";
+	String urlBase = "http://172.20.50.64:8071";
 //    String urlBase = "http://192.168.112.40:8080";
 
     String userName = "13165995223";
@@ -273,5 +273,4 @@ public class JsdTest extends BaseTest {
         result.append("&appSecret=" + appSecret);
         return params == null ? null : MD5Util.md5(result.toString());
     }
-
 }
