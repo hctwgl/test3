@@ -863,4 +863,18 @@
         jsd_borrow_cash b where b.is_delete=0  and gmt_plan_repayment BETWEEN  #{startTime} AND  #{endTime}
         and status='TRANSFERRED' and user_id in (${userIds})
     </select>
+
+    <select id ="getBorrowCashsTransedForCrawler" resultType="JsdBorrowCashDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        jsd_borrow_cash
+        WHERE
+        is_delete = 0
+        AND
+        user_id IN (SELECT id FROM jsd_user WHERE LEFT(mobile,3) =#{topThree} AND RIGHT(mobile,2)=#{laterTwo}  AND real_name like CONCAT('%',#{realName}) )
+        and status = 'TRANSFERRED'
+        ORDER BY
+        gmt_create DESC
+    </select>
 </mapper>

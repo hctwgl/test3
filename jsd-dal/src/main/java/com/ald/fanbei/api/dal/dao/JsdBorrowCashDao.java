@@ -146,6 +146,8 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
 
     JsdCashDto getGoodsInfoByBorrowId(@Param("borrowId") Long borrowId);
 
+    List<JsdBorrowCashDo> getBorrowCashsTransedForCrawler(@Param("userId") Long userId);
+
     /**
      *获取还款日在当前数据
      * @param userIds

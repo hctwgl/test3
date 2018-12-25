@@ -217,6 +217,10 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      * @return
      */
     List<JsdBorrowCashDo> getBorrowCashsInfos(Long userId);
+    /**
+     * 爬虫调用方法匹配唯一待还款
+     */
+    List<JsdBorrowCashDo> getBorrowCashsTransedForCrawler(Long userId);
 
     JsdCashDto getGoodsInfoByBorrowId(Long borrowId);
 

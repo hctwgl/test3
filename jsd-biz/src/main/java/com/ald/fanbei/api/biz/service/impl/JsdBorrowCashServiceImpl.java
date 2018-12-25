@@ -74,8 +74,6 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     JsdBorrowLegalOrderCashDao jsdBorrowLegalOrderCashDao;
     @Resource
     JsdNoticeRecordService jsdNoticeRecordService;
-    @Resource
-    JsdUserDao jsdUserDao;
 
     @Resource
     JsdLegalContractPdfCreateService jsdLegalContractPdfCreateService;
@@ -660,6 +658,11 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
             cashs.add(finshCash);
         }
         return cashs;
+    }
+
+    @Override
+    public List<JsdBorrowCashDo> getBorrowCashsTransedForCrawler(Long userId) {
+        return jsdBorrowCashDao.getBorrowCashsTransedForCrawler(userId);
     }
 
     @Override
