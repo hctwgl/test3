@@ -406,7 +406,7 @@
         <include refid="queryFields"/>
         from jsd_borrow_cash_renewal
         WHERE is_delete = 0 AND borrow_id=#{borrowId}
-        AND (status = 'P' OR status = 'Y')
+        AND status = 'Y'
         ORDER BY gmt_create DESC
     </select>
 

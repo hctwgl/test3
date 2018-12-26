@@ -360,6 +360,6 @@
         FROM jsd_borrow_legal_order_repayment
         WHERE is_delete=0
         AND borrow_id=#{borrowId}
-        AND (status = 'P' OR status = 'Y')
+        AND status = 'Y'
     </select>
 </mapper>
