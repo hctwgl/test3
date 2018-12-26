@@ -360,11 +360,13 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 			if(orderRepaymentDo != null) {
 				changOrderRepaymentStatus(outTradeNo, JsdBorrowLegalRepaymentStatus.NO.getCode(), orderRepaymentDo.getRid(),"");
 			}
-			JsdRepayType repayType=JsdRepayType.findRoleTypeByXgxyCode(repaymentDo.getType());
-			if(!JsdRepayType.WITHHOLD.getXgxyCode().equals(repaymentDo.getType())){
+			JsdRepayType repayType=JsdRepayType.findRoleTypeByXgxyCode(repaymentDo!=null?repaymentDo.getType():JsdRepayType.INITIATIVE.getXgxyCode());
+			if(!JsdRepayType.WITHHOLD.getXgxyCode().equals(repayType.getXgxyCode())){
+				logger.info("initiative repay fail!");
 				noticeXgxyRepayResult(repaymentDo,orderRepaymentDo,YesNoStatus.NO.getCode(),errorMsg,repayType,"", code);
 			}else {
-				JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceSecType.WITHHOLD_JOB_CONFIG_YF.getCode());
+				logger.info("withhold repay fail!");
+				JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.getCode(), ResourceSecType.WITHHOLD_JOB_CONFIG.getCode());
 				Map<String,String> config= (Map<String, String>) JSON.parse(resourceDo.getValue2());
 				Collection currentWithholdTime=JSONArray.toCollection(JSONArray.fromObject(config.get("currentWithholdTime")),List.class);
 				String cardType=config.get("cardType");
@@ -401,7 +403,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		}finally {
 			// 解锁还款
 			unLockRepay(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
-			jsdBorrowCashRepaymentService.unLockBorrow(repaymentDo.getUserId());
+			jsdBorrowCashRepaymentService.unLockBorrow(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
 
 		}
 
@@ -489,7 +491,7 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 			// 解锁还款
 			unLockRepay(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
-			jsdBorrowCashRepaymentService.unLockBorrow(repaymentDo.getUserId());
+			jsdBorrowCashRepaymentService.unLockBorrow(repaymentDo!=null?repaymentDo.getUserId():orderRepaymentDo.getUserId());
 
 		}
 	}
