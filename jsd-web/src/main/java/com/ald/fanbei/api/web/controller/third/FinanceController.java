@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.Constants;
+import com.ald.fanbei.api.common.exception.BizException;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
@@ -175,7 +176,7 @@ public class FinanceController{
             }
             return resqBo;
         } catch (Exception e) {
-            logger.error("error message " + e);
+            logger.error("error message " , e);
             resqBo.setCode(BizThirdRespCode.SYSTEM_ERROR.getCode());
             resqBo.setMsg(BizThirdRespCode.SYSTEM_ERROR.getDesc());
             return resqBo;
@@ -259,7 +260,7 @@ public class FinanceController{
             }
             return resqBo;
         }catch (Exception e){
-            logger.error("error message " + e);
+            logger.error("error message ", e);
             resqBo.setCode(BizThirdRespCode.SYSTEM_ERROR.getCode());
             resqBo.setMsg(BizThirdRespCode.SYSTEM_ERROR.getMsg());
             return resqBo;
@@ -407,10 +408,15 @@ public class FinanceController{
                 jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo, legalOrderCashDo, repayAmount, repayTradeNo, borrowCashDo.getUserId(),JsdRepayType.SETTLE_SYSTEM, repayType, payTime, null, dataId, remark);
             }
             return resqBo;
-        }catch (Exception e){
-            logger.error("error message " + e);
+        }catch (BizException e){
+            logger.error("error message " , e);
+            resqBo.setCode(e.getErrorCode().toString());
+            resqBo.setMsg(e.getMessage());
+            return resqBo;
+        } catch (Exception e){
+            logger.error("error message " , e);
             resqBo.setCode(BizThirdRespCode.SYSTEM_ERROR.getCode());
-            resqBo.setMsg(BizThirdRespCode.SYSTEM_ERROR.getMsg());
+            resqBo.setMsg(BizThirdRespCode.SYSTEM_ERROR.getDesc());
             return resqBo;
         }
     }
@@ -457,7 +463,7 @@ public class FinanceController{
             }
 
         } catch (Exception e) {
-            logger.error("getData hava a Exception, e = "+e+" and currTime = "+new Date());
+            logger.error("getData hava a Exception, e = ",e+" and currTime = "+new Date());
         }
         finance.setCode(BizThirdRespCode.FAILED.getCode());
         finance.setMsg(BizThirdRespCode.FAILED.getMsg());
