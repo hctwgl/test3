@@ -59,6 +59,7 @@ public enum BizExceptionCode {
     SUCCESS("SUCCESS", 200, "success", "成功"), FAILED("FAILED", 201, "failed", "失败"),
     BANK_LIMIT_MONEY("BANK_LIMIT_MONEY",1324,"bank limit money","该银行单笔限额，请使用其他银行卡还款，谢谢！"),
     BORROW_CASH_REPAY_REPEAT_ERROR("BORROW_CASH_REPAY_REPEAT_ERROR",2004,"borrow cash repay repeat","重复的还款操作"),
+    BORROW_CASH_REPAY_UNCHECKED_ERROR("BORROW_CASH_REPAY_UNCHECK_ERROR",3004,"borrow cash repay having unchecked","存在未处理的同一还款流水号或同一借款订单待平账"),
     PERSON_SEAL_CREATE_FAILED("PERSON_SEAL_CREATE_FAILED",4100,"person_seal_create_failed","个人印章创建失败"),
     COMPANY_SEAL_CREATE_FAILED("COMPANY_SEAL_CREATE_FAILED",4101,"COMPANY_SEAL_CREATE_FAILED","公司印章创建失败"),
     CONTRACT_CREATE_FAILED("CONTRACT_CREATE_FAILED",4103,"contract_create_failed","合同生成失败"),

@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.ald.fanbei.api.common.enums.YesNoStatus;
+import com.ald.fanbei.api.common.exception.BizException;
+import com.ald.fanbei.api.common.exception.BizExceptionCode;
+import com.ald.fanbei.api.dal.dao.JsdCollectionBorrowDao;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -89,6 +92,8 @@ public class CollectionMgrController extends BaseController{
     
     @Resource
     TransactionTemplate transactionTemplate;
+    @Resource
+	JsdCollectionBorrowDao jsdCollectionBorrowDao;
     
     /* --------- 借款 ------- */
     @RequestMapping(value = { "/borrow/list.json" })
@@ -110,12 +115,22 @@ public class CollectionMgrController extends BaseController{
     	String reviewRemark = "管理员【" + operator + "】操作强制结清，原因：" + params.reviewRemark;
     	
     	JsdBorrowCashDo cashDo = jsdBorrowCashService.getByTradeNoXgxy(params.tradeNoXgxy);
+		if (null == cashDo){
+			throw new BizException(BizExceptionCode.JSD_BORROW_IS_NULL);
+		}
     	JsdBorrowLegalOrderDo legalOrderDo = jsdBorrowLegalOrderService.getLastOrderByBorrowId(cashDo.getRid());
+		if (null == legalOrderDo){
+			throw new BizException(BizExceptionCode.JSD_BORROW_IS_NULL);
+		}
     	JsdCollectionBorrowDo collBorrowDo = jsdCollectionBorrowService.selectByBorrowId(cashDo.getRid());
-    	
-    	if(CollectionBorrowStatus.WAIT_FINISH.name().equals(collBorrowDo.getStatus())) {
+    	if(null != collBorrowDo && CollectionBorrowStatus.WAIT_FINISH.name().equals(collBorrowDo.getStatus())) {
     		return Resp.fail("当笔借款为待审核平账中，不可强制结清，只可审核");
     	}
+
+    	//存在同一借款订单待平账
+		if (null != collBorrowDo && CommonReviewStatus.WAIT.name().equals(collBorrowDo.getReviewStatus())){
+			throw new BizException(BizExceptionCode.BORROW_CASH_REPAY_UNCHECKED_ERROR);
+		}
     	
     	JsdCollectionBorrowDo collBorrowDoForMod = this.buildCollectionBorrowDoForMod(collBorrowDo.getRid(),
     			CollectionBorrowStatus.MANUAL_FINISHED.name(), operator, CommonReviewStatus.PASS.name(), reviewRemark);
