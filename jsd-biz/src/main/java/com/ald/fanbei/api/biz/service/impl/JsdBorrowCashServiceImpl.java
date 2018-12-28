@@ -661,8 +661,8 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
-    public List<JsdBorrowCashDo> getBorrowCashsTransedForCrawler(Long userId) {
-        return jsdBorrowCashDao.getBorrowCashsTransedForCrawler(userId);
+    public List<JsdBorrowCashDo> getBorrowCashsTransedForCrawler(String topThree,String laterTwo,String realName) {
+        return jsdBorrowCashDao.getBorrowCashsTransedForCrawler(topThree,laterTwo,realName);
     }
 
     @Override

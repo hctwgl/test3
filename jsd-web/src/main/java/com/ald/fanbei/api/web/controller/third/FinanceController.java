@@ -206,7 +206,7 @@ public class FinanceController{
                 logger.info("borrowLegalOrderCash:"+borrowLegalOrderCash);
                 List<JsdBorrowLegalOrderRepaymentDo> jsdOrderCashRepaymentDo=jsdBorrowLegalOrderRepaymentService.getRepayByBorrowId(jsdBorrowCashDo.getRid());
                 List<JsdBorrowCashRepaymentDo> jsdBorrowCashRepaymentDo=jsdBorrowCashRepaymentService.getRepayByBorrowId(jsdBorrowCashDo.getRid());
-                List<JsdBorrowCashRenewalDo> renewalDetailDos=jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(jsdBorrowCashDo.getRid());
+                List<JsdBorrowCashRenewalDo> renewalDetailDos=jsdBorrowCashRenewalService.getJsdRenewalByBorrowIdAndStatus(jsdBorrowCashDo.getRid());
                 Map renewalMap= buildRenewalInfos(renewalDetailDos);
                 map.put("repayInfos", buildeRepayInfos(jsdBorrowCashRepaymentDo,jsdOrderCashRepaymentDo));
                 logger.info("getGoodsInfoByBorrowId:"+jsdBorrowCashService.getGoodsInfoByBorrowId(jsdBorrowCashDo.getRid()));
@@ -392,17 +392,14 @@ public class FinanceController{
             //解析参数
             JSONObject object = JSON.parseObject(data);
             String mobile = object.getString("mobile");
+            String realName = object.getString("realName");
+            logger.info("getUserBorrowInfos start data = " + data + " ,sign = " + sign);
             if (!checkSign(data, sign)) {
                 resqBo.setCode(BizThirdRespCode.CLEARING_SIGN_STATUS.getCode());
                 resqBo.setMsg(BizThirdRespCode.CLEARING_SIGN_STATUS.getDesc());
             } else {
-                JsdUserDo jsdUserDo = jsdUserService.getUserInfo(mobile);
-                if (jsdUserDo == null) {
-                    resqBo.setCode(BizThirdRespCode.CLEARING_USER_IS_NULL.getCode());
-                    resqBo.setMsg(BizThirdRespCode.CLEARING_USER_IS_NULL.getDesc());
-                    return resqBo;
-                }
-                List<JsdBorrowCashDo> borrowCash = jsdBorrowCashService.getBorrowCashsTransedForCrawler(jsdUserDo.getRid());
+                List<JsdBorrowCashDo> borrowCash = jsdBorrowCashService.getBorrowCashsTransedForCrawler(mobile.substring(0,3),mobile.substring(8),realName.substring(realName.lastIndexOf('*')+1));
+                logger.info(mobile.substring(0,3)+mobile.substring(8)+realName.substring(realName.indexOf('*')+1));
                 resqBo.setData(JSON.toJSONString(getCashDetailInfo(borrowCash)));
             }
             return resqBo;

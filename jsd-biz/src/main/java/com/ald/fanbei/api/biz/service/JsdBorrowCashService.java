@@ -220,7 +220,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     /**
      * 爬虫调用方法匹配唯一待还款
      */
-    List<JsdBorrowCashDo> getBorrowCashsTransedForCrawler(Long userId);
+    List<JsdBorrowCashDo> getBorrowCashsTransedForCrawler(String topThree,String laterTwo,String realName);
 
     JsdCashDto getGoodsInfoByBorrowId(Long borrowId);
 
