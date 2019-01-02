@@ -431,6 +431,12 @@ public class FinanceController{
                 legalOrderNoReductionAmount= BigDecimalUtil.add(borrowLegalOrderCash.getInterestAmount(), borrowLegalOrderCash.getSumRepaidInterest(),
                         borrowLegalOrderCash.getPoundageAmount(), borrowLegalOrderCash.getSumRepaidPoundage(),borrowLegalOrderCash.getAmount());
             }
+            BigDecimal refundAmount=jsdBorrowLegalOrderCashService.calculateLegalRestAmount(cash, borrowLegalOrderCash);
+            if (refundAmount.compareTo(BigDecimal.ZERO) == 1 || refundAmount.compareTo(BigDecimal.ZERO) == 0){ //可退金额>0
+                map.put("refundAmount","0");
+            }else {
+                map.put("refundAmount",String.valueOf(refundAmount));
+            }
             map.put("company", configData.get("company"));
             map.put("productType", configData.get("productType"));
             map.put("productName", configData.get("productName"));
