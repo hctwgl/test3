@@ -677,7 +677,7 @@ public class H5ProtocolController {
 	@ResponseBody
 	@RequestMapping(value = {"decrypt"}, method = RequestMethod.POST)
 	public String decrypt(String data,String password) throws IOException, DocumentException {
-		return AesUtil.decryptFromBase64("e/PHwwL10VclJ/8J4vp8UU+bUOrX0fk+QC2DhrybzTkmGaEnHKbQHKKK5ZCSpJUn","testC1b6x@6aH$2dlw");
+		return AesUtil.decryptFromBase64(data,password);
 	}
 
 
