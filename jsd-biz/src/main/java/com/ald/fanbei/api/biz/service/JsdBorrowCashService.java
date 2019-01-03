@@ -269,4 +269,6 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      */
     List<JsdBorrowCashDo> getOverSectionBorrowCashRepayByUserIds(String userIds,Date startTime,Date endTime);
 
+    Integer getBorrowCashByToDay();
+
 }

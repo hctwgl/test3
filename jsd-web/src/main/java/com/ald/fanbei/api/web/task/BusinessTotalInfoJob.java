@@ -39,6 +39,8 @@ public class BusinessTotalInfoJob {
 
     @Resource
     JsdResourceService jsdResourceService;
+    @Resource
+    JsdBorrowCashService jsdBorrowCashService;
 
 
 
@@ -100,7 +102,7 @@ public class BusinessTotalInfoJob {
                             }else {
 
                             }
-                            infoDo.setLoanNum();
+                            infoDo.setLoanNum(loanNum.longValue());
                         }
                     }
                 }catch (Exception e){
@@ -117,8 +119,12 @@ public class BusinessTotalInfoJob {
     /**
      * 放款笔数(期限)
      */
-    public Integer getLoanNum(String type){
+    public Integer getLoanNum(String nper){
+        if(StringUtils.equals(nper,"all")){
+            jsdBorrowCashService.getBorrowCashByTodayCount()
+        }else {
 
+        }
         return 0;
     }
 
