@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_total_info表 -->
+<mapper namespace="com.ald.fanbei.api.dal.dao.JsdTotalInfoDao">
+    
+    <!--基本的sql查询字段 公共引用...-->
+    <sql id="queryFields">
+        id rid,gmt_create,gmt_modified,count_date,loan_num,apply_amount,loan_amount,tying_amount,repayment_amount,normal_amount,count_repayment_amount,repayment_num,normal_num,count_repayment_num,extension_num,extension_return_principal,extension_cost,in_exhibition_capital,rirst_rate,overdue_rate,unrecovered_rate,bad_debt_amount,profitability_rate 
+    </sql>
+    
+    <!-- 基本的sql查询条件公共引用 -->
+    <sql id="commonCondition">
+    	WHERE is_delete = 0
+        <if test="rid !=null">
+            AND id  = #{rid,jdbcType=INTEGER}
+        </if>
+        <if test="gmtCreate !=null">
+            AND gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="gmtModified !=null">
+            AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
+        </if>
+        <if test="countDate !=null">
+            AND count_date = #{countDate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="loanNum != null">
+            AND loan_num = #{loanNum,jdbcType=INTEGER}
+        </if>
+        <if test="applyAmount != null">
+            AND apply_amount = #{applyAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="loanAmount != null">
+            AND loan_amount = #{loanAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="tyingAmount != null">
+            AND tying_amount = #{tyingAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="repaymentAmount != null">
+            AND repayment_amount = #{repaymentAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="normalAmount != null">
+            AND normal_amount = #{normalAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="countRepaymentAmount != null">
+            AND count_repayment_amount = #{countRepaymentAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="repaymentNum != null">
+            AND repayment_num = #{repaymentNum,jdbcType=INTEGER}
+        </if>
+        <if test="normalNum != null">
+            AND normal_num = #{normalNum,jdbcType=INTEGER}
+        </if>
+        <if test="countRepaymentNum != null">
+            AND count_repayment_num = #{countRepaymentNum,jdbcType=INTEGER}
+        </if>
+        <if test="extensionNum != null">
+            AND extension_num = #{extensionNum,jdbcType=INTEGER}
+        </if>
+        <if test="extensionReturnPrincipal != null">
+            AND extension_return_principal = #{extensionReturnPrincipal,jdbcType=DECIMAL}
+        </if>
+        <if test="extensionCost != null">
+            AND extension_cost = #{extensionCost,jdbcType=DECIMAL}
+        </if>
+        <if test="inExhibitionCapital != null">
+            AND in_exhibition_capital = #{inExhibitionCapital,jdbcType=DECIMAL}
+        </if>
+        <if test="rirstRate != null">
+            AND rirst_rate = #{rirstRate,jdbcType=DECIMAL}
+        </if>
+        <if test="overdueRate != null">
+            AND overdue_rate = #{overdueRate,jdbcType=DECIMAL}
+        </if>
+        <if test="unrecoveredRate != null">
+            AND unrecovered_rate = #{unrecoveredRate,jdbcType=DECIMAL}
+        </if>
+        <if test="badDebtAmount != null">
+            AND bad_debt_amount = #{badDebtAmount,jdbcType=DECIMAL}
+        </if>
+        <if test="profitabilityRate != null">
+            AND profitability_rate = #{profitabilityRate,jdbcType=DECIMAL}
+        </if>
+    </sql>
+
+    
+    <insert id="saveRecord" parameterType="com.ald.fanbei.api.dal.domain.JsdTotalInfoDo" keyProperty="rid" useGeneratedKeys="true">
+        INSERT INTO jsd_total_info
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+	        <if test="gmtCreate != null">        
+	            gmt_create,
+	        </if>
+	        <if test="gmtModified != null">        
+	            gmt_modified,
+	        </if>
+	        <if test="countDate != null">        
+	            count_date,
+	        </if>
+	        <if test="loanNum != null">        
+	            loan_num,
+	        </if>
+	        <if test="applyAmount != null">        
+	            apply_amount,
+	        </if>
+	        <if test="loanAmount != null">        
+	            loan_amount,
+	        </if>
+	        <if test="tyingAmount != null">        
+	            tying_amount,
+	        </if>
+	        <if test="repaymentAmount != null">        
+	            repayment_amount,
+	        </if>
+	        <if test="normalAmount != null">        
+	            normal_amount,
+	        </if>
+	        <if test="countRepaymentAmount != null">        
+	            count_repayment_amount,
+	        </if>
+	        <if test="repaymentNum != null">        
+	            repayment_num,
+	        </if>
+	        <if test="normalNum != null">        
+	            normal_num,
+	        </if>
+	        <if test="countRepaymentNum != null">        
+	            count_repayment_num,
+	        </if>
+	        <if test="extensionNum != null">        
+	            extension_num,
+	        </if>
+	        <if test="extensionReturnPrincipal != null">        
+	            extension_return_principal,
+	        </if>
+	        <if test="extensionCost != null">        
+	            extension_cost,
+	        </if>
+	        <if test="inExhibitionCapital != null">        
+	            in_exhibition_capital,
+	        </if>
+	        <if test="rirstRate != null">        
+	            rirst_rate,
+	        </if>
+	        <if test="overdueRate != null">        
+	            overdue_rate,
+	        </if>
+	        <if test="unrecoveredRate != null">        
+	            unrecovered_rate,
+	        </if>
+	        <if test="badDebtAmount != null">        
+	            bad_debt_amount,
+	        </if>
+	        <if test="profitabilityRate != null">        
+	            profitability_rate,
+	        </if>
+        </trim>
+        
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+		    <if test="gmtCreate != null" >
+		       #{gmtCreate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="gmtModified != null" >
+		       #{gmtModified,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="countDate != null" >
+		       #{countDate,jdbcType=TIMESTAMP},
+		    </if>
+		    <if test="loanNum != null" >
+		       #{loanNum,jdbcType=INTEGER},
+		    </if>
+		    <if test="applyAmount != null" >
+		       #{applyAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="loanAmount != null" >
+		       #{loanAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="tyingAmount != null" >
+		       #{tyingAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="repaymentAmount != null" >
+		       #{repaymentAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="normalAmount != null" >
+		       #{normalAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="countRepaymentAmount != null" >
+		       #{countRepaymentAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="repaymentNum != null" >
+		       #{repaymentNum,jdbcType=INTEGER},
+		    </if>
+		    <if test="normalNum != null" >
+		       #{normalNum,jdbcType=INTEGER},
+		    </if>
+		    <if test="countRepaymentNum != null" >
+		       #{countRepaymentNum,jdbcType=INTEGER},
+		    </if>
+		    <if test="extensionNum != null" >
+		       #{extensionNum,jdbcType=INTEGER},
+		    </if>
+		    <if test="extensionReturnPrincipal != null" >
+		       #{extensionReturnPrincipal,jdbcType=DECIMAL},
+		    </if>
+		    <if test="extensionCost != null" >
+		       #{extensionCost,jdbcType=DECIMAL},
+		    </if>
+		    <if test="inExhibitionCapital != null" >
+		       #{inExhibitionCapital,jdbcType=DECIMAL},
+		    </if>
+		    <if test="rirstRate != null" >
+		       #{rirstRate,jdbcType=DECIMAL},
+		    </if>
+		    <if test="overdueRate != null" >
+		       #{overdueRate,jdbcType=DECIMAL},
+		    </if>
+		    <if test="unrecoveredRate != null" >
+		       #{unrecoveredRate,jdbcType=DECIMAL},
+		    </if>
+		    <if test="badDebtAmount != null" >
+		       #{badDebtAmount,jdbcType=DECIMAL},
+		    </if>
+		    <if test="profitabilityRate != null" >
+		       #{profitabilityRate,jdbcType=DECIMAL},
+		    </if>
+        </trim>
+    </insert>
+    
+    <update id="updateById"  parameterType="com.ald.fanbei.api.dal.domain.JsdTotalInfoDo">
+        UPDATE jsd_total_info
+          <set>
+            <if test="countDate != null">        
+                count_date = #{countDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="loanNum != null">        
+                loan_num = #{loanNum,jdbcType=INTEGER},
+            </if>
+            <if test="applyAmount != null">        
+                apply_amount = #{applyAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="loanAmount != null">        
+                loan_amount = #{loanAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="tyingAmount != null">        
+                tying_amount = #{tyingAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="repaymentAmount != null">        
+                repayment_amount = #{repaymentAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="normalAmount != null">        
+                normal_amount = #{normalAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="countRepaymentAmount != null">        
+                count_repayment_amount = #{countRepaymentAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="repaymentNum != null">        
+                repayment_num = #{repaymentNum,jdbcType=INTEGER},
+            </if>
+            <if test="normalNum != null">        
+                normal_num = #{normalNum,jdbcType=INTEGER},
+            </if>
+            <if test="countRepaymentNum != null">        
+                count_repayment_num = #{countRepaymentNum,jdbcType=INTEGER},
+            </if>
+            <if test="extensionNum != null">        
+                extension_num = #{extensionNum,jdbcType=INTEGER},
+            </if>
+            <if test="extensionReturnPrincipal != null">        
+                extension_return_principal = #{extensionReturnPrincipal,jdbcType=DECIMAL},
+            </if>
+            <if test="extensionCost != null">        
+                extension_cost = #{extensionCost,jdbcType=DECIMAL},
+            </if>
+            <if test="inExhibitionCapital != null">        
+                in_exhibition_capital = #{inExhibitionCapital,jdbcType=DECIMAL},
+            </if>
+            <if test="rirstRate != null">        
+                rirst_rate = #{rirstRate,jdbcType=DECIMAL},
+            </if>
+            <if test="overdueRate != null">        
+                overdue_rate = #{overdueRate,jdbcType=DECIMAL},
+            </if>
+            <if test="unrecoveredRate != null">        
+                unrecovered_rate = #{unrecoveredRate,jdbcType=DECIMAL},
+            </if>
+            <if test="badDebtAmount != null">        
+                bad_debt_amount = #{badDebtAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="profitabilityRate != null">        
+                profitability_rate = #{profitabilityRate,jdbcType=DECIMAL},
+            </if>
+            gmt_modified = NOW()
+        </set>    
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT}
+    </update>
+
+	<select id="getById" resultType="com.ald.fanbei.api.dal.domain.JsdTotalInfoDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_total_info
+        WHERE is_delete = 0 AND id=#{rid ,jdbcType=BIGINT}
+        LIMIT 0,1
+    </select>
+
+	<select id="getByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdTotalInfoDo" parameterType="com.ald.fanbei.api.dal.domain.JsdTotalInfoDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_total_info
+        <include refid="commonCondition"/> 
+        limit 0,1
+    </select>
+               
+    <select id="getListByCommonCondition" resultType="com.ald.fanbei.api.dal.domain.JsdTotalInfoDo" parameterType="com.ald.fanbei.api.dal.domain.JsdTotalInfoDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_total_info
+        <include refid="commonCondition"/>
+    </select>
+    
+</mapper>

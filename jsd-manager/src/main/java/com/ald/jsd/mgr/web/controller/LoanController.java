@@ -2,7 +2,9 @@ package com.ald.jsd.mgr.web.controller;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -99,4 +101,30 @@ public class LoanController {
         loanDetailsReq.setProctocols(proctocol);
         return Resp.succ(loanDetailsReq, "");
     }
+    
+    
+    
+    
+
+    /**
+     * total:借款汇总统计
+     *
+     * @author zhangxinxing
+     * @param loanQuery
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = {"total.json"}, method = RequestMethod.POST)
+    public Resp<LoanQuery> total(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
+    	//转换提日期输出格式
+
+    	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	Date startDate=loanQuery.getStartDate()==null?new date():loanQuery.getStartDate();
+    	
+    	
+        loanQuery.setList(jsdBorrowCashService.getLoanList(loanQuery));
+        return Resp.succ(loanQuery, "");
+    }
+    
+    
 }
