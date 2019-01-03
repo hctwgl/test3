@@ -213,7 +213,11 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         HashMap<String, BigDecimal> result = new HashMap<>();
         HashMap<String, Object> hashMap = jsdBorrowCashDao.getRepayStatistics();
         result.put("awaitRepay", new BigDecimal((Long) hashMap.get("awaitRepay")));
+        result.put("allAwaitRepay", new BigDecimal((Long) hashMap.get("allAwaitRepay")));
+        result.put("overdueAwaitRepay", new BigDecimal((Long) hashMap.get("overdueAwaitRepay")));
         result.put("repay", new BigDecimal((Long) hashMap.get("repay")));
+        result.put("advanceRepay", new BigDecimal((Long) hashMap.get("advanceRepay")));
+        result.put("overdueRepay", new BigDecimal((Long) hashMap.get("overdueRepay")));
         if (result.get("awaitRepay").equals(BigDecimal.ZERO)) {
             result.put("repayRate", BigDecimal.ZERO);
         } else {
