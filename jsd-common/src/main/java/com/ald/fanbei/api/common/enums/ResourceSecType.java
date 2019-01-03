@@ -125,7 +125,7 @@ public enum ResourceSecType {
 	    WITHHOLD_JOB_INTERNAL_UIDS("WITHHOLD_JOB_INTERNAL_UIDS", "公司内部专用定时器用户名单"),
 
 
-	WITHHOLD_JOB_CONFIG("WITHHOLD_JOB_CONFIG", "代扣任务相关配置"),
+		WITHHOLD_JOB_CONFIG("WITHHOLD_JOB_CONFIG", "代扣任务相关配置"),
     	WITHHOLD_JOB_CONFIG_YF("WITHHOLD_JOB_CONFIG_YF", "代扣任务相关配置"),
 
 
@@ -141,6 +141,7 @@ public enum ResourceSecType {
 		PROTOCOL_RENEWAL("PROTOCOL_RENEWAL", "续期协议"),
 		PLUS_PROTOCOL_BORROW_CASH("PLUS_PROTOCOL_BORROW_CASH","四方借款协议(plus)"),
 		PLUS_PROTOCOL_RENEWAL("PLUS_PROTOCOL_RENEWAL", "续期协议(plus)"),
+		JSD_RATE_INFO("JSD_RATE_INFO", "借钱配置"),
 	    PAY_TYPE("PAY_TYPE", "兼容预发和线上ups支付方式")
 		;
 
