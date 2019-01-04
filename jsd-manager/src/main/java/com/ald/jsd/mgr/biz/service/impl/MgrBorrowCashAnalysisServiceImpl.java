@@ -235,8 +235,8 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         BigDecimal avgRenewalAmount=BigDecimal.ZERO;
         BigDecimal renewalPersons=mgrBorrowCashRenewalService.getRenewalPersonsByDays(0);
         if(renewalPersons.compareTo(BigDecimal.ZERO)!=0){
-            avgRenewalAmount=renewalAmount.divide(renewalPersons, 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
-        }
+            avgRenewalAmount=renewalAmount.divide(renewalPersons, 2, BigDecimal.ROUND_HALF_UP);
+    }
         MgrDashboardInfoVo mgrDashboardInfoVo = new MgrDashboardInfoVo();
         mgrDashboardInfoVo.setTotalLoanAmt(todayAmount);
         mgrDashboardInfoVo.setTotalLoanAmtRateByWeek(totalLoanAmtRateByWeek);
