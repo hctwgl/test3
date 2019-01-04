@@ -208,6 +208,7 @@ public class CuiShouUtils {
             map.put("period","all");
             map.put("amount",String.valueOf(BigDecimal.ZERO));
             map.put("type",JsdRepayType.COLLECTION.name());
+            map.put("realRepayTime",new Date().getTime()+"");
             JsdNoticeRecordDo noticeRecordDo = new JsdNoticeRecordDo();
             noticeRecordDo.setUserId(orderDo.getUserId());
             noticeRecordDo.setType(JsdNoticeType.COLLECT_RECONCILIATION.code);
