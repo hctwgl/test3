@@ -37,8 +37,10 @@ import java.util.*;
 public class BusinessTotalInfoJob {
     Logger logger = LoggerFactory.getLogger(BusinessTotalInfoJob.class);
 
-
-
+    @Resource
+    JsdResourceService jsdResourceService;
+    @Resource
+    JsdBorrowCashService jsdBorrowCashService;
 
 
 
@@ -52,11 +54,85 @@ public class BusinessTotalInfoJob {
             String curHostIp = GetHostIpUtil.getIpAddress();
             logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
             if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
+                try{
+                    JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.name(),ResourceSecType.JSD_RATE_INFO.name());
+                    if(null != resourceDo && StringUtils.isNotBlank(resourceDo.getTypeDesc())){
+                        String[] arr = resourceDo.getTypeDesc().split(",");
+                        for (int i=0;arr.length>i;i++){
+                            JsdTotalInfoDo infoDo = new JsdTotalInfoDo();
+                            Integer loanNum = 0;
+                            if (StringUtils.equals(arr[i],"all")){
+                                //放款笔数
+                                loanNum = getLoanNum(arr[i]);
+                                //借款申请金额
+
+                                //实际出款金额
+
+                                //商品搭售金额
+
+                                //应还款金额
+
+                                //正常还款金额
+
+                                //总还款金额
+
+                                //应还款金额
+
+                                //正常还款笔数
+
+                                //总还款笔数
+
+                                //展期笔数
+
+                                //展期还本
+
+                                //展期费用
+
+                                //在展本金
+
+                                //首逾率
+
+                                //逾期率
+
+                                //未回收率
+
+                                //坏账金额
+
+                                //盈利率
+                            }else {
+
+                            }
+                            infoDo.setLoanNum(loanNum.longValue());
+                        }
+                    }
+                }catch (Exception e){
+                    logger.info("error = ",e);
+                    e.getMessage();
+                }
 
             }
         } catch (Exception e){
             logger.error("borrowCashDueJob  error, case=",e);
         }
+    }
+
+    /**
+     * 放款笔数(期限)
+     */
+    public Integer getLoanNum(String nper){
+        if(StringUtils.equals(nper,"all")){
+            jsdBorrowCashService.getBorrowCashByTodayCount()
+        }else {
+
+        }
+        return 0;
+    }
+
+    /**
+     * 放款笔数(全部)
+     */
+    public void getLoanNumByAll(){
+
     }
 
 

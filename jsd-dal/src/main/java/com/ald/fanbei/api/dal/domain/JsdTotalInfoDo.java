@@ -228,7 +228,7 @@ import java.math.BigDecimal;
 
     /**
      * 设置放款笔数
-     * 
+     *
      * @param loanNum 要设置的放款笔数
      */
     public void setLoanNum(Long loanNum){
