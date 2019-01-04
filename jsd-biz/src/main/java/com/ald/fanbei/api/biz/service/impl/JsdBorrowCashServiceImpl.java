@@ -730,4 +730,14 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     public Integer getRepaymentNum(String nper){
         return jsdBorrowCashDao.getRepaymentNum(nper);
     }
+
+    @Override
+    public Integer getSumRepaymentNum(String nper){
+        return jsdBorrowCashDao.getSumRepaymentNum(nper);
+    }
+
+    @Override
+    public Integer getNormalNum(String nper){
+        return jsdBorrowCashDao.getNormalNum(nper);
+    }
 }

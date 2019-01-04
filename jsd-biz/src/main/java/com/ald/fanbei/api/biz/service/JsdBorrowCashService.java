@@ -304,5 +304,14 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      */
     Integer getRepaymentNum(String nper);
 
+    /**
+     * 总还款笔数
+     */
+    Integer getSumRepaymentNum(String nper);
+    /**
+     * 正常放款笔数
+     */
+    Integer getNormalNum(String nper);
+
 
 }

@@ -87,9 +87,11 @@ public class BusinessTotalInfoJob {
                             Integer repaymentNum = jsdBorrowCashService.getRepaymentNum(arr[i]);
                             infoDo.setRepaymentNum(repaymentNum.longValue());
                             //正常还款笔数
-
+                            Integer normalNum = jsdBorrowCashService.getNormalNum(arr[i]);
+                            infoDo.setNormalNum(normalNum.longValue());
                             //总还款笔数
-
+                            Integer sumRepaymentNum = jsdBorrowCashService.getSumRepaymentNum(arr[i]);
+                            infoDo.setCountRepaymentNum(sumRepaymentNum.longValue());
                             //展期笔数
 
                             //展期还本
