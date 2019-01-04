@@ -60,48 +60,45 @@ public class BusinessTotalInfoJob {
                         String[] arr = resourceDo.getTypeDesc().split(",");
                         for (int i=0;arr.length>i;i++){
                             JsdTotalInfoDo infoDo = new JsdTotalInfoDo();
-                            Integer loanNum = 0;
-                            if (StringUtils.equals(arr[i],"all")){
-                                //放款笔数
-                                loanNum = getLoanNum(arr[i]);
-                                //借款申请金额
+                            //放款笔数
+                            Integer loanNum = jsdBorrowCashService.getLoanNum(arr[i]);
 
-                                //实际出款金额
+                            //借款申请金额
 
-                                //商品搭售金额
+                            //实际出款金额
 
-                                //应还款金额
+                            //商品搭售金额
 
-                                //正常还款金额
+                            //应还款金额
 
-                                //总还款金额
+                            //正常还款金额
 
-                                //应还款金额
+                            //总还款金额
 
-                                //正常还款笔数
+                            //应还款金额
 
-                                //总还款笔数
+                            //正常还款笔数
 
-                                //展期笔数
+                            //总还款笔数
 
-                                //展期还本
+                            //展期笔数
 
-                                //展期费用
+                            //展期还本
 
-                                //在展本金
+                            //展期费用
 
-                                //首逾率
+                            //在展本金
 
-                                //逾期率
+                            //首逾率
 
-                                //未回收率
+                            //逾期率
 
-                                //坏账金额
+                            //未回收率
 
-                                //盈利率
-                            }else {
+                            //坏账金额
 
-                            }
+                            //盈利率
+
                             infoDo.setLoanNum(loanNum.longValue());
                         }
                     }
@@ -116,24 +113,9 @@ public class BusinessTotalInfoJob {
         }
     }
 
-    /**
-     * 放款笔数(期限)
-     */
-    public Integer getLoanNum(String nper){
-        if(StringUtils.equals(nper,"all")){
-            jsdBorrowCashService.getBorrowCashByTodayCount()
-        }else {
 
-        }
-        return 0;
-    }
 
-    /**
-     * 放款笔数(全部)
-     */
-    public void getLoanNumByAll(){
 
-    }
 
 
 }

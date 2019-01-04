@@ -17,6 +17,7 @@ import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import com.alibaba.fastjson.JSONArray;
 import com.itextpdf.text.DocumentException;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * 极速贷Service
@@ -269,6 +270,9 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      */
     List<JsdBorrowCashDo> getOverSectionBorrowCashRepayByUserIds(String userIds,Date startTime,Date endTime);
 
-    Integer getBorrowCashByToDay();
+    /**
+     * 放款笔数(期限)
+     */
+    Integer getLoanNum(String nper);
 
 }

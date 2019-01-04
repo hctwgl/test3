@@ -694,6 +694,10 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
     public List<JsdBorrowCashDo> getOverSectionBorrowCashRepayByUserIds(String userIds,Date startTime,Date endTime){
         return jsdBorrowCashDao.getOverSectionBorrowCashRepayByUserIds(userIds,startTime,endTime);
+    }
 
+    @Override
+    public Integer getLoanNum(String nper){
+        return jsdBorrowCashDao.getLoanNum(nper);
     }
 }
