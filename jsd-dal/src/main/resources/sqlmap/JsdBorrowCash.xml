@@ -875,4 +875,71 @@
         </if>
     </select>
 
+    <select id="getAppleAmount" resultType="java.lang.Integer">
+        select SUM(amount) from
+          jsd_borrow_cash
+        where to_days(gmt_create) = to_days(now())
+          and is_delete = 0
+        <if test="nper != null and nper !='all' and nper !=''">
+            AND type = #{nper}
+        </if>
+    </select>
+
+    <select id="getLoanAmount" resultType="java.lang.Integer">
+        select SUM(amount) from
+        jsd_borrow_cash
+        where to_days(gmt_create) = to_days(now())
+        and status in ('TRANSFERRED','FINISHED')
+        and is_delete = 0
+        <if test="nper != null and nper !='all' and nper !=''">
+            AND type = #{nper}
+        </if>
+    </select>
+
+    <select id="getTyingAmount" resultType="java.lang.Integer">
+        select SUM(amount - arrival_amount) from
+        jsd_borrow_cash
+        where to_days(gmt_create) = to_days(now())
+        and status in ('TRANSFERRED','FINISHED')
+        and is_delete = 0
+        <if test="nper != null and nper !='all' and nper !=''">
+            AND type = #{nper}
+        </if>
+    </select>
+
+    <select id="getRepaymentAmount" resultType="java.lang.Integer">
+        select SUM(amount + poundage_amount + interest_amount) from
+        jsd_borrow_cash
+        where to_days(gmt_plan_repayment) = to_days(now())
+        and status = 'TRANSFERRED'
+        and is_delete = 0
+        <if test="nper != null and nper !='all' and nper !=''">
+            AND type = #{nper}
+        </if>
+    </select>
+
+    <select id="getNormalAmount" resultType="java.lang.Integer">
+        select SUM(amount + poundage_amount + interest_amount) from
+        jsd_borrow_cash
+        where to_days(gmt_plan_repayment) = to_days(now())
+        and status = 'TRANSFERRED'
+        and is_delete = 0
+        <if test="nper != null and nper !='all' and nper !=''">
+            AND type = #{nper}
+        </if>
+    </select>
+
+
+    <select id="getRepaymentNum" resultType="java.lang.Integer">
+        select count(*) from
+        jsd_borrow_cash
+        where to_days(gmt_plan_repayment) = to_days(now())
+        and status = 'TRANSFERRED'
+        and is_delete = 0
+        <if test="nper != null and nper !='all' and nper !=''">
+            AND type = #{nper}
+        </if>
+    </select>
+
+
 </mapper>

@@ -1111,4 +1111,13 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 		Long orderId ;								//商品订单id
 	}
 
+
+
+	@Override
+	public BigDecimal getSumRepaymentAmount(String nper){
+		return jsdBorrowCashRepaymentDao.getSumRepaymentAmount(nper);
+	}
+
+
+
 }

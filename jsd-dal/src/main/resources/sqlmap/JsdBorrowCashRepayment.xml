@@ -422,4 +422,13 @@
         ORDER BY
         gmt_create DESC
     </select>
+
+    <select id="getSumRepaymentAmount" resultType="java.lang.Integer">
+        SELECT SUM(repayment_amount) FROM
+            jsd_borrow_cash_repayment
+        where is_delete = 0
+          and to_days(gmt_create) = to_days(now())
+          and status = 'Y'
+    </select>
+
 </mapper>

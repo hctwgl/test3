@@ -700,4 +700,34 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     public Integer getLoanNum(String nper){
         return jsdBorrowCashDao.getLoanNum(nper);
     }
+
+    @Override
+    public BigDecimal getLoanAmount(String nper){
+        return jsdBorrowCashDao.getLoanAmount(nper);
+    }
+
+    @Override
+    public BigDecimal getAppleAmount(String nper){
+        return jsdBorrowCashDao.getAppleAmount(nper);
+    }
+
+    @Override
+    public BigDecimal getTyingAmount(String nper){
+        return jsdBorrowCashDao.getTyingAmount(nper);
+    }
+
+    @Override
+    public BigDecimal getRepaymentAmount(String nper){
+        return jsdBorrowCashDao.getRepaymentAmount(nper);
+    }
+
+    @Override
+    public BigDecimal getNormalAmount(String nper){
+        return jsdBorrowCashDao.getNormalAmount(nper);
+    }
+
+    @Override
+    public Integer getRepaymentNum(String nper){
+        return jsdBorrowCashDao.getRepaymentNum(nper);
+    }
 }

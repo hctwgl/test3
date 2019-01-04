@@ -41,6 +41,8 @@ public class BusinessTotalInfoJob {
     JsdResourceService jsdResourceService;
     @Resource
     JsdBorrowCashService jsdBorrowCashService;
+    @Resource
+    JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
 
 
 
@@ -62,21 +64,28 @@ public class BusinessTotalInfoJob {
                             JsdTotalInfoDo infoDo = new JsdTotalInfoDo();
                             //放款笔数
                             Integer loanNum = jsdBorrowCashService.getLoanNum(arr[i]);
-
+                            infoDo.setLoanNum(loanNum.longValue());
                             //借款申请金额
-
+                            BigDecimal appleAmount = jsdBorrowCashService.getAppleAmount(arr[i]);
+                            infoDo.setApplyAmount(appleAmount);
                             //实际出款金额
-
+                            BigDecimal loanAmount = jsdBorrowCashService.getLoanAmount(arr[i]);
+                            infoDo.setLoanAmount(loanAmount);
                             //商品搭售金额
-
+                            BigDecimal tyingAmount = jsdBorrowCashService.getTyingAmount(arr[i]);
+                            infoDo.setTyingAmount(tyingAmount);
                             //应还款金额
-
+                            BigDecimal repaymentAmount = jsdBorrowCashService.getRepaymentAmount(arr[i]);
+                            infoDo.setRepaymentAmount(repaymentAmount);
                             //正常还款金额
-
+                            BigDecimal normalAmount = jsdBorrowCashService.getNormalAmount(arr[i]);
+                            infoDo.setNormalAmount(normalAmount);
                             //总还款金额
-
-                            //应还款金额
-
+                            BigDecimal sumRepaymentAmount = jsdBorrowCashRepaymentService.getSumRepaymentAmount(arr[i]);
+                            infoDo.setCountRepaymentAmount(sumRepaymentAmount);
+                            //应还款笔数
+                            Integer repaymentNum = jsdBorrowCashService.getRepaymentNum(arr[i]);
+                            infoDo.setRepaymentNum(repaymentNum.longValue());
                             //正常还款笔数
 
                             //总还款笔数
@@ -99,7 +108,7 @@ public class BusinessTotalInfoJob {
 
                             //盈利率
 
-                            infoDo.setLoanNum(loanNum.longValue());
+
                         }
                     }
                 }catch (Exception e){

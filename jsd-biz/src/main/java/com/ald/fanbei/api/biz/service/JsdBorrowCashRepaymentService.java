@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -73,4 +74,6 @@ public interface JsdBorrowCashRepaymentService{
     void lockBorrow(Long userId);
 
     void unLockBorrow(Long userId);
+
+    BigDecimal getSumRepaymentAmount(String nper);
 }

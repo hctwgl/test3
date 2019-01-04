@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -56,4 +57,7 @@ public interface JsdBorrowCashRepaymentDao extends BaseDao<JsdBorrowCashRepaymen
     List<FinaneceDataDo> getRepayData();
 
     List<JsdBorrowCashRepaymentDo> getWithholdFailRepaymentCashByBorrowIdAndCardNumber(@Param("borrowId") Long borrowId,@Param("cardNumber") String cardNumber);
+
+    BigDecimal getSumRepaymentAmount(@Param("nper") String nper);
+
 }
