@@ -18,10 +18,10 @@ import java.math.BigDecimal;
 public class MgrDashboardInfoVo implements Serializable {
 	
 	private static final long serialVersionUID = 4204652534348461359L;
-	private BigDecimal totalLoanAmt;//总放款额
-	private BigDecimal totalLoanAmtRateByWeek;//放款总额周同比
-	private Integer borrowMans;//放款人数
-	private BigDecimal totalLoanAmtRateByDay;//放款总额日环比
+	private BigDecimal totalLoanAmt;//总借款额
+	private BigDecimal totalLoanAmtRateByWeek;//借款总额周同比
+	private Integer borrowMans;//借款人数
+	private BigDecimal totalLoanAmtRateByDay;//借款总额日环比
 	private BigDecimal avgAmountPer;//人平均放款额
 	private BigDecimal loanRate;//放款率
 	private Integer pvLastDay;//昨日访问人数
@@ -33,4 +33,21 @@ public class MgrDashboardInfoVo implements Serializable {
 	private BigDecimal totalRepayAmtRateByWeek;	//今日还款额周同比
 	private BigDecimal totalRepayAmtRateByDay;	//今日还款额日环比
 	private BigDecimal avgRepayAmtPer;	//人均还款额
+
+	private BigDecimal totalArriveLoanAmt;	//总放款额
+	private BigDecimal totalArriveLoanAmtRateByWeek;	//总放款周同比
+	private BigDecimal totalArriveLoanAmtRateByDay;	//出款总额日环比
+	private BigDecimal avgAmountArrive;	//人均到账
+	private BigDecimal repeatBorrowRate;	//当日复借率
+	private BigDecimal repeatBorrowRateByWeek;	//复借周同比
+	private BigDecimal repeatBorrowRateByDay;	//复借日同比
+	private BigDecimal badDebtRate;	//累计坏账率
+	private BigDecimal totalRenewalAmount;	//今日展期金额
+	private BigDecimal totalRenewalAmountByWeek;	//展期周同比
+	private BigDecimal totalRenewalAmountByDay;	//展期日同比
+	private BigDecimal avgRenewalAmount;	//人均展期
+
+
+
 }
+

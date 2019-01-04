@@ -49,6 +49,8 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
     private MgrBorrowCashRepaymentService mgrBorrowCashRepaymentService;
     @Resource
     private MgrBorrowLegalOrderRepaymentService mgrBorrowLegalOrderRepaymentService;
+    @Resource
+    private MgrBorrowCashRenewalService mgrBorrowCashRenewalService;
 
     @Override
     public MgrBorrowInfoAnalysisVo getBorrowInfoAnalysis(AnalysisReq analysisReq) {
@@ -151,11 +153,11 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             avgAmountPer = todayAmount.divide(new BigDecimal(borrowMans), 2, BigDecimal.ROUND_HALF_UP);
         }
 
-        BigDecimal totalLoanAmtRateByWeek = BigDecimal.ZERO;//放款总额周同比
+        BigDecimal totalLoanAmtRateByWeek = BigDecimal.ZERO;//借款总额周同比
         if (weekAmount != BigDecimal.ZERO) {
             totalLoanAmtRateByWeek = todayAmount.divide(weekAmount, 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
-        BigDecimal totalLoanAmtRateByDay = BigDecimal.ZERO;//放款总额日环比
+        BigDecimal totalLoanAmtRateByDay = BigDecimal.ZERO;//借款总额日环比
         if (ystAmount != BigDecimal.ZERO) {
             totalLoanAmtRateByDay = todayAmount.divide(ystAmount, 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
@@ -202,7 +204,39 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         if (!NumberUtil.isNullOrZero(personNum)) {
             avgRepayAmtPer = totalRepayAmt.divide(new BigDecimal(personNum), 2, BigDecimal.ROUND_HALF_UP);
         }
+        BigDecimal todayArrive = buildArriveAmountBorrowCashByDays(0);//今天的放款金额
 
+        BigDecimal totalArriveLoanAmtRateByWeek = BigDecimal.ZERO;//放款总额周同比
+        BigDecimal weekArriveAmount = buildArriveAmountBorrowCashByDays(7);//上周的放款金额
+        BigDecimal totalArriveLoanAmtRateByDay = BigDecimal.ZERO;//放款总额周同比
+        BigDecimal dayArriveAmount = buildArriveAmountBorrowCashByDays(1);//昨天的放款金额
+        BigDecimal avgAmountArrive = BigDecimal.ZERO;
+        if (null != todayBorrowCashDoList && 0 != todayBorrowCashDoList.size()) {
+            avgAmountArrive = todayArrive.divide(new BigDecimal(borrowMans), 2, BigDecimal.ROUND_HALF_UP);
+        }
+        if (weekArriveAmount.compareTo(BigDecimal.ZERO) != 0) {
+            totalArriveLoanAmtRateByWeek = todayArrive.divide(weekArriveAmount, 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+        }
+        if(dayArriveAmount.compareTo(BigDecimal.ZERO) != 0){
+            totalArriveLoanAmtRateByDay=todayArrive.divide(dayArriveAmount, 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+        }
+        BigDecimal renewalAmount=buildRenewalAmount(0);
+        BigDecimal renewalAmountWeek=buildRenewalAmount(7);
+        BigDecimal renewalAmountDay=buildRenewalAmount(1);
+
+        BigDecimal totalRenewalAmountByWeek=BigDecimal.ZERO;
+        if(renewalAmountWeek.compareTo(BigDecimal.ZERO) != 0){
+            totalRenewalAmountByWeek=renewalAmount.divide(renewalAmountWeek, 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+        }
+        BigDecimal totalRenewalAmountByDay=BigDecimal.ZERO;
+        if(renewalAmountWeek.compareTo(BigDecimal.ZERO) != 0){
+            totalRenewalAmountByDay=renewalAmount.divide(renewalAmountDay, 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+        }
+        BigDecimal avgRenewalAmount=BigDecimal.ZERO;
+        BigDecimal renewalPersons=mgrBorrowCashRenewalService.getRenewalPersonsByDays(0);
+        if(renewalPersons.compareTo(BigDecimal.ZERO)!=0){
+            avgRenewalAmount=renewalAmount.divide(renewalPersons, 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+        }
         MgrDashboardInfoVo mgrDashboardInfoVo = new MgrDashboardInfoVo();
         mgrDashboardInfoVo.setTotalLoanAmt(todayAmount);
         mgrDashboardInfoVo.setTotalLoanAmtRateByWeek(totalLoanAmtRateByWeek);
@@ -216,16 +250,81 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         mgrDashboardInfoVo.setTotalRepayAmtRateByDay(totalRepayAmtRateByDay);
         mgrDashboardInfoVo.setTotalRepayAmtRateByWeek(totalRepayAmtRateByWeek);
         mgrDashboardInfoVo.setAvgRepayAmtPer(avgRepayAmtPer);
-
+        mgrDashboardInfoVo.setTotalArriveLoanAmt(todayArrive);
+        mgrDashboardInfoVo.setTotalLoanAmtRateByWeek(totalArriveLoanAmtRateByWeek);
+        mgrDashboardInfoVo.setTotalArriveLoanAmtRateByDay(totalArriveLoanAmtRateByDay);
+        mgrDashboardInfoVo.setAvgAmountArrive(avgAmountArrive);
+        mgrDashboardInfoVo.setRepeatBorrowRate(repeatBorrowRate());
+        mgrDashboardInfoVo.setRepeatBorrowRateByWeek(repeatBorrowRateByWeek());
+        mgrDashboardInfoVo.setRepeatBorrowRateByDay(repeatBorrowRateByDay());
+        mgrDashboardInfoVo.setBadDebtRate(badDebtRate());
+        mgrDashboardInfoVo.setTotalRenewalAmount(renewalAmount);
+        mgrDashboardInfoVo.setTotalRenewalAmountByWeek(totalRenewalAmountByWeek);
+        mgrDashboardInfoVo.setTotalRenewalAmountByDay(totalRenewalAmountByDay);
+        mgrDashboardInfoVo.setAvgRenewalAmount(avgRenewalAmount);
         return mgrDashboardInfoVo;
     }
 
+    public BigDecimal buildRenewalAmount(Integer days){
+        Date startTime = DateUtil.initStartDateByDay(DateUtil.addDays(new Date(), -days));
+        Date endTime = DateUtil.initEndDateByDay(DateUtil.addDays(new Date(), -days));
+        return mgrBorrowCashRenewalService.getRenewalAmountByDays(startTime,endTime);
+    }
+
+    public BigDecimal badDebtRate(){
+        BigDecimal badDebtRate=BigDecimal.ZERO;
+        BigDecimal badDebtAmount =mgrBorrowCashService.getOverdueBorrowAmountTo30Day();
+        BigDecimal sumAmount =mgrBorrowCashService.getAllBorrowAmount();
+        if(sumAmount!=BigDecimal.ZERO){
+            badDebtRate= badDebtAmount.divide(sumAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+        }
+        return badDebtRate;
+    }
+
+    public BigDecimal repeatBorrowRate(){
+        BigDecimal repeatBorrowRate=BigDecimal.ZERO;
+        BigDecimal repeatBorrowAmount =mgrBorrowCashService.getRepeatBorrowCashByBorrowDays(0);
+        BigDecimal repayAmount =mgrBorrowCashService.getRepayBorrowCashAmountBorrowDays(0);
+        if(repayAmount!=BigDecimal.ZERO){
+            repeatBorrowRate= repeatBorrowAmount.divide(repayAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+        }
+        return repeatBorrowRate;
+    }
+    public BigDecimal repeatBorrowRateByWeek(){
+        BigDecimal repeatBorrowRate=BigDecimal.ZERO;
+        BigDecimal repeatBorrowAmount =mgrBorrowCashService.getRepeatBorrowCashByBorrowDays(7);
+        BigDecimal repayAmount =mgrBorrowCashService.getRepayBorrowCashAmountBorrowDays(7);
+        if(repayAmount!=BigDecimal.ZERO){
+            repeatBorrowRate= repeatBorrowAmount.divide(repayAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+        }
+        return repeatBorrowRate;
+    }
+    public BigDecimal repeatBorrowRateByDay(){
+        BigDecimal repeatBorrowRate=BigDecimal.ZERO;
+        BigDecimal repeatBorrowAmount =mgrBorrowCashService.getRepeatBorrowCashByBorrowDays(1);
+        BigDecimal repayAmount =mgrBorrowCashService.getRepayBorrowCashAmountBorrowDays(1);
+        if(repayAmount!=BigDecimal.ZERO){
+            repeatBorrowRate= repeatBorrowAmount.divide(repayAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+        }
+        return repeatBorrowRate;
+    }
     public BigDecimal buildAmountBorrowCashByDays(Integer days) {
+        BigDecimal amount = getBorrowCashList(days).stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return amount;
+    }
+
+
+
+    public BigDecimal buildArriveAmountBorrowCashByDays(Integer days) {
+        BigDecimal arriveAmount = getBorrowCashList(days).stream().map(JsdBorrowCashDo::getArrivalAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return arriveAmount;
+    }
+
+    private List<JsdBorrowCashDo> getBorrowCashList(Integer days){
         Date startTime = DateUtil.initStartDateByDay(DateUtil.addDays(new Date(), -days));
         Date endTime = DateUtil.initEndDateByDay(DateUtil.addDays(new Date(), -days));
         List<JsdBorrowCashDo> jsdBorrowCashDoList = mgrBorrowCashService.getBorrowCashBetweenStartAndEnd(startTime, endTime);//借款成功笔数
-        BigDecimal amount = jsdBorrowCashDoList.stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        return amount;
+        return jsdBorrowCashDoList;
     }
 
     public BigDecimal buildPassPersonNum(Integer days) {

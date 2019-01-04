@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- jsd_borrow_cash表 -->
+<mapper namespace="com.ald.jsd.mgr.dal.dao.MgrBorrowCashRenewalDao">
+
+
+    <select id="getRenewalAmountByDays" resultType="java.lang.Integer">
+        SELECT
+        SUM(renewal_amount)
+        FROM
+        jsd_borrow_cash_renewal
+        where is_delete=0
+        AND status ='Y'
+        AND gmt_create between #{startDate} and #{endDate}
+    </select>
+
+    <select id="getRenewalPersonsByDays" resultType="java.lang.Integer">
+        SELECT
+        count(distinct user_id)
+        FROM
+        jsd_borrow_cash_renewal
+        WHERE is_delete=0
+        AND datediff(now(),gmt_create) &lt; #{days}
+        AND status ='Y'
+    </select>
+
+</mapper>
