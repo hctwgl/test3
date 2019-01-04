@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +26,11 @@ import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.dal.dao.JsdTotalInfoDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
+import com.ald.fanbei.api.dal.domain.JsdTotalInfoDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.ald.jsd.mgr.web.dto.req.LoanDetailsReq;
@@ -47,6 +50,10 @@ public class LoanController {
     JsdCollectionBorrowService jsdCollectionBorrowService;
     @Resource
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
+    @Resource
+    JsdTotalInfoDao jsdTotalInfoDao;
+    
+    
 
     @RequestMapping(value = {"list.json"}, method = RequestMethod.POST)
     public Resp<LoanQuery> list(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
@@ -118,11 +125,26 @@ public class LoanController {
     public Resp<LoanQuery> total(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
     	//转换提日期输出格式
 
-    	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    	Date startDate=loanQuery.getStartDate()==null?new date():loanQuery.getStartDate();
-    	
-    	
-        loanQuery.setList(jsdBorrowCashService.getLoanList(loanQuery));
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = new Date();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.add(Calendar.DAY_OF_MONTH, -8);
+		date = calendar.getTime();
+		
+		
+		
+		Date startDate = loanQuery.getStartDate() == null ? date : loanQuery.getStartDate();
+		Date endDate = loanQuery.getEndDate() == null ? new Date() : loanQuery.getEndDate();
+    	String nper=loanQuery.getNper()==null? "ALL":loanQuery.getNper();
+    	JsdTotalInfoDo jsdTotalInfoDo=new JsdTotalInfoDo();
+    	jsdTotalInfoDo.setEndDate(endDate);
+    	jsdTotalInfoDo.setStartDate(startDate);
+    	jsdTotalInfoDo.setNper(nper);
+    	System.out.println(sdf.format(endDate));
+		System.out.println(sdf.format(startDate));
+    	jsdTotalInfoDao.getListByCommonCondition(jsdTotalInfoDo);
+        loanQuery.setList(jsdTotalInfoDao.getListByCommonCondition(jsdTotalInfoDo));
         return Resp.succ(loanQuery, "");
     }
     

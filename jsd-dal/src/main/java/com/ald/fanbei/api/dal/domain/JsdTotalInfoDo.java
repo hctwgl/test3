@@ -21,6 +21,17 @@ import java.math.BigDecimal;
      */
     private Long rid;
     
+    
+    
+    //  期限 
+ private String nper;
+   
+   //开始日期
+   private Date startDate;
+   
+   //结束日期
+   private Date endDate;
+    
 
     /**
      * 创建时间
@@ -548,4 +559,28 @@ import java.math.BigDecimal;
       this.profitabilityRate = profitabilityRate;
     }
 
+	public String getNper() {
+		return nper;
+	}
+
+	public void setNper(String nper) {
+		this.nper = nper;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+    
 }

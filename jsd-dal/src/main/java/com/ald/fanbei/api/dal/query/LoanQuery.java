@@ -18,13 +18,16 @@ public class LoanQuery extends Page<LoanDto> {
      */
     private String searchContent;
     
+//   期限 
+  private String nper;
+    
     //开始日期
     private Date startDate;
     
     //结束日期
     private Date endDate;
 
-    private List<LoanDto> list;
+    private List list;
 
     public String getStatus() {
         return status;
@@ -42,11 +45,11 @@ public class LoanQuery extends Page<LoanDto> {
         this.searchContent = searchContent;
     }
 
-    public List<LoanDto> getList() {
+    public List getList() {
         return list;
     }
 
-    public void setList(List<LoanDto> list) {
+    public void setList(List list) {
         this.list = list;
     }
 
@@ -65,5 +68,14 @@ public class LoanQuery extends Page<LoanDto> {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
+
+	public String getNper() {
+		return nper;
+	}
+
+	public void setNper(String nper) {
+		this.nper = nper;
+	}
     
+	
 }
