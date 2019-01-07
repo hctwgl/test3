@@ -383,7 +383,7 @@
         WHERE
         is_delete = 0
         AND
-        (mobile = #{mobile} OR user_name= #{mobile})
+        (mobile = #{phone} OR user_name= #{phone})
         order  by id
     </select>
 </mapper>
