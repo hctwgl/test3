@@ -2,7 +2,6 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +11,12 @@ import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.ald.fanbei.api.biz.service.JsdResourceService;
+import com.ald.fanbei.api.biz.service.JsdTotalInfoService;
+import com.ald.fanbei.api.common.enums.ResourceSecType;
+import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashDao;
 import com.ald.fanbei.api.dal.dao.JsdBorrowCashRenewalDao;
@@ -21,12 +26,8 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdTotalInfoDo;
 import com.google.gson.Gson;
-import com.timevale.tgtext.text.ar;
-import com.ald.fanbei.api.biz.service.JsdResourceService;
-import com.ald.fanbei.api.biz.service.JsdTotalInfoService;
-import com.ald.fanbei.api.common.enums.ResourceSecType;
-import com.ald.fanbei.api.common.enums.ResourceType;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
+
+
 
 /**
  * ServiceImpl
@@ -214,4 +215,9 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		jsdTotalInfoDao.updateById(jsdTotalInfoDo);
 
 	}
+
+	public int saveAll(List<JsdTotalInfoDo> list){
+			return jsdTotalInfoDao.saveAll(list);
+	}
 }
+

@@ -328,7 +328,9 @@
         <include refid="commonCondition"/>
     </select>
     
+    <insert id="saveAll" parameterType="java.util.list">
 
+    </insert>
     
     
 </mapper>

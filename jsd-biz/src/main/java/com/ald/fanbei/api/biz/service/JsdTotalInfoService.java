@@ -4,6 +4,8 @@ import java.util.Date;
 
 import com.ald.fanbei.api.dal.domain.JsdTotalInfoDo;
 
+import java.util.List;
+
 /**
  * Service
  * 
@@ -24,5 +26,7 @@ public interface JsdTotalInfoService extends ParentService<JsdTotalInfoDo, Long>
     void updateExtensionInfo(Date date,String term);
     
     public void updateFateInfo(Date date,String term);
+
+    int saveAll(List<JsdTotalInfoDo> list);
 
 }

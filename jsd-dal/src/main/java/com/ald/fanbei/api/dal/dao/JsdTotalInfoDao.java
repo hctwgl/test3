@@ -1,6 +1,9 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdTotalInfoDo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * Dao
@@ -12,6 +15,6 @@ import com.ald.fanbei.api.dal.domain.JsdTotalInfoDo;
  */
 public interface JsdTotalInfoDao extends BaseDao<JsdTotalInfoDo, Long> {
 
-    
+    int saveAll(@Param("list") List<JsdTotalInfoDo> list);
 
 }
