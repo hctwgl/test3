@@ -697,47 +697,47 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
     }
 
     @Override
-    public Integer getLoanNum(String nper){
-        return jsdBorrowCashDao.getLoanNum(nper);
+    public Integer getLoanNum(String nper,String date){
+        return jsdBorrowCashDao.getLoanNum(nper,date);
     }
 
     @Override
-    public BigDecimal getLoanAmount(String nper){
-        return jsdBorrowCashDao.getLoanAmount(nper);
+    public BigDecimal getLoanAmount(String nper,String date){
+        return jsdBorrowCashDao.getLoanAmount(nper,date);
     }
 
     @Override
-    public BigDecimal getAppleAmount(String nper){
-        return jsdBorrowCashDao.getAppleAmount(nper);
+    public BigDecimal getAppleAmount(String nper,String date){
+        return jsdBorrowCashDao.getAppleAmount(nper,date);
     }
 
     @Override
-    public BigDecimal getTyingAmount(String nper){
-        return jsdBorrowCashDao.getTyingAmount(nper);
+    public BigDecimal getTyingAmount(String nper,String date){
+        return jsdBorrowCashDao.getTyingAmount(nper,date);
     }
 
     @Override
-    public BigDecimal getRepaymentAmount(String nper){
-        return jsdBorrowCashDao.getRepaymentAmount(nper);
+    public BigDecimal getRepaymentAmount(String nper,String date){
+        return jsdBorrowCashDao.getRepaymentAmount(nper,date);
     }
 
     @Override
-    public BigDecimal getNormalAmount(String nper){
-        return jsdBorrowCashDao.getNormalAmount(nper);
+    public BigDecimal getNormalAmount(String nper,String date){
+        return jsdBorrowCashDao.getNormalAmount(nper,date);
     }
 
     @Override
-    public Integer getRepaymentNum(String nper){
-        return jsdBorrowCashDao.getRepaymentNum(nper);
+    public Integer getRepaymentNum(String nper,String date){
+        return jsdBorrowCashDao.getRepaymentNum(nper,date);
     }
 
     @Override
-    public Integer getSumRepaymentNum(String nper){
-        return jsdBorrowCashDao.getSumRepaymentNum(nper);
+    public Integer getSumRepaymentNum(String nper,String date){
+        return jsdBorrowCashDao.getSumRepaymentNum(nper,date);
     }
 
     @Override
-    public Integer getNormalNum(String nper){
-        return jsdBorrowCashDao.getNormalNum(nper);
+    public Integer getNormalNum(String nper,String date){
+        return jsdBorrowCashDao.getNormalNum(nper,date);
     }
 }

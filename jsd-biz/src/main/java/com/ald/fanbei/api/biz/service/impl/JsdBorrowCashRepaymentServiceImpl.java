@@ -1115,8 +1115,8 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 
 	@Override
-	public BigDecimal getSumRepaymentAmount(String nper){
-		return jsdBorrowCashRepaymentDao.getSumRepaymentAmount(nper);
+	public BigDecimal getSumRepaymentAmount(String nper,String date){
+		return jsdBorrowCashRepaymentDao.getSumRepaymentAmount(nper,date);
 	}
 
 

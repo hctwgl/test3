@@ -1,22 +1,12 @@
 package com.ald.fanbei.api.web.task;
 
-import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
-import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
-import com.ald.fanbei.api.biz.third.util.JobThreadPoolUtils;
-import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
 import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
-import com.ald.fanbei.api.dal.dao.JsdContractPdfDao;
 import com.ald.fanbei.api.dal.domain.*;
-import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Calendar;
 
 
 /**
@@ -61,36 +51,39 @@ public class BusinessTotalInfoJob {
                     if(null != resourceDo && StringUtils.isNotBlank(resourceDo.getTypeDesc())){
                         String[] arr = resourceDo.getTypeDesc().split(",");
                         for (int i=0;arr.length>i;i++){
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.add(Calendar.DATE, -1);
+                            String date = DateUtil.formatDate(calendar.getTime(),DateUtil.DEFAULT_PATTERN_WITH_HYPHEN);
                             JsdTotalInfoDo infoDo = new JsdTotalInfoDo();
                             //放款笔数
-                            Integer loanNum = jsdBorrowCashService.getLoanNum(arr[i]);
+                            Integer loanNum = jsdBorrowCashService.getLoanNum(arr[i],date);
                             infoDo.setLoanNum(loanNum.longValue());
                             //借款申请金额
-                            BigDecimal appleAmount = jsdBorrowCashService.getAppleAmount(arr[i]);
+                            BigDecimal appleAmount = jsdBorrowCashService.getAppleAmount(arr[i],date);
                             infoDo.setApplyAmount(appleAmount);
                             //实际出款金额
-                            BigDecimal loanAmount = jsdBorrowCashService.getLoanAmount(arr[i]);
+                            BigDecimal loanAmount = jsdBorrowCashService.getLoanAmount(arr[i],date);
                             infoDo.setLoanAmount(loanAmount);
                             //商品搭售金额
-                            BigDecimal tyingAmount = jsdBorrowCashService.getTyingAmount(arr[i]);
+                            BigDecimal tyingAmount = jsdBorrowCashService.getTyingAmount(arr[i],date);
                             infoDo.setTyingAmount(tyingAmount);
                             //应还款金额
-                            BigDecimal repaymentAmount = jsdBorrowCashService.getRepaymentAmount(arr[i]);
+                            BigDecimal repaymentAmount = jsdBorrowCashService.getRepaymentAmount(arr[i],date);
                             infoDo.setRepaymentAmount(repaymentAmount);
                             //正常还款金额
-                            BigDecimal normalAmount = jsdBorrowCashService.getNormalAmount(arr[i]);
+                            BigDecimal normalAmount = jsdBorrowCashService.getNormalAmount(arr[i],date);
                             infoDo.setNormalAmount(normalAmount);
                             //总还款金额
-                            BigDecimal sumRepaymentAmount = jsdBorrowCashRepaymentService.getSumRepaymentAmount(arr[i]);
+                            BigDecimal sumRepaymentAmount = jsdBorrowCashRepaymentService.getSumRepaymentAmount(arr[i],date);
                             infoDo.setCountRepaymentAmount(sumRepaymentAmount);
                             //应还款笔数
-                            Integer repaymentNum = jsdBorrowCashService.getRepaymentNum(arr[i]);
+                            Integer repaymentNum = jsdBorrowCashService.getRepaymentNum(arr[i],date);
                             infoDo.setRepaymentNum(repaymentNum.longValue());
                             //正常还款笔数
-                            Integer normalNum = jsdBorrowCashService.getNormalNum(arr[i]);
+                            Integer normalNum = jsdBorrowCashService.getNormalNum(arr[i],date);
                             infoDo.setNormalNum(normalNum.longValue());
                             //总还款笔数
-                            Integer sumRepaymentNum = jsdBorrowCashService.getSumRepaymentNum(arr[i]);
+                            Integer sumRepaymentNum = jsdBorrowCashService.getSumRepaymentNum(arr[i],date);
                             infoDo.setCountRepaymentNum(sumRepaymentNum.longValue());
                             //展期笔数
 

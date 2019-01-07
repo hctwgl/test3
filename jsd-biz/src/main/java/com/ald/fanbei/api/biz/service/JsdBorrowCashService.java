@@ -274,44 +274,44 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
     /**
      * 放款笔数
      */
-    Integer getLoanNum(String nper);
+    Integer getLoanNum(String nper,String date);
     /**
      * 申请金额
      */
-    BigDecimal getAppleAmount(String nper);
+    BigDecimal getAppleAmount(String nper,String date);
     /**
      * 实际放款金额
      */
-    BigDecimal getLoanAmount(String nper);
+    BigDecimal getLoanAmount(String nper,String date);
 
     /**
      * 商品搭售金额
      */
-    BigDecimal getTyingAmount(String nper);
+    BigDecimal getTyingAmount(String nper,String date);
 
     /**
      * 应还款金额
      */
-    BigDecimal getRepaymentAmount(String nper);
+    BigDecimal getRepaymentAmount(String nper,String date);
 
     /**
      * 正常还款金额
      */
-    BigDecimal getNormalAmount(String nper);
+    BigDecimal getNormalAmount(String nper,String date);
 
     /**
      * 应还款笔数
      */
-    Integer getRepaymentNum(String nper);
+    Integer getRepaymentNum(String nper,String date);
 
     /**
      * 总还款笔数
      */
-    Integer getSumRepaymentNum(String nper);
+    Integer getSumRepaymentNum(String nper,String date);
     /**
      * 正常放款笔数
      */
-    Integer getNormalNum(String nper);
+    Integer getNormalNum(String nper,String date);
 
 
 }

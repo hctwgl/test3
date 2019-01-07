@@ -211,21 +211,21 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
 
     List<JsdBorrowCashDo> getOverSectionBorrowCashRepayByUserIds(@Param("userIds")String userIds,@Param("startTime")Date startTime,@Param("endTime")Date endTime);
 
-    Integer getLoanNum(@Param("nper")String nper);
+    Integer getLoanNum(@Param("nper")String nper,@Param("date") String date);
 
-    BigDecimal getAppleAmount(@Param("nper")String nper);
+    BigDecimal getAppleAmount(@Param("nper")String nper,@Param("date") String date);
 
-    BigDecimal getLoanAmount(@Param("nper")String nper);
+    BigDecimal getLoanAmount(@Param("nper")String nper,@Param("date") String date);
 
-    BigDecimal getTyingAmount(@Param("nper")String nper);
+    BigDecimal getTyingAmount(@Param("nper")String nper,@Param("date") String date);
 
-    BigDecimal getRepaymentAmount(@Param("nper")String nper);
+    BigDecimal getRepaymentAmount(@Param("nper")String nper,@Param("date") String date);
 
-    BigDecimal getNormalAmount(@Param("nper")String nper);
+    BigDecimal getNormalAmount(@Param("nper")String nper,@Param("date") String date);
 
-    Integer getRepaymentNum(@Param("nper")String nper);
+    Integer getRepaymentNum(@Param("nper")String nper,@Param("date") String date);
 
-    Integer getSumRepaymentNum(@Param("nper")String nper);
+    Integer getSumRepaymentNum(@Param("nper")String nper,@Param("date") String date);
 
-    Integer getNormalNum(@Param("nper")String nper);
+    Integer getNormalNum(@Param("nper")String nper,@Param("date") String date);
 }

@@ -75,5 +75,5 @@ public interface JsdBorrowCashRepaymentService{
 
     void unLockBorrow(Long userId);
 
-    BigDecimal getSumRepaymentAmount(String nper);
+    BigDecimal getSumRepaymentAmount(String nper,String date);
 }
