@@ -15,7 +15,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 /**
@@ -33,10 +35,8 @@ public class BusinessTotalInfoJob {
     JsdBorrowCashService jsdBorrowCashService;
     @Resource
     JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
-
-
-
-
+    @Resource
+    JsdTotalInfoService jsdTotalInfoService;
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
@@ -49,6 +49,7 @@ public class BusinessTotalInfoJob {
                 try{
                     JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.name(),ResourceSecType.JSD_RATE_INFO.name());
                     if(null != resourceDo && StringUtils.isNotBlank(resourceDo.getTypeDesc())){
+                        List<JsdTotalInfoDo> list = new ArrayList<>();
                         String[] arr = resourceDo.getTypeDesc().split(",");
                         for (int i=0;arr.length>i;i++){
                             Calendar calendar = Calendar.getInstance();
@@ -103,7 +104,10 @@ public class BusinessTotalInfoJob {
 
                             //盈利率
 
-
+                            list.add(infoDo);
+                        }
+                        if(list.size()>0){
+                            jsdTotalInfoService.saveAll(list);
                         }
                     }
                 }catch (Exception e){

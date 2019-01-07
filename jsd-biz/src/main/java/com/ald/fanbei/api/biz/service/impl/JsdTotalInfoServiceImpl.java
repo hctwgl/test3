@@ -10,6 +10,7 @@ import com.ald.fanbei.api.dal.dao.JsdTotalInfoDao;
 import com.ald.fanbei.api.dal.domain.JsdTotalInfoDo;
 import com.ald.fanbei.api.biz.service.JsdTotalInfoService;
 
+import java.util.List;
 
 
 /**
@@ -32,5 +33,10 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		@Override
 	public BaseDao<JsdTotalInfoDo, Long> getDao() {
 		return jsdTotalInfoDao;
+	}
+
+	@Override
+	public int saveAll(List<JsdTotalInfoDo> list){
+			return jsdTotalInfoDao.saveAll(list);
 	}
 }
