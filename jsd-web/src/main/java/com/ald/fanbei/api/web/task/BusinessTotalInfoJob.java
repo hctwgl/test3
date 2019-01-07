@@ -1,22 +1,12 @@
 package com.ald.fanbei.api.web.task;
 
-import com.ald.fanbei.api.biz.bo.xgxy.XgxyBorrowNoticeBo;
 import com.ald.fanbei.api.biz.service.*;
-import com.ald.fanbei.api.biz.third.enums.XgxyBorrowNotifyStatus;
-import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
-import com.ald.fanbei.api.biz.third.util.JobThreadPoolUtils;
-import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.GetHostIpUtil;
 import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.*;
-import com.ald.fanbei.api.common.util.BigDecimalUtil;
 import com.ald.fanbei.api.common.util.DateUtil;
-import com.ald.fanbei.api.common.util.StringUtil;
-import com.ald.fanbei.api.dal.dao.JsdBorrowLegalOrderDao;
-import com.ald.fanbei.api.dal.dao.JsdContractPdfDao;
 import com.ald.fanbei.api.dal.domain.*;
-import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Calendar;
 
 
 /**
@@ -41,6 +31,8 @@ public class BusinessTotalInfoJob {
     JsdResourceService jsdResourceService;
     @Resource
     JsdBorrowCashService jsdBorrowCashService;
+    @Resource
+    JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
 
 
 
@@ -59,50 +51,59 @@ public class BusinessTotalInfoJob {
                     if(null != resourceDo && StringUtils.isNotBlank(resourceDo.getTypeDesc())){
                         String[] arr = resourceDo.getTypeDesc().split(",");
                         for (int i=0;arr.length>i;i++){
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.add(Calendar.DATE, -1);
+                            String date = DateUtil.formatDate(calendar.getTime(),DateUtil.DEFAULT_PATTERN_WITH_HYPHEN);
                             JsdTotalInfoDo infoDo = new JsdTotalInfoDo();
-                            Integer loanNum = 0;
-                            if (StringUtils.equals(arr[i],"all")){
-                                //放款笔数
-                                loanNum = getLoanNum(arr[i]);
-                                //借款申请金额
-
-                                //实际出款金额
-
-                                //商品搭售金额
-
-                                //应还款金额
-
-                                //正常还款金额
-
-                                //总还款金额
-
-                                //应还款金额
-
-                                //正常还款笔数
-
-                                //总还款笔数
-
-                                //展期笔数
-
-                                //展期还本
-
-                                //展期费用
-
-                                //在展本金
-
-                                //首逾率
-
-                                //逾期率
-
-                                //未回收率
-
-                                //坏账金额
-
-                                //盈利率
-                            }else {
-
-                            }
+                            //放款笔数
+                            Integer loanNum = jsdBorrowCashService.getLoanNum(arr[i],date);
                             infoDo.setLoanNum(loanNum.longValue());
+                            //借款申请金额
+                            BigDecimal appleAmount = jsdBorrowCashService.getAppleAmount(arr[i],date);
+                            infoDo.setApplyAmount(appleAmount);
+                            //实际出款金额
+                            BigDecimal loanAmount = jsdBorrowCashService.getLoanAmount(arr[i],date);
+                            infoDo.setLoanAmount(loanAmount);
+                            //商品搭售金额
+                            BigDecimal tyingAmount = jsdBorrowCashService.getTyingAmount(arr[i],date);
+                            infoDo.setTyingAmount(tyingAmount);
+                            //应还款金额
+                            BigDecimal repaymentAmount = jsdBorrowCashService.getRepaymentAmount(arr[i],date);
+                            infoDo.setRepaymentAmount(repaymentAmount);
+                            //正常还款金额
+                            BigDecimal normalAmount = jsdBorrowCashService.getNormalAmount(arr[i],date);
+                            infoDo.setNormalAmount(normalAmount);
+                            //总还款金额
+                            BigDecimal sumRepaymentAmount = jsdBorrowCashRepaymentService.getSumRepaymentAmount(arr[i],date);
+                            infoDo.setCountRepaymentAmount(sumRepaymentAmount);
+                            //应还款笔数
+                            Integer repaymentNum = jsdBorrowCashService.getRepaymentNum(arr[i],date);
+                            infoDo.setRepaymentNum(repaymentNum.longValue());
+                            //正常还款笔数
+                            Integer normalNum = jsdBorrowCashService.getNormalNum(arr[i],date);
+                            infoDo.setNormalNum(normalNum.longValue());
+                            //总还款笔数
+                            Integer sumRepaymentNum = jsdBorrowCashService.getSumRepaymentNum(arr[i],date);
+                            infoDo.setCountRepaymentNum(sumRepaymentNum.longValue());
+                            //展期笔数
+
+                            //展期还本
+
+                            //展期费用
+
+                            //在展本金
+
+                            //首逾率
+
+                            //逾期率
+
+                            //未回收率
+
+                            //坏账金额
+
+                            //盈利率
+
+
                         }
                     }
                 }catch (Exception e){
@@ -116,24 +117,9 @@ public class BusinessTotalInfoJob {
         }
     }
 
-    /**
-     * 放款笔数(期限)
-     */
-    public Integer getLoanNum(String nper){
-        if(StringUtils.equals(nper,"all")){
-            jsdBorrowCashService.getBorrowCashByTodayCount()
-        }else {
 
-        }
-        return 0;
-    }
 
-    /**
-     * 放款笔数(全部)
-     */
-    public void getLoanNumByAll(){
 
-    }
 
 
 }

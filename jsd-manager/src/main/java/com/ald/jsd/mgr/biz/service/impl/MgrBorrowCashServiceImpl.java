@@ -113,4 +113,22 @@ public class MgrBorrowCashServiceImpl implements MgrBorrowCashService {
         return mgrBorrowCashDao.getAmountByDays(days);
     }
 
+    @Override
+    public BigDecimal getRepeatBorrowCashByBorrowDays(Integer days) {
+        return mgrBorrowCashDao.getRepeatBorrowCashByBorrowDays(days);
+    }
+    public BigDecimal getRepayBorrowCashAmountBorrowDays(Integer days){
+        return mgrBorrowCashDao.getRepayBorrowCashAmountBorrowDays(days);
+    }
+
+    @Override
+    public BigDecimal getOverdueBorrowAmountTo30Day() {
+        return mgrBorrowCashDao.getOverdueBorrowAmountTo30Day();
+    }
+
+    @Override
+    public BigDecimal getAllBorrowAmount() {
+        return mgrBorrowCashDao.getAllBorrowAmount();
+    }
+
 }

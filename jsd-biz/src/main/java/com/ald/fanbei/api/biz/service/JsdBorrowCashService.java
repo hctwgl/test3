@@ -17,6 +17,8 @@ import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import com.alibaba.fastjson.JSONArray;
 import com.itextpdf.text.DocumentException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 极速贷Service
@@ -269,6 +271,47 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      */
     List<JsdBorrowCashDo> getOverSectionBorrowCashRepayByUserIds(String userIds,Date startTime,Date endTime);
 
-    Integer getBorrowCashByToDay();
+    /**
+     * 放款笔数
+     */
+    Integer getLoanNum(String nper,String date);
+    /**
+     * 申请金额
+     */
+    BigDecimal getAppleAmount(String nper,String date);
+    /**
+     * 实际放款金额
+     */
+    BigDecimal getLoanAmount(String nper,String date);
+
+    /**
+     * 商品搭售金额
+     */
+    BigDecimal getTyingAmount(String nper,String date);
+
+    /**
+     * 应还款金额
+     */
+    BigDecimal getRepaymentAmount(String nper,String date);
+
+    /**
+     * 正常还款金额
+     */
+    BigDecimal getNormalAmount(String nper,String date);
+
+    /**
+     * 应还款笔数
+     */
+    Integer getRepaymentNum(String nper,String date);
+
+    /**
+     * 总还款笔数
+     */
+    Integer getSumRepaymentNum(String nper,String date);
+    /**
+     * 正常放款笔数
+     */
+    Integer getNormalNum(String nper,String date);
+
 
 }

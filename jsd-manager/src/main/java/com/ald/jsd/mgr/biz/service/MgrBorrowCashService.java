@@ -87,4 +87,24 @@ public interface MgrBorrowCashService {
     int getPlanRepaymentCashAmountByDays(Date startDate,Date endDate);
 
     BigDecimal getAmountByDays(Integer days);
+
+    /**
+     * 复借借款
+     * @param days
+     * @return
+     */
+    BigDecimal getRepeatBorrowCashByBorrowDays(Integer days);
+
+
+    BigDecimal getRepayBorrowCashAmountBorrowDays(Integer days);
+
+    /**
+     * 获取逾期30天借款本金
+     * @return
+     */
+    BigDecimal getOverdueBorrowAmountTo30Day();
+
+    BigDecimal getAllBorrowAmount();
+
+
 }
