@@ -328,8 +328,62 @@
         <include refid="commonCondition"/>
     </select>
     
-    <insert id="saveAll" parameterType="java.util.list">
 
+
+    <insert id="saveAll" parameterType="java.util.List" >
+        INSERT INTO jsd_total_info
+        (
+        gmt_create,
+        gmt_modified,
+        count_date,
+        loan_num,
+        apply_amount,
+        loan_amount,
+        tying_amount,
+        repayment_amount,
+        normal_amount,
+        count_repayment_amount,
+        repayment_num,
+        normal_num,
+        count_repayment_num,
+        extension_num,
+        extension_return_principal,
+        extension_cost,
+        in_exhibition_capital,
+        rirst_rate,
+        overdue_rate,
+        unrecovered_rate,
+        bad_debt_amount,
+        profitability_rate,
+        nper
+        )
+        values
+        <foreach collection="list" item="item" separator="," >
+            (
+            now(),
+            now(),
+            #{item.countDate},
+            #{item.loanNum},
+            #{item.applyAmount},
+            #{item.loanAmount},
+            #{item.tyingAmount},
+            #{item.repaymentAmount},
+            #{item.normalAmount},
+            #{item.countRepaymentAmount},
+            #{item.repaymentNum},
+            #{item.normalNum},
+            #{item.countRepaymentNum},
+            #{item.extensionNum},
+            #{item.extensionReturnPrincipal},
+            #{item.extensionCost},
+            #{item.inExhibitionCapital},
+            #{item.rirstRate},
+            #{item.unrecoveredRate},
+            #{item.badDebtAmount},
+            #{item.profitabilityRate},
+            #{item.nper}
+            )
+        </foreach>
     </insert>
     
     

@@ -40,12 +40,12 @@ public class BusinessTotalInfoJob {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
-    @Scheduled(cron = "0 10 1 * * ?")
+    @Scheduled(cron = "* * * * * ?")
     public void laonDueJob(){
         try{
             String curHostIp = GetHostIpUtil.getIpAddress();
             logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-            if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
+//            if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
                 try{
                     JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.name(),ResourceSecType.JSD_RATE_INFO.name());
                     if(null != resourceDo && StringUtils.isNotBlank(resourceDo.getTypeDesc())){
@@ -56,36 +56,37 @@ public class BusinessTotalInfoJob {
                             calendar.add(Calendar.DATE, -1);
                             String date = DateUtil.formatDate(calendar.getTime(),DateUtil.DEFAULT_PATTERN_WITH_HYPHEN);
                             JsdTotalInfoDo infoDo = new JsdTotalInfoDo();
+                            infoDo.setNper(arr[i]);
                             //放款笔数
                             Integer loanNum = jsdBorrowCashService.getLoanNum(arr[i],date);
-                            infoDo.setLoanNum(loanNum.longValue());
+                            infoDo.setLoanNum(null==loanNum?0l:loanNum.longValue());
                             //借款申请金额
                             BigDecimal appleAmount = jsdBorrowCashService.getAppleAmount(arr[i],date);
-                            infoDo.setApplyAmount(appleAmount);
+                            infoDo.setApplyAmount(appleAmount==null?BigDecimal.ZERO:appleAmount);
                             //实际出款金额
                             BigDecimal loanAmount = jsdBorrowCashService.getLoanAmount(arr[i],date);
-                            infoDo.setLoanAmount(loanAmount);
+                            infoDo.setLoanAmount(loanAmount==null?BigDecimal.ZERO:loanAmount);
                             //商品搭售金额
                             BigDecimal tyingAmount = jsdBorrowCashService.getTyingAmount(arr[i],date);
-                            infoDo.setTyingAmount(tyingAmount);
+                            infoDo.setTyingAmount(tyingAmount==null?BigDecimal.ZERO:tyingAmount);
                             //应还款金额
                             BigDecimal repaymentAmount = jsdBorrowCashService.getRepaymentAmount(arr[i],date);
-                            infoDo.setRepaymentAmount(repaymentAmount);
+                            infoDo.setRepaymentAmount(repaymentAmount==null?BigDecimal.ZERO:repaymentAmount);
                             //正常还款金额
                             BigDecimal normalAmount = jsdBorrowCashService.getNormalAmount(arr[i],date);
-                            infoDo.setNormalAmount(normalAmount);
+                            infoDo.setNormalAmount(normalAmount==null?BigDecimal.ZERO:normalAmount);
                             //总还款金额
                             BigDecimal sumRepaymentAmount = jsdBorrowCashRepaymentService.getSumRepaymentAmount(arr[i],date);
-                            infoDo.setCountRepaymentAmount(sumRepaymentAmount);
+                            infoDo.setCountRepaymentAmount(sumRepaymentAmount==null?BigDecimal.ZERO:sumRepaymentAmount);
                             //应还款笔数
                             Integer repaymentNum = jsdBorrowCashService.getRepaymentNum(arr[i],date);
-                            infoDo.setRepaymentNum(repaymentNum.longValue());
+                            infoDo.setRepaymentNum(repaymentNum==null?0l:repaymentNum.longValue());
                             //正常还款笔数
                             Integer normalNum = jsdBorrowCashService.getNormalNum(arr[i],date);
-                            infoDo.setNormalNum(normalNum.longValue());
+                            infoDo.setNormalNum(normalNum==null?0l:normalNum.longValue());
                             //总还款笔数
                             Integer sumRepaymentNum = jsdBorrowCashService.getSumRepaymentNum(arr[i],date);
-                            infoDo.setCountRepaymentNum(sumRepaymentNum.longValue());
+                            infoDo.setCountRepaymentNum(sumRepaymentNum==null?0l:sumRepaymentNum.longValue());
                             //展期笔数
 
                             //展期还本
@@ -115,7 +116,7 @@ public class BusinessTotalInfoJob {
                     e.getMessage();
                 }
 
-            }
+//            }
         } catch (Exception e){
             logger.error("borrowCashDueJob  error, case=",e);
         }

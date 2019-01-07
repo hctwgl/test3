@@ -972,7 +972,7 @@
         AND r.`status` = 'Y'
         AND b.`status` in ('TRANSFERRED','FINISHED')
         <if test="nper != null and nper !='all' and nper !=''">
-            AND type = #{nper}
+            AND b.type = #{nper}
         </if>
     </select>
 
@@ -1011,7 +1011,7 @@
         and to_days(finish_date) = to_days(#{date})
         and status = 'FINISHED'
         <if test="nper != null and nper !='all' and nper !=''">
-            AND b.type = #{nper}
+            AND type = #{nper}
         </if>
     </select>
 </mapper>
