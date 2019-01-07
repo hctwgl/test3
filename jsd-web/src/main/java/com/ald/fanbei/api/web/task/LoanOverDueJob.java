@@ -362,7 +362,6 @@ public class LoanOverDueJob {
                     renewalData.put("renewalPoundage",String.valueOf(renewalDo.getNextPoundage()));//续期手续费
                     renewalData.put("renewalStatus",renewalDo.getStatus());//状态
                     renewalData.put("renewalTime",DateUtil.formatDateTime(renewalDo.getGmtCreate()));//续期时间
-                    lateFee = BigDecimalUtil.add(lateFee,renewalDo.getPriorOverdue());
                     arrayList.add(renewalData);
                 }
                 buildData.put("renewalData",JSON.toJSONString(arrayList));
