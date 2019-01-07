@@ -423,7 +423,7 @@
         gmt_create DESC
     </select>
 
-    <select id="getSumRepaymentAmount" resultType="java.lang.Integer">
+    <select id="getSumRepaymentAmount" resultType="java.math.BigDecimal">
         SELECT SUM(repayment_amount) FROM
             jsd_borrow_cash_repayment
         where is_delete = 0
