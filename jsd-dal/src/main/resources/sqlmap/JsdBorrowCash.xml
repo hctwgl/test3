@@ -141,7 +141,7 @@
 	</if>
 	
 	 <if test="endDate!=null and endDate!=''">
-    <![CDATA[   and DATE_FORMAT(gmt_plan_repayment, '%Y-%m-%d')=<  DATE_FORMAT(#{endDate}, '%Y-%m-%d')   ]]>
+    <![CDATA[and DATE_FORMAT(#{endDate}, '%Y-%m-%d')>=DATE_FORMAT(gmt_plan_repayment, '%Y-%m-%d')   ]]>
 	</if>
         
     </sql>
@@ -881,22 +881,23 @@
     </select>
     
     
-    <select id="getReplayAmount" resultType="java.lang.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
+    <select id="getReplayAmount" resultType="java.math.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
         SELECT
-        select sum(amount+overdue_amount+poundage_amount+interest_amount+sum_repaid_interest+sum_repaid_poundage+sum_repaid_overdue-repay_amount)
+         sum(amount+overdue_amount+poundage_amount+interest_amount+sum_repaid_interest+sum_repaid_poundage+sum_repaid_overdue-repay_amount)
         FROM jsd_borrow_cash
         <include refid="commonCondition"/>
     </select>
     
-    <select id="getAllReplayAmount" resultType="java.lang.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
+    <select id="getALLReplayAmount" resultType="java.math.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
         SELECT
-        select sum(repay_amount)FROM jsd_borrow_cash
+         sum(repay_amount)
+        FROM jsd_borrow_cash
         <include refid="commonCondition"/>
     </select>
     
-      <select id="getArrivalAmount" resultType="java.lang.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
+      <select id="getArrivalAmount" resultType="java.math.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
         SELECT
-        select sum(arrival_amount)FROM jsd_borrow_cash
+        sum(arrival_amount)FROM jsd_borrow_cash
         <include refid="commonCondition"/>
     </select>
     

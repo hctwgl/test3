@@ -100,9 +100,9 @@
     <![CDATA[   and DATE_FORMAT(gmt_modified , '%Y-%m-%d')=  DATE_FORMAT(#{queryDate}, '%Y-%m-%d')   ]]>
        </if> 
        
-        <if test="endDate!=null and endDate!=''">
-    <![CDATA[   and DATE_FORMAT(gmt_modified , '%Y-%m-%d')=< DATE_FORMAT(#{endDate}, '%Y-%m-%d')   ]]>
-       </if> 
+    <if test="endDate!=null and endDate!=''">
+    <![CDATA[  and DATE_FORMAT(gmt_modified, '%Y-%m-%d') <= DATE_FORMAT(#{endDate}, '%Y-%m-%d')    ]]>
+	</if>
        
     </sql>
 
@@ -446,11 +446,11 @@
     </select>
 
 
-	<select id="getRenewalAmount" resultType="java.math.BigDecimal"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">>
+	<select id="getRenewalAmount" resultType="java.math.BigDecimal"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
 		SELECT
-		count(renewal_amount)
+		sum(renewal_amount)
 		FROM jsd_borrow_cash_renewal
-		<include refid="commonCondition" />
 	</select>
+	
     
 </mapper>

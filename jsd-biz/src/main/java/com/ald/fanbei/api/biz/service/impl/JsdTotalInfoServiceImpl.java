@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service.impl;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +20,7 @@ import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdTotalInfoDo;
+import com.google.gson.Gson;
 import com.timevale.tgtext.text.ar;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdTotalInfoService;
@@ -60,7 +62,9 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		String[] arr = resourceDo.getTypeDesc().split(",");
 		// 查询展期数据
 		JsdBorrowCashRenewalDo jsdBorrowCashRenewalDo = new JsdBorrowCashRenewalDo();
+		if(!term.equals("all")){
 		jsdBorrowCashRenewalDo.setRenewalDay(Long.valueOf(term));
+		}
 		jsdBorrowCashRenewalDo.setStatus("Y");
 		jsdBorrowCashRenewalDo.setQueryDate(date);
 		List<JsdBorrowCashRenewalDo> list = jsdBorrowCashRenewalDao.getListByCommonCondition(jsdBorrowCashRenewalDo);
@@ -70,7 +74,11 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		jsdTotalInfoDo.setNper(term);
 		jsdTotalInfoDo = jsdTotalInfoDao.getByCommonCondition(jsdTotalInfoDo);
 		// 展期笔数
-		jsdTotalInfoDo.setExtensionNum(list.isEmpty() ? 0L : list.size());
+		long extensionNum=0L;
+		if(null!=list &&!list.isEmpty()){
+			extensionNum=(long) list.size();
+		}
+		jsdTotalInfoDo.setExtensionNum(extensionNum);
 		// 展期还本
 		BigDecimal extensionReturnPrincipal = new BigDecimal("0");
 		for (JsdBorrowCashRenewalDo j : list) {
@@ -92,11 +100,17 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		}
 		
 		
+		BigDecimal renewalAmount = new BigDecimal("0");
 		jsdBorrowCashRenewalDo = new JsdBorrowCashRenewalDo();
+		if(!"all".equals(term)){
 		jsdBorrowCashRenewalDo.setRenewalDay(Long.valueOf(term));
+		}
 		jsdBorrowCashRenewalDo.setStatus("Y");
 		jsdBorrowCashRenewalDo.setEndDate(date);
-		jsdTotalInfoDo.setInExhibitionCapital(jsdBorrowCashRenewalDao.getRenewalAmount(jsdBorrowCashRenewalDo));
+		renewalAmount=jsdBorrowCashRenewalDao.getRenewalAmount(jsdBorrowCashRenewalDo);
+		jsdTotalInfoDo.setInExhibitionCapital(renewalAmount);
+		Gson gson=new Gson();
+		System.out.println("更新数据为"+gson.toJson(jsdTotalInfoDo));
 		jsdTotalInfoDao.updateById(jsdTotalInfoDo);
 	
 	}
@@ -153,7 +167,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 			listAllBig = BigDecimalUtil.add(listAllBig, j.getAmount(), j.getInterestAmount(), j.getPoundageAmount(),
 					j.getOverdueAmount(), j.getSumRepaidInterest(), j.getSumRepaidPoundage(), j.getSumRepaidOverdue()).subtract(j.getRepayAmount());
 		}
-		if (!listAllBig.equals(BigDecimal.ZERO)) {
+		if (!listAllBig.equals(new BigDecimal("0.00"))) {
 			jsdTotalInfoDo.setUnrecoveredRate(listYBig.divide(listAllBig));
 		}
 		//坏账金额率
@@ -180,7 +194,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 //			bad = BigDecimalUtil.add(bad, j.getAmount(), j.getInterestAmount(), j.getPoundageAmount(),
 //					j.getOverdueAmount(), j.getSumRepaidInterest(), j.getSumRepaidPoundage(), j.getSumRepaidOverdue()).subtract(j.getRepayAmount());
 //		}
-		if(!all.equals(BigDecimal.ZERO)){
+		if(all!=null &&!all.equals(BigDecimal.ZERO)){
 			result=bad.divide(all);
 		}
 		jsdTotalInfoDo.setBadDebtAmount(result);
@@ -190,12 +204,14 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		
 		BigDecimal replay = jsdBorrowCashDao.getALLReplayAmount(jsdBorrowCashDo);
 		BigDecimal arriva = jsdBorrowCashDao.getArrivalAmount(jsdBorrowCashDo);
-		if(!BigDecimal.ZERO.equals(arriva)){
+		if(null!=arriva&&!BigDecimal.ZERO.equals(arriva)){
 			profitability=replay.divide(arriva);
 		}
 		jsdTotalInfoDo.setProfitabilityRate(profitability);
+		Gson gson=new Gson();
+		System.out.println("更新数据为"+gson.toJson(jsdTotalInfoDo));
+		
 		jsdTotalInfoDao.updateById(jsdTotalInfoDo);
 
 	}
-
 }

@@ -38,7 +38,7 @@ public interface JsdBorrowCashRenewalDao extends BaseDao<JsdBorrowCashRenewalDo,
 	List<FinaneceDataDo> getRenewalData();
 	
 	
-    BigDecimal getRenewalAmount(JsdBorrowCashRenewalDo jsdBorrowCashRenewalDo);
+	BigDecimal getRenewalAmount(JsdBorrowCashRenewalDo jsdBorrowCashRenewalDo);
 	
 
 }
