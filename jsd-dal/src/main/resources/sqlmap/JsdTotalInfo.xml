@@ -80,7 +80,9 @@
         <if test="profitabilityRate != null">
             AND profitability_rate = #{profitabilityRate,jdbcType=DECIMAL}
         </if>
-
+	<if test="queryDate!=null and queryDate!=''">
+    <![CDATA[   and DATE_FORMAT(count_date, '%Y-%m-%d')>=  DATE_FORMAT(#{queryDate}, '%Y-%m-%d')   ]]>
+	</if>
 
 	<if test="startDate!=null and startDate!=''">
     <![CDATA[   and DATE_FORMAT(count_date, '%Y-%m-%d')>=  DATE_FORMAT(#{startDate}, '%Y-%m-%d')   ]]>

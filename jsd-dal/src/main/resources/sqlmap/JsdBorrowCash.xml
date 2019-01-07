@@ -135,6 +135,15 @@
         <if test="repayRemark !=null">
             AND borrow_remark = #{repayRemark,jdbcType=VARCHAR}
         </if>
+        
+        <if test="queryDate!=null and queryDate!=''">
+    <![CDATA[   and DATE_FORMAT(gmt_plan_repayment, '%Y-%m-%d')=  DATE_FORMAT(#{queryDate}, '%Y-%m-%d')   ]]>
+	</if>
+	
+	 <if test="endDate!=null and endDate!=''">
+    <![CDATA[   and DATE_FORMAT(gmt_plan_repayment, '%Y-%m-%d')=<  DATE_FORMAT(#{endDate}, '%Y-%m-%d')   ]]>
+	</if>
+        
     </sql>
 
     
@@ -862,4 +871,35 @@
         jsd_borrow_cash b where b.is_delete=0  and gmt_plan_repayment BETWEEN  #{startTime} AND  #{endTime}
         and status='TRANSFERRED' and user_id in (${userIds})
     </select>
+    
+    
+    <select id="getcount" resultType="java.lang.Integer" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
+        SELECT
+        count(*)
+        FROM jsd_borrow_cash
+        <include refid="commonCondition"/>
+    </select>
+    
+    
+    <select id="getReplayAmount" resultType="java.lang.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
+        SELECT
+        select sum(amount+overdue_amount+poundage_amount+interest_amount+sum_repaid_interest+sum_repaid_poundage+sum_repaid_overdue-repay_amount)
+        FROM jsd_borrow_cash
+        <include refid="commonCondition"/>
+    </select>
+    
+    <select id="getAllReplayAmount" resultType="java.lang.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
+        SELECT
+        select sum(repay_amount)FROM jsd_borrow_cash
+        <include refid="commonCondition"/>
+    </select>
+    
+      <select id="getArrivalAmount" resultType="java.lang.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
+        SELECT
+        select sum(arrival_amount)FROM jsd_borrow_cash
+        <include refid="commonCondition"/>
+    </select>
+    
+    
+    
 </mapper>

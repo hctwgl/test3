@@ -31,6 +31,11 @@ import java.math.BigDecimal;
    
    //结束日期
    private Date endDate;
+   
+   
+
+   //查询日期
+   private Date queryDate;
     
 
     /**
@@ -581,6 +586,14 @@ import java.math.BigDecimal;
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	public Date getQueryDate() {
+		return queryDate;
+	}
+
+	public void setQueryDate(Date queryDate) {
+		this.queryDate = queryDate;
 	}
     
 }

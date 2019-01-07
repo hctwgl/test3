@@ -95,6 +95,15 @@
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
         </if>
+        
+        <if test="queryDate!=null and queryDate!=''">
+    <![CDATA[   and DATE_FORMAT(gmt_modified , '%Y-%m-%d')=  DATE_FORMAT(#{queryDate}, '%Y-%m-%d')   ]]>
+       </if> 
+       
+        <if test="endDate!=null and endDate!=''">
+    <![CDATA[   and DATE_FORMAT(gmt_modified , '%Y-%m-%d')=< DATE_FORMAT(#{endDate}, '%Y-%m-%d')   ]]>
+       </if> 
+       
     </sql>
 
     
@@ -435,4 +444,13 @@
    AND `gmt_create` BETWEEN concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 00:00:00") and concat(DATE_SUB(CURDATE(), INTERVAL 1 DAY), " 23:59:59") ;
 
     </select>
+
+
+	<select id="getRenewalAmount" resultType="java.math.BigDecimal"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">>
+		SELECT
+		count(renewal_amount)
+		FROM jsd_borrow_cash_renewal
+		<include refid="commonCondition" />
+	</select>
+    
 </mapper>
