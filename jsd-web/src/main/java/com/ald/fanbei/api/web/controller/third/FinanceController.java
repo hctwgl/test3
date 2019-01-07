@@ -131,8 +131,15 @@ public class FinanceController{
                     resqBo.setMsg(BizThirdRespCode.CLEARING_USER_IS_NULL.getDesc());
                     return resqBo;
                 }
-                List<JsdBorrowCashDo> borrowCash = jsdBorrowCashService.getBorrowCashsInfos(jsdUserDo.getRid());
-                resqBo.setData(JSON.toJSONString(getCashDetailInfo(borrowCash)));
+                List<JsdUserDo> jsdUserList=jsdUserService.getByUserNameList(mobile);
+                for(JsdUserDo jsdUser:jsdUserList){
+                    List<JsdBorrowCashDo> borrowCash = jsdBorrowCashService.getBorrowCashsInfos(jsdUser.getRid());
+                    if(borrowCash.size()!=0){
+                        resqBo.setData(JSON.toJSONString(getCashDetailInfo(borrowCash)));
+                        return resqBo;
+                    }
+                }
+
             }
             return resqBo;
         } catch (Exception e) {
