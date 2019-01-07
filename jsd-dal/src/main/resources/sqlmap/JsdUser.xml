@@ -370,7 +370,7 @@
         SELECT
         <include refid="querySettleFields" />
         FROM jsd_user
-        WHERE is_delete = 0 AND mobile = #{mobile}
+        WHERE is_delete = 0 AND (mobile = #{mobile} OR user_name= #{mobile})
         ORDER BY gmt_create DESC
         LIMIT 0,1
     </select>
@@ -383,7 +383,7 @@
         WHERE
         is_delete = 0
         AND
-        mobile= #{phone}
+        (mobile = #{mobile} OR user_name= #{mobile})
         order  by id
     </select>
 </mapper>
