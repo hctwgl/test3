@@ -25,7 +25,7 @@ public interface JsdTotalInfoService extends ParentService<JsdTotalInfoDo, Long>
      * @return
      */
     void updateExtensionInfo(Date date,String term,JsdTotalInfoDo jsdTotalInfoDo);
-    
+   
     public void updateFateInfo(Date date,String term,JsdTotalInfoDo jsdTotalInfoDo);
     public void updateTotalInfo(Date tdate,String date,JsdResourceDo resourceDo);
 

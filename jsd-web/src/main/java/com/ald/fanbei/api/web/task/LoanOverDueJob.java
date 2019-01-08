@@ -11,6 +11,7 @@ import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.biz.third.util.CollectionNoticeUtil;
 import com.ald.fanbei.api.biz.third.util.JobThreadPoolUtils;
 import com.ald.fanbei.api.common.enums.*;
+import com.ald.fanbei.api.common.util.dingding.DingdingUtil;
 import com.ald.fanbei.api.dal.dao.JsdContractPdfDao;
 import com.ald.fanbei.api.dal.domain.*;
 import com.ald.fanbei.api.common.util.DateUtil;
@@ -85,7 +86,7 @@ public class LoanOverDueJob {
     JsdResourceService jsdResourceService;
 
 
-
+    public static String WEBHOOK_TOKEN = "https://oapi.dingtalk.com/robot/send?access_token=d57e9ab5fb08ae68f28e21ed318a419db4dc5a51cbdd82644115c6f46201fed4";
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
@@ -120,6 +121,7 @@ public class LoanOverDueJob {
                 logger.info("borrowCashDueJob run end,time=" + new Date());
             }
         } catch (Exception e){
+            DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,NOTICE_HOST +"，逾期定时器执行失败！",true);
             logger.error("borrowCashDueJob  error, case=",e);
         }
     }
@@ -205,6 +207,7 @@ public class LoanOverDueJob {
                 }
             }
         }catch (Exception e) {
+            DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,NOTICE_HOST +"，通讯录入库失败！",true);
             logger.error("calcuOverdueRecords.addUserContancts error, userId = "+ userId, e);
         }
     }
@@ -369,6 +372,7 @@ public class LoanOverDueJob {
                 //--------------------end  催收上报接口需要参数---------------------------
                 data.add(buildData);
             }catch (Exception e){
+                DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,NOTICE_HOST +"，逾期通知催收系统失败！",true);
                 logger.info("collectionPush is error " + borrowCashDo.getRid(),e);
                 e.printStackTrace();
             }

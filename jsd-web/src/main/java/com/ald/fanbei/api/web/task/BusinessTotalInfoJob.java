@@ -7,6 +7,7 @@ import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.timeUtil;
+import com.ald.fanbei.api.common.util.dingding.DingdingUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -41,6 +42,8 @@ public class BusinessTotalInfoJob {
 	JsdTotalInfoService jsdTotalInfoService;
 
 	private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
+    public static String WEBHOOK_TOKEN = "https://oapi.dingtalk.com/robot/send?access_token=d57e9ab5fb08ae68f28e21ed318a419db4dc5a51cbdd82644115c6f46201fed4";
+
 
 	@Scheduled(cron = "0 10 1 * * ?")
 	public void laonDueJob() {
@@ -55,18 +58,24 @@ public class BusinessTotalInfoJob {
 						// 获取数据库中最新数据
 						JsdTotalInfoDo query = new JsdTotalInfoDo();
 						JsdTotalInfoDo JsdTotalInfoDo = jsdTotalInfoService.getByCommonCondition(query);
-						String date = DateUtil.formatDate(JsdTotalInfoDo.getCountDate(),
-								DateUtil.DEFAULT_PATTERN_WITH_HYPHEN);
 
 						while (null != JsdTotalInfoDo && !timeUtil.isYesterday(JsdTotalInfoDo.getCountDate())) {
+							Calendar calendar = Calendar.getInstance();
+							calendar.setTime(JsdTotalInfoDo.getCountDate());
+							calendar.add(Calendar.DAY_OF_MONTH, 1);
+							Date tdate = calendar.getTime();
+							String date = DateUtil.formatDate(JsdTotalInfoDo.getCountDate(),
+									DateUtil.DEFAULT_PATTERN_WITH_HYPHEN);
+							jsdTotalInfoService.updateTotalInfo(tdate, date, resourceDo);
 							JsdTotalInfoDo = jsdTotalInfoService.getByCommonCondition(query);
-							jsdTotalInfoService.updateTotalInfo(JsdTotalInfoDo.getCountDate(), date, resourceDo);
 						}
 
 					}
 				}
 				catch (Exception e) {
 					// 执行失败，发送短信提醒
+		            DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,NOTICE_HOST +"，逾期定时器执行失败！",true);
+
 					logger.info("error = ", e);
 					e.getMessage();
 				}
