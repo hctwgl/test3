@@ -23,9 +23,9 @@ public interface JsdTotalInfoService extends ParentService<JsdTotalInfoDo, Long>
      * @param date
      * @return
      */
-    void updateExtensionInfo(Date date,String term);
+    void updateExtensionInfo(Date date,String term,JsdTotalInfoDo jsdTotalInfoDo);
     
-    public void updateFateInfo(Date date,String term);
+    public void updateFateInfo(Date date,String term,JsdTotalInfoDo jsdTotalInfoDo);
 
     int saveAll(List<JsdTotalInfoDo> list);
 

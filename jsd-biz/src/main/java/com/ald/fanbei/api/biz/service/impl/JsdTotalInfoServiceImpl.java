@@ -57,10 +57,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 	}
 
 	@Override
-	public void updateExtensionInfo(Date date, String term) {
-		JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.name(),
-				ResourceSecType.JSD_RATE_INFO.name());
-		String[] arr = resourceDo.getTypeDesc().split(",");
+	public void updateExtensionInfo(Date date, String term,JsdTotalInfoDo jsdTotalInfoDo) {
 		// 查询展期数据
 		JsdBorrowCashRenewalDo jsdBorrowCashRenewalDo = new JsdBorrowCashRenewalDo();
 		if(!term.equals("all")){
@@ -69,11 +66,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		jsdBorrowCashRenewalDo.setStatus("Y");
 		jsdBorrowCashRenewalDo.setQueryDate(date);
 		List<JsdBorrowCashRenewalDo> list = jsdBorrowCashRenewalDao.getListByCommonCondition(jsdBorrowCashRenewalDo);
-		// 查询汇总数据
-		JsdTotalInfoDo jsdTotalInfoDo = new JsdTotalInfoDo();
-		jsdTotalInfoDo.setQueryDate(date);
-		jsdTotalInfoDo.setNper(term);
-		jsdTotalInfoDo = jsdTotalInfoDao.getByCommonCondition(jsdTotalInfoDo);
+		
 		// 展期笔数
 		long extensionNum=0L;
 		if(null!=list &&!list.isEmpty()){
@@ -116,13 +109,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 	
 	}
 
-	public void updateFateInfo(Date date, String term) {
-
-		// 查询汇总数据
-		JsdTotalInfoDo jsdTotalInfoDo = new JsdTotalInfoDo();
-		jsdTotalInfoDo.setQueryDate(date);
-		jsdTotalInfoDo.setNper(term);
-		jsdTotalInfoDo = jsdTotalInfoDao.getByCommonCondition(jsdTotalInfoDo);
+	public void updateFateInfo(Date date, String term,JsdTotalInfoDo jsdTotalInfoDo) {
 
 		// 首逾率
 		// 逾期一天的数据
