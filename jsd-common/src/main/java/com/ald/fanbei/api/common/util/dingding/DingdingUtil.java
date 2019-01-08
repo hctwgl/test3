@@ -1,7 +1,5 @@
 package com.ald.fanbei.api.common.util.dingding;
 
-import java.util.logging.Logger;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
