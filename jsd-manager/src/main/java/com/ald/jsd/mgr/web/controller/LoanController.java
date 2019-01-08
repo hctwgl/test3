@@ -68,23 +68,9 @@ public class LoanController {
 
     @RequestMapping(value = {"list.json"}, method = RequestMethod.POST)
     public Resp<LoanQuery> list(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
-    	// 逾期一天的数据
-    			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    			Calendar calendar = Calendar.getInstance();
-    			calendar.setTime(new Date());
-    			calendar.add(Calendar.DAY_OF_MONTH, -2);
-    			Date tdate = calendar.getTime();
-    			JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.name(),
-    					ResourceSecType.JSD_RATE_INFO.name());
-    			String[] arr = resourceDo.getTypeDesc().split(",");
-    			JsdTotalInfoDo jsdTotalInfoDo =new  JsdTotalInfoDo();
-    	for(String term:arr){		
-    		jsdTotalInfoService.updateExtensionInfo(tdate, term, jsdTotalInfoDo);
-    		jsdTotalInfoService.updateExtensionInfo(tdate, term, jsdTotalInfoDo);
-
-    }
-    	return null;
-    }
+    	loanQuery.setFull(true);
+    loanQuery.setList(jsdBorrowCashService.getLoanList(loanQuery));
+    return Resp.succ(loanQuery, "");}
     @RequestMapping(value = {"statistics.json"}, method = RequestMethod.POST)
     public Resp<HashMap<String, BigDecimal>> statistics(HttpServletRequest request) {
         HashMap<String, BigDecimal> hashMap = jsdBorrowCashService.getLoanStatistics();
