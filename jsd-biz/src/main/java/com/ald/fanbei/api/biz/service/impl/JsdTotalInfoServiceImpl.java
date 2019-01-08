@@ -45,8 +45,6 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 	@Resource
 	private JsdTotalInfoDao jsdTotalInfoDao;
 	@Resource
-	JsdResourceService jsdResourceService;
-	@Resource
 	JsdBorrowCashRenewalDao jsdBorrowCashRenewalDao;
 	@Resource
 	JsdBorrowCashDao jsdBorrowCashDao;
@@ -113,7 +111,6 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 
 		// 首逾率
 		// 逾期一天的数据
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		calendar.add(Calendar.DAY_OF_MONTH, -1);

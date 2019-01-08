@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  *@类描述： 每日1点执行一次
- *@author jilong
+ *@author cfp
  *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component
@@ -42,12 +42,12 @@ public class BusinessTotalInfoJob {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
-    @Scheduled(cron = "* * * * * ?")
+    @Scheduled(cron = "0 10 1 * * ?")
     public void laonDueJob(){
         try{
             String curHostIp = GetHostIpUtil.getIpAddress();
             logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-//            if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
+            if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
                 try{
                     JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.name(),ResourceSecType.JSD_RATE_INFO.name());
                     if(null != resourceDo && StringUtils.isNotBlank(resourceDo.getTypeDesc())){
@@ -63,7 +63,9 @@ public class BusinessTotalInfoJob {
                         //获取数据库中最新数据
                         JsdTotalInfoDo query=new JsdTotalInfoDo();
                         JsdTotalInfoDo JsdTotalInfoDo=jsdTotalInfoService.getByCommonCondition(query);
-                        if(null!=JsdTotalInfoDo&&timeUtil.isNow(JsdTotalInfoDo.getCountDate()))
+                        if(null!=JsdTotalInfoDo&& timeUtil.isNow(JsdTotalInfoDo.getCountDate())){
+
+                        }
                         
                         
                         String[] arr = resourceDo.getTypeDesc().split(",");
@@ -101,23 +103,9 @@ public class BusinessTotalInfoJob {
                             //总还款笔数
                             Integer sumRepaymentNum = jsdBorrowCashService.getSumRepaymentNum(arr[i],date);
                             infoDo.setCountRepaymentNum(sumRepaymentNum==null?0l:sumRepaymentNum.longValue());
-                            //展期笔数
-
-                            //展期还本
-
-                            //展期费用
-
-                            //在展本金
+                            //展期笔数、展期还本、展期费用、在展本金
                             jsdTotalInfoService.updateExtensionInfo(tdate, arr[i], infoDo);
-                            //首逾率
-
-                            //逾期率
-
-                            //未回收率
-
-                            //坏账金额
-
-                            //盈利率
+                            //首逾率、逾期率、未回收率、坏账金额、盈利率
                             jsdTotalInfoService.updateFateInfo(tdate, arr[i], infoDo);
                             list.add(infoDo);
                         }
@@ -131,7 +119,7 @@ public class BusinessTotalInfoJob {
                     e.getMessage();
                 }
 
-//            }
+            }
         } catch (Exception e){
             logger.error("borrowCashDueJob  error, case=",e);
         }
