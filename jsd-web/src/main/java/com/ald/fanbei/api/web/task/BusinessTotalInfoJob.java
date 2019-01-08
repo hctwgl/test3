@@ -63,7 +63,7 @@ public class BusinessTotalInfoJob {
                         //获取数据库中最新数据
                         JsdTotalInfoDo query=new JsdTotalInfoDo();
                         JsdTotalInfoDo JsdTotalInfoDo=jsdTotalInfoService.getByCommonCondition(query);
-//                        if(null!=JsdTotalInfoDo&&timeUtil.isNow(JsdTotalInfoDo.getCountDate()))
+                        if(null!=JsdTotalInfoDo&&timeUtil.isNow(JsdTotalInfoDo.getCountDate()))
                         
                         
                         String[] arr = resourceDo.getTypeDesc().split(",");
