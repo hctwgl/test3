@@ -10,6 +10,6 @@ public interface MgrBorrowCashRenewalService {
 
     BigDecimal getRenewalAmountByDays( Date startDate,Date endDate);
 
-    BigDecimal getRenewalPersonsByDays(Integer days);
+    int getRenewalPersonsByDays(Integer days);
 
 }

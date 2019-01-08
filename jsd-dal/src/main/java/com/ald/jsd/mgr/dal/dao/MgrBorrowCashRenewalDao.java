@@ -19,6 +19,6 @@ public interface MgrBorrowCashRenewalDao {
 
    BigDecimal getRenewalAmountByDays(@Param("startDate") Date startDate,@Param("endDate")Date endDate);
 
-   BigDecimal getRenewalPersonsByDays(Integer days);
+   int getRenewalPersonsByDays(Integer days);
 
 }
