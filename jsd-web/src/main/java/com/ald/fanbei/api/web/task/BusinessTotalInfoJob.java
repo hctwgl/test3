@@ -46,7 +46,7 @@ public class BusinessTotalInfoJob {
     public static String WEBHOOK_TOKEN = "https://oapi.dingtalk.com/robot/send?access_token=d57e9ab5fb08ae68f28e21ed318a419db4dc5a51cbdd82644115c6f46201fed4";
 
 
-    @Scheduled(cron = "* * * * * ?")
+    @Scheduled(cron = "0 10 1 * * ?")
     public void laonDueJob(){
         try{
             String curHostIp = GetHostIpUtil.getIpAddress();
