@@ -13,6 +13,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.common.enums.BorrowVersionType;
+import com.ald.fanbei.api.common.enums.ResourceSecType;
+import com.ald.fanbei.api.common.enums.ResourceType;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,12 +27,15 @@ import com.ald.fanbei.api.biz.bo.JsdProctocolBo;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashRenewalService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
+import com.ald.fanbei.api.biz.service.JsdResourceService;
+import com.ald.fanbei.api.biz.service.JsdTotalInfoService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdTotalInfoDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.fanbei.api.dal.domain.JsdCollectionBorrowDo;
+import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdTotalInfoDo;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 import com.ald.fanbei.api.dal.query.LoanQuery;
@@ -52,16 +58,31 @@ public class LoanController {
     JsdBorrowCashRenewalService jsdBorrowCashRenewalService;
     @Resource
     JsdTotalInfoDao jsdTotalInfoDao;
-    
+    @Resource
+    JsdResourceService jsdResourceService;
+    @Resource
+    JsdTotalInfoService jsdTotalInfoService;
     
 
     @RequestMapping(value = {"list.json"}, method = RequestMethod.POST)
     public Resp<LoanQuery> list(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
-        loanQuery.setFull(true);
-        loanQuery.setList(jsdBorrowCashService.getLoanList(loanQuery));
-        return Resp.succ(loanQuery, "");
-    }
+    	// 逾期一天的数据
+    			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    			Calendar calendar = Calendar.getInstance();
+    			calendar.setTime(new Date());
+    			calendar.add(Calendar.DAY_OF_MONTH, -2);
+    			Date tdate = calendar.getTime();
+    			JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.name(),
+    					ResourceSecType.JSD_RATE_INFO.name());
+    			String[] arr = resourceDo.getTypeDesc().split(",");
+    			JsdTotalInfoDo jsdTotalInfoDo =new  JsdTotalInfoDo();
+    	for(String term:arr){		
+    		jsdTotalInfoService.updateExtensionInfo(tdate, term, jsdTotalInfoDo);
+    		jsdTotalInfoService.updateExtensionInfo(tdate, term, jsdTotalInfoDo);
 
+    }
+    	return null;
+    }
     @RequestMapping(value = {"statistics.json"}, method = RequestMethod.POST)
     public Resp<HashMap<String, BigDecimal>> statistics(HttpServletRequest request) {
         HashMap<String, BigDecimal> hashMap = jsdBorrowCashService.getLoanStatistics();
@@ -136,7 +157,7 @@ public class LoanController {
 		
 		Date startDate = loanQuery.getStartDate() == null ? date : loanQuery.getStartDate();
 		Date endDate = loanQuery.getEndDate() == null ? new Date() : loanQuery.getEndDate();
-    	String nper=loanQuery.getNper()==null? "ALL":loanQuery.getNper();
+    	String nper=loanQuery.getNper()==null? "all":loanQuery.getNper();
     	JsdTotalInfoDo jsdTotalInfoDo=new JsdTotalInfoDo();
     	jsdTotalInfoDo.setEndDate(endDate);
     	jsdTotalInfoDo.setStartDate(startDate);

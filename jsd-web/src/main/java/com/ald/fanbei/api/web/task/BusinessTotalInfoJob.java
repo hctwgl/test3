@@ -6,6 +6,7 @@ import com.ald.fanbei.api.common.ConfigProperties;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.*;
 import com.ald.fanbei.api.common.util.DateUtil;
+import com.ald.fanbei.api.common.util.timeUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
@@ -50,11 +52,23 @@ public class BusinessTotalInfoJob {
                     JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.name(),ResourceSecType.JSD_RATE_INFO.name());
                     if(null != resourceDo && StringUtils.isNotBlank(resourceDo.getTypeDesc())){
                         List<JsdTotalInfoDo> list = new ArrayList<>();
+                        //关于时间方面的调整，选取数据库最新的生成时间，当要执行时间和当天的时间相同的时候，停止执行
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.add(Calendar.DATE, -1);
+                        Date tdate = calendar.getTime();
+                        String date = DateUtil.formatDate(calendar.getTime(),DateUtil.DEFAULT_PATTERN_WITH_HYPHEN);
+                        
+                        	
+                        
+                        //获取数据库中最新数据
+                        JsdTotalInfoDo query=new JsdTotalInfoDo();
+                        JsdTotalInfoDo JsdTotalInfoDo=jsdTotalInfoService.getByCommonCondition(query);
+//                        if(null!=JsdTotalInfoDo&&timeUtil.isNow(JsdTotalInfoDo.getCountDate()))
+                        
+                        
                         String[] arr = resourceDo.getTypeDesc().split(",");
                         for (int i=0;arr.length>i;i++){
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.add(Calendar.DATE, -1);
-                            String date = DateUtil.formatDate(calendar.getTime(),DateUtil.DEFAULT_PATTERN_WITH_HYPHEN);
+                            
                             JsdTotalInfoDo infoDo = new JsdTotalInfoDo();
                             infoDo.setNper(arr[i]);
                             //放款笔数
@@ -94,7 +108,7 @@ public class BusinessTotalInfoJob {
                             //展期费用
 
                             //在展本金
-
+                            jsdTotalInfoService.updateExtensionInfo(tdate, arr[i], infoDo);
                             //首逾率
 
                             //逾期率
@@ -104,7 +118,7 @@ public class BusinessTotalInfoJob {
                             //坏账金额
 
                             //盈利率
-
+                            jsdTotalInfoService.updateFateInfo(tdate, arr[i], infoDo);
                             list.add(infoDo);
                         }
                         if(list.size()>0){
@@ -112,6 +126,7 @@ public class BusinessTotalInfoJob {
                         }
                     }
                 }catch (Exception e){
+                	//执行失败，发送短信提醒
                     logger.info("error = ",e);
                     e.getMessage();
                 }
