@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ald.fanbei.api.common.enums.BorrowVersionType;
 import com.ald.fanbei.api.common.enums.ResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
+import com.ald.fanbei.api.common.exception.BizException;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Controller;
@@ -30,6 +31,7 @@ import com.ald.fanbei.api.biz.service.JsdCollectionBorrowService;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
 import com.ald.fanbei.api.biz.service.JsdTotalInfoService;
 import com.ald.fanbei.api.biz.service.JsdUserService;
+import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
 import com.ald.fanbei.api.dal.dao.JsdTotalInfoDao;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
@@ -168,6 +170,32 @@ public class LoanController {
         loanQuery.setList(jsdTotalInfoDao.getListByCommonCondition(jsdTotalInfoDo));
         return Resp.succ(loanQuery, "");
     }
+    
+    
+    /**
+     * total:借款汇总统计
+     *
+     * @author zhangxinxing
+     * @param loanQuery
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = {"updateTotal.json"}, method = RequestMethod.POST)
+    public Resp<LoanQuery> updateTotal(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
+    	if(null==loanQuery.getQueryDate()){
+    		throw new BizException("参数错误");
+    	}
+    	JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.name(),
+				ResourceSecType.JSD_RATE_INFO.name());
+    	if(null==resourceDo){
+    		throw new BizException("参数错误");
+    	}
+    	String date = DateUtil.formatDate(loanQuery.getQueryDate(),DateUtil.DEFAULT_PATTERN_WITH_HYPHEN);
+    	jsdTotalInfoService.updateTotalInfo(loanQuery.getQueryDate(), date, resourceDo);
+        return Resp.succ();
+    }
+    
+    
     
     
 }

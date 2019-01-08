@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.common.util;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -39,8 +40,13 @@ public class timeUtil {
 		// 获取今天的日期
 		String nowDay = sf.format(now);
 
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.add(Calendar.DAY_OF_MONTH, -1);
+		Date tdate = calendar.getTime();
+		
 		// 对比的时间
-		String day = sf.format(date);
+		String day = sf.format(tdate);
 
 		return day.equals(nowDay);
 

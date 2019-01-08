@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import java.util.Date;
 
+import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.ald.fanbei.api.dal.domain.JsdTotalInfoDo;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public interface JsdTotalInfoService extends ParentService<JsdTotalInfoDo, Long>
     void updateExtensionInfo(Date date,String term,JsdTotalInfoDo jsdTotalInfoDo);
     
     public void updateFateInfo(Date date,String term,JsdTotalInfoDo jsdTotalInfoDo);
+    public void updateTotalInfo(Date tdate,String date,JsdResourceDo resourceDo);
 
     int saveAll(List<JsdTotalInfoDo> list);
 

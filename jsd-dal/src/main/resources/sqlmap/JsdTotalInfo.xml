@@ -93,7 +93,7 @@
 	<if test="endDate!=null and endDate!=''">
     <![CDATA[  and DATE_FORMAT(count_date, '%Y-%m-%d') <= DATE_FORMAT(#{endDate}, '%Y-%m-%d')    ]]>
 	</if>
-	order by id desc
+	order by count_date desc
     </sql>
 
     
@@ -379,6 +379,7 @@
             #{item.extensionCost},
             #{item.inExhibitionCapital},
             #{item.rirstRate},
+            #{item.overdueRate},
             #{item.unrecoveredRate},
             #{item.badDebtAmount},
             #{item.profitabilityRate},
