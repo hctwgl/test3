@@ -19,6 +19,9 @@ import com.ald.fanbei.api.common.exception.BizException;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -64,6 +67,9 @@ public class LoanController {
     JsdResourceService jsdResourceService;
     @Resource
     JsdTotalInfoService jsdTotalInfoService;
+    @Resource
+	private TransactionTemplate transactionTemplate;
+    
     
 
     @RequestMapping(value = {"list.json"}, method = RequestMethod.POST)
@@ -177,7 +183,15 @@ public class LoanController {
     		throw new BizException("参数错误");
     	}
     	String date = DateUtil.formatDate(loanQuery.getQueryDate(),DateUtil.DEFAULT_PATTERN_WITH_HYPHEN);
-    	jsdTotalInfoService.updateTotalInfo(loanQuery.getQueryDate(), date, resourceDo);
+    	
+    	transactionTemplate.execute(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				jsdTotalInfoDao.batchDelete(loanQuery.getQueryDate());
+		    	jsdTotalInfoService.updateTotalInfo(loanQuery.getQueryDate(), date, resourceDo);
+				return null;
+			}
+		});
         return Resp.succ();
     }
     

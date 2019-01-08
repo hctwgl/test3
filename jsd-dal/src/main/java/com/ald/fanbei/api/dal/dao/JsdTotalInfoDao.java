@@ -1,8 +1,10 @@
 package com.ald.fanbei.api.dal.dao;
 
+import com.ald.fanbei.api.dal.domain.JsdOfflineOverdueRemoveDo;
 import com.ald.fanbei.api.dal.domain.JsdTotalInfoDo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,5 +18,7 @@ import java.util.List;
 public interface JsdTotalInfoDao extends BaseDao<JsdTotalInfoDo, Long> {
 
     int saveAll(@Param("list") List<JsdTotalInfoDo> list);
+    void batchDelete(Date date);
+
 
 }
