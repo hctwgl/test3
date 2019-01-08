@@ -384,6 +384,6 @@
         is_delete = 0
         AND
         (mobile = #{phone} OR user_name= #{phone})
-        order  by id
+        order  by id desc
     </select>
 </mapper>
