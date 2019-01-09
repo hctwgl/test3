@@ -42,6 +42,7 @@ public class BusinessTotalInfoJob {
 	JsdTotalInfoService jsdTotalInfoService;
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
+    private static String HOST = "0.0.0.0";
     public static String WEBHOOK_TOKEN = "https://oapi.dingtalk.com/robot/send?access_token=25e746714401a5f51249ffe4b9796325ee83e38d76f7e9122a7202c4835b6968";
 
 
@@ -50,7 +51,7 @@ public class BusinessTotalInfoJob {
 		try {
 			String curHostIp = GetHostIpUtil.getIpAddress();
 			logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-			if (StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)) {
+			if (StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST) || StringUtils.equals(GetHostIpUtil.getIpAddress(), HOST)) {
 				try {
 					JsdResourceDo resourceDo = jsdResourceService.getByTypeAngSecType(ResourceType.JSD_CONFIG.name(),
 							ResourceSecType.JSD_RATE_INFO.name());
