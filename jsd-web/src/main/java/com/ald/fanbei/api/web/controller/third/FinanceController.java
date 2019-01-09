@@ -132,14 +132,18 @@ public class FinanceController{
                     return resqBo;
                 }
                 List<JsdUserDo> jsdUserList=jsdUserService.getByUserNameList(mobile);
+                List<JsdBorrowCashDo> borrowCash=null;
                 for(JsdUserDo jsdUser:jsdUserList){
-                    List<JsdBorrowCashDo> borrowCash = jsdBorrowCashService.getBorrowCashsInfos(jsdUser.getRid());
+                     borrowCash = jsdBorrowCashService.getBorrowCashsInfos(jsdUser.getRid());
                     if(borrowCash.size()!=0){
                         resqBo.setData(JSON.toJSONString(getCashDetailInfo(borrowCash)));
                         return resqBo;
                     }
                 }
-
+                if(borrowCash==null){
+                    resqBo.setData(new ArrayList<>());
+                    return resqBo;
+                }
             }
             return resqBo;
         } catch (Exception e) {
