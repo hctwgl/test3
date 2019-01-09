@@ -141,7 +141,7 @@ public class FinanceController{
                     }
                 }
                 if(borrowCash==null){
-                    resqBo.setData(new ArrayList<>());
+                    resqBo.setData(JSON.toJSONString(new ArrayList<>()));
                     return resqBo;
                 }
             }
