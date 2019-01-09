@@ -84,7 +84,7 @@
             AND nper = #{nper,jdbcType=VARCHAR}
         </if>
 	<if test="queryDate!=null and queryDate!=''">
-    <![CDATA[   and DATE_FORMAT(count_date, '%Y-%m-%d')>=  DATE_FORMAT(#{queryDate}, '%Y-%m-%d')   ]]>
+    <![CDATA[   and DATE_FORMAT(count_date, '%Y-%m-%d')=  DATE_FORMAT(#{queryDate}, '%Y-%m-%d')   ]]>
 	</if>
 
 	<if test="startDate!=null and startDate!=''">
@@ -93,7 +93,7 @@
 	<if test="endDate!=null and endDate!=''">
     <![CDATA[  and DATE_FORMAT(count_date, '%Y-%m-%d') <= DATE_FORMAT(#{endDate}, '%Y-%m-%d')    ]]>
 	</if>
-	order by id desc
+	order by count_date desc
     </sql>
 
     
@@ -379,6 +379,7 @@
             #{item.extensionCost},
             #{item.inExhibitionCapital},
             #{item.rirstRate},
+            #{item.overdueRate},
             #{item.unrecoveredRate},
             #{item.badDebtAmount},
             #{item.profitabilityRate},
@@ -386,6 +387,14 @@
             )
         </foreach>
     </insert>
+
+
+	<update id="batchDelete" parameterType="java.util.Date">
+			update jsd_total_info
+			<set> is_delete = 1 </set>
+			where
+    <![CDATA[   DATE_FORMAT(count_date, '%Y-%m-%d')=  DATE_FORMAT(#{queryDate}, '%Y-%m-%d')   ]]>
+	</update>
     
     
 </mapper>
