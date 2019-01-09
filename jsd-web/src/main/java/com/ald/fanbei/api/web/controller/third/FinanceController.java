@@ -140,7 +140,7 @@ public class FinanceController{
                         return resqBo;
                     }
                 }
-                if(borrowCash==null){
+                if(borrowCash.size()==0){
                     resqBo.setData(JSON.toJSONString(new ArrayList<>()));
                     return resqBo;
                 }
