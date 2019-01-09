@@ -103,7 +103,9 @@ public abstract class JsdUpsPayKuaijieServiceAbstract extends BaseService {
 		if (!respBo.isSuccess()) {
 			UpsErrorType errorMsg = UpsErrorType.findRoleTypeByCode(respBo.getRespCode());
 			roolbackBizData(payTradeNo, payBizObject, errorMsg.getName(), respBo);
-			clearCache(payTradeNo);
+			if(!errorMsg.getCode().equals(UpsErrorType.UPS_ERROR_5003.getCode()) && !errorMsg.getCode().equals(UpsErrorType.UPS_ERROR_5004.getCode())) {
+				clearCache(payTradeNo);
+			}
 			throw new BizException(BizExceptionCode.getByCode(errorMsg.name()));
 		} else {
 			Map<String, Object> resultMap = upsPaySuccess(payTradeNo, bankPayType, payBizObject, respBo, bank.get("bankCardNumber").toString());

@@ -92,10 +92,10 @@ public class LoanOverDueJob {
     @Scheduled(cron = "0 10 0 * * ?")
     public void laonDueJob(){
         try{
-        	String curHostIp = GetHostIpUtil.getIpAddress();
-        	logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
+            String curHostIp = GetHostIpUtil.getIpAddress();
+            logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
             if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
-        		int pageSize = 200;
+                int pageSize = 200;
                 int totalRecord = borrowCashService.getBorrowCashOverdueCount();
                 int totalPageNum = (totalRecord + pageSize - 1) / pageSize;
                 if (totalRecord == 0) {
@@ -118,7 +118,7 @@ public class LoanOverDueJob {
                     }
                 }
                 logger.info("borrowCashDueJob run end,time=" + new Date());
-        	}
+            }
         } catch (Exception e){
             logger.error("borrowCashDueJob  error, case=",e);
         }
@@ -133,7 +133,7 @@ public class LoanOverDueJob {
         while (iterator.hasNext()){
             JsdBorrowCashDo jsdBorrowCashDo = iterator.next();
             try {
-            	addUserContancts(jsdBorrowCashDo.getUserId());
+                addUserContancts(jsdBorrowCashDo.getUserId());
                 logger.info("calcuOverdueRecords do borrowCashDueJob, borrowCashId="+jsdBorrowCashDo.getRid());
                 if(jsdBorrowCashOverdueLogService.getBorrowCashOverDueLogByNow(String.valueOf(jsdBorrowCashDo.getRid()))>0){
                     logger.warn("calcuOverdueRecords, ignore have dealed borrowCashId "+jsdBorrowCashDo.getRid());
@@ -147,7 +147,7 @@ public class LoanOverDueJob {
                             .subtract(jsdBorrowCashDo.getRepayAmount()).subtract(borrowCashRepaymentDo.getRepaymentAmount());// 当前本金
                 }
                 if (currentAmount.compareTo(BigDecimal.ZERO) == 0) {
-                	logger.warn("calcuOverdueRecords, overdue amount final is 0, ignore borrowCashId "+jsdBorrowCashDo.getRid());
+                    logger.warn("calcuOverdueRecords, overdue amount final is 0, ignore borrowCashId "+jsdBorrowCashDo.getRid());
                     iterator.remove();
                     continue;
                 }
@@ -189,30 +189,31 @@ public class LoanOverDueJob {
 
 
     void addUserContancts(Long userId){
-    	try {
-    		JsdUserDo userDo = jsdUserService.getById(userId);
-            String contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
-            if(StringUtils.isNotBlank(contacts)){
+        try {
+            JsdUserDo userDo = jsdUserService.getById(userId);
+            HashMap<String,Object> contacts=xgxyUtil.getUserContactsInfo(userDo.getOpenId());
+            if(StringUtils.isNotBlank(String.valueOf(contacts))){
                 List<JsdUserContactsDo> userContactsDo= jsdUserContactsService.getUserContactsByUserId(userId);
                 JsdUserContactsDo contactsDo=new JsdUserContactsDo();
                 contactsDo.setUserId(userId);
-                contactsDo.setContactsMobile(StringUtil.filterEmoji(contacts));
+                contactsDo.setContactsMobile(contacts.get("contacts").toString());
+                contactsDo.setMxreportUrl(contacts.get("mxreportUrl").toString());
                 if(userContactsDo.size()==0){
                     jsdUserContactsService.saveRecord(contactsDo);
                 }else {
                     jsdUserContactsService.updateByUserId(contactsDo);
                 }
             }
-    	}catch (Exception e) {
-    		logger.error("calcuOverdueRecords.addUserContancts error, userId = "+ userId, e);
-		}
+        }catch (Exception e) {
+            logger.error("calcuOverdueRecords.addUserContancts error, userId = "+ userId, e);
+        }
     }
 
 
     void  collectionPush(List<JsdBorrowCashDo> list){
-    	if(list.size() == 0){
+        if(list.size() == 0){
             logger.error("collectionPush needn't, list size is 0");
- 		   	return;
+            return;
         }
 
         List<Map<String,String>>  data = new ArrayList<>();
@@ -380,7 +381,7 @@ public class LoanOverDueJob {
 
     public void addCollectionBorrow(List<JsdBorrowCashDo> list){
         for(JsdBorrowCashDo borrowCashDo : list){
-        	try {
+            try {
 
                 Long borrowId = borrowCashDo.getRid();
                 JsdCollectionBorrowDo jsdCollectionBorrowDo = jsdCollectionBorrowService.selectByBorrowId(borrowId);
@@ -389,23 +390,23 @@ public class LoanOverDueJob {
                 borrowDo.setReviewStatus(CommonReviewStatus.WAIT.name());
                 borrowDo.setStatus(CollectionBorrowStatus.NOTICED.name());
                 if(jsdCollectionBorrowDo == null){
-                   jsdCollectionBorrowService.saveRecord(borrowDo);
+                    jsdCollectionBorrowService.saveRecord(borrowDo);
                 }
-        	}catch (Exception e) {
-        		logger.error("calcuOverdueRecords.addCollectionBorrow error, borrowCashId = " + borrowCashDo.getRid(), e);
-			}
+            }catch (Exception e) {
+                logger.error("calcuOverdueRecords.addCollectionBorrow error, borrowCashId = " + borrowCashDo.getRid(), e);
+            }
         }
     }
 
 
-   private JsdBorrowCashOverdueLogDo buildLoanOverdueLog(Long borrowId, BigDecimal currentAmount, BigDecimal interest, Long userId, String type){
-       JsdBorrowCashOverdueLogDo overdueLog = new JsdBorrowCashOverdueLogDo();
-       overdueLog.setBorrowId(borrowId);
-       overdueLog.setCurrentAmount(currentAmount);
-       overdueLog.setInterest(interest);
-       overdueLog.setUserId(userId);
-       overdueLog.setType(type);
-       return overdueLog;
-   }
+    private JsdBorrowCashOverdueLogDo buildLoanOverdueLog(Long borrowId, BigDecimal currentAmount, BigDecimal interest, Long userId, String type){
+        JsdBorrowCashOverdueLogDo overdueLog = new JsdBorrowCashOverdueLogDo();
+        overdueLog.setBorrowId(borrowId);
+        overdueLog.setCurrentAmount(currentAmount);
+        overdueLog.setInterest(interest);
+        overdueLog.setUserId(userId);
+        overdueLog.setType(type);
+        return overdueLog;
+    }
 
 }

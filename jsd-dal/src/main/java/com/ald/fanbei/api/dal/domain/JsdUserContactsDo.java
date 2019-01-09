@@ -46,4 +46,9 @@ import java.util.Date;
      */
     private String contactsMobile;
 
+   /**
+    * 通话时长
+    */
+   private String mxreportUrl;
+
 }
