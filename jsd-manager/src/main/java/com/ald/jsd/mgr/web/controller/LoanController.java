@@ -75,7 +75,8 @@ public class LoanController {
     @RequestMapping(value = {"list.json"}, method = RequestMethod.POST)
     public Resp<LoanQuery> list(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
     	loanQuery.setFull(true);
-    loanQuery.setList(jsdBorrowCashService.getLoanList(loanQuery));
+    	List list=jsdBorrowCashService.getLoanList(loanQuery);
+    loanQuery.setList(list);
     return Resp.succ(loanQuery, "");}
     @RequestMapping(value = {"statistics.json"}, method = RequestMethod.POST)
     public Resp<HashMap<String, BigDecimal>> statistics(HttpServletRequest request) {
@@ -140,26 +141,17 @@ public class LoanController {
     public Resp<LoanQuery> total(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
     	//转换提日期输出格式
 
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date = new Date();
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		calendar.add(Calendar.DAY_OF_MONTH, -8);
 		date = calendar.getTime();
-		
-		
-		
-		Date startDate = loanQuery.getStartDate() == null ? date : loanQuery.getStartDate();
-		Date endDate = loanQuery.getEndDate() == null ? new Date() : loanQuery.getEndDate();
-    	String nper=loanQuery.getNper()==null? "all":loanQuery.getNper();
-    	JsdTotalInfoDo jsdTotalInfoDo=new JsdTotalInfoDo();
-    	jsdTotalInfoDo.setEndDate(endDate);
-    	jsdTotalInfoDo.setStartDate(startDate);
-    	jsdTotalInfoDo.setNper(nper);
-    	System.out.println(sdf.format(endDate));
-		System.out.println(sdf.format(startDate));
-    	jsdTotalInfoDao.getListByCommonCondition(jsdTotalInfoDo);
-        loanQuery.setList(jsdTotalInfoDao.getListByCommonCondition(jsdTotalInfoDo));
+		loanQuery.setStartDate( loanQuery.getStartDate() == null ? date : loanQuery.getStartDate());
+		loanQuery.setEndDate(loanQuery.getEndDate() == null ? new Date() : loanQuery.getEndDate());
+		loanQuery.setNper(loanQuery.getNper()==null? "all":loanQuery.getNper());
+   
+    	jsdTotalInfoDao.getTotalInfoList(loanQuery);
+        loanQuery.setList(jsdTotalInfoDao.getTotalInfoList(loanQuery));
         return Resp.succ(loanQuery, "");
     }
     

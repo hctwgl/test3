@@ -397,4 +397,24 @@
 	</update>
     
     
+     <select id="getTotalInfoList" resultType="LoanDto">
+         SELECT 
+       *
+        FROM jsd_total_info
+        WHERE is_delete = 0
+        <if test="nper != null">
+            AND nper = #{nper,jdbcType=VARCHAR}
+        </if>
+
+	<if test="startDate!=null and startDate!=''">
+    <![CDATA[   and DATE_FORMAT(count_date, '%Y-%m-%d')>=  DATE_FORMAT(#{startDate}, '%Y-%m-%d')   ]]>
+	</if>
+	<if test="endDate!=null and endDate!=''">
+    <![CDATA[  and DATE_FORMAT(count_date, '%Y-%m-%d') <= DATE_FORMAT(#{endDate}, '%Y-%m-%d')    ]]>
+	</if>
+	order by count_date desc
+        
+    </select>
+    
+    
 </mapper>
