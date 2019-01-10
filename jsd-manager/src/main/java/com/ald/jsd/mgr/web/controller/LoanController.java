@@ -150,7 +150,7 @@ public class LoanController {
 		loanQuery.setEndDate(loanQuery.getEndDate() == null ? new Date() : loanQuery.getEndDate());
 		loanQuery.setNper(loanQuery.getNper()==null? "all":loanQuery.getNper());
    
-    	jsdTotalInfoDao.getTotalInfoList(loanQuery);
+    	List list=jsdTotalInfoDao.getTotalInfoList(loanQuery);
         loanQuery.setList(jsdTotalInfoDao.getTotalInfoList(loanQuery));
         return Resp.succ(loanQuery, "");
     }

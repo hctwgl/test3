@@ -397,7 +397,7 @@
 	</update>
     
     
-     <select id="getTotalInfoList" resultType="LoanDto">
+     <select id="getTotalInfoList" resultType="com.ald.fanbei.api.dal.domain.JsdTotalInfoDo">
          SELECT 
        *
         FROM jsd_total_info
