@@ -23,4 +23,7 @@ public class MgrTrendTodayInfoVo implements Serializable {
 	private static final long serialVersionUID = 4204652534348461359L;
 	private ArrayList<Map<Integer,Integer>> loanNumPerHourToday;//每小时的放款笔数
 
+	private ArrayList<Map<Integer,Integer>> pvPerHourToday;//每小时的访问量
+
+
 }

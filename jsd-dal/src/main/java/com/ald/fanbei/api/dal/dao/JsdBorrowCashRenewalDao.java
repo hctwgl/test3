@@ -1,8 +1,10 @@
 package com.ald.fanbei.api.dal.dao;
 
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo;
 import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -34,5 +36,9 @@ public interface JsdBorrowCashRenewalDao extends BaseDao<JsdBorrowCashRenewalDo,
 	 *
 	 * **/
 	List<FinaneceDataDo> getRenewalData();
+	
+	
+	BigDecimal getRenewalAmount(JsdBorrowCashRenewalDo jsdBorrowCashRenewalDo);
+	
 
 }

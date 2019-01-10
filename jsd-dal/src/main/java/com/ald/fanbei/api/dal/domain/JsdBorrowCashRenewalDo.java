@@ -155,7 +155,14 @@ import java.math.BigDecimal;
      * 
      */
     private Date gmtModified;
+    
+    //查询时间
+    private Date queryDate;
 
+    
+    //查询时间
+    private Date endDate;
+    
 
 
     /**
@@ -194,7 +201,18 @@ import java.math.BigDecimal;
       this.borrowId = borrowId;
     }
 
-    /**
+    
+    
+    
+    public Date getQueryDate() {
+		return queryDate;
+	}
+
+	public void setQueryDate(Date queryDate) {
+		this.queryDate = queryDate;
+	}
+
+	/**
      * 获取用户id
      *
      * @return 用户id
@@ -661,6 +679,14 @@ import java.math.BigDecimal;
     public void setGmtModified(Date gmtModified){
       this.gmtModified = gmtModified;
     }
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
 
 
 }

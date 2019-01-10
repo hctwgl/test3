@@ -197,6 +197,12 @@ import java.math.BigDecimal;
      * 
      */
     private Date gmtCreate;
+    
+    
+    private Date queryDate;
+    
+    
+    private Date endDate;
 
     /**
      * 
@@ -215,7 +221,17 @@ import java.math.BigDecimal;
 
 
 
-    public String getBorrowRemark() {
+    
+    
+    public Date getQueryDate() {
+		return queryDate;
+	}
+
+	public void setQueryDate(Date queryDate) {
+		this.queryDate = queryDate;
+	}
+
+	public String getBorrowRemark() {
 		return borrowRemark;
 	}
 
@@ -903,5 +919,14 @@ import java.math.BigDecimal;
       this.gmtModified = gmtModified;
     }
 
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+    
 
 }

@@ -8,6 +8,7 @@ import com.ald.fanbei.api.common.enums.ResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.util.DateUtil;
 import com.ald.fanbei.api.common.util.StringUtil;
+import com.ald.fanbei.api.common.util.dingding.DingdingUtil;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.JsdResourceDo;
 import com.alibaba.fastjson.JSON;
@@ -56,6 +57,7 @@ public class SecurityWithholdJob {
     private JsdBorrowCashService jsdBorrowCashService;
     ExecutorService executor = Executors.newFixedThreadPool(8);
 
+    public static String WEBHOOK_TOKEN = "https://oapi.dingtalk.com/robot/send?access_token=25e746714401a5f51249ffe4b9796325ee83e38d76f7e9122a7202c4835b6968";
 
 
     private static String SWITCH = "open";
@@ -121,6 +123,7 @@ public class SecurityWithholdJob {
                 }
             }
         } catch (Exception e){
+            DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,"代扣定时器执行失败！",true);
             logger.error("securityWithholdJob  error, case=",e);
         }
     }

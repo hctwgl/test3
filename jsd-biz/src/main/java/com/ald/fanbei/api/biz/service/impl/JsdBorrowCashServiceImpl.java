@@ -698,6 +698,50 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
 
     public List<JsdBorrowCashDo> getOverSectionBorrowCashRepayByUserIds(String userIds,Date startTime,Date endTime){
         return jsdBorrowCashDao.getOverSectionBorrowCashRepayByUserIds(userIds,startTime,endTime);
+    }
 
+    @Override
+    public Integer getLoanNum(String nper,String date){
+        return jsdBorrowCashDao.getLoanNum(nper,date);
+    }
+
+    @Override
+    public BigDecimal getLoanAmount(String nper,String date){
+        return jsdBorrowCashDao.getLoanAmount(nper,date);
+    }
+
+    @Override
+    public BigDecimal getAppleAmount(String nper,String date){
+        return jsdBorrowCashDao.getAppleAmount(nper,date);
+    }
+
+    @Override
+    public BigDecimal getTyingAmount(String nper,String date){
+        return jsdBorrowCashDao.getTyingAmount(nper,date);
+    }
+
+    @Override
+    public BigDecimal getRepaymentAmount(String nper,String date){
+        return jsdBorrowCashDao.getRepaymentAmount(nper,date);
+    }
+
+    @Override
+    public BigDecimal getNormalAmount(String nper,String date){
+        return jsdBorrowCashDao.getNormalAmount(nper,date);
+    }
+
+    @Override
+    public Integer getRepaymentNum(String nper,String date){
+        return jsdBorrowCashDao.getRepaymentNum(nper,date);
+    }
+
+    @Override
+    public Integer getSumRepaymentNum(String nper,String date){
+        return jsdBorrowCashDao.getSumRepaymentNum(nper,date);
+    }
+
+    @Override
+    public Integer getNormalNum(String nper,String date){
+        return jsdBorrowCashDao.getNormalNum(nper,date);
     }
 }

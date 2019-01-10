@@ -129,4 +129,45 @@
         and status in ('TRANSFERRED','FINISHED')
     </select>
 
+    <select id="getRepeatBorrowCashByBorrowDays" resultType="java.lang.Integer">
+        SELECT
+        SUM(bc.amount)
+        FROM
+        jsd_borrow_cash bc
+        LEFT JOIN jsd_borrow_cash_repayment cr ON bc.user_id = cr.user_id
+        WHERE
+        bc.is_delete = 0
+        AND datediff(now(), bc.gmt_arrival) &lt; #{days} and datediff(now(), bc.gmt_arrival) &gt;= 0
+        AND datediff(now(), cr.gmt_create) &lt; #{days}
+        and cr.`status`='Y'
+        AND bc.STATUS IN ('TRANSFERRED','FINISHED')
+    </select>
+
+
+    <select id="getRepayBorrowCashAmountBorrowDays" resultType="java.lang.Integer">
+        SELECT
+        SUM(bc.amount)
+        FROM
+        jsd_borrow_cash bc
+        LEFT JOIN jsd_borrow_cash_repayment cr ON bc.user_id = cr.user_id
+        WHERE
+        bc.is_delete = 0
+        AND datediff(now(), cr.gmt_create) &lt; #{days}
+        AND cr.`status`='Y'
+    </select>
+    <select id="getOverdueBorrowAmountTo30Day" resultType="java.math.BigDecimal">
+        SELECT
+        SUM(amount)
+        FROM
+        jsd_borrow_cash  where is_delete=0 and datediff(now(),gmt_plan_repayment) > 30
+        and status in ('TRANSFERRED','FINISHED')
+    </select>
+
+    <select id="getAllBorrowAmount" resultType="java.math.BigDecimal">
+        SELECT
+        SUM(amount)
+        FROM
+        jsd_borrow_cash  where is_delete=0
+        and status in ('TRANSFERRED','FINISHED')
+    </select>
 </mapper>

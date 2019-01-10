@@ -3,6 +3,7 @@ package com.ald.fanbei.api.dal.query;
 import com.ald.fanbei.api.common.page.Page;
 import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 
+import java.util.Date;
 import java.util.List;
 
 public class LoanQuery extends Page<LoanDto> {
@@ -16,8 +17,21 @@ public class LoanQuery extends Page<LoanDto> {
      * 模糊匹配字段
      */
     private String searchContent;
+    
+//   期限 
+  private String nper;
+    
+    //开始日期
+    private Date startDate;
+    
+    //结束日期
+    private Date endDate;
+    
+    
+    //查询时间
+    private Date queryDate;
 
-    private List<LoanDto> list;
+    private List list;
 
     public String getStatus() {
         return status;
@@ -35,11 +49,45 @@ public class LoanQuery extends Page<LoanDto> {
         this.searchContent = searchContent;
     }
 
-    public List<LoanDto> getList() {
+    public List getList() {
         return list;
     }
 
-    public void setList(List<LoanDto> list) {
+    public void setList(List list) {
         this.list = list;
     }
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public String getNper() {
+		return nper;
+	}
+
+	public void setNper(String nper) {
+		this.nper = nper;
+	}
+
+	public Date getQueryDate() {
+		return queryDate;
+	}
+
+	public void setQueryDate(Date queryDate) {
+		this.queryDate = queryDate;
+	}
+    
+	
 }

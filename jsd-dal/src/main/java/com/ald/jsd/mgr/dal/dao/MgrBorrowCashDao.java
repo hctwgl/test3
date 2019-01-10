@@ -66,4 +66,23 @@ public interface MgrBorrowCashDao {
 
     BigDecimal getAmountByDays(Integer days);
 
+    /**
+     * 复借借款
+     * @param days
+     * @return
+     */
+    BigDecimal getRepeatBorrowCashByBorrowDays(Integer days);
+
+
+    /**
+     * 还款的借款本金
+     * @param days
+     * @return
+     */
+    BigDecimal getRepayBorrowCashAmountBorrowDays(Integer days);
+
+    BigDecimal getOverdueBorrowAmountTo30Day();
+
+    BigDecimal getAllBorrowAmount();
+
 }
