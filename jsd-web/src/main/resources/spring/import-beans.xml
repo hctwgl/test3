@@ -15,5 +15,6 @@
 	<import resource="dal-beans.xml" />
 	<import resource="encrypt-beans.xml" />
 	<import resource="common-beans.xml" />
-	
+	<import resource="kafka-beans.xml"/>
+
 </beans>
