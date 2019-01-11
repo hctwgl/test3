@@ -431,4 +431,12 @@
           and status = 'Y'
     </select>
 
+    <select id="getInHand" resultType="com.ald.fanbei.api.dal.domain.dto.InHandTaskDto">
+        select trade_no as orderNos
+        from
+        jsd_borrow_cash_repayment
+        where is_delete = 0
+        and `status` = 'P'
+        AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <![CDATA[  <=  ]]> date(gmt_create)
+    </select>
 </mapper>
