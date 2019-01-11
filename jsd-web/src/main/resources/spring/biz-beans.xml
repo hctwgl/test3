@@ -36,6 +36,7 @@
 				
 				<value>fbfile.oss.access.key</value>
 				<value>fbfile.oss.access.secret</value>
+				<value>kafka.producer.servers</value>
 			</list>
 		</property>
 		<property name="locations">
