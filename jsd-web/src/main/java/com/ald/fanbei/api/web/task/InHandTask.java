@@ -67,7 +67,7 @@ public class InHandTask {
                 logger.info("InHandTask run end,time=" + new Date());
             }
         } catch (Exception e){
-            DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,NOTICE_HOST +"，查询处理中借款定时器执行失败！",true);
+            DingdingUtil.sendMessageByJob(NOTICE_HOST +"，查询处理中借款定时器执行失败！",true);
             logger.error("InHandTask  error, case=",e);
         }
     }

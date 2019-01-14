@@ -71,7 +71,7 @@ public class BusinessTotalInfoJob {
 				}
 				catch (Exception e) {
 					// 执行失败，发送短信提醒
-		            DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,NOTICE_HOST +"，逾期定时器执行失败！",true);
+		            DingdingUtil.sendMessageByJob(NOTICE_HOST +"，逾期定时器执行失败！",true);
 
 					logger.info("error = ", e);
 					e.getMessage();

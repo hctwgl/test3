@@ -123,7 +123,7 @@ public class SecurityWithholdJob {
                 }
             }
         } catch (Exception e){
-            DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,"代扣定时器执行失败！",true);
+            DingdingUtil.sendMessageByJob("代扣定时器执行失败！",true);
             logger.error("securityWithholdJob  error, case=",e);
         }
     }

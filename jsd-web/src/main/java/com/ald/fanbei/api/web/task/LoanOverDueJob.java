@@ -120,11 +120,11 @@ public class LoanOverDueJob {
 
                 }
                 int count = jsdBorrowCashOverdueLogService.getBorrowCashOverDueLogToDay();
-                DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN, "计划执行"+totalRecord+"条，实际执行"+ count + "条！",true);
+                DingdingUtil.sendMessageByJob("计划执行"+totalRecord+"条，实际执行"+ count + "条！",true);
                 logger.info("borrowCashDueJob run end,time=" + new Date());
             }
         } catch (Exception e){
-            DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,NOTICE_HOST +"，逾期定时器执行失败！",true);
+            DingdingUtil.sendMessageByJob(NOTICE_HOST +"，逾期定时器执行失败！",true);
             logger.error("borrowCashDueJob  error, case=",e);
         }
     }
@@ -210,7 +210,7 @@ public class LoanOverDueJob {
                 }
             }
         }catch (Exception e) {
-            DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,NOTICE_HOST +"，通讯录入库失败！",true);
+            DingdingUtil.sendMessageByJob(NOTICE_HOST +"，通讯录入库失败！",true);
             logger.error("calcuOverdueRecords.addUserContancts error, userId = "+ userId, e);
         }
     }
@@ -375,7 +375,7 @@ public class LoanOverDueJob {
                 //--------------------end  催收上报接口需要参数---------------------------
                 data.add(buildData);
             }catch (Exception e){
-                DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,NOTICE_HOST +"，逾期通知催收系统失败！",true);
+                DingdingUtil.sendMessageByJob(NOTICE_HOST +"，逾期通知催收系统失败！",true);
                 logger.info("collectionPush is error " + borrowCashDo.getRid(),e);
                 e.printStackTrace();
             }
