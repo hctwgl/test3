@@ -117,7 +117,10 @@ public class LoanOverDueJob {
                         //增加已入催数据
                         this.addCollectionBorrow(borrowCashDos);
                     }
+
                 }
+                int count = jsdBorrowCashOverdueLogService.getBorrowCashOverDueLogToDay();
+                DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN, "计划执行"+totalRecord+"条，实际执行"+ count + "条！",true);
                 logger.info("borrowCashDueJob run end,time=" + new Date());
             }
         } catch (Exception e){

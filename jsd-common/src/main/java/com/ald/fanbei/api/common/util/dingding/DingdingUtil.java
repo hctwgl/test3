@@ -1,5 +1,8 @@
 package com.ald.fanbei.api.common.util.dingding;
 
+import com.ald.fanbei.api.common.ConfigProperties;
+import com.ald.fanbei.api.common.Constants;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -9,6 +12,8 @@ import org.springframework.web.client.RestTemplate;
 import com.alibaba.fastjson.JSON;
 
 public class DingdingUtil {
+
+    private static String INVELOMENT_TYPE = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
 
 
     /**
@@ -51,6 +56,9 @@ public class DingdingUtil {
 //    }
 
     public static void sendMessageByRobot(String robotUrl, String message, Boolean atAll) {
+        if(StringUtils.equals(INVELOMENT_TYPE,"test")){
+           return;
+        }
         if (atAll == null || !atAll) {
             sendMessageByRobot(robotUrl, message);
             return;

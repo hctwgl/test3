@@ -35,10 +35,6 @@ public class BusinessTotalInfoJob {
 	@Resource
 	JsdResourceService jsdResourceService;
 	@Resource
-	JsdBorrowCashService jsdBorrowCashService;
-	@Resource
-	JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
-	@Resource
 	JsdTotalInfoService jsdTotalInfoService;
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
