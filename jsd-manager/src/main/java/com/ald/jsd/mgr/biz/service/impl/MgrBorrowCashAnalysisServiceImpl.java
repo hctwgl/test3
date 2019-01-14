@@ -280,7 +280,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         }
         BigDecimal sumAmount =mgrBorrowCashService.getAllBorrowAmount();
         if(sumAmount!=BigDecimal.ZERO && sumAmount!=null){
-            badDebtRate= badDebtAmount.divide(sumAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+            badDebtRate= badDebtAmount.divide(sumAmount,4, BigDecimal.ROUND_HALF_UP);
         }
         return badDebtRate==null?BigDecimal.ZERO:badDebtRate;
     }
