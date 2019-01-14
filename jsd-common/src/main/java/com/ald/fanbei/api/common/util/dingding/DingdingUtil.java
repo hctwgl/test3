@@ -41,14 +41,14 @@ public class DingdingUtil {
         return null;
     }
 
-    public static void sendMessageByRobot(String robotUrl, String message, String[] atMobiles) {
-        if (atMobiles == null || atMobiles.length == 0) {
-            sendMessageByRobot(robotUrl, message);
-            return;
-        }
-        DingdingData dingData = DingdingData.create(message).setAtMobiles(atMobiles);
-        doSendMessage(robotUrl, dingData);
-    }
+//    public static void sendMessageByRobot(String robotUrl, String message, String[] atMobiles) {
+//        if (atMobiles == null || atMobiles.length == 0) {
+//            sendMessageByRobot(robotUrl, message);
+//            return;
+//        }
+//        DingdingData dingData = DingdingData.create(message).setAtMobiles(atMobiles);
+//        doSendMessage(robotUrl, dingData);
+//    }
 
     public static void sendMessageByRobot(String robotUrl, String message, Boolean atAll) {
         if (atAll == null || !atAll) {
