@@ -129,7 +129,7 @@
         and status in ('TRANSFERRED','FINISHED')
     </select>
 
-    <select id="getRepeatBorrowCashByBorrowDays" resultType="java.lang.Integer">
+    <select id="getRepeatBorrowCashByBorrowDays" resultType="java.math.BigDecimal">
         SELECT
         SUM(bc.amount)
         FROM
@@ -144,7 +144,7 @@
     </select>
 
 
-    <select id="getRepayBorrowCashAmountBorrowDays" resultType="java.lang.Integer">
+    <select id="getRepayBorrowCashAmountBorrowDays" resultType="java.math.BigDecimal">
         SELECT
         SUM(bc.amount)
         FROM
