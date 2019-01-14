@@ -17,7 +17,7 @@ import java.util.List;
  */
 public interface MgrBorrowCashRenewalDao {
 
-   BigDecimal getRenewalAmountByDays(@Param("startDate") Date startDate,@Param("endDate")Date endDate);
+   Integer getRenewalAmountByDays(@Param("startDate") Date startDate,@Param("endDate")Date endDate);
 
    int getRenewalPersonsByDays(Integer days);
 
