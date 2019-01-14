@@ -57,6 +57,7 @@
 		<property name="kafka.producer.batch.size" defaultValue="16384" description="kafka" />
 		<property name="kafka.producer.linger" defaultValue="1" description="kafka" />
 		<property name="kafka.producer.buffer.memory" defaultValue="33554432" description="kafka" />
+		<property name="kafka.ald.ups.status.requst" defaultValue="ald-ups-status-requst-test" description="信贷通知ups更新状态 topic" />
 	</group>
 
 	<script>
