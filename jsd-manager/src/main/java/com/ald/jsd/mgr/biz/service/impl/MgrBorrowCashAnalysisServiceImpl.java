@@ -279,7 +279,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             badDebtAmount=BigDecimal.ZERO;
         }
         BigDecimal sumAmount =mgrBorrowCashService.getAllBorrowAmount();
-        if(sumAmount!=BigDecimal.ZERO && sumAmount!=null){
+        if(sumAmount.compareTo(BigDecimal.ZERO) != 0 && sumAmount!=null){
             badDebtRate= badDebtAmount.divide(sumAmount,4, BigDecimal.ROUND_HALF_UP);
         }
         return badDebtRate==null?BigDecimal.ZERO:badDebtRate;
@@ -292,7 +292,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             repeatBorrowAmount=BigDecimal.ZERO;
         }
         BigDecimal repayAmount =mgrBorrowCashService.getRepayBorrowCashAmountBorrowDays(0);
-        if(repayAmount!=BigDecimal.ZERO && repayAmount!=null){
+        if(repayAmount.compareTo(BigDecimal.ZERO) != 0 && repayAmount!=null){
             repeatBorrowRate= repeatBorrowAmount.divide(repayAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
         return repeatBorrowRate==null?BigDecimal.ZERO:repeatBorrowRate;
@@ -304,7 +304,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         if(repeatBorrowAmount==null){
             repeatBorrowAmount=BigDecimal.ZERO;
         }
-        if(repayAmount!=BigDecimal.ZERO && repayAmount!=null){
+        if(repayAmount.compareTo(BigDecimal.ZERO) != 0 && repayAmount!=null){
             repeatBorrowRate= repeatBorrowAmount.divide(repayAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
         return repeatBorrowRate==null?BigDecimal.ZERO:repeatBorrowRate;
@@ -316,7 +316,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             repeatBorrowAmount=BigDecimal.ZERO;
         }
         BigDecimal repayAmount =mgrBorrowCashService.getRepayBorrowCashAmountBorrowDays(1);
-        if(repayAmount!=BigDecimal.ZERO && repayAmount!=null){
+        if(repayAmount.compareTo(BigDecimal.ZERO) != 0 && repayAmount!=null){
             repeatBorrowRate= repeatBorrowAmount.divide(repayAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
         return repeatBorrowRate==null?BigDecimal.ZERO:repeatBorrowRate;
