@@ -293,8 +293,13 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         }
 
         try {
+            jsdResourceDo = jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG, ResourceSecType.RISK_DAILY_RATE_SWITCH.getCode());
+            String riskDailyRateSwitch = "open";
+            if(jsdResourceDo != null){
+                riskDailyRateSwitch = jsdResourceDo.getValue();
+            }
             String riskRateDailyFromCache = bizCacheUtil.hget(Constants.CACHEKEY_RISK_LAYER_RATE, openId+"_"+days);
-            if (StringUtils.isNotBlank(riskRateDailyFromCache)) {
+            if (StringUtils.isNotBlank(riskRateDailyFromCache) && riskDailyRateSwitch.equals("open")) {
                 logger.info("getRiskDailyRate, openId=" + openId + ", risk from cache is " + riskRateDailyFromCache);
                 riskRateDaily = new BigDecimal(riskRateDailyFromCache);
             } else {
