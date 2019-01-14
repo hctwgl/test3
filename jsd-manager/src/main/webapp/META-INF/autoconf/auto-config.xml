@@ -51,6 +51,12 @@
         <property name="jsd.collection.url" defaultValue="http://192.168.106.92:8280" description="催收通知主机IP" />
         <property name="jsd.collection.token" defaultValue="eyJhbGciOiJIUzI1NiIsImNvbXBhbnlJZCI6Nn0.eyJhdWQiOiI2IiwiaXNzIjoiQUxEIiwiaWF0IjoxNTM2NjYwMTcyfQ.WVXxSkwrujC-DCZoJdqf9zPCNhbIbOF9aWbiH0hSGNo" description="催收token" />
         <property name="jsd.collection.companyId" defaultValue="6" description="催收商户" />
+        <property name="kafka.producer.servers" defaultValue="o9T5Yhm60zb1UH8Wcari8lvYWEUzmOLF4nY9Yg4Rvx4=" description="kafka" />
+        <property name="kafka.producer.retries" defaultValue="10" description="kafka" />
+        <property name="kafka.producer.batch.size" defaultValue="16384" description="kafka" />
+        <property name="kafka.producer.linger" defaultValue="1" description="kafka" />
+        <property name="kafka.producer.buffer.memory" defaultValue="33554432" description="kafka" />
+        <property name="kafka.ald.ups.status.requst" defaultValue="ald-ups-status-requst-test" description="信贷通知ups更新状态 topic" />
     </group>
 
     <script>
