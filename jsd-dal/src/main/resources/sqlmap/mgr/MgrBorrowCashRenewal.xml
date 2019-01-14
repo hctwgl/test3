@@ -4,7 +4,7 @@
 <mapper namespace="com.ald.jsd.mgr.dal.dao.MgrBorrowCashRenewalDao">
 
 
-    <select id="getRenewalAmountByDays" resultType="java.math.BigDecimal">
+    <select id="getRenewalAmountByDays" resultType="java.lang.Integer">
         SELECT
         SUM(renewal_amount)
         FROM

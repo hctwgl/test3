@@ -16,8 +16,8 @@ public class MgrBorrowCashRenewalServiceImpl implements MgrBorrowCashRenewalServ
 
 
     @Override
-    public Integer getRenewalAmountByDays(Date startDate, Date endDate) {
-        return mgrBorrowCashRenewalDao.getRenewalAmountByDays(startDate,endDate);
+    public BigDecimal getRenewalAmountByDays(Date startDate, Date endDate) {
+        return new BigDecimal(mgrBorrowCashRenewalDao.getRenewalAmountByDays(startDate,endDate));
     }
 
     @Override
