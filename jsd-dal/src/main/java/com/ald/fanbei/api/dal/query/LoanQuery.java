@@ -26,6 +26,10 @@ public class LoanQuery extends Page<LoanDto> {
     
     //结束日期
     private Date endDate;
+    
+    
+    //查询时间
+    private Date queryDate;
 
     private List list;
 
@@ -75,6 +79,14 @@ public class LoanQuery extends Page<LoanDto> {
 
 	public void setNper(String nper) {
 		this.nper = nper;
+	}
+
+	public Date getQueryDate() {
+		return queryDate;
+	}
+
+	public void setQueryDate(Date queryDate) {
+		this.queryDate = queryDate;
 	}
     
 	

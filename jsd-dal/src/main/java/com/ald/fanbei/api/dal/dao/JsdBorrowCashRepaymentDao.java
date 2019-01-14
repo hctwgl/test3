@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import com.ald.fanbei.api.dal.domain.dto.InHandTaskDto;
 import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import org.apache.ibatis.annotations.Param;
 
@@ -59,5 +60,8 @@ public interface JsdBorrowCashRepaymentDao extends BaseDao<JsdBorrowCashRepaymen
     List<JsdBorrowCashRepaymentDo> getWithholdFailRepaymentCashByBorrowIdAndCardNumber(@Param("borrowId") Long borrowId,@Param("cardNumber") String cardNumber);
 
     BigDecimal getSumRepaymentAmount(@Param("nper") String nper,@Param("date") String date);
+
+    //查询待处理状态订单
+    List<InHandTaskDto> getInHand();
 
 }

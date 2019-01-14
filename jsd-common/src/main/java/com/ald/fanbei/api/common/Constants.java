@@ -111,4 +111,12 @@ public class Constants {
 
 	public static final Integer AVG_BORROWCASH_AMOUNT = 1400;//现金贷平均每单金额
 
+	//kafka
+	public static final String KAFKA_PRODUCER_SERVERS = "kafka.producer.servers";
+	public static final String KAFKA_PRODUCER_RETRIES = "kafka.producer.retries";
+	public static final String KAFKA_PRODUCER_BATCH_SIZE = "kafka.producer.batch.size";
+	public static final String KAFKA_PRODUCER_LINGER = "kafka.producer.linger";
+	public static final String KAFKA_PRODUCER_BUFFER_MEMORY = "kafka.producer.buffer.memory";
+	public static final String KAFKA_ALD_UPS_STATUS_REQUST = "kafka.ald.ups.status.requst";
+
 }

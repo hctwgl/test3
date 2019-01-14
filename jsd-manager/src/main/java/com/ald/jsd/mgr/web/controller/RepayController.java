@@ -4,6 +4,7 @@ import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
 import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
 import com.ald.fanbei.api.common.enums.JsdRepayType;
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo;
+import com.ald.fanbei.api.dal.domain.dto.LoanDto;
 import com.ald.fanbei.api.dal.query.LoanQuery;
 import com.ald.jsd.mgr.biz.service.MgrOfflineRepaymentService;
 import com.ald.jsd.mgr.web.Sessions;
@@ -37,7 +38,28 @@ public class RepayController {
     @RequestMapping(value = {"list.json"}, method = RequestMethod.POST)
     public Resp<LoanQuery> list(@RequestBody LoanQuery loanQuery, HttpServletRequest request) {
         loanQuery.setFull(true);
-        loanQuery.setList(jsdBorrowCashService.getRepayList(loanQuery));
+        List<LoanDto> list = jsdBorrowCashService.getRepayList(loanQuery);
+        if (null != list && list.size() > 0) {
+            for (LoanDto loanDto : list) {
+                if ("Y".equals(loanDto.getOverdueStatus()) && "TRANSFERRED".equals(loanDto.getStatus())) {
+                    //逾期 判断是否续借，续借根据预计还款时间判断状态
+                    if ("Y".equals(loanDto.getIsRenewal())) {
+                        //续借
+                        if (System.currentTimeMillis() < loanDto.getGmtPlanRepayment().getTime()){
+                            //未到预计还款时间，待还款
+                            loanDto.setStatus("TRANSFERRED");
+                        } else{
+                            //超过预计还款时间，逾期
+                            loanDto.setStatus("OVERDUE");
+                        }
+                    } else if ("N".equals(loanDto.getIsRenewal())) {
+                        //没有续借  已逾期
+                        loanDto.setStatus("OVERDUE");
+                    }
+                }
+            }
+        }
+        loanQuery.setList(list);
         return Resp.succ(loanQuery, "");
     }
 
