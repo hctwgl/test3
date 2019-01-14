@@ -229,7 +229,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
             totalRenewalAmountByWeek=renewalAmount.divide(renewalAmountWeek, 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
         BigDecimal totalRenewalAmountByDay=BigDecimal.ZERO;
-        if(renewalAmountWeek.compareTo(BigDecimal.ZERO) != 0){
+        if(renewalAmountDay.compareTo(BigDecimal.ZERO) != 0){
             totalRenewalAmountByDay=renewalAmount.divide(renewalAmountDay, 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
         BigDecimal avgRenewalAmount=BigDecimal.ZERO;
