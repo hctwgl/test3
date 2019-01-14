@@ -275,6 +275,9 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
     public BigDecimal badDebtRate(){
         BigDecimal badDebtRate=BigDecimal.ZERO;
         BigDecimal badDebtAmount =mgrBorrowCashService.getOverdueBorrowAmountTo30Day();
+        if(badDebtAmount==null){
+            badDebtAmount=BigDecimal.ZERO;
+        }
         BigDecimal sumAmount =mgrBorrowCashService.getAllBorrowAmount();
         if(sumAmount!=BigDecimal.ZERO && sumAmount!=null){
             badDebtRate= badDebtAmount.divide(sumAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
@@ -285,6 +288,9 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
     public BigDecimal repeatBorrowRate(){
         BigDecimal repeatBorrowRate=BigDecimal.ZERO;
         BigDecimal repeatBorrowAmount =mgrBorrowCashService.getRepeatBorrowCashByBorrowDays(0);
+        if(repeatBorrowAmount==null){
+            repeatBorrowAmount=BigDecimal.ZERO;
+        }
         BigDecimal repayAmount =mgrBorrowCashService.getRepayBorrowCashAmountBorrowDays(0);
         if(repayAmount!=BigDecimal.ZERO && repayAmount!=null){
             repeatBorrowRate= repeatBorrowAmount.divide(repayAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
@@ -295,6 +301,9 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         BigDecimal repeatBorrowRate=BigDecimal.ZERO;
         BigDecimal repeatBorrowAmount =mgrBorrowCashService.getRepeatBorrowCashByBorrowDays(7);
         BigDecimal repayAmount =mgrBorrowCashService.getRepayBorrowCashAmountBorrowDays(7);
+        if(repeatBorrowAmount==null){
+            repeatBorrowAmount=BigDecimal.ZERO;
+        }
         if(repayAmount!=BigDecimal.ZERO && repayAmount!=null){
             repeatBorrowRate= repeatBorrowAmount.divide(repayAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
@@ -303,6 +312,9 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
     public BigDecimal repeatBorrowRateByDay(){
         BigDecimal repeatBorrowRate=BigDecimal.ZERO;
         BigDecimal repeatBorrowAmount =mgrBorrowCashService.getRepeatBorrowCashByBorrowDays(1);
+        if(repeatBorrowAmount==null){
+            repeatBorrowAmount=BigDecimal.ZERO;
+        }
         BigDecimal repayAmount =mgrBorrowCashService.getRepayBorrowCashAmountBorrowDays(1);
         if(repayAmount!=BigDecimal.ZERO && repayAmount!=null){
             repeatBorrowRate= repeatBorrowAmount.divide(repayAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
