@@ -178,7 +178,7 @@ public class LoanOverDueJob {
                     borrowCashDo.setOverdueAmount(oldOverdueAmount.add(newOverdueAmount));
                 }
                 else {
-                    borrowCashDo.setOverdueAmount(totalOverdueAmount.subtract(orderOverdueAmount));
+                    //borrowCashDo.setOverdueAmount(totalOverdueAmount.subtract(orderOverdueAmount));
                     newOverdueAmount = BigDecimal.ZERO;
                 }
                 borrowCashDo.setOverdueDay(jsdBorrowCashDo.getOverdueDay());
