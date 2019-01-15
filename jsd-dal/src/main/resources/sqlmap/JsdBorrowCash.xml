@@ -765,8 +765,6 @@
         <if test="status != null and status =='TRANSFERRED' and status !=''">
             AND a.gmt_plan_repayment <![CDATA[  >  ]]> now()
             AND a.status =#{status}
-            AND a.status !='FINISHED'
-            AND a.status !='CLOSED'
         </if>
         <if test="status != null and status =='OVERDUE' and status !=''">
             AND a.gmt_plan_repayment <![CDATA[  <  ]]> now()
