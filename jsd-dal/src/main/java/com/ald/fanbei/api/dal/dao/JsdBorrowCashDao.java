@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
+import com.ald.fanbei.api.dal.domain.dto.InHandTaskDto;
 import com.ald.fanbei.api.dal.domain.dto.JsdCashDto;
 import com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto;
 import com.ald.fanbei.api.dal.domain.dto.LoanDto;
@@ -243,5 +244,8 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
     Integer getSumRepaymentNum(@Param("nper")String nper,@Param("date") String date);
 
     Integer getNormalNum(@Param("nper")String nper,@Param("date") String date);
+
+    //查询待处理状态订单
+    List<InHandTaskDto> getInHand();
 
 }

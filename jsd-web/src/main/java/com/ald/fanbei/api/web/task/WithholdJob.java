@@ -39,7 +39,7 @@ public class WithholdJob {
     JsdResourceService jsdResourceService;
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
-
+    private static String HOST = "0.0.0.0";
     private static String SWITCH = "open";
 
 
@@ -51,7 +51,7 @@ public class WithholdJob {
         if(resourceDo != null && SWITCH.equals(resourceDo.getValue())){
             String curHostIp = GetHostIpUtil.getIpAddress();
             logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-            if (StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)) {
+            if (StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST) || StringUtils.equals(GetHostIpUtil.getIpAddress(), HOST)) {
                logger.info("start withhold resource=" + resourceDo.getValue2());
                String currentTime= DateUtil.formatDate(new Date(),"HH:mm");
                Map<String,String> config= (Map<String, String>) JSON.parse(resourceDo.getValue2());

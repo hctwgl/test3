@@ -1,6 +1,7 @@
 package com.ald.fanbei.api.web.task;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.Date;
 import java.util.List;
@@ -86,8 +87,7 @@ public class LoanOverDueJob {
     JsdResourceService jsdResourceService;
 
 
-    public static String WEBHOOK_TOKEN = "https://oapi.dingtalk.com/robot/send?access_token=25e746714401a5f51249ffe4b9796325ee83e38d76f7e9122a7202c4835b6968";
-
+    private static String HOST = "0.0.0.0";
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
     @Scheduled(cron = "0 10 0 * * ?")
@@ -95,7 +95,7 @@ public class LoanOverDueJob {
         try{
             String curHostIp = GetHostIpUtil.getIpAddress();
             logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-            if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
+            if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST) || StringUtils.equals(GetHostIpUtil.getIpAddress(), HOST)){
                 int pageSize = 200;
                 int totalRecord = borrowCashService.getBorrowCashOverdueCount();
                 int totalPageNum = (totalRecord + pageSize - 1) / pageSize;
@@ -117,11 +117,14 @@ public class LoanOverDueJob {
                         //增加已入催数据
                         this.addCollectionBorrow(borrowCashDos);
                     }
+
                 }
+                int count = jsdBorrowCashOverdueLogService.getBorrowCashOverDueLogToDay();
+                DingdingUtil.sendMessageByJob(NOTICE_HOST+"：计划执行"+totalRecord+"条，实际执行"+ count + "条！",true);
                 logger.info("borrowCashDueJob run end,time=" + new Date());
             }
         } catch (Exception e){
-            DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,NOTICE_HOST +"，逾期定时器执行失败！",true);
+            DingdingUtil.sendMessageByJob(NOTICE_HOST +"，逾期定时器执行失败！",true);
             logger.error("borrowCashDueJob  error, case=",e);
         }
     }
@@ -153,18 +156,36 @@ public class LoanOverDueJob {
                     iterator.remove();
                     continue;
                 }
+                //获取逾期本金百分比
+                JsdResourceDo overdueConfig = jsdResourceService.getByTypeAngSecType(ResourceType.OVERDUE.getCode(), ResourceSecType.OVERDUE_CONFIG.getCode());
+                BigDecimal percentOverdue = new BigDecimal(50);
+                if(overdueConfig!=null&&!StringUtil.isEmpty(overdueConfig.getValue())){
+                    percentOverdue = new BigDecimal(overdueConfig.getValue());
+                }
+                //总逾期费（不能超过）
+                BigDecimal totalOverdueAmount = jsdBorrowCashDo.getAmount().multiply(percentOverdue.divide(new BigDecimal(100),2, RoundingMode.HALF_UP)).setScale(2,BigDecimal.ROUND_HALF_UP);
+                //商品逾期费
+                JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo=jsdBorrowLegalOrderCashService.getOverdueBorrowLegalOrderCashByBorrowId(jsdBorrowCashDo.getRid());
+                BigDecimal orderOverdueAmount = borrowLegalOrderCashDo == null ? BigDecimal.ZERO : borrowLegalOrderCashDo.getOverdueAmount().add(borrowLegalOrderCashDo.getSumRepaidOverdue());
+
                 BigDecimal oldOverdueAmount = jsdBorrowCashDo.getOverdueAmount();//当前逾期
                 BigDecimal newOverdueAmount = currentAmount.multiply(jsdBorrowCashDo.getOverdueRate().divide(new BigDecimal(360),6,BigDecimal.ROUND_HALF_UP)).setScale(2,BigDecimal.ROUND_HALF_UP);
                 JsdBorrowCashDo borrowCashDo = new JsdBorrowCashDo();
                 jsdBorrowCashDo.setOverdueAmount(oldOverdueAmount.add(newOverdueAmount));
                 jsdBorrowCashDo.setOverdueDay(jsdBorrowCashDo.getOverdueDay()+1);
                 jsdBorrowCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
-                borrowCashDo.setOverdueAmount(oldOverdueAmount.add(newOverdueAmount));
+                if(oldOverdueAmount.add(newOverdueAmount).add(orderOverdueAmount).add(jsdBorrowCashDo.getSumRepaidOverdue()).compareTo(totalOverdueAmount) < 1) {
+                    borrowCashDo.setOverdueAmount(oldOverdueAmount.add(newOverdueAmount));
+                }
+                else {
+                    //borrowCashDo.setOverdueAmount(totalOverdueAmount.subtract(orderOverdueAmount));
+                    newOverdueAmount = BigDecimal.ZERO;
+                }
                 borrowCashDo.setOverdueDay(jsdBorrowCashDo.getOverdueDay());
                 borrowCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
                 borrowCashDo.setRid(jsdBorrowCashDo.getRid());
                 borrowCashService.updateById(borrowCashDo);
-                JsdBorrowLegalOrderCashDo borrowLegalOrderCashDo=jsdBorrowLegalOrderCashService.getOverdueBorrowLegalOrderCashByBorrowId(jsdBorrowCashDo.getRid());
+
                 if(borrowLegalOrderCashDo!=null){
                     BigDecimal orderAmount = BigDecimalUtil.add(borrowLegalOrderCashDo.getAmount(), borrowLegalOrderCashDo.getSumRepaidInterest(), borrowLegalOrderCashDo.getSumRepaidPoundage()).subtract(borrowLegalOrderCashDo.getRepaidAmount());// 当前本金
                     BigDecimal oldOverdueorderAmount = borrowLegalOrderCashDo.getOverdueAmount();//当前逾期
@@ -175,8 +196,13 @@ public class LoanOverDueJob {
                     JsdBorrowLegalOrderCashDo jsdBorrowLegalOrderCashDo = new JsdBorrowLegalOrderCashDo();
                     jsdBorrowLegalOrderCashDo.setRid(borrowLegalOrderCashDo.getRid());
                     jsdBorrowLegalOrderCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
-                    jsdBorrowLegalOrderCashDo.setOverdueDay((short) (borrowLegalOrderCashDo.getOverdueDay()));
-                    jsdBorrowLegalOrderCashDo.setOverdueAmount(oldOverdueorderAmount.add(newOverdueorderAmount));
+                    jsdBorrowLegalOrderCashDo.setOverdueDay(borrowLegalOrderCashDo.getOverdueDay());
+                    if(borrowCashDo.getOverdueAmount().add(jsdBorrowCashDo.getSumRepaidOverdue()).add(orderOverdueAmount).add(newOverdueorderAmount).compareTo(totalOverdueAmount) < 1) {
+                        jsdBorrowLegalOrderCashDo.setOverdueAmount(oldOverdueorderAmount.add(newOverdueorderAmount));
+                    }
+                    else {
+                        newOverdueorderAmount = BigDecimal.ZERO;
+                    }
                     jsdBorrowLegalOrderCashService.updateById(jsdBorrowLegalOrderCashDo);
                     jsdBorrowCashOverdueLogService.saveRecord(buildLoanOverdueLog(borrowLegalOrderCashDo.getRid(),orderAmount,newOverdueorderAmount,borrowLegalOrderCashDo.getUserId(), OverdueLogType.ORDER_CASH.name()) );
                 }
@@ -207,7 +233,7 @@ public class LoanOverDueJob {
                 }
             }
         }catch (Exception e) {
-            DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,NOTICE_HOST +"，通讯录入库失败！",true);
+            DingdingUtil.sendMessageByJob(NOTICE_HOST +"，通讯录入库失败！",true);
             logger.error("calcuOverdueRecords.addUserContancts error, userId = "+ userId, e);
         }
     }
@@ -372,7 +398,7 @@ public class LoanOverDueJob {
                 //--------------------end  催收上报接口需要参数---------------------------
                 data.add(buildData);
             }catch (Exception e){
-                DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,NOTICE_HOST +"，逾期通知催收系统失败！",true);
+                DingdingUtil.sendMessageByJob(NOTICE_HOST +"，逾期通知催收系统失败！",true);
                 logger.info("collectionPush is error " + borrowCashDo.getRid(),e);
                 e.printStackTrace();
             }

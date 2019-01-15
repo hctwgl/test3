@@ -2,6 +2,7 @@ package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderRepaymentDo;
 
+import com.ald.fanbei.api.dal.domain.dto.InHandTaskDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -39,5 +40,8 @@ public interface JsdBorrowLegalOrderRepaymentDao extends BaseDao<JsdBorrowLegalO
     JsdBorrowLegalOrderRepaymentDo getByTradeNoOut(@Param("tradeNoUps") String tradeNoUps);
 
     List<JsdBorrowLegalOrderRepaymentDo> getRepayByBorrowId(@Param("borrowId") Long borrowId);
+
+    //查询待处理状态订单
+    List<InHandTaskDto> getInHand();
 
 }

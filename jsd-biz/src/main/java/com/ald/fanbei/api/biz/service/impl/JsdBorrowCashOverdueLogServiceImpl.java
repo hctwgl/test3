@@ -56,4 +56,11 @@ public class JsdBorrowCashOverdueLogServiceImpl extends ParentServiceImpl<JsdBor
 	public List<JsdBorrowCashOverdueLogDto> getListCashOverdueLogByBorrowId(Long borrowId, Date payTime) {
 		return jsdBorrowCashOverdueLogDao.getListCashOverdueLogByBorrowId(borrowId,payTime);
 	}
+
+	@Override
+	public int getBorrowCashOverDueLogToDay() {
+		Date date = new Date(System.currentTimeMillis());
+		Date bengin = DateUtil.getStartOfDate(date);
+		return jsdBorrowCashOverdueLogDao.getBorrowCashOverDueLogToDay(bengin);
+	}
 }

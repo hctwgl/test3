@@ -16,6 +16,7 @@ public class MgrCollectionBorrowDto {
 	private BigDecimal reducibleAmount;
 	private BigDecimal unReducibleAmount;
 	private BigDecimal reducibleRate;
+	private String mobile;
 	
 	public String getTradeNoXgxy() {
 		return tradeNoXgxy;
@@ -88,5 +89,11 @@ public class MgrCollectionBorrowDto {
 	}
 	public void setReducibleRate(BigDecimal reducibleRate) {
 		this.reducibleRate = reducibleRate;
+	}
+	public String getMobile() {
+		return mobile;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
 }

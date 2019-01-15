@@ -42,12 +42,12 @@ public class DingdingData {
         this.at = at;
     }
 
-    public DingdingData setAtMobiles(String[] atMobiles) {
-        this.at = new DingDingAt(atMobiles);
-        String atStr = String.join(" ", Arrays.stream(atMobiles).map(m -> "@" + m).collect(Collectors.toList()));
-        this.text.setContent(String.format("%s %s", this.text.getContent(), atStr));
-        return this;
-    }
+//    public DingdingData setAtMobiles(String[] atMobiles) {
+//        this.at = new DingDingAt(atMobiles);
+//        String atStr = String.join(" ", Arrays.stream(atMobiles).map(m -> "@" + m).collect(Collectors.toList()));
+//        this.text.setContent(String.format("%s %s", this.text.getContent(), atStr));
+//        return this;
+//    }
 
     public DingdingData setIsAtAll() {
         this.at = new DingDingAt(true);
