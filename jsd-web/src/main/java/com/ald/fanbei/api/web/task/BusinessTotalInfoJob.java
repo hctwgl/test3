@@ -41,7 +41,7 @@ public class BusinessTotalInfoJob {
     private static String HOST = "0.0.0.0";
 
 
-	@Scheduled(cron = "0/10 * * * * ?")
+	@Scheduled(cron = "0 10 1 * * ?")
 	public void laonDueJob() {
 		try {
 			String curHostIp = GetHostIpUtil.getIpAddress();
