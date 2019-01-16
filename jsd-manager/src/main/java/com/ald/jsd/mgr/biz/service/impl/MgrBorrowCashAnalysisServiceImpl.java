@@ -293,7 +293,7 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         }
         BigDecimal repayAmount =mgrBorrowCashService.getRepayBorrowCashAmountBorrowDays(0);
         if(repayAmount!=null){
-            repeatBorrowRate= repeatBorrowAmount.divide(repayAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
+            repeatBorrowRate= repeatBorrowAmount.divide(repayAmount,4, BigDecimal.ROUND_HALF_UP);
         }
         return repeatBorrowRate==null?BigDecimal.ZERO:repeatBorrowRate;
     }
