@@ -186,11 +186,11 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 				lastOrderCashDo.getSumRepaidInterest(),lastOrderCashDo.getSumRepaidOverdue(),lastOrderCashDo.getSumRepaidPoundage()).subtract(lastOrderCashDo.getRepaidAmount());
 
 		// 上期借款手续费
-		BigDecimal poundage = borrowCashDo.getPoundageAmount();
+		BigDecimal poundage = borrowCashDo.getPoundageAmount().add(lastOrderCashDo.getPoundageAmount());
 		// 上期借款利息
-		BigDecimal rateAmount = borrowCashDo.getInterestAmount();
+		BigDecimal rateAmount = borrowCashDo.getInterestAmount().add(lastOrderCashDo.getInterestAmount());
 		// 上期借款逾期费
-		BigDecimal overdueAmount = borrowCashDo.getOverdueAmount();
+		BigDecimal overdueAmount = borrowCashDo.getOverdueAmount().add(lastOrderCashDo.getOverdueAmount());
 
 		// 续借需要支付本金
 		BigDecimal capital = BigDecimalUtil.multiply(borrowCashDo.getAmount(), paramBo.capitalRate);
