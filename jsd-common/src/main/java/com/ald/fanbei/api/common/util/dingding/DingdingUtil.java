@@ -57,9 +57,9 @@ public class DingdingUtil {
 //    }
 
     public static void sendMessageByJob(String message, Boolean atAll) {
-        if(StringUtils.equals(INVELOMENT_TYPE,"test")){
+    	/*        if(StringUtils.equals(INVELOMENT_TYPE,"test")){
            return;
-        }
+        }*/
         String robotUrl = WEBHOOK_TOKEN;
         if (atAll == null || !atAll) {
             sendMessageByRobot(robotUrl, message);

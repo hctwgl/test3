@@ -20,7 +20,7 @@
         FROM
         jsd_borrow_cash_renewal
         WHERE is_delete=0
-        AND datediff(now(),gmt_create) &lt; #{days}
+        AND datediff(now(),gmt_create)= #{days}
         AND status ='Y'
     </select>
 
