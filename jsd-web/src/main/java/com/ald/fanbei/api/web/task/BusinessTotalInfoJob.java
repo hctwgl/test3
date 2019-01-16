@@ -35,15 +35,10 @@ public class BusinessTotalInfoJob {
 	@Resource
 	JsdResourceService jsdResourceService;
 	@Resource
-	JsdBorrowCashService jsdBorrowCashService;
-	@Resource
-	JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
-	@Resource
 	JsdTotalInfoService jsdTotalInfoService;
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
     private static String HOST = "0.0.0.0";
-    public static String WEBHOOK_TOKEN = "https://oapi.dingtalk.com/robot/send?access_token=25e746714401a5f51249ffe4b9796325ee83e38d76f7e9122a7202c4835b6968";
 
 
 	@Scheduled(cron = "0 10 1 * * ?")
@@ -65,18 +60,30 @@ public class BusinessTotalInfoJob {
 							calendar.setTime(JsdTotalInfoDo.getCountDate());
 							calendar.add(Calendar.DAY_OF_MONTH, 1);
 							Date tdate = calendar.getTime();
-							String date = DateUtil.formatDate(JsdTotalInfoDo.getCountDate(),
+							String date = DateUtil.formatDate(tdate,
 									DateUtil.DEFAULT_PATTERN_WITH_HYPHEN);
-							jsdTotalInfoService.updateTotalInfo(tdate, date, resourceDo);
-							JsdTotalInfoDo = jsdTotalInfoService.getByCommonCondition(query);
+							try{
+								
+								jsdTotalInfoService.updateTotalInfo(tdate, date, resourceDo);
+								JsdTotalInfoDo = jsdTotalInfoService.getByCommonCondition(query);
+							}catch (Exception e) {
+								//设置时间加一天，跳过当前时间
+								calendar.add(Calendar.DAY_OF_MONTH, 1);
+								JsdTotalInfoDo.setCountDate(calendar.getTime());
+								
+								// 执行失败，发送短信提醒
+					            DingdingUtil.sendMessageByJob(NOTICE_HOST +"，日期为"+date+"，每日现金统计出现异常！",true);
+								logger.info("error = ", e);
+								e.getMessage();
+							}
+							
 						}
 
 					}
 				}
 				catch (Exception e) {
 					// 执行失败，发送短信提醒
-		            DingdingUtil.sendMessageByRobot(WEBHOOK_TOKEN,NOTICE_HOST +"，逾期定时器执行失败！",true);
-
+		            DingdingUtil.sendMessageByJob(NOTICE_HOST +"，逾期定时器执行失败！",true);
 					logger.info("error = ", e);
 					e.getMessage();
 				}
