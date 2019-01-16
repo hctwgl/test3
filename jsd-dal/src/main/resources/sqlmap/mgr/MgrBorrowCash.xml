@@ -146,7 +146,7 @@
 
     <select id="getRepayBorrowCashAmountBorrowDays" resultType="java.math.BigDecimal">
         SELECT
-        SUM(cr.amount)
+        SUM(bc.amount)
         FROM
         jsd_borrow_cash bc
         LEFT JOIN jsd_borrow_cash_repayment cr ON bc.user_id = cr.user_id
