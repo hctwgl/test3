@@ -311,6 +311,7 @@ public class LoanOverDueJob {
                 BigDecimal residueAmount = BigDecimal.ZERO;//应还金额
                 BigDecimal currentAmount = BigDecimal.ZERO;//应还本金
                 BigDecimal overdueAmount = BigDecimal.ZERO;//逾期金额
+                BigDecimal noReducteAmount = BigDecimal.ZERO;//不可减免金额
                 //应还本金
                 currentAmount = BigDecimalUtil.add(borrowCashDo.getAmount(), borrowCashDo.getSumRepaidInterest(), borrowCashDo.getSumRepaidPoundage(), borrowCashDo.getSumRepaidOverdue()).subtract(borrowCashDo.getRepayAmount());
                 //催收金额
@@ -327,6 +328,8 @@ public class LoanOverDueJob {
                 BigDecimal borrowAmount = borrowCashDo.getAmount();
                 //滞纳金
                 BigDecimal lateFee = BigDecimalUtil.add(borrowCashDo.getOverdueAmount(),borrowCashDo.getSumRepaidOverdue());
+                //不可减免金额
+                noReducteAmount = BigDecimalUtil.add(borrowCashDo.getInterestAmount(),borrowCashDo.getSumRepaidInterest(),borrowCashDo.getPoundageAmount(),borrowCashDo.getSumRepaidPoundage(),borrowCashDo.getAmount());
                 if(orderCashDo != null){
                     //应还本金
                     currentAmount = BigDecimalUtil.add(currentAmount, orderCashDo.getAmount(), orderCashDo.getSumRepaidInterest(), orderCashDo.getSumRepaidPoundage(), orderCashDo.getSumRepaidOverdue()).subtract(orderCashDo.getRepaidAmount());
@@ -344,6 +347,8 @@ public class LoanOverDueJob {
                     borrowAmount = borrowAmount.add(orderCashDo.getAmount());
                     //滞纳金
                     lateFee = BigDecimalUtil.add(lateFee,orderCashDo.getOverdueAmount(),orderCashDo.getSumRepaidOverdue());
+                    //不可减免金额
+                    noReducteAmount = BigDecimalUtil.add(noReducteAmount,orderCashDo.getAmount(),orderCashDo.getInterestAmount(),orderCashDo.getPoundageAmount(),orderCashDo.getSumRepaidInterest(),orderCashDo.getSumRepaidPoundage());
                 }
                 buildData.put("productId",resourceDo.getValue2());//产品id
                 buildData.put("caseName",resourceDo.getValue()+"_"+borrowCashDo.getType());//案件名称
@@ -355,6 +360,7 @@ public class LoanOverDueJob {
                 buildData.put("dataId",String.valueOf(jsdBorrowLegalOrder.getRid()));//源数据id
                 buildData.put("planRepaymenTime",DateUtil.formatDateTime(borrowCashDo.getGmtPlanRepayment()));//计划还款时间
                 buildData.put("overdueAmount",String.valueOf(overdueAmount));//逾期金额
+                buildData.put("noReducteAmount",String.valueOf(noReducteAmount));//不可减免金额
                 //借款详情
                 buildData.put("borrowNo",borrowCashDo.getBorrowNo());//借款编号
                 buildData.put("borrowStatus",borrowCashDo.getStatus());//借款状态

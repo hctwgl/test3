@@ -758,9 +758,13 @@
         jsd_borrow_cash a inner join jsd_user b on a.user_id=b.id
         where a.is_delete=0
         and a.review_status='PASS'
-        <if test="status != null and status !='ALL' and status !='OVERDUE' and status !=''">
+        <if test="status != null and status !='ALL' and status !='OVERDUE' and status !='TRANSFERRED' and status !=''">
             AND a.status =#{status}
             AND a.overdue_status='N'
+        </if>
+        <if test="status != null and status =='TRANSFERRED' and status !=''">
+            AND a.gmt_plan_repayment <![CDATA[  >  ]]> now()
+            AND a.status =#{status}
         </if>
         <if test="status != null and status =='OVERDUE' and status !=''">
             AND a.gmt_plan_repayment <![CDATA[  <  ]]> now()
