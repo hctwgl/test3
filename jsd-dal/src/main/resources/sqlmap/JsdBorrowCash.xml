@@ -691,7 +691,7 @@
             WHERE
                 `status` = 'FINISHED'
             AND to_days(finish_date) = to_days(now())
-            and overdue_status = 'Y'
+            and finish_date <![CDATA[   >  ]]> gmt_plan_repayment
         ) AS overdueRepay,
         (
             SELECT
