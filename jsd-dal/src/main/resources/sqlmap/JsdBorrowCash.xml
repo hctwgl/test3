@@ -718,6 +718,7 @@
             WHERE
                 `status` = 'TRANSFERRED' and is_delete=0
                 AND  overdue_status = 'Y'
+                AND gmt_plan_repayment <![CDATA[  <  ]]> now()
         ) AS overdueAwaitRepay
     </select>
 
@@ -768,6 +769,7 @@
         </if>
         <if test="status != null and status =='OVERDUE' and status !=''">
             AND a.gmt_plan_repayment <![CDATA[  <  ]]> now()
+            AND a.overdue_status='Y'
             AND a.status !='FINISHED'
             AND a.status !='CLOSED'
         </if>
