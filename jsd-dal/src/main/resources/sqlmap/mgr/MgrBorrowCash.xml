@@ -137,8 +137,8 @@
         LEFT JOIN jsd_borrow_cash_repayment cr ON bc.user_id = cr.user_id
         WHERE
         bc.is_delete = 0
-        AND datediff(now(), bc.gmt_arrival) &lt; #{days} and datediff(now(), bc.gmt_arrival) &gt;= 0
-        AND datediff(now(), cr.gmt_create) &lt; #{days}
+        AND datediff(now(), bc.gmt_arrival) = #{days}
+        AND datediff(now(), cr.gmt_create) = #{days}
         and cr.`status`='Y'
         AND bc.STATUS IN ('TRANSFERRED','FINISHED')
     </select>
@@ -152,7 +152,7 @@
         LEFT JOIN jsd_borrow_cash_repayment cr ON bc.user_id = cr.user_id
         WHERE
         bc.is_delete = 0
-        AND datediff(now(), cr.gmt_create) &lt; #{days}
+        AND datediff(now(), cr.gmt_create) = #{days}
         AND cr.`status`='Y'
     </select>
     <select id="getOverdueBorrowAmountTo30Day" resultType="java.math.BigDecimal">
