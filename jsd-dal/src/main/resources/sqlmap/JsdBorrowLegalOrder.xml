@@ -340,7 +340,7 @@
         jsd_borrow_legal_order
         where to_days(gmt_create) = to_days(#{date})
         and status in ('AWAIT_DELIVER','DELIVERED','CONFIRM_RECEIVED')
-        and is_delete = 0;
+        and is_delete = 0
         <if test="nper != null and nper !='all' and nper !=''">
             AND type = #{nper}
         </if>
