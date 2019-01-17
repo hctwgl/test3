@@ -424,7 +424,7 @@
     </select>
 
     <select id="getSumRepaymentAmount" resultType="java.math.BigDecimal">
-        SELECT SUM(repayment_amount) FROM
+        SELECT SUM(actual_amount) FROM
             jsd_borrow_cash_repayment
         where is_delete = 0
           and to_days(gmt_create) = to_days(#{date})
