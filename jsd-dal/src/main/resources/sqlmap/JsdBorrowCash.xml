@@ -973,7 +973,7 @@
     </select>
 
     <select id="getLoanAmount" resultType="java.math.BigDecimal">
-        select SUM(amount) from
+        select SUM(arrival_amount) from
         jsd_borrow_cash
         where to_days(gmt_create) = to_days(#{date})
         and status in ('TRANSFERRED','FINISHED')
