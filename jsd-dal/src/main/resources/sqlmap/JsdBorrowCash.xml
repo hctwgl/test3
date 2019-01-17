@@ -982,17 +982,6 @@
         </if>
     </select>
 
-    <select id="getTyingAmount" resultType="java.math.BigDecimal">
-        select SUM(amount - arrival_amount) from
-        jsd_borrow_cash
-        where to_days(gmt_create) = to_days(#{date})
-        and status in ('TRANSFERRED','FINISHED')
-        and is_delete = 0
-        <if test="nper != null and nper !='all' and nper !=''">
-            AND type = #{nper}
-        </if>
-    </select>
-
     <select id="getRepaymentAmount" resultType="java.math.BigDecimal">
         select SUM(amount + poundage_amount + interest_amount) from
         jsd_borrow_cash

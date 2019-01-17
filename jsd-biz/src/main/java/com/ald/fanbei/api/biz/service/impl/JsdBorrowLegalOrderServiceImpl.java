@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.biz.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -56,5 +57,9 @@ public class JsdBorrowLegalOrderServiceImpl extends ParentServiceImpl<JsdBorrowL
 	@Override
 	public JsdBorrowLegalOrderDo getLastValidOrderByBorrowId(Long borrowId) {
 		return jsdBorrowLegalOrderDao.getLastValidOrderByBorrowId(borrowId);
+	}
+	@Override
+	public BigDecimal getTyingAmount(String nper, String date){
+		return jsdBorrowLegalOrderDao.getTyingAmount(nper,date);
 	}
 }

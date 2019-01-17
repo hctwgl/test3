@@ -2,6 +2,7 @@ package com.ald.fanbei.api.dal.dao;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -26,5 +27,7 @@ public interface JsdBorrowLegalOrderDao extends BaseDao<JsdBorrowLegalOrderDo, L
     List<JsdBorrowLegalOrderDo> getBorrowOrdersByBorrowId(@Param("borrowId")Long borrowId);
 
     JsdBorrowLegalOrderDo getLastValidOrderByBorrowId(@Param("borrowId") Long borrowId);
+
+    BigDecimal getTyingAmount(@Param("nper")String nper, @Param("date")String date);
 
 }

@@ -720,10 +720,7 @@ public class JsdBorrowCashServiceImpl extends ParentServiceImpl<JsdBorrowCashDo,
         return jsdBorrowCashDao.getAppleAmount(nper,date);
     }
 
-    @Override
-    public BigDecimal getTyingAmount(String nper,String date){
-        return jsdBorrowCashDao.getTyingAmount(nper,date);
-    }
+
 
     @Override
     public BigDecimal getRepaymentAmount(String nper,String date){

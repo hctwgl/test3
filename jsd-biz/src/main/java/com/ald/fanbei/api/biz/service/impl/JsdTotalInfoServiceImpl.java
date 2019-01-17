@@ -9,15 +9,12 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.ald.fanbei.api.biz.service.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.ald.fanbei.api.biz.service.JsdBorrowCashRepaymentService;
-import com.ald.fanbei.api.biz.service.JsdBorrowCashService;
-import com.ald.fanbei.api.biz.service.JsdResourceService;
-import com.ald.fanbei.api.biz.service.JsdTotalInfoService;
 import com.ald.fanbei.api.common.enums.ResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.util.BigDecimalUtil;
@@ -56,6 +53,8 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 	JsdResourceService jsdResourceService;
 	@Resource
 	JsdBorrowCashRepaymentService jsdBorrowCashRepaymentService;
+	@Resource
+	JsdBorrowLegalOrderService jsdBorrowLegalOrderService;
 
 	@Override
 	public BaseDao<JsdTotalInfoDo, Long> getDao() {
@@ -226,7 +225,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 				BigDecimal loanAmount = jsdBorrowCashService.getLoanAmount(arr[i], date);
 				infoDo.setLoanAmount(loanAmount == null ? BigDecimal.ZERO : loanAmount);
 				// 商品搭售金额
-				BigDecimal tyingAmount = jsdBorrowCashService.getTyingAmount(arr[i], date);
+				BigDecimal tyingAmount = jsdBorrowLegalOrderService.getTyingAmount(arr[i], date);
 				infoDo.setTyingAmount(tyingAmount == null ? BigDecimal.ZERO : tyingAmount);
 				// 应还款金额
 				BigDecimal repaymentAmount = jsdBorrowCashService.getRepaymentAmount(arr[i], date);

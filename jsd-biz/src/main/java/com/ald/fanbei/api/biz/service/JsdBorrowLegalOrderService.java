@@ -2,6 +2,7 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.JsdBorrowLegalOrderDo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -51,4 +52,10 @@ public interface JsdBorrowLegalOrderService extends ParentService<JsdBorrowLegal
      * @return
      */
     JsdBorrowLegalOrderDo getLastValidOrderByBorrowId(Long borrowId);
+
+
+    /**
+     * 商品搭售金额
+     */
+    BigDecimal getTyingAmount(String nper, String date);
 }

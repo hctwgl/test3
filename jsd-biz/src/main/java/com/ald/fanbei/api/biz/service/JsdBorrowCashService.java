@@ -284,10 +284,7 @@ public interface JsdBorrowCashService extends ParentService<JsdBorrowCashDo, Lon
      */
     BigDecimal getLoanAmount(String nper,String date);
 
-    /**
-     * 商品搭售金额
-     */
-    BigDecimal getTyingAmount(String nper,String date);
+
 
     /**
      * 应还款金额
