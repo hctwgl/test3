@@ -285,41 +285,43 @@ public class MgrBorrowCashAnalysisServiceImpl implements MgrBorrowCashAnalysisSe
         return badDebtRate==null?BigDecimal.ZERO:badDebtRate;
     }
 
+    //复借率
     public BigDecimal repeatBorrowRate(){
-        BigDecimal repeatBorrowRate=BigDecimal.ZERO;
-        BigDecimal repeatBorrowAmount =mgrBorrowCashService.getRepeatBorrowCashByBorrowDays(0);
-        if(repeatBorrowAmount==null){
-            repeatBorrowAmount=BigDecimal.ZERO;
+        Date startTime = DateUtil.initStartDateByDay(DateUtil.addDays(new Date(), 0));
+        Date endTime = DateUtil.initEndDateByDay(DateUtil.addDays(new Date(), 0));
+        BigDecimal repeatBorrowRate = BigDecimal.ZERO;//复借率
+        int arrivalBorrowCashPerNum = mgrBorrowCashService.getArrivalBorrowCashBetweenStartAndEnd(startTime, endTime);//当期到期人数
+        int haveBorrowCashPerNum=repeatPersons(0);
+        if (haveBorrowCashPerNum != 0) {
+            repeatBorrowRate = new BigDecimal(haveBorrowCashPerNum).divide(new BigDecimal(arrivalBorrowCashPerNum), 4, BigDecimal.ROUND_HALF_UP);
         }
-        BigDecimal repayAmount =mgrBorrowCashService.getRepayBorrowCashAmountBorrowDays(0);
-        if(repayAmount!=null){
-            repeatBorrowRate= repeatBorrowAmount.divide(repayAmount,4, BigDecimal.ROUND_HALF_UP);
-        }
-        return repeatBorrowRate==null?BigDecimal.ZERO:repeatBorrowRate;
+        return repeatBorrowRate;
+    }
+    //复借人数
+    public int repeatPersons(Integer days){
+        Date startTime = DateUtil.initStartDateByDay(DateUtil.addDays(new Date(), -days));
+        Date endTime = DateUtil.initEndDateByDay(DateUtil.addDays(new Date(), -days));
+        int haveBorrowCashPerNum = mgrBorrowCashService.getUserNumBetweenStartAndEnd(startTime, endTime);//当期复借人数
+        return haveBorrowCashPerNum;
     }
     public BigDecimal repeatBorrowRateByWeek(){
-        BigDecimal repeatBorrowRate=BigDecimal.ZERO;
-        BigDecimal repeatBorrowAmount =mgrBorrowCashService.getRepeatBorrowCashByBorrowDays(7);
-        BigDecimal repayAmount =mgrBorrowCashService.getRepayBorrowCashAmountBorrowDays(7);
-        if(repeatBorrowAmount==null){
-            repeatBorrowAmount=BigDecimal.ZERO;
+        BigDecimal repeatBorrowWeek=BigDecimal.ZERO;
+        int toDayRepeat=repeatPersons(0);
+        int weekRepeat=repeatPersons(7);
+        if(weekRepeat!=0){
+            repeatBorrowWeek=new BigDecimal(toDayRepeat).divide(new BigDecimal(weekRepeat), 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
-        if(repayAmount!=null ){
-            repeatBorrowRate= repeatBorrowAmount.divide(repayAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
-        }
-        return repeatBorrowRate==null?BigDecimal.ZERO:repeatBorrowRate;
+        return repeatBorrowWeek;
+
     }
     public BigDecimal repeatBorrowRateByDay(){
-        BigDecimal repeatBorrowRate=BigDecimal.ZERO;
-        BigDecimal repeatBorrowAmount =mgrBorrowCashService.getRepeatBorrowCashByBorrowDays(1);
-        if(repeatBorrowAmount==null){
-            repeatBorrowAmount=BigDecimal.ZERO;
+        BigDecimal repeatBorrowDay=BigDecimal.ZERO;
+        int toDayRepeat=repeatPersons(0);
+        int dayRepeat=repeatPersons(1);
+        if(dayRepeat!=0){
+            repeatBorrowDay=new BigDecimal(toDayRepeat).divide(new BigDecimal(dayRepeat), 4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
         }
-        BigDecimal repayAmount =mgrBorrowCashService.getRepayBorrowCashAmountBorrowDays(1);
-        if(repayAmount!=null ){
-            repeatBorrowRate= repeatBorrowAmount.divide(repayAmount,4, BigDecimal.ROUND_HALF_UP).subtract(BigDecimal.ONE);
-        }
-        return repeatBorrowRate==null?BigDecimal.ZERO:repeatBorrowRate;
+        return repeatBorrowDay;
     }
     public BigDecimal buildAmountBorrowCashByDays(Integer days) {
         BigDecimal amount = getBorrowCashList(days).stream().map(JsdBorrowCashDo::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
