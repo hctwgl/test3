@@ -998,7 +998,7 @@
         select SUM(amount + poundage_amount + interest_amount) from
         jsd_borrow_cash
         where to_days(gmt_plan_repayment) = to_days(#{date})
-        and status = 'TRANSFERRED'
+        and status in ('TRANSFERRED','FINISHED')
         and is_delete = 0
         <if test="nper != null and nper !='all' and nper !=''">
             AND type = #{nper}
