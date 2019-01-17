@@ -1028,6 +1028,7 @@
         jsd_borrow_cash b, jsd_borrow_cash_repayment r
         where b.id = r.borrow_id
         and TO_DAYS(r.gmt_create) = TO_DAYS(#{date})
+        and TO_DAYS(b.finish_date) = TO_DAYS(#{date})
         and r.status = 'Y'
         and b.is_delete = 0
         and b.is_delete = r.is_delete
