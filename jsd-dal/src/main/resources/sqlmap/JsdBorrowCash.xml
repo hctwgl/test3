@@ -1031,6 +1031,7 @@
         and r.status = 'Y'
         and b.is_delete = 0
         and b.is_delete = r.is_delete
+        and b.status = 'FINISHED'
         <if test="nper != null and nper !='all' and nper !=''">
             AND b.type = #{nper}
         </if>
