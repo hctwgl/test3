@@ -1001,8 +1001,7 @@
         jsd_borrow_cash_repayment r
         WHERE
         r.borrow_id = b.id
-        AND TO_DAYS(r.gmt_create) = TO_DAYS(b.gmt_plan_repayment)
-        and TO_DAYS(r.gmt_create) = TO_DAYS(#{date})
+        and TO_DAYS(b.gmt_plan_repayment) = TO_DAYS(#{date})
         AND r.`status` = 'Y'
         AND b.`status` in ('TRANSFERRED','FINISHED')
         <if test="nper != null and nper !='all' and nper !=''">
