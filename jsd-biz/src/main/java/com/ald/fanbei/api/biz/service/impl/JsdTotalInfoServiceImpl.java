@@ -88,7 +88,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		BigDecimal extensionCost = new BigDecimal("0");
 		for (JsdBorrowCashRenewalDo j : list) {
 			extensionCost = extensionCost.add(
-					j.getCapital().subtract((j.getPriorPoundage().add(j.getPriorOverdue()).add(j.getPriorInterest()))));
+					j.getActualAmount().subtract(j.getCapital().add(j.getPriorPoundage().add(j.getPriorOverdue().add(j.getPriorInterest())))));
 		}
 		jsdTotalInfoDo.setExtensionCost(extensionCost);
 
