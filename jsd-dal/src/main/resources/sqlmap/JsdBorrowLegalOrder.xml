@@ -336,13 +336,15 @@
     </select>
 
     <select id="getTyingAmount" resultType="java.math.BigDecimal">
-        select SUM(price_amount) from
-        jsd_borrow_legal_order
-        where to_days(gmt_create) = to_days(#{date})
-        and status in ('AWAIT_DELIVER','DELIVERED','CONFIRM_RECEIVED')
-        and is_delete = 0
+        select SUM(o.price_amount) from
+        jsd_borrow_legal_order o, jsd_borrow_cash c
+        where to_days(o.gmt_create) = to_days(#{date})
+        and o.status in ('AWAIT_DELIVER','DELIVERED','CONFIRM_RECEIVED')
+        and o.is_delete = 0
+        and o.is_delete = c.is_delete
+        and o.borrow_id = c.id
         <if test="nper != null and nper !='all' and nper !=''">
-            AND type = #{nper}
+            AND c.type = #{nper}
         </if>
     </select>
 
