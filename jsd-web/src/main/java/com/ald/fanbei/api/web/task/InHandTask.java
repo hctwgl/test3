@@ -44,7 +44,7 @@ public class InHandTask {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
-    @Scheduled(cron = "0 0/5 * * * ?")//一小时一次
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void InHand(){
         try{
             String curHostIp = GetHostIpUtil.getIpAddress();
