@@ -47,8 +47,34 @@ import java.math.BigDecimal;
      * 
      */
     private String tradeNoUps;
+    private String unstatus;
+    
+    private String orstatus;
+    
+    
+    
+    
+    
+    
+    
 
-    /**
+    public String getOrstatus() {
+		return orstatus;
+	}
+
+	public void setOrstatus(String orstatus) {
+		this.orstatus = orstatus;
+	}
+
+	public String getUnstatus() {
+		return unstatus;
+	}
+
+	public void setUnstatus(String unstatus) {
+		this.unstatus = unstatus;
+	}
+
+	/**
      * 借款天数
      */
     private String type;

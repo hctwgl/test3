@@ -93,10 +93,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		jsdTotalInfoDo.setExtensionCost(extensionCost);
 
 		// 在展本金，数据太大，不适合便利
-		BigDecimal inExhibitionCapital = new BigDecimal("0");
-		for (JsdBorrowCashRenewalDo j : list) {
-			inExhibitionCapital = inExhibitionCapital.add(j.getRenewalAmount());
-		}
+		
 
 		BigDecimal renewalAmount = new BigDecimal("0");
 		jsdBorrowCashRenewalDo = new JsdBorrowCashRenewalDo();
@@ -122,9 +119,13 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		Date tdate = calendar.getTime();
 
 		JsdBorrowCashDo jsdBorrowCashDo = new JsdBorrowCashDo();
+		if (!term.equals("all")) {
+			jsdBorrowCashDo.setType(term);
+		}
 		jsdBorrowCashDo.setQueryDate(tdate);
+		jsdBorrowCashDo.setOrstatus("1");
 		List<JsdBorrowCashDo> listAll = jsdBorrowCashDao.getListByCommonCondition(jsdBorrowCashDo);
-
+		jsdBorrowCashDo.setOrstatus(null);
 		jsdBorrowCashDo.setStatus("TRANSFERRED");
 		List<JsdBorrowCashDo> listY = jsdBorrowCashDao.getListByCommonCondition(jsdBorrowCashDo);
 		BigDecimal rirstRate = new BigDecimal("0.00");
@@ -137,8 +138,13 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		// 逾期率
 		BigDecimal overdueRate = new BigDecimal("0.00");
 		jsdBorrowCashDo = new JsdBorrowCashDo();
-		jsdBorrowCashDo.setEndDate(date);
+		jsdBorrowCashDo.setEndDate(tdate);
+		jsdBorrowCashDo.setOrstatus("1");
+		if (!term.equals("all")) {
+			jsdBorrowCashDo.setType(term);
+		}
 		int ALL = jsdBorrowCashDao.getcount(jsdBorrowCashDo);
+		jsdBorrowCashDo.setOrstatus(null);
 		jsdBorrowCashDo.setStatus("TRANSFERRED");
 		int Y = jsdBorrowCashDao.getcount(jsdBorrowCashDo);
 		if (ALL != 0) {
@@ -162,20 +168,21 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 					.subtract(j.getRepayAmount());
 		}
 		if (!listAllBig.equals(new BigDecimal("0.00"))) {
-			jsdTotalInfoDo.setUnrecoveredRate(listYBig.divide(listAllBig,2));
+			jsdTotalInfoDo.setUnrecoveredRate(listYBig.divide(listAllBig,4,BigDecimal.ROUND_HALF_UP));
 		}else{
 			jsdTotalInfoDo.setUnrecoveredRate(new BigDecimal("0.00"));
 
 		}
 		// 坏账金额率
 		BigDecimal result = new BigDecimal("0");
-		calendar.setTime(date);
-		calendar.add(Calendar.DAY_OF_MONTH, -30);
+		calendar.add(Calendar.DAY_OF_MONTH, -31);
 		tdate = calendar.getTime();
 
 		jsdBorrowCashDo = new JsdBorrowCashDo();
 		jsdBorrowCashDo.setEndDate(tdate);
-
+		if (!term.equals("all")) {
+			jsdBorrowCashDo.setType(term);
+		}
 		// 坏账金额
 		jsdBorrowCashDo.setQueryDate(date);
 		BigDecimal all = jsdBorrowCashDao.getReplayAmount(jsdBorrowCashDo);
@@ -183,17 +190,21 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		jsdBorrowCashDo.setStatus("TRANSFERRED");
 		BigDecimal bad = jsdBorrowCashDao.getReplayAmount(jsdBorrowCashDo);
 		if (all != null && !all.equals(BigDecimal.ZERO)) {
-			result = bad.divide(all);
+			result = bad.divide(all,4,BigDecimal.ROUND_HALF_UP);
 		}
 		jsdTotalInfoDo.setBadDebtAmount(result);
 
 		// 盈利率
 		BigDecimal profitability = new BigDecimal("0");
-
+		jsdBorrowCashDo = new JsdBorrowCashDo();
+		if (!term.equals("all")) {
+			jsdBorrowCashDo.setType(term);
+		}
+		jsdBorrowCashDo.setEndDate(date);
 		BigDecimal replay = jsdBorrowCashDao.getALLReplayAmount(jsdBorrowCashDo);
 		BigDecimal arriva = jsdBorrowCashDao.getArrivalAmount(jsdBorrowCashDo);
 		if (null != arriva && !BigDecimal.ZERO.equals(arriva)) {
-			profitability = replay.divide(arriva);
+			profitability = (replay.subtract(arriva)).divide(arriva,4,BigDecimal.ROUND_HALF_UP);
 		}
 		jsdTotalInfoDo.setProfitabilityRate(profitability);
 		Gson gson = new Gson();
@@ -257,4 +268,6 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		
 
 	}
+	
+	
 }

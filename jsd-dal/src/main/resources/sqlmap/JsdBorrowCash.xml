@@ -136,6 +136,15 @@
             AND borrow_remark = #{repayRemark,jdbcType=VARCHAR}
         </if>
         
+        <if test="unstatus !=null">
+            AND status = #{unstatus,jdbcType=VARCHAR}
+        </if>
+        
+        <if test="orstatus !=null">
+            AND (status = 'TRANSFERRED' OR status= 'FINISHED')
+        </if>
+        
+        
         <if test="queryDate!=null and queryDate!=''">
     <![CDATA[   and DATE_FORMAT(gmt_plan_repayment, '%Y-%m-%d')=  DATE_FORMAT(#{queryDate}, '%Y-%m-%d')   ]]>
 	</if>
