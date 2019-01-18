@@ -184,9 +184,10 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 			jsdBorrowCashDo.setType(term);
 		}
 		// 坏账金额
-		jsdBorrowCashDo.setQueryDate(date);
+		jsdBorrowCashDo.setOrstatus("1");
+		jsdBorrowCashDo.setEndDate(date);
 		BigDecimal all = jsdBorrowCashDao.getReplayAmount(jsdBorrowCashDo);
-		jsdBorrowCashDo.setQueryDate(tdate);
+		jsdBorrowCashDo.setEndDate(tdate);
 		jsdBorrowCashDo.setStatus("TRANSFERRED");
 		BigDecimal bad = jsdBorrowCashDao.getReplayAmount(jsdBorrowCashDo);
 		if (all != null && !all.equals(BigDecimal.ZERO)) {
@@ -200,6 +201,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		if (!term.equals("all")) {
 			jsdBorrowCashDo.setType(term);
 		}
+		jsdBorrowCashDo.setOrstatus("1");
 		jsdBorrowCashDo.setEndDate(date);
 		BigDecimal replay = jsdBorrowCashDao.getALLReplayAmount(jsdBorrowCashDo);
 		BigDecimal arriva = jsdBorrowCashDao.getArrivalAmount(jsdBorrowCashDo);
