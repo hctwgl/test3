@@ -425,10 +425,15 @@
 
     <select id="getSumRepaymentAmount" resultType="java.math.BigDecimal">
         SELECT SUM(actual_amount) FROM
-            jsd_borrow_cash_repayment
-        where is_delete = 0
-          and to_days(gmt_create) = to_days(#{date})
-          and status = 'Y'
+            jsd_borrow_cash_repayment r, jsd_borrow_cash c
+        where r.is_delete = 0
+          and c.is_delete = r.is_delete
+          and to_days(r.gmt_create) = to_days(#{date})
+          and r.status = 'Y'
+          and c.status in ('TRANSFERRED','FINISHED')
+        <if test="nper != null and nper !='all' and nper !=''">
+            AND c.type = #{nper}
+        </if>
     </select>
 
     <select id="getInHand" resultType="com.ald.fanbei.api.dal.domain.dto.InHandTaskDto">
