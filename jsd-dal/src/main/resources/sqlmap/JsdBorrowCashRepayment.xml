@@ -431,7 +431,7 @@
           and c.is_delete = r.is_delete
           and to_days(r.gmt_create) = to_days(#{date})
           and r.status = 'Y'
-          and c.status in ('TRANSFERRED','FINISHED')
+          and c.status in ('FINISHED')
         <if test="nper != null and nper !='all' and nper !=''">
             AND c.type = #{nper}
         </if>
