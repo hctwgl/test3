@@ -427,6 +427,7 @@
         SELECT SUM(actual_amount) FROM
             jsd_borrow_cash_repayment r, jsd_borrow_cash c
         where r.is_delete = 0
+          and r.borrow_id = c.id
           and c.is_delete = r.is_delete
           and to_days(r.gmt_create) = to_days(#{date})
           and r.status = 'Y'

@@ -190,7 +190,10 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		jsdBorrowCashDo.setEndDate(tdate);
 		jsdBorrowCashDo.setStatus("TRANSFERRED");
 		BigDecimal bad = jsdBorrowCashDao.getReplayAmount(jsdBorrowCashDo);
-		if (all != null && !all.equals(BigDecimal.ZERO)) {
+		if(null == bad){
+
+		}
+		if (all != null && !all.equals(BigDecimal.ZERO) && bad != null) {
 			result = bad.divide(all,4,BigDecimal.ROUND_HALF_UP);
 		}
 		jsdTotalInfoDo.setBadDebtAmount(result);
