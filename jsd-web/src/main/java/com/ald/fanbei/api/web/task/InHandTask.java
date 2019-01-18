@@ -49,7 +49,7 @@ public class InHandTask {
         try{
             String curHostIp = GetHostIpUtil.getIpAddress();
             logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-            if(StringUtils.equals(GetHostIpUtil.getIpAddress(), NOTICE_HOST)){
+            if(StringUtils.equals(curHostIp, NOTICE_HOST)){
                 logger.info("InHandTask run start,time=" + new Date());
                 List<InHandTaskDto> list = jsdBorrowCashDao.getInHand();
                 List<InHandTaskDto> list2 = jsdBorrowCashRenewalDao.getInHand();
