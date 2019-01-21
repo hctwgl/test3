@@ -225,7 +225,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		jsdBorrowCashDo.setUnstatus("1");
 		BigDecimal arriva = jsdBorrowCashDao.getArrivalAmount(jsdBorrowCashDo);
 		if (null != arriva && !BigDecimal.ZERO.equals(arriva)) {
-			profitability = (replay.subtract(arriva)).divide(arriva,4,BigDecimal.ROUND_HALF_UP);
+			profitability = (replay.subtract(arriva)).divide(arriva,4,BigDecimal.ROUND_DOWN);
 		}
 		jsdTotalInfoDo.setProfitabilityRate(profitability);
 		Gson gson = new Gson();
@@ -280,7 +280,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 				// 展期笔数、展期还本、展期费用、在展本金
 				this.updateExtensionInfo(tdate, arr[i], infoDo);
 				// 首逾率、逾期率、未回收率、坏账金额、盈利率
-				this.updateFateInfo(tdate, "all", infoDo);
+				this.updateFateInfo(tdate, arr[i], infoDo);
 				list.add(infoDo);
 			}
 			if (list.size() > 0) {
