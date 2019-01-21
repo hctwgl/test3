@@ -135,24 +135,24 @@
         <if test="repayRemark !=null">
             AND borrow_remark = #{repayRemark,jdbcType=VARCHAR}
         </if>
-        
+
         <if test="unstatus !=null">
             AND status = #{unstatus,jdbcType=VARCHAR}
         </if>
-        
+
         <if test="orstatus !=null">
             AND (status = 'TRANSFERRED' OR status= 'FINISHED')
         </if>
-        
-        
+
+
         <if test="queryDate!=null and queryDate!=''">
     <![CDATA[   and DATE_FORMAT(gmt_plan_repayment, '%Y-%m-%d')=  DATE_FORMAT(#{queryDate}, '%Y-%m-%d')   ]]>
 	</if>
-	
+
 	 <if test="endDate!=null and endDate!=''">
     <![CDATA[and DATE_FORMAT(#{endDate}, '%Y-%m-%d')>=DATE_FORMAT(gmt_plan_repayment, '%Y-%m-%d')   ]]>
 	</if>
-        
+
     </sql>
 
     
@@ -853,6 +853,7 @@
         FROM jsd_borrow_cash c LEFT JOIN jsd_borrow_legal_order o
         ON c.id=o.borrow_id
         WHERE o.is_delete=0 AND c.id =#{borrowId}
+        AND o.status NOT IN ('CLOSED','UNPAID')
         ORDER BY o.id DESC LIMIT 1
     </select>
     <select id="getOverdueInfoByUserId" resultType="com.ald.fanbei.api.dal.domain.dto.AfUserBorrowCashOverdueInfoDto">
@@ -925,59 +926,59 @@
         jsd_borrow_cash b where b.is_delete=0  and gmt_plan_repayment BETWEEN  #{startTime} AND  #{endTime}
         and status='TRANSFERRED' and user_id in (${userIds})
     </select>
-    
-    
+
+
     <select id="getcount" resultType="java.lang.Integer" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
         SELECT
         count(*)
         FROM jsd_borrow_cash
         <include refid="commonCondition"/>
     </select>
-    
-    
+
+
     <select id="getReplayAmount" resultType="java.math.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
         SELECT
          sum(amount+overdue_amount+poundage_amount+interest_amount+sum_repaid_interest+sum_repaid_poundage+sum_repaid_overdue-repay_amount)
         FROM jsd_borrow_cash
         <include refid="commonCondition"/>
     </select>
-    
+
     <select id="getALLReplayAmount" resultType="java.math.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
         SELECT
          sum(repay_amount)
         FROM jsd_borrow_cash
-        where 
+        where
         is_delete = 0
-  
-        AND status = #{status,jdbcType=VARCHAR}     
-         <if test="type != null">        
+
+        AND status = #{status,jdbcType=VARCHAR}
+         <if test="type != null">
                AND type = #{type,jdbcType=VARCHAR}
             </if>
-	
+
 	 <![CDATA[and DATE_FORMAT(#{endDate}, '%Y-%m-%d')>=DATE_FORMAT(finish_date, '%Y-%m-%d')   ]]>
-       
+
     </select>
-    
+
       <select id="getArrivalAmount" resultType="java.math.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
         SELECT
         sum(arrival_amount)
        FROM jsd_borrow_cash
-        where 
+        where
         is_delete = 0
-        
+
         AND (status = 'TRANSFERRED' OR status= 'FINISHED')
-       <if test="type != null">        
+       <if test="type != null">
                AND type = #{type,jdbcType=VARCHAR}
             </if>
-	
+
 	 <![CDATA[and DATE_FORMAT(#{endDate}, '%Y-%m-%d')>=DATE_FORMAT(gmt_arrival, '%Y-%m-%d')   ]]>
-       
-       
-       
+
+
+
     </select>
-    
-    
-    
+
+
+
 
 
     <select id="getLoanNum" resultType="java.lang.Integer">
@@ -1032,10 +1033,12 @@
         WHERE
         r.borrow_id = b.id
         and TO_DAYS(b.gmt_plan_repayment) = TO_DAYS(#{date})
+        <![CDATA[ and  TO_DAYS(r.gmt_create) <= TO_DAYS(#{date}) ]]>
+        <![CDATA[ and  TO_DAYS(b.finish_date) <= TO_DAYS(#{date}) ]]>
         AND r.`status` = 'Y'
         AND r.is_delete = '0'
         AND b.is_delete = '0'
-        AND b.`status` in ('TRANSFERRED','FINISHED')
+        AND b.`status` in ('FINISHED')
         <if test="nper != null and nper !='all' and nper !=''">
             AND b.type = #{nper}
         </if>
@@ -1070,15 +1073,22 @@
     </select>
 
     <select id="getNormalNum" resultType="java.lang.Integer">
-        select count(id)
-        from
-        jsd_borrow_cash
-        where is_delete = 0
-        and to_days(finish_date) = to_days(gmt_plan_repayment)
-        and to_days(finish_date) = to_days(#{date})
-        and status = 'FINISHED'
+        SELECT
+            COUNT(DISTINCT(b.`id`))
+        FROM
+        jsd_borrow_cash b,
+        jsd_borrow_cash_repayment r
+        WHERE
+        r.borrow_id = b.id
+        and TO_DAYS(b.gmt_plan_repayment) = TO_DAYS(#{date})
+        <![CDATA[ and  TO_DAYS(r.gmt_create) <= TO_DAYS(#{date}) ]]>
+        <![CDATA[ and  TO_DAYS(b.finish_date) <= TO_DAYS(#{date}) ]]>
+        AND r.`status` = 'Y'
+        AND r.is_delete = '0'
+        AND b.is_delete = '0'
+        AND b.`status` in ('FINISHED')
         <if test="nper != null and nper !='all' and nper !=''">
-            AND type = #{nper}
+            AND b.type = #{nper}
         </if>
     </select>
 
@@ -1090,4 +1100,24 @@
         and `status` = 'TRANSFERING'
         AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <![CDATA[  <=  ]]> date(gmt_create)
     </select>
+
+    <select id ="getBorrowCashsTransedForCrawler" resultType="JsdBorrowCashDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM
+        jsd_borrow_cash
+        WHERE
+        is_delete = 0
+        AND
+        user_id IN (SELECT id FROM jsd_user
+        WHERE is_delete = 0
+        AND (LEFT(mobile,3) =#{topThree} OR LEFT(user_name,3) =#{topThree})
+        AND (RIGHT(mobile,2)=#{laterTwo} OR RIGHT(user_name,2)=#{laterTwo})
+        AND substring(real_name,2)=#{realName})
+        and status = 'TRANSFERRED'
+        ORDER BY
+        gmt_create DESC
+    </select>
+
+
 </mapper>
