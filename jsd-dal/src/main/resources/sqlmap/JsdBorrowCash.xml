@@ -951,7 +951,9 @@
         is_delete = 0
 
         AND status = #{status,jdbcType=VARCHAR}
-        AND type = #{type,jdbcType=VARCHAR}
+         <if test="type != null">
+               AND type = #{type,jdbcType=VARCHAR}
+            </if>
 
 	 <![CDATA[and DATE_FORMAT(#{endDate}, '%Y-%m-%d')>=DATE_FORMAT(finish_date, '%Y-%m-%d')   ]]>
 
@@ -965,7 +967,9 @@
         is_delete = 0
 
         AND (status = 'TRANSFERRED' OR status= 'FINISHED')
-        AND type = #{type,jdbcType=VARCHAR}
+       <if test="type != null">
+               AND type = #{type,jdbcType=VARCHAR}
+            </if>
 
 	 <![CDATA[and DATE_FORMAT(#{endDate}, '%Y-%m-%d')>=DATE_FORMAT(gmt_arrival, '%Y-%m-%d')   ]]>
 
@@ -1029,10 +1033,12 @@
         WHERE
         r.borrow_id = b.id
         and TO_DAYS(b.gmt_plan_repayment) = TO_DAYS(#{date})
+        <![CDATA[ and  TO_DAYS(r.gmt_create) <= TO_DAYS(#{date}) ]]>
+        <![CDATA[ and  TO_DAYS(b.finish_date) <= TO_DAYS(#{date}) ]]>
         AND r.`status` = 'Y'
         AND r.is_delete = '0'
         AND b.is_delete = '0'
-        AND b.`status` in ('TRANSFERRED','FINISHED')
+        AND b.`status` in ('FINISHED')
         <if test="nper != null and nper !='all' and nper !=''">
             AND b.type = #{nper}
         </if>
@@ -1067,15 +1073,22 @@
     </select>
 
     <select id="getNormalNum" resultType="java.lang.Integer">
-        select count(id)
-        from
-        jsd_borrow_cash
-        where is_delete = 0
-        and to_days(finish_date) = to_days(gmt_plan_repayment)
-        and to_days(finish_date) = to_days(#{date})
-        and status = 'FINISHED'
+        SELECT
+            COUNT(DISTINCT(b.`id`))
+        FROM
+        jsd_borrow_cash b,
+        jsd_borrow_cash_repayment r
+        WHERE
+        r.borrow_id = b.id
+        and TO_DAYS(b.gmt_plan_repayment) = TO_DAYS(#{date})
+        <![CDATA[ and  TO_DAYS(r.gmt_create) <= TO_DAYS(#{date}) ]]>
+        <![CDATA[ and  TO_DAYS(b.finish_date) <= TO_DAYS(#{date}) ]]>
+        AND r.`status` = 'Y'
+        AND r.is_delete = '0'
+        AND b.is_delete = '0'
+        AND b.`status` in ('FINISHED')
         <if test="nper != null and nper !='all' and nper !=''">
-            AND type = #{nper}
+            AND b.type = #{nper}
         </if>
     </select>
 

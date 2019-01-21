@@ -153,6 +153,22 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		jsdTotalInfoDo.setOverdueRate(overdueRate);
 		// 未回收率
 		BigDecimal listYBig = new BigDecimal("0.00");
+		
+		
+		 jsdBorrowCashDo = new JsdBorrowCashDo();
+		if (!term.equals("all")) {
+			jsdBorrowCashDo.setType(term);
+		}
+		jsdBorrowCashDo.setQueryDate(date);
+		jsdBorrowCashDo.setOrstatus("1");
+		listAll = jsdBorrowCashDao.getListByCommonCondition(jsdBorrowCashDo);
+		jsdBorrowCashDo.setOrstatus(null);
+		jsdBorrowCashDo.setStatus("TRANSFERRED");
+		 listY = jsdBorrowCashDao.getListByCommonCondition(jsdBorrowCashDo);
+		
+		
+		
+		
 		for (JsdBorrowCashDo j : listY) {
 			listYBig = BigDecimalUtil
 					.add(listYBig, j.getAmount(), j.getInterestAmount(), j.getPoundageAmount(), j.getOverdueAmount(),
@@ -209,7 +225,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		jsdBorrowCashDo.setUnstatus("1");
 		BigDecimal arriva = jsdBorrowCashDao.getArrivalAmount(jsdBorrowCashDo);
 		if (null != arriva && !BigDecimal.ZERO.equals(arriva)) {
-			profitability = (replay.subtract(arriva)).divide(arriva,4,BigDecimal.ROUND_HALF_UP);
+			profitability = (replay.subtract(arriva)).divide(arriva,4,BigDecimal.ROUND_DOWN);
 		}
 		jsdTotalInfoDo.setProfitabilityRate(profitability);
 		Gson gson = new Gson();
