@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.ald.fanbei.api.biz.service.*;
 import com.ald.fanbei.api.common.enums.ProductType;
+import com.ald.fanbei.api.common.util.AesUtil;
 import com.ald.fanbei.api.dal.domain.*;
 import com.itextpdf.text.DocumentException;
 import org.apache.commons.lang.StringUtils;
@@ -671,6 +672,12 @@ public class H5ProtocolController {
 	@RequestMapping(value = {"protocolBeheadPdf"}, method = RequestMethod.POST)
 	public void protocolBeheadPdf( String data) throws IOException, DocumentException {
 		jsdLegalContractPdfCreateService.platformServiceBeheadProtocol(data);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = {"decrypt"}, method = RequestMethod.POST)
+	public String decrypt(String data,String password) throws IOException, DocumentException {
+		return AesUtil.decryptFromBase64(data,password);
 	}
 
 

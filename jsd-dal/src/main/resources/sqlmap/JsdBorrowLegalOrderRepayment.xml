@@ -360,7 +360,7 @@
         FROM jsd_borrow_legal_order_repayment
         WHERE is_delete=0
         AND borrow_id=#{borrowId}
-        AND status <![CDATA[!= ]]> 'N'
+        AND status = 'Y'
     </select>
 
     <select id="getInHand" resultType="com.ald.fanbei.api.dal.domain.dto.InHandTaskDto">

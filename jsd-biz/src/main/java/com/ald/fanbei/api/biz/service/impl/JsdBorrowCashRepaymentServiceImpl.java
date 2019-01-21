@@ -798,12 +798,14 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 								jsdBorrowLegalOrderCashDo.getSumRepaidInterest(), jsdBorrowLegalOrderCashDo.getSumRepaidPoundage(), jsdBorrowLegalOrderCashDo.getSumRepaidOverdue(), jsdBorrowLegalOrderCashDo.getAmount()).subtract(jsdBorrowLegalOrderCashDo.getRepaidAmount());
 						if (payAmount.compareTo(restAmount) < 0) {
 							logger.info("legal order cash part offline repay，borrowId=" + jsdBorrowLegalOrderCashDo.getBorrowId());
-						} else if (repayTime.before(jsdBorrowLegalOrderCashDo.getGmtPlanRepay())) {
+						} else{
 							JsdBorrowLegalOrderCashDo borrowLegalOrderCashDoCashDo = new JsdBorrowLegalOrderCashDo();
 							borrowLegalOrderCashDoCashDo.setRid(jsdBorrowLegalOrderCashDo.getRid());
 							borrowLegalOrderCashDoCashDo.setOverdueAmount(restOverdue);
 							borrowLegalOrderCashDoCashDo.setOverdueDay((short) (jsdBorrowLegalOrderCashDo.getOverdueDay() - orderCashList.size()));
-							borrowLegalOrderCashDoCashDo.setOverdueStatus("N");
+							if (repayTime.before(jsdBorrowLegalOrderCashDo.getGmtPlanRepay())){
+								borrowLegalOrderCashDoCashDo.setOverdueStatus("N");
+							}
 							jsdBorrowLegalOrderCashDao.updateById(borrowLegalOrderCashDoCashDo);
 							JsdOfflineOverdueRemoveDo jsdOfflineOverdueRemoveDo = new JsdOfflineOverdueRemoveDo();
 							jsdOfflineOverdueRemoveDo.setCurrentAmount(BigDecimalUtil.add(jsdBorrowLegalOrderCashDo.getAmount(), jsdBorrowLegalOrderCashDo.getSumRepaidInterest(), jsdBorrowLegalOrderCashDo.getSumRepaidPoundage(), jsdBorrowLegalOrderCashDo.getSumRepaidOverdue()).subtract(jsdBorrowLegalOrderCashDo.getRepaidAmount()));
@@ -948,12 +950,14 @@ public class JsdBorrowCashRepaymentServiceImpl extends JsdUpsPayKuaijieServiceAb
 
 				if(payAmount.compareTo(restAmount)<0){
 					logger.info("part offline repay，borrowId="+jsdBorrowCashDo.getRid());
-				}else if (repayTime.before(jsdBorrowCashDo.getGmtPlanRepayment())){
+				}else{
 					JsdBorrowCashDo borrowCashDo = new JsdBorrowCashDo();
 					borrowCashDo.setRid(jsdBorrowCashDo.getRid());
 					borrowCashDo.setOverdueAmount(jsdBorrowCashDo.getOverdueAmount().subtract(removeOverdue));
 					borrowCashDo.setOverdueDay(jsdBorrowCashDo.getOverdueDay() - cashList.size());
-					borrowCashDo.setOverdueStatus("N");
+					if (repayTime.before(jsdBorrowCashDo.getGmtPlanRepayment())){
+						borrowCashDo.setOverdueStatus("N");
+					}
 					jsdBorrowCashDao.updateById(borrowCashDo);
 					JsdOfflineOverdueRemoveDo jsdOfflineOverdueRemoveDo = new JsdOfflineOverdueRemoveDo();
 					jsdOfflineOverdueRemoveDo.setCurrentAmount(BigDecimalUtil.add(jsdBorrowCashDo.getAmount(), jsdBorrowCashDo.getSumRepaidInterest(), jsdBorrowCashDo.getSumRepaidPoundage(), jsdBorrowCashDo.getSumRepaidOverdue()).subtract(jsdBorrowCashDo.getRepayAmount()));

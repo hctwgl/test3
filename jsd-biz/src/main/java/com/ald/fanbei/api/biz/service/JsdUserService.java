@@ -2,6 +2,8 @@ package com.ald.fanbei.api.biz.service;
 
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 
+import java.util.List;
+
 /**
  * 极速贷用户信息Service
  * 
@@ -17,5 +19,8 @@ public interface JsdUserService extends ParentService<JsdUserDo, Long>{
 	int updateUser(JsdUserDo userDo);
 
 	JsdUserDo getUserInfo(String mobile);
+
+	List<JsdUserDo> getByUserNameList(String phone);
+
 
 }

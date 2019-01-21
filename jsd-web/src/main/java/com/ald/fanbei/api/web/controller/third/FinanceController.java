@@ -131,48 +131,19 @@ public class FinanceController{
                     resqBo.setMsg(BizThirdRespCode.CLEARING_USER_IS_NULL.getDesc());
                     return resqBo;
                 }
-                List<JsdBorrowCashDo> borrowCash = jsdBorrowCashService.getBorrowCashsInfos(jsdUserDo.getRid());
-                List borrowList = new ArrayList();
-                JsdResourceDo resourceDo= jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG,Constants.JSD_FINANCE_CONFIG);
-                Map<String,String> configData= (Map<String, String>) JSON.parse(resourceDo.getValue());
-                for (JsdBorrowCashDo cash : borrowCash) {
-                    JsdBorrowLegalOrderCashDo borrowLegalOrderCash = jsdBorrowLegalOrderCashService.getLegalOrderByBorrowId(cash.getRid());
-                    Map<String, String> map = new HashMap<>();
-                    BigDecimal legalOrderSumAmount=BigDecimal.ZERO;
-                    BigDecimal legalOrderOverdueAmount=BigDecimal.ZERO;
-                    BigDecimal legalOrderRepayAmount=BigDecimal.ZERO;
-                    BigDecimal legalOrderNoReductionAmount=BigDecimal.ZERO;
-                    if(borrowLegalOrderCash!=null){
-                        legalOrderSumAmount = BigDecimalUtil.add(borrowLegalOrderCash.getAmount(), borrowLegalOrderCash.getOverdueAmount(), borrowLegalOrderCash.getSumRepaidOverdue(),
-                                    borrowLegalOrderCash.getInterestAmount(), borrowLegalOrderCash.getSumRepaidInterest(),
-                                    borrowLegalOrderCash.getPoundageAmount(), borrowLegalOrderCash.getSumRepaidPoundage());
-                        legalOrderOverdueAmount = BigDecimalUtil.add(borrowLegalOrderCash.getOverdueAmount(),borrowLegalOrderCash.getSumRepaidOverdue());
-                        legalOrderRepayAmount = BigDecimalUtil.add(borrowLegalOrderCash.getRepaidAmount());
-                        legalOrderNoReductionAmount= BigDecimalUtil.add(borrowLegalOrderCash.getInterestAmount(), borrowLegalOrderCash.getSumRepaidInterest(),
-                                                     borrowLegalOrderCash.getPoundageAmount(), borrowLegalOrderCash.getSumRepaidPoundage(),borrowLegalOrderCash.getAmount());
+                List<JsdUserDo> jsdUserList=jsdUserService.getByUserNameList(mobile);
+                List<JsdBorrowCashDo> borrowCash=null;
+                for(JsdUserDo jsdUser:jsdUserList){
+                     borrowCash = jsdBorrowCashService.getBorrowCashsInfos(jsdUser.getRid());
+                    if(borrowCash.size()!=0){
+                        resqBo.setData(JSON.toJSONString(getCashDetailInfo(borrowCash)));
+                        return resqBo;
                     }
-                    map.put("company", configData.get("company"));
-                    map.put("productType", configData.get("productType"));
-                    map.put("productName", configData.get("productName"));
-                    map.put("planRepayTime",  DateUtil.formatDate(cash.getGmtPlanRepayment(),"yyyy-MM-dd HH:mm:ss"));
-                    map.put("status", cash.getStatus());
-                    map.put("orderNo", cash.getBorrowNo());
-                    map.put("tradeTime",  DateUtil.formatDate(cash.getGmtCreate(),"yyyy-MM-dd HH:mm:ss"));
-                    map.put("sumAmount", String.valueOf(BigDecimalUtil.add(cash.getAmount(),
-                            cash.getOverdueAmount(), cash.getSumRepaidOverdue(),
-                            cash.getInterestAmount(), cash.getSumRepaidInterest(),
-                            cash.getPoundageAmount(), cash.getSumRepaidPoundage(),legalOrderSumAmount)));
-                    map.put("repayAmount", String.valueOf(BigDecimalUtil.add(cash.getRepayAmount(),legalOrderRepayAmount)));
-                    map.put("restAmount", String.valueOf(jsdBorrowLegalOrderCashService.calculateLegalRestAmount(cash, borrowLegalOrderCash)));
-                    map.put("day",cash.getType());
-                    map.put("noReductionAmount",String.valueOf(BigDecimalUtil.add(cash.getAmount(),
-                            cash.getInterestAmount(), cash.getSumRepaidInterest(),
-                            cash.getPoundageAmount(), cash.getSumRepaidPoundage(),legalOrderNoReductionAmount)));
-                    map.put("companyId",configData.get("companyId"));
-                    map.put("overdueAmount",String.valueOf(BigDecimalUtil.add(cash.getOverdueAmount(),cash.getSumRepaidOverdue(),legalOrderOverdueAmount)));
-                    borrowList.add(map);
                 }
-                resqBo.setData(JSON.toJSONString(borrowList));
+                if(borrowCash.size()==0){
+                    resqBo.setData(JSON.toJSONString(new ArrayList<>()));
+                    return resqBo;
+                }
             }
             return resqBo;
         } catch (Exception e) {
@@ -246,7 +217,7 @@ public class FinanceController{
                 logger.info("borrowLegalOrderCash:"+borrowLegalOrderCash);
                 List<JsdBorrowLegalOrderRepaymentDo> jsdOrderCashRepaymentDo=jsdBorrowLegalOrderRepaymentService.getRepayByBorrowId(jsdBorrowCashDo.getRid());
                 List<JsdBorrowCashRepaymentDo> jsdBorrowCashRepaymentDo=jsdBorrowCashRepaymentService.getRepayByBorrowId(jsdBorrowCashDo.getRid());
-                List<JsdBorrowCashRenewalDo> renewalDetailDos=jsdBorrowCashRenewalService.getJsdRenewalByBorrowId(jsdBorrowCashDo.getRid());
+                List<JsdBorrowCashRenewalDo> renewalDetailDos=jsdBorrowCashRenewalService.getJsdRenewalByBorrowIdAndStatus(jsdBorrowCashDo.getRid());
                 Map renewalMap= buildRenewalInfos(renewalDetailDos);
                 map.put("repayInfos", buildeRepayInfos(jsdBorrowCashRepaymentDo,jsdOrderCashRepaymentDo));
                 logger.info("getGoodsInfoByBorrowId:"+jsdBorrowCashService.getGoodsInfoByBorrowId(jsdBorrowCashDo.getRid()));
@@ -382,6 +353,7 @@ public class FinanceController{
         borrowInfo.put("status", jsdCashDto.getStatus());
         return borrowInfo;
     }
+
     @RequestMapping(value = {"/offlineRepay"}, method = RequestMethod.POST)
     @ResponseBody
     public ClearingResqBo offlineRepay(HttpServletRequest request){
@@ -419,6 +391,85 @@ public class FinanceController{
             resqBo.setMsg(BizThirdRespCode.SYSTEM_ERROR.getDesc());
             return resqBo;
         }
+    }
+
+    @RequestMapping(value = {"/getUserLikeBorrowInfos"},method = RequestMethod.POST)
+    @ResponseBody
+    public ClearingResqBo getUserLikeBorrowInfos(HttpServletRequest request) {
+        ClearingResqBo resqBo = new ClearingResqBo(BizThirdRespCode.SUCCESS.getCode(), "请求成功");
+        try {
+            String data = ObjectUtils.toString(request.getParameter("data"));
+            String sign = ObjectUtils.toString(request.getParameter("sign"));
+            //解析参数
+            JSONObject object = JSON.parseObject(data);
+            String mobile = object.getString("mobile");
+            String realName = object.getString("realName");
+            logger.info("getUserBorrowInfos start data = " + data + " ,sign = " + sign);
+            if (!checkSign(data, sign)) {
+                resqBo.setCode(BizThirdRespCode.CLEARING_SIGN_STATUS.getCode());
+                resqBo.setMsg(BizThirdRespCode.CLEARING_SIGN_STATUS.getDesc());
+            } else {
+                List<JsdBorrowCashDo> borrowCash = jsdBorrowCashService.getBorrowCashsTransedForCrawler(mobile.substring(0,3),mobile.substring(8),realName.substring(realName.lastIndexOf('*')+1));
+                logger.info(mobile.substring(0,3)+mobile.substring(8)+realName.substring(realName.indexOf('*')+1));
+                resqBo.setData(JSON.toJSONString(getCashDetailInfo(borrowCash)));
+            }
+            return resqBo;
+        } catch (Exception e) {
+            logger.error("error message " , e);
+            resqBo.setCode(BizThirdRespCode.SYSTEM_ERROR.getCode());
+            resqBo.setMsg(BizThirdRespCode.SYSTEM_ERROR.getDesc());
+            return resqBo;
+        }
+    }
+
+    private List getCashDetailInfo(List<JsdBorrowCashDo> borrowCash){
+        List borrowList = new ArrayList();
+        JsdResourceDo resourceDo= jsdResourceService.getByTypeAngSecType(Constants.JSD_CONFIG,Constants.JSD_FINANCE_CONFIG);
+        Map<String,String> configData= (Map<String, String>) JSON.parse(resourceDo.getValue());
+        for (JsdBorrowCashDo cash : borrowCash) {
+            JsdBorrowLegalOrderCashDo borrowLegalOrderCash = jsdBorrowLegalOrderCashService.getLegalOrderByBorrowId(cash.getRid());
+            Map<String, String> map = new HashMap<>();
+            BigDecimal legalOrderSumAmount=BigDecimal.ZERO;
+            BigDecimal legalOrderOverdueAmount=BigDecimal.ZERO;
+            BigDecimal legalOrderRepayAmount=BigDecimal.ZERO;
+            BigDecimal legalOrderNoReductionAmount=BigDecimal.ZERO;
+            if(borrowLegalOrderCash!=null){
+                legalOrderSumAmount = BigDecimalUtil.add(borrowLegalOrderCash.getAmount(), borrowLegalOrderCash.getOverdueAmount(), borrowLegalOrderCash.getSumRepaidOverdue(),
+                        borrowLegalOrderCash.getInterestAmount(), borrowLegalOrderCash.getSumRepaidInterest(),
+                        borrowLegalOrderCash.getPoundageAmount(), borrowLegalOrderCash.getSumRepaidPoundage());
+                legalOrderOverdueAmount = BigDecimalUtil.add(borrowLegalOrderCash.getOverdueAmount(),borrowLegalOrderCash.getSumRepaidOverdue());
+                legalOrderRepayAmount = BigDecimalUtil.add(borrowLegalOrderCash.getRepaidAmount());
+                legalOrderNoReductionAmount= BigDecimalUtil.add(borrowLegalOrderCash.getInterestAmount(), borrowLegalOrderCash.getSumRepaidInterest(),
+                        borrowLegalOrderCash.getPoundageAmount(), borrowLegalOrderCash.getSumRepaidPoundage(),borrowLegalOrderCash.getAmount());
+            }
+            BigDecimal refundAmount=jsdBorrowLegalOrderCashService.calculateLegalRestAmount(cash, borrowLegalOrderCash);
+            if (refundAmount.compareTo(BigDecimal.ZERO) == 1 || refundAmount.compareTo(BigDecimal.ZERO) == 0){ //可退金额>0
+                map.put("refundAmount","0");
+            }else {
+                map.put("refundAmount",String.valueOf(refundAmount).substring(1));
+            }
+            map.put("company", configData.get("company"));
+            map.put("productType", configData.get("productType"));
+            map.put("productName", configData.get("productName"));
+            map.put("planRepayTime",  DateUtil.formatDate(cash.getGmtPlanRepayment(),"yyyy-MM-dd HH:mm:ss"));
+            map.put("status", cash.getStatus());
+            map.put("orderNo", cash.getBorrowNo());
+            map.put("tradeTime",  DateUtil.formatDate(cash.getGmtCreate(),"yyyy-MM-dd HH:mm:ss"));
+            map.put("sumAmount", String.valueOf(BigDecimalUtil.add(cash.getAmount(),
+                    cash.getOverdueAmount(), cash.getSumRepaidOverdue(),
+                    cash.getInterestAmount(), cash.getSumRepaidInterest(),
+                    cash.getPoundageAmount(), cash.getSumRepaidPoundage(),legalOrderSumAmount)));
+            map.put("repayAmount", String.valueOf(BigDecimalUtil.add(cash.getRepayAmount(),legalOrderRepayAmount)));
+            map.put("restAmount", String.valueOf(jsdBorrowLegalOrderCashService.calculateLegalRestAmount(cash, borrowLegalOrderCash)));
+            map.put("day",cash.getType());
+            map.put("noReductionAmount",String.valueOf(BigDecimalUtil.add(cash.getAmount(),
+                    cash.getInterestAmount(), cash.getSumRepaidInterest(),
+                    cash.getPoundageAmount(), cash.getSumRepaidPoundage(),legalOrderNoReductionAmount)));
+            map.put("companyId",configData.get("companyId"));
+            map.put("overdueAmount",String.valueOf(BigDecimalUtil.add(cash.getOverdueAmount(),cash.getSumRepaidOverdue(),legalOrderOverdueAmount)));
+            borrowList.add(map);
+        }
+        return borrowList;
     }
 
     /**

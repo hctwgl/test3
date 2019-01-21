@@ -10,6 +10,7 @@ import com.ald.fanbei.api.dal.dao.BaseDao;
 import com.ald.fanbei.api.dal.dao.JsdUserDao;
 import com.ald.fanbei.api.dal.domain.JsdUserDo;
 
+import java.util.List;
 
 
 /**
@@ -45,5 +46,9 @@ public class JsdUserServiceImpl extends ParentServiceImpl<JsdUserDo, Long> imple
 	@Override
 	public JsdUserDo getUserInfo(String mobile) {
 		return jsdUserDao.getUserInfo(mobile);
+	}
+
+	public List<JsdUserDo> getByUserNameList(String phone){
+		return jsdUserDao.getByUserNameList(phone);
 	}
 }
