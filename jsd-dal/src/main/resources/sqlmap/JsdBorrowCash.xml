@@ -1029,6 +1029,7 @@
         WHERE
         r.borrow_id = b.id
         and TO_DAYS(b.gmt_plan_repayment) = TO_DAYS(#{date})
+        and  TO_DAYS(r.gmt_create) = TO_DAYS(#{date})
         AND r.`status` = 'Y'
         AND r.is_delete = '0'
         AND b.is_delete = '0'
