@@ -65,12 +65,10 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 	public void updateExtensionInfo(Date date, String term, JsdTotalInfoDo jsdTotalInfoDo) {
 		// 查询展期数据
 		JsdBorrowCashRenewalDo jsdBorrowCashRenewalDo = new JsdBorrowCashRenewalDo();
-		if (!term.equals("all")) {
-			jsdBorrowCashRenewalDo.setRenewalDay(Long.valueOf(term));
-		}
 		jsdBorrowCashRenewalDo.setStatus("Y");
 		jsdBorrowCashRenewalDo.setQueryDate(date);
-		List<JsdBorrowCashRenewalDo> list = jsdBorrowCashRenewalDao.getListByCommonCondition(jsdBorrowCashRenewalDo);
+		jsdBorrowCashRenewalDo.setType(term);
+		List<JsdBorrowCashRenewalDo> list = jsdBorrowCashRenewalDao.getListByType(jsdBorrowCashRenewalDo);
 
 		// 展期笔数
 		long extensionNum = 0L;
@@ -97,13 +95,15 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 
 		BigDecimal renewalAmount = new BigDecimal("0");
 		jsdBorrowCashRenewalDo = new JsdBorrowCashRenewalDo();
-		if (!"all".equals(term)) {
-			jsdBorrowCashRenewalDo.setRenewalDay(Long.valueOf(term));
-		}
 		jsdBorrowCashRenewalDo.setStatus("Y");
 		jsdBorrowCashRenewalDo.setEndDate(date);
+		jsdBorrowCashRenewalDo.setType(term);
 		renewalAmount = jsdBorrowCashRenewalDao.getRenewalAmount(jsdBorrowCashRenewalDo);
+		if(renewalAmount !=null){
 		jsdTotalInfoDo.setInExhibitionCapital(renewalAmount);
+		}else{
+			jsdTotalInfoDo.setInExhibitionCapital(new BigDecimal("0"));
+		}
 		Gson gson = new Gson();
 		System.out.println("更新数据为" + gson.toJson(jsdTotalInfoDo));
 
@@ -188,10 +188,11 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		jsdBorrowCashDo.setEndDate(date);
 		BigDecimal all = jsdBorrowCashDao.getReplayAmount(jsdBorrowCashDo);
 		jsdBorrowCashDo.setEndDate(tdate);
+		jsdBorrowCashDo.setOrstatus(null);
 		jsdBorrowCashDo.setStatus("TRANSFERRED");
 		BigDecimal bad = jsdBorrowCashDao.getReplayAmount(jsdBorrowCashDo);
-		if (all != null && !all.equals(BigDecimal.ZERO)) {
-			result = bad.divide(all,4,BigDecimal.ROUND_HALF_UP);
+		if (bad!=null&&all != null && !all.equals(BigDecimal.ZERO)) {
+			result = bad.divide(all,4,BigDecimal.ROUND_DOWN);
 		}
 		jsdTotalInfoDo.setBadDebtAmount(result);
 
@@ -201,9 +202,11 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		if (!term.equals("all")) {
 			jsdBorrowCashDo.setType(term);
 		}
-		jsdBorrowCashDo.setOrstatus("1");
+		jsdBorrowCashDo.setStatus("FINISHED");
 		jsdBorrowCashDo.setEndDate(date);
 		BigDecimal replay = jsdBorrowCashDao.getALLReplayAmount(jsdBorrowCashDo);
+		jsdBorrowCashDo.setStatus(null);
+		jsdBorrowCashDo.setUnstatus("1");
 		BigDecimal arriva = jsdBorrowCashDao.getArrivalAmount(jsdBorrowCashDo);
 		if (null != arriva && !BigDecimal.ZERO.equals(arriva)) {
 			profitability = (replay.subtract(arriva)).divide(arriva,4,BigDecimal.ROUND_HALF_UP);

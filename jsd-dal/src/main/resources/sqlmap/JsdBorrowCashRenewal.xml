@@ -9,7 +9,7 @@
     </sql>
     
     <!-- 基本的sql查询条件公共引用 -->
-    <sql id="commonCondition">
+    <sql id="commonCondition">       
         WHERE is_delete = 0
         <if test="rid !=null">
             AND id  = #{rid,jdbcType=INTEGER}
@@ -94,8 +94,7 @@
         </if>
         <if test="gmtModified !=null">
             AND gmt_modified = #{gmtModified,jdbcType=TIMESTAMP}
-        </if>
-        
+        </if>        
         <if test="queryDate!=null and queryDate!=''">
     <![CDATA[   and DATE_FORMAT(gmt_modified , '%Y-%m-%d')=  DATE_FORMAT(#{queryDate}, '%Y-%m-%d')   ]]>
        </if> 
@@ -387,6 +386,28 @@
         <include refid="commonCondition"/>
     </select>
     
+    
+     <select id="getListByType" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
+        SELECT
+       *
+        FROM jsd_borrow_cash_renewal a, jsd_borrow_cash b
+        where a.is_delete = 0
+        	and b.is_delete = 0
+         and a.borrow_id = b.id
+         and a.status = #{status,jdbcType=VARCHAR}
+        <if test="type != null and type !='all' and type !=''">
+            AND b.type = #{type}
+        </if>
+        <if test="queryDate!=null and queryDate!=''">
+    <![CDATA[   and DATE_FORMAT(a.gmt_modified , '%Y-%m-%d')=  DATE_FORMAT(#{queryDate}, '%Y-%m-%d')   ]]>
+       </if> 
+       
+    <if test="endDate!=null and endDate!=''">
+    <![CDATA[  and DATE_FORMAT(a.gmt_modified, '%Y-%m-%d') <= DATE_FORMAT(#{endDate}, '%Y-%m-%d')    ]]>
+	</if>
+    </select>
+    
+    
     <select id="getLastJsdRenewalByBorrowId" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
     	select 
 			<include refid="queryFields"/> 
@@ -449,8 +470,22 @@
 	<select id="getRenewalAmount" resultType="java.math.BigDecimal"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
 		SELECT
 		sum(renewal_amount)
-		FROM jsd_borrow_cash_renewal
-		<include refid="commonCondition"/> 	
+		FROM jsd_borrow_cash_renewal a, jsd_borrow_cash b
+		 where a.is_delete = 0
+		 and b.is_delete = 0
+         and a.borrow_id = b.id
+         and a.status = #{status,jdbcType=VARCHAR}
+        <if test="type != null and type !='all' and type !=''">
+            AND b.type = #{type}
+        </if>
+        <if test="queryDate!=null and queryDate!=''">
+    <![CDATA[   and DATE_FORMAT(a.gmt_modified , '%Y-%m-%d')=  DATE_FORMAT(#{queryDate}, '%Y-%m-%d')   ]]>
+       </if> 
+       
+    <if test="endDate!=null and endDate!=''">
+    <![CDATA[  and DATE_FORMAT(a.gmt_modified, '%Y-%m-%d') <= DATE_FORMAT(#{endDate}, '%Y-%m-%d')    ]]>
+	</if>
+
 	</select>
 
     <select id="getInHand" resultType="com.ald.fanbei.api.dal.domain.dto.InHandTaskDto">
@@ -461,5 +496,14 @@
         and `status` = 'P'
         AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <![CDATA[  <=  ]]> date(gmt_create)
     </select>
+    
+    
+     <select id="getListBytype" resultType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
+        SELECT
+        <include refid="queryFields" />
+        FROM jsd_borrow_cash_renewal
+        <include refid="commonCondition"/>
+    </select>
+    
     
 </mapper>

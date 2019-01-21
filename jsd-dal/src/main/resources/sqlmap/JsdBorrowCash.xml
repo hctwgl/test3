@@ -946,13 +946,30 @@
         SELECT
          sum(repay_amount)
         FROM jsd_borrow_cash
-        <include refid="commonCondition"/>
+        where 
+        is_delete = 0
+        
+        AND status = #{status,jdbcType=VARCHAR}
+        AND type = #{type,jdbcType=VARCHAR}
+	
+	 <![CDATA[and DATE_FORMAT(#{endDate}, '%Y-%m-%d')>=DATE_FORMAT(finish_date, '%Y-%m-%d')   ]]>
+       
     </select>
     
       <select id="getArrivalAmount" resultType="java.math.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
         SELECT
-        sum(arrival_amount)FROM jsd_borrow_cash
-        <include refid="commonCondition"/>
+        sum(arrival_amount)
+       FROM jsd_borrow_cash
+        where 
+        is_delete = 0
+        
+        AND (status = 'TRANSFERRED' OR status= 'FINISHED')
+        AND type = #{type,jdbcType=VARCHAR}
+	
+	 <![CDATA[and DATE_FORMAT(#{endDate}, '%Y-%m-%d')>=DATE_FORMAT(gmt_arrival, '%Y-%m-%d')   ]]>
+       
+       
+       
     </select>
     
     

@@ -163,9 +163,28 @@ import java.math.BigDecimal;
     //查询时间
     private Date endDate;
     
+    
+    
+    //产品类型
+    private String type;
+    
+    
+    
+    
+    
+    
+    
 
 
-    /**
+    public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	/**
      * 获取主键Id
      *
      * @return rid

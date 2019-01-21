@@ -44,5 +44,8 @@ public interface JsdBorrowCashRenewalDao extends BaseDao<JsdBorrowCashRenewalDo,
 	//查询待处理状态订单
 	List<InHandTaskDto> getInHand();
 	
+	
+	List<JsdBorrowCashRenewalDo> getListByType(JsdBorrowCashRenewalDo jsdBorrowCashRenewalDo);
+	
 
 }
