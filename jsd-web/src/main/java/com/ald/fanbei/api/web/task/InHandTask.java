@@ -49,7 +49,7 @@ public class InHandTask {
         try{
             String curHostIp = GetHostIpUtil.getIpAddress();
             logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-            if(StringUtils.equals(curHostIp, NOTICE_HOST)){
+            //if(StringUtils.equals(curHostIp, NOTICE_HOST)){
                 logger.info("InHandTask run start,time=" + new Date());
                 List<InHandTaskDto> list = jsdBorrowCashDao.getInHand();
                 List<InHandTaskDto> list2 = jsdBorrowCashRenewalDao.getInHand();
@@ -64,7 +64,7 @@ public class InHandTask {
                     kafkaTemplate.send(ConfigProperties.get(Constants.KAFKA_ALD_UPS_STATUS_REQUST), JSON.toJSONString(list));
                 }
                 logger.info("InHandTask run end,time=" + new Date());
-            }
+            //}
         } catch (Exception e){
             DingdingUtil.sendMessageByJob(NOTICE_HOST +"，查询处理中借款定时器执行失败！",true);
             logger.error("InHandTask  error, case=",e);
