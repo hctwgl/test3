@@ -17,6 +17,7 @@ import com.ald.fanbei.api.common.enums.ResourceSecType;
 import com.ald.fanbei.api.common.enums.ResourceType;
 import com.ald.fanbei.api.common.exception.BizException;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
@@ -51,7 +52,7 @@ import com.alibaba.fastjson.JSONObject;
 @Controller
 @ResponseBody
 @RequestMapping("/api/loan/")
-public class LoanController {
+public class LoanController extends BaseController{
 
     @Resource
     JsdBorrowCashService jsdBorrowCashService;
@@ -149,9 +150,9 @@ public class LoanController {
 		loanQuery.setStartDate( loanQuery.getStartDate() == null ? date : loanQuery.getStartDate());
 		loanQuery.setEndDate(loanQuery.getEndDate() == null ? new Date() : loanQuery.getEndDate());
 		loanQuery.setNper(loanQuery.getNper()==null? "all":loanQuery.getNper());
-   
+        logger.info("total loanQuery = " + JSON.toJSONString(loanQuery));
     	List list=jsdTotalInfoDao.getTotalInfoList(loanQuery);
-        loanQuery.setList(jsdTotalInfoDao.getTotalInfoList(loanQuery));
+        loanQuery.setList(list);
         return Resp.succ(loanQuery, "");
     }
     
