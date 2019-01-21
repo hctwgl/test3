@@ -1032,7 +1032,7 @@
         AND r.`status` = 'Y'
         AND r.is_delete = '0'
         AND b.is_delete = '0'
-        AND b.`status` in ('TRANSFERRED','FINISHED')
+        AND b.`status` in ('FINISHED')
         <if test="nper != null and nper !='all' and nper !=''">
             AND b.type = #{nper}
         </if>
