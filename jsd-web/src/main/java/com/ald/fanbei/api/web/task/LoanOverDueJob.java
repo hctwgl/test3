@@ -174,7 +174,9 @@ public class LoanOverDueJob {
                 jsdBorrowCashDo.setOverdueAmount(oldOverdueAmount.add(newOverdueAmount));
                 jsdBorrowCashDo.setOverdueDay(jsdBorrowCashDo.getOverdueDay()+1);
                 jsdBorrowCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
-                if(oldOverdueAmount.add(newOverdueAmount).add(orderOverdueAmount).add(jsdBorrowCashDo.getSumRepaidOverdue()).compareTo(totalOverdueAmount) < 1) {
+                logger.info("totalOverdueAmount:"+totalOverdueAmount);
+                logger.info("overdueAmount:"+totalOverdueAmount);
+                if((oldOverdueAmount.add(newOverdueAmount).add(orderOverdueAmount).add(jsdBorrowCashDo.getSumRepaidOverdue())).compareTo(totalOverdueAmount) < 1) {
                     borrowCashDo.setOverdueAmount(oldOverdueAmount.add(newOverdueAmount));
                 }
                 else {
@@ -197,7 +199,7 @@ public class LoanOverDueJob {
                     jsdBorrowLegalOrderCashDo.setRid(borrowLegalOrderCashDo.getRid());
                     jsdBorrowLegalOrderCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
                     jsdBorrowLegalOrderCashDo.setOverdueDay(borrowLegalOrderCashDo.getOverdueDay());
-                    if(borrowCashDo.getOverdueAmount().add(jsdBorrowCashDo.getSumRepaidOverdue()).add(orderOverdueAmount).add(newOverdueorderAmount).compareTo(totalOverdueAmount) < 1) {
+                    if((borrowCashDo.getOverdueAmount().add(jsdBorrowCashDo.getSumRepaidOverdue()).add(orderOverdueAmount).add(newOverdueorderAmount)).compareTo(totalOverdueAmount) < 1) {
                         jsdBorrowLegalOrderCashDo.setOverdueAmount(oldOverdueorderAmount.add(newOverdueorderAmount));
                     }
                     else {

@@ -979,7 +979,7 @@
     <select id="getLoanNum" resultType="java.lang.Integer">
         select count(id) from
           jsd_borrow_cash
-        where to_days(gmt_create) = to_days(#{date})
+        where to_days(gmt_arrival) = to_days(#{date})
           and status in ('TRANSFERRED','FINISHED')
           and is_delete = 0
         <if test="nper != null and nper !='all' and nper !=''">
@@ -1000,7 +1000,7 @@
     <select id="getLoanAmount" resultType="java.math.BigDecimal">
         select SUM(arrival_amount) from
         jsd_borrow_cash
-        where to_days(gmt_create) = to_days(#{date})
+        where to_days(gmt_arrival) = to_days(#{date})
         and status in ('TRANSFERRED','FINISHED')
         and is_delete = 0
         <if test="nper != null and nper !='all' and nper !=''">
@@ -1029,6 +1029,8 @@
         r.borrow_id = b.id
         and TO_DAYS(b.gmt_plan_repayment) = TO_DAYS(#{date})
         AND r.`status` = 'Y'
+        AND r.is_delete = '0'
+        AND b.is_delete = '0'
         AND b.`status` in ('TRANSFERRED','FINISHED')
         <if test="nper != null and nper !='all' and nper !=''">
             AND b.type = #{nper}
@@ -1040,7 +1042,7 @@
         select count(*) from
         jsd_borrow_cash
         where to_days(gmt_plan_repayment) = to_days(#{date})
-        and status = 'TRANSFERRED'
+        and status in ('TRANSFERRED','FINISHED')
         and is_delete = 0
         <if test="nper != null and nper !='all' and nper !=''">
             AND type = #{nper}
