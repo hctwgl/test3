@@ -14,7 +14,7 @@ import com.alibaba.fastjson.JSON;
 public class DingdingUtil {
 
     private static String INVELOMENT_TYPE = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
-    public static String WEBHOOK_TOKEN = "https://oapi.dingtalk.com/robot/send?access_token=25e746714401a5f51249ffe4b9796325ee83e38d76f7e9122a7202c4835b6968";
+    public static String WEBHOOK_TOKEN = "https://oapi.dingtalk.com/robot/send?access_token=e58074057a8c80e220bd1cb2efdd0649e6233f334005142a0a63fa15e04ec9c9";
 
 
     /**
