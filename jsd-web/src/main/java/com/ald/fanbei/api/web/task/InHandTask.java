@@ -22,10 +22,10 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *@类描述：查询七天内状态是处理中的借款
- *@author yafei.li
+ * @author yafei.li
+ * @类描述：查询七天内状态是处理中的借款
  * @Date 2019-1-11
- *@注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
+ * @注意：本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component
 public class InHandTask {
@@ -45,29 +45,39 @@ public class InHandTask {
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
     @Scheduled(cron = "0 0/5 * * * ?")
-    public void InHand(){
-        try{
+    public void InHand() {
+        try {
             String curHostIp = GetHostIpUtil.getIpAddress();
             logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
             //if(StringUtils.equals(curHostIp, NOTICE_HOST)){
-                logger.info("InHandTask run start,time=" + new Date());
-                List<InHandTaskDto> list = jsdBorrowCashDao.getInHand();
-                List<InHandTaskDto> list2 = jsdBorrowCashRenewalDao.getInHand();
-                List<InHandTaskDto> list3 = jsdBorrowCashRepaymentDao.getInHand();
-                List<InHandTaskDto> list4 = jsdBorrowLegalOrderRepaymentDao.getInHand();
-                list.addAll(list2);
-                list.addAll(list3);
-                list.addAll(list4);
-                if (null == list || list.size() == 0){
-                    logger.info("InHandTask is no data");
-                } else {
-                    kafkaTemplate.send(ConfigProperties.get(Constants.KAFKA_ALD_UPS_STATUS_REQUST), JSON.toJSONString(list));
+            logger.info("InHandTask run start,time=" + new Date());
+            List<InHandTaskDto> list = jsdBorrowCashDao.getInHand();
+            List<InHandTaskDto> list2 = jsdBorrowCashRenewalDao.getInHand();
+            List<InHandTaskDto> list3 = jsdBorrowCashRepaymentDao.getInHand();
+            List<InHandTaskDto> list4 = jsdBorrowLegalOrderRepaymentDao.getInHand();
+            list.addAll(list2);
+            list.addAll(list3);
+            list.addAll(list4);
+            if (null == list || list.size() == 0) {
+                logger.info("InHandTask is no data");
+            } else {
+                Integer pageSize = 10;
+                Integer totalRecord = list.size();
+                Integer totalPageNum = (totalRecord + pageSize - 1) / pageSize;
+                for (int i = 0; i < totalPageNum; i++) {
+                    int fromIndex = pageSize * i;
+                    int toIndex = pageSize * (i + 1);
+                    if (i == (totalPageNum - 1)) {
+                        toIndex = list.size();
+                    }
+                    kafkaTemplate.send(ConfigProperties.get(Constants.KAFKA_ALD_UPS_STATUS_REQUST), JSON.toJSONString(list.subList(fromIndex, toIndex)));
                 }
-                logger.info("InHandTask run end,time=" + new Date());
+            }
+            logger.info("InHandTask run end,time=" + new Date());
             //}
-        } catch (Exception e){
-            DingdingUtil.sendMessageByJob(NOTICE_HOST +"，查询处理中借款定时器执行失败！",true);
-            logger.error("InHandTask  error, case=",e);
+        } catch (Exception e) {
+            DingdingUtil.sendMessageByJob(NOTICE_HOST + "，查询处理中借款定时器执行失败！", true);
+            logger.error("InHandTask  error, case=", e);
         }
     }
 }
