@@ -153,6 +153,22 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		jsdTotalInfoDo.setOverdueRate(overdueRate);
 		// 未回收率
 		BigDecimal listYBig = new BigDecimal("0.00");
+		
+		
+		 jsdBorrowCashDo = new JsdBorrowCashDo();
+		if (!term.equals("all")) {
+			jsdBorrowCashDo.setType(term);
+		}
+		jsdBorrowCashDo.setQueryDate(date);
+		jsdBorrowCashDo.setOrstatus("1");
+		listAll = jsdBorrowCashDao.getListByCommonCondition(jsdBorrowCashDo);
+		jsdBorrowCashDo.setOrstatus(null);
+		jsdBorrowCashDo.setStatus("TRANSFERRED");
+		 listY = jsdBorrowCashDao.getListByCommonCondition(jsdBorrowCashDo);
+		
+		
+		
+		
 		for (JsdBorrowCashDo j : listY) {
 			listYBig = BigDecimalUtil
 					.add(listYBig, j.getAmount(), j.getInterestAmount(), j.getPoundageAmount(), j.getOverdueAmount(),
@@ -264,7 +280,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 				// 展期笔数、展期还本、展期费用、在展本金
 				this.updateExtensionInfo(tdate, arr[i], infoDo);
 				// 首逾率、逾期率、未回收率、坏账金额、盈利率
-				this.updateFateInfo(tdate, arr[i], infoDo);
+				this.updateFateInfo(tdate, "all", infoDo);
 				list.add(infoDo);
 			}
 			if (list.size() > 0) {
