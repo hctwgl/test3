@@ -156,7 +156,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		
 		
 		 jsdBorrowCashDo = new JsdBorrowCashDo();
-		
+		 jsdBorrowCashDo.setType(term);
 		jsdBorrowCashDo.setQueryDate(date);
 		listYBig = jsdBorrowCashDao.getlistY(jsdBorrowCashDo);
 		BigDecimal listAllBig = jsdBorrowCashDao.getlistAll(jsdBorrowCashDo);
@@ -270,7 +270,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 				// 展期笔数、展期还本、展期费用、在展本金
 				this.updateExtensionInfo(tdate, arr[i], infoDo);
 				// 首逾率、逾期率、未回收率、坏账金额、盈利率
-				this.updateFateInfo(tdate, "all", infoDo);
+				this.updateFateInfo(tdate, arr[i], infoDo);
 				list.add(infoDo);
 			}
 			if (list.size() > 0) {
