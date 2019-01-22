@@ -40,6 +40,10 @@ public interface JsdBorrowCashRenewalDao extends BaseDao<JsdBorrowCashRenewalDo,
 	
 	
 	BigDecimal getRenewalAmount(JsdBorrowCashRenewalDo jsdBorrowCashRenewalDo);
+	
+	
+	
+	BigDecimal getALLReplayAmount(JsdBorrowCashRenewalDo jsdBorrowCashRenewalDo);
 
 	//查询待处理状态订单
 	List<InHandTaskDto> getInHand();
