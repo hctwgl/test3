@@ -148,7 +148,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		jsdBorrowCashDo.setStatus("TRANSFERRED");
 		int Y = jsdBorrowCashDao.getcount(jsdBorrowCashDo);
 		if (ALL != 0) {
-			overdueRate = new BigDecimal(Y / Double.valueOf(ALL));
+			overdueRate = new BigDecimal(Y / Double.valueOf(ALL)).setScale(4, BigDecimal.ROUND_DOWN);
 		}
 		jsdTotalInfoDo.setOverdueRate(overdueRate);
 		// 未回收率
