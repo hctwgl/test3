@@ -202,7 +202,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		// 坏账金额
 		jsdBorrowCashDo.setOrstatus("1");
 		jsdBorrowCashDo.setEndDate(date);
-		BigDecimal all = jsdBorrowCashDao.getALLReplayAmount(jsdBorrowCashDo);
+		BigDecimal all = jsdBorrowCashDao.getReplayAllAmount(jsdBorrowCashDo);
 		jsdBorrowCashDo.setEndDate(tdate);
 		jsdBorrowCashDo.setOrstatus(null);
 		jsdBorrowCashDo.setStatus("TRANSFERRED");

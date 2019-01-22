@@ -219,7 +219,7 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
     
     
     BigDecimal getReplayAmount(JsdBorrowCashDo jsdBorrowCashDo);
-    BigDecimal getAllReplayAmount(JsdBorrowCashDo jsdBorrowCashDo);
+    BigDecimal getReplayAllAmount(JsdBorrowCashDo jsdBorrowCashDo);
     
     
     BigDecimal getALLReplayAmount(JsdBorrowCashDo jsdBorrowCashDo);
