@@ -73,7 +73,7 @@ public class InHandTask {
                     kafkaTemplate.send(ConfigProperties.get(Constants.KAFKA_ALD_UPS_STATUS_REQUST), JSON.toJSONString(list.subList(fromIndex, toIndex)));
                 }
             }
-            logger.info("InHandTask run end,time=" + new Date());
+            logger.info("InHandTask run end,data=" + JSON.toJSONString(list));
             //}
         } catch (Exception e) {
             DingdingUtil.sendMessageByJob(NOTICE_HOST + "，查询处理中借款定时器执行失败！", true);
