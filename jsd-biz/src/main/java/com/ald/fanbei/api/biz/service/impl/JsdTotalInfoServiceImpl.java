@@ -219,7 +219,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		if (!term.equals("all")) {
 			jsdBorrowCashRenewalDo.setType(term);
 		}
-		jsdBorrowCashRenewalDo.setStatus("FINISHED");
+		jsdBorrowCashRenewalDo.setStatus("Y");
 		jsdBorrowCashRenewalDo.setEndDate(date);
 		
 		jsdBorrowCashDo = new JsdBorrowCashDo();
