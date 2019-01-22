@@ -509,7 +509,7 @@
     <select id="getALLReplayAmount" resultType="java.math.BigDecimal"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRenewalDo">
 		SELECT
 		sum(actual_amount)
-		FROM jsd_borrow_cash_renewal a, jsd_borrow_cash b
+		FROM jsd_borrow_cash_repayment a, jsd_borrow_cash b
 		 where a.is_delete = 0
 		 and b.is_delete = 0
          and a.borrow_id = b.id
