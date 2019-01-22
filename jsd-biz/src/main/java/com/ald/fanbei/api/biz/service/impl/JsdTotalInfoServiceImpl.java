@@ -130,7 +130,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		List<JsdBorrowCashDo> listY = jsdBorrowCashDao.getListByCommonCondition(jsdBorrowCashDo);
 		BigDecimal rirstRate = new BigDecimal("0.00");
 		if (listAll != null && !listAll.isEmpty()) {
-			rirstRate = new BigDecimal(listY.size() / Double.valueOf(listAll.size()));
+			rirstRate = new BigDecimal(listY.size() / Double.valueOf(listAll.size())).setScale(4, BigDecimal.ROUND_DOWN);
 		}
 
 		jsdTotalInfoDo.setRirstRate(rirstRate);
