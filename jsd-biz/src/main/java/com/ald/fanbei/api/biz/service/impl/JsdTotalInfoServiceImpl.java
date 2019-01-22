@@ -156,7 +156,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		
 		
 		 jsdBorrowCashDo = new JsdBorrowCashDo();
-		
+		 jsdBorrowCashDo.setType(term);
 		jsdBorrowCashDo.setQueryDate(date);
 		listYBig = jsdBorrowCashDao.getlistY(jsdBorrowCashDo);
 		BigDecimal listAllBig = jsdBorrowCashDao.getlistAll(jsdBorrowCashDo);
