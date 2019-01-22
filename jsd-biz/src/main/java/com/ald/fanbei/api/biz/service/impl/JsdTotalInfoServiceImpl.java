@@ -202,10 +202,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 			jsdBorrowCashDo.setType(term);
 		}
 		jsdBorrowCashDo.setEndDate(date);
-		jsdBorrowCashDo.setStatus("FINISHED");
 		BigDecimal replay = jsdBorrowCashDao.getALLReplayAmount(jsdBorrowCashDo);
-		jsdBorrowCashDo.setAmount(null);
-		jsdBorrowCashDo.setUnstatus("1");
 		BigDecimal arriva = jsdBorrowCashDao.getArrivalAmount(jsdBorrowCashDo);
 		if (null!=replay&&null != arriva && !BigDecimal.ZERO.equals(arriva)) {
 			profitability = (replay.subtract(arriva)).divide(arriva,4,BigDecimal.ROUND_DOWN);
@@ -220,6 +217,8 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		return jsdTotalInfoDao.saveAll(list);
 	}
 
+	
+	
 	@Override
 	public void updateTotalInfo(Date tdate,String date,JsdResourceDo resourceDo) {
 
