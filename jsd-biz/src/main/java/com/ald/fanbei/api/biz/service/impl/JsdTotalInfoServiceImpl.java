@@ -262,7 +262,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 				// 展期笔数、展期还本、展期费用、在展本金
 				this.updateExtensionInfo(tdate, arr[i], infoDo);
 				// 首逾率、逾期率、未回收率、坏账金额、盈利率
-				this.updateFateInfo(tdate, arr[i], infoDo);
+				this.updateFateInfo(tdate,arr[i], infoDo);
 				list.add(infoDo);
 			}
 			if (list.size() > 0) {
