@@ -197,22 +197,12 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		// 盈利率
 		BigDecimal profitability = new BigDecimal("0");
 		
-		JsdBorrowCashRenewalDo jsdBorrowCashRenewalDo=new JsdBorrowCashRenewalDo();
-		if (!term.equals("all")) {
-			jsdBorrowCashRenewalDo.setType(term);
-		}
-		jsdBorrowCashRenewalDo.setStatus("Y");
-		jsdBorrowCashRenewalDo.setEndDate(date);
-		
 		jsdBorrowCashDo = new JsdBorrowCashDo();
 		if (!term.equals("all")) {
 			jsdBorrowCashDo.setType(term);
 		}
 		jsdBorrowCashDo.setEndDate(date);
-		
-		
-		BigDecimal replay = jsdBorrowCashRenewalDao.getALLReplayAmount(jsdBorrowCashRenewalDo);
-		jsdBorrowCashDo.setUnstatus("1");
+		BigDecimal replay = jsdBorrowCashDao.getALLReplayAmount(jsdBorrowCashDo);
 		BigDecimal arriva = jsdBorrowCashDao.getArrivalAmount(jsdBorrowCashDo);
 		if (null!=replay&&null != arriva && !BigDecimal.ZERO.equals(arriva)) {
 			profitability = (replay.subtract(arriva)).divide(arriva,4,BigDecimal.ROUND_DOWN);
@@ -227,6 +217,8 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		return jsdTotalInfoDao.saveAll(list);
 	}
 
+	
+	
 	@Override
 	public void updateTotalInfo(Date tdate,String date,JsdResourceDo resourceDo) {
 
@@ -270,7 +262,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 				// 展期笔数、展期还本、展期费用、在展本金
 				this.updateExtensionInfo(tdate, arr[i], infoDo);
 				// 首逾率、逾期率、未回收率、坏账金额、盈利率
-				this.updateFateInfo(tdate, arr[i], infoDo);
+				this.updateFateInfo(tdate,arr[i], infoDo);
 				list.add(infoDo);
 			}
 			if (list.size() > 0) {

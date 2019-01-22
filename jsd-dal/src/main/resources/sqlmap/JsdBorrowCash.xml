@@ -959,8 +959,8 @@
         where
         is_delete = 0
 
-        AND status = #{status,jdbcType=VARCHAR}
-         <if test="type != null">
+        AND status = 'FINISHED'
+         <if test="type != null and type !=''">
                AND type = #{type,jdbcType=VARCHAR}
             </if>
 
@@ -975,8 +975,8 @@
         where
         is_delete = 0
 
-        AND (status = 'TRANSFERRED' OR status= 'FINISHED')
-       <if test="type != null">
+        AND status in ('TRANSFERRED','FINISHED')
+      <if test="type != null and type !=''">
                AND type = #{type,jdbcType=VARCHAR}
             </if>
 
