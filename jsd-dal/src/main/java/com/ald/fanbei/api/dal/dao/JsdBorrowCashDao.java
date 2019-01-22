@@ -227,9 +227,9 @@ public interface JsdBorrowCashDao extends BaseDao<JsdBorrowCashDo, Long> {
     
     BigDecimal getArrivalAmount(JsdBorrowCashDo jsdBorrowCashDo);
     
-
+    BigDecimal getlistAll(JsdBorrowCashDo jsdBorrowCashDo);
     
-    
+    BigDecimal getlistY(JsdBorrowCashDo jsdBorrowCashDo);
     Integer getLoanNum(@Param("nper")String nper,@Param("date") String date);
 
     BigDecimal getAppleAmount(@Param("nper")String nper,@Param("date") String date);

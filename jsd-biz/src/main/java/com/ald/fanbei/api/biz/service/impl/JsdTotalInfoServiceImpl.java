@@ -156,34 +156,16 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		
 		
 		 jsdBorrowCashDo = new JsdBorrowCashDo();
-		if (!term.equals("all")) {
-			jsdBorrowCashDo.setType(term);
-		}
+		
 		jsdBorrowCashDo.setQueryDate(date);
-		jsdBorrowCashDo.setOrstatus("1");
-		listAll = jsdBorrowCashDao.getListByCommonCondition(jsdBorrowCashDo);
-		jsdBorrowCashDo.setOrstatus(null);
-		jsdBorrowCashDo.setStatus("TRANSFERRED");
-		 listY = jsdBorrowCashDao.getListByCommonCondition(jsdBorrowCashDo);
+		listYBig = jsdBorrowCashDao.getlistY(jsdBorrowCashDo);
+		BigDecimal listAllBig = jsdBorrowCashDao.getlistAll(jsdBorrowCashDo);
 		
 		
 		
 		
-		for (JsdBorrowCashDo j : listY) {
-			listYBig = BigDecimalUtil
-					.add(listYBig, j.getAmount(), j.getInterestAmount(), j.getPoundageAmount(), j.getOverdueAmount(),
-							j.getSumRepaidInterest(), j.getSumRepaidPoundage(), j.getSumRepaidOverdue())
-					.subtract(j.getRepayAmount());
-		}
-
-		BigDecimal listAllBig = new BigDecimal("0.00");
-		for (JsdBorrowCashDo j : listAll) {
-			listAllBig = BigDecimalUtil
-					.add(listAllBig, j.getAmount(), j.getInterestAmount(), j.getPoundageAmount(), j.getOverdueAmount(),
-							j.getSumRepaidInterest(), j.getSumRepaidPoundage(), j.getSumRepaidOverdue());
-					
-		}
-		if (!listAllBig.equals(new BigDecimal("0.00"))) {
+		
+		if ( listYBig!=null&& null!=listAllBig&&!listAllBig.equals(new BigDecimal("0.00"))) {
 			jsdTotalInfoDo.setUnrecoveredRate(listYBig.divide(listAllBig,4,BigDecimal.ROUND_DOWN));
 		}else{
 			jsdTotalInfoDo.setUnrecoveredRate(new BigDecimal("0.00"));
@@ -288,7 +270,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 				// 展期笔数、展期还本、展期费用、在展本金
 				this.updateExtensionInfo(tdate, arr[i], infoDo);
 				// 首逾率、逾期率、未回收率、坏账金额、盈利率
-				this.updateFateInfo(tdate, arr[i], infoDo);
+				this.updateFateInfo(tdate, "all", infoDo);
 				list.add(infoDo);
 			}
 			if (list.size() > 0) {
