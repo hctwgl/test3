@@ -184,7 +184,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 					
 		}
 		if (!listAllBig.equals(new BigDecimal("0.00"))) {
-			jsdTotalInfoDo.setUnrecoveredRate(listYBig.divide(listAllBig,4,BigDecimal.ROUND_HALF_UP));
+			jsdTotalInfoDo.setUnrecoveredRate(listYBig.divide(listAllBig,4,BigDecimal.ROUND_DOWN));
 		}else{
 			jsdTotalInfoDo.setUnrecoveredRate(new BigDecimal("0.00"));
 
