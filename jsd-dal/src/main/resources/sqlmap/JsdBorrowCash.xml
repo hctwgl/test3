@@ -943,6 +943,15 @@
         <include refid="commonCondition"/>
     </select>
 
+
+ <select id="getAllReplayAmount" resultType="java.math.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
+        SELECT
+         sum(amount+overdue_amount+poundage_amount+interest_amount+sum_repaid_interest+sum_repaid_poundage+sum_repaid_overdue)
+        FROM jsd_borrow_cash
+        <include refid="commonCondition"/>
+    </select>
+
+
     <select id="getALLReplayAmount" resultType="java.math.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
         SELECT
          sum(repay_amount)

@@ -180,8 +180,8 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		for (JsdBorrowCashDo j : listAll) {
 			listAllBig = BigDecimalUtil
 					.add(listAllBig, j.getAmount(), j.getInterestAmount(), j.getPoundageAmount(), j.getOverdueAmount(),
-							j.getSumRepaidInterest(), j.getSumRepaidPoundage(), j.getSumRepaidOverdue())
-					.subtract(j.getRepayAmount());
+							j.getSumRepaidInterest(), j.getSumRepaidPoundage(), j.getSumRepaidOverdue());
+					
 		}
 		if (!listAllBig.equals(new BigDecimal("0.00"))) {
 			jsdTotalInfoDo.setUnrecoveredRate(listYBig.divide(listAllBig,4,BigDecimal.ROUND_HALF_UP));
@@ -202,7 +202,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		// 坏账金额
 		jsdBorrowCashDo.setOrstatus("1");
 		jsdBorrowCashDo.setEndDate(date);
-		BigDecimal all = jsdBorrowCashDao.getReplayAmount(jsdBorrowCashDo);
+		BigDecimal all = jsdBorrowCashDao.getALLReplayAmount(jsdBorrowCashDo);
 		jsdBorrowCashDo.setEndDate(tdate);
 		jsdBorrowCashDo.setOrstatus(null);
 		jsdBorrowCashDo.setStatus("TRANSFERRED");
