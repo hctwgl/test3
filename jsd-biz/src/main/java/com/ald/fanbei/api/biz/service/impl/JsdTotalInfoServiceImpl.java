@@ -197,21 +197,14 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		// 盈利率
 		BigDecimal profitability = new BigDecimal("0");
 		
-		JsdBorrowCashRenewalDo jsdBorrowCashRenewalDo=new JsdBorrowCashRenewalDo();
-		if (!term.equals("all")) {
-			jsdBorrowCashRenewalDo.setType(term);
-		}
-		jsdBorrowCashRenewalDo.setStatus("Y");
-		jsdBorrowCashRenewalDo.setEndDate(date);
-		
 		jsdBorrowCashDo = new JsdBorrowCashDo();
 		if (!term.equals("all")) {
 			jsdBorrowCashDo.setType(term);
 		}
 		jsdBorrowCashDo.setEndDate(date);
-		
-		
-		BigDecimal replay = jsdBorrowCashRenewalDao.getALLReplayAmount(jsdBorrowCashRenewalDo);
+		jsdBorrowCashDo.setStatus("FINISHED");
+		BigDecimal replay = jsdBorrowCashDao.getALLReplayAmount(jsdBorrowCashDo);
+		jsdBorrowCashDo.setAmount(null);
 		jsdBorrowCashDo.setUnstatus("1");
 		BigDecimal arriva = jsdBorrowCashDao.getArrivalAmount(jsdBorrowCashDo);
 		if (null!=replay&&null != arriva && !BigDecimal.ZERO.equals(arriva)) {
