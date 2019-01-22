@@ -943,6 +943,15 @@
         <include refid="commonCondition"/>
     </select>
 
+
+ <select id="getReplayAllAmount" resultType="java.math.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
+        SELECT
+         sum(amount+overdue_amount+poundage_amount+interest_amount+sum_repaid_interest+sum_repaid_poundage+sum_repaid_overdue)
+        FROM jsd_borrow_cash
+        <include refid="commonCondition"/>
+    </select>
+
+
     <select id="getALLReplayAmount" resultType="java.math.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
         SELECT
          sum(repay_amount)
@@ -1118,6 +1127,48 @@
         ORDER BY
         gmt_create DESC
     </select>
+
+
+
+
+ <select id="getlistAll" resultType="java.math.BigDecimal" parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
+        select 
+	sum(amount + overdue_amount + poundage_amount + interest_amount + sum_repaid_interest + sum_repaid_poundage + 
+sum_repaid_overdue
+  )
+ from
+        jsd_borrow_cash
+        where 
+        status in ('TRANSFERRED','FINISHED')
+        and is_delete = 0
+        <if test="type != null and type !='all' and type !=''">
+            AND type = #{type}
+        </if>
+       <![CDATA[   and DATE_FORMAT(gmt_plan_repayment, '%Y-%m-%d')=  DATE_FORMAT(#{queryDate}, '%Y-%m-%d')   ]]>
+    </select>
+    
+    
+    
+    
+    <select id="getlistY" resultType="java.math.BigDecimal"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashDo">
+        select 
+		sum(amount + overdue_amount + poundage_amount + interest_amount + sum_repaid_interest + sum_repaid_poundage + 
+sum_repaid_overdue - repay_amount
+  )
+ from
+        jsd_borrow_cash
+        where 
+        status ='TRANSFERRED'
+        and is_delete = 0
+        <if test="type != null and type !='all' and type !=''">
+            AND type = #{type}
+        </if>
+       <![CDATA[   and DATE_FORMAT(gmt_plan_repayment, '%Y-%m-%d')=  DATE_FORMAT(#{queryDate}, '%Y-%m-%d')   ]]>
+    </select>
+
+
+
+
 
 
 </mapper>
