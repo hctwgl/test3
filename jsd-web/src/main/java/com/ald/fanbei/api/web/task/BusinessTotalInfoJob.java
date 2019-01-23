@@ -54,8 +54,8 @@ public class BusinessTotalInfoJob {
 						// 获取数据库中最新数据
 						JsdTotalInfoDo query = new JsdTotalInfoDo();
 						JsdTotalInfoDo JsdTotalInfoDo = jsdTotalInfoService.getByCommonCondition(query);
-
-						while (null != JsdTotalInfoDo && !timeUtil.isYesterday(JsdTotalInfoDo.getCountDate())) {
+						int time=0;
+						while (null != JsdTotalInfoDo && !timeUtil.isYesterday(JsdTotalInfoDo.getCountDate())&& time<4) {
 							Calendar calendar = Calendar.getInstance();
 							calendar.setTime(JsdTotalInfoDo.getCountDate());
 							calendar.add(Calendar.DAY_OF_MONTH, 1);
@@ -63,20 +63,21 @@ public class BusinessTotalInfoJob {
 							String date = DateUtil.formatDate(tdate,
 									DateUtil.DEFAULT_PATTERN_WITH_HYPHEN);
 							try{
-
 								jsdTotalInfoService.updateTotalInfo(tdate, date, resourceDo);
 								JsdTotalInfoDo = jsdTotalInfoService.getByCommonCondition(query);
-							}catch (Exception e) {
-								//设置时间加一天，跳过当前时间
-								calendar.add(Calendar.DAY_OF_MONTH, 1);
+							}catch (Exception e) {								
 								JsdTotalInfoDo.setCountDate(calendar.getTime());
-
+								time++;
 								// 执行失败，发送短信提醒
 					            DingdingUtil.sendMessageByJob(NOTICE_HOST +"，日期为"+date+"，每日现金统计出现异常！",true);
 								logger.info("error = ", e);
 								e.getMessage();
 							}
 
+						}
+						if(time>=4){
+				            DingdingUtil.sendMessageByJob(NOTICE_HOST +"定时任务出现错误过多，停止执行",true);
+	
 						}
 
 					}

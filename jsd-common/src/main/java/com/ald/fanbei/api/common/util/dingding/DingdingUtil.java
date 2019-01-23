@@ -15,7 +15,8 @@ public class DingdingUtil {
 
     private static String INVELOMENT_TYPE = ConfigProperties.get(Constants.CONFKEY_INVELOMENT_TYPE);
     public static String WEBHOOK_TOKEN = "https://oapi.dingtalk.com/robot/send?access_token=e58074057a8c80e220bd1cb2efdd0649e6233f334005142a0a63fa15e04ec9c9";
-
+    //测试接口
+    //public static String WEBHOOK_TOKEN = "https://oapi.dingtalk.com/robot/send?access_token=ed3876cde0df1bdecb4180857a9cb7d165425ddc2878ab2f0658b2d6a9659e7b";
 
     /**
      * 通过钉钉机器人发送钉钉消息
@@ -60,12 +61,17 @@ public class DingdingUtil {
     	/*        if(StringUtils.equals(INVELOMENT_TYPE,"test")){
            return;
         }*/
-        String robotUrl = WEBHOOK_TOKEN;
-        if (atAll == null || !atAll) {
-            sendMessageByRobot(robotUrl, message);
-            return;
-        }
-        DingdingData dingData = DingdingData.create(message).setIsAtAll();
-        doSendMessage(robotUrl, dingData);
+        try {
+			String robotUrl = WEBHOOK_TOKEN;
+			if (atAll == null || !atAll) {
+				sendMessageByRobot(robotUrl, message);
+				return;
+			}
+			DingdingData dingData = DingdingData.create(message).setIsAtAll();
+			doSendMessage(robotUrl, dingData);
+		}
+		catch (Exception e) {
+		e.getMessage();
+		}
     }
 }
