@@ -130,7 +130,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		List<JsdBorrowCashDo> listY = jsdBorrowCashDao.getListByCommonCondition(jsdBorrowCashDo);
 		BigDecimal rirstRate = new BigDecimal("0.00");
 		if (listAll != null && !listAll.isEmpty()) {
-			rirstRate = new BigDecimal(listY.size() / Double.valueOf(listAll.size()));
+			rirstRate = new BigDecimal(listY.size() / Double.valueOf(listAll.size())).setScale(4, BigDecimal.ROUND_DOWN);
 		}
 
 		jsdTotalInfoDo.setRirstRate(rirstRate);
@@ -148,7 +148,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		jsdBorrowCashDo.setStatus("TRANSFERRED");
 		int Y = jsdBorrowCashDao.getcount(jsdBorrowCashDo);
 		if (ALL != 0) {
-			overdueRate = new BigDecimal(Y / Double.valueOf(ALL));
+			overdueRate = new BigDecimal(Y / Double.valueOf(ALL)).setScale(4, BigDecimal.ROUND_DOWN);
 		}
 		jsdTotalInfoDo.setOverdueRate(overdueRate);
 		// 未回收率
@@ -156,35 +156,17 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		
 		
 		 jsdBorrowCashDo = new JsdBorrowCashDo();
-		if (!term.equals("all")) {
-			jsdBorrowCashDo.setType(term);
-		}
+		 jsdBorrowCashDo.setType(term);
 		jsdBorrowCashDo.setQueryDate(date);
-		jsdBorrowCashDo.setOrstatus("1");
-		listAll = jsdBorrowCashDao.getListByCommonCondition(jsdBorrowCashDo);
-		jsdBorrowCashDo.setOrstatus(null);
-		jsdBorrowCashDo.setStatus("TRANSFERRED");
-		 listY = jsdBorrowCashDao.getListByCommonCondition(jsdBorrowCashDo);
+		listYBig = jsdBorrowCashDao.getlistY(jsdBorrowCashDo);
+		BigDecimal listAllBig = jsdBorrowCashDao.getlistAll(jsdBorrowCashDo);
 		
 		
 		
 		
-		for (JsdBorrowCashDo j : listY) {
-			listYBig = BigDecimalUtil
-					.add(listYBig, j.getAmount(), j.getInterestAmount(), j.getPoundageAmount(), j.getOverdueAmount(),
-							j.getSumRepaidInterest(), j.getSumRepaidPoundage(), j.getSumRepaidOverdue())
-					.subtract(j.getRepayAmount());
-		}
-
-		BigDecimal listAllBig = new BigDecimal("0.00");
-		for (JsdBorrowCashDo j : listAll) {
-			listAllBig = BigDecimalUtil
-					.add(listAllBig, j.getAmount(), j.getInterestAmount(), j.getPoundageAmount(), j.getOverdueAmount(),
-							j.getSumRepaidInterest(), j.getSumRepaidPoundage(), j.getSumRepaidOverdue())
-					.subtract(j.getRepayAmount());
-		}
-		if (!listAllBig.equals(new BigDecimal("0.00"))) {
-			jsdTotalInfoDo.setUnrecoveredRate(listYBig.divide(listAllBig,4,BigDecimal.ROUND_HALF_UP));
+		
+		if ( listYBig!=null&& null!=listAllBig&&!listAllBig.equals(new BigDecimal("0.00"))) {
+			jsdTotalInfoDo.setUnrecoveredRate(listYBig.divide(listAllBig,4,BigDecimal.ROUND_DOWN));
 		}else{
 			jsdTotalInfoDo.setUnrecoveredRate(new BigDecimal("0.00"));
 
@@ -202,7 +184,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		// 坏账金额
 		jsdBorrowCashDo.setOrstatus("1");
 		jsdBorrowCashDo.setEndDate(date);
-		BigDecimal all = jsdBorrowCashDao.getReplayAmount(jsdBorrowCashDo);
+		BigDecimal all = jsdBorrowCashDao.getReplayAllAmount(jsdBorrowCashDo);
 		jsdBorrowCashDo.setEndDate(tdate);
 		jsdBorrowCashDo.setOrstatus(null);
 		jsdBorrowCashDo.setStatus("TRANSFERRED");
@@ -214,17 +196,15 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 
 		// 盈利率
 		BigDecimal profitability = new BigDecimal("0");
+		
 		jsdBorrowCashDo = new JsdBorrowCashDo();
 		if (!term.equals("all")) {
 			jsdBorrowCashDo.setType(term);
 		}
-		jsdBorrowCashDo.setStatus("FINISHED");
 		jsdBorrowCashDo.setEndDate(date);
 		BigDecimal replay = jsdBorrowCashDao.getALLReplayAmount(jsdBorrowCashDo);
-		jsdBorrowCashDo.setStatus(null);
-		jsdBorrowCashDo.setUnstatus("1");
 		BigDecimal arriva = jsdBorrowCashDao.getArrivalAmount(jsdBorrowCashDo);
-		if (null != arriva && !BigDecimal.ZERO.equals(arriva)) {
+		if (null!=replay&&null != arriva && !BigDecimal.ZERO.equals(arriva)) {
 			profitability = (replay.subtract(arriva)).divide(arriva,4,BigDecimal.ROUND_DOWN);
 		}
 		jsdTotalInfoDo.setProfitabilityRate(profitability);
@@ -237,6 +217,8 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 		return jsdTotalInfoDao.saveAll(list);
 	}
 
+	
+	
 	@Override
 	public void updateTotalInfo(Date tdate,String date,JsdResourceDo resourceDo) {
 
@@ -280,7 +262,7 @@ public class JsdTotalInfoServiceImpl extends ParentServiceImpl<JsdTotalInfoDo, L
 				// 展期笔数、展期还本、展期费用、在展本金
 				this.updateExtensionInfo(tdate, arr[i], infoDo);
 				// 首逾率、逾期率、未回收率、坏账金额、盈利率
-				this.updateFateInfo(tdate, arr[i], infoDo);
+				this.updateFateInfo(tdate,arr[i], infoDo);
 				list.add(infoDo);
 			}
 			if (list.size() > 0) {

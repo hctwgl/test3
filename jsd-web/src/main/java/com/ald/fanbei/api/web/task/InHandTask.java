@@ -44,37 +44,37 @@ public class InHandTask {
 
     private static String NOTICE_HOST = ConfigProperties.get(Constants.CONFKEY_TASK_ACTIVE_HOST);
 
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0 0 * * *  ?")
     public void InHand() {
         try {
             String curHostIp = GetHostIpUtil.getIpAddress();
             logger.info("curHostIp=" + curHostIp + ", configNoticeHost=" + NOTICE_HOST);
-            //if(StringUtils.equals(curHostIp, NOTICE_HOST)){
-            logger.info("InHandTask run start,time=" + new Date());
-            List<InHandTaskDto> list = jsdBorrowCashDao.getInHand();
-            List<InHandTaskDto> list2 = jsdBorrowCashRenewalDao.getInHand();
-            List<InHandTaskDto> list3 = jsdBorrowCashRepaymentDao.getInHand();
-            List<InHandTaskDto> list4 = jsdBorrowLegalOrderRepaymentDao.getInHand();
-            list.addAll(list2);
-            list.addAll(list3);
-            list.addAll(list4);
-            if (null == list || list.size() == 0) {
-                logger.info("InHandTask is no data");
-            } else {
-                Integer pageSize = 10;
-                Integer totalRecord = list.size();
-                Integer totalPageNum = (totalRecord + pageSize - 1) / pageSize;
-                for (int i = 0; i < totalPageNum; i++) {
-                    int fromIndex = pageSize * i;
-                    int toIndex = pageSize * (i + 1);
-                    if (i == (totalPageNum - 1)) {
-                        toIndex = list.size();
+            if (StringUtils.equals(curHostIp, NOTICE_HOST)) {
+                logger.info("InHandTask run start,time=" + new Date());
+                List<InHandTaskDto> list = jsdBorrowCashDao.getInHand();
+                List<InHandTaskDto> list2 = jsdBorrowCashRenewalDao.getInHand();
+                List<InHandTaskDto> list3 = jsdBorrowCashRepaymentDao.getInHand();
+                List<InHandTaskDto> list4 = jsdBorrowLegalOrderRepaymentDao.getInHand();
+                list.addAll(list2);
+                list.addAll(list3);
+                list.addAll(list4);
+                if (null == list || list.size() == 0) {
+                    logger.info("InHandTask is no data");
+                } else {
+                    Integer pageSize = 10;
+                    Integer totalRecord = list.size();
+                    Integer totalPageNum = (totalRecord + pageSize - 1) / pageSize;
+                    for (int i = 0; i < totalPageNum; i++) {
+                        int fromIndex = pageSize * i;
+                        int toIndex = pageSize * (i + 1);
+                        if (i == (totalPageNum - 1)) {
+                            toIndex = list.size();
+                        }
+                        kafkaTemplate.send(ConfigProperties.get(Constants.KAFKA_ALD_UPS_STATUS_REQUST), JSON.toJSONString(list.subList(fromIndex, toIndex)));
                     }
-                    kafkaTemplate.send(ConfigProperties.get(Constants.KAFKA_ALD_UPS_STATUS_REQUST), JSON.toJSONString(list.subList(fromIndex, toIndex)));
                 }
+                logger.info("InHandTask run end,data=" + JSON.toJSONString(list));
             }
-            logger.info("InHandTask run end,time=" + new Date());
-            //}
         } catch (Exception e) {
             DingdingUtil.sendMessageByJob(NOTICE_HOST + "，查询处理中借款定时器执行失败！", true);
             logger.error("InHandTask  error, case=", e);
