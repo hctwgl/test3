@@ -63,9 +63,9 @@ public class MgrOfflineRepaymentServiceImpl implements MgrOfflineRepaymentServic
             throw new BizException(BizExceptionCode.JSD_BORROW_IS_NULL);
         }
         JsdBorrowLegalOrderCashDo legalOrderCashDo = jsdBorrowLegalOrderCashService.getBorrowLegalOrderCashByBorrowId(borrowCashDo.getRid());
-        if (null == legalOrderCashDo){
-            throw new BizException(BizExceptionCode.JSD_BORROW_IS_NULL);
-        }
+//        if (null == legalOrderCashDo){
+//            throw new BizException(BizExceptionCode.JSD_BORROW_IS_NULL);
+//        }
         String dataId = String.valueOf(borrowCashDo.getRid() + borrowCashDo.getRenewalNum());
         jsdBorrowCashRepaymentService.offlineRepay(borrowCashDo, legalOrderCashDo, amount, tradeNo, borrowCashDo.getUserId(), repayType, channel, repaymentDate, null, dataId, remark);
         mgrOperateLogDao.addOperateLog(realName, "线下还款：" + JSON.toJSONString(reqData));
