@@ -6,7 +6,9 @@ import com.ald.fanbei.api.biz.bo.aassetside.edspay.FanbeiBorrowBankInfoBo;
 import com.ald.fanbei.api.biz.bo.aassetside.edspay.RepaymentPlan;
 import com.ald.fanbei.api.biz.bo.assetpush.EdspayGetCreditRespBo;
 import com.ald.fanbei.api.biz.service.JsdResourceService;
+import com.ald.fanbei.api.biz.service.JsdUserService;
 import com.ald.fanbei.api.biz.service.JsdViewAssetService;
+import com.ald.fanbei.api.biz.third.util.XgxyUtil;
 import com.ald.fanbei.api.biz.util.BizCacheUtil;
 import com.ald.fanbei.api.common.Constants;
 import com.ald.fanbei.api.common.enums.*;
@@ -32,10 +34,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -68,6 +67,10 @@ public class JsdAssetPackageDetailServiceImpl extends ParentServiceImpl<JsdAsset
 	JsdAssetSideOperaLogDao jsdAssetSideOperaLogDao;
 	@Resource
 	JsdBorrowCashDao jsdBorrowCashDao;
+	@Resource
+	JsdUserService jsdUserService;
+	@Resource
+	XgxyUtil xgxyUtil;
 
 	@Override
 	public BaseDao<JsdAssetPackageDetailDo, Long> getDao() {
@@ -402,7 +405,11 @@ public class JsdAssetPackageDetailServiceImpl extends ParentServiceImpl<JsdAsset
 		repaymentPlan.setRepaymentInterest(BigDecimalUtil.multiply(afViewAssetBorrowCashDo.getArrivalAmount(), new BigDecimal(borrowRate.doubleValue()*timeLimit / 360d)));
 		repaymentPlan.setRepaymentPeriod(0);
 		repaymentPlans.add(repaymentPlan);
+		JsdUserDo jsdUserDo = jsdUserService.getUserInfo(afViewAssetBorrowCashDo.getMobile());
+		HashMap<String,String> userAssetPushInfo = xgxyUtil.getUserAssetPushInfo(jsdUserDo.getOpenId());
 		EdspayGetCreditRespBo creditRespBo = new EdspayGetCreditRespBo();
+		creditRespBo.setBehindCardUrl(userAssetPushInfo.get("photo2"));
+		creditRespBo.setFrontCardUrl(userAssetPushInfo.get("photo1"));
 		creditRespBo.setPackageNo(afAssetPackageDo.getAssetNo());
 		creditRespBo.setOrderNo(afViewAssetBorrowCashDo.getBorrowNo());
 		creditRespBo.setUserId(afViewAssetBorrowCashDo.getUserId());

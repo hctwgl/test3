@@ -47,6 +47,8 @@ public class EdspayGetCreditRespBo implements Serializable {
 	private BigDecimal overdueAmount;//平台总逾期金额
 	private List<RepaymentPlan> repaymentPlans;//还款计划数组
 	private Integer isCur;//债权推送类型，(0实时推送[Default]，1非实时推送)
+	private String frontCardUrl;//正面url
+	private String behindCardUrl;//反面url
 	
 	
 	public EdspayGetCreditRespBo() {
@@ -356,6 +358,21 @@ public class EdspayGetCreditRespBo implements Serializable {
 				+ ", overdueAmount=" + overdueAmount + ", repaymentPlans="
 				+ repaymentPlans + ", isCur=" + isCur + "]";
 	}
-	
-	
+
+
+	public String getFrontCardUrl() {
+		return frontCardUrl;
+	}
+
+	public void setFrontCardUrl(String frontCardUrl) {
+		this.frontCardUrl = frontCardUrl;
+	}
+
+	public String getBehindCardUrl() {
+		return behindCardUrl;
+	}
+
+	public void setBehindCardUrl(String behindCardUrl) {
+		this.behindCardUrl = behindCardUrl;
+	}
 }
