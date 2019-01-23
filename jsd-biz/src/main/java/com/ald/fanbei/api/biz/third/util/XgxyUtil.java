@@ -297,6 +297,36 @@ public class XgxyUtil extends AbstractThird {
         return param;
     }
 
+    /*
+     *
+     * yg资产推送获取西瓜用户信息
+     * */
+    public HashMap<String,String> getUserAssetPushInfo(String openId) {
+        HashMap<String, String> params = new HashMap<>();
+        try {
+            params.put("appId", APPID);
+            Map<String, String> data = new HashMap<>();
+            data.put("openId", openId);
+            data.put("timestamp",String.valueOf(new Date().getTime()));
+            params.put("data", DsedSignUtil.paramsEncrypt(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+            params.put("sign", DsedSignUtil.generateSign(JSONObject.parseObject(JSON.toJSONString(data)), PRIVATE_KEY));
+
+            String url = getXgxyUrl() + "/isp/open/third/eca/v1/getUserAssetPushInfo";
+            String reqResult = HttpUtilForXgxy.post(url, JSON.toJSONString(params), JSON.toJSONString(data));
+            if (StringUtil.isBlank(reqResult)) {
+                return params;
+            }
+            XgxyResqBo reqBo = JSONObject.parseObject(reqResult, XgxyResqBo.class);
+            if (XGXY_REQ_CODE_SUCC.equals(reqBo.getCode())) {
+                JSONObject jsonObject = JSON.parseObject(reqResult);
+                return JSONObject.parseObject(jsonObject.get("data").toString(),HashMap.class);
+            }
+        } catch (Exception e) {
+            logger.info("overDueNoticeRequest request fail", e);
+        }
+        return params;
+    }
+
 
     public static void main(String[] ars) {
 //        XgxyUtil xgxyUtil = new XgxyUtil();
