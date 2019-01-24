@@ -445,4 +445,64 @@
         and `status` = 'P'
         AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <![CDATA[  <=  ]]> date(gmt_create)
     </select>
+
+    <update id="updateByRepayDo"  parameterType="com.ald.fanbei.api.dal.domain.JsdBorrowCashRepaymentDo">
+        UPDATE jsd_borrow_cash_repayment
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeNo != null">
+                trade_no = #{tradeNo,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeNoXgxy != null">
+                trade_no_xgxy = #{tradeNoXgxy,jdbcType=VARCHAR},
+            </if>
+            <if test="tradeNoUps != null">
+                trade_no_ups = #{tradeNoUps,jdbcType=VARCHAR},
+            </if>
+            <if test="repaymentAmount != null">
+                repayment_amount = #{repaymentAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="actualAmount != null">
+                actual_amount = #{actualAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="borrowId != null">
+                borrow_id = #{borrowId,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="cardNumber != null">
+                card_number = #{cardNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="cardName != null">
+                card_name = #{cardName,jdbcType=VARCHAR},
+            </if>
+            <if test="failCode != null">
+                fail_code = #{failCode,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="failMsg != null">
+                fail_msg = #{failMsg,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="payTime != null">
+                pay_time = #{payTime,jdbcType=TIMESTAMP},
+            </if>
+            gmt_modified = NOW()
+        </set>
+        WHERE is_delete = 0 AND id = #{rid ,jdbcType=BIGINT} and status != 'Y'
+    </update>
+
 </mapper>

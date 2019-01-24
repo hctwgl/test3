@@ -1,5 +1,6 @@
 package com.ald.fanbei.api.dal.dao;
 
+import com.ald.fanbei.api.dal.domain.JsdBorrowCashDo;
 import com.ald.fanbei.api.dal.domain.dto.InHandTaskDto;
 import com.ald.jsd.mgr.dal.domain.FinaneceDataDo;
 import org.apache.ibatis.annotations.Param;
@@ -63,5 +64,7 @@ public interface JsdBorrowCashRepaymentDao extends BaseDao<JsdBorrowCashRepaymen
 
     //查询待处理状态订单
     List<InHandTaskDto> getInHand();
+
+    int updateByRepayDo(JsdBorrowCashRepaymentDo repaymentDo);
 
 }
