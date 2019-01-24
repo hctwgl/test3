@@ -440,7 +440,7 @@ public class H5ProtocolController {
 				model.put("reGmtStart", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(),renewalDo.getOverdueDay()), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("reGmtEnd", DateUtil.formatDate(DateUtil.addDays(DateUtil.addDays(renewalDo.getGmtPlanRepayment(), Math.toIntExact(renewalDo.getRenewalDay())),renewalDo.getOverdueDay()), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("remark", renewalDo.getRemark());
-	        	model.put("reGmtPlanRepay", DateUtil.formatDate(renewalDo.getGmtPlanRepayment(), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+	        	model.put("reGmtPlanRepay", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(),renewalDo.getOverdueDay()), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 	        	model.put("reRepayCapital", renewalDo.getCapital());
 	        	model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getCapital()));
 	        	model.put("reServiceRate", renewalDo.getPoundageRate().multiply(NUM100).setScale(2) + "%");
@@ -608,7 +608,7 @@ public class H5ProtocolController {
 				model.put("reGmtStart", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(),renewalDo.getOverdueDay()), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("reGmtEnd", DateUtil.formatDate(DateUtil.addDays(DateUtil.addDays(renewalDo.getGmtPlanRepayment(), Math.toIntExact(renewalDo.getRenewalDay())),renewalDo.getOverdueDay()), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("remark", renewalDo.getRemark());
-				model.put("reGmtPlanRepay", DateUtil.formatDate(DateUtil.addDays(renewalDo.getGmtPlanRepayment(),Math.toIntExact(renewalDo.getRenewalDay())), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
+				model.put("reGmtPlanRepay", DateUtil.formatDate(DateUtil.addDays(DateUtil.addDays(renewalDo.getGmtPlanRepayment(),Math.toIntExact(renewalDo.getRenewalDay())),renewalDo.getOverdueDay()), DateUtil.DEFAULT_CHINESE_SIMPLE_PATTERN));
 				model.put("reRepayCapital", renewalDo.getCapital());
 				model.put("reRepayCapitalUpper", NumberUtil.number2CNMontrayUnit(renewalDo.getCapital()));
 				model.put("reServiceRate", renewalDo.getPoundageRate().multiply(NUM100).setScale(2) + "%");
