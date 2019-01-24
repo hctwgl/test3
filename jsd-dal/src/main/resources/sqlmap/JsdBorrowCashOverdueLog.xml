@@ -174,7 +174,7 @@
         SELECT
             count(*)
         FROM jsd_borrow_cash_overdue_log
-        WHERE is_delete=0 AND type = 'CASH' AND borrow_id=#{borrowId} AND  to_days(gmt_create)=to_days(now())
+        WHERE is_delete=0 AND type = 'CASH' AND  to_days(gmt_create)=to_days(now())
     </select>
     
 </mapper>
