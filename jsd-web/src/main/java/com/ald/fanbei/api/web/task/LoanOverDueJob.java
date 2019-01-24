@@ -171,13 +171,13 @@ public class LoanOverDueJob {
                 BigDecimal oldOverdueAmount = jsdBorrowCashDo.getOverdueAmount();//当前逾期
                 BigDecimal newOverdueAmount = currentAmount.multiply(jsdBorrowCashDo.getOverdueRate().divide(new BigDecimal(360),6,BigDecimal.ROUND_HALF_UP)).setScale(2,BigDecimal.ROUND_HALF_UP);
                 JsdBorrowCashDo borrowCashDo = new JsdBorrowCashDo();
-                jsdBorrowCashDo.setOverdueAmount(oldOverdueAmount.add(newOverdueAmount));
                 jsdBorrowCashDo.setOverdueDay(jsdBorrowCashDo.getOverdueDay()+1);
                 jsdBorrowCashDo.setOverdueStatus(YesNoStatus.YES.getCode());
                 logger.info("totalOverdueAmount:"+totalOverdueAmount);
                 logger.info("overdueAmount:"+totalOverdueAmount);
                 if((oldOverdueAmount.add(newOverdueAmount).add(orderOverdueAmount).add(jsdBorrowCashDo.getSumRepaidOverdue())).compareTo(totalOverdueAmount) < 1) {
                     borrowCashDo.setOverdueAmount(oldOverdueAmount.add(newOverdueAmount));
+                    jsdBorrowCashDo.setOverdueAmount(oldOverdueAmount.add(newOverdueAmount));
                 }
                 else {
                     borrowCashDo.setOverdueAmount(oldOverdueAmount);
