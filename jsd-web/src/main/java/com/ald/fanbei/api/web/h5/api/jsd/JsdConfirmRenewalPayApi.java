@@ -186,11 +186,11 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 				lastOrderCashDo.getSumRepaidInterest(),lastOrderCashDo.getSumRepaidOverdue(),lastOrderCashDo.getSumRepaidPoundage()).subtract(lastOrderCashDo.getRepaidAmount());
 
 		// 上期借款手续费
-		BigDecimal poundage = borrowCashDo.getPoundageAmount().add(lastOrderCashDo.getPoundageAmount());
+		BigDecimal poundage = borrowCashDo.getPoundageAmount();
 		// 上期借款利息
-		BigDecimal rateAmount = borrowCashDo.getInterestAmount().add(lastOrderCashDo.getInterestAmount());
+		BigDecimal rateAmount = borrowCashDo.getInterestAmount();
 		// 上期借款逾期费
-		BigDecimal overdueAmount = borrowCashDo.getOverdueAmount().add(lastOrderCashDo.getOverdueAmount());
+		BigDecimal overdueAmount = borrowCashDo.getOverdueAmount();
 
 		// 续借需要支付本金
 		BigDecimal capital = BigDecimalUtil.multiply(borrowCashDo.getAmount(), paramBo.capitalRate);
@@ -214,9 +214,9 @@ public class JsdConfirmRenewalPayApi implements JsdH5Handle {
 		renewalDo.setStatus(JsdRenewalDetailStatus.APPLY.getCode());
 		renewalDo.setRemark(borrowCashDo.getRemark());
 		renewalDo.setRenewalAmount(renewalAmount);
-		renewalDo.setPriorInterest(borrowCashDo.getInterestAmount());
-		renewalDo.setPriorPoundage(borrowCashDo.getPoundageAmount());
-		renewalDo.setPriorOverdue(borrowCashDo.getOverdueAmount());
+		renewalDo.setPriorInterest(borrowCashDo.getInterestAmount().add(lastOrderCashDo.getInterestAmount()));
+		renewalDo.setPriorPoundage(borrowCashDo.getPoundageAmount().add(lastOrderCashDo.getPoundageAmount()));
+		renewalDo.setPriorOverdue(borrowCashDo.getOverdueAmount().add(lastOrderCashDo.getOverdueAmount()));
 		renewalDo.setCapital(capital);
 		renewalDo.setActualAmount(actualAmount);
 		renewalDo.setNextInterest(nextInterest);
